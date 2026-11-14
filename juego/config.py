@@ -40,7 +40,11 @@ POR_DEFECTO = {
     "tutorial_visto": False,
     "radar_filtro": "todo",
     "emisora": 1,
-    "ia_activa": False,            # modo IA al hablar con la gente (necesita clave de la API)
+    "ia_activa": False,            # modo IA al hablar con la gente
+    "ia_servicio": "auto",         # auto | local | gemini | otro | openai | anthropic
+    "ia_url_otro": "",             # dirección de un servicio compatible con OpenAI; vacío = OpenRouter
+    "ia_modelo_otro": "",          # modelo de ese servicio; vacío = lo elige el juego
+    "voces_grabadas": True,        # en las escenas, usar las voces grabadas que haya en data/voces
     "atraccion": "todos",          # contenido para adultos: quién te atrae
     "mi_genero": "x",              # contenido para adultos: cómo te ven los demás (x = no dicho)
     "vida_realista": False,        # hambre y sueño
@@ -62,6 +66,7 @@ OPCIONES = {
     "atraccion": ["todos", "mujeres", "hombres"],
     "mi_genero": ["x", "h", "m"],
     "act_fuente": ["servidor", "github", "ambas", "personalizada"],
+    "ia_servicio": ["auto", "local", "gemini", "otro", "openai", "anthropic"],
 }
 
 

@@ -1,0 +1,2994 @@
+{
+ "info": {
+  "nombre": "Bahía del Ocaso",
+  "autor": "Puerto Bravo",
+  "version": "1.0",
+  "descripcion": "Una ciudad grande y nueva en la costa oeste: seis barrios, tres bandas, más de cincuenta lugares y una historia propia en veintiuna misiones, en una ciudad en sequía donde el agua es el contrabando. Con vida honrada, cinco vehículos, tres armas, tres carreras y dos personajes."
+ },
+ "lugares": [
+  {
+   "id": "pb_salida_ocaso",
+   "nombre": "Salida oeste, autovía de Bahía del Ocaso",
+   "tipo": "salida",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    0,
+    2
+   ],
+   "lado": "O",
+   "pos": 36,
+   "desc": "La autovía de la costa hacia el oeste. Al final está Bahía del Ocaso.",
+   "a_mapa": "bahia_ocaso",
+   "a_lugar": "oc_salida",
+   "km": 140,
+   "horas": 1.6
+  },
+  {
+   "id": "mar_ocaso",
+   "nombre": "Embarcadero de los Astilleros, desde el mar",
+   "tipo": "muelle",
+   "mapa": "mar",
+   "xy": [
+    60,
+    700
+   ],
+   "desc": "Las grúas de Bahía del Ocaso, muy al oeste de Puerto Bravo.",
+   "a_mapa": "bahia_ocaso",
+   "a_lugar": "oc_embarcadero"
+  }
+ ],
+ "misiones": [
+  {
+   "id": "oc01",
+   "titulo": "Dos horas de agua",
+   "capitulo": 40,
+   "contacto": "Custodia",
+   "lugar": "oc_garaje",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En Bahía del Ocaso, un garaje del Cauce Seco busca conductor de cisternas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Custodia",
+       "¿Vienes por el anuncio? Soy Custodia Barral. Aquí llevamos tres años sin que llueva y el grifo da dos horas al día, cuando da."
+      ],
+      [
+       "Custodia",
+       "Yo reparto agua con dos cisternas más viejas que yo. Antes de darte una, quiero ver si sabes moverte por la ciudad."
+      ],
+      [
+       "Custodia",
+       "Sube al depósito municipal, en Las Naves, y dime cuántas cisternas hay aparcadas. Mira bien, que me lo sé."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Ve al Depósito municipal de cisternas, en Las Naves, al norte del barrio.",
+     "lugar": "oc_deposito",
+     "radio": 14
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Cuentas doce cisternas. Nueve llevan pintado el logotipo de Aguas del Ocaso encima del escudo del ayuntamiento."
+      ],
+      [
+       "Narrador",
+       "Un guarda te mira desde la garita y apunta algo en una libreta."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a Grúas y Cisternas Barral.",
+     "lugar": "oc_garaje"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Custodia",
+       "Doce, y nueve ya no son del pueblo. Has mirado bien. El trabajo es tuyo, Dani."
+      ],
+      [
+       "Custodia",
+       "Esa empresa se está quedando con todo lo que lleve agua. Mañana empiezas."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 200
+   }
+  },
+  {
+   "id": "oc02",
+   "titulo": "La primera cisterna",
+   "capitulo": 40,
+   "contacto": "Custodia",
+   "lugar": "oc_garaje",
+   "requiere": [
+    "oc01"
+   ],
+   "resumen": "El comedor vecinal lleva dos días cocinando con agua de garrafa.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Custodia",
+       "El comedor vecinal está seco. Coge la cisterna de la puerta y llévasela llena."
+      ],
+      [
+       "Custodia",
+       "Despacio. Diez mil litros no frenan, se paran cuando ellos quieren."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Sube a la cisterna que hay en la puerta del garaje. Está abierta.",
+     "lugar": "oc_garaje",
+     "modelo": "oc_cisterna",
+     "nombre": "la cisterna de Custodia",
+     "abierto": true
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Lleva la cisterna al Comedor Vecinal del Cauce sin darle golpes.",
+     "lugar": "oc_comedor",
+     "salud_min": 70
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Cocinera",
+       "¡Agua! Niñas, sacad las ollas grandes. Hoy hay cocido para todo el que venga."
+      ],
+      [
+       "Cocinera",
+       "Dile a Custodia que no sabemos cómo pagarle."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 300
+   }
+  },
+  {
+   "id": "oc03",
+   "titulo": "Agua de nadie",
+   "capitulo": 40,
+   "contacto": "Custodia",
+   "lugar": "oc_garaje",
+   "requiere": [
+    "oc02"
+   ],
+   "resumen": "Hay una cisterna llena en la desaladora, y un barrio entero esperando.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Custodia",
+       "Me han cortado el suministro. Dicen que debo recibos que ya pagué."
+      ],
+      [
+       "Custodia",
+       "En la puerta de la desaladora hay una cisterna de las suyas, llena, esperando para subir a regar setos a Los Miradores."
+      ],
+      [
+       "Custodia",
+       "Esa agua sale de nuestro mar. Tráela al cauce. Y que no te sigan hasta aquí."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Hazte con la cisterna que espera junto a la Desaladora, en Las Naves.",
+     "lugar": "oc_desaladora",
+     "modelo": "oc_cisterna",
+     "nombre": "la cisterna de Aguas del Ocaso",
+     "busqueda": 2
+    },
+    {
+     "tipo": "policia",
+     "texto": "Han avisado a la policía. Despístala antes de volver al barrio.",
+     "nivel": 2
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Lleva la cisterna a la puerta del Gimnasio El Aljibe, en el Cauce Seco.",
+     "lugar": "oc_gimnasio",
+     "salud_min": 40
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Los vecinos salen con garrafas, cubos y hasta una bañera de niño. Nadie pregunta de dónde viene el agua."
+      ],
+      [
+       "Salva el Largo",
+       "Tú eres el nuevo de Custodia. Yo soy Salva. Los Aljibes cuidamos de este barrio. Pásate luego por el gimnasio."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 500
+   }
+  },
+  {
+   "id": "oc04",
+   "titulo": "Los Aljibes",
+   "capitulo": 40,
+   "contacto": "Salva el Largo",
+   "lugar": "oc_gimnasio",
+   "requiere": [
+    "oc03"
+   ],
+   "resumen": "Salva el Largo quiere saber de qué lado estás.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Salva el Largo",
+       "Los Aljibes empezamos llenando los depósitos de las abuelas. Ahora también espantamos a los que vienen a romperlos."
+      ],
+      [
+       "Salva el Largo",
+       "Hay un hombre, Braulio Seisdedos, que trabaja para la empresa del agua. Manda gente a reventar las bocas de riego para que tengamos que comprarles."
+      ],
+      [
+       "Salva el Largo",
+       "Están ahora mismo en el colmado. Toma, la llave de las cisternas. Sirve para abrir y para convencer."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "oc_llave"
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve al Colmado La Garrafa y echa a los hombres de Seisdedos.",
+     "lugar": "oc_tienda",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Matón de Seisdedos",
+       "arma": "bate",
+       "salud": 55
+      },
+      {
+       "n": 1,
+       "tipo": "Capataz de Seisdedos",
+       "arma": "pistola",
+       "salud": 70
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Tendera",
+       "Iban a romperme la toma de agua. Gracias, hijo. Llévate lo que quieras del mostrador."
+      ],
+      [
+       "Salva el Largo",
+       "Bien. Desde hoy, en el Cauce no pagas una copa."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 600,
+    "arma": "oc_llave"
+   }
+  },
+  {
+   "id": "oc05",
+   "titulo": "El contador",
+   "capitulo": 40,
+   "contacto": "Nerea",
+   "lugar": "oc_periodico",
+   "requiere": [
+    "oc04"
+   ],
+   "resumen": "Una periodista de El Faro del Ocaso anda preguntando por los contadores del barrio.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "Nerea Ibarrola, de El Faro. Tú eres el de la cisterna, no lo niegues, que te vio media ciudad."
+      ],
+      [
+       "Nerea",
+       "Tengo una fuente que dice que los contadores nuevos del Cauce marcan el doble. Necesito uno para llevarlo a un laboratorio."
+      ],
+      [
+       "Nerea",
+       "Hay una caja de contadores retirados en el depósito municipal. Yo no puedo entrar. Tú ya sabes el camino."
+      ]
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge un contador precintado en el Depósito municipal de cisternas.",
+     "lugar": "oc_deposito",
+     "objeto": "un contador precintado"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva el contador a El Faro del Ocaso antes de que noten que falta. Tienes poco más de tres minutos.",
+     "lugar": "oc_periodico",
+     "limite": 200
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "Mira el precinto: es de fábrica y lleva el sello de la empresa. Si marca de más, viene así de casa."
+      ],
+      [
+       "Nerea",
+       "Esto va a tardar. Mientras, ten cuidado con Seisdedos. Le faltan dedos, pero no memoria."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 450
+   }
+  },
+  {
+   "id": "oc06",
+   "titulo": "Sed",
+   "capitulo": 40,
+   "contacto": "Custodia",
+   "lugar": "oc_garaje",
+   "requiere": [
+    "oc05"
+   ],
+   "resumen": "Se están llevando las bombas del pozo del barrio.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Custodia",
+       "¡Dani! Los de Seisdedos han arrancado las bombas del pozo viejo y las han cargado en un camión. Sin ese pozo, el barrio no aguanta ni una semana."
+      ],
+      [
+       "Custodia",
+       "Acaban de salir hacia Las Naves. Páralos como sea."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y detén el camión de las bombas antes de que llegue a Las Naves.",
+     "lugar": "oc_empleo",
+     "limite": 280,
+     "modelo": "camion",
+     "nombre": "el camión de las bombas",
+     "salud": 260
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge las bombas del pozo que han quedado en la calzada.",
+     "objeto": "las bombas del pozo",
+     "aqui": true
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Custodia",
+       "Las montamos esta noche. Has salvado el pozo, y eso aquí no se olvida."
+      ],
+      [
+       "Custodia",
+       "Pero van a volver, y nosotros solos no llegamos. Hay que hablar con los del muelle, aunque me cueste."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1200,
+    "chaleco": true
+   }
+  },
+  {
+   "id": "oc07",
+   "titulo": "Tuberías que desaparecen",
+   "capitulo": 41,
+   "contacto": "Salva el Largo",
+   "lugar": "oc_gimnasio",
+   "requiere": [
+    "oc06"
+   ],
+   "resumen": "Alguien arranca de noche el cobre de las tuberías del barrio.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Salva el Largo",
+       "Hay calles que ya no tienen agua ni las dos horas. Alguien se está llevando las tuberías de cobre, tramo a tramo."
+      ],
+      [
+       "Salva el Largo",
+       "Todo el cobre de esta ciudad acaba en el mismo sitio: la Peña del Cobre, en los muelles. Hay una cuadrilla suya ahora mismo en el taller de los Barrena."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve al Taller Hermanos Barrena, en los muelles, y para a la cuadrilla.",
+     "lugar": "oc_taller",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Chatarrero de la Peña",
+       "arma": "bate",
+       "salud": 60
+      },
+      {
+       "n": 1,
+       "tipo": "Chatarrero de la Peña",
+       "arma": "escopeta",
+       "salud": 70
+      }
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge un tramo de tubería de los que llevaban.",
+     "lugar": "oc_taller",
+     "objeto": "un tramo de tubería marcada"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "La tubería lleva una etiqueta de encargo. Quien paga el cobre no es la Peña: es una empresa llamada Aguas del Ocaso."
+      ],
+      [
+       "Narrador",
+       "Una mujer con un mono de soldador te mira desde la puerta, sin prisa, y se va hacia la taberna."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 700
+   }
+  },
+  {
+   "id": "oc08",
+   "titulo": "La Fundi",
+   "capitulo": 41,
+   "contacto": "La Fundi",
+   "lugar": "oc_taberna",
+   "requiere": [
+    "oc07"
+   ],
+   "resumen": "La jefa de la Peña del Cobre quiere hablar contigo en El Lingote.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Fundi",
+       "Me has dejado cuatro hombres sin trabajar una semana. Siéntate. Aquí me llaman la Fundi."
+      ],
+      [
+       "La Fundi",
+       "Yo compro cobre. No pregunto de dónde sale. Seisdedos me lo paga al triple si viene de vuestro barrio, y hasta hoy no quise saber por qué."
+      ],
+      [
+       "La Fundi",
+       "Si quieres que deje de comprarlo, tráeme algo que valga más. La policía me incautó una ranchera cargada. Está en el patio de la comisaría."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Saca la ranchera cargada del patio de la Comisaría del Centro.",
+     "lugar": "oc_comisaria",
+     "modelo": "oc_ranchera",
+     "nombre": "la ranchera incautada",
+     "busqueda": 3
+    },
+    {
+     "tipo": "policia",
+     "texto": "Tienes media comisaría detrás. Piérdelos.",
+     "nivel": 3
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Lleva la ranchera a la Chatarrería La Fundición.",
+     "lugar": "oc_chatarreria",
+     "salud_min": 35
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Fundi",
+       "Entera. No me lo esperaba. Desde hoy la Peña no toca una tubería del Cauce."
+      ],
+      [
+       "La Fundi",
+       "Y dile a tu jefa que no me mire así cuando venga, que las dos sabemos lo que es levantar un negocio sola."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1500
+   }
+  },
+  {
+   "id": "oc09",
+   "titulo": "Marea baja",
+   "capitulo": 41,
+   "contacto": "La Fundi",
+   "lugar": "oc_taberna",
+   "requiere": [
+    "oc08"
+   ],
+   "resumen": "Seisdedos saca por mar lo que ya no puede sacar por tierra.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Fundi",
+       "Seisdedos ha dejado de comprarme y ahora carga él mismo. Tiene gente en el embarcadero metiendo cobre en una barcaza."
+      ],
+      [
+       "La Fundi",
+       "Ese cobre es de tuberías vuestras y el embarcadero es mío. Vamos a medias: tú los echas, yo me quedo la carga."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve al Embarcadero de los Astilleros y echa a los hombres de Seisdedos.",
+     "lugar": "oc_embarcadero",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Estibador de Seisdedos",
+       "arma": "pistola",
+       "salud": 65
+      },
+      {
+       "n": 2,
+       "tipo": "Estibador de Seisdedos",
+       "arma": "navaja",
+       "salud": 60
+      }
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el albarán de carga que ha quedado en el muelle.",
+     "lugar": "oc_embarcadero",
+     "objeto": "el albarán de la barcaza"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El albarán lleva el destino de la carga: la sede de Aguas del Ocaso, a nombre de Leocadia Arizmendi."
+      ],
+      [
+       "Narrador",
+       "El cobre de las tuberías del barrio se usa para ampliar la red de Los Miradores."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1300
+   }
+  },
+  {
+   "id": "oc10",
+   "titulo": "Hierro y agua",
+   "capitulo": 41,
+   "contacto": "La Fundi",
+   "lugar": "oc_taberna",
+   "requiere": [
+    "oc09"
+   ],
+   "resumen": "Seisdedos viene a cobrarse lo del embarcadero.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Fundi",
+       "Vienen a por la chatarrería. Tres coches. Si me queman el desguace, la Peña se acaba y Seisdedos se queda los muelles."
+      ],
+      [
+       "La Fundi",
+       "Toma. Es una remachadora de astillero. Le hemos hecho unos arreglos."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "oc_remachadora",
+     "balas": 32
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Defiende la Chatarrería La Fundición. Ya están llegando.",
+     "lugar": "oc_chatarreria",
+     "limite": 300,
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Hombre de Seisdedos",
+       "arma": "pistola",
+       "salud": 70
+      },
+      {
+       "n": 2,
+       "tipo": "Hombre de Seisdedos",
+       "arma": "subfusil",
+       "salud": 75
+      },
+      {
+       "n": 1,
+       "tipo": "Incendiario",
+       "arma": "oc_garrafa",
+       "salud": 60
+      }
+     ],
+     "ya": true
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Fundi",
+       "Ni una chispa en el desguace. Te debo el negocio, forastero."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2000,
+    "arma": "oc_remachadora",
+    "balas": 24
+   }
+  },
+  {
+   "id": "oc11",
+   "titulo": "El pacto del muelle",
+   "capitulo": 41,
+   "contacto": "Custodia",
+   "lugar": "oc_garaje",
+   "requiere": [
+    "oc10"
+   ],
+   "resumen": "Custodia y la Fundi llevan veinte años sin hablarse. Hoy toca.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Custodia",
+       "Veinte años hace que no piso esa taberna. Fuimos socias, la Fundi y yo. Ella se quedó la chatarra y yo las cisternas, y nos dijimos de todo."
+      ],
+      [
+       "Custodia",
+       "Llévame. Si voy sola, me doy la vuelta en la puerta."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Acompaña a Custodia a la Taberna El Lingote, en los muelles.",
+     "lugar": "oc_taberna"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Fundi",
+       "Custodia."
+      ],
+      [
+       "Custodia",
+       "Sagrario."
+      ],
+      [
+       "Narrador",
+       "Se miran un rato largo. Luego la Fundi pone dos vasos en la mesa."
+      ],
+      [
+       "La Fundi",
+       "El cauce pone las cisternas y los muelles ponemos el hierro. Y el chico, que ya ha demostrado para qué sirve, hace de puente."
+      ],
+      [
+       "Custodia",
+       "Hecho. Y el lanchón viejo, el que era de las dos, que se lo quede Dani. Que al menos sirva para algo."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "dinero": 800
+    }
+   ],
+   "recompensa": {
+    "dinero": 1500,
+    "barco": {
+     "modelo": "oc_lanchon",
+     "en": "oc_embarcadero"
+    }
+   }
+  },
+  {
+   "id": "oc12",
+   "titulo": "Los ojos de la colina",
+   "capitulo": 42,
+   "contacto": "Nerea",
+   "lugar": "oc_periodico",
+   "requiere": [
+    "oc11"
+   ],
+   "resumen": "El laboratorio ha contestado, y Nerea necesita ojos en Los Miradores.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "El contador marca un cuarenta por ciento de más. Está preparado así. Pero con un contador no tumbo a Arizmendi: necesito sus cuentas."
+      ],
+      [
+       "Nerea",
+       "En la colina hay unos chavales con motos, Los Vigías. Vigilan los chalés por cuatro perras y saben quién entra y quién sale de cada casa."
+      ],
+      [
+       "Nerea",
+       "No se fían de nadie de abajo. Sube a la torre y pregunta por Mirlo. Y sube rápido: si tardas, ni te reciben."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Sube a la Torre del Vigía, en Los Miradores, en menos de tres minutos.",
+     "lugar": "oc_torre",
+     "limite": 170
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mirlo",
+       "Has tardado poco para ser del cauce. Soy Mirlo. Aquí arriba nos pagan por mirar y por callar."
+      ],
+      [
+       "Mirlo",
+       "A mi madre le cortaron el agua el mes pasado, y limpia la casa de la que nos paga. Así que habla."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 500
+   }
+  },
+  {
+   "id": "oc13",
+   "titulo": "Carrera de sombras",
+   "capitulo": 42,
+   "contacto": "Mirlo",
+   "lugar": "oc_torre",
+   "requiere": [
+    "oc12"
+   ],
+   "resumen": "Para que Los Vigías te escuchen, primero tienes que seguirles el ritmo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mirlo",
+       "Aquí nadie manda por hablar. Coge esa moto y llega a lo alto de la colina antes de que yo cuente hasta cien."
+      ],
+      [
+       "Mirlo",
+       "Si la rompes, la pagas."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Sube a la moto de vigía que hay junto a la torre.",
+     "lugar": "oc_torre",
+     "modelo": "oc_vigia",
+     "nombre": "la moto de vigía",
+     "abierto": true
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Llega con la moto a la puerta de la Villa del Mirador, en lo alto de la colina, en cien segundos.",
+     "lugar": "oc_villa",
+     "limite": 100,
+     "salud_min": 50
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mirlo",
+       "Noventa y pico. Vale. Los Vigías te escuchan."
+      ],
+      [
+       "Mirlo",
+       "Quieres las cuentas de la Arizmendi. No las guarda en la sede: se las lleva a casa cada viernes en un maletín gris."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 800
+   }
+  },
+  {
+   "id": "oc14",
+   "titulo": "El maletín gris",
+   "capitulo": 42,
+   "contacto": "Mirlo",
+   "lugar": "oc_torre",
+   "requiere": [
+    "oc13"
+   ],
+   "resumen": "Es viernes. El maletín sale de la sede a las ocho.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mirlo",
+       "El chófer deja el maletín en el coche mientras ella cena en El Horizonte. Veinte minutos, todos los viernes."
+      ],
+      [
+       "Mirlo",
+       "Nosotros distraemos al chófer. Tú coges el maletín y bajas al periódico sin parar."
+      ]
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el maletín gris junto al Restaurante El Horizonte.",
+     "lugar": "oc_horizonte",
+     "objeto": "el maletín gris"
+    },
+    {
+     "tipo": "policia",
+     "texto": "El chófer ha dado la alarma. Despista a la policía.",
+     "nivel": 2
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva el maletín a El Faro del Ocaso.",
+     "lugar": "oc_periodico"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "Facturas, planos de la red y un contrato con el ayuntamiento. Mira esta cláusula: si el consumo del Cauce baja de un mínimo, la empresa puede cerrar el ramal."
+      ],
+      [
+       "Nerea",
+       "Por eso rompen las bocas y arrancan las tuberías. No quieren venderos agua, Dani. Quieren el barrio vacío para construir."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1600
+   }
+  },
+  {
+   "id": "oc15",
+   "titulo": "La llave maestra",
+   "capitulo": 42,
+   "contacto": "Salva el Largo",
+   "lugar": "oc_gimnasio",
+   "requiere": [
+    "oc14"
+   ],
+   "resumen": "El agua del barrio se abre y se cierra desde una sala de la desaladora.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Salva el Largo",
+       "Según los planos, hay una sala de válvulas en la desaladora. Con la llave maestra se abre el ramal del Cauce entero, sin contador."
+      ],
+      [
+       "Salva el Largo",
+       "La guardan los vigilantes privados. No son policías, y tampoco se lo piensan antes de disparar."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "balas": 24,
+     "balas_arma": "oc_remachadora"
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve a la Desaladora y quita de en medio a la vigilancia privada.",
+     "lugar": "oc_desaladora",
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Vigilante privado",
+       "arma": "pistola",
+       "salud": 75
+      },
+      {
+       "n": 2,
+       "tipo": "Vigilante privado",
+       "arma": "escopeta",
+       "salud": 85
+      }
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la llave maestra de las válvulas.",
+     "lugar": "oc_desaladora",
+     "objeto": "la llave maestra de las válvulas"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Es una llave de bronce del tamaño de un antebrazo. Pesa como si supiera lo que abre."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1800,
+    "chaleco": true
+   }
+  },
+  {
+   "id": "oc16",
+   "titulo": "La noche de las válvulas",
+   "capitulo": 42,
+   "contacto": "Custodia",
+   "lugar": "oc_garaje",
+   "requiere": [
+    "oc15"
+   ],
+   "resumen": "Tres válvulas, una noche y toda la ciudad mirando.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Custodia",
+       "Son tres válvulas: la de la desaladora, la del depósito y la del cauce. Hay que abrirlas seguidas o salta la presión."
+      ],
+      [
+       "Custodia",
+       "Los Vigías avisan desde arriba, la Peña corta la calle de las Naves y Los Aljibes esperan en el cauce. Tú llevas la llave. Corre."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Primera válvula: la Desaladora. Tienes dos minutos y medio.",
+     "lugar": "oc_desaladora",
+     "limite": 150
+    },
+    {
+     "tipo": "ir",
+     "texto": "Segunda válvula: el Depósito municipal. Minuto y medio.",
+     "lugar": "oc_deposito",
+     "limite": 90
+    },
+    {
+     "tipo": "ir",
+     "texto": "Tercera válvula: el lecho del Cauce Seco. Dos minutos y medio.",
+     "lugar": "oc_cauce",
+     "limite": 150,
+     "radio": 45
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Primero es un temblor en el suelo. Luego, por todas las bocas de riego del barrio a la vez, sale el agua."
+      ],
+      [
+       "Narrador",
+       "La gente sale en pijama a la calle. Alguien pone música. Los críos se meten vestidos en el cauce, que por una noche vuelve a ser un río."
+      ],
+      [
+       "Custodia",
+       "Mañana nos la cortan otra vez. Pero ya han visto que se puede."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2500
+   }
+  },
+  {
+   "id": "oc17",
+   "titulo": "Portada",
+   "capitulo": 43,
+   "contacto": "Nerea",
+   "lugar": "oc_periodico",
+   "requiere": [
+    "oc16"
+   ],
+   "resumen": "El Faro del Ocaso va a publicarlo todo, si llega a la imprenta.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "Sale mañana en portada. El problema es que la imprenta está en Las Naves, y Seisdedos ha puesto gente en la puerta del periódico."
+      ],
+      [
+       "Nerea",
+       "Límpiame la calle. Luego llevas tú las planchas a la embotelladora vieja, que es donde imprimimos desde que nos subieron el alquiler."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Despeja la puerta de El Faro del Ocaso.",
+     "lugar": "oc_periodico",
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Hombre de Seisdedos",
+       "arma": "pistola",
+       "salud": 75
+      },
+      {
+       "n": 2,
+       "tipo": "Hombre de Seisdedos",
+       "arma": "uzi",
+       "salud": 80
+      }
+     ],
+     "ya": true
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva las planchas a la Embotelladora La Gota, en Las Naves, en cuatro minutos.",
+     "lugar": "oc_embotelladora",
+     "limite": 240
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Impresor",
+       "Planchas calientes y sin una arruga. A las seis está en todos los quioscos."
+      ],
+      [
+       "Narrador",
+       "Al día siguiente, la portada dice: La sed del Cauce estaba en el contrato."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2200
+   }
+  },
+  {
+   "id": "oc18",
+   "titulo": "Seisdedos",
+   "capitulo": 43,
+   "contacto": "Salva el Largo",
+   "lugar": "oc_gimnasio",
+   "requiere": [
+    "oc17"
+   ],
+   "resumen": "Con la portada en la calle, Braulio Seisdedos hace las maletas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Salva el Largo",
+       "Seisdedos se va. Ha vaciado la caja de la empresa y tira para la autovía en su todoterreno."
+      ],
+      [
+       "Salva el Largo",
+       "Si se va, se lleva los nombres de los que cobraban. Que no salga de la ciudad."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y detén el todoterreno de Seisdedos antes de que pasen cinco minutos.",
+     "lugar": "oc_sede",
+     "limite": 300,
+     "modelo": "todoterreno",
+     "nombre": "el todoterreno de Seisdedos",
+     "salud": 300
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la libreta que ha salido despedida del todoterreno.",
+     "objeto": "la libreta de Seisdedos",
+     "aqui": true
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Seisdedos sale del coche cojeando, con las manos en alto, y espera a la policía sentado en el bordillo."
+      ],
+      [
+       "Narrador",
+       "La libreta tiene tres años de pagos: concejales, inspectores y un director de periódico."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2800
+   }
+  },
+  {
+   "id": "oc19",
+   "titulo": "El convoy",
+   "capitulo": 43,
+   "contacto": "La Fundi",
+   "lugar": "oc_taberna",
+   "requiere": [
+    "oc18"
+   ],
+   "resumen": "Arizmendi quiere sacar de la ciudad las bombas principales de la desaladora.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Fundi",
+       "La Arizmendi sabe que pierde la concesión. Si se va, se lleva las bombas grandes en un blindado, y sin ellas no hay desaladora para nadie."
+      ],
+      [
+       "La Fundi",
+       "El blindado está cargando en la sede. Tú lo sacas y nosotros lo escondemos entre la chatarra. Te va a seguir hasta el ejército."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Hazte con el blindado que carga junto a la Sede de Aguas del Ocaso.",
+     "lugar": "oc_sede",
+     "modelo": "blindado",
+     "nombre": "el blindado de las bombas",
+     "busqueda": 4
+    },
+    {
+     "tipo": "policia",
+     "texto": "Tienes a toda la ciudad detrás. Despístalos.",
+     "nivel": 3
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Esconde el blindado en la Chatarrería La Fundición.",
+     "lugar": "oc_chatarreria",
+     "salud_min": 25
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Fundi",
+       "Debajo de cuarenta toneladas de hierro no lo encuentra ni su madre. Las bombas se quedan en la ciudad."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 3500
+   }
+  },
+  {
+   "id": "oc20",
+   "titulo": "La desaladora",
+   "capitulo": 43,
+   "contacto": "Custodia",
+   "lugar": "oc_garaje",
+   "requiere": [
+    "oc19"
+   ],
+   "resumen": "Arizmendi ha cerrado la desaladora con su gente dentro. Toda la ciudad está sin agua.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Custodia",
+       "Ha cerrado la desaladora entera. Ni el cauce, ni el centro, ni los hoteles. Dice que no abre hasta que le devuelvan la concesión."
+      ],
+      [
+       "Custodia",
+       "Esta vez vamos todos: los Aljibes, la Peña y los Vigías. Tú entras el primero, que para eso tienes la llave."
+      ],
+      [
+       "Salva el Largo",
+       "Coge lo que necesites. Hoy no se ahorra."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "escopeta_combate",
+     "balas": 40
+    },
+    {
+     "tipo": "dar",
+     "arma": "oc_garrafa",
+     "balas": 3
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Primero, el Depósito municipal: abre paso entre la vigilancia.",
+     "lugar": "oc_deposito",
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Vigilante privado",
+       "arma": "pistola",
+       "salud": 80
+      },
+      {
+       "n": 2,
+       "tipo": "Vigilante privado",
+       "arma": "subfusil",
+       "salud": 85
+      }
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ahora, la Desaladora. Están atrincherados en la entrada.",
+     "lugar": "oc_desaladora",
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Vigilante privado",
+       "arma": "escopeta",
+       "salud": 90
+      },
+      {
+       "n": 3,
+       "tipo": "Vigilante privado",
+       "arma": "fusil",
+       "salud": 90
+      },
+      {
+       "n": 1,
+       "tipo": "Jefe de seguridad",
+       "arma": "ametralladora",
+       "salud": 160
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Metes la llave de bronce en la válvula general y empujas con todo el cuerpo. Gira."
+      ],
+      [
+       "Narrador",
+       "La desaladora vuelve a rugir. En la sala de control solo queda una silla vacía, todavía caliente."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 5000,
+    "chaleco": true
+   }
+  },
+  {
+   "id": "oc21",
+   "titulo": "El agua es de todos",
+   "capitulo": 43,
+   "contacto": "Mirlo",
+   "lugar": "oc_torre",
+   "requiere": [
+    "oc20"
+   ],
+   "resumen": "Leocadia Arizmendi baja de la colina por última vez.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mirlo",
+       "¡La tenemos vista! Sale de la sede en la limusina, con las escrituras de la concesión. Si las firma en otra provincia, vuelve dentro de un año con otro nombre."
+      ],
+      [
+       "Mirlo",
+       "Baja por la avenida de los Miradores. Yo voy delante en la moto y te canto las curvas."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y detén la limusina de Arizmendi antes de que salga de la ciudad.",
+     "lugar": "oc_sede",
+     "limite": 330,
+     "modelo": "limusina",
+     "nombre": "la limusina de Arizmendi",
+     "salud": 380
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge las escrituras de la concesión.",
+     "objeto": "las escrituras de la concesión",
+     "aqui": true
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Arizmendi",
+       "¿Sabes lo que vale esta ciudad sin mí? Nada. Yo traje el agua."
+      ],
+      [
+       "Nerea",
+       "El agua estaba en el mar, Leocadia. Usted solo puso el contador. Sonría, que esta foto sí va a salir."
+      ],
+      [
+       "Narrador",
+       "Un mes después, el pleno devuelve la desaladora a la ciudad. Custodia corta la cinta con la llave de bronce colgada del cuello."
+      ],
+      [
+       "Narrador",
+       "Y la primera noche de otoño, sin que nadie lo espere, en Bahía del Ocaso llueve."
+      ],
+      [
+       "Custodia",
+       "Mira tú, Dani. Ahora que no hacía falta."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 12000,
+    "arma": "escopeta_combate",
+    "balas": 40
+   }
+  },
+  {
+   "id": "och1",
+   "titulo": "Garrafas a domicilio",
+   "capitulo": 44,
+   "contacto": "La tendera",
+   "lugar": "oc_tienda",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Trabajo honrado: hay vecinos mayores que no pueden cargar con el agua.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La tendera",
+       "Tengo tres pedidos de garrafas para gente que no puede con ellas. ¿Me echas una mano? Te pago el viaje."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Primera entrega: la casa baja de la calle del Cauce. Dos minutos.",
+     "lugar": "oc_casa_cauce",
+     "limite": 120
+    },
+    {
+     "tipo": "ir",
+     "texto": "Segunda entrega: el Comedor Vecinal.",
+     "lugar": "oc_comedor",
+     "limite": 120
+    },
+    {
+     "tipo": "ir",
+     "texto": "Tercera entrega: la Farmacia del Cauce.",
+     "lugar": "oc_farmacia",
+     "limite": 120
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La boticaria",
+       "Las del fondo son para el suero de los abuelos. Gracias, de verdad."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 260
+   }
+  },
+  {
+   "id": "och2",
+   "titulo": "Agua para El Abrevadero",
+   "capitulo": 44,
+   "contacto": "La voluntaria",
+   "lugar": "oc_protectora",
+   "requiere": [
+    "och1"
+   ],
+   "resumen": "Trabajo honrado: la protectora tiene cuarenta perros y los bebederos vacíos.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La voluntaria",
+       "Cuarenta perros y ni una gota. Custodia nos presta una cisterna, pero no tenemos quien la conduzca."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Recoge la cisterna prestada en Grúas y Cisternas Barral. Está abierta.",
+     "lugar": "oc_garaje",
+     "modelo": "oc_cisterna",
+     "nombre": "la cisterna prestada",
+     "abierto": true
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Lleva la cisterna a la Protectora El Abrevadero con cuidado.",
+     "lugar": "oc_protectora",
+     "salud_min": 75
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La voluntaria",
+       "Escucha cómo beben. Si algún día quieres un perro, aquí tienes cuarenta candidatos."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 320
+   }
+  },
+  {
+   "id": "och3",
+   "titulo": "Golpe de calor",
+   "capitulo": 44,
+   "contacto": "El socorrista",
+   "lugar": "oc_chiringuito",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Trabajo honrado: en la playa hace falta alguien con piernas y cabeza.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El socorrista",
+       "Tengo a un señor con un golpe de calor en la arena y el botiquín de la caseta vacío. Corre a la farmacia y luego ven a la playa."
+      ]
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el suero en la Farmacia del Cauce. Tienes dos minutos y medio.",
+     "lugar": "oc_farmacia",
+     "limite": 150,
+     "objeto": "el suero y las compresas"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Llévalo a la Playa de las Palmeras.",
+     "lugar": "oc_playa",
+     "limite": 150,
+     "radio": 45
+    },
+    {
+     "tipo": "ir",
+     "texto": "Acompaña al señor al Hospital de la Bahía.",
+     "lugar": "oc_hospital",
+     "limite": 150
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El socorrista",
+       "Ha llegado consciente, y eso es gracias a ti. El ayuntamiento paga poco, pero paga."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 400
+   }
+  },
+  {
+   "id": "och4",
+   "titulo": "La colecta de las fuentes",
+   "capitulo": 44,
+   "contacto": "El concejal",
+   "lugar": "oc_ayuntamiento",
+   "requiere": [
+    "och2",
+    "och3"
+   ],
+   "resumen": "Trabajo honrado: los vecinos quieren arreglar las fuentes de la plaza por su cuenta.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El concejal",
+       "Oficialmente no hay presupuesto para las fuentes. Pero hay huchas repartidas por media ciudad. Si alguien de fiar las recogiera..."
+      ]
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la hucha de Casa Leona.",
+     "lugar": "oc_marisqueria",
+     "objeto": "la hucha de Casa Leona"
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la hucha del Gimnasio El Aljibe.",
+     "lugar": "oc_gimnasio",
+     "objeto": "la hucha del gimnasio"
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la hucha de la Taberna El Lingote.",
+     "lugar": "oc_taberna",
+     "objeto": "la hucha de El Lingote"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva las huchas a la Plaza de las Fuentes.",
+     "lugar": "oc_plaza",
+     "radio": 45
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Con lo recogido alcanza para dos de las cuatro fuentes. Las encienden esa misma tarde, sin televisión."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 600
+   }
+  },
+  {
+   "id": "oca1",
+   "titulo": "Última copa",
+   "capitulo": 45,
+   "contacto": "Jimena",
+   "lugar": "oc_club",
+   "requiere": [
+    "oc01"
+   ],
+   "resumen": "En la Sala Crepúsculo, Jimena necesita un recado discreto.",
+   "adultos": true,
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Jimena",
+       "El aguardiente de palma se me acaba y el que me lo trae no se atreve a cruzar el centro. Recoge mi pedido en la Nave Catorce y quédate una botella."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Ve a la Nave Catorce, en Las Naves.",
+     "lugar": "oc_proveedor"
+    },
+    {
+     "tipo": "dar",
+     "sustancia": "oc_aguardiente",
+     "cantidad": 1
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve con el pedido a la Sala Crepúsculo.",
+     "lugar": "oc_club"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Jimena",
+       "Puntual y sin preguntas. Así da gusto. La próxima la pago yo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 350,
+    "afinidad": {
+     "oc_jimena": 15
+    }
+   }
+  }
+ ],
+ "armas": [
+  {
+   "id": "oc_llave",
+   "nombre": "Llave de cisterna",
+   "tipo": "cuerpo",
+   "dano": 34,
+   "alcance": 2.6,
+   "cadencia": 0.75,
+   "precision": 0.9,
+   "sonido": "golpe",
+   "ruido": 0,
+   "precio": 60,
+   "desc": "Medio metro de hierro para abrir bocas de riego. También abre otras cosas."
+  },
+  {
+   "id": "oc_remachadora",
+   "nombre": "Pistola de remaches",
+   "tipo": "fuego",
+   "dano": 38,
+   "alcance": 18,
+   "cadencia": 0.7,
+   "precision": 0.8,
+   "cargador": 8,
+   "sonido": "disparo_silenciado",
+   "ruido": 1,
+   "precio": 1100,
+   "balas": 24,
+   "precio_balas": 45,
+   "desc": "Una herramienta de astillero arreglada por la Peña del Cobre. Corta de alcance y lenta, pero pega fuerte y casi no se oye."
+  },
+  {
+   "id": "oc_garrafa",
+   "nombre": "Garrafa incendiaria",
+   "tipo": "explosivo",
+   "dano": 70,
+   "alcance": 22,
+   "cadencia": 1.2,
+   "precision": 1,
+   "cargador": 1,
+   "radio": 6,
+   "sonido": "lanzar",
+   "ruido": 3,
+   "precio": 220,
+   "balas": 2,
+   "precio_balas": 200,
+   "desc": "Una garrafa con mecha. Se lanza como una granada y deja el suelo ardiendo."
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "oc_cisterna",
+   "nombre": "Camión cisterna",
+   "vel_max": 21,
+   "acel": 4.2,
+   "freno": 9,
+   "salud": 260,
+   "motor": "motor_camion",
+   "tono": 1.0,
+   "valor": 900,
+   "claxon": "claxon_camion",
+   "trabajo": "camion",
+   "desc": "Diez mil litros de agua sobre ruedas. Lento, pesado y casi imposible de parar. Con la tecla J haces transportes entre localidades."
+  },
+  {
+   "id": "oc_rebajado",
+   "nombre": "Cupé rebajado Atardecer",
+   "vel_max": 24,
+   "acel": 5.5,
+   "freno": 12,
+   "salud": 170,
+   "motor": "motor_coche",
+   "tono": 0.8,
+   "valor": 1400,
+   "precio": 11000,
+   "desc": "Un cupé largo, bajo y pintado a mano. No corre mucho, pero aguanta y suena grave."
+  },
+  {
+   "id": "oc_ranchera",
+   "nombre": "Ranchera del Cobre",
+   "vel_max": 26,
+   "acel": 6.0,
+   "freno": 12,
+   "salud": 210,
+   "motor": "motor_furgoneta",
+   "tono": 1.1,
+   "valor": 1100,
+   "precio": 8200,
+   "desc": "Una ranchera reforzada con chapa de barco. La usan en los muelles para cargar chatarra."
+  },
+  {
+   "id": "oc_vigia",
+   "nombre": "Moto de vigía",
+   "vel_max": 36,
+   "acel": 10,
+   "freno": 16,
+   "salud": 70,
+   "motor": "motor_moto",
+   "tono": 1.3,
+   "valor": 800,
+   "precio": 7400,
+   "trabajo": "paqueteria",
+   "desc": "Una moto de monte aligerada. Sube las cuestas de Los Miradores como si fueran llanas, y se rompe con poco."
+  },
+  {
+   "id": "oc_lanchon",
+   "nombre": "Lanchón chatarrero",
+   "vel_max": 13,
+   "acel": 2.5,
+   "freno": 4,
+   "salud": 320,
+   "motor": "motor_barco",
+   "tono": 0.8,
+   "valor": 0,
+   "precio": 17000,
+   "trabajo": "mensajeria",
+   "barco": true,
+   "desc": "Un lanchón de hierro con una grúa en popa. Lento y duro como un yunque."
+  }
+ ],
+ "carreras": [
+  {
+   "id": "oc_c1",
+   "nombre": "Vuelta al Cauce Seco",
+   "mapa": "bahia_ocaso",
+   "premio": 600,
+   "tiempo": 95,
+   "puntos": [
+    [
+     0,
+     2
+    ],
+    [
+     4,
+     2
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     2
+    ]
+   ]
+  },
+  {
+   "id": "oc_c2",
+   "nombre": "Rectas de Las Naves",
+   "mapa": "bahia_ocaso",
+   "premio": 900,
+   "tiempo": 110,
+   "puntos": [
+    [
+     2,
+     6
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     2,
+     6
+    ]
+   ]
+  },
+  {
+   "id": "oc_c3",
+   "nombre": "Del mirador al mar",
+   "mapa": "bahia_ocaso",
+   "premio": 1400,
+   "tiempo": 120,
+   "puntos": [
+    [
+     6,
+     7
+    ],
+    [
+     8,
+     7
+    ],
+    [
+     8,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     6,
+     4
+    ],
+    [
+     6,
+     7
+    ]
+   ]
+  }
+ ],
+ "mapas": [
+  {
+   "id": "bahia_ocaso",
+   "nombre": "Bahía del Ocaso",
+   "tipo": "ciudad",
+   "avenidas": [
+    "Avenida de los Astilleros",
+    "Avenida del Cobre",
+    "Avenida de la Rambla",
+    "Avenida del Aljibe",
+    "Avenida de las Palmeras",
+    "Avenida del Ocaso",
+    "Avenida de la Bahía",
+    "Avenida de los Miradores",
+    "Avenida del Levante"
+   ],
+   "calles": [
+    "Paseo Marítimo",
+    "Calle de la Marea",
+    "Calle del Cauce",
+    "Calle de la Sed",
+    "Calle de las Fuentes",
+    "Calle de las Naves",
+    "Calle de la Colina",
+    "Camino de la Cumbre"
+   ],
+   "barrios": [
+    {
+     "id": "oc_muelles",
+     "nombre": "Muelles del Cobre",
+     "i": [
+      0,
+      2
+     ],
+     "j": [
+      0,
+      1
+     ],
+     "ambiente": "amb_puerto",
+     "vehiculos": [
+      "oc_ranchera",
+      "pickup",
+      "furgoneta",
+      "camion"
+     ],
+     "descripcion": "Muelles del Cobre: grúas oxidadas, montañas de chatarra y olor a gasóleo. Aquí manda la Peña del Cobre, que compra y vende cualquier cosa que pese."
+    },
+    {
+     "id": "oc_paseo",
+     "nombre": "Paseo de las Palmeras",
+     "i": [
+      3,
+      7
+     ],
+     "j": [
+      0,
+      1
+     ],
+     "ambiente": "amb_playa",
+     "vehiculos": [
+      "descapotable",
+      "oc_rebajado",
+      "deportivo",
+      "scooter",
+      "bici"
+     ],
+     "descripcion": "Paseo de las Palmeras: playa ancha, palmeras, hoteles y coches rebajados dando vueltas despacio con la música alta. Aquí nunca falta el agua."
+    },
+    {
+     "id": "oc_cauce",
+     "nombre": "El Cauce Seco",
+     "i": [
+      0,
+      3
+     ],
+     "j": [
+      2,
+      4
+     ],
+     "ambiente": "amb_residencial",
+     "vehiculos": [
+      "utilitario",
+      "oc_rebajado",
+      "oc_cisterna",
+      "furgoneta",
+      "bici"
+     ],
+     "descripcion": "El Cauce Seco: casas bajas a los dos lados de un río que lleva tres años sin agua. Dos horas de grifo al día y colas con garrafas. Es el barrio de Los Aljibes."
+    },
+    {
+     "id": "oc_centro",
+     "nombre": "El Centro",
+     "i": [
+      4,
+      7
+     ],
+     "j": [
+      2,
+      4
+     ],
+     "ambiente": "amb_ciudad",
+     "vehiculos": [
+      "sedan",
+      "utilitario",
+      "taxi",
+      "autobus",
+      "lujo"
+     ],
+     "descripcion": "El Centro: bancos, el ayuntamiento, el periódico y una plaza con una fuente que solo encienden cuando viene la televisión."
+    },
+    {
+     "id": "oc_naves",
+     "nombre": "Las Naves",
+     "i": [
+      0,
+      3
+     ],
+     "j": [
+      5,
+      6
+     ],
+     "ambiente": "amb_industrial",
+     "vehiculos": [
+      "camion",
+      "oc_cisterna",
+      "furgoneta",
+      "pickup"
+     ],
+     "descripcion": "Las Naves: la desaladora, los depósitos y las cisternas de Aguas del Ocaso entrando y saliendo día y noche, con vigilancia privada."
+    },
+    {
+     "id": "oc_miradores",
+     "nombre": "Los Miradores",
+     "i": [
+      4,
+      7
+     ],
+     "j": [
+      5,
+      6
+     ],
+     "ambiente": "amb_parque",
+     "vehiculos": [
+      "lujo",
+      "deportivo",
+      "todoterreno",
+      "oc_vigia"
+     ],
+     "descripcion": "Los Miradores: chalés en la colina, setos regados y piscinas llenas. Por las cuestas suben y bajan las motos de Los Vigías, que lo ven todo."
+    }
+   ],
+   "bloques": {
+    "0,0": "muelle",
+    "1,0": "muelle",
+    "4,0": "arena",
+    "5,0": "arena",
+    "6,0": "arena",
+    "2,3": "arena",
+    "5,3": "plaza",
+    "6,6": "hierba",
+    "7,5": "hierba"
+   },
+   "trafico": 7,
+   "peatones": 7,
+   "nombre_objeto": "Chapa de contador",
+   "casetes": [
+    [
+     40,
+     100
+    ],
+    [
+     130,
+     300
+    ],
+    [
+     250,
+     40
+    ],
+    [
+     330,
+     520
+    ],
+    [
+     400,
+     250
+    ],
+    [
+     470,
+     130
+    ],
+    [
+     520,
+     420
+    ],
+    [
+     580,
+     60
+    ],
+    [
+     640,
+     330
+    ],
+    [
+     690,
+     560
+    ],
+    [
+     100,
+     480
+    ],
+    [
+     200,
+     590
+    ]
+   ],
+   "lugares": [
+    {
+     "id": "oc_embarcadero",
+     "nombre": "Embarcadero de los Astilleros",
+     "tipo": "embarcadero",
+     "bloque": [
+      1,
+      0
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Un muelle de hormigón entre dos grúas. De aquí se sale a mar abierto.",
+     "a_mapa": "mar",
+     "a_lugar": "mar_ocaso"
+    },
+    {
+     "id": "oc_lonja",
+     "nombre": "Lonja del Ocaso",
+     "tipo": "pescaderia",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Compran el pescado al peso y pagan al momento."
+    },
+    {
+     "id": "oc_espigon",
+     "nombre": "Espigón de las Grúas",
+     "tipo": "pesca",
+     "bloque": [
+      0,
+      0
+     ],
+     "xy": [
+      20,
+      20
+     ],
+     "desc": "Entre los pilotes pican la corvina y, con suerte, el pez limón."
+    },
+    {
+     "id": "oc_nautica",
+     "nombre": "Náutica Astilleros",
+     "tipo": "nautica",
+     "bloque": [
+      1,
+      0
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Barcos de trabajo y alguno de paseo. Los dejan amarrados en el embarcadero.",
+     "embarcadero": "oc_embarcadero"
+    },
+    {
+     "id": "oc_chatarreria",
+     "nombre": "Chatarrería La Fundición",
+     "tipo": "desguace",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "El desguace de la Peña del Cobre. Pagan por cualquier vehículo y no miran la matrícula."
+    },
+    {
+     "id": "oc_deposito_chatarra",
+     "nombre": "Depósito de chatarra del muelle",
+     "tipo": "negocio",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Un solar lleno de hierro. Está en venta para quien se lleve bien con la Peña. Da dinero cada medianoche.",
+     "sonido": "lugar_taller",
+     "requiere": "oc11",
+     "precio": 26000,
+     "ingresos": 600
+    },
+    {
+     "id": "oc_taller",
+     "nombre": "Taller Hermanos Barrena",
+     "tipo": "taller",
+     "bloque": [
+      1,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Chapa, pintura y suspensiones rebajadas. Aquí se hacen los coches que pasean por las Palmeras."
+    },
+    {
+     "id": "oc_taberna",
+     "nombre": "Taberna El Lingote",
+     "tipo": "taberna",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Dados, vino en vaso corto y encargos apuntados con tiza. Aquí se sienta la Fundi."
+    },
+    {
+     "id": "oc_empenos",
+     "nombre": "Compro Oro y Cobre",
+     "tipo": "empenos",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Casa de empeños. Se quedan con lo que traigas y te lo guardan un tiempo."
+    },
+    {
+     "id": "oc_hotel",
+     "nombre": "Gran Hotel Ocaso",
+     "tipo": "hotel",
+     "bloque": [
+      3,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Ocho plantas frente al mar y una fuente en la entrada que no se apaga nunca.",
+     "precio_noche": 90
+    },
+    {
+     "id": "oc_ropa",
+     "nombre": "Sastrería Brisa",
+     "tipo": "ropa",
+     "bloque": [
+      3,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Camisas de lino y trajes claros, como se lleva en el paseo."
+    },
+    {
+     "id": "oc_casino",
+     "nombre": "Casino La Última Luz",
+     "tipo": "casino",
+     "bloque": [
+      4,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Ruleta, cartas y tragaperras con vistas a la puesta de sol."
+    },
+    {
+     "id": "oc_cine",
+     "nombre": "Cine de Verano Palmeras",
+     "tipo": "cine",
+     "bloque": [
+      4,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Un cine al aire libre con sillas de tijera."
+    },
+    {
+     "id": "oc_chiringuito",
+     "nombre": "Chiringuito La Última Ola",
+     "tipo": "comida",
+     "bloque": [
+      5,
+      1
+     ],
+     "lado": "S",
+     "pos": 20,
+     "desc": "Sardinas al espeto y limonada. El agua del grifo, de pago."
+    },
+    {
+     "id": "oc_playa",
+     "nombre": "Playa de las Palmeras",
+     "tipo": "tesoro",
+     "bloque": [
+      5,
+      0
+     ],
+     "xy": [
+      36,
+      30
+     ],
+     "desc": "Arena fina y muchos turistas despistados. Con un detector siempre sale algo."
+    },
+    {
+     "id": "oc_rompiente",
+     "nombre": "Rompiente del Ocaso",
+     "tipo": "pesca",
+     "bloque": [
+      6,
+      0
+     ],
+     "xy": [
+      40,
+      15
+     ],
+     "desc": "Se pesca al atardecer, con el sol de cara."
+    },
+    {
+     "id": "oc_feria",
+     "nombre": "Noria del Paseo",
+     "tipo": "feria",
+     "bloque": [
+      6,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Una noria, tiro al blanco y máquinas recreativas."
+    },
+    {
+     "id": "oc_taxi",
+     "nombre": "Parada de taxis del Paseo",
+     "tipo": "taxi",
+     "bloque": [
+      6,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Taxis blancos con una franja naranja.",
+     "vehiculo": "taxi"
+    },
+    {
+     "id": "oc_atico",
+     "nombre": "Ático del Paseo Marítimo",
+     "tipo": "casa",
+     "bloque": [
+      7,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Un ático con terraza y tres plazas de garaje. Se oye el mar desde la cama.",
+     "precio": 68000,
+     "garaje": 3
+    },
+    {
+     "id": "oc_club",
+     "nombre": "Sala Crepúsculo",
+     "tipo": "club",
+     "bloque": [
+      7,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Copas caras, música lenta y gente que no pregunta de dónde vienes.",
+     "adultos": true
+    },
+    {
+     "id": "oc_garaje",
+     "nombre": "Grúas y Cisternas Barral",
+     "tipo": "monumento",
+     "bloque": [
+      1,
+      3
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "El garaje de Custodia Barral: dos cisternas viejas, una grúa y un perro que no ladra. De aquí sale el agua del barrio.",
+     "sonido": "lugar_taller",
+     "vehiculo": "oc_cisterna"
+    },
+    {
+     "id": "oc_carrera_cauce",
+     "nombre": "Salida de carreras del Cauce",
+     "tipo": "carrera",
+     "bloque": [
+      0,
+      2
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Se corre de noche, por el lecho del río y las calles de alrededor."
+    },
+    {
+     "id": "oc_casa_cauce",
+     "nombre": "Casa baja de la calle del Cauce",
+     "tipo": "casa",
+     "bloque": [
+      1,
+      2
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Una casa de una planta con patio, parra y un depósito de agua en el tejado.",
+     "precio": 5200,
+     "garaje": 1
+    },
+    {
+     "id": "oc_tienda",
+     "nombre": "Colmado La Garrafa",
+     "tipo": "tienda",
+     "bloque": [
+      2,
+      2
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "De todo, y garrafas de veinte litros apiladas hasta el techo."
+    },
+    {
+     "id": "oc_farmacia",
+     "nombre": "Farmacia del Cauce",
+     "tipo": "farmacia",
+     "bloque": [
+      3,
+      2
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Botiquines, suero y sombra en la puerta."
+    },
+    {
+     "id": "oc_comedor",
+     "nombre": "Comedor Vecinal del Cauce",
+     "tipo": "ong",
+     "bloque": [
+      0,
+      3
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Los vecinos cocinan para los vecinos. Siempre hace falta agua y manos."
+    },
+    {
+     "id": "oc_cauce",
+     "nombre": "El lecho del Cauce Seco",
+     "tipo": "monumento",
+     "bloque": [
+      2,
+      3
+     ],
+     "xy": [
+      36,
+      36
+     ],
+     "desc": "El río de la ciudad, que es ahora un camino de arena y piedras. Los críos juegan donde antes se pescaba.",
+     "sonido": "amb_campo"
+    },
+    {
+     "id": "oc_pizzeria",
+     "nombre": "Pizzería La Sequía",
+     "tipo": "pizzeria",
+     "bloque": [
+      3,
+      3
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Masa fina, horno de leña y reparto en moto. Buscan repartidor."
+    },
+    {
+     "id": "oc_trastienda",
+     "nombre": "La Trastienda de Fermín",
+     "tipo": "armeria",
+     "bloque": [
+      0,
+      4
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Una ferretería con otra tienda detrás. Más barata que la del centro, para quien es del barrio.",
+     "descuento": 0.85
+    },
+    {
+     "id": "oc_gimnasio",
+     "nombre": "Gimnasio El Aljibe",
+     "tipo": "gimnasio",
+     "bloque": [
+      2,
+      4
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Sacos, cuerdas y un cuadrilátero donde se arreglan las cosas sin armas."
+    },
+    {
+     "id": "oc_empleo",
+     "nombre": "Oficina de empleo de Bahía del Ocaso",
+     "tipo": "empleo",
+     "bloque": [
+      3,
+      4
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Oficios, jornadas y ascensos. La cola da la vuelta a la manzana."
+    },
+    {
+     "id": "oc_estacion",
+     "nombre": "Estación de autobuses del Ocaso",
+     "tipo": "estacion",
+     "bloque": [
+      4,
+      2
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Autobuses a toda la comarca. El viaje a Puerto Bravo es largo.",
+     "precio": 45
+    },
+    {
+     "id": "oc_banco",
+     "nombre": "Banco de la Bahía",
+     "tipo": "banco",
+     "bloque": [
+      5,
+      2
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Mármol, aire acondicionado y una fuente en el vestíbulo."
+    },
+    {
+     "id": "oc_periodico",
+     "nombre": "El Faro del Ocaso",
+     "tipo": "periodico",
+     "bloque": [
+      6,
+      2
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "El único periódico de la ciudad que no es de Arizmendi. Aquí trabaja Nerea Ibarrola."
+    },
+    {
+     "id": "oc_loteria",
+     "nombre": "Lotería La Gota de Oro",
+     "tipo": "loteria",
+     "bloque": [
+      7,
+      2
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Dicen que aquí cayó el gordo el último año que llovió."
+    },
+    {
+     "id": "oc_hospital",
+     "nombre": "Hospital de la Bahía",
+     "tipo": "hospital",
+     "bloque": [
+      4,
+      3
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "El hospital de la ciudad. Urgencias a la vuelta."
+    },
+    {
+     "id": "oc_plaza",
+     "nombre": "Plaza de las Fuentes",
+     "tipo": "monumento",
+     "bloque": [
+      5,
+      3
+     ],
+     "xy": [
+      36,
+      36
+     ],
+     "desc": "Una plaza con cuatro fuentes. Solo funciona una, y solo cuando viene la televisión.",
+     "sonido": "lugar_fuente"
+    },
+    {
+     "id": "oc_comisaria",
+     "nombre": "Comisaría del Centro",
+     "tipo": "comisaria",
+     "bloque": [
+      6,
+      3
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "La comisaría de Bahía del Ocaso. En la puerta hay siempre un coche patrulla."
+    },
+    {
+     "id": "oc_concesionario",
+     "nombre": "Automóviles Atardecer",
+     "tipo": "concesionario",
+     "bloque": [
+      7,
+      3
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Coches rebajados, rancheras, motos de monte y descapotables.",
+     "modelos": [
+      "oc_rebajado",
+      "oc_ranchera",
+      "oc_vigia",
+      "descapotable",
+      "deportivo",
+      "sedan"
+     ]
+    },
+    {
+     "id": "oc_salida",
+     "nombre": "Salida este, autovía de Puerto Bravo",
+     "tipo": "salida",
+     "bloque": [
+      7,
+      3
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "La autovía de la costa, que lleva a Puerto Bravo tras un buen rato de carretera.",
+     "a_mapa": "puerto_bravo",
+     "a_lugar": "pb_salida_ocaso",
+     "km": 140,
+     "horas": 1.6
+    },
+    {
+     "id": "oc_academia",
+     "nombre": "Escuela de Oficios del Ocaso",
+     "tipo": "academia",
+     "bloque": [
+      4,
+      4
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Cursos de conducción, puntería, resistencia y pesca."
+    },
+    {
+     "id": "oc_ayuntamiento",
+     "nombre": "Ayuntamiento de Bahía del Ocaso",
+     "tipo": "monumento",
+     "bloque": [
+      5,
+      4
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Un edificio con reloj y campanas. En el balcón, una pancarta: el agua es un bien escaso, úsala con cabeza.",
+     "sonido": "lugar_iglesia"
+    },
+    {
+     "id": "oc_marisqueria",
+     "nombre": "Casa Leona",
+     "tipo": "comida",
+     "bloque": [
+      6,
+      4
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Guisos de puchero y menú del día. Aquí comen los del periódico."
+    },
+    {
+     "id": "oc_armeria",
+     "nombre": "Armería del Centro",
+     "tipo": "armeria",
+     "bloque": [
+      7,
+      4
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Con licencia, escaparate y precios de ciudad."
+    },
+    {
+     "id": "oc_deposito",
+     "nombre": "Depósito municipal de cisternas",
+     "tipo": "monumento",
+     "bloque": [
+      0,
+      5
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Una explanada donde duermen las cisternas del reparto de agua. De noche solo hay un guarda.",
+     "sonido": "lugar_taller"
+    },
+    {
+     "id": "oc_embotelladora",
+     "nombre": "Embotelladora La Gota",
+     "tipo": "negocio",
+     "bloque": [
+      2,
+      5
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Una embotelladora que Aguas del Ocaso tuvo que soltar. Da dinero cada medianoche.",
+     "sonido": "lugar_rio",
+     "requiere": "oc21",
+     "precio": 38000,
+     "ingresos": 850
+    },
+    {
+     "id": "oc_protectora",
+     "nombre": "Protectora El Abrevadero",
+     "tipo": "protectora",
+     "bloque": [
+      3,
+      5
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Perros recogidos de las naves abandonadas. Aquí puedes adoptar uno."
+    },
+    {
+     "id": "oc_desaladora",
+     "nombre": "Desaladora Aguas del Ocaso",
+     "tipo": "monumento",
+     "bloque": [
+      1,
+      6
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Aquí se saca agua dulce del mar. Se oye correr detrás de la valla, día y noche, aunque en el barrio no llegue.",
+     "sonido": "lugar_rio"
+    },
+    {
+     "id": "oc_circuito",
+     "nombre": "Salida del circuito de Las Naves",
+     "tipo": "carrera",
+     "bloque": [
+      2,
+      6
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Rectas largas entre almacenes. Aquí se corre en serio."
+    },
+    {
+     "id": "oc_proveedor",
+     "nombre": "Nave Catorce",
+     "tipo": "proveedor",
+     "bloque": [
+      3,
+      6
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Una nave sin rótulo. Dentro venden lo que no se puede vender fuera.",
+     "adultos": true,
+     "factor": {
+      "hierba": 0.9,
+      "polvo": 1.1,
+      "pastillas": 0.9,
+      "cristal": 1.2,
+      "oc_aguardiente": 0.7
+     }
+    },
+    {
+     "id": "oc_sede",
+     "nombre": "Sede de Aguas del Ocaso",
+     "tipo": "monumento",
+     "bloque": [
+      4,
+      5
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Cristal, acero y una cascada en el vestíbulo. Aquí tiene el despacho Leocadia Arizmendi.",
+     "sonido": "lugar_fuente"
+    },
+    {
+     "id": "oc_torre",
+     "nombre": "Torre del Vigía",
+     "tipo": "monumento",
+     "bloque": [
+      4,
+      6
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Una torre de vigilancia antigua. A sus pies se juntan las motos de Los Vigías.",
+     "sonido": "lugar_iglesia"
+    },
+    {
+     "id": "oc_villa",
+     "nombre": "Villa del Mirador",
+     "tipo": "casa",
+     "bloque": [
+      5,
+      6
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Un chalé en lo alto de la colina, con cuatro plazas de garaje y la ciudad entera a los pies.",
+     "precio": 140000,
+     "garaje": 4
+    },
+    {
+     "id": "oc_horizonte",
+     "nombre": "Restaurante El Horizonte",
+     "tipo": "comida",
+     "bloque": [
+      6,
+      5
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Mantel de hilo y precios de mirador. El agua, en botella de cristal.",
+     "caro": true
+    },
+    {
+     "id": "oc_mirador",
+     "nombre": "Mirador del Ocaso",
+     "tipo": "monumento",
+     "bloque": [
+      6,
+      6
+     ],
+     "xy": [
+      36,
+      50
+     ],
+     "desc": "El punto más alto de la ciudad. Desde aquí se ve dónde hay verde y dónde no.",
+     "sonido": "amb_parque"
+    },
+    {
+     "id": "oc_helipuerto",
+     "nombre": "Helipuerto de Los Miradores",
+     "tipo": "helipuerto",
+     "bloque": [
+      7,
+      5
+     ],
+     "xy": [
+      36,
+      36
+     ],
+     "desc": "Una pista entre pinos, para quien no quiere bajar por las cuestas.",
+     "precio": 260
+    }
+   ]
+  }
+ ],
+ "comidas": [
+  {
+   "nombre": "Espeto de sardinas",
+   "precio": 9,
+   "salud": 30
+  },
+  {
+   "nombre": "Cocido del comedor",
+   "precio": 6,
+   "salud": 40
+  },
+  {
+   "nombre": "Limonada con hielo",
+   "precio": 4,
+   "salud": 10
+  }
+ ],
+ "objetos": [
+  {
+   "id": "oc_cantimplora",
+   "nombre": "Cantimplora de Los Aljibes",
+   "precio": 30,
+   "desc": "Una cantimplora abollada con un aljibe grabado. En el Cauce, quien la lleva es de fiar."
+  }
+ ],
+ "peces": [
+  {
+   "nombre": "una corvina del Ocaso",
+   "valor": 46,
+   "peso": 10
+  },
+  {
+   "nombre": "un pez limón",
+   "valor": 90,
+   "peso": 4
+  }
+ ],
+ "capitulos": {
+  "40": "Bahía del Ocaso: la sequía",
+  "41": "Bahía del Ocaso: la Peña del Cobre",
+  "42": "Bahía del Ocaso: Los Vigías",
+  "43": "Bahía del Ocaso: el agua es de todos",
+  "44": "Bahía del Ocaso: vida honrada",
+  "45": "Bahía del Ocaso: historias para adultos"
+ },
+ "personajes": [
+  {
+   "id": "oc_tino",
+   "nombre": "Tino",
+   "apellido": "Barral",
+   "desc": "Sobrino de Custodia, criado entre cisternas. Empieza con conducción al nivel cuatro, buena resistencia, una llave de cisterna, doscientos cincuenta euros y buen nombre entre los vecinos.",
+   "dinero": 250,
+   "ciudadania": 40,
+   "conduccion": 4,
+   "resistencia": 2,
+   "arma": "oc_llave",
+   "botiquines": 1
+  },
+  {
+   "id": "oc_alondra",
+   "nombre": "Alondra",
+   "apellido": "Cifuentes",
+   "desc": "Fue de Los Vigías hasta que se cansó de mirar. Empieza con conducción y puntería al nivel tres, fama en la calle y tres juegos de ganzúas.",
+   "reputacion": 25,
+   "conduccion": 3,
+   "punteria": 3,
+   "botiquines": 1,
+   "ganzuas": 3
+  }
+ ],
+ "personas": [
+  {
+   "id": "oc_jimena",
+   "nombre": "Jimena",
+   "edad": 36,
+   "lugar": "oc_club",
+   "gustos": [
+    "oc_atardecer",
+    "cena"
+   ],
+   "regalo": "oc_caracola",
+   "desc": "Dueña de la Sala Crepúsculo. Voz ronca, risa fácil y una memoria prodigiosa para las deudas. Llegó a la ciudad con una maleta y no piensa irse."
+  },
+  {
+   "id": "oc_elias",
+   "nombre": "Elías",
+   "edad": 29,
+   "lugar": "oc_club",
+   "gustos": [
+    "oc_atardecer",
+    "paseo"
+   ],
+   "regalo": "oc_caracola",
+   "desc": "Toca el piano en la Sala Crepúsculo y de día repara barcas en los astilleros. Callado, de manos grandes, y más listo de lo que deja ver."
+  }
+ ],
+ "sustancias": [
+  {
+   "id": "oc_aguardiente",
+   "nombre": "Aguardiente de palma",
+   "unidad": "botella",
+   "legal": true,
+   "precio": 22,
+   "duracion": 110,
+   "animo": 10,
+   "punteria": -0.05,
+   "deriva": 0.22,
+   "tono": 0.012,
+   "adiccion": 2.0,
+   "sobredosis": 4,
+   "bajon": {
+    "animo": -4,
+    "duracion": 60
+   },
+   "desc": "Aguardiente de dátil, fuerte y dulzón. Sube mucho el ánimo y tumba pronto: a la cuarta seguida acabas en el hospital."
+  }
+ ],
+ "actividades": [
+  {
+   "id": "oc_atardecer",
+   "nombre": "Ver la puesta de sol desde el Mirador del Ocaso",
+   "precio": 0,
+   "horas": 2
+  }
+ ],
+ "regalos": [
+  {
+   "id": "oc_caracola",
+   "nombre": "Una caracola de la rompiente",
+   "precio": 60,
+   "afinidad": 9
+  }
+ ]
+}

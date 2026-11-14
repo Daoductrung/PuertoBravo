@@ -83,11 +83,14 @@ class VentanaEditor(wx.Frame):
         self._item(mod, "&Comprobar el mod\tF5", "Busca errores: referencias que no existen, posiciones imposibles, pasos incoherentes.", self.comprobar)
         self._item(mod, "&Activar o desactivar mods...\tCtrl+M", "Elige qué mods carga el juego.", self.activar)
         self._item(mod, "A&brir la carpeta de mods\tCtrl+B", "Abre la carpeta en el Explorador.", self.carpeta)
+        self._item(mod, "&Guion de voces para grabar\tCtrl+G", "Escribe un texto con todas las frases de las misiones y el nombre de archivo de cada grabación.", self.guion_voces)
+        self._item(mod, "Abrir la carpeta de &voces\tCtrl+Shift+V", "Abre la carpeta donde se dejan las grabaciones.", self.carpeta_voces)
         self._item(mod, "&Probar en el juego\tF9", "Guarda el mod y abre el juego.", self.probar)
         barra.Append(mod, "&Mod")
         ayuda = wx.Menu()
         self._item(ayuda, "&Manual del editor\tF1", "Abre el manual en el navegador.", self.manual)
-        self._item(ayuda, "&Acerca de...", "Versión del editor.", self.acerca)
+        self._item(ayuda, "&Invítame a un café si te gusta mi trabajo", "Abre la página de donaciones de PayPal en el navegador.", self.cafe)
+        self._item(ayuda, "&Acerca de...", "Versión del editor, autor y licencia.", self.acerca)
         barra.Append(ayuda, "A&yuda")
         self.SetMenuBar(barra)
 
@@ -216,6 +219,31 @@ class VentanaEditor(wx.Frame):
         os.makedirs(rutas.MODS, exist_ok=True)
         os.startfile(rutas.MODS)
 
+    def guion_voces(self):
+        from juego import voces
+        misiones = self.mod.crudo().get("misiones", [])
+        if not any(p.get("tipo") == "dialogo" for m in misiones for p in m.get("pasos", [])):
+            mostrar_mensaje(self, "Este mod no tiene misiones con diálogos, así que no hay nada que grabar.", "Guion de voces")
+            return
+        os.makedirs(voces.carpeta(), exist_ok=True)
+        voces.refrescar()
+        nombre = "guion_" + (os.path.splitext(os.path.basename(self.mod.ruta))[0] if self.mod.ruta else "mod_sin_guardar") + ".txt"
+        ruta = os.path.join(voces.carpeta(), nombre)
+        try:
+            with open(ruta, "w", encoding="utf-8-sig", newline="\r\n") as f:
+                f.write(voces.guion(misiones, self.mod.info.get("nombre", "")))
+        except OSError as e:
+            mostrar_error(self, f"No se pudo escribir el guion.\n{e}")
+            return
+        mostrar_mensaje(self, f"Guion escrito en la carpeta de voces, con el nombre {nombre}. Se abre ahora en el Bloc de notas.\n\n"
+                              "Cada frase lleva encima el nombre que debe tener su grabación. Deja las grabaciones en esa misma carpeta.", "Guion de voces")
+        os.startfile(ruta)
+
+    def carpeta_voces(self):
+        from juego import voces
+        os.makedirs(voces.carpeta(), exist_ok=True)
+        os.startfile(voces.carpeta())
+
     def probar(self):
         if not self.guardar():
             return
@@ -258,8 +286,13 @@ class VentanaEditor(wx.Frame):
         except OSError:
             mostrar_error(self, "No se encontró el manual del editor. Debería estar en data, docs, editor_mods.html.")
 
+    def cafe(self):
+        from juego import CAFE
+        os.startfile(CAFE)
+
     def acerca(self):
-        mostrar_mensaje(self, f"Editor de mods de {NOMBRE}, versión {VERSION}.\n\nCrea lugares, misiones, armas, vehículos, carreras, localidades enteras y todo el contenido del juego sin escribir código.\n\nCtrl+H explica el control en el que estás. F5 comprueba el mod. F9 lo prueba en el juego.", "Acerca del editor")
+        from juego import ANIO, AUTOR
+        mostrar_mensaje(self, f"Editor de mods de {NOMBRE}, versión {VERSION}.\n\nHecho por {AUTOR}.\nCopyright {ANIO}, {AUTOR}. Software libre con licencia MIT.\n\nCrea lugares, misiones, armas, vehículos, carreras, localidades enteras y todo el contenido del juego sin escribir código.\n\nCtrl+H explica el control en el que estás. F5 comprueba el mod. F9 lo prueba en el juego.", "Acerca del editor")
 
 
 def ejecutar():

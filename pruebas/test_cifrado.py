@@ -110,6 +110,10 @@ def test_las_partidas_se_protegen_en_el_juego_compilado(robot, monkeypatch):
     monkeypatch.setattr(cifrado, "COMPILADO", False)
     assert menus_juego.escribir_ranura(p, 3) and menus_juego._archivo(3).endswith(".json") and not cifrado.esta_cifrado(menus_juego._archivo(3))
     assert menus_juego.leer_ranura(3) is not None
-    # una partida legible de antes se sigue viendo en el juego compilado
+    # pero el juego compilado no acepta una partida legible: ni con su extensión ni disfrazada con la protegida
     monkeypatch.setattr(cifrado, "COMPILADO", True)
-    assert menus_juego.leer_ranura(3) is not None and str(menus_juego.mas_reciente()) in ("2", "3")
+    assert menus_juego.leer_ranura(3) is None
+    import shutil
+    shutil.copy(menus_juego._archivo(3, ".json"), menus_juego._archivo(3))
+    assert menus_juego.leer_ranura(3) is None and menus_juego.mas_reciente() is None
+    assert menus_juego.escribir_ranura(p, 1) and menus_juego.leer_ranura(1) is not None and str(menus_juego.mas_reciente()) == "1"

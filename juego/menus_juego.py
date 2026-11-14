@@ -26,10 +26,18 @@ def _archivo(ranura, ext=None):
     return os.path.join(rutas.carpeta_data(CARPETA), f"partida_{ranura}{ext}")
 
 
+def _archivos_validos(ranura):
+    """Los archivos de una ranura que el juego acepta. En el juego compilado solo valen las partidas protegidas:
+    una partida legible, escrita o retocada a mano, no se carga."""
+    posibles = [r for r in (_archivo(ranura, rutas.EXT_PARTIDA), _archivo(ranura, ".json")) if os.path.exists(r)]
+    if cifrado.COMPILADO:
+        posibles = [r for r in posibles if cifrado.esta_cifrado(r)]
+    return posibles
+
+
 def leer_ranura(ranura):
-    """Lee la ranura. Si hay una partida con la otra extensión (de antes de compilar, o al revés), vale la más reciente."""
-    rutas_posibles = [r for r in (_archivo(ranura, rutas.EXT_PARTIDA), _archivo(ranura, ".json")) if os.path.exists(r)]
-    for ruta in sorted(rutas_posibles, key=os.path.getmtime, reverse=True):
+    """Lee la ranura. En el código fuente, si hay una partida con cada extensión, vale la más reciente."""
+    for ruta in sorted(_archivos_validos(ranura), key=os.path.getmtime, reverse=True):
         try:
             return cifrado.leer_json(ruta)
         except (OSError, ValueError, zlib.error):
@@ -59,8 +67,8 @@ def texto_ranura(ranura):
 def mas_reciente():
     mejor = None
     for r in RANURAS:
-        tiempos = [os.path.getmtime(a) for a in (_archivo(r, rutas.EXT_PARTIDA), _archivo(r, ".json")) if os.path.exists(a)]
-        if not tiempos:
+        tiempos = [os.path.getmtime(a) for a in _archivos_validos(r)]
+        if not tiempos or leer_ranura(r) is None:      # una partida estropeada o manipulada no cuenta
             continue
         t = max(tiempos)
         if mejor is None or t > mejor[0]:
@@ -136,11 +144,47 @@ def principal(app):
             Opcion("Opciones", lambda: opciones(app)),
             Opcion("Ayuda: lista de teclas", lambda: ayuda_teclas(app, "todo")),
             Opcion("Abrir el manual", lambda: abrir_manual(app)),
+            Opcion("Acerca de", lambda: acerca(app), ayuda="La versión que tienes, quién ha hecho el juego, dónde avisar de un fallo y cómo invitarle a un café."),
             Opcion("Salir", app.salir),
         ]
         return lista
     app.abrir(Menu(app, f"{NOMBRE}. Menú principal", ops, escapable=False,
                    intro="Usa las flechas arriba y abajo para moverte y pulsa Intro para elegir"))
+
+
+def acerca(app):
+    """Versión, autor, licencia, enlaces y la invitación a un café."""
+    from . import ANIO, AUTOR, CAFE, FALLOS, MASTODON, VERSION, WEB
+
+    def abrir(url, que):
+        def hacer():
+            try:
+                os.startfile(url)
+                app.decir(f"Abriendo {que} en tu navegador.", True)
+            except (OSError, AttributeError):
+                app.son("error")
+                app.decir(f"No se pudo abrir el navegador. La dirección es {url}", True)
+        return hacer
+    m = Menu(app, f"Acerca de {NOMBRE}", [
+        Opcion(f"{NOMBRE}, versión {VERSION}"),
+        Opcion(f"Hecho por {AUTOR}"),
+        Opcion(f"Copyright {ANIO}, {AUTOR}. Software libre con licencia MIT: puedes usarlo, modificarlo y repartirlo",
+               ayuda="El texto completo de la licencia está en la página del proyecto."),
+        Opcion("Un audiojuego de mundo abierto, en español, pensado desde el principio para jugarse sin ver la pantalla"),
+        Opcion("Invítame a un café si te gusta mi trabajo", abrir(CAFE, "la página de donaciones de PayPal"),
+               ayuda="El juego es gratis y lo seguirá siendo. Si te ha hecho pasar un buen rato y quieres agradecerlo, Intro abre la página de donaciones en el navegador."),
+        Opcion("Página del proyecto en GitHub", abrir(WEB, "la página del proyecto"), ayuda="La descripción completa, el código fuente y todas las versiones."),
+        Opcion("Avisar de un fallo o proponer una mejora", abrir(FALLOS, "la página de incidencias"),
+               ayuda="En Opciones, Registro para informar de fallos, se explica qué carpeta adjuntar."),
+        Opcion("Mastodon del autor", abrir(MASTODON, "el perfil de Mastodon")),
+        Opcion("Novedades de esta versión", abrir(rutas.data("docs", "novedades.html"), "las novedades")),
+        Opcion("Agradecimientos: a quienes prueban el juego y avisan de los fallos. Los sonidos son mejorables y toda ayuda con ellos es bienvenida",
+               ayuda="La guía cambiar sonidos, en la carpeta data, docs, explica cómo sustituir cualquier sonido o montar un pack completo."),
+        Opcion("Componentes: las voces de las escenas de Bahía del Ocaso están generadas por ordenador con VibeVoice, de Microsoft. "
+               "El modelo local de inteligencia artificial, si lo instalas, funciona con llama punto c p p"),
+        Opcion("Volver", lambda: app.cerrar(m)),
+    ])
+    app.abrir(m)
 
 
 def abrir_manual(app):
@@ -291,7 +335,9 @@ def opciones(app):
             lista("movimiento", "Movimiento a pie", "En modo brújula el oído mira siempre al norte. Con giros, el sonido gira contigo."),
             lista("conduccion", "Conducción", "También se cambia durante el juego con F2."),
             si_no("frenada_auto", "Frenada automática ante el tráfico", "En conducción asistida, el coche frena solo para no chocar con el vehículo de delante. Mantén A para adelantarlo."),
-            si_no("piloto_gps", "Piloto del GPS, el coche gira solo siguiendo la ruta", "Solo funciona en conducción asistida y con un destino marcado."),
+            si_no("piloto_gps", "Piloto del GPS, el coche va solo hasta el destino",
+                  "Con un destino marcado en el GPS y en conducción asistida, el coche conduce solo: acelera, frena, gira, espera en los semáforos y se detiene al llegar. "
+                  "Con cualquier flecha o el espacio mandas tú. Se activa también con la tecla Y al volante."),
             si_no("sonar", "Sensor de proximidad al volante"),
         ], "Cómo caminas y cómo conduces."),
         seccion("Orientación y avisos", [
@@ -318,6 +364,9 @@ def opciones(app):
         Opcion("Mando", mando, ayuda="Mandos de Xbox y PlayStation: ver qué hace cada botón, reasignarlos y activar la vibración."),
         seccion("Voz", [
             si_no("voz_sapi", "Usar la voz de Windows en lugar del lector de pantalla", al_cambiar=lambda: app.voz.cambiar(cfg["voz_sapi"])),
+            si_no("voces_grabadas", "Voces grabadas en las escenas, solo con el personaje Dani",
+                  ayuda_="Con sí, las escenas de las misiones que tengan grabaciones suenan con voces de actores, en lugar de leerlas tu lector de pantalla, y el texto sigue saliendo en braille. "
+                         "Solo cuando juegas con Dani, porque las grabaciones le llaman por su nombre. Con no, o con otro personaje, todo lo dice tu lector de pantalla o, si no usas lector, la voz de Windows."),
         ], "Con qué voz habla el juego."),
         Opcion("Registro para informar de fallos", lambda: __import__("juego.menus_registro", fromlist=["x"]).opciones(app),
                ayuda="El juego anota lo que pasa en cada sesión para poder encontrar los fallos. Aquí ves dónde está, qué contiene y cómo enviarlo."),
@@ -643,13 +692,15 @@ def _menu_lugar(p, l, ops, intro=None):
 def _comprar_comida(p, c, factor=1.0):
     def f():
         precio = int(c["precio"] * factor)
-        if p.j.salud >= p.j.salud_max:
-            p.app.decir("No tienes hambre: tu salud está al máximo.", True)
+        con_hambre = p.vida_realista() and p.j.hambre >= 15           # con vida realista se come por hambre, aunque la salud esté entera
+        if p.j.salud >= p.j.salud_max and not con_hambre:
+            p.app.decir("No tienes hambre: tu salud está al máximo." if not p.vida_realista() else "Ahora no tienes hambre. La tecla V te dice cómo vas de hambre y de sueño.", True)
             return
         if p.pagar(precio):
             p.j.salud = min(p.j.salud_max, p.j.salud + c["salud"])
             p.son("comer", cat="interfaz")
-            p.app.decir(f"{c['nombre']}. Salud {int(p.j.salud)}.", True)
+            hambre = p.necesidades_txt()
+            p.app.decir(f"{c['nombre']}. Salud {int(p.j.salud)}.{hambre}", True)
     return f
 
 

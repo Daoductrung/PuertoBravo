@@ -54,6 +54,22 @@ class Voz:
         except Exception:
             pass
 
+    def mostrar(self, texto):
+        """Para cuando suena una voz grabada: el texto no se lee, pero va al braille, al historial y al registro."""
+        texto = str(texto)
+        registro.voz(texto)
+        self.historial.append(texto)
+        self.cursor = len(self.historial) - 1
+        if self.muda:
+            self.registro.append(texto)
+            return
+        self.callar()
+        if self.salida is not None:
+            try:
+                self.salida.braille(texto)
+            except Exception:
+                pass
+
     def callar(self):
         if self.salida is not None and not self.muda:
             try:

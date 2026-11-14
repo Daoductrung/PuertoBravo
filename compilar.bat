@@ -49,6 +49,7 @@ if errorlevel 1 (
 echo Copiando la carpeta data junto a los ejecutables...
 xcopy /e /i /y /q "data\datos" "%D%\data\datos" >nul
 xcopy /e /i /y /q "data\docs" "%D%\data\docs" >nul
+if exist "data\voces_serie" xcopy /e /i /y /q "data\voces_serie" "%D%\data\voces_serie" >nul
 xcopy /e /i /y /q "data\sonidos" "%D%\data\sonidos" >nul
 xcopy /e /i /y /q "data\musica" "%D%\data\musica" >nul
 xcopy /i /y /q "data\radio\*.*" "%D%\data\radio" >nul
@@ -64,6 +65,7 @@ if exist "data\mods\motor_y_asfalto.json" copy /y "data\mods\motor_y_asfalto.jso
 if exist "data\mods\penas_altas.json" copy /y "data\mods\penas_altas.json" "%D%\data\mods" >nul
 if exist "data\mods\isla_de_los_vientos.json" copy /y "data\mods\isla_de_los_vientos.json" "%D%\data\mods" >nul
 if exist "data\mods\noches_de_neon.json" copy /y "data\mods\noches_de_neon.json" "%D%\data\mods" >nul
+if exist "data\mods\bahia_del_ocaso.json" copy /y "data\mods\bahia_del_ocaso.json" "%D%\data\mods" >nul
 if exist "LEEME.txt" copy /y "LEEME.txt" "%D%\LEEME.txt" >nul
 
 echo Protegiendo los datos del juego y los mods...

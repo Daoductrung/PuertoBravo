@@ -4,9 +4,9 @@ Con la tecla J, a pie, hablas con quien tengas al lado. Puedes elegir qué decir
 que quieras: el juego entiende la intención (saludar, preguntar por un sitio, pedir un favor, hacer un
 cumplido, amenazar...) y la persona responde según su carácter, su humor y la confianza que te tenga.
 
-Modo IA (opcional): si el jugador lo activa y tiene instalado el paquete «anthropic» y una clave de la
-API, lo que escriba se envía a Claude junto con la ficha de la persona, y la respuesta es libre. Sin
-eso, todo funciona igual con el motor de conversación propio, sin conexión.
+Modo IA (opcional): si el jugador lo activa, lo que escriba se envía a una inteligencia artificial (local o
+de internet) junto con la ficha de la persona, y la respuesta es libre. Sin eso, contesta el motor propio,
+sin conexión: las intenciones de este archivo y la base de respuestas por temas de respuestas.py.
 """
 import json
 import math
@@ -265,7 +265,7 @@ class Charla:
     # ------------------------------------------------------------------ modo IA
     def ia_disponible(self):
         from . import ia
-        return self.cfg["ia_activa"] and ia.disponible()
+        return self.cfg["ia_activa"] and ia.disponible(self.cfg)
 
     def responder_libre(self, q, texto):
         """Respuesta a un texto libre: con el modo IA si está activo; si no, con el motor propio."""
@@ -286,6 +286,18 @@ class Charla:
         intencion, dato = interpretar(texto)
         if intencion == "nada":
             return "No has dicho nada."
+        if intencion in ("otra", "saludar", "cumplido", "barrio", "invitar", "limosna"):
+            # Sin modo IA: la base de respuestas. Si lo escrito toca un tema conocido, manda el tema antes que una intención floja.
+            from . import respuestas
+            if intencion == "otra" or respuestas.tema_de(texto) is not None:
+                x, y = self.pos()
+                frase, cambio, _ = respuestas.responder(texto, f, {"barrio": self.mundo.barrio(x, y)["nombre"], "ciudad": self.mundo.nombre,
+                                                                    "hora": self.hora_txt(), "tu": self.j.nombre})
+                f["frases"] += 1
+                self.son("murmullo", xy=(q.x, q.y), vol=0.5)
+                if cambio:
+                    self._trato(f, cambio if f["frases"] <= 12 else 0)
+                return f"{f['nombre']}: {frase}"
         if intencion == "ligar":
             return self.ligar(q) if self.modo_adulto() else f"{f['nombre']}: " + random.choice(["Gracias, pero no.", "Qué cosas tienes."])
         return self.responder(q, intencion, dato)

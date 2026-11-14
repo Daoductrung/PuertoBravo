@@ -1,5 +1,5 @@
 PUERTO BRAVO: LEY DEL ASFALTO
-Audiojuego de mundo abierto, en español y totalmente accesible. Versión 1.5.
+Audiojuego de mundo abierto, en español y totalmente accesible. Versión 1.6.
 Se juega con el oído, con teclado o con mando de Xbox o de PlayStation.
 
 PARA JUGAR
@@ -32,6 +32,11 @@ SI ALGO FALLA
     https://github.com/hxebolax/PuertoBravo/issues
     o por Mastodon: https://comunidad.nvda.es/@HXeBoLaX
   Jugando, F12 pone una marca en el registro en el momento en que notes algo raro.
+
+INTELIGENCIA ARTIFICIAL, OPCIONAL
+  La gente de la calle puede contestar con una inteligencia artificial. Se activa en Opciones,
+  Personas e inteligencia artificial. Desde ahí mismo puedes descargar una gratuita que
+  funciona sin internet. También valen Google AI Studio, OpenAI, Anthropic y otros servicios.
 
 PARA CREAR MODS
   Ejecuta EditorMods.exe. Es un editor accesible con lector de pantalla.

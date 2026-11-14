@@ -132,56 +132,6 @@ def test_texto_libre_e_intenciones(robot):
         assert "Gracias, pero no" in r or "Qué cosas tienes" in r
 
 
-def test_modo_ia_con_un_cliente_simulado(robot, monkeypatch):
-    """El modo IA envía la ficha y la frase, y aplica lo que devuelve. Se prueba sin red, con un cliente de pega."""
-    p = robot.nueva_partida()
-    q, f = _vecino(p)
-    pedido = {}
-
-    class Mensajes:
-        def create(self, **kw):
-            pedido.update(kw)
-            contenido = json.dumps({"respuesta": "Pues  mira, hoy hace bueno.", "confianza": 7, "accion": "nada"})
-            return types.SimpleNamespace(stop_reason="end_turn", content=[types.SimpleNamespace(type="thinking"), types.SimpleNamespace(type="text", text=contenido)])
-    falso = types.SimpleNamespace(beta=types.SimpleNamespace(messages=Mensajes()))
-    r = ia.responder(p, q, "¿Qué tal el día?", cliente_=falso)
-    assert r == {"respuesta": "Pues mira, hoy hace bueno.", "confianza": 7, "accion": "nada"}
-    assert pedido["model"] == "claude-opus-5-5" and pedido["fallbacks"] == "default" and pedido["output_config"]["format"]["type"] == "json_schema"
-    assert "¿Qué tal el día?" in pedido["messages"][-1]["content"] and '"oficio": "panadera"' in pedido["messages"][-1]["content"]
-    assert "explícito" in pedido["system"][0]["text"]
-    # integrado: con el modo activo, la respuesta libre viene de la IA y cambia la confianza
-    monkeypatch.setattr(ia, "disponible", lambda: True)
-    monkeypatch.setattr(ia, "cliente", lambda: falso)
-    p.cfg["ia_activa"] = True
-    c0 = f["confianza"]
-    assert p.responder_libre(q, "¿Qué tal el día?") == "Maite: Pues mira, hoy hace bueno."
-    assert f["confianza"] == c0 + 7 and f["memoria"][-1][0] == "¿Qué tal el día?"
-    assert len(pedido["messages"]) == 1
-    p.responder_libre(q, "¿Y mañana?")
-    assert len(pedido["messages"]) == 3                               # recuerda lo hablado
-    # una negativa del modelo, o un fallo, no rompen nada: se contesta con el motor propio
-
-    class Rechaza:
-        def create(self, **kw):
-            return types.SimpleNamespace(stop_reason="refusal", content=[])
-    monkeypatch.setattr(ia, "cliente", lambda: types.SimpleNamespace(beta=types.SimpleNamespace(messages=Rechaza())))
-    assert "prefiero no hablar" in p.responder_libre(q, "lo que sea")
-
-    class Falla:
-        def create(self, **kw):
-            raise RuntimeError("sin red")
-    monkeypatch.setattr(ia, "cliente", lambda: types.SimpleNamespace(beta=types.SimpleNamespace(messages=Falla())))
-    assert p.responder_libre(q, "hola").startswith("Maite:")
-    p.cfg["ia_activa"] = False
-    # la clave se guarda cifrada
-    monkeypatch.setattr(ia, "_ruta_clave", lambda: os.path.join(rutas.data("partidas_pruebas"), "ia.pbc"))
-    os.makedirs(rutas.data("partidas_pruebas"), exist_ok=True)
-    ia.guardar_clave("clave-de-prueba-123")
-    assert ia.clave_guardada() == "clave-de-prueba-123" and b"clave-de-prueba" not in open(ia._ruta_clave(), "rb").read()
-    ia.guardar_clave("")
-    assert ia.clave_guardada() == ""
-
-
 # ============================================================================ vida realista
 def test_vida_realista_hambre_y_sueno(robot):
     p = robot.nueva_partida()

@@ -370,7 +370,38 @@ class Conduccion:
             self.decir(f"{int(abs(v.vel) * 3.6)} kilómetros por hora.", True)
         elif k == pygame.K_y:
             self.cfg["piloto_gps"] = not self.cfg["piloto_gps"]
-            self.decir("Piloto del GPS " + ("activado: el coche girará solo siguiendo la ruta." if self.cfg["piloto_gps"] else "desactivado."), True)
+            if not self.cfg["piloto_gps"]:
+                self.decir("Piloto del GPS desactivado.", True)
+            elif not self.modo_asistido():
+                self.decir("Piloto del GPS activado, pero solo funciona en conducción asistida. Cámbiala en Opciones, Movimiento y conducción.", True)
+            elif not self.gps:
+                self.decir("Piloto del GPS activado. Marca un destino en el GPS y el coche irá solo: acelera, frena, gira y para en los semáforos.", True)
+            else:
+                self.decir(f"Piloto del GPS activado: el coche va solo hasta {self.gps['nombre']}. Con cualquier flecha o el espacio mandas tú.", True)
+
+    def piloto_completo(self):
+        """¿Conduce el coche solo? Con el piloto del GPS activado, en conducción asistida, en tierra y con un destino marcado."""
+        v = self.j.veh
+        return bool(self.cfg["piloto_gps"] and self.gps and v and self.modo_asistido() and self.mundo.tipo != "mar"
+                    and not v.modelo.get("barco") and not v.modelo.get("vuela"))
+
+    def _pilotar(self, v, dt, freno):
+        """El piloto lleva los pedales: velocidad de ciudad, despacio al llegar y parado en rojo o con algo delante."""
+        mo = v.modelo
+        dx, dy = self.gps["dest"]
+        dist = math.hypot(dx - v.x, dy - v.y)
+        objetivo = min(mo["vel_max"] * 0.6, 14.0)
+        if dist < 45:
+            objetivo = min(objetivo, max(3.0, dist * 0.3))
+        if self._semaforo_rojo(v):
+            objetivo = 0.0
+            if self.t - getattr(self, "t_aviso_rojo", -99) > 20:
+                self.t_aviso_rojo = self.t
+                self.decir("Semáforo en rojo. El piloto espera.")
+        if v.vel < objetivo:
+            v.vel = min(objetivo, v.vel + mo["acel"] * 0.8 * dt)
+        elif v.vel > objetivo:
+            v.vel = max(objetivo, v.vel - freno * dt)
 
     # --------------------------------------------------------- conducir
     def conducir(self, dt):
@@ -388,6 +419,8 @@ class Conduccion:
                 v.vel = max(0.0, v.vel - freno * dt)
             else:
                 v.vel = max(-6.0, v.vel - 4 * dt)
+        elif self.piloto_completo() and pygame.K_SPACE not in t:
+            self._pilotar(v, dt, freno)
         else:
             v.vel -= math.copysign(min(abs(v.vel), 1.8 * dt), v.vel)
         if pygame.K_SPACE in t and abs(v.vel) > 0:
@@ -400,7 +433,7 @@ class Conduccion:
         x0, y0 = v.x, v.y
         if self.modo_asistido():
             lat = -6.0 if pygame.K_a in t else 2.2 if pygame.K_d in t else 0.0
-            if self.cfg["frenada_auto"] and v.vel > 0:
+            if (self.cfg["frenada_auto"] or self.piloto_completo()) and v.vel > 0:
                 self._frenada_auto(v, dt, freno)
             self._aviso_cruce(v)
             self._mover_via(v, dt, lat, self._decidir_jugador)

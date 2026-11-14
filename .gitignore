@@ -48,3 +48,6 @@ Thumbs.db
 *.tmp
 *.bak
 *.log
+data/ia_local/
+data/voces/
+!data/mods/bahia_del_ocaso.json

@@ -12,6 +12,7 @@
 - penas_altas.json: un pueblo minero de montaña, con su historia, su lago y contenido para el modo adulto.
 - isla_de_los_vientos.json: una isla a la que se llega navegando, con raqueros, salinas y un catamarán.
 - noches_de_neon.json: la noche de Puerto Bravo, sin mapa nuevo: locales, taxis nocturnos y vida social.
+- bahia_del_ocaso.json: una ciudad grande de costa, con seis barrios, tres bandas y una historia de veintiuna misiones.
 
 Todos se pueden abrir con el editor de mods para ver cómo están hechos.
 """
@@ -21,6 +22,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from juego import rutas          # noqa: E402
 
@@ -711,6 +713,11 @@ def noches_neon():
     }
 
 
+def bahia_ocaso():
+    import mod_bahia_ocaso
+    return mod_bahia_ocaso.crear(ARMAS, VEHICULOS, SUSTANCIAS, clon)
+
+
 def escribir(nombre, crudo):
     from editor import modelo
     mod = modelo.Mod.desde_crudo(crudo)
@@ -723,7 +730,7 @@ def escribir(nombre, crudo):
 
 
 MODS = (("costa_dorada.json", costa_dorada), ("oficios_y_recados.json", oficios), ("valdeolmos.json", valdeolmos), ("motor_y_asfalto.json", motor),
-        ("penas_altas.json", penas_altas), ("isla_de_los_vientos.json", isla_vientos), ("noches_de_neon.json", noches_neon))
+        ("penas_altas.json", penas_altas), ("isla_de_los_vientos.json", isla_vientos), ("noches_de_neon.json", noches_neon), ("bahia_del_ocaso.json", bahia_ocaso))
 
 if __name__ == "__main__":
     mal = False

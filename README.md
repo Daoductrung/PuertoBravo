@@ -47,7 +47,9 @@ Todo lo que ocurre tiene su sonido, colocado a tu alrededor: lo que suena a la d
 - Vida delictiva: la historia, contratos, encargos de coches, atracos y guerras de territorio.
 - Ocio: carreras y regatas, casino, bingo, lotería, boxeo, galería de tiro, pesca, búsqueda de tesoros, cine, recreativos y bolsa.
 - Casas con garaje, un perro que te acompaña y busca objetos, guardaespaldas, logros y habilidades que suben con la práctica.
-- Hablar con cualquier persona de la calle: cada una tiene su nombre, su oficio y su carácter. Puedes preguntar, invitar a un café, hacer amigos o escribir lo que quieras decirle. Con una clave propia de la API de Anthropic, un modo opcional hace que contesten interpretadas por una inteligencia artificial.
+- Hablar con cualquier persona de la calle: cada una tiene su nombre, su oficio y su carácter. Puedes preguntar, invitar a un café, hacer amigos o escribir lo que quieras decirle. Un modo opcional hace que contesten interpretadas por una inteligencia artificial: un modelo local gratuito y sin internet, Google AI Studio, OpenAI, Anthropic u otro servicio compatible. El juego elige solo el modelo más barato.
+- Voces grabadas: cualquier frase de una misión puede sonar con una voz grabada en lugar del lector de pantalla.
+- Sin inteligencia artificial, una base de más de mil cien frases en casi setenta temas (`juego/respuestas.py`) contesta a lo que escribas, según el carácter de cada persona.
 - Una ciudad que no se repite: cada día viene distinto (rebajas, mercado, fiesta, huelga, operación salida) y cambian los precios, la gente y el tráfico. Ninguna partida es igual a otra.
 - Vida realista, opcional: hambre y sueño.
 - Jugar con amigos, sin servidores de nadie: tu propio juego abre la partida, con o sin contraseña, y les das una dirección. Os oís, os encontráis con el radar y el GPS, os escribís, vais en el mismo coche, hacéis carreras con apuesta y repartos en equipo.
@@ -88,7 +90,7 @@ compilar.bat   :: genera dist\PuertoBravo, portable y listo para repartir
 publicar.bat   :: comprime, firma y publica la versión compilada
 ```
 
-Dependencias (`requirements.txt`): pygame-ce, numpy, sounddevice, soundfile, accessible-output2, wxPython, cx_Freeze y pytest. El modo IA necesita además el paquete `anthropic`, que es opcional: sin él, el juego funciona igual y esa opción avisa de que no está disponible.
+Dependencias (`requirements.txt`): pygame-ce, numpy, sounddevice, soundfile, accessible-output2, wxPython, cx_Freeze y pytest. El modo IA no necesita ningún paquete: habla con los servicios por HTTPS con la biblioteca estándar (`juego/ia.py`), pregunta a cada uno su lista de modelos y elige el de la gama barata.
 
 El repositorio incluye el audio: los sonidos por defecto y los tres packs en `data/sonidos`, la música de la radio en `data/radio` y la de ambiente en `data/musica`. Si falta algún sonido por defecto, el juego lo vuelve a generar al arrancar.
 
@@ -157,8 +159,9 @@ Un mod también es un archivo JSON. El formato está explicado, con ejemplos, en
 
 ### Mods de serie
 
-Vienen siete, ya activados, que además sirven de modelo. Se generan con `herramientas/crear_mods_ejemplo.py`, donde se puede leer cómo está hecho cada uno:
+Vienen ocho, ya activados, que además sirven de modelo. Se generan con `herramientas/crear_mods_ejemplo.py`, donde se puede leer cómo está hecho cada uno:
 
+- Bahía del Ocaso: una ciudad grande de costa, con seis barrios, tres bandas y una historia de veintiuna misiones (`herramientas/mod_bahia_ocaso.py`).
 - Costa Dorada: un pueblo pesquero con su historia y un ejemplo de todo lo que admite un mod.
 - Valdeolmos: un pueblo de viñas, con un fraude de vino y una carrera de tractores.
 - Peñas Altas: un pueblo minero de montaña, con una mina que alguien explota de noche.
@@ -168,6 +171,8 @@ Vienen siete, ya activados, que además sirven de modelo. Se generan con `herram
 - Motor y asfalto: coches, una moto, carreras y misiones al volante.
 
 Para compartir un mod, pasa su archivo `.pbm`. Quien lo recibe lo copia en su `data\mods`.
+
+Las misiones pueden llevar voces grabadas (`juego/voces.py`): archivos de sonido en `data\voces`, uno por frase. El editor escribe el guion con el nombre de cada archivo. No se aceptan mods con material de otros juegos ni voces clonadas de personas reales.
 
 ---
 

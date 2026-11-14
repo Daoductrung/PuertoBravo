@@ -27,7 +27,7 @@ opciones = {
 
 # Opcionales: si están instalados, van en la compilación; si no, el juego funciona igual sin ellos.
 import importlib.util  # noqa: E402
-for _opcional in ("anthropic", "cryptography"):
+for _opcional in ("cryptography",):
     if importlib.util.find_spec(_opcional) is not None:
         opciones["packages"].append(_opcional)
 

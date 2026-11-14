@@ -77,6 +77,9 @@ class App:
         menus_juego.principal(self)
         from . import menus_actualizar
         menus_actualizar.al_arrancar(self)
+        if self.cfg["ia_activa"] and self.cfg["ia_servicio"] in ("auto", "local") and not self.pruebas:
+            from . import ia
+            ia.ajustar_local(self.cfg)           # si el modo IA usa el modelo local, que vaya cargando; al salir se cierra siempre
 
     # ------------------------------------------------------------------ audio
     def aplicar_volumenes(self):
@@ -303,6 +306,11 @@ class App:
                 cargador.cancelar()
             except Exception:
                 pass
+        try:
+            from . import ia
+            ia.parar_local()
+        except Exception:
+            pass
         self.mez.cerrar()
         pygame.quit()
         if not self.pruebas:

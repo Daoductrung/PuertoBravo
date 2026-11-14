@@ -84,6 +84,10 @@ class Misiones:
         ms["pendiente"] = True
         self._materializar()
 
+    def voces_activas(self):
+        """Las voces grabadas solo suenan si el jugador las quiere y juega con Dani: las grabaciones le llaman por ese nombre."""
+        return bool(self.cfg["voces_grabadas"]) and self.j.personaje == "dani"
+
     def _siguiente_paso(self):
         ms = self.mision
         if not ms:
@@ -101,7 +105,9 @@ class Misiones:
         tipo = p["tipo"]
         l = self._lugar_paso(p)
         if tipo == "dialogo":
-            self.app.abrir(Dialogo(self.app, [(self.txt(q), self.txt(tx)) for q, tx in p["lineas"]], self._siguiente_paso))
+            from . import voces
+            self.app.abrir(Dialogo(self.app, [(self.txt(q), self.txt(tx)) for q, tx in p["lineas"]], self._siguiente_paso,
+                                   voces=voces.de_paso(ms["def"]["id"], ms["paso"], len(p["lineas"])) if self.voces_activas() else None))
             return
         if tipo == "dar":
             if "arma" in p:

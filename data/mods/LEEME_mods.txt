@@ -3,7 +3,7 @@ MODS DE PUERTO BRAVO: LEY DEL ASFALTO
 Un mod es una ampliación del juego: lugares, misiones, vehículos, armas o localidades enteras.
 Cada mod es un archivo de esta carpeta, y se carga solo al arrancar el juego.
 
-El juego trae siete: Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos, Noches de neón,
+El juego trae ocho: Bahía del Ocaso, Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos, Noches de neón,
 Oficios y recados, y Motor y asfalto.
 
 Para añadir un mod que te hayan pasado, copia aquí su archivo.

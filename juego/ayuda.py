@@ -54,7 +54,7 @@ TECLAS = {
         ("A y D", "en conducción asistida, mantenlas para cambiar de carril: A invade el carril contrario para adelantar y D te arrima a la acera"),
         ("Frenada automática", "en conducción asistida el coche frena solo si hay un vehículo delante en tu carril. Se desactiva en Opciones"),
         ("U", "media vuelta, con el coche casi parado"),
-        ("Y", "piloto del GPS: el coche gira solo siguiendo la ruta marcada"),
+        ("Y", "piloto del GPS: el coche va solo hasta el destino marcado; acelera, frena, gira y espera en los semáforos"),
         ("E", "en conducción libre, endereza el coche hacia el punto cardinal más cercano"),
         ("W", "velocidad actual"),
         ("H", "claxon"),

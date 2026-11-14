@@ -136,21 +136,37 @@ class Dialogo:
     """Escena de texto: Intro avanza, flecha arriba repite, Escape la salta entera."""
     pausa_mundo = True
 
-    def __init__(self, app, lineas, al_terminar=None):
+    def __init__(self, app, lineas, al_terminar=None, voces=None):
         self.app = app
         self.lineas = [tuple(l) for l in lineas]
         self.i = 0
         self.al_terminar = al_terminar
         self.primera = True
+        self.voces = voces              # una grabación por frase, o None donde no hay
+        self.canal = None
+
+    def _callar_voz(self):
+        if self.canal is not None:
+            self.canal.parar()
+            self.canal = None
 
     def _decir(self):
         quien, texto = self.lineas[self.i]
+        self._callar_voz()
         self.app.son("dialogo")
         extra = ""
         if self.primera:
             extra = " Pulsa Intro para continuar."
             self.primera = False
-        self.app.decir((texto if quien == "Narrador" else f"{quien}: {texto}") + extra, True)
+        frase = (texto if quien == "Narrador" else f"{quien}: {texto}") + extra
+        grabada = self.voces[self.i] if self.voces and self.i < len(self.voces) else None
+        if grabada and self.app.cfg["voces_grabadas"]:
+            from . import voces
+            self.canal = voces.sonar(self.app, grabada)
+            if self.canal is not None:
+                self.app.voz.mostrar(frase)          # la voz es la grabación; el texto va al braille y al historial
+                return
+        self.app.decir(frase, True)
 
     def al_entrar(self):
         if self.i < len(self.lineas):
@@ -159,9 +175,11 @@ class Dialogo:
             self._fin()
 
     def _fin(self):
+        self._callar_voz()
         self.app.cerrar(self)
 
     def cerrado(self):
+        self._callar_voz()
         if self.al_terminar:
             f = self.al_terminar
             self.al_terminar = None

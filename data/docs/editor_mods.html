@@ -66,6 +66,8 @@ li { margin-bottom: .3em; }
 <li><kbd>Control M</kbd>: activar o desactivar mods, para elegir cuáles carga el juego.</li>
 <li><kbd>Control B</kbd>: abrir la carpeta de mods en el Explorador.</li>
 <li><kbd>F9</kbd>: guardar, comprobar y abrir el juego para probar el mod.</li>
+<li><kbd>Control G</kbd>: escribir el guion de voces del mod, para grabar las frases de las misiones.</li>
+<li><kbd>Control Mayúsculas V</kbd>: abrir la carpeta de voces.</li>
 </ul>
 <h3>En las listas de elementos</h3>
 <ul>
@@ -97,7 +99,7 @@ li { margin-bottom: .3em; }
 <p>El botón Copiar del juego original trae a tu mod una copia de un elemento original para modificarlo. Si le dejas el mismo identificador, sustituye al original; si se lo cambias, se añade como uno nuevo. Es la manera más rápida de aprender: copia una misión que te guste y mira cómo está hecha.</p>
 
 <h3>Aprender de los mods de ejemplo</h3>
-<p>En la carpeta de mods hay siete mods completos: Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos, Noches de neón, Oficios y recados, y Motor y asfalto. Ábrelos con <kbd>Control O</kbd>: <code>costa_dorada</code> tiene un ejemplo de cada cosa que se puede crear, incluido un mapa entero y misiones con los nueve tipos de paso.</p>
+<p>En la carpeta de mods hay ocho mods completos: Bahía del Ocaso, que es una ciudad entera con una historia larga, Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos, Noches de neón, Oficios y recados, y Motor y asfalto. Ábrelos con <kbd>Control O</kbd>: <code>costa_dorada</code> tiene un ejemplo de cada cosa que se puede crear, incluido un mapa entero y misiones con los nueve tipos de paso.</p>
 
 <h2>5. Las misiones</h2>
 <p>Una misión es una lista de pasos. Cada paso tiene un tipo:</p>
@@ -113,6 +115,18 @@ li { margin-bottom: .3em; }
 <li>Perseguir: alcanzar a un vehículo que huye.</li>
 </ul>
 <p>En los textos puedes escribir Dani: el juego lo cambia por el nombre del personaje que haya elegido quien juega.</p>
+
+<h3>Dar voz a los personajes</h3>
+<p>Las frases de los diálogos las lee el lector de pantalla de quien juega. Si quieres que suenen con voces grabadas, no hay que tocar nada en el mod: basta con dejar las grabaciones en la carpeta de voces del juego.</p>
+<ol>
+<li>Guarda el mod y pulsa <kbd>Control G</kbd>, o elige Guion de voces para grabar en el menú Mod. El editor escribe un archivo de texto con todas las frases de todas las misiones y lo abre en el Bloc de notas.</li>
+<li>En el guion, cada frase lleva encima el nombre que debe tener su grabación, por ejemplo <strong>oc01_1_2</strong>: misión, número de paso y número de frase. Al final dice cuántas frases tiene cada personaje, para repartirlas entre varias personas.</li>
+<li>Graba cada frase en un archivo aparte, en WAV, OGG, FLAC o MP3, con ese nombre.</li>
+<li>Deja los archivos en la carpeta de voces, que se abre con <kbd>Control Mayúsculas V</kbd>. Pueden ir en subcarpetas.</li>
+<li>Vuelve a pulsar <kbd>Control G</kbd> cuando quieras: las frases que ya tienen archivo salen marcadas con la palabra GRABADA.</li>
+</ol>
+<p>Las frases sin grabación las sigue leyendo el lector, así que se puede grabar poco a poco. Si después cambias el orden de los pasos o de las frases de una misión, cambian sus números: vuelve a sacar el guion y renombra los archivos.</p>
+<p>Para compartir un mod con voces, pasa el archivo del mod y, aparte, una carpeta con las grabaciones para copiar en <strong>data\voces</strong>. Usa voces propias o voces sintéticas que tengas permiso para usar: no voces clonadas de personas reales ni sacadas de otros juegos o películas.</p>
 
 <h2>6. Los sonidos</h2>
 <p>Todo lo que añadas debe sonar. Cada lugar tiene un campo de sonido, que es el que se oye al pasar por su puerta y de fondo al entrar. Elige en el desplegable uno de los sonidos del juego. Si quieres uno nuevo, copia tu archivo en <code>data\sonidos\por_defecto</code> con el nombre que quieras y aparecerá en la lista la próxima vez que abras el editor. La guía <a href="cambiar_sonidos.html">cambiar_sonidos.html</a> describe todos los sonidos.</p>
