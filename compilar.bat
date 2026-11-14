@@ -61,6 +61,9 @@ if exist "data\mods\costa_dorada.json" copy /y "data\mods\costa_dorada.json" "%D
 if exist "data\mods\oficios_y_recados.json" copy /y "data\mods\oficios_y_recados.json" "%D%\data\mods" >nul
 if exist "data\mods\valdeolmos.json" copy /y "data\mods\valdeolmos.json" "%D%\data\mods" >nul
 if exist "data\mods\motor_y_asfalto.json" copy /y "data\mods\motor_y_asfalto.json" "%D%\data\mods" >nul
+if exist "data\mods\penas_altas.json" copy /y "data\mods\penas_altas.json" "%D%\data\mods" >nul
+if exist "data\mods\isla_de_los_vientos.json" copy /y "data\mods\isla_de_los_vientos.json" "%D%\data\mods" >nul
+if exist "data\mods\noches_de_neon.json" copy /y "data\mods\noches_de_neon.json" "%D%\data\mods" >nul
 if exist "LEEME.txt" copy /y "LEEME.txt" "%D%\LEEME.txt" >nul
 
 echo Protegiendo los datos del juego y los mods...
@@ -88,6 +91,7 @@ echo La carpeta para distribuir es %D%
 echo   Juego:           %D%\PuertoBravo.exe
 echo   Editor de mods:  %D%\EditorMods.exe
 echo Es portable y esta limpia: puedes comprimirla en un zip y repartirla.
+echo Para publicarla como actualizacion, ejecuta publicar.bat
 echo Los datos del juego y los mods van protegidos: no se pueden editar con un editor de texto.
 echo Tus partidas y opciones siguen en la carpeta data del proyecto, no en la compilacion.
 echo.

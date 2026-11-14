@@ -8,11 +8,15 @@ from . import mundo as M
 from .combate import Combate
 from .conduccion import Conduccion
 from .adultos import Adultos
+from .azar import Azar
 from .entidades import Jugador, Objeto, Persona, Vehiculo
 from .extras import Extras
 from .extras2 import Extras2
 from .extras3 import Extras3
+from .charla import Charla
+from .intimidad import Intimidad
 from .misiones import Misiones
+from .necesidades import Necesidades
 from .online import Online
 from .trabajos import Trabajos
 from .vida import Vida
@@ -26,7 +30,7 @@ FRASES = [
 ]
 
 
-class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online):
+class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, Charla, Intimidad, Necesidades, Azar):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -108,6 +112,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             casa = self.mundo.lugares["bar_gaviota"]
             self.j.x, self.j.y = casa.x - 25, casa.y
             self.aplicar_personaje(personaje)
+        self.azar_iniciar()
         self._crear_casetes()
         if self.veh_guardado:
             d = self.veh_guardado
@@ -142,6 +147,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.voz.decir(texto, interrumpir)
 
     def son(self, nombre, xy=None, **kw):
+        if nombre == "comer":
+            self.ha_comido()             # comer en cualquier sitio quita el hambre (vida realista)
         return self.mez.sonar(nombre, xy=xy, **kw)
 
     def pos(self):
@@ -411,7 +418,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         elif k == pygame.K_v:
             self.estado()
         elif k == pygame.K_t:
-            self.decir(f"Son las {self.hora_txt()}, día {self.dia}. {'Llueve.' if self.lluvia else 'Cielo despejado.'}", True)
+            self.decir(f"Son las {self.hora_txt()}, día {self.dia}. {'Llueve.' if self.lluvia else 'Cielo despejado.'} {self.dia_txt()}".strip(), True)
         elif k == pygame.K_o:
             self.decir(self.objetivo_txt(), True)
         elif k == pygame.K_n:
@@ -530,6 +537,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.perro_busca()
         elif k == pygame.K_u:
             self.alternar_paseo()
+        elif k == pygame.K_j:
+            self.hablar()
         elif k == pygame.K_h:
             self.son("grito", vol=0.5)
             for p in self.personas:
@@ -577,6 +586,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             t += " Bajo los efectos de: " + ", ".join(sorted({(self.sustancia(e["id"]) or {"nombre": e["id"]})["nombre"].lower() + (", con bajón" if e.get("bajon") else "") for e in j.efectos})) + "."
         if self._abstinencia():
             t += " Tienes síndrome de abstinencia."
+        t += self.necesidades_txt()
+        if self.modo_adulto() and self.estado_intimo_txt():
+            t += " " + self.estado_intimo_txt()
         if j.veh:
             v = j.veh
             t += f" Conduces {v.nombre}, a {int(abs(v.vel) * 3.6)} kilómetros por hora, estado {int(100 * v.salud / v.salud_max)} por ciento."
@@ -955,7 +967,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.forzando = None
             self.decir("Dejas de forzar la cerradura.")
         correr = (pygame.K_LSHIFT in t or pygame.K_RSHIFT in t) and not j.agachado
-        vel = (1.3 if j.agachado else 5.2 * (1 + 0.015 * self.nivel("resistencia")) if correr else 2.4) * self.mod_velocidad()
+        vel = (1.3 if j.agachado else 5.2 * (1 + 0.015 * self.nivel("resistencia")) if correr else 2.4) * self.mod_velocidad() * self.mod_necesidades()
         n = math.hypot(dx, dy)
         if self.cfg["movimiento"] == "brujula" and not solo:
             j.rumbo = M.rumbo_a(dx, dy)
@@ -1123,11 +1135,13 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
     def _tiempo(self, dt):
         antes = int(self.reloj // 60)
         self.reloj += dt / 2.0
+        self.pasar_necesidades(dt / 2.0)
         if self.reloj >= 1440:
             self.reloj -= 1440
             self.dia += 1
             self.plazas_usadas.clear()
             self._cobrar_negocios()
+            self.sortear_dia()
         hora = int(self.reloj // 60)
         if hora != antes:
             r = random.random()
@@ -1163,6 +1177,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.ingresos_territorios()
         self.mover_bolsa()
         self.dia_adultos()
+        self.dia_intimidad()
         n = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto)
         if n:
             coste = 200 * n
@@ -1173,13 +1188,15 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 self.personas = [p for p in self.personas if p.tipo != "aliado"]
                 self.decir("No puedes pagar a tus guardaespaldas y se marchan.")
 
-    def pasar_horas(self, horas):
+    def pasar_horas(self, horas, dormir=False):
+        self.pasar_necesidades(horas * 60, durmiendo=dormir)
         self.reloj += horas * 60
         while self.reloj >= 1440:
             self.reloj -= 1440
             self.dia += 1
             self.plazas_usadas.clear()
             self._cobrar_negocios()
+            self.sortear_dia()
 
     def _avisos(self, dt):
         j = self.j
@@ -1359,7 +1376,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             return
         # tráfico
         n = sum(1 for v in self.vehiculos if v.ia == "trafico")
-        if n < (max(1, m.trafico // 2) if noche else m.trafico):
+        if n < max(1, round((max(1, m.trafico // 2) if noche else m.trafico) * self.azar_factor("trafico"))):
             horizontal = random.random() < 0.5
             dist = random.uniform(100, 180) * random.choice([-1, 1])
             if horizontal:
@@ -1407,7 +1424,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 self.vehiculos.append(v)
         # peatones
         n = sum(1 for p in self.personas if p.tipo in ("civil", "banda") and not p.tag and not p.muerto)
-        tope = max(1, m.peatones // 3) if noche else m.peatones
+        tope = max(1, round((max(1, m.peatones // 3) if noche else m.peatones) * self.azar_factor("peatones")))
         if self.lluvia:
             tope = max(1, tope // 2)
         if n < tope:

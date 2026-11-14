@@ -62,6 +62,8 @@ class App:
         for e in self.datos["errores_mods"]:
             self.voz.decir("Error en un mod: " + e)
         menus_juego.principal(self)
+        from . import menus_actualizar
+        menus_actualizar.al_arrancar(self)
 
     # ------------------------------------------------------------------ audio
     def aplicar_volumenes(self):
@@ -120,10 +122,13 @@ class App:
         self.pila.remove(pantalla)
         self.teclas.clear()
         cima = self.pila[-1] if self.pila else None
-        if hasattr(pantalla, "cerrado"):
+        despues = getattr(pantalla, "cerrado_al_final", False)
+        if hasattr(pantalla, "cerrado") and not despues:
             pantalla.cerrado()
         if era_cima and self.pila and self.pila[-1] is cima:
             cima.al_entrar()
+        if despues:
+            pantalla.cerrado()             # lo que diga la respuesta se oye después del menú, no tapado por él
 
     def empezar_partida(self, guardado, personaje=None):
         from .partida import Partida
@@ -165,6 +170,9 @@ class App:
             if self.partida is not None:
                 self.partida.red_paso(dt)          # los amigos conectados siguen oyéndote aunque tengas un menú abierto
             self._musica(dt)
+            if getattr(self, "act_aviso", None) is not None:
+                from . import menus_actualizar
+                menus_actualizar.paso(self)
         self.mez.actualizar()
 
     def inyectar(self, key, mod=0, unicode="", soltar=True):

@@ -246,6 +246,8 @@ class Mundo:
         self.ancho = (self.NX - 1) * B
         self.alto = (self.NY - 1) * B
         self.barrios = c["barrios"]
+        for b in self.barrios:                     # una isla sin coches puede venir sin la lista
+            b.setdefault("vehiculos", [])
         self.bloques = {}
         for k, v in c.get("bloques", {}).items():
             i, j = k.split(",")

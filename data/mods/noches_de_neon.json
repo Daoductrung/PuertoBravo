@@ -1,0 +1,666 @@
+{
+ "info": {
+  "nombre": "Noches de neón",
+  "autor": "Puerto Bravo",
+  "version": "1.0",
+  "descripcion": "La noche de Puerto Bravo: un barrio de locales nuevo con una sala de conciertos, una churrería de madrugada, un hotel, un ático, una empresa de taxis nocturnos con su taxi para trabajar, una limusina, tres misiones de chófer y portero, y, con el modo adulto, una sala de fiestas, dos personas a las que conocer, planes, regalos, un cóctel y dos historias."
+ },
+ "lugares": [
+  {
+   "id": "nn_sotano",
+   "nombre": "Sala de conciertos El Sótano",
+   "tipo": "monumento",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    6,
+    6
+   ],
+   "lado": "O",
+   "pos": 36,
+   "desc": "Un sótano con buen sonido y mala ventilación. Toca alguien casi todas las noches.",
+   "sonido": "lugar_bar"
+  },
+  {
+   "id": "nn_churreria",
+   "nombre": "Churrería La Madrugada",
+   "tipo": "comida",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    7,
+    7
+   ],
+   "lado": "S",
+   "pos": 36,
+   "desc": "Abre cuando cierran los demás. Churros, chocolate y caldo."
+  },
+  {
+   "id": "nn_hotel",
+   "nombre": "Hotel Medianoche",
+   "tipo": "hotel",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    6,
+    6
+   ],
+   "lado": "E",
+   "pos": 36,
+   "desc": "Moqueta gruesa, recepcionista discreto y desayuno hasta las doce.",
+   "precio_noche": 70
+  },
+  {
+   "id": "nn_atico",
+   "nombre": "Ático de la calle de los Neones",
+   "tipo": "casa",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    6,
+    6
+   ],
+   "lado": "S",
+   "pos": 36,
+   "desc": "Un ático con terraza sobre los letreros luminosos. Dos plazas de garaje.",
+   "precio": 12500,
+   "garaje": 2
+  },
+  {
+   "id": "nn_radiotaxi",
+   "nombre": "Radio Taxi Luna",
+   "tipo": "negocio",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    7,
+    6
+   ],
+   "lado": "E",
+   "pos": 36,
+   "desc": "Una cooperativa de taxis nocturnos en venta. En la puerta hay siempre un taxi: súbete y pulsa J.",
+   "sonido": "lugar_taxi",
+   "vehiculo": "nn_taxi",
+   "precio": 15000,
+   "ingresos": 380
+  },
+  {
+   "id": "nn_seguridad",
+   "nombre": "Seguridad Búho",
+   "tipo": "armeria",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    7,
+    6
+   ],
+   "lado": "N",
+   "pos": 36,
+   "desc": "Material para porteros y escoltas."
+  },
+  {
+   "id": "nn_luna",
+   "nombre": "Sala de fiestas Luna Llena",
+   "tipo": "club",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    7,
+    6
+   ],
+   "lado": "S",
+   "pos": 36,
+   "desc": "Dos plantas, espectáculo a medianoche y la cola más larga de la ciudad.",
+   "adultos": true
+  },
+  {
+   "id": "nn_trastienda",
+   "nombre": "La Trastienda",
+   "tipo": "proveedor",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    6,
+    6
+   ],
+   "lado": "N",
+   "pos": 36,
+   "desc": "Detrás de una tienda de discos. Aquí se abastece media noche de Puerto Bravo.",
+   "adultos": true,
+   "factor": {
+    "hierba": 1.1,
+    "polvo": 0.9,
+    "pastillas": 0.8,
+    "cristal": 1.1,
+    "nn_coctel": 0.8
+   }
+  }
+ ],
+ "misiones": [
+  {
+   "id": "nn01",
+   "titulo": "Turno de noche",
+   "capitulo": 32,
+   "contacto": "Mari Cruz",
+   "lugar": "nn_radiotaxi",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En Radio Taxi Luna falta un chófer para un servicio especial.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mari Cruz",
+       "Se me ha puesto malo el de la limusina y tengo a un cantante esperando en el Hotel Medianoche. ¿Tú conduces fino?"
+      ],
+      [
+       "Mari Cruz",
+       "La limusina está en la puerta de la sala El Sótano. Recógela y llévala al casino sin un rasguño, que es alquilada."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Recoge la limusina junto a la sala El Sótano. Está abierta.",
+     "lugar": "nn_sotano",
+     "modelo": "nn_limusina",
+     "nombre": "la limusina alquilada",
+     "abierto": true
+    },
+    {
+     "tipo": "ir",
+     "texto": "Pasa por el Hotel Medianoche a recoger al cantante.",
+     "lugar": "nn_hotel"
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Llévalo al casino en poco más de tres minutos y sin golpes.",
+     "lugar": "casino",
+     "limite": 200,
+     "salud_min": 85
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El cantante baja sin dar las gracias. La propina, eso sí, es de las buenas."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 450
+   }
+  },
+  {
+   "id": "nn02",
+   "titulo": "Los de la puerta",
+   "capitulo": 32,
+   "contacto": "Mari Cruz",
+   "lugar": "nn_radiotaxi",
+   "requiere": [
+    "nn01"
+   ],
+   "resumen": "Una banda cobra a los taxistas por dejarles parar delante de los locales.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mari Cruz",
+       "Nos piden cincuenta euros por noche y taxi. Al que no paga le rajan las ruedas. Están en la churrería, que es donde cuentan la caja."
+      ],
+      [
+       "Mari Cruz",
+       "Toma, la porra de mi cuñado, que era portero. Si se ponen tontos, tú más."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "nn_porra"
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve a la Churrería La Madrugada y échalos de allí.",
+     "lugar": "nn_churreria",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Matón de puerta",
+       "arma": "navaja",
+       "salud": 55
+      },
+      {
+       "n": 1,
+       "tipo": "El Cobrador",
+       "arma": "nn_derringer",
+       "salud": 85
+      }
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la libreta de cobros.",
+     "lugar": "nn_churreria",
+     "objeto": "la libreta de cobros"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "En la libreta están todos los taxis de la ciudad, y al final una matrícula subrayada dos veces."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 700,
+    "arma": "nn_derringer",
+    "balas": 10
+   }
+  },
+  {
+   "id": "nn03",
+   "titulo": "Bajada de bandera",
+   "capitulo": 32,
+   "contacto": "Mari Cruz",
+   "lugar": "nn_radiotaxi",
+   "requiere": [
+    "nn02"
+   ],
+   "resumen": "El jefe de los cobradores huye con la caja de un mes.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mari Cruz",
+       "La matrícula es de un sedán negro. Se va con la caja de todo el mes por la salida del este. Ese dinero es de los compañeros."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y destroza el sedán negro antes de que salga de la ciudad.",
+     "lugar": "salida_este",
+     "limite": 260,
+     "modelo": "sedan",
+     "nombre": "el sedán negro",
+     "salud": 200
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la caja del mes.",
+     "objeto": "la caja del mes",
+     "aqui": true
+    },
+    {
+     "tipo": "policia",
+     "texto": "Te han visto. Despista a la policía antes de volver.",
+     "nivel": 2
+    },
+    {
+     "tipo": "ir",
+     "texto": "Devuelve la caja a Radio Taxi Luna.",
+     "lugar": "nn_radiotaxi"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mari Cruz",
+       "Aquí no se olvida esto. Llévate el scooter de las luces, que era del Cobrador y ya no lo va a necesitar."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "dinero": 300
+    }
+   ],
+   "recompensa": {
+    "dinero": 1600,
+    "chaleco": true
+   }
+  },
+  {
+   "id": "nna1",
+   "titulo": "Lista de invitados",
+   "capitulo": 33,
+   "contacto": "Darío",
+   "lugar": "nn_luna",
+   "requiere": [
+    "nn01"
+   ],
+   "resumen": "En la Luna Llena, Darío necesita que alguien recoja un encargo antes de que abra la sala.",
+   "adultos": true,
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Darío",
+       "Esta noche viene medio Ayuntamiento y me falta lo del cóctel de la casa. Pásate por La Trastienda y tráemelo. Quédate dos para ti."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Pasa por La Trastienda.",
+     "lugar": "nn_trastienda"
+    },
+    {
+     "tipo": "dar",
+     "sustancia": "nn_coctel",
+     "cantidad": 2
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a la Luna Llena antes de que abran las puertas.",
+     "lugar": "nn_luna",
+     "limite": 150
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Darío",
+       "Puntual. Eso aquí vale más que el dinero. Estás en la lista, para siempre."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 320,
+    "afinidad": {
+     "nn_dario": 15
+    }
+   }
+  },
+  {
+   "id": "nna2",
+   "titulo": "Después del último pase",
+   "capitulo": 33,
+   "contacto": "Irene",
+   "lugar": "nn_luna",
+   "requiere": [
+    "nna1"
+   ],
+   "resumen": "Irene, la cantante de la sala, tiene a un admirador que no entiende un no.",
+   "adultos": true,
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Irene",
+       "Me espera cada noche en la puerta de atrás. Le he dicho que no de todas las maneras. Hoy ha venido con dos amigos."
+      ],
+      [
+       "Irene",
+       "No quiero que le pase nada grave. Solo que entienda."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Están junto a la sala El Sótano. Haz que lo entiendan.",
+     "lugar": "nn_sotano",
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Amigo del pesado",
+       "arma": "punos",
+       "salud": 45
+      },
+      {
+       "n": 1,
+       "tipo": "El pesado",
+       "arma": "punos",
+       "salud": 60
+      }
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a la Luna Llena.",
+     "lugar": "nn_luna"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Irene",
+       "Gracias. De verdad. La primera copa de cada noche, para ti, mientras yo cante aquí."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 400,
+    "afinidad": {
+     "nn_irene": 18
+    }
+   }
+  }
+ ],
+ "armas": [
+  {
+   "id": "nn_porra",
+   "nombre": "Porra extensible",
+   "tipo": "cuerpo",
+   "dano": 24,
+   "alcance": 2.3,
+   "cadencia": 0.45,
+   "precision": 0.9,
+   "sonido": "golpe",
+   "ruido": 0,
+   "precio": 85,
+   "desc": "Rápida y discreta. La de los porteros."
+  },
+  {
+   "id": "nn_derringer",
+   "nombre": "Derringer de bolsillo",
+   "tipo": "fuego",
+   "dano": 48,
+   "alcance": 12,
+   "cadencia": 0.8,
+   "precision": 0.9,
+   "cargador": 2,
+   "sonido": "disparo_revolver",
+   "ruido": 2,
+   "precio": 520,
+   "balas": 10,
+   "precio_balas": 40,
+   "desc": "Dos tiros y a recargar. Cabe en cualquier bolsillo."
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "nn_taxi",
+   "nombre": "Taxi nocturno",
+   "vel_max": 27,
+   "acel": 7.0,
+   "freno": 14,
+   "salud": 130,
+   "motor": "motor_coche",
+   "tono": 1.0,
+   "valor": 900,
+   "precio": 7200,
+   "trabajo": "taxi",
+   "desc": "Un taxi con luz verde y radio de la cooperativa. Con la tecla J llevas pasajeros."
+  },
+  {
+   "id": "nn_limusina",
+   "nombre": "Limusina Medianoche",
+   "vel_max": 27,
+   "acel": 5.5,
+   "freno": 11,
+   "salud": 190,
+   "motor": "motor_coche",
+   "tono": 0.8,
+   "valor": 4000,
+   "precio": 42000,
+   "desc": "Larga, negra y con los cristales tintados."
+  },
+  {
+   "id": "nn_vespa",
+   "nombre": "Scooter de neón",
+   "vel_max": 24,
+   "acel": 6.0,
+   "freno": 12,
+   "salud": 60,
+   "motor": "motor_moto",
+   "tono": 1.5,
+   "valor": 450,
+   "precio": 2300,
+   "trabajo": "paqueteria",
+   "desc": "Un scooter con luces de colores bajo el chasis."
+  }
+ ],
+ "carreras": [
+  {
+   "id": "nn_c1",
+   "nombre": "Nocturna de los Neones",
+   "mapa": "puerto_bravo",
+   "premio": 750,
+   "tiempo": 95,
+   "puntos": [
+    [
+     7,
+     6
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     7,
+     5
+    ],
+    [
+     7,
+     6
+    ]
+   ]
+  }
+ ],
+ "comidas": [
+  {
+   "nombre": "Churros con chocolate",
+   "precio": 5,
+   "salud": 20
+  },
+  {
+   "nombre": "Caldo de madrugada",
+   "precio": 3,
+   "salud": 12
+  }
+ ],
+ "objetos": [
+  {
+   "id": "nn_pulsera",
+   "nombre": "Pulsera de la sala El Sótano",
+   "precio": 15,
+   "desc": "La entrada del concierto de esta noche. De recuerdo."
+  }
+ ],
+ "capitulos": {
+  "32": "Noches de neón",
+  "33": "Noches de neón: historias para adultos"
+ },
+ "personajes": [
+  {
+   "id": "nn_vera",
+   "nombre": "Vera",
+   "apellido": "Montoya",
+   "desc": "Diez años de taxista de noche. Empieza con conducción al nivel cuatro, cuatrocientos euros, una porra y algo de nombre tanto entre los vecinos como en la calle.",
+   "dinero": 400,
+   "reputacion": 15,
+   "ciudadania": 15,
+   "conduccion": 4,
+   "arma": "nn_porra",
+   "botiquines": 1
+  }
+ ],
+ "personas": [
+  {
+   "id": "nn_dario",
+   "nombre": "Darío",
+   "edad": 41,
+   "lugar": "nn_luna",
+   "gustos": [
+    "nn_concierto",
+    "cena"
+   ],
+   "regalo": "nn_vinilo",
+   "desc": "Encargado de la Luna Llena. Traje impecable, memoria de elefante y un sentido del humor muy seco. Fue bailarín antes de que le fallara una rodilla."
+  },
+  {
+   "id": "nn_irene",
+   "nombre": "Irene",
+   "edad": 30,
+   "lugar": "nn_luna",
+   "gustos": [
+    "nn_churros",
+    "paseo"
+   ],
+   "regalo": "nn_vinilo",
+   "desc": "Canta boleros a medianoche y rock cuando nadie mira. Tímida fuera del escenario, y en él no hay quien le quite los ojos de encima."
+  }
+ ],
+ "sustancias": [
+  {
+   "id": "nn_coctel",
+   "nombre": "Cóctel Luna Llena",
+   "unidad": "copa",
+   "legal": true,
+   "precio": 14,
+   "duracion": 110,
+   "animo": 10,
+   "punteria": -0.05,
+   "deriva": 0.22,
+   "tono": 0.012,
+   "adiccion": 1.5,
+   "sobredosis": 5,
+   "bajon": {
+    "animo": -4,
+    "duracion": 60
+   },
+   "desc": "El cóctel de la casa. Entra solo y sube el ánimo más que una copa normal."
+  }
+ ],
+ "actividades": [
+  {
+   "id": "nn_concierto",
+   "nombre": "Ir a un concierto en El Sótano",
+   "precio": 30,
+   "horas": 3
+  },
+  {
+   "id": "nn_churros",
+   "nombre": "Churros al amanecer en La Madrugada",
+   "precio": 12,
+   "horas": 1
+  }
+ ],
+ "regalos": [
+  {
+   "id": "nn_vinilo",
+   "nombre": "Un vinilo de primera edición",
+   "precio": 110,
+   "afinidad": 12
+  },
+  {
+   "id": "nn_entradas",
+   "nombre": "Dos entradas de palco",
+   "precio": 160,
+   "afinidad": 15
+  }
+ ]
+}

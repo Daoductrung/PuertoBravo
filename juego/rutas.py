@@ -65,6 +65,16 @@ EXT_AUDIO = (".wav", ".ogg", ".flac", ".mp3")
 EXT_DATOS = ".pbd"      # datos del juego: mapas, misiones, armas, vehículos
 EXT_MOD = ".pbm"        # mods guardados con el editor
 EXT_PARTIDA = ".pbs"    # partidas guardadas
+EXT_CONFIG = ".pbc"     # opciones, botones del mando y clave del modo IA
+
+
+def archivo_config(nombre):
+    """Ruta de un archivo de configuración: nombre.pbc (protegido) en el juego compilado, nombre.json en el código fuente.
+    Si solo existe el de la otra forma (una configuración de antes de compilar), se devuelve ese para leerlo."""
+    from . import cifrado
+    carpeta = carpeta_data("config")
+    propia = os.path.join(carpeta, nombre + (EXT_CONFIG if cifrado.COMPILADO else ".json"))
+    return propia
 DATOS = data("datos")
 MODS = data("mods")
 PACKS = data("sonidos")                       # aquí dentro va una carpeta por pack

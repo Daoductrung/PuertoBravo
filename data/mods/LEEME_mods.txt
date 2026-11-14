@@ -1,10 +1,11 @@
-Carpeta de mods de Puerto Bravo: Ley del Asfalto.
+MODS DE PUERTO BRAVO: LEY DEL ASFALTO
 
-Cada archivo .json que dejes aquí se carga al arrancar el juego y se suma a los datos originales.
-El formato está explicado en data\docs\crear_mods.html.
+Un mod es una ampliación del juego: lugares, misiones, vehículos, armas o localidades enteras.
+Cada mod es un archivo de esta carpeta, y se carga solo al arrancar el juego.
 
-El archivo ejemplo_mod.json.desactivado es un mod de muestra: añade un bar y una misión.
-Para probarlo, quítale la terminación «.desactivado» para que acabe en .json.
+El juego trae siete: Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos, Noches de neón,
+Oficios y recados, y Motor y asfalto.
 
-Para cambiar sonidos o música no hace falta ningún mod: sustituye el archivo en data\sonidos\por_defecto
-o en data\radio. Lo explica data\docs\cambiar_sonidos.html.
+Para añadir un mod que te hayan pasado, copia aquí su archivo.
+Para quitar uno, bórralo de aquí o desactívalo en el editor con Control M.
+Para crear los tuyos, usa EditorMods.exe, que está junto al juego. Su manual se abre con F1.

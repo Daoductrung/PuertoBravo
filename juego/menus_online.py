@@ -134,7 +134,8 @@ def amigos(p):
             ops = [Opcion(lambda: p.donde_esta(r)),
                    Opcion("Marcar en el GPS", lambda: (volver_al_juego(), p.gps_a_amigo(r))),
                    Opcion("Enviarle 50 euros", lambda: p.dar_dinero_a(r, 50)),
-                   Opcion("Enviarle 500 euros", lambda: p.dar_dinero_a(r, 500))]
+                   Opcion("Enviarle 500 euros", lambda: p.dar_dinero_a(r, 500)),
+                   Opcion("Darle un botiquín", lambda: p.dar_botiquin_a(r))]
             if p.es_anfitrion():
                 def echar():
                     p.servidor.expulsar(r.id)
@@ -150,6 +151,22 @@ def amigos(p):
         lineas = list(reversed(p.chat)) or ["Todavía no hay mensajes"]
         m = Menu(app, "Últimos mensajes, del más reciente al más antiguo", [Opcion(t) for t in lineas] + [Opcion("Volver", lambda: app.cerrar(m))])
         app.abrir(m)
+
+    def hecho(resultado, salir=False):
+        ok, texto = resultado
+        if texto:
+            app.son("menu_ok" if ok else "error")
+            app.decir(texto, True)
+        menu.refrescar(False)
+        if ok and salir:
+            volver_al_juego()
+
+    def carrera():
+        from . import menus_juego
+        menus_juego.lista_lugares(p, al_elegir=lambda l: hecho(p.proponer_carrera(l)), titulo="Destino de la carrera", otras=False)
+
+    def reparto():
+        hecho(p.proponer_reparto())
 
     def desconectar():
         anfitrion = p.es_anfitrion()
@@ -177,6 +194,20 @@ def amigos(p):
                         + f". Jugadores: {len(p.remotos) + 1}")]
         lista += [Opcion((lambda r=r: p.donde_esta(r)), amigo(r), ayuda="Intro para marcarlo en el GPS, enviarle dinero" + (" o expulsarlo." if p.es_anfitrion() else ".")) for r in p.remotos.values()]
         lista.append(Opcion("Escribir un mensaje", lambda: escribir_mensaje(p), ayuda="También con la tecla F10, sin abrir el móvil."))
+        lista.append(Opcion(lambda: p.coop_txt(), ayuda="Las actividades conjuntas son carreras con apuesta y repartos en equipo. Además, a pie junto al vehículo parado de un amigo, la tecla F te sube de pasajero."))
+        c = p.coop
+        if c is None:
+            lista.append(Opcion("Proponer una carrera hasta un lugar: 100 euros de apuesta", carrera, ayuda="Eliges el destino. Quien llega primero se lleva las apuestas de todos."))
+            lista.append(Opcion("Proponer un reparto en equipo", reparto, ayuda="Cuatro entregas por esta localidad en seis minutos. Si las hacéis entre todos, cobráis todos."))
+        elif c["estado"] == "propuesta":
+            if c["de"] == p.red.id:
+                lista.append(Opcion("Empezar ya", lambda: hecho(p.empezar_coop(), True)))
+            elif p.red.id not in c["participantes"]:
+                lista.append(Opcion("Aceptar y participar", lambda: hecho(p.aceptar_coop())))
+            if c["de"] == p.red.id:
+                lista.append(Opcion("Cancelar la actividad", lambda: (p.cancelar_coop(), menu.refrescar(False))))
+        elif c["de"] == p.red.id:
+            lista.append(Opcion("Cancelar la actividad", lambda: (p.cancelar_coop(), menu.refrescar(False))))
         lista.append(Opcion("Repasar los últimos mensajes", mensajes))
         if p.es_anfitrion():
             lista.append(Opcion("Cómo invitar a un amigo: direcciones y puerto", invitar))

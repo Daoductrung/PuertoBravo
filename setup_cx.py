@@ -25,6 +25,12 @@ opciones = {
     "silent_level": 1,
 }
 
+# Opcionales: si están instalados, van en la compilación; si no, el juego funciona igual sin ellos.
+import importlib.util  # noqa: E402
+for _opcional in ("anthropic", "cryptography"):
+    if importlib.util.find_spec(_opcional) is not None:
+        opciones["packages"].append(_opcional)
+
 setup(
     name="PuertoBravo",
     version=VERSION,

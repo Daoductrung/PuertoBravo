@@ -1,0 +1,643 @@
+{
+ "info": {
+  "nombre": "Isla de los Vientos",
+  "autor": "Puerto Bravo",
+  "version": "1.0",
+  "descripcion": "Una isla nueva en el Mar de Poniente, a la que se llega navegando: tres misiones contra unos raqueros, un encargo honrado, una casa, unas salinas que dan dinero, pesca, búsqueda de tesoros, un fusil de pesca silencioso, un garfio, un catamarán, una moto de agua y un personaje marinero."
+ },
+ "lugares": [
+  {
+   "id": "mar_vientos",
+   "nombre": "Muelle de la Isla de los Vientos, desde el mar",
+   "tipo": "muelle",
+   "mapa": "mar",
+   "xy": [
+    2000,
+    700
+   ],
+   "desc": "El muelle de piedra de la Isla de los Vientos, mar adentro, al este.",
+   "a_mapa": "isla_vientos",
+   "a_lugar": "iv_muelle"
+  }
+ ],
+ "misiones": [
+  {
+   "id": "iv01",
+   "titulo": "La barca del martes",
+   "capitulo": 30,
+   "contacto": "Chelo",
+   "lugar": "iv_cantina",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En la Cantina del Salinero, Chelo dice que la barca de los víveres lleva dos semanas sin venir.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chelo",
+       "La barca del martes no viene desde hace dos martes. Y anoche vi un fuego en las dunas."
+      ],
+      [
+       "Chelo",
+       "Tú que tienes piernas, acércate a mirar. Yo de aquí no me muevo, que alguien tiene que guardar el ron."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Ve a las Dunas del Naufragio, al este de la isla.",
+     "lugar": "iv_dunas",
+     "radio": 14
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el bidón medio enterrado.",
+     "lugar": "iv_dunas",
+     "objeto": "un bidón con el nombre de la barca"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El bidón es de la barca de los víveres. Alguien la ha vaciado aquí, y no fueron las gaviotas."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 240
+   }
+  },
+  {
+   "id": "iv02",
+   "titulo": "Raqueros",
+   "capitulo": 30,
+   "contacto": "Chelo",
+   "lugar": "iv_cantina",
+   "requiere": [
+    "iv01"
+   ],
+   "resumen": "Unos raqueros asaltan las barcas pequeñas y esconden el botín en la isla.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chelo",
+       "Raqueros. Mi abuelo los colgaba del semáforo. Tú no hace falta que llegues a tanto."
+      ],
+      [
+       "Chelo",
+       "Duermen en las salinas. Toma el fusil de pesca de mi marido: no hace ruido."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "iv_fusil",
+     "balas": 10
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve a las Salinas de Poniente y acaba con los raqueros.",
+     "lugar": "iv_salinas",
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Raquero",
+       "arma": "iv_garfio",
+       "salud": 55
+      },
+      {
+       "n": 1,
+       "tipo": "Patrón raquero",
+       "arma": "pistola",
+       "salud": 85
+      }
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la llave que llevaba el patrón.",
+     "lugar": "iv_salinas",
+     "objeto": "la llave del pañol"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "La llave abre el pañol del semáforo. Dentro están los víveres de dos semanas y el barquero, atado y furioso."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 650,
+    "arma": "iv_fusil",
+    "balas": 8
+   }
+  },
+  {
+   "id": "iv03",
+   "titulo": "Campana de niebla",
+   "capitulo": 30,
+   "contacto": "Chelo",
+   "lugar": "iv_cantina",
+   "requiere": [
+    "iv02"
+   ],
+   "resumen": "Vuelven más raqueros, de noche y con niebla.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chelo",
+       "Vuelven los que faltaban, y con esta niebla no se ve ni el muelle. Sube al semáforo y toca la campana: los vecinos saben lo que significa."
+      ],
+      [
+       "Chelo",
+       "Después baja al muelle y recíbelos como se merecen."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Sube a la Torre del Semáforo y toca la campana. Tienes dos minutos.",
+     "lugar": "iv_semaforo",
+     "limite": 120
+    },
+    {
+     "tipo": "dar",
+     "balas": 10,
+     "balas_arma": "iv_fusil"
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Baja al Muelle de las Salinas y rechaza el desembarco.",
+     "lugar": "iv_muelle",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Raquero",
+       "arma": "iv_garfio",
+       "salud": 60
+      },
+      {
+       "n": 1,
+       "tipo": "El Sordo",
+       "arma": "escopeta",
+       "salud": 110
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Cuando levanta la niebla, la barca de los raqueros se aleja a la deriva, vacía."
+      ],
+      [
+       "Chelo",
+       "Ya puedes decir que eres de la isla. El catamarán del varadero es tuyo: lo dejó a deber uno que ya no va a volver."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "dinero": 300
+    }
+   ],
+   "recompensa": {
+    "dinero": 1400,
+    "barco": {
+     "modelo": "iv_catamaran",
+     "en": "iv_muelle"
+    }
+   }
+  },
+  {
+   "id": "iv04",
+   "titulo": "Sal para el fogón",
+   "capitulo": 31,
+   "contacto": "El cocinero",
+   "lugar": "iv_fogon",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Trabajo honrado: recados por la isla antes de que llegue la barca de los turistas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El cocinero",
+       "Me quedo sin sal en una isla de salinas, tiene gracia. Tráeme un saco de las salinas y agua del aljibe."
+      ]
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge un saco de sal en las Salinas de Poniente.",
+     "lugar": "iv_salinas",
+     "objeto": "un saco de sal gorda"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Pasa por El Aljibe a llenar la garrafa.",
+     "lugar": "iv_aljibe"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a El Fogón de Barlovento antes de que atraque la barca.",
+     "lugar": "iv_fogon",
+     "limite": 150
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El cocinero",
+       "Justo a tiempo. Siéntate, que hoy comes aquí y no pagas."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 230
+   }
+  }
+ ],
+ "armas": [
+  {
+   "id": "iv_fusil",
+   "nombre": "Fusil de pesca submarina",
+   "tipo": "fuego",
+   "dano": 70,
+   "alcance": 20,
+   "cadencia": 1.8,
+   "precision": 0.94,
+   "cargador": 1,
+   "sonido": "lanzar",
+   "ruido": 0,
+   "precio": 700,
+   "balas": 8,
+   "precio_balas": 45,
+   "desc": "Dispara varillas de acero. Silencioso y lento de recargar."
+  },
+  {
+   "id": "iv_garfio",
+   "nombre": "Garfio de estibador",
+   "tipo": "cuerpo",
+   "dano": 28,
+   "alcance": 2.2,
+   "cadencia": 0.55,
+   "precision": 0.95,
+   "sonido": "navaja",
+   "ruido": 0,
+   "precio": 35,
+   "desc": "Para mover fardos. Y para lo que haga falta."
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "iv_catamaran",
+   "nombre": "Catamarán Alisio",
+   "vel_max": 21,
+   "acel": 5.0,
+   "freno": 5,
+   "salud": 170,
+   "motor": "motor_lancha",
+   "tono": 0.6,
+   "valor": 0,
+   "precio": 19000,
+   "trabajo": "mensajeria",
+   "barco": true,
+   "desc": "Dos cascos, mucha vela y casi nada de ruido. Con la tecla J haces mensajería entre muelles."
+  },
+  {
+   "id": "iv_moto",
+   "nombre": "Moto de agua Levante",
+   "vel_max": 31,
+   "acel": 9.0,
+   "freno": 7,
+   "salud": 60,
+   "motor": "motor_lancha",
+   "tono": 1.3,
+   "valor": 0,
+   "precio": 6800,
+   "trabajo": "mensajeria",
+   "barco": true,
+   "desc": "Rápida, nerviosa y frágil."
+  }
+ ],
+ "mapas": [
+  {
+   "id": "isla_vientos",
+   "nombre": "Isla de los Vientos",
+   "tipo": "isla",
+   "avenidas": [
+    "Sendero de Barlovento",
+    "Sendero del Aljibe",
+    "Sendero de Sotavento"
+   ],
+   "calles": [
+    "Senda del Muelle",
+    "Senda de las Salinas",
+    "Senda del Semáforo"
+   ],
+   "barrios": [
+    {
+     "id": "iv_isla",
+     "nombre": "Isla de los Vientos",
+     "i": [
+      0,
+      1
+     ],
+     "j": [
+      0,
+      1
+     ],
+     "ambiente": "amb_playa",
+     "descripcion": "La Isla de los Vientos: salinas abandonadas, dunas, cuatro casas de pescadores y un viento que no para nunca. Sin coches y sin policía."
+    }
+   ],
+   "bloques": {
+    "0,0": "muelle",
+    "1,0": "arena",
+    "0,1": "hierba",
+    "1,1": "arena"
+   },
+   "trafico": 0,
+   "peatones": 2,
+   "policia": false,
+   "aparcados": false,
+   "nombre_objeto": "Concha nacarada",
+   "casetes": [
+    [
+     30,
+     140
+    ],
+    [
+     150,
+     40
+    ],
+    [
+     150,
+     150
+    ]
+   ],
+   "lugares": [
+    {
+     "id": "iv_muelle",
+     "nombre": "Muelle de las Salinas",
+     "tipo": "embarcadero",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Un muelle de piedra donde antes cargaban la sal.",
+     "a_mapa": "mar",
+     "a_lugar": "mar_vientos"
+    },
+    {
+     "id": "iv_cantina",
+     "nombre": "Cantina del Salinero",
+     "tipo": "taberna",
+     "bloque": [
+      1,
+      0
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Dados, ron de caña y los cuatro vecinos de la isla."
+    },
+    {
+     "id": "iv_fogon",
+     "nombre": "El Fogón de Barlovento",
+     "tipo": "comida",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Pescado a la sal, como se ha hecho siempre aquí."
+    },
+    {
+     "id": "iv_almacen",
+     "nombre": "Almacén de la Isla",
+     "tipo": "tienda",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Lo que trae la barca del martes, y poco más."
+    },
+    {
+     "id": "iv_efectos",
+     "nombre": "Efectos de pesca Sotavento",
+     "tipo": "armeria",
+     "bloque": [
+      1,
+      0
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Garfios, fusiles de pesca submarina y cuchillos de desescamar."
+    },
+    {
+     "id": "iv_casa",
+     "nombre": "Casa del salinero",
+     "tipo": "casa",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Una casa baja de piedra, encalada, con un aljibe y vistas a todo el mar.",
+     "precio": 9500,
+     "garaje": 0
+    },
+    {
+     "id": "iv_salinas",
+     "nombre": "Salinas de Poniente",
+     "tipo": "negocio",
+     "bloque": [
+      1,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Las salinas se pueden volver a poner en marcha. Dan dinero cada medianoche.",
+     "sonido": "gaviota",
+     "precio": 14000,
+     "ingresos": 340
+    },
+    {
+     "id": "iv_posada",
+     "nombre": "Posada del Semáforo",
+     "tipo": "hotel",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "El antiguo semáforo marítimo, convertido en posada de seis camas.",
+     "precio_noche": 40
+    },
+    {
+     "id": "iv_nautica",
+     "nombre": "Varadero de la Isla",
+     "tipo": "nautica",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Venden y reparan barcos. Los dejan amarrados en el muelle.",
+     "embarcadero": "iv_muelle"
+    },
+    {
+     "id": "iv_helipuerto",
+     "nombre": "Explanada del Semáforo",
+     "tipo": "helipuerto",
+     "bloque": [
+      0,
+      1
+     ],
+     "xy": [
+      20,
+      20
+     ],
+     "desc": "Una explanada de tierra batida por el viento.",
+     "precio": 220
+    },
+    {
+     "id": "iv_semaforo",
+     "nombre": "Torre del Semáforo",
+     "tipo": "monumento",
+     "bloque": [
+      0,
+      1
+     ],
+     "xy": [
+      50,
+      50
+     ],
+     "desc": "Desde aquí se avisaba a los barcos con banderas. La campana de niebla sigue sonando.",
+     "sonido": "lugar_iglesia"
+    },
+    {
+     "id": "iv_aljibe",
+     "nombre": "El Aljibe",
+     "tipo": "monumento",
+     "bloque": [
+      1,
+      1
+     ],
+     "xy": [
+      20,
+      50
+     ],
+     "desc": "La única agua dulce de la isla.",
+     "sonido": "lugar_fuente"
+    },
+    {
+     "id": "iv_rompiente",
+     "nombre": "Rompiente de Barlovento",
+     "tipo": "pesca",
+     "bloque": [
+      1,
+      0
+     ],
+     "xy": [
+      55,
+      15
+     ],
+     "desc": "Sargos, lubinas y, en noches de luna, alguna morena."
+    },
+    {
+     "id": "iv_dunas",
+     "nombre": "Dunas del Naufragio",
+     "tipo": "tesoro",
+     "bloque": [
+      1,
+      1
+     ],
+     "xy": [
+      50,
+      20
+     ],
+     "desc": "Aquí encalló un mercante hace cien años. La arena aún devuelve cosas."
+    }
+   ]
+  }
+ ],
+ "comidas": [
+  {
+   "nombre": "Lubina a la sal",
+   "precio": 15,
+   "salud": 48
+  },
+  {
+   "nombre": "Ron de caña con limón",
+   "precio": 4,
+   "salud": 8
+  }
+ ],
+ "objetos": [
+  {
+   "id": "iv_sal",
+   "nombre": "Saquito de flor de sal",
+   "precio": 12,
+   "desc": "Sal de la isla. De regalo queda muy bien."
+  }
+ ],
+ "peces": [
+  {
+   "nombre": "una lubina de rompiente",
+   "valor": 44,
+   "peso": 10
+  },
+  {
+   "nombre": "una morena",
+   "valor": 62,
+   "peso": 4
+  },
+  {
+   "nombre": "un sargo",
+   "valor": 20,
+   "peso": 18
+  }
+ ],
+ "capitulos": {
+  "30": "Isla de los Vientos",
+  "31": "Isla de los Vientos: vida honrada"
+ },
+ "personajes": [
+  {
+   "id": "iv_telmo",
+   "nombre": "Telmo",
+   "apellido": "Barlovento",
+   "desc": "Nacido en la isla y criado en una barca. Empieza con la pesca al nivel cuatro, resistencia al tres, un garfio y dos botiquines.",
+   "dinero": 180,
+   "resistencia": 3,
+   "pesca": 4,
+   "arma": "iv_garfio",
+   "botiquines": 2
+  }
+ ]
+}

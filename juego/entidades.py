@@ -31,6 +31,12 @@ class Jugador:
         self.voluntario_dia = 0
         self.reputacion = 0.0
         self.relaciones = {}
+        self.conocidos = []          # gente de la calle que te ha dado su número
+        self.intimos = {}            # artículos íntimos (contenido para adultos): preservativos, velas...
+        self.its = 0                 # día en que te contagiaste, o 0
+        self.semilla = 0             # la suerte propia de esta partida: precios y cómo viene cada día
+        self.hambre = 0.0            # vida realista: de 0 a 100
+        self.sueno = 0.0
         self.pareja = ""
         self.sustancias = {}
         self.efectos = []

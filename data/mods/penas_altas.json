@@ -1,0 +1,1050 @@
+{
+ "info": {
+  "nombre": "Peñas Altas",
+  "autor": "Puerto Bravo",
+  "version": "1.0",
+  "descripcion": "Un pueblo minero en lo alto de la sierra: cuatro misiones sobre una mina que alguien explota a escondidas, un encargo honrado, una historia para adultos, carabina, pico y dinamita, un quad, una moto de trial y un volquete con el que hacer portes, una subida de montaña, pesca en el lago, búsqueda de tesoros y dos personajes."
+ },
+ "lugares": [
+  {
+   "id": "pb_salida_penas",
+   "nombre": "Salida norte, carretera de Peñas Altas",
+   "tipo": "salida",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    7,
+    7
+   ],
+   "lado": "N",
+   "pos": 36,
+   "desc": "La carretera de curvas que sube a la sierra, hasta Peñas Altas.",
+   "a_mapa": "penas_altas",
+   "a_lugar": "pa_salida",
+   "km": 44,
+   "horas": 1.1
+  }
+ ],
+ "misiones": [
+  {
+   "id": "pa01",
+   "titulo": "Aire de sierra",
+   "capitulo": 27,
+   "contacto": "Fermín",
+   "lugar": "pa_cantina",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En la Cantina del Barrenero, un minero jubilado dice que por la noche hay luces en la mina cerrada.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Fermín",
+       "Cuarenta años bajé a La Encantada, y te digo que esa mina está cerrada. Pues anoche había luces en la bocamina."
+      ],
+      [
+       "Fermín",
+       "A mí ya no me dan las piernas. Sube tú, mira y vuelve. Pago el vino."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Sube a la Bocamina de La Encantada, al noreste, junto al lago.",
+     "lugar": "pa_bocamina",
+     "radio": 14
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la lámpara que hay en la entrada.",
+     "lugar": "pa_bocamina",
+     "objeto": "una lámpara de carburo todavía caliente"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "La lámpara está tibia y los raíles brillan: por aquí han pasado vagonetas esta misma noche."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 220
+   }
+  },
+  {
+   "id": "pa02",
+   "titulo": "El volquete de noche",
+   "capitulo": 27,
+   "contacto": "Fermín",
+   "lugar": "pa_cantina",
+   "requiere": [
+    "pa01"
+   ],
+   "resumen": "Un volquete baja cargado de la mina cuando el pueblo duerme.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Fermín",
+       "Sacan mineral a escondidas y lo bajan en un volquete de la cantera. Está aparcado en el Taller, cargado hasta arriba."
+      ],
+      [
+       "Fermín",
+       "Llévatelo a la puerta de la Hermandad Minera, que allí lo verá todo el pueblo por la mañana. Despacio, que pesa."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Hazte con el volquete cargado junto al Taller del Castillete.",
+     "lugar": "pa_taller",
+     "modelo": "pa_volquete",
+     "nombre": "el volquete cargado",
+     "busqueda": 1
+    },
+    {
+     "tipo": "policia",
+     "texto": "Alguien ha dado el aviso. Despista a la patrulla.",
+     "nivel": 1
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Lleva el volquete a la Hermandad Minera sin destrozarlo.",
+     "lugar": "pa_empleo",
+     "salud_min": 50
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Dejas el volquete atravesado delante de la puerta. Bajo la lona hay mineral, sí, y unas cajas con el sello de una naviera de Puerto Bravo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 550
+   }
+  },
+  {
+   "id": "pa03",
+   "titulo": "Los de la galería tres",
+   "capitulo": 27,
+   "contacto": "Fermín",
+   "lugar": "pa_cantina",
+   "requiere": [
+    "pa02"
+   ],
+   "resumen": "Los que explotan la mina a escondidas han bajado al pueblo a buscar al que les robó el volquete.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Fermín",
+       "Han venido preguntando por ti. Están en la escombrera, esperando a que oscurezca."
+      ],
+      [
+       "Fermín",
+       "Toma mi carabina y dos cartuchos de los de antes. Con mecha corta, así que no te duermas."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "pa_carabina",
+     "balas": 12
+    },
+    {
+     "tipo": "dar",
+     "arma": "pa_dinamita",
+     "balas": 2
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve a la escombrera vieja y acaba con los de la galería tres.",
+     "lugar": "pa_escombrera",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Barrenero furtivo",
+       "arma": "pa_pico",
+       "salud": 60
+      },
+      {
+       "n": 1,
+       "tipo": "Encargado",
+       "arma": "revolver",
+       "salud": 90
+      }
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el plano de las galerías.",
+     "lugar": "pa_escombrera",
+     "objeto": "el plano de las galerías"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El plano marca una galería nueva que pasa justo por debajo del lago. Si la abren, se inunda media mina y medio pueblo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 800,
+    "arma": "pa_carabina",
+    "balas": 10
+   }
+  },
+  {
+   "id": "pa04",
+   "titulo": "Antes de que revienten el lago",
+   "capitulo": 27,
+   "contacto": "Fermín",
+   "lugar": "pa_cantina",
+   "requiere": [
+    "pa03"
+   ],
+   "resumen": "El ingeniero que dirige las voladuras huye sierra abajo con los detonadores.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Fermín",
+       "El ingeniero se ha asustado y se va con los detonadores en su todoterreno. Si llega abajo, vuelve con otra cuadrilla."
+      ],
+      [
+       "Fermín",
+       "Párale en la carretera. Después tira lo que lleve al lago."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "balas": 10,
+     "balas_arma": "pa_carabina"
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y destroza el todoterreno del ingeniero antes de cinco minutos.",
+     "lugar": "pa_salida",
+     "limite": 300,
+     "modelo": "todoterreno",
+     "nombre": "el todoterreno del ingeniero",
+     "salud": 230
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la caja de detonadores.",
+     "objeto": "la caja de detonadores",
+     "aqui": true
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva los detonadores a la orilla del Lago Negro y tíralos al agua.",
+     "lugar": "pa_lago_pesca"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "La caja se hunde despacio. Arriba, en la bocamina, ya no hay luces."
+      ],
+      [
+       "Fermín",
+       "La Encantada vuelve a dormir. El quad de mi nieto es tuyo: está en el concesionario, pregunta por él."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "dinero": 400
+    }
+   ],
+   "recompensa": {
+    "dinero": 1800,
+    "chaleco": true
+   }
+  },
+  {
+   "id": "pa05",
+   "titulo": "Losa para el tejado",
+   "capitulo": 28,
+   "contacto": "La hermana mayor",
+   "lugar": "pa_cocina",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Trabajo honrado: la Cocina de la Hermandad tiene goteras y la cantera regala la pizarra.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La hermana mayor",
+       "Llueve dentro del comedor. La cantera nos da la losa, pero hay que ir a por ella."
+      ],
+      [
+       "La hermana mayor",
+       "Pasa por la cantera, luego por la ferretería a por clavos y vuelve antes de que empiece a nevar."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Ve a la Cantera de pizarra.",
+     "lugar": "pa_cantera"
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge los clavos en la Ferretería El Polvorín.",
+     "lugar": "pa_polvorin",
+     "objeto": "una caja de clavos de pizarrero"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a la Cocina de la Hermandad antes de que nieve. Tienes casi tres minutos.",
+     "lugar": "pa_cocina",
+     "limite": 170
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Entre cuatro subís al tejado. A media tarde ya no gotea, y huele a potaje."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 260
+   }
+  },
+  {
+   "id": "paa1",
+   "titulo": "Endrinas para la ciudad",
+   "capitulo": 29,
+   "contacto": "Olalla",
+   "lugar": "pa_lumbre",
+   "requiere": [
+    "pa01"
+   ],
+   "resumen": "En La Lumbre, Olalla quiere que alguien de fuera pruebe su licor.",
+   "adultos": true,
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Olalla",
+       "Lo destilo yo. Si gusta abajo, dejo de servir copas a cuatro mineros. Llévale estas botellas al del Refugio y quédate dos."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "sustancia": "pa_endrinas",
+     "cantidad": 2
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva las botellas al Refugio del Collado.",
+     "lugar": "pa_refugio"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El guarda prueba un trago, tose y pide otra caja."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 280,
+    "afinidad": {
+     "pa_olalla": 15
+    }
+   }
+  }
+ ],
+ "armas": [
+  {
+   "id": "pa_carabina",
+   "nombre": "Carabina de monte",
+   "tipo": "fuego",
+   "dano": 58,
+   "alcance": 34,
+   "cadencia": 0.5,
+   "precision": 0.88,
+   "cargador": 15,
+   "sonido": "disparo_rifle",
+   "ruido": 3,
+   "precio": 1100,
+   "balas": 30,
+   "precio_balas": 100,
+   "desc": "Ligera y precisa a mucha distancia. La de los guardas de la sierra."
+  },
+  {
+   "id": "pa_pico",
+   "nombre": "Pico de minero",
+   "tipo": "cuerpo",
+   "dano": 34,
+   "alcance": 2.6,
+   "cadencia": 0.9,
+   "precision": 0.95,
+   "sonido": "navaja",
+   "ruido": 0,
+   "precio": 45,
+   "desc": "Pesa lo suyo y tarda en volver, pero donde cae, cae."
+  },
+  {
+   "id": "pa_dinamita",
+   "nombre": "Cartucho de dinamita",
+   "tipo": "explosivo",
+   "dano": 130,
+   "alcance": 30,
+   "cadencia": 1.3,
+   "precision": 1,
+   "cargador": 1,
+   "radio": 8,
+   "sonido": "lanzar",
+   "ruido": 3,
+   "precio": 320,
+   "balas": 2,
+   "precio_balas": 500,
+   "desc": "De los que sobraron en el polvorín. Más potente que una granada: aléjate después de lanzarlo."
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "pa_quad",
+   "nombre": "Quad de montaña",
+   "vel_max": 27,
+   "acel": 8.0,
+   "freno": 13,
+   "salud": 120,
+   "motor": "motor_moto",
+   "tono": 0.8,
+   "valor": 900,
+   "precio": 5600,
+   "desc": "Sube por donde no sube nada más."
+  },
+  {
+   "id": "pa_trial",
+   "nombre": "Moto de trial",
+   "vel_max": 29,
+   "acel": 9.5,
+   "freno": 16,
+   "salud": 70,
+   "motor": "motor_moto",
+   "tono": 1.2,
+   "valor": 800,
+   "precio": 4300,
+   "trabajo": "paqueteria",
+   "desc": "Ligera como una bicicleta y con un motor que no se cala nunca."
+  },
+  {
+   "id": "pa_volquete",
+   "nombre": "Volquete de la cantera",
+   "vel_max": 17,
+   "acel": 3.5,
+   "freno": 9,
+   "salud": 320,
+   "motor": "motor_camion",
+   "tono": 1.0,
+   "valor": 1500,
+   "precio": 11000,
+   "claxon": "claxon_camion",
+   "trabajo": "camion",
+   "desc": "Un camión volquete lento y durísimo. Con la tecla J haces portes entre localidades."
+  }
+ ],
+ "carreras": [
+  {
+   "id": "pa_c1",
+   "nombre": "Subida al Collado",
+   "mapa": "penas_altas",
+   "premio": 380,
+   "tiempo": 90,
+   "puntos": [
+    [
+     3,
+     1
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     3,
+     1
+    ]
+   ]
+  }
+ ],
+ "mapas": [
+  {
+   "id": "penas_altas",
+   "nombre": "Peñas Altas",
+   "tipo": "pueblo",
+   "avenidas": [
+    "Cuesta de la Mina",
+    "Calle de los Barreneros",
+    "Calle del Castillete",
+    "Camino del Collado"
+   ],
+   "calles": [
+    "Carretera de Puerto Bravo",
+    "Calle de la Fragua",
+    "Calle del Lavadero",
+    "Senda del Lago"
+   ],
+   "barrios": [
+    {
+     "id": "pa_pueblo",
+     "nombre": "Peñas Altas",
+     "i": [
+      0,
+      2
+     ],
+     "j": [
+      0,
+      1
+     ],
+     "ambiente": "amb_montana",
+     "vehiculos": [
+      "todoterreno",
+      "pa_quad",
+      "pa_volquete",
+      "utilitario"
+     ],
+     "descripcion": "Peñas Altas, un pueblo minero colgado de la sierra. Casas de pizarra, humo de chimenea y un castillete de hierro que se ve desde todo el valle."
+    },
+    {
+     "id": "pa_lago",
+     "nombre": "El Lago Negro",
+     "i": [
+      0,
+      2
+     ],
+     "j": [
+      2,
+      2
+     ],
+     "ambiente": "amb_montana",
+     "vehiculos": [
+      "todoterreno",
+      "pa_trial"
+     ],
+     "descripcion": "El Lago Negro: agua quieta y fría entre pinos, con la bocamina vieja en la ladera de enfrente."
+    }
+   ],
+   "bloques": {
+    "1,0": "plaza",
+    "0,2": "hierba",
+    "1,2": "hierba",
+    "2,2": "hierba"
+   },
+   "trafico": 1,
+   "peatones": 3,
+   "nombre_objeto": "Pepita de pirita",
+   "casetes": [
+    [
+     60,
+     60
+    ],
+    [
+     210,
+     130
+    ],
+    [
+     130,
+     230
+    ]
+   ],
+   "lugares": [
+    {
+     "id": "pa_salida",
+     "nombre": "Salida sur, carretera de Puerto Bravo",
+     "tipo": "salida",
+     "bloque": [
+      1,
+      0
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "La carretera de curvas que baja de la sierra hasta Puerto Bravo.",
+     "a_mapa": "puerto_bravo",
+     "a_lugar": "pb_salida_penas",
+     "km": 44,
+     "horas": 1.1
+    },
+    {
+     "id": "pa_estacion",
+     "nombre": "Parada del autobús de Peñas Altas",
+     "tipo": "estacion",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "N",
+     "pos": 20,
+     "desc": "Una marquesina de pizarra frente a la fragua.",
+     "precio": 28
+    },
+    {
+     "id": "pa_cantina",
+     "nombre": "Cantina del Barrenero",
+     "tipo": "taberna",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Vino caliente, dados y mineros jubilados que lo saben todo."
+    },
+    {
+     "id": "pa_fonda",
+     "nombre": "Fonda La Pizarra",
+     "tipo": "comida",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Potaje de la sierra y pan de horno de leña."
+    },
+    {
+     "id": "pa_economato",
+     "nombre": "Economato Minero",
+     "tipo": "tienda",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "El economato de la antigua compañía. Sigue vendiendo de todo."
+    },
+    {
+     "id": "pa_polvorin",
+     "nombre": "Ferretería El Polvorín",
+     "tipo": "armeria",
+     "bloque": [
+      1,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Picos, carabinas de monte y, bajo el mostrador, lo que sobró de la mina."
+    },
+    {
+     "id": "pa_botica",
+     "nombre": "Botica de la Sierra",
+     "tipo": "farmacia",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Una botica pequeña con olor a eucalipto."
+    },
+    {
+     "id": "pa_taller",
+     "nombre": "Taller del Castillete",
+     "tipo": "taller",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Arreglan volquetes, quads y lo que suba hasta aquí."
+    },
+    {
+     "id": "pa_banco",
+     "nombre": "Caja de la Sierra",
+     "tipo": "banco",
+     "bloque": [
+      1,
+      1
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Una ventanilla y un cajero que tarda en despertar."
+    },
+    {
+     "id": "pa_casa",
+     "nombre": "Casa del capataz",
+     "tipo": "casa",
+     "bloque": [
+      1,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Una casa de pizarra con estufa de leña y cochera para dos vehículos.",
+     "precio": 4400,
+     "garaje": 2
+    },
+    {
+     "id": "pa_cantera",
+     "nombre": "Cantera de pizarra",
+     "tipo": "negocio",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "La cantera sigue dando losa. Está en venta, con su volquete en la puerta: súbete y pulsa J para hacer portes.",
+     "sonido": "lugar_mina",
+     "vehiculo": "pa_volquete",
+     "precio": 26000,
+     "ingresos": 610
+    },
+    {
+     "id": "pa_empleo",
+     "nombre": "Hermandad Minera, bolsa de trabajo",
+     "tipo": "empleo",
+     "bloque": [
+      1,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Jornadas en la cantera y oficios de la sierra."
+    },
+    {
+     "id": "pa_escuela",
+     "nombre": "Escuela de Montaña",
+     "tipo": "academia",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Cursos de resistencia y de tiro de montaña.",
+     "cursos": [
+      "resistencia",
+      "punteria"
+     ]
+    },
+    {
+     "id": "pa_gimnasio",
+     "nombre": "Frontón Cubierto",
+     "tipo": "gimnasio",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Pelota, pesas de hierro fundido y combates en fiestas."
+    },
+    {
+     "id": "pa_cocina",
+     "nombre": "Cocina de la Hermandad",
+     "tipo": "ong",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Dan de comer a los viejos mineros. Siempre faltan manos."
+    },
+    {
+     "id": "pa_refugio",
+     "nombre": "Refugio del Collado",
+     "tipo": "hotel",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Literas, mantas gordas y una chimenea que no se apaga.",
+     "precio_noche": 28
+    },
+    {
+     "id": "pa_motos",
+     "nombre": "Motos y Quads Sierra Alta",
+     "tipo": "concesionario",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Todo lo que sube por un pedregal.",
+     "modelos": [
+      "pa_quad",
+      "pa_trial",
+      "pa_volquete"
+     ]
+    },
+    {
+     "id": "pa_circuito",
+     "nombre": "Salida de la subida al Collado",
+     "tipo": "carrera",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Una carrera de montaña entre pinos."
+    },
+    {
+     "id": "pa_helipuerto",
+     "nombre": "Helipuerto de rescate",
+     "tipo": "helipuerto",
+     "bloque": [
+      2,
+      2
+     ],
+     "xy": [
+      20,
+      20
+     ],
+     "desc": "Una losa de hormigón con una H pintada.",
+     "precio": 150
+    },
+    {
+     "id": "pa_plaza",
+     "nombre": "Plaza del Castillete",
+     "tipo": "monumento",
+     "bloque": [
+      1,
+      0
+     ],
+     "xy": [
+      36,
+      40
+     ],
+     "desc": "El castillete de la mina, oxidado, y una fuente de agua de deshielo.",
+     "sonido": "lugar_fuente"
+    },
+    {
+     "id": "pa_bocamina",
+     "nombre": "Bocamina de La Encantada",
+     "tipo": "monumento",
+     "bloque": [
+      2,
+      2
+     ],
+     "xy": [
+      50,
+      50
+     ],
+     "desc": "La entrada de la mina vieja. Sale un aire frío que huele a hierro.",
+     "sonido": "lugar_mina"
+    },
+    {
+     "id": "pa_lago_pesca",
+     "nombre": "Orilla del Lago Negro",
+     "tipo": "pesca",
+     "bloque": [
+      0,
+      2
+     ],
+     "xy": [
+      40,
+      40
+     ],
+     "desc": "Truchas de lago y, con suerte, un lucio.",
+     "sonido": "lugar_rio"
+    },
+    {
+     "id": "pa_escombrera",
+     "nombre": "Escombrera vieja",
+     "tipo": "tesoro",
+     "bloque": [
+      1,
+      2
+     ],
+     "xy": [
+      36,
+      36
+     ],
+     "desc": "Entre la escoria aún aparecen herramientas, monedas y alguna pepita."
+    },
+    {
+     "id": "pa_lumbre",
+     "nombre": "Bar de copas La Lumbre",
+     "tipo": "club",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "El único sitio abierto de noche en toda la sierra.",
+     "adultos": true
+    },
+    {
+     "id": "pa_alambique",
+     "nombre": "El Alambique",
+     "tipo": "proveedor",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Licor de endrinas casero y lo poco que sube de la ciudad.",
+     "adultos": true,
+     "factor": {
+      "hierba": 0.9,
+      "polvo": 1.5,
+      "pastillas": 1.2,
+      "cristal": 1.5,
+      "pa_endrinas": 0.7
+     }
+    }
+   ]
+  }
+ ],
+ "comidas": [
+  {
+   "nombre": "Potaje de la sierra",
+   "precio": 11,
+   "salud": 42
+  },
+  {
+   "nombre": "Vino caliente con miel",
+   "precio": 4,
+   "salud": 9
+  }
+ ],
+ "objetos": [
+  {
+   "id": "pa_lampara",
+   "nombre": "Lámpara de minero",
+   "precio": 35,
+   "desc": "Una lámpara de carburo restaurada. De recuerdo."
+  }
+ ],
+ "peces": [
+  {
+   "nombre": "una trucha del Lago Negro",
+   "valor": 34,
+   "peso": 14
+  },
+  {
+   "nombre": "un lucio",
+   "valor": 70,
+   "peso": 4
+  }
+ ],
+ "capitulos": {
+  "27": "Peñas Altas",
+  "28": "Peñas Altas: vida honrada",
+  "29": "Peñas Altas: historias para adultos"
+ },
+ "personajes": [
+  {
+   "id": "pa_berta",
+   "nombre": "Berta",
+   "apellido": "Lombao",
+   "desc": "Barrenera, como su madre. Empieza con resistencia al nivel cinco, más salud de lo normal, un pico de minero y poco dinero.",
+   "dinero": 120,
+   "salud_max": 115,
+   "ciudadania": 25,
+   "resistencia": 5,
+   "arma": "pa_pico",
+   "botiquines": 1
+  },
+  {
+   "id": "pa_goyo",
+   "nombre": "Goyo",
+   "apellido": "Peñalba",
+   "desc": "Guarda de la sierra hasta que cerraron el coto. Empieza con puntería al nivel cuatro, una carabina de monte con doce balas y doscientos euros.",
+   "dinero": 200,
+   "conduccion": 2,
+   "punteria": 4,
+   "arma": "pa_carabina",
+   "balas": 12
+  }
+ ],
+ "personas": [
+  {
+   "id": "pa_olalla",
+   "nombre": "Olalla",
+   "edad": 37,
+   "lugar": "pa_lumbre",
+   "gustos": [
+    "pa_lago_noche",
+    "copas"
+   ],
+   "regalo": "pa_manta",
+   "desc": "Volvió de la ciudad para llevar el bar de su padre. Destila su propio licor, lee en la barra cuando no hay nadie y dice las cosas una sola vez."
+  }
+ ],
+ "sustancias": [
+  {
+   "id": "pa_endrinas",
+   "nombre": "Licor de endrinas",
+   "unidad": "botella",
+   "legal": true,
+   "precio": 16,
+   "duracion": 110,
+   "animo": 8,
+   "punteria": -0.05,
+   "deriva": 0.22,
+   "tono": 0.012,
+   "adiccion": 1.8,
+   "sobredosis": 4,
+   "bajon": {
+    "animo": -4,
+    "duracion": 60
+   },
+   "desc": "Licor casero de endrinas de la sierra. Dulce, engañoso y más fuerte de lo que parece."
+  }
+ ],
+ "actividades": [
+  {
+   "id": "pa_lago_noche",
+   "nombre": "Ver las estrellas desde el Lago Negro",
+   "precio": 10,
+   "horas": 3
+  }
+ ],
+ "regalos": [
+  {
+   "id": "pa_manta",
+   "nombre": "Una manta de lana de la sierra",
+   "precio": 90,
+   "afinidad": 11
+  }
+ ]
+}

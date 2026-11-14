@@ -1,6 +1,6 @@
 """Protege (o vuelve a dejar legibles) los archivos JSON de una carpeta data.
 
-    .venv\\Scripts\\python.exe herramientas\\cifrar_datos.py dist\\PuertoBravo\\data          protege datos y mods
+    .venv\\Scripts\\python.exe herramientas\\cifrar_datos.py dist\\PuertoBravo\\data          protege datos, mods y los JSON de los packs
     .venv\\Scripts\\python.exe herramientas\\cifrar_datos.py dist\\PuertoBravo\\data abrir    los deja otra vez legibles
 
 Lo usa compilar.bat sobre la carpeta compilada. Nunca se ejecuta sobre la carpeta data del proyecto:
@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from juego import cifrado, rutas          # noqa: E402
 
-CARPETAS = ("datos", "mods")
+CARPETAS = ("datos", "mods", "sonidos")      # en sonidos solo hay JSON de apoyo: pack.json y _niveles.json
 
 
 def _cambiar(f, de, a):

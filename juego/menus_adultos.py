@@ -155,16 +155,20 @@ def vida_social(p):
             if p._hecho_hoy(r, "noche"):
                 app.decir("Hoy ya habéis estado juntos.", True)
                 return
-            p.sumar_afinidad(pid, 6)
-            p.pasar_horas(8)
-            j.salud = j.salud_max
-            p.cambiar_animo(22)
-            j.stats["noches"] = j.stats.get("noches", 0) + 1
-            p.son("noche_juntos", cat="interfaz")
-            _volver_al_juego(p)
-            app.abrir(Dialogo(app, [("Narrador", f"Vais a {donde}. La puerta se cierra y lo que pasa esa noche es cosa vuestra. "
-                                                 f"Por la mañana desayunáis sin prisa. Son las {p.hora_txt()} y te sientes como nunca.")]))
-            p.celos(pid)
+            from .intimidad import ENCUENTROS
+
+            def elegir(tipo):
+                def f():
+                    gusta = tipo == pers.get("noche", "romantico")
+                    p.sumar_afinidad(pid, 9 if gusta else 5)
+                    p.encuentro(pers["nombre"], tipo, donde, pid=pid)
+                    if gusta:
+                        p.decir(f"Era justo lo que le apetecía a {pers['nombre']}.")
+                    p.celos(pid)
+                return f
+            mm = Menu(app, f"La noche con {pers['nombre']}", [Opcion(ENCUENTROS[t][0], elegir(t)) for t in ENCUENTROS] + [Opcion("Mejor otro día", lambda: (r["hoy"].pop("noche", None), app.cerrar(mm)))],
+                      intro="Cada persona tiene su manera preferida. Lo que hayas comprado para la ocasión se nota")
+            app.abrir(mm)
 
         def romper():
             r = p.relacion(pid)
@@ -185,7 +189,10 @@ def vida_social(p):
                 return lista + [Opcion("Aún no os conocéis. Ve a ese lugar y preséntate desde este mismo menú"), Opcion("Volver", lambda: app.cerrar())]
             estado = {"pareja": "Sois pareja", "ex": "Lo dejasteis"}.get(r["estado"], "Os estáis conociendo")
             lista.append(Opcion(lambda: f"{estado}. {p.afinidad_txt(p.relacion(pid)).capitalize()}. Habéis tenido {p.relacion(pid).get('citas', 0)} citas"))
-            lista += [Opcion("Charlar un rato", charlar), Opcion("Proponer una cita", menu_cita), Opcion("Hacerle un regalo", menu_regalo),
+            from .intimidad import GESTOS
+            lista += [Opcion("Charlar un rato", charlar), Opcion("Proponer una cita", menu_cita), Opcion("Hacerle un regalo", menu_regalo)]
+            lista += [Opcion(GESTOS[g][0], (lambda g=g: p.gesto(pid, pers, g)) if True else None, ayuda="Un gesto de cariño. Hace falta cierta confianza, y cada uno se puede repetir una vez al día.") for g in GESTOS]
+            lista += [
                       Opcion("Pasar la noche juntos", noche, ayuda="Necesitáis mucha confianza. Vais a una de tus casas en esta localidad o, si no tienes, a un hotel por 70 euros.")]
             if j.pareja == pid:
                 lista.append(Opcion("Romper la relación", romper))
@@ -282,6 +289,10 @@ def club(p, l):
         _volver_al_juego(p)
         app.abrir(Dialogo(app, [("Narrador", f"Pagas, subís a una habitación y la puerta se cierra. Una hora después estás otra vez en la calle. Son las {p.hora_txt()}.")]))
         p.cambiar_animo(14)
+        if j.intimos.get("preservativos", 0) > 0:
+            j.intimos["preservativos"] -= 1
+        elif not j.its and random.random() < 0.15:
+            j.its = p.dia
         azar = random.random()
         if azar < 0.08 and p.mundo.policia:
             multa = min(j.dinero, 300)
@@ -293,10 +304,46 @@ def club(p, l):
             j.dinero -= robo
             p.decir(f"Al salir notas la cartera más ligera: te faltan {robo} euros.")
         p.celos()
+    def bailar():
+        if not p.pagar(5):
+            return
+        p.pasar_horas(1)
+        p.cambiar_animo(6)
+        p.son("cita", cat="interfaz")
+        if random.random() < 0.45:
+            from .charla import ficha
+            from .entidades import Persona
+            x, y = p.mundo.punto_libre(j.x + random.uniform(-3, 3), j.y + random.uniform(-3, 3))
+            q = Persona("civil", x, y)
+            q.estado = "quieto"
+            f = ficha(q)
+            f["confianza"], f["disponible"] = 25, True
+            if p.cfg["mi_genero"] != "x" and p.cfg["mi_genero"] not in f["le_atraen"]:
+                f["le_atraen"] += p.cfg["mi_genero"]
+            p.personas.append(q)
+            app.decir(f"Bailas una hora en la pista. Alguien no deja de mirarte: al salir está a tu lado. Háblale con la tecla J. Son las {p.hora_txt()}.", True)
+        else:
+            app.decir(f"Bailas una hora en la pista y sales con otra cara. Son las {p.hora_txt()}.", True)
+
+    def privado():
+        if p.pagar(60):
+            p.pasar_horas(0.5)
+            p.cambiar_animo(9)
+            p.son("cita", cat="interfaz")
+            app.decir("Pase privado. Luces bajas, música lenta y un baile solo para ti, a un palmo y sin tocar. Sales con el pulso acelerado.", True)
+
+    def tienda():
+        mt = Menu(app, lambda: f"Tienda discreta del club. Tienes {j.dinero} euros",
+                  [Opcion((lambda a=a: f"{a['nombre']}: {a['precio']} euros. Tienes {j.intimos.get(a['id'], 0)}"), (lambda a=a: p.comprar_articulo(a)), ayuda=a["desc"]) for a in p.articulos_intimos()]
+                  + [Opcion("Volver", lambda: app.cerrar(mt))])
+        app.abrir(mt)
     m = Menu(app, lambda: f"{l.nombre}. Tienes {j.dinero} euros", [
         Opcion("Tomar una copa: 15 euros", copa, ayuda="Es alcohol: sube el ánimo, pero cada copa te hace caminar más torcido y apuntar peor."),
+        Opcion("Bailar en la pista: 5 euros", bailar, ayuda="Sube el ánimo, y es buen sitio para conocer a alguien."),
         Opcion("Ver el espectáculo: 20 euros", espectaculo),
-        Opcion("Pagar por compañía: 150 euros", compania, ayuda="Sube el ánimo. Puede haber redada, pueden robarte y, si tienes pareja, puede enterarse."),
+        Opcion("Pase privado: 60 euros", privado, ayuda="Un baile sensual solo para ti. Sube el ánimo."),
+        Opcion("Tienda discreta: preservativos, lencería y más", tienda, ayuda="Lo que compres aquí mejora tus noches y sirve de regalo."),
+        Opcion("Pagar por compañía: 150 euros", compania, ayuda="Sube el ánimo. Puede haber redada, pueden robarte y, si tienes pareja, puede enterarse. Sin preservativos hay riesgo para tu salud."),
         Opcion("Volver", lambda: app.cerrar())])
     app.abrir(m)
 

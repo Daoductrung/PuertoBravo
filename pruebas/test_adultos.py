@@ -52,7 +52,7 @@ def test_opciones_por_secciones_con_volver(robot):
     menus_juego.opciones(app)
     raiz = app.pila[-1]
     textos = [o.texto for o in raiz.opciones]
-    assert textos[-1] == "Volver" and len(textos) == 8
+    assert textos[-1] == "Volver" and len(textos) == 10 and "Personas e inteligencia artificial" in textos and "Actualizaciones" in textos
     for k in range(len(textos) - 1):
         raiz.i = k
         robot.tecla(pygame.K_RETURN)
@@ -160,7 +160,9 @@ def test_relaciones(robot):
     j.animo = animo = 50.0
     robot.app.pila[-1].refrescar(False)
     _elegir(robot, "Pasar la noche juntos")
-    assert isinstance(robot.app.pila[-1], Dialogo) and "puerta se cierra" in robot.dicho()
+    assert "La noche con Lucía" in robot.app.pila[-1].titulo            # se elige cómo
+    _elegir(robot, "noche romántica")
+    assert isinstance(robot.app.pila[-1], Dialogo) and "noche romántica con Lucía" in robot.dicho()
     robot.saltar_dialogos()
     assert j.animo > animo and j.salud == j.salud_max and j.stats["noches"] == 1
     # descuidar la relación la rompe

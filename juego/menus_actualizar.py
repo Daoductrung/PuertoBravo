@@ -1,0 +1,232 @@
+"""Menú de actualizaciones y aviso al arrancar."""
+import os
+import sys
+import threading
+
+import pygame
+
+from . import VERSION, actualizador as A
+from .menus import EntradaTexto, Menu, Opcion
+
+TEXTO_FUENTE = {"servidor": "el servidor del juego", "github": "GitHub", "ambas": "las dos, el servidor del juego y GitHub", "personalizada": "una dirección personalizada"}
+
+
+class Tarea:
+    """Pantalla de espera: hace un trabajo largo sin congelar el juego. Escape lo cancela."""
+    pausa_mundo = True
+
+    def __init__(self, app, titulo, trabajo, al_terminar):
+        self.app = app
+        self.titulo = titulo
+        self.trabajo = trabajo                # función(tarea) -> resultado
+        self.al_terminar = al_terminar        # función(resultado, error)
+        self.cancelada = False
+        self.avisos = []                      # textos que el trabajo quiere que se digan
+        self.resultado = None
+        self.error = None
+        self.hecho = False
+        self.hilo = None
+        self.t_eco = 0.0
+
+    def al_entrar(self):
+        self.app.decir(self.titulo + ". Espera. Escape cancela.", True)
+
+    def decir(self, texto):
+        self.avisos.append(texto)
+
+    def _correr(self):
+        try:
+            self.resultado = self.trabajo(self)
+        except Exception as e:               # el error se cuenta al jugador en el hilo principal
+            self.error = e
+        self.hecho = True
+
+    def tecla(self, ev):
+        if ev.key == pygame.K_ESCAPE:
+            self.cancelada = True
+            self.app.decir("Cancelando.", True)
+        else:
+            self.app.decir(self.titulo + ". Espera.", True)
+
+    def actualizar(self, dt):
+        if self.hilo is None:
+            if self.app.pruebas:
+                self.hilo = True
+                self._correr()
+            else:
+                self.hilo = threading.Thread(target=self._correr, daemon=True)
+                self.hilo.start()
+        while self.avisos:
+            self.app.decir(self.avisos.pop(0))
+        if not self.hecho:
+            self.t_eco += dt
+            if self.t_eco >= 4.0:             # un tictac suave: sigue trabajando
+                self.t_eco = 0.0
+                self.app.son("menu_mover", vol=0.3)
+            return
+        self.app.cerrar(self)
+        self.al_terminar(self.resultado, self.error)
+
+
+def _abrir(app):
+    """Con qué se abre la red. En las pruebas automáticas nunca se sale a internet."""
+    propio = getattr(app, "act_abrir", None)
+    if propio is not None:
+        return propio
+    if app.pruebas:
+        def sin_red(url, tiempo=0):
+            raise OSError("sin red en las pruebas")
+        return sin_red
+    return None
+
+
+def buscar(app, al_no_haber=None):
+    cfg = app.cfg
+
+    def trabajo(tarea):
+        return A.comprobar(cfg["act_fuente"], cfg["act_url"], abrir=_abrir(app), claves=getattr(app, "act_claves", None))
+
+    def fin(info, error):
+        if error is not None:
+            app.son("error")
+            app.decir(str(error) if isinstance(error, A.ErrorActualizacion) else "No se pudo comprobar si hay una versión nueva.", True)
+        elif info is None:
+            app.son("guardado")
+            app.decir(f"Tienes la última versión, la {VERSION}.", True)
+        else:
+            ofrecer(app, info)
+    app.abrir(Tarea(app, f"Buscando actualizaciones en {TEXTO_FUENTE[cfg['act_fuente']]}", trabajo, fin))
+
+
+def ofrecer(app, info):
+    megas = max(1, round(info.tamano / (1024 * 1024)))
+
+    def novedades():
+        app.decir(info.novedades or "Esta versión no trae notas.", True)
+
+    def instalar():
+        if not A.puede_instalar():
+            app.son("error")
+            app.decir("Estás jugando desde el código fuente: la versión nueva solo se instala sola en el juego compilado.", True)
+            return
+        app.cerrar(m)
+        descargar(app, info)
+    m = Menu(app, f"Hay una versión nueva, la {info.version}. Tienes la {VERSION}", [
+        Opcion("Leer las novedades", novedades),
+        Opcion(f"Descargar e instalar ahora, {megas} megas", instalar,
+               ayuda="Descarga la versión nueva, comprueba que es auténtica, cierra el juego, lo actualiza y lo vuelve a abrir. Tus partidas, tus opciones, tu música y tus mods no se tocan."),
+        Opcion("Ahora no", lambda: app.cerrar(m)),
+    ])
+    app.son("evento")
+    app.abrir(m)
+
+
+def descargar(app, info):
+    estado = {"cuarto": 0}
+
+    def trabajo(tarea):
+        def progreso(hecho, total):
+            cuarto = int(4 * hecho / max(1, total))
+            if cuarto > estado["cuarto"] and cuarto < 4:
+                estado["cuarto"] = cuarto
+                tarea.decir(f"{cuarto * 25} por ciento.")
+        ruta = A.descargar(info, progreso=progreso, cancelado=lambda: tarea.cancelada, abrir=_abrir(app))
+        tarea.decir("Descarga comprobada. Preparando la instalación.")
+        nueva = A.extraer(ruta, os.path.join(A.carpeta_trabajo(), "nueva"))
+        try:
+            os.remove(ruta)
+        except OSError:
+            pass
+        return A.escribir_instalador(nueva, version=info.version)
+
+    def fin(bat, error):
+        if error is not None:
+            if not isinstance(error, A.Cancelado):
+                app.son("error")
+            A.limpiar()
+            app.decir(str(error) if isinstance(error, A.ErrorActualizacion) else "No se pudo preparar la actualización.", True)
+            return
+        p = app.partida
+        if p is not None and not p.mision:
+            try:
+                from . import menus_juego
+                menus_juego.escribir_ranura(p, "auto")
+            except Exception:
+                pass
+        app.son("guardado")
+        app.decir("Todo listo. El juego se cierra, se actualiza y vuelve a abrirse solo en unos segundos.", True)
+        if not app.pruebas:
+            pygame.time.wait(4500)
+            A.lanzar_instalador(bat)
+        app.salir()
+    app.abrir(Tarea(app, f"Descargando la versión {info.version}", trabajo, fin))
+
+
+def opciones(app):
+    cfg = app.cfg
+
+    def fuente(d):
+        i = A.FUENTES.index(cfg["act_fuente"]) if cfg["act_fuente"] in A.FUENTES else 0
+        cfg["act_fuente"] = A.FUENTES[(i + d) % len(A.FUENTES)]
+
+    def auto(d):
+        cfg["act_auto"] = not cfg["act_auto"]
+
+    def direccion():
+        def hecho(t):
+            t = t.strip()
+            if t:
+                try:
+                    A.comprobar_url(t)
+                except A.ErrorActualizacion as e:
+                    app.son("error")
+                    app.decir(str(e), True)
+                    return
+            cfg["act_url"] = t
+            app.decir("Dirección guardada." if t else "Dirección borrada.", True)
+        app.abrir(EntradaTexto(app, "Dirección personalizada del archivo version punto json", hecho, inicial=cfg["act_url"], maximo=300,
+                               ayuda="La dirección completa, que empiece por https, del archivo version.json. Puedes pegarla con Control V. Sirva de donde sirva, la versión tiene que ir firmada por quien publica el juego."))
+
+    m = Menu(app, "Actualizaciones", [
+        Opcion(f"Versión instalada: {VERSION}", lambda: app.decir(f"Tienes la versión {VERSION}.", True)),
+        Opcion("Buscar actualizaciones ahora", lambda: buscar(app)),
+        Opcion(lambda: f"Buscar al arrancar el juego: {'sí' if cfg['act_auto'] else 'no'}", ajuste=auto,
+               ayuda="Al abrir el juego mira si hay una versión nueva y te avisa. No descarga ni instala nada sin que tú lo pidas."),
+        Opcion(lambda: f"Actualizar desde: {TEXTO_FUENTE[cfg['act_fuente']]}", ajuste=fuente,
+               ayuda="Con las flechas izquierda y derecha eliges de dónde se buscan y se descargan las versiones: el servidor del juego, GitHub, las dos o una dirección que escribas tú. "
+                     "Con las dos, se usa la versión más nueva y, si una falla, la otra. Venga de donde venga, solo se instala una versión firmada por quien publica el juego."),
+        Opcion(lambda: "Dirección personalizada: " + (cfg["act_url"] or "ninguna"), direccion, ayuda="Solo se usa si eliges actualizar desde una dirección personalizada. Intro para escribirla."),
+        Opcion("Volver", lambda: app.cerrar(m)),
+    ], al_cerrar=cfg.guardar)
+    app.abrir(m)
+
+
+# ------------------------------------------------------------------ al arrancar
+def al_arrancar(app):
+    """Tras actualizar, lo dice y limpia. Si está activado, busca una versión nueva sin molestar."""
+    if A.ARG_TRAS_ACTUALIZAR in sys.argv:
+        A.limpiar()
+        app.decir(f"Juego actualizado a la versión {VERSION}. Las novedades están en el manual.")
+    elif "--actualizacion-fallida" in sys.argv:
+        A.limpiar()
+        app.decir("La actualización no se pudo instalar y se ha dejado la versión que tenías.")
+    app.act_aviso = None
+    if app.pruebas or not app.cfg["act_auto"]:
+        return
+
+    def mirar():
+        try:
+            app.act_aviso = A.comprobar(app.cfg["act_fuente"], app.cfg["act_url"])
+        except Exception:
+            app.act_aviso = None             # sin conexión o sin fuente: al arrancar no se molesta con errores
+    threading.Thread(target=mirar, daemon=True).start()
+
+
+def paso(app):
+    """Llamado en cada vuelta del bucle: da el aviso cuando la búsqueda del arranque encuentra algo."""
+    info = getattr(app, "act_aviso", None)
+    if info is None or app.partida is not None or len(app.pila) != 1:
+        return
+    app.act_aviso = None
+    app.son("evento")
+    app.decir(f"Hay una versión nueva del juego, la {info.version}. Para instalarla entra en Opciones, Actualizaciones.")

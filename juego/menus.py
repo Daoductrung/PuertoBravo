@@ -198,6 +198,7 @@ class EntradaTexto:
     Con secreto=True (contraseñas) no se dicen las letras.
     """
     pausa_mundo = True
+    cerrado_al_final = True
 
     def __init__(self, app, titulo, al_aceptar, inicial="", secreto=False, maximo=120, ayuda=None):
         self.app = app

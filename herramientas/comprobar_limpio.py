@@ -10,7 +10,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-MODS_DE_SERIE = ("costa_dorada.pbm", "oficios_y_recados.pbm", "valdeolmos.pbm", "motor_y_asfalto.pbm")
+MODS_DE_SERIE = ("costa_dorada.pbm", "oficios_y_recados.pbm", "valdeolmos.pbm", "motor_y_asfalto.pbm",
+                 "penas_altas.pbm", "isla_de_los_vientos.pbm", "noches_de_neon.pbm")
+# La documentación que se reparte es para quien juega: nada de programación.
+SOLO_DESARROLLO = (("data", "docs", "crear_mods.html"), ("data", "actualizacion"), ("herramientas",), ("pruebas",))
 
 
 def comprobar(raiz):
@@ -22,11 +25,13 @@ def comprobar(raiz):
 
     for necesario in (("PuertoBravo.exe",), ("EditorMods.exe",), ("data", "datos", "ciudad.pbd"), ("data", "docs", "manual.html"),
                       ("data", "docs", "teclas.html"), ("data", "docs", "cambiar_sonidos.html"), ("data", "docs", "editor_mods.html"),
-                      ("data", "docs", "crear_mods.html"), ("data", "docs", "novedades.html"), ("data", "sonidos", "por_defecto"), ("data", "sonidos", "realista"), ("data", "sonidos", "alternativo"), ("data", "sonidos", "retro"),
-                      ("data", "radio"), ("data", "musica"), ("data", "mods", "costa_dorada.pbm"), ("data", "mods", "oficios_y_recados.pbm"),
-                      ("data", "mods", "valdeolmos.pbm"), ("data", "mods", "motor_y_asfalto.pbm")):
+                      ("data", "docs", "novedades.html"), ("data", "sonidos", "por_defecto"), ("data", "sonidos", "realista"), ("data", "sonidos", "alternativo"), ("data", "sonidos", "retro"),
+                      ("data", "radio"), ("data", "musica")) + tuple(("data", "mods", m) for m in MODS_DE_SERIE):
         if not hay(*necesario):
             problemas.append("Falta " + os.path.join(*necesario))
+    for sobra in SOLO_DESARROLLO:
+        if hay(*sobra):
+            problemas.append("Es solo para desarrollo y no debe repartirse: " + os.path.join(*sobra))
     for carpeta in ("partidas", "config", os.path.join("radio", "mi_musica")):
         ruta = os.path.join(data, carpeta)
         if os.path.isdir(ruta):
@@ -47,7 +52,7 @@ def comprobar(raiz):
                 problemas.append("Mod personal: " + os.path.join("data", "mods", f))
     # los datos del juego y los mods deben ir protegidos
     from juego import cifrado
-    for sub in ("datos", "mods"):
+    for sub in ("datos", "mods", "sonidos", "radio", "musica", "docs"):
         for base, _, archivos in os.walk(os.path.join(data, sub)):
             for f in archivos:
                 ruta = os.path.join(base, f)

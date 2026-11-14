@@ -244,6 +244,11 @@ class Servidor:
                     texto = "".join(c for c in str(m.get("texto", "")) if c.isprintable())[:300].strip()
                     if texto:
                         self._a_todos({"t": "chat", "de": ident, "nombre": nombre, "texto": texto}, menos=ident)
+                elif t == "act":
+                    # actividades conjuntas (carreras, repartos en equipo, subir al coche de otro): se reenvían tal cual
+                    d = m.get("d")
+                    if isinstance(d, dict) and len(json.dumps(d)) < 3000:
+                        self._a_todos({"t": "act", "de": ident, "nombre": nombre, "d": d}, menos=ident)
                 elif t == "evento":
                     self._a_todos({"t": "evento", "de": ident, "que": str(m.get("que", ""))[:20]}, menos=ident)
                 elif t == "dinero":

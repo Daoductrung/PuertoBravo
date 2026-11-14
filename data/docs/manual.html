@@ -14,8 +14,8 @@ li { margin-bottom: .3em; }
 </head>
 <body>
 <h1>Puerto Bravo: Ley del Asfalto</h1>
-<p>Manual del juego, versión 1.3. Audiojuego de mundo abierto, totalmente en español y totalmente accesible: se juega solo con el oído, con el teclado o con un mando de Xbox o de PlayStation, y con tu lector de pantalla.</p>
-<p>Las demás guías están en la misma carpeta, <strong>data\docs</strong>: <a href="teclas.html">teclas y botones</a>, <a href="novedades.html">novedades de cada versión</a>, <a href="cambiar_sonidos.html">cambiar los sonidos y la música</a>, <a href="crear_mods.html">formato de los mods</a> y <a href="editor_mods.html">manual del editor de mods</a>.</p>
+<p>Manual del juego, versión 1.4. Audiojuego de mundo abierto, totalmente en español y totalmente accesible: se juega solo con el oído, con el teclado o con un mando de Xbox o de PlayStation, y con tu lector de pantalla.</p>
+<p>Las demás guías están en la misma carpeta, <strong>data\docs</strong>: <a href="teclas.html">teclas y botones</a>, <a href="novedades.html">novedades de cada versión</a>, <a href="cambiar_sonidos.html">cambiar los sonidos y la música</a> y <a href="editor_mods.html">manual del editor de mods</a>.</p>
 <p>Este manual está organizado por encabezados. Con NVDA o JAWS puedes saltar de sección en sección con la tecla <kbd>H</kbd>.</p>
 
 <h2>1. Qué es este juego</h2>
@@ -34,6 +34,9 @@ li { margin-bottom: .3em; }
 <li>Dos formas de vivir, que se pueden mezclar: la vida honrada, con oficina de empleo, oficios con ascensos, cursos y voluntariado, y la vida delictiva.</li>
 <li>Música de ambiente con varias piezas por situación, que se calla cuando pones la radio.</li>
 <li>Un modo opcional con contenido para mayores de 18 años, desactivado de serie.</li>
+<li>Una ciudad viva: puedes hablar con cualquier persona de la calle, cada una con su nombre, su oficio y su carácter, y cada día viene distinto: precios que suben y bajan, días de fiesta, de huelga o de mercado. Ninguna partida es igual a otra.</li>
+<li>Juego con amigos por internet o en casa, sin servidores de nadie: tu propio juego abre la partida.</li>
+<li>Actualizaciones desde el propio juego, eligiendo de dónde se descargan.</li>
 <li>Un editor de mods accesible para crear tus propias ampliaciones.</li>
 <li>Siete emisoras de radio con música original, una de noticias que comenta lo que haces y otra con tu propia música.</li>
 </ul>
@@ -44,7 +47,7 @@ li { margin-bottom: .3em; }
 <li>Auriculares estéreo. Son imprescindibles: el juego coloca cada sonido en su sitio alrededor de ti.</li>
 <li>Un lector de pantalla abierto, como NVDA o JAWS. Si no hay ninguno, el juego habla con la voz de Windows.</li>
 </ul>
-<p>Ejecuta <strong>PuertoBravo.exe</strong>, o <strong>jugar.bat</strong> si usas el código fuente. El juego no instala nada: todo lo que usa o genera está en la carpeta <strong>data</strong>, junto al ejecutable. Puedes copiar la carpeta entera del juego a otro equipo.</p>
+<p>Ejecuta <strong>PuertoBravo.exe</strong>. El juego no instala nada: todo lo que usa o genera está en la carpeta <strong>data</strong>, junto al ejecutable. Puedes copiar la carpeta entera del juego a otro equipo.</p>
 <p>La ventana muestra en letras grandes y con alto contraste el último mensaje hablado, por si juegas con resto visual o con alguien que ve.</p>
 
 <h2>3. Los menús</h2>
@@ -133,6 +136,7 @@ li { margin-bottom: .3em; }
 <li><kbd>H</kbd>: gritar para espantar a los peatones.</li>
 <li><kbd>E</kbd>: con un arma en la mano, atracar al peatón que tengas al lado.</li>
 <li><kbd>Y</kbd>: si tienes perro, le pides que busque por el olfato el objeto más cercano.</li>
+<li><kbd>J</kbd>: hablar con la persona que tengas al lado. Cada una tiene su nombre, su oficio y su carácter: puedes saludar, preguntar por un sitio, invitar a un café, hacer amigos o escribir lo que quieras decirle.</li>
 <li><kbd>U</kbd>: caminar solo: con un destino marcado en el GPS, el personaje sigue la ruta él solo hasta llegar. Mantén Mayúsculas para que corra. Cualquier flecha, o la U otra vez, lo detiene.</li>
 </ul>
 <h3>Al volante, en barco y en helicóptero</h3>
@@ -185,7 +189,7 @@ li { margin-bottom: .3em; }
 <h3>Vibración</h3>
 <p>El mando vibra cuando te hieren, en los choques y las explosiones, al subir el nivel de búsqueda, al llegar a un destino y, sobre todo, cuando pica un pez. En conducción libre, el bordillo vibra por el lado correspondiente. La vibración refuerza el sonido, nunca lo sustituye, y se puede desactivar.</p>
 <h3>Cambiar los botones</h3>
-<p>En Opciones, Mando, puedes ver qué hace cada botón, reasignar cualquiera a pie y al volante, probar la vibración y volver a la asignación original. La asignación se guarda en <strong>data\config\mando.json</strong>.</p>
+<p>En Opciones, Mando, puedes ver qué hace cada botón, reasignar cualquiera a pie y al volante, probar la vibración y volver a la asignación original. La asignación se guarda con tus opciones.</p>
 
 <h2>6. Conducir</h2>
 <h3>Conducción asistida, la opción por defecto</h3>
@@ -280,7 +284,9 @@ li { margin-bottom: .3em; }
 <li>Combate y dificultad: dificultad, ayuda de puntería, sucesos callejeros y las dos asistencias.</li>
 <li>Mando: qué hace cada botón, reasignarlos y la vibración.</li>
 <li>Voz: lector de pantalla o voz de Windows.</li>
-<li>Contenido para adultos: activarlo o desactivarlo.</li>
+<li>Personas e inteligencia artificial: cómo contestan las personas de la calle.</li>
+<li>Actualizaciones: buscar una versión nueva y elegir de dónde se actualiza.</li>
+<li>Contenido para adultos: activarlo o desactivarlo, y decir quién te atrae.</li>
 </ul>
 <p>También hay dos asistencias para quien quiera explorar sin presión: no recibir daño y jugar sin policía. Y se pueden desactivar los sucesos callejeros.</p>
 
@@ -294,32 +300,22 @@ li { margin-bottom: .3em; }
 <h3>Cambiar los sonidos y la música</h3>
 <p>Todos los efectos de sonido y toda la música son archivos normales, en <strong>data\sonidos\por_defecto</strong>, <strong>data\radio</strong> y <strong>data\musica</strong>. Puedes sustituir cualquiera por una grabación tuya. La guía <strong>data\docs\cambiar_sonidos.html</strong> explica cómo y describe cada archivo.</p>
 
-<h2>14. Ampliar el juego</h2>
-<p>Todo el contenido está en archivos JSON dentro de la carpeta <strong>data\datos</strong>: mapas, lugares, misiones, armas y vehículos. Para añadir contenido sin tocar los originales, crea archivos JSON en la carpeta <strong>data\mods</strong>. En <strong>data\docs\crear_mods.html</strong> se explica el formato con ejemplos.</p>
-<h3>Mods de ejemplo</h3>
-<p>El juego trae cuatro mods completos, ya activados, que además sirven de modelo: ábrelos con el editor para ver cómo están hechos.</p>
+<h2>14. Ampliar el juego: los mods</h2>
+<p>Un mod es una ampliación: un archivo que añade al juego lugares, misiones, vehículos, armas o localidades enteras, sin tocar nada de lo original. Los mods están en la carpeta <strong>data\mods</strong> y se cargan solos al arrancar. Si un mod tiene un error, el juego lo dice al arrancar y sigue funcionando.</p>
+<h3>Mods que vienen con el juego</h3>
+<p>El juego trae siete mods completos, ya activados. Suman tres pueblos, una isla y muchas horas de juego:</p>
 <ul>
-<li>Costa Dorada: un pueblo pesquero nuevo al oeste de Puerto Bravo, al que se llega por la salida oeste, en autobús o por mar. Tiene su historia en cinco misiones, un encargo honrado, casi todos los tipos de lugar, tres armas, un buggy, una furgoneta de reparto, un velero y un autogiro, una carrera, comidas, peces y dos personajes para elegir. Con el contenido para adultos, además, un club, un proveedor, una persona, un regalo, un plan y una sustancia.</li>
-<li>Oficios y recados: más vida honrada en Puerto Bravo, con un club de tiro deportivo, un banco de alimentos, una empresa de mensajería, un piso, una moto de reparto, un personaje y dos encargos.</li>
+<li>Costa Dorada: un pueblo pesquero al oeste de Puerto Bravo, al que se llega por la salida oeste, en autobús o por mar. Tiene su historia en cinco misiones, un encargo honrado, casi todos los tipos de lugar, tres armas, un buggy, una furgoneta de reparto, un velero y un autogiro, una carrera, comidas, peces y dos personajes para elegir. Con el contenido para adultos, además, un club, un proveedor, una persona, un regalo, un plan y una sustancia.</li>
 <li>Valdeolmos: un pueblo de viñas al norte, al que se llega por la salida noreste de Puerto Bravo o en autobús. Tres misiones sobre un fraude de vino, un encargo honrado, una carrera de tractores, pesca de río, una escopeta de caza, una hoz, un tractor con remolque y un personaje.</li>
+<li>Peñas Altas: un pueblo minero en lo alto de la sierra, al que se llega por la salida norte de Puerto Bravo que lleva su nombre, o en autobús. Cuatro misiones sobre una mina cerrada que alguien explota de noche, un encargo honrado, una carabina de monte, un pico y cartuchos de dinamita, un quad, una moto de trial y un volquete con el que hacer portes, una subida de montaña, pesca en el Lago Negro, búsqueda de tesoros en la escombrera y dos personajes. Con el contenido para adultos, un bar de copas, un proveedor, una persona y una historia.</li>
+<li>Isla de los Vientos: una isla mar adentro, al este, a la que solo se llega navegando o en helicóptero. Tres misiones contra unos raqueros que asaltan las barcas, un encargo honrado, una casa, unas salinas que dan dinero, pesca en la rompiente, tesoros en las dunas, un fusil de pesca submarina silencioso, un garfio, un catamarán, una moto de agua y un personaje marinero.</li>
+<li>Noches de neón: la noche de Puerto Bravo, en un barrio de locales al noreste. Una sala de conciertos, una churrería de madrugada, un hotel, un ático, una cooperativa de taxis nocturnos con su taxi para trabajar, una limusina, un scooter, una carrera nocturna, tres misiones de chófer y un personaje. Con el contenido para adultos, una sala de fiestas, dos personas a las que conocer, planes, regalos, un cóctel y dos historias.</li>
+<li>Oficios y recados: más vida honrada en Puerto Bravo, con un club de tiro deportivo, un banco de alimentos, una empresa de mensajería, un piso, una moto de reparto, un personaje y dos encargos.</li>
 <li>Motor y asfalto: para quien solo quiere conducir. Tres coches y una moto nuevos, la Escudería Viento Sur con su taller y su escuela de pilotos, tres carreras por Puerto Bravo, un piloto para elegir y dos misiones al volante.</li>
 </ul>
-<p>Para quitar uno, desactívalo en el editor con <kbd>Control M</kbd> o borra su archivo de <strong>data\mods</strong>.</p>
+<p>Para quitar uno, desactívalo en el editor con <kbd>Control M</kbd> o borra su archivo de <strong>data\mods</strong>. Para añadir un mod que te hayan pasado, copia su archivo, de extensión <strong>.pbm</strong>, en esa misma carpeta.</p>
 <h3>El editor de mods</h3>
-<p>No hace falta escribir los archivos a mano. El programa <strong>EditorMods.exe</strong>, que está junto al juego (o <strong>editor.bat</strong> si usas el código fuente), es un editor accesible con lector de pantalla con el que se crea todo lo que admite un mod: lugares, misiones con todos sus pasos, armas, vehículos, carreras, comida, objetos, peces, personajes, mapas enteros y, para el modo adulto, personas, actividades, regalos y sustancias. Comprueba el mod antes de guardarlo y lo deja en <strong>data\mods</strong>. Su manual es <a href="editor_mods.html">editor_mods.html</a>, y se abre desde el propio editor con <kbd>F1</kbd>.</p>
-<h3>La carpeta data</h3>
-<ul>
-<li><strong>data\datos</strong>: mapas, lugares, misiones, armas y vehículos.</li>
-<li><strong>data\sonidos</strong>: los efectos de sonido, en subcarpetas. <strong>por_defecto</strong> tiene los de serie, un archivo por sonido, y cada una de las demás es un pack.</li>
-<li><strong>data\radio</strong>: la música de las emisoras, y dentro <strong>mi_musica</strong>.</li>
-<li><strong>data\musica</strong>: la música de ambiente, una carpeta por situación.</li>
-<li><strong>data\config</strong>: tus opciones y la asignación de botones del mando.</li>
-<li><strong>data\partidas</strong>: las partidas guardadas.</li>
-<li><strong>data\mods</strong>: ampliaciones.</li>
-<li><strong>data\docs</strong>: este manual y las guías.</li>
-</ul>
-<p>Para llevarte tus partidas a otro equipo, copia la carpeta <strong>data\partidas</strong>.</p>
-
+<p>Para crear tus propios mods está el programa <strong>EditorMods.exe</strong>, junto al juego. Es un editor accesible con lector de pantalla con el que se crea todo lo que admite un mod, rellenando formularios: lugares, misiones con todos sus pasos, armas, vehículos, carreras, comida, objetos, peces, personajes, mapas enteros y, para el modo adulto, personas, planes, regalos y sustancias. Comprueba el mod antes de guardarlo y lo deja en <strong>data\mods</strong>, listo para jugar. Con él puedes abrir también los mods que vienen con el juego para ver cómo están hechos. Su manual es <a href="editor_mods.html">editor_mods.html</a>, y se abre desde el propio editor con <kbd>F1</kbd>.</p>
 
 <h2>15. Elegir personaje</h2>
 <p>Al empezar una partida nueva eliges personaje. La historia es la misma para todos, y los demás te llaman por el nombre del que elijas; cambian las ventajas con las que empiezas.</p>
@@ -356,15 +352,15 @@ li { margin-bottom: .3em; }
 <li>Trapicheo: los proveedores venden mercancía a un precio que cambia cada día y en cada sitio. A pie, con mercancía encima, la tecla <kbd>E</kbd> junto a un peatón le ofrece un trato; puede aceptar, rechazarlo o ser un policía de paisano.</li>
 <li>Todo afecta: al ánimo, a la salud, a la fama, al prestigio entre los vecinos y a tus relaciones.</li>
 </ul>
-
-<h3>Archivos protegidos</h3>
-<p>En el juego compilado, los datos, los mods y las partidas guardadas van protegidos: su contenido está cifrado y firmado, así que no se pueden abrir con un editor de texto para cambiarlos, y un archivo manipulado o estropeado se rechaza. Cada tipo tiene su extensión:</p>
+<h3>Ligar con la gente de la calle</h3>
+<p>Con el contenido para adultos activado, al hablar con una persona con la tecla <kbd>J</kbd> aparecen más opciones: coquetear, proponerle ir a tu casa, si tienes una, o a un hotel. A cada persona le atrae quien le atrae, puede tener pareja o no estar de humor, y depende de cómo le hayas caído: un no es un no, y si insistes se marcha. En Opciones, Contenido para adultos, dices quién te atrae y, si quieres, cómo te ven los demás.</p>
 <ul>
-<li><strong>.pbd</strong>: datos del juego (mapas, misiones, armas, vehículos), en <strong>data\datos</strong>.</li>
-<li><strong>.pbm</strong>: mods, en <strong>data\mods</strong>.</li>
-<li><strong>.pbs</strong>: partidas guardadas, en <strong>data\partidas</strong>.</li>
+<li>Una noche juntos puede ser de cuatro maneras, y la eliges tú: romántica, apasionada, de risas y juegos, o tranquila. Con las personas de tu vida social hay, además, gestos de cariño: un beso, bailar juntos, un masaje o decirle algo al oído. Hace falta cierta confianza y cada uno se puede repetir una vez al día.</li>
+<li>Todo está contado con sensualidad y sin escenas explícitas: cuando la puerta se cierra, el juego pasa a la mañana siguiente.</li>
+<li>En farmacias y hospitales hay preservativos. En los clubes se venden, además, velas, aceite de masaje, lencería y un juguete para dos: cada artículo hace mejor un tipo de noche.</li>
+<li>Sin protección puedes contraer una infección: se nota en el ánimo y en la salud hasta que la tratas. En farmacias y hospitales hay una prueba gratuita y tratamiento. La tecla <kbd>V</kbd> te dice cómo estás.</li>
+<li>En los clubes, además de copas y espectáculo, puedes bailar en la pista y conocer a alguien.</li>
 </ul>
-<p>Para crear o cambiar contenido se usa el editor de mods, que abre tanto los mods protegidos como los escritos a mano en JSON y siempre guarda protegido, como <strong>.pbm</strong>. Un mod escrito a mano en un archivo <strong>.json</strong> no se carga en el juego compilado: el juego te avisa al arrancar y te pide que lo abras con el editor y lo guardes. El editor conserva tu archivo original con la extensión <strong>.json.original</strong>.</p>
 
 <h2>19. Jugar con amigos</h2>
 <p>Puedes jugar con otras personas sin depender de ningún servidor de fuera: tu propio juego hace de servidor. Tú montas la partida y sigues jugando con normalidad; a tus amigos les das una dirección y se conectan.</p>
@@ -374,7 +370,10 @@ li { margin-bottom: .3em; }
 <li>El radar los anuncia y el GPS te lleva hasta ellos, también si están en otra localidad.</li>
 <li>Os escribís mensajes, que se leen en voz alta. La tecla <kbd>F10</kbd> abre el cuadro para escribir sin pasar por el móvil.</li>
 <li>Os podéis enviar dinero.</li>
-<li>Cada uno conserva su propia partida, sus misiones y su progreso.</li>
+<li>Os podéis dar botiquines.</li>
+<li>Podéis ir en el mismo vehículo: ponte junto al de tu amigo y pulsa <kbd>F</kbd> para subir de pasajero; vas donde él vaya. <kbd>F</kbd> otra vez para bajar.</li>
+<li>Actividades conjuntas, desde Jugar con amigos: una carrera hasta un lugar con cien euros de apuesta por cabeza, que se lleva quien llega primero, y un reparto en equipo, en el que entre todos lleváis paquetes por la ciudad y os repartís la paga. Uno la propone, los demás la aceptan y quien la propuso da la salida.</li>
+<li>Cada uno conserva su propia partida, sus misiones y su progreso, y puede hacer todo lo que haría jugando solo: misiones, trabajos, compras, casas, pesca o carreras. La ciudad de cada uno es la suya: la gente y el tráfico que oyes son los de tu partida.</li>
 </ul>
 <h3>Abrir tu partida</h3>
 <ol>
@@ -404,17 +403,77 @@ li { margin-bottom: .3em; }
 <h3>Al escribir texto</h3>
 <p>En los cuadros de texto del juego (mensajes, direcciones, contraseñas, tu nombre) cada letra se dice al escribirla. <kbd>Intro</kbd> acepta, <kbd>Escape</kbd> cancela, <kbd>Retroceso</kbd> borra, <kbd>Flecha arriba</kbd> lee lo escrito y <kbd>Control V</kbd> pega. Las contraseñas no se dicen: se oye «asterisco».</p>
 
-<h2>20. Qué distribuir y qué es tuyo</h2>
-<p>El juego compilado es portable: una carpeta que se puede copiar o comprimir tal cual. Lo personal son solo <strong>data\partidas</strong>, <strong>data\config</strong>, lo que hayas puesto en <strong>data\radio\mi_musica</strong> y tus mods. La compilación que genera <strong>compilar.bat</strong> sale limpia, sin nada de eso.</p>
+<h2>20. La gente de la calle</h2>
+<p>Las personas con las que te cruzas no son figurantes. Cada una tiene su nombre, su edad, su oficio, su carácter y su humor del día, y ninguna partida tiene los mismos vecinos. A pie, con alguien al lado, la tecla <kbd>J</kbd> abre la conversación.</p>
+<ul>
+<li>Puedes saludar, preguntar por el barrio, preguntar qué se cuenta, preguntar a qué se dedica, hacer un cumplido, contar un chiste, invitar a un café o dar una limosna.</li>
+<li>Preguntar por un sitio: te dice dónde hay una farmacia, un taller o lo que busques, y te lo marca en el GPS.</li>
+<li>Lo que se cuenta sale de lo que de verdad pasa en tu partida: el tiempo, si hoy hay fiesta o huelga, si la policía busca a alguien, dónde hay trabajo.</li>
+<li>Pedirle el número y ser amigos: si le has caído bien, pasa a tus conocidos. Están en el móvil, en Tus conocidos, con su oficio y su localidad.</li>
+<li>Cada persona reacciona según su carácter y según tu fama: a quien tiene buen nombre entre los vecinos le contestan mejor; a quien tiene fama de peligroso, con miedo.</li>
+<li>También puedes insultar o amenazar para que te dé dinero. Es un delito, y la gente se acuerda.</li>
+<li>Escribir lo que quieras decirle: escribes una frase con tus palabras y la persona contesta según lo que haya entendido.</li>
+</ul>
+<h3>Modo IA</h3>
+<p>En Opciones, Personas e inteligencia artificial, puedes activar el modo IA. Con él, cuando escribes lo que quieres decirle a alguien, contesta una inteligencia artificial, Claude, interpretando a esa persona con su carácter y sabiendo dónde estáis, qué hora es y qué tiempo hace. Así puedes hablar de cualquier cosa.</p>
+<ul>
+<li>Necesita conexión a internet y una clave de la API de Anthropic, que se consigue en su página y es de pago: cada frase tiene un pequeño coste que paga el dueño de la clave. La clave se escribe en esa misma pantalla de opciones y se guarda cifrada en tu ordenador.</li>
+<li>Se envía lo que escribes, la ficha de la persona, la hora, el barrio, el tiempo y cómo te ven los vecinos. No se envían tu partida, tus archivos ni ningún dato tuyo.</li>
+<li>Sin modo IA, o si falla la conexión, contesta el propio juego, sin internet.</li>
+<li>Si esa pantalla de opciones dice que falta el componente de inteligencia artificial, tu copia del juego no lo incluye y el modo IA no se puede activar. Todo lo demás funciona igual.</li>
+</ul>
 
-<h2>21. Problemas frecuentes</h2>
+<h2>21. Cada día es distinto</h2>
+<p>Puerto Bravo no se repite. Cada partida nace con su propia suerte, y cada medianoche se decide cómo viene el día siguiente.</p>
+<ul>
+<li>La mayoría de los días son normales. Otros hay rebajas en las armerías, mercado, con la comida más barata, o escasez, con todo más caro. Hay días de fiesta, con las calles llenas de gente y pocos coches; huelgas de transportes, sin apenas tráfico; operaciones salida, con atascos; días en que no hay un alma, y días de crucero, con turistas por todas partes.</li>
+<li>El juego lo anuncia a medianoche con un aviso sonoro. La tecla <kbd>T</kbd>, que dice la hora y el tiempo, te lo recuerda; la emisora de noticias lo cuenta y la gente de la calle lo comenta.</li>
+<li>Además, cada comercio tiene cada día su precio, un poco por encima o por debajo del de la tienda de al lado. Merece la pena comparar.</li>
+<li>También cambian solos el tiempo, los coches que circulan y los que hay aparcados, las personas con las que te cruzas, los sucesos callejeros, la bolsa, la lotería y, en el modo adulto, los precios de los proveedores.</li>
+</ul>
+
+<h2>22. Vida realista: hambre y sueño</h2>
+<p>Es opcional y viene desactivada. Se activa en Opciones, Combate y dificultad. Con ella hay que comer y dormir, como en la vida.</p>
+<ul>
+<li>El hambre tarda unas catorce horas de juego en llegar al límite, y el sueño unas veinte. Comer en cualquier sitio quita el hambre; dormir en una casa tuya o en un hotel quita el sueño.</li>
+<li>Con mucha hambre o mucho sueño vas más despacio y apuntas peor. Si los ignoras, pierdes salud poco a poco.</li>
+<li>El juego te avisa cuando empiezan a apretar, y la tecla <kbd>V</kbd> te dice cómo vas.</li>
+</ul>
+
+<h2>23. Actualizaciones</h2>
+<p>El juego se actualiza solo, cuando tú quieras. Al arrancar mira si hay una versión nueva y, si la hay, te avisa; no descarga ni instala nada sin que lo pidas.</p>
+<ul>
+<li>Para actualizar, entra en Opciones, Actualizaciones, y elige Buscar actualizaciones ahora. Si hay versión nueva puedes leer sus novedades y elegir Descargar e instalar ahora. El juego va diciendo el progreso; <kbd>Escape</kbd> cancela.</li>
+<li>Al terminar la descarga, el juego se cierra, se actualiza y vuelve a abrirse solo en unos segundos. Si algo fallara, se queda la versión que tenías.</li>
+<li>Tus partidas, tus opciones, tu música y tus mods no se tocan.</li>
+<li>Actualizar desde: con las flechas izquierda y derecha eliges de dónde se buscan y se descargan las versiones. Hay cuatro posibilidades: el servidor del juego; GitHub; las dos, que usa la versión más nueva y, si una falla, la otra; o una dirección personalizada, que escribes en la opción siguiente y tiene que empezar por https.</li>
+<li>Venga de donde venga, solo se instala una versión firmada por quien publica el juego: si alguien cambiara el archivo por el camino, el juego lo rechaza.</li>
+<li>Buscar al arrancar el juego: se puede desactivar. Entonces solo se busca cuando tú lo pides.</li>
+<li>Si no consigue conectar y usas AdGuard, un antivirus con protección de red o un cortafuegos, añade Puerto Bravo a sus excepciones.</li>
+</ul>
+
+<h2>24. Tus archivos</h2>
+<p>El juego no instala nada: es una carpeta que se puede copiar tal cual a otro equipo o a una memoria. Todo lo que usa está en la carpeta <strong>data</strong>, junto al ejecutable.</p>
+<ul>
+<li><strong>data\partidas</strong>: tus partidas guardadas. Para llevártelas a otro equipo, copia esta carpeta.</li>
+<li><strong>data\config</strong>: tus opciones y la asignación de botones del mando.</li>
+<li><strong>data\radio\mi_musica</strong>: tu música para la emisora Mi música.</li>
+<li><strong>data\mods</strong>: los mods, los que vienen con el juego y los tuyos.</li>
+<li><strong>data\sonidos</strong>, <strong>data\radio</strong> y <strong>data\musica</strong>: los sonidos y la música, que puedes cambiar como explica la guía <a href="cambiar_sonidos.html">cambiar_sonidos.html</a>.</li>
+<li><strong>data\docs</strong>: este manual y las guías.</li>
+</ul>
+<p>Los datos del juego, los mods, las partidas y las opciones van protegidos: no se pueden abrir con un editor de texto para cambiarlos, y un archivo manipulado o estropeado se rechaza en lugar de cargarse a medias. Para crear o cambiar contenido se usa el editor de mods.</p>
+<p>Si pasas el juego a otra persona, no le pases tus carpetas <strong>data\partidas</strong> y <strong>data\config</strong>.</p>
+
+<h2>25. Problemas frecuentes</h2>
 <ul>
 <li>No se oye nada: comprueba que los auriculares son el dispositivo de salida predeterminado de Windows antes de abrir el juego.</li>
 <li>El lector no habla: abre NVDA o JAWS antes que el juego, o activa en Opciones la voz de Windows.</li>
 <li>Izquierda y derecha suenan al revés: tienes los auriculares cambiados de lado.</li>
 <li>El juego se cierra: se guarda automáticamente y deja los detalles en el archivo <strong>data\error.log</strong>.</li>
 <li>Un amigo no consigue entrar en mi partida: comprueba que le has dado la dirección de internet y no la de casa, que el puerto está abierto en el router y que ni tu cortafuegos ni un filtro como AdGuard bloquean el juego.</li>
-<li>El juego dice al arrancar que un mod está escrito a mano: ábrelo con el editor de mods y guárdalo.</li>
+<li>El juego dice al arrancar que un mod no está preparado: ábrelo con el editor de mods y guárdalo.</li>
+<li>No encuentra actualizaciones o no conecta: comprueba tu conexión y, en Opciones, Actualizaciones, prueba a actualizar desde la otra fuente.</li>
 <li>El mando no responde: comprueba que Windows lo reconoce y que la ventana del juego está en primer plano. Si los nombres de los botones no coinciden con los de tu mando, cámbialos en Opciones, Mando.</li>
 </ul>
 </body>

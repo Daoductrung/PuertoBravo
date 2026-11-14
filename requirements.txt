@@ -6,3 +6,5 @@ accessible-output2>=0.17
 wxPython>=4.2.3
 cx_Freeze>=8.7
 pytest>=9.0
+# Opcional, para el modo IA al hablar con la gente. Sin él, el juego funciona igual:
+# anthropic

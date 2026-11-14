@@ -9,6 +9,9 @@
 - oficios_y_recados.json: un mod pequeño de vida honrada en las ciudades que ya existen.
 - valdeolmos.json: otro pueblo nuevo, de interior, con su historia, su río y su carrera de tractores.
 - motor_y_asfalto.json: coches, una moto, carreras y dos misiones al volante.
+- penas_altas.json: un pueblo minero de montaña, con su historia, su lago y contenido para el modo adulto.
+- isla_de_los_vientos.json: una isla a la que se llega navegando, con raqueros, salinas y un catamarán.
+- noches_de_neon.json: la noche de Puerto Bravo, sin mapa nuevo: locales, taxis nocturnos y vida social.
 
 Todos se pueden abrir con el editor de mods para ver cómo están hechos.
 """
@@ -383,6 +386,330 @@ def motor():
         ],
     }
 
+# ============================================================ Peñas Altas
+def penas_altas():
+    cuerpo = primero(ARMAS, lambda a: a["tipo"] == "cuerpo" and a["id"] != "punos")
+    explosivo = "granada" if "granada" in ARMAS else primero(ARMAS, lambda a: a["tipo"] == "explosivo")
+    carabina = "carabina" if "carabina" in ARMAS else primero(ARMAS, lambda a: a["tipo"] == "fuego")
+    quad = "quad" if "quad" in VEHICULOS else "utilitario"
+    camion = "camion" if "camion" in VEHICULOS else "utilitario"
+    cross = "cross" if "cross" in VEHICULOS else "utilitario"
+    todo = "todoterreno" if "todoterreno" in VEHICULOS else "utilitario"
+    mapa = {
+        "id": "penas_altas", "tipo": "pueblo", "nombre": "Peñas Altas", "trafico": 1, "peatones": 3, "nombre_objeto": "Pepita de pirita",
+        "avenidas": ["Cuesta de la Mina", "Calle de los Barreneros", "Calle del Castillete", "Camino del Collado"],
+        "calles": ["Carretera de Puerto Bravo", "Calle de la Fragua", "Calle del Lavadero", "Senda del Lago"],
+        "barrios": [
+            {"id": "pa_pueblo", "nombre": "Peñas Altas", "i": [0, 2], "j": [0, 1], "ambiente": "amb_montana", "vehiculos": [todo, "pa_quad", "pa_volquete", "utilitario"],
+             "descripcion": "Peñas Altas, un pueblo minero colgado de la sierra. Casas de pizarra, humo de chimenea y un castillete de hierro que se ve desde todo el valle."},
+            {"id": "pa_lago", "nombre": "El Lago Negro", "i": [0, 2], "j": [2, 2], "ambiente": "amb_montana", "vehiculos": [todo, "pa_trial"],
+             "descripcion": "El Lago Negro: agua quieta y fría entre pinos, con la bocamina vieja en la ladera de enfrente."}],
+        "bloques": {"1,0": "plaza", "0,2": "hierba", "1,2": "hierba", "2,2": "hierba"},
+        "lugares": [
+            {"id": "pa_salida", "nombre": "Salida sur, carretera de Puerto Bravo", "tipo": "salida", "bloque": [1, 0], "lado": "S", "pos": 36, "a_mapa": "puerto_bravo", "a_lugar": "pb_salida_penas", "km": 44, "horas": 1.1, "desc": "La carretera de curvas que baja de la sierra hasta Puerto Bravo."},
+            {"id": "pa_estacion", "nombre": "Parada del autobús de Peñas Altas", "tipo": "estacion", "bloque": [0, 0], "lado": "N", "pos": 20, "precio": 28, "desc": "Una marquesina de pizarra frente a la fragua."},
+            {"id": "pa_cantina", "nombre": "Cantina del Barrenero", "tipo": "taberna", "bloque": [2, 0], "lado": "N", "pos": 36, "desc": "Vino caliente, dados y mineros jubilados que lo saben todo."},
+            {"id": "pa_fonda", "nombre": "Fonda La Pizarra", "tipo": "comida", "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Potaje de la sierra y pan de horno de leña."},
+            {"id": "pa_economato", "nombre": "Economato Minero", "tipo": "tienda", "bloque": [0, 1], "lado": "S", "pos": 36, "desc": "El economato de la antigua compañía. Sigue vendiendo de todo."},
+            {"id": "pa_polvorin", "nombre": "Ferretería El Polvorín", "tipo": "armeria", "bloque": [1, 1], "lado": "S", "pos": 36, "desc": "Picos, carabinas de monte y, bajo el mostrador, lo que sobró de la mina."},
+            {"id": "pa_botica", "nombre": "Botica de la Sierra", "tipo": "farmacia", "bloque": [0, 1], "lado": "E", "pos": 36, "desc": "Una botica pequeña con olor a eucalipto."},
+            {"id": "pa_taller", "nombre": "Taller del Castillete", "tipo": "taller", "bloque": [2, 0], "lado": "O", "pos": 36, "desc": "Arreglan volquetes, quads y lo que suba hasta aquí."},
+            {"id": "pa_banco", "nombre": "Caja de la Sierra", "tipo": "banco", "bloque": [1, 1], "lado": "N", "pos": 36, "desc": "Una ventanilla y un cajero que tarda en despertar."},
+            {"id": "pa_casa", "nombre": "Casa del capataz", "tipo": "casa", "bloque": [1, 1], "lado": "O", "pos": 36, "precio": 4400, "garaje": 2, "desc": "Una casa de pizarra con estufa de leña y cochera para dos vehículos."},
+            {"id": "pa_cantera", "nombre": "Cantera de pizarra", "tipo": "negocio", "bloque": [2, 1], "lado": "S", "pos": 36, "sonido": "lugar_mina", "precio": 26000, "ingresos": 610, "vehiculo": "pa_volquete", "desc": "La cantera sigue dando losa. Está en venta, con su volquete en la puerta: súbete y pulsa J para hacer portes."},
+            {"id": "pa_empleo", "nombre": "Hermandad Minera, bolsa de trabajo", "tipo": "empleo", "bloque": [1, 1], "lado": "E", "pos": 36, "desc": "Jornadas en la cantera y oficios de la sierra."},
+            {"id": "pa_escuela", "nombre": "Escuela de Montaña", "tipo": "academia", "bloque": [2, 1], "lado": "O", "pos": 36, "cursos": ["resistencia", "punteria"], "desc": "Cursos de resistencia y de tiro de montaña."},
+            {"id": "pa_gimnasio", "nombre": "Frontón Cubierto", "tipo": "gimnasio", "bloque": [0, 1], "lado": "N", "pos": 36, "desc": "Pelota, pesas de hierro fundido y combates en fiestas."},
+            {"id": "pa_cocina", "nombre": "Cocina de la Hermandad", "tipo": "ong", "bloque": [2, 1], "lado": "N", "pos": 36, "desc": "Dan de comer a los viejos mineros. Siempre faltan manos."},
+            {"id": "pa_refugio", "nombre": "Refugio del Collado", "tipo": "hotel", "bloque": [2, 0], "lado": "E", "pos": 36, "precio_noche": 28, "desc": "Literas, mantas gordas y una chimenea que no se apaga."},
+            {"id": "pa_motos", "nombre": "Motos y Quads Sierra Alta", "tipo": "concesionario", "bloque": [0, 0], "lado": "O", "pos": 36, "modelos": ["pa_quad", "pa_trial", "pa_volquete"], "desc": "Todo lo que sube por un pedregal."},
+            {"id": "pa_circuito", "nombre": "Salida de la subida al Collado", "tipo": "carrera", "bloque": [2, 1], "lado": "E", "pos": 36, "desc": "Una carrera de montaña entre pinos."},
+            {"id": "pa_helipuerto", "nombre": "Helipuerto de rescate", "tipo": "helipuerto", "bloque": [2, 2], "xy": [20, 20], "precio": 150, "desc": "Una losa de hormigón con una H pintada."},
+            {"id": "pa_plaza", "nombre": "Plaza del Castillete", "tipo": "monumento", "bloque": [1, 0], "xy": [36, 40], "sonido": "lugar_fuente", "desc": "El castillete de la mina, oxidado, y una fuente de agua de deshielo."},
+            {"id": "pa_bocamina", "nombre": "Bocamina de La Encantada", "tipo": "monumento", "bloque": [2, 2], "xy": [50, 50], "sonido": "lugar_mina", "desc": "La entrada de la mina vieja. Sale un aire frío que huele a hierro."},
+            {"id": "pa_lago_pesca", "nombre": "Orilla del Lago Negro", "tipo": "pesca", "bloque": [0, 2], "xy": [40, 40], "sonido": "lugar_rio", "desc": "Truchas de lago y, con suerte, un lucio."},
+            {"id": "pa_escombrera", "nombre": "Escombrera vieja", "tipo": "tesoro", "bloque": [1, 2], "xy": [36, 36], "desc": "Entre la escoria aún aparecen herramientas, monedas y alguna pepita."},
+            {"id": "pa_lumbre", "nombre": "Bar de copas La Lumbre", "tipo": "club", "bloque": [0, 1], "lado": "O", "pos": 36, "adultos": True, "desc": "El único sitio abierto de noche en toda la sierra."},
+            {"id": "pa_alambique", "nombre": "El Alambique", "tipo": "proveedor", "bloque": [2, 0], "lado": "S", "pos": 36, "adultos": True, "factor": {"hierba": 0.9, "polvo": 1.5, "pastillas": 1.2, "cristal": 1.5, "pa_endrinas": 0.7}, "desc": "Licor de endrinas casero y lo poco que sube de la ciudad."},
+        ],
+        "casetes": [[60, 60], [210, 130], [130, 230]],
+    }
+    misiones = [
+        {"id": "pa01", "titulo": "Aire de sierra", "capitulo": 27, "contacto": "Fermín", "lugar": "pa_cantina", "requiere": ["m01"],
+         "resumen": "En la Cantina del Barrenero, un minero jubilado dice que por la noche hay luces en la mina cerrada.",
+         "pasos": [D(("Fermín", "Cuarenta años bajé a La Encantada, y te digo que esa mina está cerrada. Pues anoche había luces en la bocamina."),
+                     ("Fermín", "A mí ya no me dan las piernas. Sube tú, mira y vuelve. Pago el vino.")),
+                   {"tipo": "ir", "lugar": "pa_bocamina", "radio": 14, "texto": "Sube a la Bocamina de La Encantada, al noreste, junto al lago."},
+                   {"tipo": "recoger", "lugar": "pa_bocamina", "objeto": "una lámpara de carburo todavía caliente", "texto": "Recoge la lámpara que hay en la entrada."},
+                   D(("Narrador", "La lámpara está tibia y los raíles brillan: por aquí han pasado vagonetas esta misma noche."))],
+         "recompensa": {"dinero": 220}},
+        {"id": "pa02", "titulo": "El volquete de noche", "capitulo": 27, "contacto": "Fermín", "lugar": "pa_cantina", "requiere": ["pa01"],
+         "resumen": "Un volquete baja cargado de la mina cuando el pueblo duerme.",
+         "pasos": [D(("Fermín", "Sacan mineral a escondidas y lo bajan en un volquete de la cantera. Está aparcado en el Taller, cargado hasta arriba."),
+                     ("Fermín", "Llévatelo a la puerta de la Hermandad Minera, que allí lo verá todo el pueblo por la mañana. Despacio, que pesa.")),
+                   {"tipo": "robar", "lugar": "pa_taller", "modelo": "pa_volquete", "nombre": "el volquete cargado", "busqueda": 1, "texto": "Hazte con el volquete cargado junto al Taller del Castillete."},
+                   {"tipo": "policia", "nivel": 1, "texto": "Alguien ha dado el aviso. Despista a la patrulla."},
+                   {"tipo": "entregar", "lugar": "pa_empleo", "salud_min": 50, "texto": "Lleva el volquete a la Hermandad Minera sin destrozarlo."},
+                   D(("Narrador", "Dejas el volquete atravesado delante de la puerta. Bajo la lona hay mineral, sí, y unas cajas con el sello de una naviera de Puerto Bravo."))],
+         "recompensa": {"dinero": 550}},
+        {"id": "pa03", "titulo": "Los de la galería tres", "capitulo": 27, "contacto": "Fermín", "lugar": "pa_cantina", "requiere": ["pa02"],
+         "resumen": "Los que explotan la mina a escondidas han bajado al pueblo a buscar al que les robó el volquete.",
+         "pasos": [D(("Fermín", "Han venido preguntando por ti. Están en la escombrera, esperando a que oscurezca."),
+                     ("Fermín", "Toma mi carabina y dos cartuchos de los de antes. Con mecha corta, así que no te duermas.")),
+                   {"tipo": "dar", "arma": "pa_carabina", "balas": 12},
+                   {"tipo": "dar", "arma": "pa_dinamita", "balas": 2},
+                   {"tipo": "eliminar", "lugar": "pa_escombrera", "texto": "Ve a la escombrera vieja y acaba con los de la galería tres.",
+                    "enemigos": [{"n": 3, "tipo": "Barrenero furtivo", "arma": "pa_pico", "salud": 60}, {"n": 1, "tipo": "Encargado", "arma": "revolver", "salud": 90}]},
+                   {"tipo": "recoger", "lugar": "pa_escombrera", "objeto": "el plano de las galerías", "texto": "Recoge el plano de las galerías."},
+                   D(("Narrador", "El plano marca una galería nueva que pasa justo por debajo del lago. Si la abren, se inunda media mina y medio pueblo."))],
+         "recompensa": {"dinero": 800, "arma": "pa_carabina", "balas": 10}},
+        {"id": "pa04", "titulo": "Antes de que revienten el lago", "capitulo": 27, "contacto": "Fermín", "lugar": "pa_cantina", "requiere": ["pa03"],
+         "resumen": "El ingeniero que dirige las voladuras huye sierra abajo con los detonadores.",
+         "pasos": [D(("Fermín", "El ingeniero se ha asustado y se va con los detonadores en su todoterreno. Si llega abajo, vuelve con otra cuadrilla."),
+                     ("Fermín", "Párale en la carretera. Después tira lo que lleve al lago.")),
+                   {"tipo": "dar", "balas_arma": "pa_carabina", "balas": 10},
+                   {"tipo": "perseguir", "lugar": "pa_salida", "modelo": todo, "nombre": "el todoterreno del ingeniero", "salud": 230, "limite": 300,
+                    "texto": "Alcanza y destroza el todoterreno del ingeniero antes de cinco minutos."},
+                   {"tipo": "recoger", "aqui": True, "objeto": "la caja de detonadores", "texto": "Recoge la caja de detonadores."},
+                   {"tipo": "ir", "lugar": "pa_lago_pesca", "texto": "Lleva los detonadores a la orilla del Lago Negro y tíralos al agua."},
+                   D(("Narrador", "La caja se hunde despacio. Arriba, en la bocamina, ya no hay luces."),
+                     ("Fermín", "La Encantada vuelve a dormir. El quad de mi nieto es tuyo: está en el concesionario, pregunta por él.")),
+                   {"tipo": "dar", "dinero": 400}],
+         "recompensa": {"dinero": 1800, "chaleco": True}},
+        {"id": "pa05", "titulo": "Losa para el tejado", "capitulo": 28, "contacto": "La hermana mayor", "lugar": "pa_cocina", "requiere": ["m01"],
+         "resumen": "Trabajo honrado: la Cocina de la Hermandad tiene goteras y la cantera regala la pizarra.",
+         "pasos": [D(("La hermana mayor", "Llueve dentro del comedor. La cantera nos da la losa, pero hay que ir a por ella."),
+                     ("La hermana mayor", "Pasa por la cantera, luego por la ferretería a por clavos y vuelve antes de que empiece a nevar.")),
+                   {"tipo": "ir", "lugar": "pa_cantera", "texto": "Ve a la Cantera de pizarra."},
+                   {"tipo": "recoger", "lugar": "pa_polvorin", "objeto": "una caja de clavos de pizarrero", "texto": "Recoge los clavos en la Ferretería El Polvorín."},
+                   {"tipo": "ir", "lugar": "pa_cocina", "limite": 170, "texto": "Vuelve a la Cocina de la Hermandad antes de que nieve. Tienes casi tres minutos."},
+                   D(("Narrador", "Entre cuatro subís al tejado. A media tarde ya no gotea, y huele a potaje."))],
+         "recompensa": {"dinero": 260}},
+        {"id": "paa1", "titulo": "Endrinas para la ciudad", "capitulo": 29, "adultos": True, "contacto": "Olalla", "lugar": "pa_lumbre", "requiere": ["pa01"],
+         "resumen": "En La Lumbre, Olalla quiere que alguien de fuera pruebe su licor.",
+         "pasos": [D(("Olalla", "Lo destilo yo. Si gusta abajo, dejo de servir copas a cuatro mineros. Llévale estas botellas al del Refugio y quédate dos.")),
+                   {"tipo": "dar", "sustancia": "pa_endrinas", "cantidad": 2},
+                   {"tipo": "ir", "lugar": "pa_refugio", "texto": "Lleva las botellas al Refugio del Collado."},
+                   D(("Narrador", "El guarda prueba un trago, tose y pide otra caja."))],
+         "recompensa": {"dinero": 280, "afinidad": {"pa_olalla": 15}}},
+    ]
+    return {
+        "info": {"nombre": "Peñas Altas", "autor": "Puerto Bravo", "version": "1.0",
+                 "descripcion": "Un pueblo minero en lo alto de la sierra: cuatro misiones sobre una mina que alguien explota a escondidas, un encargo honrado, una historia para adultos, carabina, pico y dinamita, un quad, una moto de trial y un volquete con el que hacer portes, una subida de montaña, pesca en el lago, búsqueda de tesoros y dos personajes."},
+        "capitulos": {"27": "Peñas Altas", "28": "Peñas Altas: vida honrada", "29": "Peñas Altas: historias para adultos"},
+        "mapas": [mapa],
+        "lugares": [{"id": "pb_salida_penas", "mapa": "puerto_bravo", "nombre": "Salida norte, carretera de Peñas Altas", "tipo": "salida", "bloque": [7, 7], "lado": "N", "pos": 36,
+                     "a_mapa": "penas_altas", "a_lugar": "pa_salida", "km": 44, "horas": 1.1, "desc": "La carretera de curvas que sube a la sierra, hasta Peñas Altas."}],
+        "misiones": misiones,
+        "armas": [clon(ARMAS, carabina, id="pa_carabina", nombre="Carabina de monte", dano=58, alcance=34, precision=0.88, precio=1100, desc="Ligera y precisa a mucha distancia. La de los guardas de la sierra."),
+                  clon(ARMAS, cuerpo, id="pa_pico", nombre="Pico de minero", dano=34, alcance=2.6, cadencia=0.9, precio=45, desc="Pesa lo suyo y tarda en volver, pero donde cae, cae."),
+                  clon(ARMAS, explosivo, id="pa_dinamita", nombre="Cartucho de dinamita", dano=130, precio=320, desc="De los que sobraron en el polvorín. Más potente que una granada: aléjate después de lanzarlo.")],
+        "vehiculos": [clon(VEHICULOS, quad, id="pa_quad", nombre="Quad de montaña", vel_max=27, acel=8.0, salud=120, valor=900, precio=5600, desc="Sube por donde no sube nada más."),
+                      clon(VEHICULOS, cross, id="pa_trial", nombre="Moto de trial", vel_max=29, acel=9.5, salud=70, valor=800, precio=4300, desc="Ligera como una bicicleta y con un motor que no se cala nunca."),
+                      clon(VEHICULOS, camion, id="pa_volquete", nombre="Volquete de la cantera", vel_max=17, salud=320, valor=1500, precio=11000, trabajo="camion", desc="Un camión volquete lento y durísimo. Con la tecla J haces portes entre localidades.")],
+        "carreras": [{"id": "pa_c1", "nombre": "Subida al Collado", "mapa": "penas_altas", "premio": 380, "tiempo": 90, "puntos": [[3, 1], [3, 3], [0, 3], [0, 1], [3, 1]]}],
+        "comidas": [{"nombre": "Potaje de la sierra", "precio": 11, "salud": 42}, {"nombre": "Vino caliente con miel", "precio": 4, "salud": 9}],
+        "objetos": [{"id": "pa_lampara", "nombre": "Lámpara de minero", "precio": 35, "desc": "Una lámpara de carburo restaurada. De recuerdo."}],
+        "peces": [{"nombre": "una trucha del Lago Negro", "valor": 34, "peso": 14}, {"nombre": "un lucio", "valor": 70, "peso": 4}],
+        "personajes": [
+            {"id": "pa_berta", "nombre": "Berta", "apellido": "Lombao", "resistencia": 5, "salud_max": 115, "ciudadania": 25, "arma": "pa_pico", "botiquines": 1, "dinero": 120,
+             "desc": "Barrenera, como su madre. Empieza con resistencia al nivel cinco, más salud de lo normal, un pico de minero y poco dinero."},
+            {"id": "pa_goyo", "nombre": "Goyo", "apellido": "Peñalba", "punteria": 4, "conduccion": 2, "arma": "pa_carabina", "balas": 12, "dinero": 200,
+             "desc": "Guarda de la sierra hasta que cerraron el coto. Empieza con puntería al nivel cuatro, una carabina de monte con doce balas y doscientos euros."}],
+        "personas": [{"id": "pa_olalla", "nombre": "Olalla", "edad": 37, "lugar": "pa_lumbre", "gustos": ["pa_lago_noche", "copas"], "regalo": "pa_manta",
+                      "desc": "Volvió de la ciudad para llevar el bar de su padre. Destila su propio licor, lee en la barra cuando no hay nadie y dice las cosas una sola vez."}],
+        "actividades": [{"id": "pa_lago_noche", "nombre": "Ver las estrellas desde el Lago Negro", "precio": 10, "horas": 3}],
+        "regalos": [{"id": "pa_manta", "nombre": "Una manta de lana de la sierra", "precio": 90, "afinidad": 11}],
+        "sustancias": [clon(SUSTANCIAS, "alcohol", id="pa_endrinas", nombre="Licor de endrinas", unidad="botella", precio=16, animo=8, adiccion=1.8, sobredosis=4,
+                            desc="Licor casero de endrinas de la sierra. Dulce, engañoso y más fuerte de lo que parece.")],
+    }
+
+
+# ============================================================ Isla de los Vientos
+def isla_vientos():
+    cuerpo = primero(ARMAS, lambda a: a["tipo"] == "cuerpo" and a["id"] != "punos")
+    ballesta = "ballesta" if "ballesta" in ARMAS else primero(ARMAS, lambda a: a["tipo"] == "fuego")
+    cat = "catamaran" if "catamaran" in VEHICULOS else primero(VEHICULOS, lambda v: v.get("barco"))
+    moto_agua = "moto_agua" if "moto_agua" in VEHICULOS else primero(VEHICULOS, lambda v: v.get("barco"))
+    mapa = {
+        "id": "isla_vientos", "tipo": "isla", "nombre": "Isla de los Vientos", "trafico": 0, "peatones": 2, "policia": False, "aparcados": False, "nombre_objeto": "Concha nacarada",
+        "avenidas": ["Sendero de Barlovento", "Sendero del Aljibe", "Sendero de Sotavento"],
+        "calles": ["Senda del Muelle", "Senda de las Salinas", "Senda del Semáforo"],
+        "barrios": [{"id": "iv_isla", "nombre": "Isla de los Vientos", "i": [0, 1], "j": [0, 1], "ambiente": "amb_playa", "vehiculos": [],
+                     "descripcion": "La Isla de los Vientos: salinas abandonadas, dunas, cuatro casas de pescadores y un viento que no para nunca. Sin coches y sin policía."}],
+        "bloques": {"0,0": "muelle", "1,0": "arena", "0,1": "hierba", "1,1": "arena"},
+        "lugares": [
+            {"id": "iv_muelle", "nombre": "Muelle de las Salinas", "tipo": "embarcadero", "bloque": [0, 0], "lado": "S", "pos": 36, "a_mapa": "mar", "a_lugar": "mar_vientos", "desc": "Un muelle de piedra donde antes cargaban la sal."},
+            {"id": "iv_cantina", "nombre": "Cantina del Salinero", "tipo": "taberna", "bloque": [1, 0], "lado": "N", "pos": 36, "desc": "Dados, ron de caña y los cuatro vecinos de la isla."},
+            {"id": "iv_fogon", "nombre": "El Fogón de Barlovento", "tipo": "comida", "bloque": [0, 0], "lado": "N", "pos": 36, "desc": "Pescado a la sal, como se ha hecho siempre aquí."},
+            {"id": "iv_almacen", "nombre": "Almacén de la Isla", "tipo": "tienda", "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Lo que trae la barca del martes, y poco más."},
+            {"id": "iv_efectos", "nombre": "Efectos de pesca Sotavento", "tipo": "armeria", "bloque": [1, 0], "lado": "O", "pos": 36, "desc": "Garfios, fusiles de pesca submarina y cuchillos de desescamar."},
+            {"id": "iv_casa", "nombre": "Casa del salinero", "tipo": "casa", "bloque": [0, 1], "lado": "S", "pos": 36, "precio": 9500, "garaje": 0, "desc": "Una casa baja de piedra, encalada, con un aljibe y vistas a todo el mar."},
+            {"id": "iv_salinas", "nombre": "Salinas de Poniente", "tipo": "negocio", "bloque": [1, 1], "lado": "S", "pos": 36, "sonido": "gaviota", "precio": 14000, "ingresos": 340, "desc": "Las salinas se pueden volver a poner en marcha. Dan dinero cada medianoche."},
+            {"id": "iv_posada", "nombre": "Posada del Semáforo", "tipo": "hotel", "bloque": [0, 1], "lado": "E", "pos": 36, "precio_noche": 40, "desc": "El antiguo semáforo marítimo, convertido en posada de seis camas."},
+            {"id": "iv_nautica", "nombre": "Varadero de la Isla", "tipo": "nautica", "bloque": [0, 0], "lado": "O", "pos": 36, "embarcadero": "iv_muelle", "desc": "Venden y reparan barcos. Los dejan amarrados en el muelle."},
+            {"id": "iv_helipuerto", "nombre": "Explanada del Semáforo", "tipo": "helipuerto", "bloque": [0, 1], "xy": [20, 20], "precio": 220, "desc": "Una explanada de tierra batida por el viento."},
+            {"id": "iv_semaforo", "nombre": "Torre del Semáforo", "tipo": "monumento", "bloque": [0, 1], "xy": [50, 50], "sonido": "lugar_iglesia", "desc": "Desde aquí se avisaba a los barcos con banderas. La campana de niebla sigue sonando."},
+            {"id": "iv_aljibe", "nombre": "El Aljibe", "tipo": "monumento", "bloque": [1, 1], "xy": [20, 50], "sonido": "lugar_fuente", "desc": "La única agua dulce de la isla."},
+            {"id": "iv_rompiente", "nombre": "Rompiente de Barlovento", "tipo": "pesca", "bloque": [1, 0], "xy": [55, 15], "desc": "Sargos, lubinas y, en noches de luna, alguna morena."},
+            {"id": "iv_dunas", "nombre": "Dunas del Naufragio", "tipo": "tesoro", "bloque": [1, 1], "xy": [50, 20], "desc": "Aquí encalló un mercante hace cien años. La arena aún devuelve cosas."},
+        ],
+        "casetes": [[30, 140], [150, 40], [150, 150]],
+    }
+    misiones = [
+        {"id": "iv01", "titulo": "La barca del martes", "capitulo": 30, "contacto": "Chelo", "lugar": "iv_cantina", "requiere": ["m01"],
+         "resumen": "En la Cantina del Salinero, Chelo dice que la barca de los víveres lleva dos semanas sin venir.",
+         "pasos": [D(("Chelo", "La barca del martes no viene desde hace dos martes. Y anoche vi un fuego en las dunas."),
+                     ("Chelo", "Tú que tienes piernas, acércate a mirar. Yo de aquí no me muevo, que alguien tiene que guardar el ron.")),
+                   {"tipo": "ir", "lugar": "iv_dunas", "radio": 14, "texto": "Ve a las Dunas del Naufragio, al este de la isla."},
+                   {"tipo": "recoger", "lugar": "iv_dunas", "objeto": "un bidón con el nombre de la barca", "texto": "Recoge el bidón medio enterrado."},
+                   D(("Narrador", "El bidón es de la barca de los víveres. Alguien la ha vaciado aquí, y no fueron las gaviotas."))],
+         "recompensa": {"dinero": 240}},
+        {"id": "iv02", "titulo": "Raqueros", "capitulo": 30, "contacto": "Chelo", "lugar": "iv_cantina", "requiere": ["iv01"],
+         "resumen": "Unos raqueros asaltan las barcas pequeñas y esconden el botín en la isla.",
+         "pasos": [D(("Chelo", "Raqueros. Mi abuelo los colgaba del semáforo. Tú no hace falta que llegues a tanto."),
+                     ("Chelo", "Duermen en las salinas. Toma el fusil de pesca de mi marido: no hace ruido.")),
+                   {"tipo": "dar", "arma": "iv_fusil", "balas": 10},
+                   {"tipo": "eliminar", "lugar": "iv_salinas", "texto": "Ve a las Salinas de Poniente y acaba con los raqueros.",
+                    "enemigos": [{"n": 2, "tipo": "Raquero", "arma": "iv_garfio", "salud": 55}, {"n": 1, "tipo": "Patrón raquero", "arma": "pistola", "salud": 85}]},
+                   {"tipo": "recoger", "lugar": "iv_salinas", "objeto": "la llave del pañol", "texto": "Recoge la llave que llevaba el patrón."},
+                   D(("Narrador", "La llave abre el pañol del semáforo. Dentro están los víveres de dos semanas y el barquero, atado y furioso."))],
+         "recompensa": {"dinero": 650, "arma": "iv_fusil", "balas": 8}},
+        {"id": "iv03", "titulo": "Campana de niebla", "capitulo": 30, "contacto": "Chelo", "lugar": "iv_cantina", "requiere": ["iv02"],
+         "resumen": "Vuelven más raqueros, de noche y con niebla.",
+         "pasos": [D(("Chelo", "Vuelven los que faltaban, y con esta niebla no se ve ni el muelle. Sube al semáforo y toca la campana: los vecinos saben lo que significa."),
+                     ("Chelo", "Después baja al muelle y recíbelos como se merecen.")),
+                   {"tipo": "ir", "lugar": "iv_semaforo", "limite": 120, "texto": "Sube a la Torre del Semáforo y toca la campana. Tienes dos minutos."},
+                   {"tipo": "dar", "balas_arma": "iv_fusil", "balas": 10},
+                   {"tipo": "eliminar", "lugar": "iv_muelle", "texto": "Baja al Muelle de las Salinas y rechaza el desembarco.",
+                    "enemigos": [{"n": 3, "tipo": "Raquero", "arma": "iv_garfio", "salud": 60}, {"n": 1, "tipo": "El Sordo", "arma": "escopeta", "salud": 110}]},
+                   D(("Narrador", "Cuando levanta la niebla, la barca de los raqueros se aleja a la deriva, vacía."),
+                     ("Chelo", "Ya puedes decir que eres de la isla. El catamarán del varadero es tuyo: lo dejó a deber uno que ya no va a volver.")),
+                   {"tipo": "dar", "dinero": 300}],
+         "recompensa": {"dinero": 1400, "barco": {"modelo": "iv_catamaran", "en": "iv_muelle"}}},
+        {"id": "iv04", "titulo": "Sal para el fogón", "capitulo": 31, "contacto": "El cocinero", "lugar": "iv_fogon", "requiere": ["m01"],
+         "resumen": "Trabajo honrado: recados por la isla antes de que llegue la barca de los turistas.",
+         "pasos": [D(("El cocinero", "Me quedo sin sal en una isla de salinas, tiene gracia. Tráeme un saco de las salinas y agua del aljibe.")),
+                   {"tipo": "recoger", "lugar": "iv_salinas", "objeto": "un saco de sal gorda", "texto": "Recoge un saco de sal en las Salinas de Poniente."},
+                   {"tipo": "ir", "lugar": "iv_aljibe", "texto": "Pasa por El Aljibe a llenar la garrafa."},
+                   {"tipo": "ir", "lugar": "iv_fogon", "limite": 150, "texto": "Vuelve a El Fogón de Barlovento antes de que atraque la barca."},
+                   D(("El cocinero", "Justo a tiempo. Siéntate, que hoy comes aquí y no pagas."))],
+         "recompensa": {"dinero": 230}},
+    ]
+    return {
+        "info": {"nombre": "Isla de los Vientos", "autor": "Puerto Bravo", "version": "1.0",
+                 "descripcion": "Una isla nueva en el Mar de Poniente, a la que se llega navegando: tres misiones contra unos raqueros, un encargo honrado, una casa, unas salinas que dan dinero, pesca, búsqueda de tesoros, un fusil de pesca silencioso, un garfio, un catamarán, una moto de agua y un personaje marinero."},
+        "capitulos": {"30": "Isla de los Vientos", "31": "Isla de los Vientos: vida honrada"},
+        "mapas": [mapa],
+        "lugares": [{"id": "mar_vientos", "mapa": "mar", "nombre": "Muelle de la Isla de los Vientos, desde el mar", "tipo": "muelle", "xy": [2000, 700], "a_mapa": "isla_vientos", "a_lugar": "iv_muelle",
+                     "desc": "El muelle de piedra de la Isla de los Vientos, mar adentro, al este."}],
+        "misiones": misiones,
+        "armas": [clon(ARMAS, ballesta, id="iv_fusil", nombre="Fusil de pesca submarina", dano=70, alcance=20, precio=700, balas=8, precio_balas=45, desc="Dispara varillas de acero. Silencioso y lento de recargar."),
+                  clon(ARMAS, cuerpo, id="iv_garfio", nombre="Garfio de estibador", dano=28, alcance=2.2, cadencia=0.55, precio=35, desc="Para mover fardos. Y para lo que haga falta.")],
+        "vehiculos": [clon(VEHICULOS, cat, id="iv_catamaran", nombre="Catamarán Alisio", vel_max=21, salud=170, precio=19000, trabajo="mensajeria", desc="Dos cascos, mucha vela y casi nada de ruido. Con la tecla J haces mensajería entre muelles."),
+                      clon(VEHICULOS, moto_agua, id="iv_moto", nombre="Moto de agua Levante", vel_max=31, salud=60, precio=6800, desc="Rápida, nerviosa y frágil.")],
+        "comidas": [{"nombre": "Lubina a la sal", "precio": 15, "salud": 48}, {"nombre": "Ron de caña con limón", "precio": 4, "salud": 8}],
+        "objetos": [{"id": "iv_sal", "nombre": "Saquito de flor de sal", "precio": 12, "desc": "Sal de la isla. De regalo queda muy bien."}],
+        "peces": [{"nombre": "una lubina de rompiente", "valor": 44, "peso": 10}, {"nombre": "una morena", "valor": 62, "peso": 4}, {"nombre": "un sargo", "valor": 20, "peso": 18}],
+        "personajes": [{"id": "iv_telmo", "nombre": "Telmo", "apellido": "Barlovento", "pesca": 4, "resistencia": 3, "arma": "iv_garfio", "dinero": 180, "botiquines": 2,
+                        "desc": "Nacido en la isla y criado en una barca. Empieza con la pesca al nivel cuatro, resistencia al tres, un garfio y dos botiquines."}],
+    }
+
+
+# ============================================================ Noches de neón
+def noches_neon():
+    cuerpo = "bate" if "bate" in ARMAS else primero(ARMAS, lambda a: a["tipo"] == "cuerpo" and a["id"] != "punos")
+    corta = "revolver" if "revolver" in ARMAS else primero(ARMAS, lambda a: a["tipo"] == "fuego")
+    taxi = "taxi" if "taxi" in VEHICULOS else "utilitario"
+    limu = "limusina" if "limusina" in VEHICULOS else "utilitario"
+    scooter = "scooter" if "scooter" in VEHICULOS else "utilitario"
+    return {
+        "info": {"nombre": "Noches de neón", "autor": "Puerto Bravo", "version": "1.0",
+                 "descripcion": "La noche de Puerto Bravo: un barrio de locales nuevo con una sala de conciertos, una churrería de madrugada, un hotel, un ático, una empresa de taxis nocturnos con su taxi para trabajar, una limusina, tres misiones de chófer y portero, y, con el modo adulto, una sala de fiestas, dos personas a las que conocer, planes, regalos, un cóctel y dos historias."},
+        "capitulos": {"32": "Noches de neón", "33": "Noches de neón: historias para adultos"},
+        "lugares": [
+            {"id": "nn_sotano", "mapa": "puerto_bravo", "nombre": "Sala de conciertos El Sótano", "tipo": "monumento", "bloque": [6, 6], "lado": "O", "pos": 36, "sonido": "lugar_bar", "desc": "Un sótano con buen sonido y mala ventilación. Toca alguien casi todas las noches."},
+            {"id": "nn_churreria", "mapa": "puerto_bravo", "nombre": "Churrería La Madrugada", "tipo": "comida", "bloque": [7, 7], "lado": "S", "pos": 36, "desc": "Abre cuando cierran los demás. Churros, chocolate y caldo."},
+            {"id": "nn_hotel", "mapa": "puerto_bravo", "nombre": "Hotel Medianoche", "tipo": "hotel", "bloque": [6, 6], "lado": "E", "pos": 36, "precio_noche": 70, "desc": "Moqueta gruesa, recepcionista discreto y desayuno hasta las doce."},
+            {"id": "nn_atico", "mapa": "puerto_bravo", "nombre": "Ático de la calle de los Neones", "tipo": "casa", "bloque": [6, 6], "lado": "S", "pos": 36, "precio": 12500, "garaje": 2, "desc": "Un ático con terraza sobre los letreros luminosos. Dos plazas de garaje."},
+            {"id": "nn_radiotaxi", "mapa": "puerto_bravo", "nombre": "Radio Taxi Luna", "tipo": "negocio", "bloque": [7, 6], "lado": "E", "pos": 36, "sonido": "lugar_taxi", "precio": 15000, "ingresos": 380, "vehiculo": "nn_taxi", "desc": "Una cooperativa de taxis nocturnos en venta. En la puerta hay siempre un taxi: súbete y pulsa J."},
+            {"id": "nn_seguridad", "mapa": "puerto_bravo", "nombre": "Seguridad Búho", "tipo": "armeria", "bloque": [7, 6], "lado": "N", "pos": 36, "desc": "Material para porteros y escoltas."},
+            {"id": "nn_luna", "mapa": "puerto_bravo", "nombre": "Sala de fiestas Luna Llena", "tipo": "club", "bloque": [7, 6], "lado": "S", "pos": 36, "adultos": True, "desc": "Dos plantas, espectáculo a medianoche y la cola más larga de la ciudad."},
+            {"id": "nn_trastienda", "mapa": "puerto_bravo", "nombre": "La Trastienda", "tipo": "proveedor", "bloque": [6, 6], "lado": "N", "pos": 36, "adultos": True, "factor": {"hierba": 1.1, "polvo": 0.9, "pastillas": 0.8, "cristal": 1.1, "nn_coctel": 0.8}, "desc": "Detrás de una tienda de discos. Aquí se abastece media noche de Puerto Bravo."},
+        ],
+        "vehiculos": [
+            clon(VEHICULOS, taxi, id="nn_taxi", nombre="Taxi nocturno", salud=130, valor=900, precio=7200, trabajo="taxi", desc="Un taxi con luz verde y radio de la cooperativa. Con la tecla J llevas pasajeros."),
+            clon(VEHICULOS, limu, id="nn_limusina", nombre="Limusina Medianoche", vel_max=27, salud=190, valor=4000, precio=42000, desc="Larga, negra y con los cristales tintados."),
+            clon(VEHICULOS, scooter, id="nn_vespa", nombre="Scooter de neón", vel_max=24, salud=60, valor=450, precio=2300, desc="Un scooter con luces de colores bajo el chasis."),
+        ],
+        "armas": [clon(ARMAS, cuerpo, id="nn_porra", nombre="Porra extensible", dano=24, alcance=2.3, cadencia=0.45, precio=85, desc="Rápida y discreta. La de los porteros."),
+                  clon(ARMAS, corta, id="nn_derringer", nombre="Derringer de bolsillo", dano=48, alcance=12, cargador=2, precio=520, balas=10, precio_balas=40, desc="Dos tiros y a recargar. Cabe en cualquier bolsillo.")],
+        "comidas": [{"nombre": "Churros con chocolate", "precio": 5, "salud": 20}, {"nombre": "Caldo de madrugada", "precio": 3, "salud": 12}],
+        "objetos": [{"id": "nn_pulsera", "nombre": "Pulsera de la sala El Sótano", "precio": 15, "desc": "La entrada del concierto de esta noche. De recuerdo."}],
+        "carreras": [{"id": "nn_c1", "nombre": "Nocturna de los Neones", "mapa": "puerto_bravo", "premio": 750, "tiempo": 95, "puntos": [[7, 6], [7, 8], [4, 8], [4, 5], [7, 5], [7, 6]]}],
+        "personajes": [{"id": "nn_vera", "nombre": "Vera", "apellido": "Montoya", "conduccion": 4, "reputacion": 15, "ciudadania": 15, "dinero": 400, "arma": "nn_porra", "botiquines": 1,
+                        "desc": "Diez años de taxista de noche. Empieza con conducción al nivel cuatro, cuatrocientos euros, una porra y algo de nombre tanto entre los vecinos como en la calle."}],
+        "misiones": [
+            {"id": "nn01", "titulo": "Turno de noche", "capitulo": 32, "contacto": "Mari Cruz", "lugar": "nn_radiotaxi", "requiere": ["m01"],
+             "resumen": "En Radio Taxi Luna falta un chófer para un servicio especial.",
+             "pasos": [D(("Mari Cruz", "Se me ha puesto malo el de la limusina y tengo a un cantante esperando en el Hotel Medianoche. ¿Tú conduces fino?"),
+                         ("Mari Cruz", "La limusina está en la puerta de la sala El Sótano. Recógela y llévala al casino sin un rasguño, que es alquilada.")),
+                       {"tipo": "robar", "lugar": "nn_sotano", "modelo": "nn_limusina", "nombre": "la limusina alquilada", "abierto": True, "texto": "Recoge la limusina junto a la sala El Sótano. Está abierta."},
+                       {"tipo": "ir", "lugar": "nn_hotel", "texto": "Pasa por el Hotel Medianoche a recoger al cantante."},
+                       {"tipo": "entregar", "lugar": "casino", "salud_min": 85, "limite": 200, "texto": "Llévalo al casino en poco más de tres minutos y sin golpes."},
+                       D(("Narrador", "El cantante baja sin dar las gracias. La propina, eso sí, es de las buenas."))],
+             "recompensa": {"dinero": 450}},
+            {"id": "nn02", "titulo": "Los de la puerta", "capitulo": 32, "contacto": "Mari Cruz", "lugar": "nn_radiotaxi", "requiere": ["nn01"],
+             "resumen": "Una banda cobra a los taxistas por dejarles parar delante de los locales.",
+             "pasos": [D(("Mari Cruz", "Nos piden cincuenta euros por noche y taxi. Al que no paga le rajan las ruedas. Están en la churrería, que es donde cuentan la caja."),
+                         ("Mari Cruz", "Toma, la porra de mi cuñado, que era portero. Si se ponen tontos, tú más.")),
+                       {"tipo": "dar", "arma": "nn_porra"},
+                       {"tipo": "eliminar", "lugar": "nn_churreria", "texto": "Ve a la Churrería La Madrugada y échalos de allí.",
+                        "enemigos": [{"n": 3, "tipo": "Matón de puerta", "arma": "navaja", "salud": 55}, {"n": 1, "tipo": "El Cobrador", "arma": "nn_derringer", "salud": 85}]},
+                       {"tipo": "recoger", "lugar": "nn_churreria", "objeto": "la libreta de cobros", "texto": "Recoge la libreta de cobros."},
+                       D(("Narrador", "En la libreta están todos los taxis de la ciudad, y al final una matrícula subrayada dos veces."))],
+             "recompensa": {"dinero": 700, "arma": "nn_derringer", "balas": 10}},
+            {"id": "nn03", "titulo": "Bajada de bandera", "capitulo": 32, "contacto": "Mari Cruz", "lugar": "nn_radiotaxi", "requiere": ["nn02"],
+             "resumen": "El jefe de los cobradores huye con la caja de un mes.",
+             "pasos": [D(("Mari Cruz", "La matrícula es de un sedán negro. Se va con la caja de todo el mes por la salida del este. Ese dinero es de los compañeros.")),
+                       {"tipo": "perseguir", "lugar": "salida_este", "modelo": "sedan" if "sedan" in VEHICULOS else "utilitario", "nombre": "el sedán negro", "salud": 200, "limite": 260, "texto": "Alcanza y destroza el sedán negro antes de que salga de la ciudad."},
+                       {"tipo": "recoger", "aqui": True, "objeto": "la caja del mes", "texto": "Recoge la caja del mes."},
+                       {"tipo": "policia", "nivel": 2, "texto": "Te han visto. Despista a la policía antes de volver."},
+                       {"tipo": "ir", "lugar": "nn_radiotaxi", "texto": "Devuelve la caja a Radio Taxi Luna."},
+                       D(("Mari Cruz", "Aquí no se olvida esto. Llévate el scooter de las luces, que era del Cobrador y ya no lo va a necesitar.")),
+                       {"tipo": "dar", "dinero": 300}],
+             "recompensa": {"dinero": 1600, "chaleco": True}},
+            {"id": "nna1", "titulo": "Lista de invitados", "capitulo": 33, "adultos": True, "contacto": "Darío", "lugar": "nn_luna", "requiere": ["nn01"],
+             "resumen": "En la Luna Llena, Darío necesita que alguien recoja un encargo antes de que abra la sala.",
+             "pasos": [D(("Darío", "Esta noche viene medio Ayuntamiento y me falta lo del cóctel de la casa. Pásate por La Trastienda y tráemelo. Quédate dos para ti.")),
+                       {"tipo": "ir", "lugar": "nn_trastienda", "texto": "Pasa por La Trastienda."},
+                       {"tipo": "dar", "sustancia": "nn_coctel", "cantidad": 2},
+                       {"tipo": "ir", "lugar": "nn_luna", "limite": 150, "texto": "Vuelve a la Luna Llena antes de que abran las puertas."},
+                       D(("Darío", "Puntual. Eso aquí vale más que el dinero. Estás en la lista, para siempre."))],
+             "recompensa": {"dinero": 320, "afinidad": {"nn_dario": 15}}},
+            {"id": "nna2", "titulo": "Después del último pase", "capitulo": 33, "adultos": True, "contacto": "Irene", "lugar": "nn_luna", "requiere": ["nna1"],
+             "resumen": "Irene, la cantante de la sala, tiene a un admirador que no entiende un no.",
+             "pasos": [D(("Irene", "Me espera cada noche en la puerta de atrás. Le he dicho que no de todas las maneras. Hoy ha venido con dos amigos."),
+                         ("Irene", "No quiero que le pase nada grave. Solo que entienda.")),
+                       {"tipo": "eliminar", "lugar": "nn_sotano", "texto": "Están junto a la sala El Sótano. Haz que lo entiendan.",
+                        "enemigos": [{"n": 2, "tipo": "Amigo del pesado", "arma": "punos", "salud": 45}, {"n": 1, "tipo": "El pesado", "arma": "punos", "salud": 60}]},
+                       {"tipo": "ir", "lugar": "nn_luna", "texto": "Vuelve a la Luna Llena."},
+                       D(("Irene", "Gracias. De verdad. La primera copa de cada noche, para ti, mientras yo cante aquí."))],
+             "recompensa": {"dinero": 400, "afinidad": {"nn_irene": 18}}},
+        ],
+        "personas": [
+            {"id": "nn_dario", "nombre": "Darío", "edad": 41, "lugar": "nn_luna", "gustos": ["nn_concierto", "cena"], "regalo": "nn_vinilo",
+             "desc": "Encargado de la Luna Llena. Traje impecable, memoria de elefante y un sentido del humor muy seco. Fue bailarín antes de que le fallara una rodilla."},
+            {"id": "nn_irene", "nombre": "Irene", "edad": 30, "lugar": "nn_luna", "gustos": ["nn_churros", "paseo"], "regalo": "nn_vinilo",
+             "desc": "Canta boleros a medianoche y rock cuando nadie mira. Tímida fuera del escenario, y en él no hay quien le quite los ojos de encima."}],
+        "actividades": [{"id": "nn_concierto", "nombre": "Ir a un concierto en El Sótano", "precio": 30, "horas": 3},
+                        {"id": "nn_churros", "nombre": "Churros al amanecer en La Madrugada", "precio": 12, "horas": 1}],
+        "regalos": [{"id": "nn_vinilo", "nombre": "Un vinilo de primera edición", "precio": 110, "afinidad": 12},
+                    {"id": "nn_entradas", "nombre": "Dos entradas de palco", "precio": 160, "afinidad": 15}],
+        "sustancias": [clon(SUSTANCIAS, "alcohol", id="nn_coctel", nombre="Cóctel Luna Llena", unidad="copa", precio=14, animo=10, adiccion=1.5, sobredosis=5,
+                            desc="El cóctel de la casa. Entra solo y sube el ánimo más que una copa normal.")],
+    }
+
 
 def escribir(nombre, crudo):
     from editor import modelo
@@ -395,7 +722,8 @@ def escribir(nombre, crudo):
     return ruta, errores, avisos
 
 
-MODS = (("costa_dorada.json", costa_dorada), ("oficios_y_recados.json", oficios), ("valdeolmos.json", valdeolmos), ("motor_y_asfalto.json", motor))
+MODS = (("costa_dorada.json", costa_dorada), ("oficios_y_recados.json", oficios), ("valdeolmos.json", valdeolmos), ("motor_y_asfalto.json", motor),
+        ("penas_altas.json", penas_altas), ("isla_de_los_vientos.json", isla_vientos), ("noches_de_neon.json", noches_neon))
 
 if __name__ == "__main__":
     mal = False

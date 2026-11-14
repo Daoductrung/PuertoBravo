@@ -1,0 +1,18 @@
+{
+  "lugares": [
+    {"id": "mod_bar_rincon", "mapa": "puerto_bravo", "nombre": "Bar El Rincón", "tipo": "taberna",
+     "bloque": [2, 3], "lado": "N", "pos": 20,
+     "desc": "Un bar pequeño con las mejores croquetas de Puerto Bravo."}
+  ],
+  "misiones": [
+    {"id": "mod01", "titulo": "Croquetas a domicilio", "capitulo": 5, "contacto": "Loli",
+     "lugar": "mod_bar_rincon", "requiere": ["m01"],
+     "resumen": "La dueña del Bar El Rincón necesita un repartidor.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [["Loli", "Tú tienes cara de saber correr. Lleva estas croquetas al hospital antes de que se enfríen."]]},
+       {"tipo": "ir", "lugar": "hospital", "limite": 150, "texto": "Lleva las croquetas al Hospital General en dos minutos y medio."},
+       {"tipo": "dialogo", "lineas": [["Narrador", "Las enfermeras de urgencias te reciben con un aplauso."]]}
+     ],
+     "recompensa": {"dinero": 200}}
+  ]
+}

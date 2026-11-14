@@ -24,7 +24,7 @@ import os
 
 import numpy as np
 
-from . import rutas, sintesis
+from . import cifrado, rutas, sintesis
 
 SR = sintesis.SR
 VENTANA = int(0.3 * SR)
@@ -69,19 +69,13 @@ def igualar(d, ref):
 
 def referencias(carpeta, originales=None):
     """Nivel y pico de cada sonido original. Se calcula una vez y se guarda en _niveles.json."""
-    ruta = os.path.join(carpeta, "_niveles.json")
-    try:
-        with open(ruta, encoding="utf-8") as f:
-            datos = json.load(f)
-        if datos.get("version") == sintesis.VERSION_CACHE and datos.get("niveles"):
-            return datos["niveles"]
-    except (OSError, ValueError):
-        pass
+    datos = _leer(carpeta, "_niveles")
+    if datos and datos.get("version") == sintesis.VERSION_CACHE and datos.get("niveles"):
+        return datos["niveles"]
     originales = originales or sintesis.generar()
     niveles = {k: [round(nivel(v), 6), round(pico(v), 6)] for k, v in originales.items()}
     try:
-        with open(ruta, "w", encoding="utf-8") as f:
-            json.dump({"version": sintesis.VERSION_CACHE, "niveles": niveles}, f)
+        cifrado.escribir_json(os.path.join(carpeta, "_niveles" + (rutas.EXT_DATOS if cifrado.COMPILADO else ".json")), {"version": sintesis.VERSION_CACHE, "niveles": niveles})
     except OSError:
         pass
     return niveles
@@ -96,13 +90,21 @@ def carpeta_defecto():
     return rutas.carpeta_sonidos()
 
 
+def _leer(carpeta, base):
+    """Lee carpeta/base.json o carpeta/base.pbd (la forma protegida del juego compilado). None si no hay o no vale."""
+    for ext in (".json", rutas.EXT_DATOS):
+        ruta = os.path.join(carpeta, base + ext)
+        if os.path.exists(ruta):
+            try:
+                d = cifrado.leer_json(ruta)
+                return d if isinstance(d, dict) else None
+            except (OSError, ValueError):
+                continue
+    return None
+
+
 def _meta(ruta):
-    try:
-        with open(os.path.join(ruta, "pack.json"), encoding="utf-8") as f:
-            m = json.load(f)
-        return m if isinstance(m, dict) else {}
-    except (OSError, ValueError):
-        return {}
+    return _leer(ruta, "pack") or {}
 
 
 def _archivos(ruta):

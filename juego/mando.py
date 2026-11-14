@@ -75,6 +75,7 @@ ACCIONES = {
     "trabajo": ("empezar o terminar un trabajo con el vehículo", K.K_j, 0, False),
     "piloto": ("piloto del GPS", K.K_y, 0, False),
     "paseo": ("caminar solo siguiendo el GPS", K.K_u, 0, False),
+    "hablar": ("hablar con la persona de al lado", K.K_j, 0, False),
     "especial": ("pescar en el mar, o sirena en vehículos de emergencias", K.K_p, 0, False),
     "velocidad": ("decir la velocidad", K.K_w, 0, False),
 }
@@ -132,12 +133,18 @@ class Mando:
 
     # ------------------------------------------------------------ asignación
     def _archivo(self):
-        return os.path.join(rutas.carpeta_data("config"), "mando.json")
+        propio = rutas.archivo_config("mando")
+        if not os.path.exists(propio):                    # botones guardados con la otra forma
+            base = os.path.splitext(propio)[0]
+            for ext in (".json", rutas.EXT_CONFIG):
+                if os.path.exists(base + ext) and not getattr(self, "_guardando", False):
+                    return base + ext
+        return propio
 
     def _cargar_mapa(self):
         try:
-            with open(self._archivo(), encoding="utf-8") as f:
-                d = json.load(f)
+            from . import cifrado
+            d = cifrado.leer_json(self._archivo())
             for c in self.mapa:
                 for b, a in d.get(c, {}).items():
                     if b in ORDEN_BOTONES and a in ACCIONES:
@@ -149,8 +156,8 @@ class Mando:
         if self.app.pruebas:
             return
         try:
-            with open(self._archivo(), "w", encoding="utf-8") as f:
-                json.dump(self.mapa, f, ensure_ascii=False, indent=2)
+            from . import cifrado
+            cifrado.escribir_json(rutas.archivo_config("mando"), self.mapa, sangria=2)
         except OSError:
             pass
 

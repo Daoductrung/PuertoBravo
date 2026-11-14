@@ -382,7 +382,7 @@ def hotel(p, l):
             p.app.son("error")
             p.app.decir("El recepcionista no admite huéspedes con la policía detrás.", True)
         elif p.pagar(int(l.get("precio_noche", 70))):
-            p.pasar_horas(8)
+            p.pasar_horas(8, dormir=True)
             j.salud = j.salud_max
             p.son("pasan_horas", cat="interfaz")
             p.app.decir(f"Duermes ocho horas en una cama estupenda. Salud al máximo. Son las {p.hora_txt()} del día {p.dia}.", True)

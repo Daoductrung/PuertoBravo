@@ -101,7 +101,7 @@ class Extras2:
         j = self.j
         s = j.stats
         ops = [
-            f"Son las {self.hora_txt()}. " + ("Llueve en toda la comarca: precaución en las carreteras." if self.lluvia else "Cielos despejados en toda la comarca."),
+            f"Son las {self.hora_txt()}. " + ("Llueve en toda la comarca: precaución en las carreteras." if self.lluvia else "Cielos despejados en toda la comarca.") + (" " + self.dia_txt() if self.dia_txt() else ""),
             "El Atlético Bravo empata a cero y sigue soñando con el ascenso.",
             "El Ayuntamiento de Puerto Bravo promete arreglar el reloj de la plaza. Otra vez.",
             "Los pescadores de Cala Brava denuncian que cada vez hay más botas viejas en el mar.",

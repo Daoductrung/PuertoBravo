@@ -44,6 +44,8 @@ class Online:
         self.remotos = {}
         self.t_red = 0.0
         self.chat = []             # últimos mensajes, para repasarlos
+        self.coop = None           # actividad conjunta propuesta o en marcha
+        self.pasajero = None       # id del amigo en cuyo vehículo vas
 
     def online_activo(self):
         return getattr(self, "red", None) is not None and self.red.conectado
@@ -99,6 +101,8 @@ class Online:
         for r in getattr(self, "remotos", {}).values():
             r.callar()
         self.remotos = {}
+        self.coop = None
+        self.pasajero = None
         era = getattr(self, "red", None) is not None or self.es_anfitrion()
         if getattr(self, "red", None) is not None:
             self.red.cerrar()
@@ -186,6 +190,8 @@ class Online:
             self._red_mensaje(m)
         if getattr(self, "red", None) is not None:
             self._red_sonidos(dt)
+            self._coop_paso()
+            self._pasajero_paso()
 
     def _red_mensaje(self, m):
         t = m.get("t")
@@ -226,6 +232,8 @@ class Online:
             del self.chat[:-30]
             self.son("chat", cat="interfaz")
             self.decir(f"{m.get('nombre', 'Alguien')} dice: {m.get('texto', '')}")
+        elif t == "act":
+            self._coop_mensaje(m.get("de"), str(m.get("nombre", "Alguien")), m.get("d") or {})
         elif t == "evento":
             r = self.remotos.get(m.get("de"))
             if r and r.mapa == self.mundo.id and m.get("que") == "claxon":
@@ -285,3 +293,260 @@ class Online:
                 if r.t_paso <= 0:
                     r.t_paso = 0.45
                     self.son("paso_npc", xy=(r.x, r.y), ref=4, maxd=40, vol=0.7)
+
+    # ------------------------------------------------------ actividades conjuntas
+    def _act(self, **d):
+        if self.online_activo():
+            self.red.enviar({"t": "act", "d": d})
+
+    def coop_txt(self):
+        c = self.coop
+        if not c:
+            return "No hay ninguna actividad conjunta"
+        que = f"Carrera hasta {c['destino']} con {c['apuesta']} euros de apuesta" if c["tipo"] == "carrera" else f"Reparto en equipo: quedan {len(c['restantes'])} entregas"
+        fase = {"propuesta": "propuesta por " + c["nombre"], "marcha": "en marcha"}[c["estado"]]
+        return f"{que}, {fase}. Participantes: {len(c['participantes'])}"
+
+    def proponer_carrera(self, lugar, apuesta=100):
+        """Una carrera entre amigos hasta un lugar: quien llega primero se lleva las apuestas."""
+        if not self.online_activo() or not self.remotos:
+            return False, "Necesitas al menos un amigo conectado."
+        if self.coop:
+            return False, "Ya hay una actividad propuesta o en marcha."
+        if self.j.dinero < apuesta:
+            return False, f"No tienes los {apuesta} euros de la apuesta."
+        self.coop = {"tipo": "carrera", "de": self.red.id, "nombre": "ti", "lugar": lugar.id, "mapa": lugar.mapa, "destino": self.nombre_lugar(lugar),
+                     "apuesta": apuesta, "estado": "propuesta", "participantes": {self.red.id}, "restantes": []}
+        self._act(que="propuesta", tipo="carrera", lugar=lugar.id, mapa=lugar.mapa, apuesta=apuesta)
+        return True, f"Propones una carrera hasta {lugar.nombre} con {apuesta} euros de apuesta. Cuando tus amigos acepten, dale a Empezar."
+
+    def proponer_reparto(self):
+        """Reparto en equipo: cuatro entregas por la localidad. Entre todos, contrarreloj; si se completa, cobran todos."""
+        import random
+        if not self.online_activo() or not self.remotos:
+            return False, "Necesitas al menos un amigo conectado."
+        if self.coop:
+            return False, "Ya hay una actividad propuesta o en marcha."
+        cand = [l for l in self.mundo.lugares.values() if l.tipo in ("tienda", "comida", "taberna", "farmacia", "banco", "hotel", "gimnasio", "armeria", "taller")]
+        if len(cand) < 4:
+            return False, "En esta localidad no hay sitios suficientes para un reparto."
+        elegidos = [l.id for l in random.sample(cand, 4)]
+        self.coop = {"tipo": "reparto", "de": self.red.id, "nombre": "ti", "mapa": self.mundo.id, "destino": self.mundo.nombre, "apuesta": 0,
+                     "estado": "propuesta", "participantes": {self.red.id}, "restantes": elegidos, "lugar": None}
+        self._act(que="propuesta", tipo="reparto", lugares=elegidos, mapa=self.mundo.id)
+        return True, f"Propones un reparto en equipo en {self.mundo.nombre}: cuatro entregas en seis minutos. Cuando tus amigos acepten, dale a Empezar."
+
+    def aceptar_coop(self):
+        c = self.coop
+        if not c or c["estado"] != "propuesta" or self.red.id in c["participantes"]:
+            return False, "No hay nada que aceptar."
+        if c["apuesta"] and self.j.dinero < c["apuesta"]:
+            return False, f"No tienes los {c['apuesta']} euros de la apuesta."
+        c["participantes"].add(self.red.id)
+        self._act(que="acepto")
+        return True, "Aceptado. Empezará cuando lo diga quien lo ha propuesto."
+
+    def empezar_coop(self):
+        c = self.coop
+        if not c or c["de"] != self.red.id or c["estado"] != "propuesta":
+            return False, "Solo puede empezarla quien la ha propuesto."
+        if len(c["participantes"]) < 2:
+            return False, "Todavía no ha aceptado nadie."
+        self._act(que="salida", participantes=sorted(c["participantes"]))
+        self._coop_salida(sorted(c["participantes"]))
+        return True, ""
+
+    def cancelar_coop(self):
+        if self.coop:
+            self._act(que="cancelada")
+            self.coop = None
+            self.cancelar_gps()
+            self.decir("Actividad cancelada.", True)
+
+    def _coop_salida(self, participantes):
+        c = self.coop
+        c["participantes"] = set(participantes)
+        if self.red.id not in c["participantes"]:
+            self.coop = None
+            return
+        c["estado"] = "marcha"
+        c["t0"] = self.t
+        self.son("mision_ok", cat="interfaz", vol=0.5)
+        if c["tipo"] == "carrera":
+            self.j.dinero -= min(self.j.dinero, c["apuesta"])
+            l = self.lugares.get(c["lugar"])
+            if l is not None:
+                self.gps_a_lugar(l, callar=True)
+            self.decir(f"¡Salida! Carrera hasta {c['destino']}. Hay {c['apuesta'] * len(c['participantes'])} euros en juego.", True)
+        else:
+            self._coop_gps_reparto()
+            self.decir(f"¡En marcha! Cuatro entregas en {c['destino']} en seis minutos. Repartíos: cada uno a la que tenga más cerca.", True)
+
+    def _coop_gps_reparto(self):
+        import math
+        c = self.coop
+        x, y = self.pos()
+        aqui = [self.lugares[i] for i in c["restantes"] if i in self.lugares and self.lugares[i].mapa == self.mundo.id]
+        if aqui:
+            self.gps_a_lugar(min(aqui, key=lambda l: math.hypot(l.x - x, l.y - y)), callar=True)
+
+    def _coop_mensaje(self, de, nombre, d):
+        que = d.get("que")
+        c = self.coop
+        if que == "propuesta" and c is None:
+            if d.get("tipo") == "carrera":
+                l = self.lugares.get(d.get("lugar"))
+                if l is None:
+                    return
+                try:
+                    apuesta = max(0, min(5000, int(d.get("apuesta", 0))))
+                except (TypeError, ValueError):
+                    return
+                self.coop = {"tipo": "carrera", "de": de, "nombre": nombre, "lugar": l.id, "mapa": l.mapa, "destino": self.nombre_lugar(l), "apuesta": apuesta,
+                             "estado": "propuesta", "participantes": {de}, "restantes": []}
+                texto = f"{nombre} propone una carrera hasta {self.nombre_lugar(l)} con {apuesta} euros de apuesta."
+            elif d.get("tipo") == "reparto":
+                lugares = [i for i in (d.get("lugares") or []) if i in self.lugares][:8]
+                if not lugares:
+                    return
+                mapa = self.mapas.get(d.get("mapa"))
+                self.coop = {"tipo": "reparto", "de": de, "nombre": nombre, "mapa": d.get("mapa"), "destino": mapa.nombre if mapa else "otra localidad", "apuesta": 0,
+                             "estado": "propuesta", "participantes": {de}, "restantes": lugares, "lugar": None}
+                texto = f"{nombre} propone un reparto en equipo en {self.coop['destino']}."
+            else:
+                return
+            self.son("evento", cat="interfaz")
+            self.decir(texto + " Para aceptar, abre el móvil con M y entra en Jugar con amigos.")
+        elif que in ("sube", "baja"):
+            if d.get("a") == self.red.id:
+                self.son("puerta_coche", vol=0.7)
+                self.decir(f"{nombre} {'sube a tu vehículo' if que == 'sube' else 'se baja de tu vehículo'}.")
+        elif que == "regalo":
+            if d.get("a") == self.red.id and d.get("cosa") == "botiquin":
+                self.j.objetos["botiquin"] = self.j.objetos.get("botiquin", 0) + 1
+                self.son("recoger", cat="interfaz")
+                self.decir(f"{nombre} te da un botiquín. Tienes {self.j.objetos['botiquin']}.")
+        elif c is None:
+            return
+        elif que == "acepto" and c["estado"] == "propuesta":
+            c["participantes"].add(de)
+            self.son("chat", cat="interfaz")
+            self.decir(f"{nombre} acepta. Ya sois {len(c['participantes'])}.")
+        elif que == "salida" and de == c["de"] and c["estado"] == "propuesta":
+            try:
+                participantes = [int(x) for x in d.get("participantes") or []]
+            except (TypeError, ValueError):
+                participantes = list(c["participantes"])
+            self._coop_salida(participantes)
+        elif que == "meta" and c["estado"] == "marcha" and c["tipo"] == "carrera":
+            self.coop = None
+            self.cancelar_gps()
+            self.son("mision_fallo", cat="interfaz", vol=0.5)
+            self.decir(f"{nombre} ha llegado primero y se lleva las apuestas.")
+        elif que == "punto" and c["estado"] == "marcha" and c["tipo"] == "reparto":
+            self._coop_punto(d.get("lugar"), nombre)
+        elif que == "cancelada" and de == c["de"]:
+            self.coop = None
+            self.cancelar_gps()
+            self.decir(f"{nombre} ha cancelado la actividad.")
+
+    def _coop_punto(self, lugar_id, quien):
+        c = self.coop
+        if lugar_id not in c["restantes"]:
+            return
+        c["restantes"].remove(lugar_id)
+        l = self.lugares.get(lugar_id)
+        self.son("llegada", cat="interfaz")
+        if c["restantes"]:
+            self.decir(f"{quien} entrega en {l.nombre if l else 'un punto'}. Quedan {len(c['restantes'])}.")
+            if self.red.id in c["participantes"]:
+                self._coop_gps_reparto()
+            return
+        premio = 250 + 50 * len(c["participantes"])
+        self.coop = None
+        self.cancelar_gps()
+        self.son("mision_ok", cat="interfaz")
+        self.dar_dinero(premio)
+        self.cambiar_ciudadania(2.0)
+        self.j.stats["coop"] = self.j.stats.get("coop", 0) + 1
+        self.decir(f"¡Reparto completado entre todos! Cobráis {premio} euros cada uno.")
+
+    def _coop_paso(self):
+        import math
+        c = self.coop
+        if not c or c["estado"] != "marcha" or self.red.id not in c["participantes"]:
+            return
+        x, y = self.pos()
+        if c["tipo"] == "carrera":
+            l = self.lugares.get(c["lugar"])
+            if l is not None and l.mapa == self.mundo.id and math.hypot(l.x - x, l.y - y) < 25:
+                bote = c["apuesta"] * len(c["participantes"])
+                self._act(que="meta")
+                self.coop = None
+                self.cancelar_gps()
+                self.son("mision_ok", cat="interfaz")
+                self.dar_dinero(bote)
+                self.j.stats["coop"] = self.j.stats.get("coop", 0) + 1
+                self.decir(f"¡Has ganado la carrera! Te llevas {bote} euros.")
+        else:
+            if self.t - c.get("t0", self.t) > 360:
+                self._act(que="cancelada") if c["de"] == self.red.id else None
+                self.coop = None
+                self.cancelar_gps()
+                self.son("mision_fallo", cat="interfaz")
+                self.decir("Se acabó el tiempo del reparto. Otra vez será.")
+                return
+            for i in list(c["restantes"]):
+                l = self.lugares.get(i)
+                if l is not None and l.mapa == self.mundo.id and math.hypot(l.x - x, l.y - y) < 20:
+                    self._act(que="punto", lugar=i)
+                    self._coop_punto(i, "Tú")
+                    break
+
+    # ------------------------------------------------------------- ir de pasajero
+    def subir_con_amigo(self):
+        """A pie, junto al vehículo parado de un amigo: subes de pasajero y él te lleva."""
+        if not self.online_activo() or self.j.veh:
+            return False
+        x, y = self.pos()
+        cerca = [r for r in self.remotos.values() if r.veh and r.visto and r.mapa == self.mundo.id and r.dist(x, y) < 8 and r.vel < 3]
+        if not cerca:
+            return False
+        r = min(cerca, key=lambda r: r.dist(x, y))
+        self.pasajero = r.id
+        self.parar_paseo()
+        self.son("puerta_coche", vol=0.8)
+        self._act(que="sube", a=r.id)
+        self.decir(f"Subes de pasajero con {r.nombre}. Pulsa F para bajarte cuando pare.", True)
+        return True
+
+    def bajar_de_amigo(self, motivo=None):
+        r = self.remotos.get(self.pasajero)
+        self.pasajero = None
+        self.j.x, self.j.y = self.mundo.punto_libre(self.j.x + 2, self.j.y + 2)
+        self.son("puerta_coche", vol=0.8)
+        if r is not None:
+            self._act(que="baja", a=r.id)
+        self.decir(motivo or "Te bajas.", True)
+
+    def _pasajero_paso(self):
+        if self.pasajero is None:
+            return
+        r = self.remotos.get(self.pasajero)
+        if r is None or not r.veh:
+            self.bajar_de_amigo("Tu amigo ha dejado el vehículo y te bajas.")
+            return
+        if r.mapa != self.mundo.id and r.mapa in self.mapas:
+            self.cambiar_mapa(r.mapa, r.tx, r.ty)
+        self.j.x, self.j.y = r.x, r.y
+
+    def dar_botiquin_a(self, remoto):
+        j = self.j
+        if j.objetos.get("botiquin", 0) < 1:
+            self.app.son("error")
+            self.decir("No te queda ningún botiquín.", True)
+            return False
+        j.objetos["botiquin"] -= 1
+        self._act(que="regalo", a=remoto.id, cosa="botiquin")
+        self.decir(f"Le das un botiquín a {remoto.nombre}. Te quedan {j.objetos['botiquin']}.", True)
+        return True

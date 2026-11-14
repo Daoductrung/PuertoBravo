@@ -18,12 +18,11 @@ li { margin-bottom: .3em; }
 
 <h2>1. Abrir el editor</h2>
 <ul>
-<li>En el juego compilado: ejecuta <strong>EditorMods.exe</strong>, que está junto a <strong>PuertoBravo.exe</strong>.</li>
-<li>Con el código fuente: ejecuta <strong>editor.bat</strong>.</li>
+<li>Ejecuta <strong>EditorMods.exe</strong>, que está junto a <strong>PuertoBravo.exe</strong>.</li>
 </ul>
 <p>El editor guarda los mods en la carpeta <code>data\mods</code>, que es de donde los lee el juego. Un mod es un único archivo, con extensión <code>.pbm</code>.</p>
-<p>Los mods que guarda el editor quedan protegidos, con la extensión <code>.pbm</code>: el archivo está cifrado y firmado, y no se puede leer ni retocar con un editor de texto. El editor abre igual los mods protegidos, los que vienen con el juego y los escritos a mano en JSON; al guardar, siempre protege.</p>
-<p>Si has escrito un mod a mano en un archivo <code>.json</code>, el juego compilado no lo carga: ábrelo aquí con <kbd>Control O</kbd> y guárdalo con <kbd>Control S</kbd>. El editor lo deja como <code>.pbm</code>, listo para usar, y conserva tu archivo original como <code>.json.original</code>.</p>
+<p>Los mods que guarda el editor quedan protegidos, con la extensión <code>.pbm</code>: el archivo está cifrado y firmado, y no se puede leer ni retocar con un editor de texto. El editor abre los mods protegidos, incluidos los que vienen con el juego; al guardar, siempre protege.</p>
+<p>Si te pasan un mod sin proteger, en un archivo <code>.json</code>, el juego no lo carga: ábrelo aquí con <kbd>Control O</kbd> y guárdalo con <kbd>Control S</kbd>. El editor lo comprueba, lo deja como <code>.pbm</code>, listo para usar, y conserva el archivo original con la terminación <code>.json.original</code>.</p>
 
 <h2>2. La ventana principal</h2>
 <p>Tiene dos listas y una fila de botones. Con <kbd>Tabulador</kbd> pasas de una a otra.</p>
@@ -98,7 +97,7 @@ li { margin-bottom: .3em; }
 <p>El botón Copiar del juego original trae a tu mod una copia de un elemento original para modificarlo. Si le dejas el mismo identificador, sustituye al original; si se lo cambias, se añade como uno nuevo. Es la manera más rápida de aprender: copia una misión que te guste y mira cómo está hecha.</p>
 
 <h3>Aprender de los mods de ejemplo</h3>
-<p>En la carpeta de mods hay cuatro mods completos: Costa Dorada, Valdeolmos, Oficios y recados, y Motor y asfalto. Ábrelos con <kbd>Control O</kbd>: <code>costa_dorada</code> tiene un ejemplo de cada cosa que se puede crear, incluido un mapa entero y misiones con los nueve tipos de paso.</p>
+<p>En la carpeta de mods hay siete mods completos: Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos, Noches de neón, Oficios y recados, y Motor y asfalto. Ábrelos con <kbd>Control O</kbd>: <code>costa_dorada</code> tiene un ejemplo de cada cosa que se puede crear, incluido un mapa entero y misiones con los nueve tipos de paso.</p>
 
 <h2>5. Las misiones</h2>
 <p>Una misión es una lista de pasos. Cada paso tiene un tipo:</p>
@@ -134,6 +133,6 @@ li { margin-bottom: .3em; }
 <li>El juego no muestra mi contenido: comprueba con <kbd>Control M</kbd> que el mod está activado y con <kbd>F5</kbd> que no tiene errores. Los lugares con contenido para adultos solo aparecen con esa opción activada en el juego.</li>
 <li>He estropeado un mod: los originales del juego no se tocan nunca. Desactiva o borra el archivo del mod y el juego vuelve a estar como antes.</li>
 </ul>
-<p>El formato interno de los archivos, por si quieres editarlos a mano, está en <a href="crear_mods.html">crear_mods.html</a>.</p>
+
 </body>
 </html>

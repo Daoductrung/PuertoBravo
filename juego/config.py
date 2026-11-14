@@ -40,9 +40,16 @@ POR_DEFECTO = {
     "tutorial_visto": False,
     "radar_filtro": "todo",
     "emisora": 1,
+    "ia_activa": False,            # modo IA al hablar con la gente (necesita clave de la API)
+    "atraccion": "todos",          # contenido para adultos: quién te atrae
+    "mi_genero": "x",              # contenido para adultos: cómo te ven los demás (x = no dicho)
+    "vida_realista": False,        # hambre y sueño
     "red_nombre": "",              # cómo te ven tus amigos; vacío = el nombre de tu personaje
     "red_puerto": 47810,
     "red_ultima": "",              # última dirección a la que te uniste
+    "act_auto": True,              # buscar una versión nueva al arrancar (solo avisa)
+    "act_fuente": "servidor",      # servidor | github | ambas | personalizada
+    "act_url": "",                 # dirección de version.json para la fuente personalizada
 }
 
 OPCIONES = {
@@ -52,19 +59,26 @@ OPCIONES = {
     "dificultad": ["facil", "normal", "dificil"],
     "direcciones": ["cardinal", "reloj", "relativa"],
     "radar_filtro": ["todo", "lugares", "vehiculos", "personas", "objetos"],
+    "atraccion": ["todos", "mujeres", "hombres"],
+    "mi_genero": ["x", "h", "m"],
+    "act_fuente": ["servidor", "github", "ambas", "personalizada"],
 }
 
 
 class Config:
     def __init__(self, archivo=None):
-        self.archivo = archivo or os.path.join(rutas.carpeta_data("config"), "config.json")
+        self.archivo = archivo or rutas.archivo_config("config")
         self.v = {k: (dict(v) if isinstance(v, dict) else v) for k, v in POR_DEFECTO.items()}
         self.cargar()
 
     def cargar(self):
         try:
-            with open(self.archivo, "r", encoding="utf-8") as f:
-                datos = json.load(f)
+            from . import cifrado
+            origen = self.archivo
+            if not os.path.exists(origen):                # opciones guardadas con la otra forma (antes o después de compilar)
+                base = os.path.splitext(origen)[0]
+                origen = next((base + e for e in (".json", rutas.EXT_CONFIG) if os.path.exists(base + e)), origen)
+            datos = cifrado.leer_json(origen)
             for k, val in datos.items():
                 if k in POR_DEFECTO and isinstance(val, type(POR_DEFECTO[k])):
                     self.v[k] = val
@@ -78,10 +92,8 @@ class Config:
 
     def guardar(self):
         try:
-            tmp = self.archivo + ".tmp"
-            with open(tmp, "w", encoding="utf-8") as f:
-                json.dump(self.v, f, ensure_ascii=False, indent=2)
-            os.replace(tmp, self.archivo)
+            from . import cifrado
+            cifrado.escribir_json(self.archivo, self.v, sangria=2)          # protegido en el juego compilado
         except OSError:
             pass
 

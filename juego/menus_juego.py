@@ -217,7 +217,8 @@ def opciones(app):
                "asistida": "asistida, el coche sigue el carril solo", "libre": "libre, tú llevas el volante",
                "completa": "completa, apunta sola al enemigo más cercano", "manual": "manual, hay que encararse al enemigo",
                "facil": "fácil", "normal": "normal", "dificil": "difícil",
-               "cardinal": "puntos cardinales", "reloj": "horas del reloj", "relativa": "delante, derecha, detrás, izquierda"}
+               "cardinal": "puntos cardinales", "reloj": "horas del reloj", "relativa": "delante, derecha, detrás, izquierda",
+               "todos": "todo el mundo", "mujeres": "las mujeres", "hombres": "los hombres", "x": "prefiero no decirlo", "h": "hombre", "m": "mujer"}
     canal = {"vol_efectos": "efectos", "vol_ambiente": "ambiente", "vol_musica": "musica", "vol_interfaz": "interfaz", "vol_ambiente_musical": "musica"}
 
     def vol(clave, nombre, ayuda_="Cámbialo con las flechas izquierda y derecha."):
@@ -310,14 +311,21 @@ def opciones(app):
             si_no("sucesos", "Sucesos callejeros al azar", "Atracos, pandilleros y maletines perdidos que aparecen de vez en cuando por la calle."),
             si_no("invulnerable", "Asistencia: no recibir daño", "Para explorar sin preocuparte de nada."),
             si_no("sin_policia", "Asistencia: sin policía", "Los delitos no cuentan y nadie te persigue."),
+            si_no("vida_realista", "Vida realista: hambre y sueño", "Hay que comer y dormir. Con hambre o con sueño vas más despacio y apuntas peor, y si los ignoras pierdes salud. La tecla V te dice cómo estás."),
         ], "Dificultad, puntería y asistencias."),
+        Opcion("Personas e inteligencia artificial", lambda: __import__("juego.menus_charla", fromlist=["x"]).opciones_ia(app),
+               ayuda="Cómo contestan las personas de la calle cuando les escribes lo que quieres: con el motor del juego o con una inteligencia artificial."),
         Opcion("Mando", mando, ayuda="Mandos de Xbox y PlayStation: ver qué hace cada botón, reasignarlos y activar la vibración."),
         seccion("Voz", [
             si_no("voz_sapi", "Usar la voz de Windows en lugar del lector de pantalla", al_cambiar=lambda: app.voz.cambiar(cfg["voz_sapi"])),
         ], "Con qué voz habla el juego."),
+        Opcion("Actualizaciones", lambda: __import__("juego.menus_actualizar", fromlist=["x"]).opciones(app),
+               ayuda="Buscar una versión nueva del juego e instalarla, y elegir de dónde se actualiza: el servidor del juego, GitHub, los dos o una dirección tuya."),
         seccion("Contenido para adultos", [
             Opcion(lambda: f"Contenido para mayores de 18 años: {'activado' if cfg['adultos'] else 'desactivado'}", ajuste=adultos,
-                   ayuda="Añade relaciones sentimentales y sexuales, compañía de pago, drogas y trapicheo, siempre contado sin escenas explícitas. Todo tiene consecuencias en el ánimo, la salud, la reputación y las relaciones. Desactivado, nada de eso aparece en el juego."),
+                   ayuda="Añade relaciones sentimentales y sexuales, ligar con cualquiera, aventuras, compañía de pago, drogas y trapicheo, contado de forma sensual pero sin escenas explícitas. Todo tiene consecuencias en el ánimo, la salud, la reputación y las relaciones. Desactivado, nada de eso aparece en el juego."),
+            lista("atraccion", "Me atraen", "Con quién puedes coquetear."),
+            lista("mi_genero", "Soy", "Sirve para saber a quién le puedes gustar. Si prefieres no decirlo, le puedes gustar a cualquiera."),
         ], "Activa o desactiva los temas para mayores de 18 años."),
     ]
     principal_ = Menu(app, "Opciones", secciones + [Opcion("Volver", lambda: app.cerrar(principal_), ayuda="Cierra las opciones. También sirve Escape.")],
@@ -524,6 +532,8 @@ def movil(p):
                   Opcion(lambda: "Jugar con amigos" + (f": conectado, {len(p.remotos) + 1} jugadores" if p.online_activo() else ""),
                          lambda: __import__("juego.menus_online", fromlist=["x"]).amigos(p),
                          ayuda="Abre tu partida para que entren tus amigos, o únete a la de uno. Tu propio juego hace de servidor: no hace falta nada más."),
+                  Opcion(lambda: f"Tus conocidos: {len(j.conocidos)}", lambda: __import__("juego.menus_charla", fromlist=["x"]).conocidos(p),
+                         ayuda="La gente de la calle que te ha dado su número. Hablas con cualquiera con la tecla J."),
                   Opcion("Tu carrera: vida honrada y vida delictiva", lambda: __import__("juego.menus_vida", fromlist=["x"]).carrera(p)),
                   Opcion("Habilidades y logros", lambda: mx.progreso(p)),
                   Opcion("Territorios: guerras de barrio", lambda: mx.territorios(p)),
@@ -680,7 +690,7 @@ def _casa(p, l):
             app.son("error")
             app.decir("No puedes descansar con la policía en la puerta.", True)
             return
-        p.pasar_horas(8)
+        p.pasar_horas(8, dormir=True)
         j.salud = j.salud_max
         p.son("pasan_horas", cat="interfaz")
         app.decir(f"Duermes ocho horas. Salud al máximo. Son las {p.hora_txt()} del día {p.dia}.", True)
@@ -741,7 +751,7 @@ def _casa(p, l):
 def _armeria(p, l):
     app = p.app
     j = p.j
-    factor = float(l.get("descuento", 1.0))
+    factor = float(l.get("descuento", 1.0)) * p.mercado("armas", l.id)
 
     def comprar(a):
         def f():
@@ -801,17 +811,27 @@ def _tienda(p, l):
         p.dar_dinero(botin)
         p.decir(f"¡Manos arriba! El dependiente vacía la caja: {botin} euros. ¡Ha pulsado la alarma, lárgate!")
         p.poner_busqueda(2)
-    ops = [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {c['precio']} euros", _comprar_comida(p, c)) for c in p.datos["comidas"][:3:2]]
+    factor = p.mercado("comida", l.id)
+    ops = [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {int(c['precio'] * factor)} euros", _comprar_comida(p, c, factor)) for c in p.datos["comidas"][:3:2]]
     ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua"), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará.")]
     m = _menu_lugar(p, l, ops)
 
 
+def _salud_intima(p):
+    """Opciones de farmacias y hospitales del contenido para adultos."""
+    if not p.modo_adulto():
+        return []
+    art = p.articulos_intimos()[0]
+    return [Opcion(lambda: f"{art['nombre']}: {art['precio']} euros. Llevas {p.j.intimos.get('preservativos', 0)}", lambda: p.comprar_articulo(art), ayuda=art["desc"]),
+            Opcion("Prueba de salud sexual, gratis. El tratamiento, si hace falta, 120 euros", p.prueba_y_tratamiento)]
+
+
 def _farmacia(p, l):
-    _menu_lugar(p, l, [_comprar_objeto(p, "botiquin")])
+    _menu_lugar(p, l, [_comprar_objeto(p, "botiquin")] + _salud_intima(p))
 
 
 def _comida(p, l):
-    factor = 3.0 if l.get("caro") else 1.0
+    factor = (3.0 if l.get("caro") else 1.0) * p.mercado("comida", l.id)
     ops = [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {int(c['precio'] * factor)} euros", _comprar_comida(p, c, factor)) for c in p.datos["comidas"]]
     if l.tipo == "pizzeria":
         def trabajar():
@@ -836,6 +856,7 @@ def _hospital(p, l):
     if p.modo_adulto():
         from . import menus_adultos as ma
         ops.append(Opcion("Desintoxicación: 800 euros y dos días ingresado", lambda: ma.desintoxicar(p), ayuda="Elimina todas tus dependencias."))
+        ops += _salud_intima(p)
     _menu_lugar(p, l, ops)
 
 

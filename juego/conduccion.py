@@ -158,6 +158,14 @@ class Conduccion:
 
     # ---------------------------------------------------- entrar y salir
     def entrar_salir(self):
+        if getattr(self, "pasajero", None) is not None:
+            self.bajar_de_amigo()
+            return
+        if not self.j.veh and self.subir_con_amigo():
+            return
+        self._entrar_salir()
+
+    def _entrar_salir(self):
         j = self.j
         if self.mundo.tipo == "mar":
             self.decir("No puedes bajarte en mitad del mar. Acércate a un muelle y pulsa Intro para atracar.", True)

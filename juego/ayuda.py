@@ -42,6 +42,7 @@ TECLAS = {
         ("H", "gritar para espantar a los peatones"),
         ("E", "con un arma en la mano, atracar al peatón que tengas al lado"),
         ("Y", "si tienes perro, le pides que busque por el olfato el objeto más cercano"),
+        ("J", "hablar con la persona que tengas al lado. Cada una tiene su nombre, su oficio y su carácter: puedes saludar, preguntar por un sitio, invitar a un café, hacer amigos o escribir lo que quieras decirle"),
         ("U", "caminar solo: con un destino marcado en el GPS, el personaje sigue la ruta él solo hasta llegar. Mantén Mayúsculas para que corra. Cualquier flecha, o la U otra vez, lo detiene"),
     ],
     "coche": [
