@@ -13,6 +13,7 @@ from .extras import Extras
 from .extras2 import Extras2
 from .extras3 import Extras3
 from .misiones import Misiones
+from .online import Online
 from .trabajos import Trabajos
 from .vida import Vida
 
@@ -25,7 +26,7 @@ FRASES = [
 ]
 
 
-class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida):
+class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -62,6 +63,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.gps = None
         self.objetivo = None
         self.radar_lista = []
+        self.online_iniciar()
         self.radar_idx = -1
         self.barrio_act = None
         self.cruce_act = None
@@ -418,6 +420,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             x, y = self.pos()
             self.son("baliza_destino", xy=(x, y + 15), ref=8, maxd=60, cat="interfaz")     # un toque que suena desde el norte
             self.decir(self.rumbo_txt() + ". El tono suena desde el norte.", True)
+        elif k == pygame.K_F10:
+            from . import menus_online
+            menus_online.escribir_mensaje(self)
         elif k == pygame.K_F9:
             from .pantallas import ExploradorMapa
             self.app.abrir(ExploradorMapa(self.app, self))
@@ -644,6 +649,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                       for v in self.vehiculos if v is not self.j.veh and not v.muerto and v.dist(x, y) <= 70]
         if f in ("todo", "personas"):
             lista += [(p.nombre + (" hostil" if p.hostil else ""), p.x, p.y, p) for p in self.personas if not p.muerto and p.dist(x, y) <= 60]
+            lista += [(r.nombre + (", tu amigo, al volante" if r.veh else ", tu amigo, a pie"), r.x, r.y, r) for r in getattr(self, "remotos", {}).values()
+                      if r.mapa == self.mundo.id and r.visto and r.dist(x, y) <= 200]
         if f in ("todo", "objetos"):
             lista += [(o.nombre, o.x, o.y, o) for o in self.objetos if o.dist(x, y) <= 90]
         lista.sort(key=lambda e: math.hypot(e[1] - x, e[2] - y))
@@ -1450,6 +1457,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
 
     def silenciar(self):
         """Detiene todos los sonidos del mundo (al salir de la partida)."""
+        self.desconectar_online()
         for v in self.vehiculos:
             v.callar()
         for o in self.objetos:

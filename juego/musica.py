@@ -662,8 +662,8 @@ class MusicaAmbiente:
         """Una pieza que ya no suena deja de ocupar memoria."""
         if self.rutas.get(clave) and clave != self.pista:
             self.mez.sonidos.pop(clave, None)
-            for k in [k for k in self.mez._var if k[0] == clave]:
-                del self.mez._var[k]
+            for k in [k for k in list(self.mez._var) if k[0] == clave]:      # copia: lo puede estar tocando otro hilo
+                self.mez._var.pop(k, None)
 
     def volumen_actual(self):
         return self.canales[self.pista][1] if self.pista in self.canales else 0.0

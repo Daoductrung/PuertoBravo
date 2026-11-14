@@ -45,24 +45,46 @@ def test_el_juego_carga_los_datos_protegidos(tmp_path, monkeypatch):
     assert n >= 15
     for base, _, archivos in os.walk(copia):
         for f in archivos:
-            if f.endswith(".json"):
+            assert not f.endswith(".json"), f"{f} sigue siendo un .json"          # ya no queda ningún .json
+            if f.endswith((".pbd", ".pbm")):
                 assert cifrado.esta_cifrado(os.path.join(base, f)), f
+    assert os.path.exists(os.path.join(copia, "datos", "ciudad.pbd")) and os.path.exists(os.path.join(copia, "mods", "costa_dorada.pbm"))
+    assert os.path.exists(os.path.join(copia, "datos", "mapas", "villaseca.pbd"))
     monkeypatch.setattr(rutas, "DATOS", os.path.join(copia, "datos"))
     monkeypatch.setattr(rutas, "MODS", os.path.join(copia, "mods"))
     protegido = mundo.cargar_datos()
     assert not protegido["errores_mods"]
     assert [m["id"] for m in protegido["misiones"]] == [m["id"] for m in normal["misiones"]]
     assert len(protegido["vehiculos"]) == len(normal["vehiculos"]) and set(protegido["mapas"]) == set(normal["mapas"]) if isinstance(normal.get("mapas"), dict) else True
+    # en el juego compilado, un mod escrito a mano no se carga: se pide abrirlo con el editor
+    with open(os.path.join(copia, "mods", "a_mano.json"), "w", encoding="utf-8") as f:
+        json.dump({"comidas": [{"nombre": "Pan con trampa", "precio": 1, "salud": 999}]}, f)
+    monkeypatch.setattr(cifrado, "COMPILADO", True)
+    compilado = mundo.cargar_datos()
+    assert any("a_mano.json" in e and "editor de mods" in e for e in compilado["errores_mods"])
+    assert not any(c["nombre"] == "Pan con trampa" for c in compilado["comidas"])
+    # el editor lo abre y, al guardarlo, lo deja protegido como .pbm y aparta el original
+    from editor import modelo
+    mod = modelo.Mod.cargar(os.path.join(copia, "mods", "a_mano.json"))
+    apartado = mod.guardar()
+    assert mod.ruta.endswith("a_mano.pbm") and cifrado.esta_cifrado(mod.ruta) and apartado.endswith("a_mano.json.original")
+    compilado = mundo.cargar_datos()
+    assert not compilado["errores_mods"] and any(c["nombre"] == "Pan con trampa" for c in compilado["comidas"])
+    monkeypatch.setattr(cifrado, "COMPILADO", False)
+    os.remove(mod.ruta)
+    os.remove(apartado)
     assert cifrar_datos.recorrer(copia, abrir=True) == n                   # y se puede deshacer
+    assert os.path.exists(os.path.join(copia, "datos", "ciudad.json"))
 
 
 def test_el_editor_guarda_protegido_y_abre_las_dos_formas(tmp_path):
     from editor import modelo
     legible = os.path.join(rutas.MODS, "costa_dorada.json")
     mod = modelo.Mod.cargar(legible)                                       # abre el legible
-    ruta = str(tmp_path / "mi_mod.json")
-    mod.guardar(ruta)                                                      # el editor guarda protegido
-    assert cifrado.esta_cifrado(ruta)
+    mod.guardar(str(tmp_path / "mi_mod.json"))                             # el editor guarda protegido, como .pbm
+    ruta = mod.ruta
+    assert ruta.endswith("mi_mod.pbm") and cifrado.esta_cifrado(ruta) and not os.path.exists(str(tmp_path / "mi_mod.json"))
+    assert modelo.ruta_protegida("x.json.desactivado") == "x.pbm.desactivado" and modelo.ruta_protegida("x") == "x.pbm"
     otra_vez = modelo.Mod.cargar(ruta)                                     # y abre el protegido
     assert otra_vez.crudo() == mod.crudo()
     assert otra_vez.info["nombre"] == "Costa Dorada" and len(otra_vez.secciones["misiones"]) == 7
@@ -77,7 +99,7 @@ def test_las_partidas_se_protegen_en_el_juego_compilado(robot, monkeypatch):
     monkeypatch.setattr(cifrado, "COMPILADO", True)
     assert menus_juego.escribir_ranura(p, 2)
     ruta = menus_juego._archivo(2)
-    assert cifrado.esta_cifrado(ruta) and b"4321" not in open(ruta, "rb").read()
+    assert ruta.endswith(".pbs") and cifrado.esta_cifrado(ruta) and b"4321" not in open(ruta, "rb").read()
     assert menus_juego.leer_ranura(2)["jugador"]["dinero"] == 4321 if "jugador" in menus_juego.leer_ranura(2) else menus_juego.leer_ranura(2) is not None
     # una partida manipulada no se carga
     crudo = bytearray(open(ruta, "rb").read())
@@ -86,5 +108,8 @@ def test_las_partidas_se_protegen_en_el_juego_compilado(robot, monkeypatch):
     assert menus_juego.leer_ranura(2) is None
     # y una partida antigua, legible, se sigue leyendo
     monkeypatch.setattr(cifrado, "COMPILADO", False)
-    assert menus_juego.escribir_ranura(p, 3) and not cifrado.esta_cifrado(menus_juego._archivo(3))
+    assert menus_juego.escribir_ranura(p, 3) and menus_juego._archivo(3).endswith(".json") and not cifrado.esta_cifrado(menus_juego._archivo(3))
     assert menus_juego.leer_ranura(3) is not None
+    # una partida legible de antes se sigue viendo en el juego compilado
+    monkeypatch.setattr(cifrado, "COMPILADO", True)
+    assert menus_juego.leer_ranura(3) is not None and str(menus_juego.mas_reciente()) in ("2", "3")

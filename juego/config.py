@@ -40,6 +40,9 @@ POR_DEFECTO = {
     "tutorial_visto": False,
     "radar_filtro": "todo",
     "emisora": 1,
+    "red_nombre": "",              # cómo te ven tus amigos; vacío = el nombre de tu personaje
+    "red_puerto": 47810,
+    "red_ultima": "",              # última dirección a la que te uniste
 }
 
 OPCIONES = {

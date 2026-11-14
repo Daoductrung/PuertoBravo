@@ -9,7 +9,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 10
+VERSION_CACHE = 11
 PI2 = 2 * np.pi
 
 
@@ -492,6 +492,10 @@ def generar(semilla=7):
         pos += tt
         tt *= 1.12
     S["ruleta"] = _norm(rul, 0.5)
+    # jugar con amigos
+    S["amigo_entra"] = _norm(_sec([523, 784, 1047], 0.09, 0.5, 0.25, (1, 0.4)), 0.5)
+    S["amigo_sale"] = _norm(_sec([1047, 784, 523], 0.09, 0.5, 0.25, (1, 0.4)), 0.45)
+    S["chat"] = _norm(_sec([1568, 2093], 0.045, 0.2, 0.09, (1, 0.6)), 0.45)
     S["logro"] = _norm(_sec([784, 1047, 1319, 1568, 2093], 0.09, 0.6, 0.3, (1, 0.5, 0.25)), 0.6)
     S["nivel"] = _norm(_sec([659, 880, 1319], 0.1, 0.5, 0.25, (1, 0.4)), 0.5)
     S["campana_ring"] = _norm(sum(a * _seno(f, 1.2) * _decae(1.2, tau) for f, a, tau in ((1320, 1, 0.4), (2650, 0.5, 0.25), (3990, 0.3, 0.15))), 0.6)

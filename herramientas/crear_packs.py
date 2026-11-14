@@ -296,6 +296,7 @@ EXTRA = {
     "arranque": ("CAR", "Car_Engine_Start_Up"), "claxon": ("CAR", "Car_Horn"), "motor_coche": ("CAR", "Car_Engine_Loop", {"bucle": 2.4, "desde": 0.2}),
     "motor_furgoneta": ("CAR", "Car_Engine_Loop_2", {"bucle": 3.2, "desde": 0.3}),
     "rodadura": ("LOOPS", "rolling", {"bucle": 0.85, "desde": 0.02}),
+    "amigo_entra": ("IF", "maximize_004"), "amigo_sale": ("IF", "minimize_004"), "chat": ("IF", "confirmation_002"),
     "gallo": ("BSB", "gallo_0283"), "frenazo": ("BSB", "frenazo_2370", {"dur": 1.2}),
 }
 for _clave in ("realista", "alternativo"):

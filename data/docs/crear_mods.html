@@ -13,7 +13,7 @@ code { color: #9fe89f; }
 <body>
 <h1>Crear mods para Puerto Bravo: Ley del Asfalto</h1>
 <p>La forma más cómoda de crear un mod es el editor de mods, <strong>EditorMods.exe</strong>, que es accesible con lector de pantalla y tiene su propio manual en <a href="editor_mods.html">editor_mods.html</a>. Este documento describe el formato de los archivos, por si prefieres escribirlos a mano o quieres entender qué guarda el editor.</p>
-<p>En el juego compilado, los datos originales y los mods que guarda el editor van protegidos (cifrados), así que no se ven como texto. Un mod escrito a mano en JSON normal, como los ejemplos de este documento, sigue funcionando: el juego y el editor leen las dos formas.</p>
+<p>En el juego compilado, los datos originales (archivos <code>.pbd</code>) y los mods (archivos <code>.pbm</code>) van protegidos, cifrados, y no se ven como texto. Si escribes un mod a mano en un archivo <code>.json</code>, como los ejemplos de este documento, tienes que abrirlo con el editor de mods y guardarlo: el editor lo comprueba y lo deja protegido como <code>.pbm</code>, que es lo que carga el juego. Con el código fuente, el juego sí lee directamente los <code>.json</code>.</p>
 <p>El juego lee al arrancar todos los archivos <code>.json</code> de la carpeta <strong>data\mods</strong> y los fusiona con los datos originales. Si un elemento tiene el mismo <code>id</code> que uno existente, lo sustituye; si no, se añade. Si un mod tiene un error, el juego lo dice al arrancar y sigue funcionando.</p>
 
 <h2>Estructura de un mod</h2>

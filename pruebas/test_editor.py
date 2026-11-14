@@ -107,10 +107,11 @@ def test_comprobar_mod_correcto_y_con_errores(cat, tmp_path):
     for esperado in ("no existe en Puerto Bravo", "dentro de un edificio", "«no_existe», que no existe", "hace falta antes un paso", "falta «Nombre»", "18"):
         assert esperado in texto, (esperado, texto)
     # guardar y volver a abrir
-    ruta = os.path.join(tmp_path, "prueba.json")
-    m.guardar(ruta)
+    m.guardar(os.path.join(tmp_path, "prueba.json"))
+    ruta = m.ruta
     from juego import cifrado
-    assert cifrado.esta_cifrado(ruta)                   # el editor guarda protegido
+    assert ruta.endswith("prueba.pbm") and not os.path.exists(os.path.join(tmp_path, "prueba.json"))
+    assert cifrado.esta_cifrado(ruta)                   # el editor guarda protegido y con su extensión
     crudo = cifrado.leer_json(ruta)
     assert crudo["misiones"][0]["pasos"][0]["lineas"] == [["Loli", "Corre."]]
     assert crudo["mapas"][0]["bloques"] == {"1,0": "plaza"} and crudo["capitulos"] == {"20": "Mi capítulo"}

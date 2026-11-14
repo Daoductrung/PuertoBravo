@@ -336,6 +336,7 @@ class Conduccion:
                 self.decir(f"Media vuelta. Vas hacia el {M.cardinal(v.rumbo)}.", True)
         elif k == pygame.K_h:
             self.son(v.modelo.get("claxon", "claxon"), vol=0.8)
+            self.enviar_evento("claxon")
             for p in self.personas:
                 if p.tipo == "civil" and not p.muerto and p.dist(v.x, v.y) < 18 and p.estado == "pasea":
                     p.estado = "huye"

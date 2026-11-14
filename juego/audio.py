@@ -118,8 +118,8 @@ class Mezclador:
     # ---------------------------------------------------------------- sonidos
     def registrar(self, nombre, datos):
         self.sonidos[nombre] = np.ascontiguousarray(datos, dtype=np.float32)
-        for k in [k for k in self._var if k[0] == nombre]:
-            del self._var[k]
+        for k in [k for k in list(self._var) if k[0] == nombre]:
+            self._var.pop(k, None)
 
     def _variante(self, nombre, bucle, apagado):
         clave = (nombre, bucle, apagado)

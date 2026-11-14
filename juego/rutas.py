@@ -61,6 +61,10 @@ def carpeta_sonidos():
 
 
 EXT_AUDIO = (".wav", ".ogg", ".flac", ".mp3")
+# Extensiones de los archivos protegidos (cifrados) del juego compilado. En el código fuente todo es .json legible.
+EXT_DATOS = ".pbd"      # datos del juego: mapas, misiones, armas, vehículos
+EXT_MOD = ".pbm"        # mods guardados con el editor
+EXT_PARTIDA = ".pbs"    # partidas guardadas
 DATOS = data("datos")
 MODS = data("mods")
 PACKS = data("sonidos")                       # aquí dentro va una carpeta por pack

@@ -20,15 +20,21 @@ NOMBRE_RANURA = {"auto": "Guardado automático", "rapido": "Guardado rápido"}
 CARPETA = "partidas"
 
 
-def _archivo(ranura):
-    return os.path.join(rutas.carpeta_data(CARPETA), f"partida_{ranura}.json")
+def _archivo(ranura, ext=None):
+    """Archivo de una ranura. En el juego compilado las partidas van protegidas y con extensión propia."""
+    ext = ext or (rutas.EXT_PARTIDA if cifrado.COMPILADO else ".json")
+    return os.path.join(rutas.carpeta_data(CARPETA), f"partida_{ranura}{ext}")
 
 
 def leer_ranura(ranura):
-    try:
-        return cifrado.leer_json(_archivo(ranura))
-    except (OSError, ValueError, zlib.error):
-        return None
+    """Lee la ranura. Si hay una partida con la otra extensión (de antes de compilar, o al revés), vale la más reciente."""
+    rutas_posibles = [r for r in (_archivo(ranura, rutas.EXT_PARTIDA), _archivo(ranura, ".json")) if os.path.exists(r)]
+    for ruta in sorted(rutas_posibles, key=os.path.getmtime, reverse=True):
+        try:
+            return cifrado.leer_json(ruta)
+        except (OSError, ValueError, zlib.error):
+            continue
+    return None
 
 
 def escribir_ranura(p, ranura):
@@ -53,10 +59,10 @@ def texto_ranura(ranura):
 def mas_reciente():
     mejor = None
     for r in RANURAS:
-        try:
-            t = os.path.getmtime(_archivo(r))
-        except OSError:
+        tiempos = [os.path.getmtime(a) for a in (_archivo(r, rutas.EXT_PARTIDA), _archivo(r, ".json")) if os.path.exists(a)]
+        if not tiempos:
             continue
+        t = max(tiempos)
         if mejor is None or t > mejor[0]:
             mejor = (t, r)
     return mejor[1] if mejor else None
@@ -123,6 +129,9 @@ def principal(app):
         lista += [
             Opcion("Nueva partida", lambda: __import__("juego.menus_vida", fromlist=["x"]).elegir_personaje(app)),
             Opcion("Cargar partida", lambda: menu_cargar(app)),
+            Opcion("Jugar con amigos", lambda: app.decir("Para jugar con amigos, empieza o carga tu partida, abre el móvil con la tecla M y entra en Jugar con amigos. "
+                                                        "Desde ahí puedes abrir tu partida, con o sin contraseña, y darles tu dirección, o unirte a la de un amigo.", True),
+                   ayuda="El propio juego monta el servidor en tu ordenador. No hace falta ningún programa más."),
             Opcion("Aprender los sonidos del juego", lambda: sonidos(app)),
             Opcion("Opciones", lambda: opciones(app)),
             Opcion("Ayuda: lista de teclas", lambda: ayuda_teclas(app, "todo")),
@@ -512,6 +521,9 @@ def movil(p):
                   Opcion("Explorar el mapa con el cursor", lambda: app.abrir(ExploradorMapa(app, p)), ayuda="Recorre la localidad cruce a cruce sin mover al personaje. También se abre con F9."),
                   Opcion("Marcadores personales", lambda: mx.marcadores(p)),
                   Opcion("Servicios: vehículo, guardaespaldas, ambulancia y taxi", lambda: mx.servicios(p)),
+                  Opcion(lambda: "Jugar con amigos" + (f": conectado, {len(p.remotos) + 1} jugadores" if p.online_activo() else ""),
+                         lambda: __import__("juego.menus_online", fromlist=["x"]).amigos(p),
+                         ayuda="Abre tu partida para que entren tus amigos, o únete a la de uno. Tu propio juego hace de servidor: no hace falta nada más."),
                   Opcion("Tu carrera: vida honrada y vida delictiva", lambda: __import__("juego.menus_vida", fromlist=["x"]).carrera(p)),
                   Opcion("Habilidades y logros", lambda: mx.progreso(p)),
                   Opcion("Territorios: guerras de barrio", lambda: mx.territorios(p)),

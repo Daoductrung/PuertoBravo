@@ -98,6 +98,7 @@ li { margin-bottom: .3em; }
 <li><kbd>O</kbd>: objetivo de la misión o del trabajo en curso.</li>
 <li><kbd>N</kbd>: descripción del lugar o del barrio en el que estás.</li>
 <li><kbd>K</kbd>: hacia dónde miras o conduces, y hace sonar un tono desde el norte para orientarte.</li>
+<li><kbd>F10</kbd>: jugando con amigos, escribir un mensaje: se lee en voz alta a los demás. Para abrir tu partida a tus amigos o unirte a la de uno, abre el móvil con M y entra en Jugar con amigos.</li>
 <li><kbd>F9</kbd>: explorador de mapa: recorre la localidad con un cursor, cruce a cruce, sin mover al personaje. Tabulador dice los lugares junto al cursor e Intro marca el destino.</li>
 <li><kbd>Tabulador y Mayúsculas Tabulador</kbd>: radar: recorre lo que hay alrededor, de lo más cercano a lo más lejano.</li>
 <li><kbd>B</kbd>: pone el GPS y la baliza hacia lo último que dijo el radar.</li>
@@ -357,17 +358,63 @@ li { margin-bottom: .3em; }
 </ul>
 
 <h3>Archivos protegidos</h3>
-<p>En el juego compilado, los datos (mapas, misiones, armas, vehículos), los mods y las partidas guardadas van protegidos: conservan la extensión <strong>.json</strong>, pero su contenido está cifrado y firmado, así que no se pueden abrir con un editor de texto para cambiarlos, y un archivo manipulado o estropeado se rechaza. Para crear o cambiar contenido se usa el editor de mods, que abre tanto los archivos protegidos como los escritos a mano y siempre guarda protegido. Un mod escrito a mano en JSON normal sigue funcionando.</p>
+<p>En el juego compilado, los datos, los mods y las partidas guardadas van protegidos: su contenido está cifrado y firmado, así que no se pueden abrir con un editor de texto para cambiarlos, y un archivo manipulado o estropeado se rechaza. Cada tipo tiene su extensión:</p>
+<ul>
+<li><strong>.pbd</strong>: datos del juego (mapas, misiones, armas, vehículos), en <strong>data\datos</strong>.</li>
+<li><strong>.pbm</strong>: mods, en <strong>data\mods</strong>.</li>
+<li><strong>.pbs</strong>: partidas guardadas, en <strong>data\partidas</strong>.</li>
+</ul>
+<p>Para crear o cambiar contenido se usa el editor de mods, que abre tanto los mods protegidos como los escritos a mano en JSON y siempre guarda protegido, como <strong>.pbm</strong>. Un mod escrito a mano en un archivo <strong>.json</strong> no se carga en el juego compilado: el juego te avisa al arrancar y te pide que lo abras con el editor y lo guardes. El editor conserva tu archivo original con la extensión <strong>.json.original</strong>.</p>
 
-<h2>19. Qué distribuir y qué es tuyo</h2>
+<h2>19. Jugar con amigos</h2>
+<p>Puedes jugar con otras personas sin depender de ningún servidor de fuera: tu propio juego hace de servidor. Tú montas la partida y sigues jugando con normalidad; a tus amigos les das una dirección y se conectan.</p>
+<h3>Qué se comparte</h3>
+<ul>
+<li>Oyes a tus amigos donde están: el motor de lo que conducen, sus pasos y su claxon.</li>
+<li>El radar los anuncia y el GPS te lleva hasta ellos, también si están en otra localidad.</li>
+<li>Os escribís mensajes, que se leen en voz alta. La tecla <kbd>F10</kbd> abre el cuadro para escribir sin pasar por el móvil.</li>
+<li>Os podéis enviar dinero.</li>
+<li>Cada uno conserva su propia partida, sus misiones y su progreso.</li>
+</ul>
+<h3>Abrir tu partida</h3>
+<ol>
+<li>Dentro del juego, abre el móvil con <kbd>M</kbd> y entra en Jugar con amigos.</li>
+<li>Si quieres, pon una contraseña: solo entrará quien la sepa. Sin contraseña entra cualquiera que tenga la dirección.</li>
+<li>Elige Abrir mi partida a mis amigos. El juego te dice la dirección para quien esté en tu misma red.</li>
+<li>En Cómo invitar a un amigo tienes las dos direcciones, la de casa y la de internet, y con <kbd>Intro</kbd> se copian al portapapeles para pegarlas en un mensaje.</li>
+</ol>
+<p>Una dirección tiene esta forma: <strong>puertobravo://83.45.12.7:47810</strong>. El último número es el puerto.</p>
+<h3>Para que entren amigos de fuera de tu casa</h3>
+<ul>
+<li>En tu router hay que abrir el puerto <strong>47810</strong>, protocolo TCP, hacia tu ordenador. Suele estar en el apartado de abrir puertos o redirección de puertos.</li>
+<li>La primera vez, el cortafuegos de Windows pregunta si permite el acceso al juego: di que sí.</li>
+<li>Si usas AdGuard, un antivirus con protección de red u otro filtro de conexiones, añade Puerto Bravo a sus excepciones. El juego reintenta solo cuando una conexión se corta nada más empezar, y vuelve a entrar si se corta en mitad de la partida, pero un filtro que bloquee siempre no se puede saltar.</li>
+<li>Sin abrir el puerto solo podrán entrar quienes estén en tu misma red.</li>
+</ul>
+<h3>Unirte a la partida de un amigo</h3>
+<p>En el móvil, Jugar con amigos, Unirme a la partida de un amigo. Escribe o pega con <kbd>Control V</kbd> la dirección que te ha dado, y después la contraseña, si tiene. El juego recuerda la última dirección.</p>
+<h3>Mientras jugáis</h3>
+<ul>
+<li>En el móvil, Jugar con amigos muestra quién está y dónde. Con <kbd>Intro</kbd> sobre un amigo puedes marcarlo en el GPS o enviarle dinero.</li>
+<li>Quien ha abierto la partida puede expulsar a un jugador desde ese mismo menú.</li>
+<li>Los mensajes recibidos se pueden repasar en Repasar los últimos mensajes.</li>
+<li>Tres sonidos avisan: tres notas que suben cuando alguien entra, tres que bajan cuando se va y dos notas agudas cuando llega un mensaje.</li>
+<li>La conexión no va cifrada: no escribas nada que no dirías en voz alta.</li>
+</ul>
+<h3>Al escribir texto</h3>
+<p>En los cuadros de texto del juego (mensajes, direcciones, contraseñas, tu nombre) cada letra se dice al escribirla. <kbd>Intro</kbd> acepta, <kbd>Escape</kbd> cancela, <kbd>Retroceso</kbd> borra, <kbd>Flecha arriba</kbd> lee lo escrito y <kbd>Control V</kbd> pega. Las contraseñas no se dicen: se oye «asterisco».</p>
+
+<h2>20. Qué distribuir y qué es tuyo</h2>
 <p>El juego compilado es portable: una carpeta que se puede copiar o comprimir tal cual. Lo personal son solo <strong>data\partidas</strong>, <strong>data\config</strong>, lo que hayas puesto en <strong>data\radio\mi_musica</strong> y tus mods. La compilación que genera <strong>compilar.bat</strong> sale limpia, sin nada de eso.</p>
 
-<h2>20. Problemas frecuentes</h2>
+<h2>21. Problemas frecuentes</h2>
 <ul>
 <li>No se oye nada: comprueba que los auriculares son el dispositivo de salida predeterminado de Windows antes de abrir el juego.</li>
 <li>El lector no habla: abre NVDA o JAWS antes que el juego, o activa en Opciones la voz de Windows.</li>
 <li>Izquierda y derecha suenan al revés: tienes los auriculares cambiados de lado.</li>
 <li>El juego se cierra: se guarda automáticamente y deja los detalles en el archivo <strong>data\error.log</strong>.</li>
+<li>Un amigo no consigue entrar en mi partida: comprueba que le has dado la dirección de internet y no la de casa, que el puerto está abierto en el router y que ni tu cortafuegos ni un filtro como AdGuard bloquean el juego.</li>
+<li>El juego dice al arrancar que un mod está escrito a mano: ábrelo con el editor de mods y guárdalo.</li>
 <li>El mando no responde: comprueba que Windows lo reconoce y que la ventana del juego está en primer plano. Si los nombres de los botones no coinciden con los de tu mando, cámbialos en Opciones, Mando.</li>
 </ul>
 </body>

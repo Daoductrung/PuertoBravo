@@ -189,3 +189,88 @@ class Dialogo:
 
     def actualizar(self, dt):
         pass
+
+
+class EntradaTexto:
+    """Pide un texto por teclado, diciendo en voz alta cada letra que se escribe.
+
+    Intro acepta, Escape cancela, Retroceso borra, flecha arriba o F1 leen lo escrito y Control V pega.
+    Con secreto=True (contraseñas) no se dicen las letras.
+    """
+    pausa_mundo = True
+
+    def __init__(self, app, titulo, al_aceptar, inicial="", secreto=False, maximo=120, ayuda=None):
+        self.app = app
+        self.titulo = titulo
+        self.al_aceptar = al_aceptar
+        self.texto = inicial or ""
+        self.secreto = secreto
+        self.maximo = maximo
+        self.ayuda = ayuda
+        self.aceptado = False
+
+    def _leer(self):
+        if not self.texto:
+            return "Vacío"
+        return f"{len(self.texto)} caracteres escritos" if self.secreto else self.texto
+
+    def al_entrar(self):
+        self.app.decir(f"{self.titulo}. Escribe y pulsa Intro. Escape cancela. {self._leer()}", True)
+
+    def tecla(self, ev):
+        k = ev.key
+        mod = getattr(ev, "mod", 0)
+        if k in (pygame.K_RETURN, pygame.K_KP_ENTER):
+            self.aceptado = True
+            self.app.son("menu_ok")
+            self.app.cerrar(self)
+        elif k == pygame.K_ESCAPE:
+            self.app.son("menu_atras")
+            self.app.decir("Cancelado.", True)
+            self.app.cerrar(self)
+        elif k == pygame.K_BACKSPACE:
+            if self.texto:
+                quitada = self.texto[-1]
+                self.texto = self.texto[:-1]
+                self.app.son("menu_ajuste")
+                self.app.decir("Borrado" if self.secreto else f"Borrado {self._nombre(quitada)}", True)
+            else:
+                self.app.son("menu_borde")
+                self.app.decir("Vacío", True)
+        elif k in (pygame.K_UP, pygame.K_F1):
+            self.app.decir((self.ayuda + " " if self.ayuda and k == pygame.K_F1 else "") + self._leer(), True)
+        elif k == pygame.K_v and mod & pygame.KMOD_CTRL:
+            try:
+                pegado = pygame.scrap.get_text() or ""
+            except Exception:
+                pegado = ""
+            pegado = "".join(c for c in pegado if c.isprintable())
+            if pegado:
+                self.texto = (self.texto + pegado)[:self.maximo]
+                self.app.decir("Pegado. " + self._leer(), True)
+            else:
+                self.app.son("error")
+                self.app.decir("No hay texto en el portapapeles.", True)
+        else:
+            letra = getattr(ev, "unicode", "") or ""
+            if letra and letra.isprintable() and not (mod & (pygame.KMOD_CTRL | pygame.KMOD_ALT) and not (mod & pygame.KMOD_MODE)):
+                if len(self.texto) >= self.maximo:
+                    self.app.son("menu_borde")
+                    return
+                self.texto += letra
+                self.app.son("menu_mover")
+                self.app.decir("asterisco" if self.secreto else self._nombre(letra), True)
+
+    @staticmethod
+    def _nombre(c):
+        return {" ": "espacio", ".": "punto", ":": "dos puntos", "/": "barra", ",": "coma", "-": "guion", "_": "guion bajo", "@": "arroba",
+                "?": "interrogación", "!": "exclamación"}.get(c, f"{c} mayúscula" if c.isupper() else c)
+
+    def actualizar(self, dt):
+        pass
+
+    def cerrado(self):
+        if self.aceptado and self.al_aceptar:
+            f = self.al_aceptar
+            self.al_aceptar = None
+            f(self.texto)

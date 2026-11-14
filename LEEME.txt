@@ -10,6 +10,11 @@ PARA JUGAR
   Usa auriculares y ten abierto tu lector de pantalla (NVDA o JAWS).
   Dentro del juego, F1 dice las teclas y los botones del mando en cualquier momento.
 
+PARA JUGAR CON AMIGOS
+  Dentro del juego, abre el móvil con M y entra en Jugar con amigos. Tu propio juego hace de
+  servidor: abres tu partida, con o sin contraseña, y das la dirección a tus amigos.
+  Está explicado en el manual, en el apartado Jugar con amigos.
+
 PARA CREAR MODS
   Con el juego compilado: ejecuta EditorMods.exe.
   Con el código fuente: ejecuta editor.bat.
@@ -19,8 +24,8 @@ PARA COMPILAR (con cx_Freeze)
   1. entorno.bat   (si no lo has hecho ya)
   2. compilar.bat  Genera la carpeta dist\PuertoBravo con el juego y el editor de mods.
      La carpeta sale limpia y lista para distribuir: es portable y no lleva partidas, opciones,
-     registros ni música personal. Los datos del juego y los mods se protegen (cifran) para que
-     no se puedan editar a mano. Al final se comprueba sola que está completa, limpia y protegida.
+     registros ni música personal. Los datos del juego y los mods se protegen (cifran) y cambian
+     de extensión (.pbd y .pbm) para que no se puedan editar a mano. Al final se comprueba sola que está completa, limpia y protegida.
      Tus partidas y opciones están en la carpeta data del proyecto y no se tocan.
 
 PARA COMPROBAR QUE TODO FUNCIONA
@@ -58,7 +63,8 @@ OTRAS CARPETAS DEL CÓDIGO FUENTE
                   crear_prompts_musica.py escribe los prompts de música de adjuntos\prompts.
   adjuntos        Material aparte: colecciones de sonidos libres descargadas, los packs montados
                   y los prompts para generar la música con una IA.
-  pruebas         Pruebas automáticas.
+  pruebas         Pruebas automáticas. test_ronda.py entra en todos los menús y lugares y juega
+                  veinte días con el tiempo acelerado.
   setup_cx.py     Receta de compilación de cx_Freeze.
 
 REQUISITOS

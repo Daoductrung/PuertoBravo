@@ -18,11 +18,9 @@ data/config_pruebas.json
 data/error.log
 data/radio/mi_musica/
 
-# Audio: el juego lo genera solo al arrancar (sonidos por defecto, radio y música de ambiente).
-# Los packs de sonidos se publican aparte, como archivo de una versión, no dentro del repositorio.
-data/sonidos/
-data/radio/
-data/musica/
+# Restos de pruebas
+data/sonidos/_prueba/
+*.json.original
 
 # Mods propios: solo se versionan los de serie
 data/mods/*

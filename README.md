@@ -13,6 +13,7 @@ Es un juego original: su ciudad, su historia, sus personajes y su música son pr
 - Coches, motos, camiones, barcos y helicóptero; armas; policía con cinco niveles de búsqueda.
 - Radio con música propia, música de ambiente y packs de sonidos intercambiables.
 - Un modo opcional para mayores de 18 años, desactivado de serie.
+- Jugar con amigos sin servidores externos: el propio juego monta el servidor, con o sin contraseña.
 - Un editor de mods accesible, hecho con wxPython, y cuatro mods completos de serie.
 
 ## Requisitos
@@ -31,7 +32,7 @@ probar.bat     :: ejecuta las pruebas automáticas
 compilar.bat   :: genera dist\PuertoBravo, portable y listo para distribuir
 ```
 
-La primera vez que arranca, el juego genera sus sonidos, la música de la radio y la música de ambiente en la carpeta `data`. Por eso el audio no está en el repositorio.
+El repositorio incluye el audio: los sonidos por defecto y los tres packs en `data/sonidos`, la música de la radio en `data/radio` y la música de ambiente en `data/musica`. Si falta algún sonido por defecto, el juego lo vuelve a generar al arrancar.
 
 ## Estructura
 
@@ -45,7 +46,7 @@ La primera vez que arranca, el juego genera sus sonidos, la música de la radio 
 
 ## Compilación
 
-`compilar.bat` usa cx_Freeze y deja en `dist\PuertoBravo` una carpeta portable con `PuertoBravo.exe` y `EditorMods.exe`. La compilación sale limpia, sin partidas ni opciones personales, y con los datos del juego y los mods protegidos: los `.json` van cifrados y firmados para que no se puedan editar a mano. El editor de mods abre los archivos protegidos y los escritos a mano, y siempre guarda protegido.
+`compilar.bat` usa cx_Freeze y deja en `dist\PuertoBravo` una carpeta portable con `PuertoBravo.exe` y `EditorMods.exe`. La compilación sale limpia, sin partidas ni opciones personales, y con los datos del juego y los mods protegidos: van cifrados y firmados, con extensiones propias (`.pbd` para los datos, `.pbm` para los mods y `.pbs` para las partidas), para que no se puedan editar a mano. El editor de mods abre los archivos protegidos y los `.json` escritos a mano, y siempre guarda protegido.
 
 La protección usa una clave que va dentro del propio programa. Evita la edición casual; no es una barrera frente a quien analice el ejecutable.
 
@@ -59,8 +60,8 @@ Está en `data/docs`: `manual.html`, `teclas.html`, `novedades.html`, `cambiar_s
 
 ## Sonidos de terceros
 
-Los packs de sonidos alternativos se montan con grabaciones de dominio público (licencia CC0) de kenney.nl, opengameart.org y bigsoundbank.com. No forman parte del repositorio. Cada pack lleva un archivo `CREDITOS.txt` con el origen de cada sonido.
+Los packs de sonidos alternativos se montan con grabaciones de dominio público (licencia CC0) de kenney.nl, opengameart.org y bigsoundbank.com. Cada pack lleva un archivo `CREDITOS.txt` con el origen de cada sonido.
 
 ## Licencia
 
-Pendiente de decidir. Hasta que se añada un archivo de licencia, todos los derechos quedan reservados.
+Licencia MIT: puedes usar, modificar y distribuir cualquier parte del juego, con la única condición de conservar el aviso de derechos y la licencia. Está en el archivo `LICENSE`.

@@ -148,11 +148,25 @@ class Mod:
         return out
 
     def guardar(self, ruta=None, protegido=True):
-        """Guarda el mod. Desde el editor siempre queda protegido: no se puede retocar con un editor de texto."""
+        """Guarda el mod. Desde el editor siempre queda protegido, con extensión .pbm: no se puede retocar
+        con un editor de texto. Si el mod venía de un .json escrito a mano, ese archivo se aparta como
+        .json.original para que el juego no cargue las dos versiones. Devuelve el archivo apartado, o None."""
         ruta = ruta or self.ruta
-        cifrado.escribir_json(ruta, self.crudo(), cifrado=protegido, sangria=1)
+        apartado = None
+        if protegido:
+            destino = ruta_protegida(ruta)
+            cifrado.escribir_json(destino, self.crudo(), cifrado=True)
+            if os.path.normcase(destino) != os.path.normcase(ruta) and os.path.exists(ruta) and not cifrado.esta_cifrado(ruta):
+                apartado = ruta + ".original"
+                os.replace(ruta, apartado)
+            elif os.path.normcase(destino) != os.path.normcase(ruta) and os.path.exists(ruta):
+                os.remove(ruta)                   # un .json ya protegido, de una versión anterior: queda solo el .pbm
+            ruta = destino
+        else:
+            cifrado.escribir_json(ruta, self.crudo(), cifrado=False, sangria=1)
         self.ruta = ruta
         self.modificado = False
+        return apartado
 
 
 class Catalogo:
@@ -384,14 +398,29 @@ def comprobar(mod, cat):
     return errores, avisos
 
 
+EXT_MODS = (".json", rutas.EXT_MOD)
+
+
+def ruta_protegida(ruta):
+    """Nombre con el que el editor guarda un mod: siempre .pbm (o .pbm.desactivado)."""
+    baja = ruta.lower()
+    if baja.endswith(".json.desactivado"):
+        return ruta[:-len(".json.desactivado")] + rutas.EXT_MOD + ".desactivado"
+    if baja.endswith(".json"):
+        return ruta[:-5] + rutas.EXT_MOD
+    if baja.endswith((rutas.EXT_MOD, rutas.EXT_MOD + ".desactivado")):
+        return ruta
+    return ruta + rutas.EXT_MOD
+
+
 def listar_mods():
     """[(nombre de archivo, activo)] de la carpeta de mods."""
     out = []
     try:
         for f in sorted(os.listdir(rutas.MODS)):
-            if f.lower().endswith(".json"):
+            if f.lower().endswith(EXT_MODS):
                 out.append((f, True))
-            elif f.lower().endswith(".json.desactivado"):
+            elif f.lower().endswith(tuple(e + ".desactivado" for e in EXT_MODS)):
                 out.append((f, False))
     except OSError:
         pass
@@ -402,7 +431,7 @@ def activar_mod(nombre, activo):
     origen = os.path.join(rutas.MODS, nombre)
     if activo and nombre.lower().endswith(".desactivado"):
         destino = origen[:-len(".desactivado")]
-    elif not activo and nombre.lower().endswith(".json"):
+    elif not activo and nombre.lower().endswith(EXT_MODS):
         destino = origen + ".desactivado"
     else:
         return nombre

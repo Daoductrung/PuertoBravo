@@ -1,0 +1,1 @@
+Piezas de serie creadas. Si borras este archivo, se vuelven a crear las que falten.

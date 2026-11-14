@@ -10,7 +10,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-MODS_DE_SERIE = ("costa_dorada.json", "oficios_y_recados.json", "valdeolmos.json", "motor_y_asfalto.json")
+MODS_DE_SERIE = ("costa_dorada.pbm", "oficios_y_recados.pbm", "valdeolmos.pbm", "motor_y_asfalto.pbm")
 
 
 def comprobar(raiz):
@@ -20,11 +20,11 @@ def comprobar(raiz):
     def hay(*partes):
         return os.path.exists(os.path.join(raiz, *partes))
 
-    for necesario in (("PuertoBravo.exe",), ("EditorMods.exe",), ("data", "datos", "ciudad.json"), ("data", "docs", "manual.html"),
+    for necesario in (("PuertoBravo.exe",), ("EditorMods.exe",), ("data", "datos", "ciudad.pbd"), ("data", "docs", "manual.html"),
                       ("data", "docs", "teclas.html"), ("data", "docs", "cambiar_sonidos.html"), ("data", "docs", "editor_mods.html"),
                       ("data", "docs", "crear_mods.html"), ("data", "docs", "novedades.html"), ("data", "sonidos", "por_defecto"), ("data", "sonidos", "realista"), ("data", "sonidos", "alternativo"), ("data", "sonidos", "retro"),
-                      ("data", "radio"), ("data", "musica"), ("data", "mods", "costa_dorada.json"), ("data", "mods", "oficios_y_recados.json"),
-                      ("data", "mods", "valdeolmos.json"), ("data", "mods", "motor_y_asfalto.json")):
+                      ("data", "radio"), ("data", "musica"), ("data", "mods", "costa_dorada.pbm"), ("data", "mods", "oficios_y_recados.pbm"),
+                      ("data", "mods", "valdeolmos.pbm"), ("data", "mods", "motor_y_asfalto.pbm")):
         if not hay(*necesario):
             problemas.append("Falta " + os.path.join(*necesario))
     for carpeta in ("partidas", "config", os.path.join("radio", "mi_musica")):
@@ -50,8 +50,10 @@ def comprobar(raiz):
     for sub in ("datos", "mods"):
         for base, _, archivos in os.walk(os.path.join(data, sub)):
             for f in archivos:
-                if f.lower().endswith(".json"):
-                    ruta = os.path.join(base, f)
+                ruta = os.path.join(base, f)
+                if f.lower().endswith((".json", ".json.desactivado")):
+                    problemas.append("Sin proteger, sigue siendo un .json: " + os.path.relpath(ruta, raiz))
+                elif f.lower().endswith((".pbd", ".pbm")):
                     if not cifrado.esta_cifrado(ruta):
                         problemas.append("Sin proteger: " + os.path.relpath(ruta, raiz))
                     else:

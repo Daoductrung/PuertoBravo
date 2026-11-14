@@ -16,21 +16,33 @@ from juego import cifrado, rutas          # noqa: E402
 CARPETAS = ("datos", "mods")
 
 
+def _cambiar(f, de, a):
+    """Nombre de archivo con la extensión cambiada, respetando el .desactivado final de los mods apagados."""
+    cola = ".desactivado" if f.lower().endswith(".desactivado") else ""
+    cuerpo = f[:len(f) - len(cola)] if cola else f
+    return cuerpo[:-len(de)] + a + cola if cuerpo.lower().endswith(de) else None
+
+
 def recorrer(data, abrir=False):
+    """Protege los JSON de datos y mods y les pone su extensión propia (.pbd y .pbm). Con abrir=True, lo deshace."""
     hechos = 0
     for sub in CARPETAS:
+        propia = rutas.EXT_MOD if sub == "mods" else rutas.EXT_DATOS
+        de, a = (propia, ".json") if abrir else (".json", propia)
         for base, _, archivos in os.walk(os.path.join(data, sub)):
             for f in archivos:
-                if f.lower().endswith((".json", ".json.desactivado")):
-                    ruta = os.path.join(base, f)
-                    hechos += bool(cifrado.descifrar_archivo(ruta) if abrir else cifrar_archivo_seguro(ruta))
+                nuevo = _cambiar(f, de, a)
+                if nuevo is None:
+                    continue
+                ruta, destino = os.path.join(base, f), os.path.join(base, nuevo)
+                if abrir:
+                    cifrado.descifrar_archivo(ruta)
+                else:
+                    cifrado.cifrar_archivo(ruta)
+                    cifrado.leer_json(ruta)          # se comprueba que lo que queda se puede volver a leer
+                os.replace(ruta, destino)
+                hechos += 1
     return hechos
-
-
-def cifrar_archivo_seguro(ruta):
-    cambiado = cifrado.cifrar_archivo(ruta)
-    cifrado.leer_json(ruta)                  # se comprueba que lo que queda se puede volver a leer
-    return cambiado
 
 
 if __name__ == "__main__":

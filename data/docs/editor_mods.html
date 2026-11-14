@@ -21,8 +21,9 @@ li { margin-bottom: .3em; }
 <li>En el juego compilado: ejecuta <strong>EditorMods.exe</strong>, que está junto a <strong>PuertoBravo.exe</strong>.</li>
 <li>Con el código fuente: ejecuta <strong>editor.bat</strong>.</li>
 </ul>
-<p>El editor guarda los mods en la carpeta <code>data\mods</code>, que es de donde los lee el juego. Un mod es un único archivo con extensión <code>.json</code>.</p>
-<p>Los mods que guarda el editor quedan protegidos: el archivo está cifrado y firmado, y no se puede leer ni retocar con un editor de texto. El editor abre igual los mods protegidos, los que vienen con el juego y los escritos a mano en JSON normal; al guardar, siempre protege.</p>
+<p>El editor guarda los mods en la carpeta <code>data\mods</code>, que es de donde los lee el juego. Un mod es un único archivo, con extensión <code>.pbm</code>.</p>
+<p>Los mods que guarda el editor quedan protegidos, con la extensión <code>.pbm</code>: el archivo está cifrado y firmado, y no se puede leer ni retocar con un editor de texto. El editor abre igual los mods protegidos, los que vienen con el juego y los escritos a mano en JSON; al guardar, siempre protege.</p>
+<p>Si has escrito un mod a mano en un archivo <code>.json</code>, el juego compilado no lo carga: ábrelo aquí con <kbd>Control O</kbd> y guárdalo con <kbd>Control S</kbd>. El editor lo deja como <code>.pbm</code>, listo para usar, y conserva tu archivo original como <code>.json.original</code>.</p>
 
 <h2>2. La ventana principal</h2>
 <p>Tiene dos listas y una fila de botones. Con <kbd>Tabulador</kbd> pasas de una a otra.</p>
@@ -97,7 +98,7 @@ li { margin-bottom: .3em; }
 <p>El botón Copiar del juego original trae a tu mod una copia de un elemento original para modificarlo. Si le dejas el mismo identificador, sustituye al original; si se lo cambias, se añade como uno nuevo. Es la manera más rápida de aprender: copia una misión que te guste y mira cómo está hecha.</p>
 
 <h3>Aprender de los mods de ejemplo</h3>
-<p>En la carpeta de mods hay cuatro mods completos: Costa Dorada, Valdeolmos, Oficios y recados, y Motor y asfalto. Ábrelos con <kbd>Control O</kbd>: <code>costa_dorada.json</code> tiene un ejemplo de cada cosa que se puede crear, incluido un mapa entero y misiones con los nueve tipos de paso.</p>
+<p>En la carpeta de mods hay cuatro mods completos: Costa Dorada, Valdeolmos, Oficios y recados, y Motor y asfalto. Ábrelos con <kbd>Control O</kbd>: <code>costa_dorada</code> tiene un ejemplo de cada cosa que se puede crear, incluido un mapa entero y misiones con los nueve tipos de paso.</p>
 
 <h2>5. Las misiones</h2>
 <p>Una misión es una lista de pasos. Cada paso tiene un tipo:</p>
@@ -125,7 +126,7 @@ li { margin-bottom: .3em; }
 <p>Con <kbd>Control M</kbd> se abre una lista de casillas con todos los mods de la carpeta. Los marcados son los que carga el juego. Un mod desactivado no se borra: su archivo cambia de extensión y el juego lo ignora.</p>
 
 <h2>9. Compartir un mod</h2>
-<p>Envía el archivo <code>.json</code> de la carpeta <code>data\mods</code>. Quien lo reciba solo tiene que copiarlo en su carpeta <code>data\mods</code>. Si tu mod usa sonidos nuevos, envía también esos archivos, que van en <code>data\sonidos\por_defecto</code>.</p>
+<p>Envía el archivo <code>.pbm</code> de la carpeta <code>data\mods</code>. Quien lo reciba solo tiene que copiarlo en su carpeta <code>data\mods</code>. Si tu mod usa sonidos nuevos, envía también esos archivos, que van en <code>data\sonidos\por_defecto</code>.</p>
 
 <h2>10. Problemas frecuentes</h2>
 <ul>

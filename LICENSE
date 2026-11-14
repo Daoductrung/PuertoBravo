@@ -1,0 +1,32 @@
+MIT License
+
+Copyright (c) 2026 hxebolax
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+----------------------------------------------------------------------------
+En español, y sin valor legal frente al texto de arriba: puedes usar, copiar,
+modificar, mezclar, publicar, distribuir y vender este juego y todo lo que
+contiene (código, datos, textos, historia, mapas, misiones, música y sonidos
+propios), con una sola condición: conservar este aviso de derechos y esta
+licencia en las copias.
+
+Los packs de sonidos de data/sonidos (realista, alternativo y retro) usan
+grabaciones de terceros publicadas con licencia CC0, de dominio público. El
+archivo CREDITOS.txt de cada pack indica de dónde sale cada una.

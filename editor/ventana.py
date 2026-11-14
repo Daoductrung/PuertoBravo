@@ -137,7 +137,7 @@ class VentanaEditor(wx.Frame):
         if not self._descartar():
             return
         os.makedirs(rutas.MODS, exist_ok=True)
-        with wx.FileDialog(self, "Abrir mod", defaultDir=rutas.MODS, wildcard="Mods (*.json;*.desactivado)|*.json;*.desactivado|Todos los archivos|*.*",
+        with wx.FileDialog(self, "Abrir mod", defaultDir=rutas.MODS, wildcard="Mods (*.pbm;*.json;*.desactivado)|*.pbm;*.json;*.desactivado|Todos los archivos|*.*",
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as dlg:
             if dlg.ShowModal() != wx.ID_OK:
                 return
@@ -151,25 +151,26 @@ class VentanaEditor(wx.Frame):
         if not self.mod.ruta:
             return self.guardar_como()
         try:
-            self.mod.guardar()
+            apartado = self.mod.guardar()
         except OSError as e:
             mostrar_error(self, f"No se pudo guardar.\n{e}", "Error al guardar")
             return False
         self._titulo()
-        self.SetStatusText("Mod guardado en " + self.mod.ruta)
+        self.SetStatusText("Mod guardado y protegido en " + self.mod.ruta)
+        if apartado:
+            mostrar_mensaje(self, "El mod se ha guardado protegido, con extensión pbm, que es la que usa el juego.\n\n"
+                                  f"El archivo escrito a mano se conserva como {os.path.basename(apartado)} y el juego ya no lo carga.", "Mod protegido")
         return True
 
     def guardar_como(self):
         os.makedirs(rutas.MODS, exist_ok=True)
         propuesto = "".join(ch if ch.isalnum() else "_" for ch in self.mod.info.get("nombre", "mi_mod").lower()).strip("_") or "mi_mod"
-        with wx.FileDialog(self, "Guardar mod", defaultDir=rutas.MODS, defaultFile=propuesto + ".json", wildcard="Mods (*.json)|*.json",
+        with wx.FileDialog(self, "Guardar mod", defaultDir=rutas.MODS, defaultFile=propuesto + rutas.EXT_MOD, wildcard="Mods protegidos (*.pbm)|*.pbm",
                            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as dlg:
             if dlg.ShowModal() != wx.ID_OK:
                 return False
             ruta = dlg.GetPath()
-        if not ruta.lower().endswith(".json"):
-            ruta += ".json"
-        self.mod.ruta = ruta
+        self.mod.ruta = modelo.ruta_protegida(ruta)
         return self.guardar()
 
     def _cerrar(self, evento):

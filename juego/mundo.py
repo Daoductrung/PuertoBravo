@@ -66,8 +66,17 @@ def metros(d):
 
 
 def _leer_json(ruta_archivo):
+    """Lee un archivo de datos. En el código fuente es nombre.json; en el juego compilado, nombre.pbd, protegido."""
     from . import cifrado
-    return cifrado.leer_json(ruta_archivo)          # vale tanto para el JSON legible como para el protegido
+    if not os.path.exists(ruta_archivo) and ruta_archivo.lower().endswith(".json"):
+        protegido = ruta_archivo[:-5] + rutas.EXT_DATOS
+        if os.path.exists(protegido):
+            ruta_archivo = protegido
+    return cifrado.leer_json(ruta_archivo)
+
+
+def _es_dato(nombre):
+    return nombre.lower().endswith((".json", rutas.EXT_DATOS))
 
 
 def cargar_datos(con_mods=True):
@@ -99,23 +108,29 @@ def cargar_datos(con_mods=True):
     carpeta_mapas = os.path.join(rutas.DATOS, "mapas")
     if os.path.isdir(carpeta_mapas):
         for nombre in sorted(os.listdir(carpeta_mapas)):
-            if nombre.lower().endswith(".json"):
+            if _es_dato(nombre):
                 try:
                     d["mapas"].append(_leer_json(os.path.join(carpeta_mapas, nombre)))
                 except (OSError, ValueError) as e:
                     d["errores_mods"].append(f"{nombre}: {e}")
-    for extra in sorted(f for f in os.listdir(rutas.DATOS) if f.startswith("misiones_") and f.endswith(".json")):
+    for extra in sorted(f for f in os.listdir(rutas.DATOS) if f.startswith("misiones_") and _es_dato(f)):
         ruta_extra = os.path.join(rutas.DATOS, extra)
         if os.path.exists(ruta_extra):
             ex = _leer_json(ruta_extra)
             d["misiones"] += ex.get("misiones", [])
             d["capitulos"].update(ex.get("capitulos", {}))
     if con_mods and os.path.isdir(rutas.MODS):
+        from . import cifrado
         for nombre in sorted(os.listdir(rutas.MODS)):
-            if not nombre.lower().endswith(".json"):
+            if not nombre.lower().endswith((".json", rutas.EXT_MOD)):
+                continue
+            ruta_mod = os.path.join(rutas.MODS, nombre)
+            if cifrado.COMPILADO and not cifrado.esta_cifrado(ruta_mod):
+                # en el juego que se reparte solo valen los mods guardados con el editor
+                d["errores_mods"].append(f"{nombre} está escrito a mano y no se ha cargado. Ábrelo con el editor de mods y guárdalo: el editor lo deja protegido y listo para usar")
                 continue
             try:
-                mod = _leer_json(os.path.join(rutas.MODS, nombre))
+                mod = _leer_json(ruta_mod)
             except (OSError, ValueError) as e:
                 d["errores_mods"].append(f"{nombre}: {e}")
                 continue

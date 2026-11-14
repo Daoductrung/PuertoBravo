@@ -162,6 +162,8 @@ class App:
             self.mez.mundo_pausado = getattr(cima, "pausa_mundo", True)
             self.mando.actualizar(dt)
             cima.actualizar(dt)
+            if self.partida is not None:
+                self.partida.red_paso(dt)          # los amigos conectados siguen oyéndote aunque tengas un menú abierto
             self._musica(dt)
         self.mez.actualizar()
 
