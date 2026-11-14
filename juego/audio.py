@@ -278,6 +278,15 @@ class Mezclador:
             r = c.rate * self.tono_mundo if c.cat in ("efectos", "ambiente") else c.rate
             L = c.largo
             gl1, gr1 = (0.0, 0.0) if c.parando else (c.gl_obj, c.gr_obj)
+            if c.gl < 1e-4 and c.gr < 1e-4 and gl1 < 1e-4 and gr1 < 1e-4 and not c.parando:
+                # No se oye (está lejos o con el volumen a cero): avanza sin gastar cálculo. Con muchas sirenas y motores, esto es lo que evita los tirones.
+                c.pos += n * r
+                if c.bucle:
+                    c.pos %= L
+                elif c.pos >= L:
+                    c.fin = True
+                c.dl, c.dr, c.muf = c.dl_obj, c.dr_obj, c.muf_obj
+                continue
             if c.estereo or c.xy is None:
                 idx = c.pos + self._ar[:n] * r
                 s = self._leer(c.datos, idx, L, c.bucle)

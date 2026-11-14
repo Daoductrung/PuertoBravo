@@ -407,3 +407,42 @@ def test_escoltar_y_sigilo(robot):
     p.j.agachado = False
     robot.frames(10)
     assert p.mision is None and "te ha oído" in robot.app.pila[-1].titulo
+
+
+def test_pack_envolvente(app):
+    """El pack nuevo trae ambientes en estéreo, no toca la orientación y el juego lo carga."""
+    import json
+    from juego import catalogo_sonidos as cat, packs, rutas
+    carpeta = os.path.join(rutas.carpeta_sonidos(), "envolvente") if os.path.isdir(os.path.join(rutas.carpeta_sonidos(), "envolvente")) \
+        else os.path.join(rutas.DATA, "sonidos", "envolvente")
+    assert os.path.isdir(carpeta)
+    meta = json.load(open(os.path.join(carpeta, "pack.json"), encoding="utf-8"))
+    assert meta["nombre"] == "Envolvente" and meta["ambientes_en_estereo"] == 11 and "CC0" in meta["licencia"]
+    nombres = {os.path.splitext(f)[0] for f in os.listdir(carpeta) if f.endswith((".wav", ".ogg", ".flac", ".mp3"))}
+    realista = {os.path.splitext(f)[0] for f in os.listdir(os.path.join(os.path.dirname(carpeta), "realista")) if f.endswith(".wav")}
+    assert nombres == realista and len(nombres) == 223          # los mismos archivos que los demás packs
+    serie = os.path.join(os.path.dirname(carpeta), "por_defecto")
+    orientacion = {k for k, g in enumerate(cat.GRUPOS) if g[0] in ("Orientación y GPS", "Localizadores", "Firmas de los lugares")}
+    vistos = 0
+    for n in nombres:                                   # los de orientación son, byte a byte, los de serie
+        if cat.grupo_de(n) in orientacion:
+            vistos += 1
+            assert open(os.path.join(carpeta, n + ".wav"), "rb").read() == open(os.path.join(serie, n + ".wav"), "rb").read(), n
+    assert vistos >= 40
+    creditos = open(os.path.join(carpeta, "CREDITOS.txt"), encoding="utf-8-sig").read()
+    for n in ("amb_ciudad", "amb_playa", "amb_noche", "lluvia"):
+        assert n in nombres and n + ":" in creditos
+    anterior = app.cfg["pack_sonidos"]
+    app.cfg["pack_sonidos"] = "envolvente"
+    try:
+        info = app.recargar_sonidos()
+        assert info["pack"] == "envolvente" and info["del_pack"] > 150
+        amb = app.mez.sonidos["amb_ciudad"]
+        assert amb.ndim == 2 and amb.shape[1] == 2 and 40 * 44100 < len(amb) <= 90 * 44100
+        assert not np.allclose(amb[:, 0], amb[:, 1]) and 0.03 < float(np.sqrt((amb ** 2).mean())) < 0.25
+        assert app.mez.sonidos["claxon"].ndim == 1                   # lo que tiene posición sigue en mono
+        principio, final = amb[:2000], amb[-2000:]
+        assert abs(float(final[-1].mean()) - float(principio[0].mean())) < 0.2      # el bucle no da un chasquido
+    finally:
+        app.cfg["pack_sonidos"] = anterior
+        app.recargar_sonidos()

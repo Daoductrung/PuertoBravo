@@ -1,0 +1,17 @@
+﻿SONIDOS DEL PACK ENVOLVENTE
+
+Los sonidos de este pack son de dominio público o tienen licencia CC0: se pueden usar, cambiar y repartir sin pedir permiso.
+Parte de ellos vienen del pack realista del juego, montado con sonidos libres de kenney.nl y opengameart.org.
+Las grabaciones añadidas en este pack son estas:
+
+amb_campo: Summer meadow - Houghton Lodge, de richwise. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/richwise/sounds/815552/
+amb_ciudad: Day Traffic - City Life, de Liljendal. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/Liljendal/sounds/442636/
+amb_industrial: ventilation huge noise ext Farine Five Roses factory industrial courtyard ext.flac, de kyles. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/kyles/sounds/454272/
+amb_mar: Sailing boat, bow wave (close perspective), de Pfannkuchn. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/Pfannkuchn/sounds/360631/
+amb_montana: EXT Blustery quiet 1.wav, de deleted_user_2104797. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/deleted_user_2104797/sounds/324493/
+amb_noche: crickets night urban park or residential backyard suburbs distant city skyline and owl India.flac, de kyles. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/kyles/sounds/451946/
+amb_parque: St_Stephen's_Green_Ambiance_Dublin_04, de SignatureSoundsOrg. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/SignatureSoundsOrg/sounds/869037/
+amb_playa: WAVES HIGH TIDE ST 1m 96k, de clif_creates. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/clif_creates/sounds/813160/
+amb_puerto: Baltimore Harbor with Distant Industrial Ambience, de flood-mix. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/flood-mix/sounds/413334/
+amb_residencial: Nõmme_Morning_June.wav, de Islabonita. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/Islabonita/sounds/471070/
+lluvia: RainAndWaterRunning.wav, de derjuli. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/derjuli/sounds/824122/

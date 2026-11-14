@@ -293,7 +293,8 @@ li { margin-bottom: .3em; }
 <li>Movimiento y conducción: movimiento a pie con brújula o con giros, conducción asistida o libre, frenada automática, piloto del GPS y sensor de proximidad.</li>
 <li>Orientación y avisos: formato de las direcciones, voz y baliza del GPS, anuncios de cruces, lugares, barrios y suelo, sonido de los lugares y semáforos acústicos.</li>
 <li>Combate y dificultad: dificultad, ayuda de puntería, sucesos callejeros y las dos asistencias.</li>
-<li>Mando: qué hace cada botón, reasignarlos y la vibración.</li>
+<li>Teclado: cambiar con qué tecla se hace cada cosa mientras juegas. Eliges la función, pulsas Intro y luego la tecla que quieres. Las dos teclas se intercambian. No se pueden cambiar Escape, Intro, F1, F12 ni las teclas de mayúsculas, control y alt, y en los menús las teclas son siempre las de serie. La ayuda de F1 dice las teclas que hayas puesto.</li>
+<li>Mando: qué hace cada botón, reasignarlos, la vibración y su fuerza.</li>
 <li>Voz: lector de pantalla o voz de Windows, si en las escenas suenan las voces grabadas que haya, y si los menús dicen la posición de cada opción, por ejemplo tres de nueve.</li>
 <li>Personas e inteligencia artificial: cómo contestan las personas de la calle, con qué servicio y con qué claves.</li>
 <li>Registro para informar de fallos: dónde está el registro de la sesión, qué contiene y cómo enviarlo.</li>
@@ -308,6 +309,7 @@ li { margin-bottom: .3em; }
 <p>Fuera de los vehículos, o con la radio apagada, suena una música de fondo suave que cambia con la situación: el menú principal, explorar de día, la noche, el mar y los momentos de tensión, con la policía detrás o enemigos cerca. Cada situación tiene varias piezas: se empieza por una al azar y, cuando termina, suena otra distinta. Al encender la radio de un vehículo la música de ambiente se calla, y vuelve cuando apagas la radio con <kbd>Mayúsculas R</kbd> o te bajas. Se desactiva y se ajusta en Opciones, Sonido y música. Puedes añadir tu propia música a cada situación copiando archivos en <strong>data\musica</strong>, en la carpeta de esa situación: se usan todos los que haya, al azar, sean cuantos sean y se llamen como se llamen. Toda la música, la de ambiente y la de la radio, se nivela sola al cargarla, así que ninguna pista suena más fuerte que otra.</p>
 <h3>Packs de sonidos</h3>
 <p>En Opciones, Sonido y música, la opción Pack de sonidos cambia con las flechas izquierda y derecha entre los sonidos por defecto y los packs. Todos están en <strong>data\sonidos</strong>, cada uno en su subcarpeta: <strong>por_defecto</strong> son los de serie, que el juego vuelve a crear si falta alguno, y cada una de las demás subcarpetas es un pack. El cambio se oye al momento. Vienen instalados tres packs completos, con todos los sonidos del juego. Realista y Alternativo usan grabaciones reales de dominio público para pasos, puertas, armas, voces, vehículos, sirenas, ambientes, agua, viento, avisos y menús; Retro suena como una consola antigua. Los tres sustituyen todo lo que no es orientación y conservan el sonido original en balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. Un pack tuyo puede traer solo algunos sonidos: los demás siguen con el original. Puedes añadir los tuyos copiando su carpeta en <strong>data\sonidos</strong>.</p>
+<p>El pack <strong>Envolvente</strong> es el de los ambientes: lleva los sonidos del pack realista y once ambientes de barrio grabados de verdad en estéreo. Sus sonidos de orientación son los de serie.</p>
 <p>Como cada grabación viene a un volumen distinto, el juego iguala el volumen de cada sonido cambiado al del original. Además, en Ajustar el volumen de cada sonido están todos los sonidos por grupos: <kbd>Intro</kbd> lo hace sonar y las flechas izquierda y derecha suben o bajan ese sonido en concreto.</p>
 <h3>Cambiar los sonidos y la música</h3>
 <p>Todos los efectos de sonido y toda la música son archivos normales, en <strong>data\sonidos\por_defecto</strong>, <strong>data\radio</strong> y <strong>data\musica</strong>. Puedes sustituir cualquiera por una grabación tuya. La guía <strong>data\docs\cambiar_sonidos.html</strong> explica cómo y describe cada archivo.</p>
@@ -503,6 +505,16 @@ li { margin-bottom: .3em; }
 <li>Para comer, entra en cualquier bar, restaurante, pizzería o taberna y elige un plato. Con la vida realista puedes comer siempre que tengas algo de hambre, aunque tu salud esté entera. Si no sabes dónde hay uno, pregunta a cualquier persona de la calle dónde puedes comer y te lo marca en el GPS.</li>
 <li>Sin la vida realista, la comida solo sirve para recuperar salud: por eso, si la tienes al máximo, el juego dice que no tienes hambre.</li>
 </ul>
+
+<h3>Misiones que se juegan de oído</h3>
+<p>Además de ir a un sitio, conseguir un vehículo o enfrentarte a alguien, hay cuatro tipos de encargo pensados para el oído. En todos, la tecla <kbd>O</kbd> te dice cómo vas.</p>
+<ul>
+<li>Seguir a alguien. Va andando y se le oyen los pasos. No hay GPS: tienes que ir detrás por el sonido. Si te acercas a menos de seis metros, o de tres y medio agachado, se da cuenta. Si te quedas a más de cincuenta y cinco metros un rato, lo pierdes. El juego avisa cuando estás demasiado cerca o cuando se te aleja.</li>
+<li>Acompañar a alguien. Vas a recogerle; desde entonces te sigue a pie y sube contigo si coges un vehículo. Hay que llegar los dos al destino.</li>
+<li>Entrar sin hacer ruido. Hay vigilantes paseando alrededor del sitio, y se les oye andar. De pie te oyen a seis metros; corriendo, a once; agachado con la <kbd>X</kbd>, a menos de tres. Si te oyen, se acabó. El juego avisa cuando tienes uno cerca.</li>
+<li>Ruta contra el reloj. Varias paradas en un orden fijo, con un tiempo para todas. El GPS te lleva de una a la siguiente.</li>
+</ul>
+<p>En Bahía del Ocaso hay cuatro encargos de este tipo, que empiezan en el periódico El Faro del Ocaso cuando ya has hecho la misión El contador.</p>
 
 <h3>Si fallas una misión: los puntos de control</h3>
 <p>Las misiones largas guardan un punto de control cada vez que terminas un tramo. Si fallas después, el juego ofrece tres cosas: reintentar desde el último punto de control, que te devuelve al comienzo del tramo en el que estabas con lo que tenías entonces; reintentar desde el principio de la misión; o dejarlo por ahora. No hay punto de control mientras llevas un vehículo de la misión que aún hay que entregar: ahí se vuelve al tramo anterior.</p>

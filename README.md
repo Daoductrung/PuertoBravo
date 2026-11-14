@@ -92,7 +92,7 @@ publicar.bat   :: comprime, firma y publica la versión compilada
 
 Dependencias (`requirements.txt`): pygame-ce, numpy, sounddevice, soundfile, accessible-output2, wxPython, cx_Freeze y pytest. El modo IA no necesita ningún paquete: habla con los servicios por HTTPS con la biblioteca estándar (`juego/ia.py`), pregunta a cada uno su lista de modelos y elige el de la gama barata.
 
-El repositorio incluye el audio: los sonidos por defecto y los tres packs en `data/sonidos`, la música de la radio en `data/radio` y la de ambiente en `data/musica`. Si falta algún sonido por defecto, el juego lo vuelve a generar al arrancar.
+El repositorio incluye el audio: los sonidos por defecto y los cuatro packs en `data/sonidos` (el pack Envolvente se monta con `herramientas/crear_pack_envolvente.py`), la música de la radio en `data/radio` y la de ambiente en `data/musica`. Si falta algún sonido por defecto, el juego lo vuelve a generar al arrancar.
 
 ### Estructura
 
