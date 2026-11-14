@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Crear mods para Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 52em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+pre { background: #222; padding: .8em; overflow: auto; border-radius: 6px; }
+code { color: #9fe89f; }
+</style>
+</head>
+<body>
+<h1>Crear mods para Puerto Bravo: Ley del Asfalto</h1>
+<p>La forma más cómoda de crear un mod es el editor de mods, <strong>EditorMods.exe</strong>, que es accesible con lector de pantalla y tiene su propio manual en <a href="editor_mods.html">editor_mods.html</a>. Este documento describe el formato de los archivos, por si prefieres escribirlos a mano o quieres entender qué guarda el editor.</p>
+<p>En el juego compilado, los datos originales y los mods que guarda el editor van protegidos (cifrados), así que no se ven como texto. Un mod escrito a mano en JSON normal, como los ejemplos de este documento, sigue funcionando: el juego y el editor leen las dos formas.</p>
+<p>El juego lee al arrancar todos los archivos <code>.json</code> de la carpeta <strong>data\mods</strong> y los fusiona con los datos originales. Si un elemento tiene el mismo <code>id</code> que uno existente, lo sustituye; si no, se añade. Si un mod tiene un error, el juego lo dice al arrancar y sigue funcionando.</p>
+
+<h2>Estructura de un mod</h2>
+<p>Un mod es un objeto JSON con cualquiera de estas listas: <code>lugares</code>, <code>misiones</code>, <code>armas</code>, <code>vehiculos</code>, <code>carreras</code>, <code>comidas</code>, <code>objetos</code>, <code>peces</code>, <code>personajes</code>, <code>capitulos</code> y <code>mapas</code>. Para el contenido para adultos, además: <code>personas</code>, <code>actividades</code>, <code>regalos</code> y <code>sustancias</code>.</p>
+
+<h2>El mapa</h2>
+<p>Las coordenadas son metros. La x crece hacia el este y la y hacia el norte. Hay una vía cada 90 metros. Las manzanas se numeran con dos índices: el primero cuenta avenidas desde el oeste y el segundo calles desde el sur, empezando en cero.</p>
+
+<h2>Añadir un lugar</h2>
+<pre><code>{
+  "lugares": [
+    {"id": "mi_bar", "mapa": "puerto_bravo", "nombre": "Bar El Rincón", "tipo": "taberna",
+     "bloque": [2, 3], "lado": "N", "pos": 20,
+     "desc": "Un bar pequeño con las mejores croquetas."}
+  ]
+}</code></pre>
+<ul>
+<li><code>bloque</code>: la manzana. <code>lado</code>: N, S, E u O, la fachada donde está la puerta. <code>pos</code>: metros desde la esquina oeste o sur, de 0 a 72.</li>
+<li>En plazas, parques y playas puedes usar <code>"xy": [x, y]</code> dentro de la manzana en lugar de <code>lado</code> y <code>pos</code>.</li>
+<li><code>mapa</code>: puerto_bravo, san_lucero, monteferro, villaseca, cala_brava, fuentefria, isla_tortuga, plataforma o mar. Si falta, es Puerto Bravo.</li>
+</ul>
+<h3>Tipos de lugar</h3>
+<p>casa, negocio, armeria, tienda, farmacia, comida, pizzeria, hospital, comisaria, taller, desguace, casino, bar, taberna, taxi, carrera, periodico, banco, loteria, empenos, pescaderia, gimnasio, ropa, cine, hotel, concesionario, nautica, estacion, salida, embarcadero, muelle, helipuerto, protectora, feria, tesoro, pesca, monumento, empleo, academia y ong. Con el contenido para adultos, además, club y proveedor.</p>
+<ul>
+<li>casa: <code>precio</code> y <code>garaje</code>. negocio: <code>precio</code> e <code>ingresos</code> diarios.</li>
+<li>salida, embarcadero y muelle: <code>a_mapa</code> y <code>a_lugar</code>, el lugar de llegada.</li>
+<li><code>vehiculo</code>: modelo que aparece siempre aparcado en la puerta.</li>
+<li><code>requiere</code>: id de la misión que hay que completar para que abra.</li>
+<li><code>sonido</code>: nombre del sonido que emite el lugar. Es también el ambiente que se oye de fondo al entrar. Ponlo siempre: en este juego todo debe sonar.</li>
+<li>academia: <code>cursos</code>, lista con las habilidades que enseña: conduccion, punteria, resistencia y pesca. Si falta, enseña las cuatro.</li>
+<li>empleo y ong no necesitan nada más.</li>
+</ul>
+
+<h2>Añadir una misión</h2>
+<pre><code>{
+  "misiones": [
+    {"id": "mod01", "titulo": "Croquetas a domicilio", "capitulo": 5, "contacto": "Loli",
+     "lugar": "mi_bar", "requiere": ["m01"],
+     "resumen": "La dueña del Bar El Rincón necesita un repartidor.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [["Loli", "Lleva estas croquetas al hospital, anda."]]},
+       {"tipo": "ir", "lugar": "hospital", "limite": 120, "texto": "Lleva las croquetas al Hospital General en dos minutos."},
+       {"tipo": "dialogo", "lineas": [["Narrador", "Las enfermeras te aplauden."]]}
+     ],
+     "recompensa": {"dinero": 200}}
+  ]
+}</code></pre>
+<h3>Tipos de paso</h3>
+<ul>
+<li><code>dialogo</code>: <code>lineas</code>, una lista de pares con quién habla y qué dice. Usa Narrador para la narración.</li>
+<li><code>ir</code>: llegar a un <code>lugar</code>.</li>
+<li><code>dar</code>: entrega <code>arma</code> con <code>balas</code>, o <code>dinero</code>.</li>
+<li><code>robar</code>: aparece un vehículo <code>modelo</code> junto al <code>lugar</code> y hay que subirse. Con <code>"abierto": true</code> no hay que forzarlo. <code>busqueda</code> pone nivel de búsqueda al subir.</li>
+<li><code>entregar</code>: llevar ese vehículo a un <code>lugar</code>. <code>salud_min</code> es el estado mínimo en porcentaje.</li>
+<li><code>eliminar</code>: <code>enemigos</code>, una lista de grupos con <code>n</code>, <code>tipo</code>, <code>arma</code> y <code>salud</code>. Con <code>"ya": true</code> aparecen al instante.</li>
+<li><code>recoger</code>: un <code>objeto</code> en un <code>lugar</code>, o donde estés con <code>"aqui": true</code>.</li>
+<li><code>policia</code>: pone <code>nivel</code> de búsqueda y hay que despistarla.</li>
+<li><code>perseguir</code>: un vehículo <code>modelo</code> huye desde el <code>lugar</code> y hay que destruirlo. <code>salud</code> es su resistencia.</li>
+</ul>
+<p>Cualquier paso admite <code>texto</code>, que se dice al empezarlo, y <code>limite</code>, un tiempo en segundos.</p>
+<p>La recompensa admite <code>dinero</code>, <code>arma</code> con <code>balas</code>, <code>chaleco</code> y <code>barco</code>.</p>
+
+<h2>Armas y vehículos</h2>
+<p>Copia una entrada de <code>data\datos\armas.json</code> o <code>data\datos\vehiculos.json</code>, cámbiale el <code>id</code> y los valores. En un vehículo, <code>"barco": true</code> lo convierte en embarcación, <code>"vuela": true</code> en aeronave, <code>trabajo</code> le da un oficio con la tecla J y <code>precio</code> lo pone a la venta. Los vehículos de un barrio se eligen de la lista <code>vehiculos</code> de ese barrio en el mapa.</p>
+
+<h2>Personajes</h2>
+<pre><code>{
+  "personajes": [
+    {"id": "lola", "nombre": "Lola", "apellido": "Vega", "desc": "Mecánica. Empieza con la conducción al nivel tres.",
+     "conduccion": 3, "dinero": 200, "botiquines": 1}
+  ]
+}</code></pre>
+<p>Campos opcionales: <code>dinero</code>, <code>salud_max</code>, <code>animo</code>, <code>reputacion</code>, <code>ciudadania</code>, los niveles iniciales <code>conduccion</code>, <code>punteria</code>, <code>resistencia</code> y <code>pesca</code>, <code>arma</code>, <code>botiquines</code> y <code>ganzuas</code>. En los textos de las misiones, el nombre Dani se cambia solo por el del personaje elegido.</p>
+
+<h2>Misiones en archivos propios</h2>
+<p>Además de la carpeta mods, el juego carga cualquier archivo de la carpeta <strong>data\datos</strong> cuyo nombre empiece por <code>misiones_</code>.</p>
+
+<h2>Sonidos</h2>
+<p>Los sonidos ya no van en los mods: cada sonido es un archivo de <strong>data\sonidos\por_defecto</strong> que puedes sustituir directamente. Está todo explicado, con la lista completa de archivos, en <strong>data\docs\cambiar_sonidos.html</strong>.</p>
+
+<h2>Consejos</h2>
+<ul>
+<li>Guarda los archivos en UTF-8.</li>
+<li>Si usas el código fuente, ejecuta <strong>probar.bat</strong>: las pruebas comprueban que todos los lugares, modelos y armas que citan las misiones existen, y juegan cada misión de principio a fin.</li>
+</ul>
+</body>
+</html>

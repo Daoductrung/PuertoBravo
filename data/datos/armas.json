@@ -1,0 +1,55 @@
+{
+  "armas": [
+    {"id": "punos", "nombre": "Puños", "tipo": "cuerpo", "dano": 12, "alcance": 2.5, "cadencia": 0.45, "precision": 0.95, "sonido": "golpe", "ruido": 0, "precio": 0, "desc": "Lo que traes de serie."},
+    {"id": "navaja", "nombre": "Navaja", "tipo": "cuerpo", "dano": 28, "alcance": 2.5, "cadencia": 0.5, "precision": 0.95, "sonido": "navaja", "ruido": 0, "precio": 80, "desc": "Silenciosa y rápida. Solo sirve a un paso de distancia."},
+    {"id": "bate", "nombre": "Bate de béisbol", "tipo": "cuerpo", "dano": 40, "alcance": 3.0, "cadencia": 0.8, "precision": 0.9, "sonido": "golpe", "ruido": 0, "precio": 120, "desc": "Lento pero contundente."},
+    {"id": "pistola", "nombre": "Pistola nueve milímetros", "tipo": "fuego", "dano": 25, "alcance": 35, "cadencia": 0.4, "precision": 0.85, "cargador": 12, "sonido": "disparo_pistola", "ruido": 2, "precio": 400, "balas": 24, "precio_balas": 40, "desc": "Fiable y equilibrada. Doce balas por cargador."},
+    {"id": "revolver", "nombre": "Revólver", "tipo": "fuego", "dano": 48, "alcance": 40, "cadencia": 0.8, "precision": 0.9, "cargador": 6, "sonido": "disparo_revolver", "ruido": 2, "precio": 900, "balas": 18, "precio_balas": 60, "desc": "Seis balas que pegan como coces de mula."},
+    {"id": "subfusil", "nombre": "Subfusil", "tipo": "fuego", "dano": 16, "alcance": 30, "cadencia": 0.11, "precision": 0.7, "cargador": 30, "automatica": true, "sonido": "disparo_subfusil", "ruido": 2, "precio": 1500, "balas": 60, "precio_balas": 90, "desc": "Automático: mantén pulsado el disparo. Treinta balas que se van volando."},
+    {"id": "escopeta", "nombre": "Escopeta recortada", "tipo": "fuego", "dano": 70, "alcance": 16, "cadencia": 1.0, "precision": 0.95, "cargador": 2, "sonido": "disparo_escopeta", "ruido": 3, "precio": 1100, "balas": 12, "precio_balas": 70, "desc": "Devastadora de cerca, inútil de lejos. Dos cartuchos."},
+    {"id": "rifle", "nombre": "Rifle de precisión", "tipo": "fuego", "dano": 95, "alcance": 90, "cadencia": 1.5, "precision": 0.97, "cargador": 5, "sonido": "disparo_rifle", "ruido": 3, "precio": 3500, "balas": 10, "precio_balas": 120, "desc": "Un disparo, un problema menos. Alcanza casi cien metros."},
+    {"id": "machete", "nombre": "Machete", "tipo": "cuerpo", "dano": 48, "alcance": 3.0, "cadencia": 0.6, "precision": 0.92, "sonido": "navaja", "ruido": 0, "precio": 220, "desc": "La mejor arma cuerpo a cuerpo: rápida y muy dañina."},
+    {"id": "silenciada", "nombre": "Pistola con silenciador", "tipo": "fuego", "dano": 22, "alcance": 30, "cadencia": 0.45, "precision": 0.88, "cargador": 10, "sonido": "disparo_silenciado", "ruido": 0, "precio": 1400, "balas": 20, "precio_balas": 60, "desc": "No hace ruido: nadie se asusta ni llama a la policía por los disparos."},
+    {"id": "escopeta_combate", "nombre": "Escopeta de combate", "tipo": "fuego", "dano": 62, "alcance": 20, "cadencia": 0.55, "precision": 0.93, "cargador": 8, "sonido": "disparo_escopeta", "ruido": 3, "precio": 3200, "balas": 16, "precio_balas": 110, "desc": "Ocho cartuchos seguidos. Para limpiar habitaciones."},
+    {"id": "fusil", "nombre": "Fusil de asalto", "tipo": "fuego", "dano": 26, "alcance": 55, "cadencia": 0.12, "precision": 0.8, "cargador": 30, "automatica": true, "sonido": "disparo_fusil", "ruido": 3, "precio": 5500, "balas": 90, "precio_balas": 160, "desc": "Automático, preciso y con mucho alcance. El arma más completa."},
+    {"id": "ametralladora", "nombre": "Ametralladora ligera", "tipo": "fuego", "dano": 20, "alcance": 50, "cadencia": 0.07, "precision": 0.65, "cargador": 100, "automatica": true, "sonido": "disparo_fusil", "ruido": 3, "precio": 9500, "balas": 200, "precio_balas": 300, "desc": "Cien balas por cinta. Poca puntería y muchísimo plomo."},
+    {"id": "molotov", "nombre": "Cóctel molotov", "tipo": "explosivo", "dano": 70, "alcance": 22, "radio": 6, "cadencia": 1.2, "precision": 1, "cargador": 1, "sonido": "lanzar", "ruido": 3, "precio": 250, "balas": 2, "precio_balas": 200, "desc": "Una botella incendiaria que daña todo en seis metros. Se lanza hacia el enemigo fijado."},
+    {"id": "granada", "nombre": "Granadas de mano", "tipo": "explosivo", "dano": 130, "alcance": 30, "radio": 8, "cadencia": 1.3, "precision": 1, "cargador": 1, "sonido": "lanzar", "ruido": 3, "precio": 600, "balas": 2, "precio_balas": 500, "desc": "Explota a ocho metros a la redonda. No la lances cerca de ti."},
+    {"id": "lanzacohetes", "nombre": "Lanzacohetes", "tipo": "explosivo", "dano": 320, "alcance": 90, "radio": 10, "cadencia": 2.5, "precision": 1, "cargador": 1, "sonido": "cohete", "ruido": 3, "precio": 15000, "balas": 2, "precio_balas": 3000, "desc": "Destruye casi cualquier vehículo de un disparo, desde muy lejos."},
+    {"id": "puno_americano", "nombre": "Puño americano", "tipo": "cuerpo", "dano": 24, "alcance": 2.5, "cadencia": 0.4, "precision": 0.95, "sonido": "golpe", "ruido": 0, "precio": 60, "desc": "Puños, pero con argumentos."},
+    {"id": "katana", "nombre": "Katana", "tipo": "cuerpo", "dano": 65, "alcance": 3.2, "cadencia": 0.65, "precision": 0.93, "sonido": "navaja", "ruido": 0, "precio": 1200, "desc": "El arma cuerpo a cuerpo definitiva. Silenciosa y letal."},
+    {"id": "uzi", "nombre": "Micro subfusil", "tipo": "fuego", "dano": 13, "alcance": 24, "cadencia": 0.08, "precision": 0.62, "cargador": 32, "automatica": true, "sonido": "disparo_subfusil", "ruido": 2, "precio": 900, "balas": 64, "precio_balas": 70, "desc": "Pequeño, barato y nervioso. Escupe balas a toda velocidad."},
+    {"id": "carabina", "nombre": "Carabina", "tipo": "fuego", "dano": 42, "alcance": 65, "cadencia": 0.5, "precision": 0.92, "cargador": 15, "sonido": "disparo_rifle", "ruido": 3, "precio": 2800, "balas": 30, "precio_balas": 100, "desc": "Semiautomática y precisa a media distancia."},
+    {"id": "ballesta", "nombre": "Ballesta", "tipo": "fuego", "dano": 85, "alcance": 50, "cadencia": 1.8, "precision": 0.94, "cargador": 1, "sonido": "lanzar", "ruido": 0, "precio": 1600, "balas": 12, "precio_balas": 60, "desc": "Totalmente silenciosa: nadie oye el disparo. Un virote cada vez."},
+    {"id": "minigun", "nombre": "Ametralladora rotativa", "tipo": "fuego", "dano": 24, "alcance": 55, "cadencia": 0.045, "precision": 0.7, "cargador": 300, "automatica": true, "sonido": "disparo_fusil", "ruido": 3, "precio": 25000, "balas": 300, "precio_balas": 900, "desc": "Trescientas balas en quince segundos. No queda nada en pie."}
+  ],
+  "objetos": [
+    {"id": "botiquin", "nombre": "Botiquín", "precio": 60, "desc": "Recupera cincuenta puntos de salud. Se usa con la tecla Z."},
+    {"id": "ganzua", "nombre": "Juego de ganzúas", "precio": 150, "desc": "Abre los coches aparcados en la mitad de tiempo y sin que salte la alarma. Se gasta una por coche."},
+    {"id": "chaleco", "nombre": "Chaleco antibalas", "precio": 350, "desc": "Cien puntos de blindaje que absorben los daños antes que tu salud."}
+  ],
+  "comidas": [
+    {"nombre": "Bocadillo", "precio": 8, "salud": 20},
+    {"nombre": "Menú del día", "precio": 18, "salud": 50},
+    {"nombre": "Refresco", "precio": 3, "salud": 8},
+    {"nombre": "Banquete", "precio": 40, "salud": 100}
+  ],
+  "peces": [
+    {"nombre": "una sardina", "valor": 5, "peso": 30},
+    {"nombre": "un boquerón", "valor": 4, "peso": 25},
+    {"nombre": "una caballa", "valor": 9, "peso": 22},
+    {"nombre": "una dorada", "valor": 22, "peso": 14},
+    {"nombre": "una lubina", "valor": 32, "peso": 12},
+    {"nombre": "un pulpo", "valor": 38, "peso": 8},
+    {"nombre": "un mero enorme", "valor": 70, "peso": 6},
+    {"nombre": "un atún rojo", "valor": 160, "peso": 3},
+    {"nombre": "un pez espada", "valor": 230, "peso": 2},
+    {"nombre": "una bota vieja", "valor": 0, "peso": 6},
+    {"nombre": "un cofre pequeño lleno de monedas", "valor": 450, "peso": 1},
+    {"nombre": "una trucha", "valor": 18, "peso": 16},
+    {"nombre": "un calamar gigante", "valor": 300, "peso": 1},
+    {"nombre": "un bonito", "valor": 45, "peso": 9},
+    {"nombre": "una langosta", "valor": 90, "peso": 4},
+    {"nombre": "un neumático viejo", "valor": 0, "peso": 4}
+  ]
+}

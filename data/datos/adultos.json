@@ -1,0 +1,44 @@
+{
+  "nota": "Contenido para mayores de 18 años. Solo se usa si la opción está activada. Todos los personajes son adultos.",
+  "personas": [
+    {"id": "lucia", "nombre": "Lucía", "edad": 29, "lugar": "chiringuito", "gustos": ["paseo", "baile"], "regalo": "flores",
+     "desc": "Camarera del Chiringuito El Espeto. Risa fácil, lengua afilada y un tatuaje de un ancla en la muñeca. Sueña con tener su propio bar."},
+    {"id": "andres", "nombre": "Andrés", "edad": 34, "lugar": "gimnasio_pb", "gustos": ["cena", "copas"], "regalo": "reloj",
+     "desc": "Entrenador del Gimnasio El Yunque. Fue boxeador y lo dejó a tiempo. Tranquilo, protector y pésimo contando chistes."},
+    {"id": "noa", "nombre": "Noa", "edad": 27, "lugar": "sl_bocateria", "gustos": ["cine", "paseo"], "regalo": "libro",
+     "desc": "Prepara el doctorado en San Lucero y cena de bocadillo casi todas las noches. Curiosa, irónica y con opiniones sobre todo."},
+    {"id": "valeria", "nombre": "Valeria", "edad": 41, "lugar": "boutique", "gustos": ["cena", "baile"], "regalo": "joya",
+     "desc": "Dueña de la Boutique Las Torres. Elegante, directa y acostumbrada a mandar. No soporta que la hagan esperar."},
+    {"id": "ibai", "nombre": "Ibai", "edad": 31, "lugar": "cb_cofradia", "gustos": ["paseo", "cena"], "regalo": "vino",
+     "desc": "Pescador de Cala Brava. Manos ásperas, voz suave y la costumbre de mirar el cielo antes de contestar."},
+    {"id": "sole", "nombre": "Sole", "edad": 36, "lugar": "mf_taberna", "gustos": ["cine", "copas"], "regalo": "bombones",
+     "desc": "Soldadora y delegada del sindicato en Monteferro. Dura por fuera, leal hasta el final y la mejor bailando en las verbenas."}
+  ],
+  "actividades": [
+    {"id": "paseo", "nombre": "Dar un paseo", "precio": 0, "horas": 2},
+    {"id": "cine", "nombre": "Ir al cine", "precio": 30, "horas": 3},
+    {"id": "copas", "nombre": "Salir de copas", "precio": 25, "horas": 3},
+    {"id": "baile", "nombre": "Ir a bailar", "precio": 40, "horas": 4},
+    {"id": "cena", "nombre": "Cenar en un restaurante", "precio": 60, "horas": 3}
+  ],
+  "regalos": [
+    {"id": "flores", "nombre": "Un ramo de flores", "precio": 20, "afinidad": 5},
+    {"id": "bombones", "nombre": "Una caja de bombones", "precio": 30, "afinidad": 6},
+    {"id": "libro", "nombre": "Un libro", "precio": 25, "afinidad": 5},
+    {"id": "vino", "nombre": "Una botella de buen vino", "precio": 35, "afinidad": 6},
+    {"id": "reloj", "nombre": "Un reloj", "precio": 250, "afinidad": 12},
+    {"id": "joya", "nombre": "Una joya", "precio": 400, "afinidad": 16}
+  ],
+  "sustancias": [
+    {"id": "alcohol", "nombre": "Alcohol", "unidad": "copa", "legal": true, "precio": 6, "duracion": 110, "animo": 6, "punteria": -0.05, "deriva": 0.22, "tono": 0.012,
+     "adiccion": 1.5, "sobredosis": 5, "bajon": {"animo": -4, "duracion": 60}, "desc": "Sube el ánimo y afloja la lengua. Con cada copa caminas más torcido y apuntas peor. A la quinta seguida, acabas en el hospital."},
+    {"id": "hierba", "nombre": "Hierba", "unidad": "bolsita", "precio": 12, "duracion": 130, "animo": 12, "punteria": -0.05, "tono": 0.02,
+     "adiccion": 2, "sobredosis": 6, "bajon": {"animo": -5, "duracion": 80}, "desc": "Relaja y sube el ánimo, pero embota los reflejos y la puntería."},
+    {"id": "pastillas", "nombre": "Pastillas", "unidad": "pastilla", "precio": 25, "duracion": 150, "animo": 25, "velocidad": 1.08,
+     "adiccion": 4, "sobredosis": 3, "bajon": {"animo": -22, "duracion": 150}, "desc": "Euforia durante un rato largo. El bajón de después hunde el ánimo."},
+    {"id": "polvo", "nombre": "Polvo blanco", "unidad": "gramo", "precio": 60, "duracion": 90, "animo": 10, "velocidad": 1.15, "punteria": 0.06,
+     "adiccion": 7, "sobredosis": 3, "bajon": {"animo": -16, "punteria": -0.06, "duracion": 120}, "desc": "Corres más y apuntas mejor durante minuto y medio. Luego llega el bajón, y engancha mucho."},
+    {"id": "cristal", "nombre": "Cristal", "unidad": "dosis", "precio": 90, "duracion": 100, "animo": 8, "velocidad": 1.25, "dano": 0.75, "punteria": -0.03,
+     "adiccion": 12, "sobredosis": 2, "bajon": {"animo": -30, "salud": -15, "duracion": 150}, "desc": "Corres como nadie y casi no notas los golpes. El bajón te quita salud y ánimo, y es lo que más engancha."}
+  ]
+}

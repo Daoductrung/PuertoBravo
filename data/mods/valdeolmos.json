@@ -1,0 +1,746 @@
+{
+ "info": {
+  "nombre": "Valdeolmos",
+  "autor": "Puerto Bravo",
+  "version": "1.0",
+  "descripcion": "Un pueblo de viñas al norte de Puerto Bravo: tres misiones sobre un fraude de vino, un encargo honrado, una carrera de tractores, pesca de río, una escopeta de caza, una hoz, un tractor con remolque, un todoterreno de campo y un personaje."
+ },
+ "lugares": [
+  {
+   "id": "pb_salida_valdeolmos",
+   "nombre": "Salida noreste, carretera de Valdeolmos",
+   "tipo": "salida",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    9,
+    6
+   ],
+   "lado": "E",
+   "pos": 36,
+   "desc": "La carretera que sube entre viñedos hasta Valdeolmos.",
+   "a_mapa": "valdeolmos",
+   "a_lugar": "vo_salida",
+   "km": 31,
+   "horas": 0.8
+  }
+ ],
+ "misiones": [
+  {
+   "id": "vo01",
+   "titulo": "Vendimia",
+   "capitulo": 24,
+   "contacto": "Aurelio",
+   "lugar": "vo_bodega",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En Bodegas Hermanos Olmedo falta gente para sacar la uva antes de la tormenta.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Aurelio",
+       "Viene tormenta y tengo media cosecha en la Viña Vieja. ¿Sabes llevar un tractor? Da igual, se aprende."
+      ],
+      [
+       "Aurelio",
+       "Coge el tractor con el remolque en la Cooperativa y tráelo entero al Taller, que hay que cambiarle una rueda antes de cargar."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Recoge el tractor con remolque junto a la Cooperativa Vinícola.",
+     "lugar": "vo_cooperativa",
+     "modelo": "vo_remolque",
+     "nombre": "el tractor con remolque",
+     "abierto": true
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Llévalo al Taller Agrícola Ruedas sin golpearlo.",
+     "lugar": "vo_taller",
+     "salud_min": 70
+    },
+    {
+     "tipo": "ir",
+     "texto": "Corre a la Viña Vieja antes de que empiece a llover. Tienes poco más de tres minutos.",
+     "lugar": "vo_vina",
+     "limite": 200,
+     "radio": 16
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Llegas con los primeros goterones. Entre seis cargáis las últimas cajas."
+      ],
+      [
+       "Aurelio",
+       "Buena mano tienes. Pásate mañana, que tengo otro asunto menos limpio."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 350
+   }
+  },
+  {
+   "id": "vo02",
+   "titulo": "Vino aguado",
+   "capitulo": 24,
+   "contacto": "Aurelio",
+   "lugar": "vo_bodega",
+   "requiere": [
+    "vo01"
+   ],
+   "resumen": "Alguien está vendiendo vino falso con la etiqueta de los Olmedo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Aurelio",
+       "Me están hundiendo. Sale de aquí un camión con vino de garrafa y mi etiqueta. Carga en la ermita, de noche."
+      ],
+      [
+       "Aurelio",
+       "Toma la escopeta de mi padre. No quiero muertos si se puede evitar, pero tampoco quiero que te maten."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "vo_escopeta",
+     "balas": 10
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve a la Ermita de San Roque y acaba con los que cargan el vino falso.",
+     "lugar": "vo_ermita",
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Mozo de carga",
+       "arma": "vo_hoz",
+       "salud": 55
+      },
+      {
+       "n": 1,
+       "tipo": "Capataz",
+       "arma": "pistola",
+       "salud": 80
+      }
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el rollo de etiquetas falsas.",
+     "lugar": "vo_ermita",
+     "objeto": "el rollo de etiquetas falsas"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Las etiquetas llevan el sello de una imprenta de Puerto Bravo. Alguien de la ciudad paga todo esto."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 700,
+    "arma": "vo_escopeta",
+    "balas": 8
+   }
+  },
+  {
+   "id": "vo03",
+   "titulo": "El camión de las garrafas",
+   "capitulo": 24,
+   "contacto": "Aurelio",
+   "lugar": "vo_bodega",
+   "requiere": [
+    "vo02"
+   ],
+   "resumen": "El último camión de vino falso sale hoy del valle.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Aurelio",
+       "Sale el último camión, por la carretera de Puerto Bravo. Si lo paras, se acabó. La Guardia Civil va a preguntar, así que no te quedes cerca."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "balas": 12,
+     "balas_arma": "vo_escopeta"
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y destroza el camión de las garrafas antes de que salga del valle.",
+     "lugar": "vo_salida",
+     "limite": 320,
+     "modelo": "camion",
+     "nombre": "el camión de las garrafas",
+     "salud": 260
+    },
+    {
+     "tipo": "policia",
+     "texto": "Han dado el aviso. Despista a la Guardia Civil.",
+     "nivel": 2
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el albarán que ha quedado en la cuneta.",
+     "objeto": "el albarán del camión",
+     "aqui": true
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Aurelio",
+       "El valle es de quien lo trabaja. Toma, y la escopeta te la quedas."
+      ],
+      [
+       "Narrador",
+       "En el albarán hay un nombre conocido: Belmonte."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "dinero": 300
+    }
+   ],
+   "recompensa": {
+    "dinero": 1500,
+    "chaleco": true
+   }
+  },
+  {
+   "id": "vo04",
+   "titulo": "Reparto de la cooperativa",
+   "capitulo": 25,
+   "contacto": "La presidenta",
+   "lugar": "vo_cooperativa",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Trabajo honrado: llevar pedidos por el pueblo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La presidenta",
+       "Tres cajas: una al Mesón, otra a la Posada y otra a la Despensa de la Parroquia, que esa va de regalo."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva la primera caja al Mesón del Lagar.",
+     "lugar": "vo_meson"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva la segunda a la Posada del Olmo.",
+     "lugar": "vo_hostal"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Y la tercera a la Despensa de la Parroquia, antes de que cierren.",
+     "lugar": "vo_parroquia",
+     "limite": 150
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El cura te da las gracias y una bendición que no has pedido."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 280
+   }
+  }
+ ],
+ "armas": [
+  {
+   "id": "vo_escopeta",
+   "nombre": "Escopeta de caza paralela",
+   "tipo": "fuego",
+   "dano": 62,
+   "alcance": 22,
+   "cadencia": 0.9,
+   "precision": 0.95,
+   "cargador": 2,
+   "sonido": "disparo_escopeta",
+   "ruido": 3,
+   "precio": 950,
+   "balas": 12,
+   "precio_balas": 70,
+   "desc": "Dos cañones, largo alcance para ser escopeta y un retroceso que se nota."
+  },
+  {
+   "id": "vo_hoz",
+   "nombre": "Hoz de vendimia",
+   "tipo": "cuerpo",
+   "dano": 26,
+   "alcance": 2.4,
+   "cadencia": 0.5,
+   "precision": 0.95,
+   "sonido": "navaja",
+   "ruido": 0,
+   "precio": 30,
+   "desc": "Corta racimos y lo que haga falta."
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "vo_remolque",
+   "nombre": "Tractor con remolque",
+   "vel_max": 13,
+   "acel": 3.0,
+   "freno": 8,
+   "salud": 260,
+   "motor": "motor_tractor",
+   "tono": 1.0,
+   "valor": 900,
+   "precio": 6000,
+   "claxon": "claxon_camion",
+   "desc": "Lento como una procesión y duro como una piedra."
+  },
+  {
+   "id": "vo_campero",
+   "nombre": "Todoterreno campero",
+   "vel_max": 26,
+   "acel": 6.5,
+   "freno": 12,
+   "salud": 200,
+   "motor": "motor_furgoneta",
+   "tono": 1.15,
+   "valor": 1200,
+   "precio": 7800,
+   "desc": "Un todoterreno viejo de los que arrancan siempre."
+  }
+ ],
+ "carreras": [
+  {
+   "id": "vo_c1",
+   "nombre": "Carrera de las viñas",
+   "mapa": "valdeolmos",
+   "premio": 300,
+   "tiempo": 85,
+   "puntos": [
+    [
+     0,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     1
+    ]
+   ]
+  }
+ ],
+ "mapas": [
+  {
+   "id": "valdeolmos",
+   "nombre": "Valdeolmos",
+   "tipo": "pueblo",
+   "avenidas": [
+    "Camino de las Viñas",
+    "Calle del Lagar",
+    "Calle de la Vendimia",
+    "Carretera de la Bodega"
+   ],
+   "calles": [
+    "Carretera de Puerto Bravo",
+    "Calle de la Plaza",
+    "Calle de los Olmos",
+    "Camino del Río"
+   ],
+   "barrios": [
+    {
+     "id": "vo_pueblo",
+     "nombre": "Valdeolmos",
+     "i": [
+      0,
+      2
+     ],
+     "j": [
+      0,
+      1
+     ],
+     "ambiente": "amb_campo",
+     "vehiculos": [
+      "tractor",
+      "todoterreno",
+      "vo_remolque",
+      "bici"
+     ],
+     "descripcion": "Valdeolmos, un pueblo de viñas y bodegas. Huele a mosto en septiembre y a leña el resto del año."
+    },
+    {
+     "id": "vo_ribera",
+     "nombre": "La Ribera",
+     "i": [
+      0,
+      2
+     ],
+     "j": [
+      2,
+      2
+     ],
+     "ambiente": "amb_parque",
+     "vehiculos": [
+      "todoterreno",
+      "bici"
+     ],
+     "descripcion": "La Ribera: huertas, olmos viejos y el río Olmedilla, que baja frío y con truchas."
+    }
+   ],
+   "bloques": {
+    "1,0": "plaza",
+    "0,2": "hierba",
+    "1,2": "hierba",
+    "2,2": "hierba"
+   },
+   "trafico": 1,
+   "peatones": 3,
+   "casetes": [
+    [
+     60,
+     120
+    ],
+    [
+     200,
+     230
+    ]
+   ],
+   "lugares": [
+    {
+     "id": "vo_salida",
+     "nombre": "Salida sur, carretera de Puerto Bravo",
+     "tipo": "salida",
+     "bloque": [
+      1,
+      0
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "La carretera que baja hasta Puerto Bravo entre viñedos.",
+     "a_mapa": "puerto_bravo",
+     "a_lugar": "pb_salida_valdeolmos",
+     "km": 31,
+     "horas": 0.8
+    },
+    {
+     "id": "vo_estacion",
+     "nombre": "Parada del autobús de Valdeolmos",
+     "tipo": "estacion",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "N",
+     "pos": 20,
+     "desc": "Una parada con un banco de piedra bajo un olmo.",
+     "precio": 22
+    },
+    {
+     "id": "vo_bodega",
+     "nombre": "Bodegas Hermanos Olmedo",
+     "tipo": "taberna",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Vino de la casa, partidas de dados y gente que sabe todo lo que pasa en el valle."
+    },
+    {
+     "id": "vo_cooperativa",
+     "nombre": "Cooperativa Vinícola",
+     "tipo": "negocio",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "La cooperativa del pueblo, en venta desde que se jubiló el presidente.",
+     "sonido": "lugar_taller",
+     "precio": 18000,
+     "ingresos": 430
+    },
+    {
+     "id": "vo_meson",
+     "nombre": "Mesón del Lagar",
+     "tipo": "comida",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Cordero asado y vino del año."
+    },
+    {
+     "id": "vo_tienda",
+     "nombre": "Colmado de la Plaza",
+     "tipo": "tienda",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Una tienda de pueblo donde hay de todo y se fía hasta fin de mes."
+    },
+    {
+     "id": "vo_armeria",
+     "nombre": "Armería del Coto",
+     "tipo": "armeria",
+     "bloque": [
+      1,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Escopetas de caza, cartuchos y hoces bien afiladas."
+    },
+    {
+     "id": "vo_botica",
+     "nombre": "Botica de Valdeolmos",
+     "tipo": "farmacia",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "La botica de siempre, con su báscula de hierro."
+    },
+    {
+     "id": "vo_taller",
+     "nombre": "Taller Agrícola Ruedas",
+     "tipo": "taller",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Arreglan tractores, y lo que les lleves."
+    },
+    {
+     "id": "vo_casa",
+     "nombre": "Casa del viñador",
+     "tipo": "casa",
+     "bloque": [
+      1,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Una casa de piedra con lagar y cochera para tres vehículos.",
+     "precio": 5200,
+     "garaje": 3
+    },
+    {
+     "id": "vo_empleo",
+     "nombre": "Sindicato Agrario, bolsa de trabajo",
+     "tipo": "empleo",
+     "bloque": [
+      1,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Jornadas de vendimia y oficios del campo."
+    },
+    {
+     "id": "vo_escuela",
+     "nombre": "Escuela de Capataces",
+     "tipo": "academia",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Cursos de conducción de maquinaria y de resistencia.",
+     "cursos": [
+      "conduccion",
+      "resistencia"
+     ]
+    },
+    {
+     "id": "vo_parroquia",
+     "nombre": "Despensa de la Parroquia",
+     "tipo": "ong",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Reparten comida y ropa. Siempre hacen falta manos."
+    },
+    {
+     "id": "vo_hostal",
+     "nombre": "Posada del Olmo",
+     "tipo": "hotel",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Camas de lana y silencio de pueblo.",
+     "precio_noche": 30
+    },
+    {
+     "id": "vo_circuito",
+     "nombre": "Salida de la carrera de tractores",
+     "tipo": "carrera",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "En fiestas se corre con lo que tenga ruedas."
+    },
+    {
+     "id": "vo_plaza",
+     "nombre": "Plaza del Olmo",
+     "tipo": "monumento",
+     "bloque": [
+      1,
+      0
+     ],
+     "xy": [
+      36,
+      40
+     ],
+     "desc": "Un olmo centenario y un caño de agua helada.",
+     "sonido": "lugar_fuente"
+    },
+    {
+     "id": "vo_ermita",
+     "nombre": "Ermita de San Roque",
+     "tipo": "monumento",
+     "bloque": [
+      2,
+      2
+     ],
+     "xy": [
+      45,
+      45
+     ],
+     "desc": "Una ermita blanca entre viñas, con una campana que avisa de las tormentas.",
+     "sonido": "lugar_iglesia"
+    },
+    {
+     "id": "vo_rio",
+     "nombre": "Poza del río Olmedilla",
+     "tipo": "pesca",
+     "bloque": [
+      0,
+      2
+     ],
+     "xy": [
+      40,
+      40
+     ],
+     "desc": "Truchas y barbos en agua limpia.",
+     "sonido": "lugar_rio"
+    },
+    {
+     "id": "vo_vina",
+     "nombre": "Viña Vieja",
+     "tipo": "monumento",
+     "bloque": [
+      1,
+      2
+     ],
+     "xy": [
+      36,
+      36
+     ],
+     "desc": "Las cepas más viejas del valle, retorcidas como manos."
+    }
+   ]
+  }
+ ],
+ "comidas": [
+  {
+   "nombre": "Cordero asado",
+   "precio": 16,
+   "salud": 50
+  },
+  {
+   "nombre": "Vaso de mosto",
+   "precio": 2,
+   "salud": 6
+  }
+ ],
+ "peces": [
+  {
+   "nombre": "una trucha del Olmedilla",
+   "valor": 30,
+   "peso": 14
+  },
+  {
+   "nombre": "un barbo",
+   "valor": 18,
+   "peso": 20
+  }
+ ],
+ "capitulos": {
+  "24": "Valdeolmos",
+  "25": "Valdeolmos: vida honrada"
+ },
+ "personajes": [
+  {
+   "id": "vo_ines",
+   "nombre": "Inés",
+   "apellido": "Olmedo",
+   "desc": "Hija de viñadores, acostumbrada a trabajar de sol a sol. Empieza con resistencia al nivel cuatro, algo más de salud, una hoz y buen nombre entre los vecinos.",
+   "salud_max": 110,
+   "ciudadania": 35,
+   "conduccion": 2,
+   "resistencia": 4,
+   "arma": "vo_hoz",
+   "botiquines": 1
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+# Entorno, compilación y cachés
+.venv/
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Material aparte y privado: descargas, packs en preparación y prompts
+adjuntos/
+
+# Lo personal de cada jugador
+data/partidas/
+data/partidas_pruebas/
+data/config/
+data/config_pruebas.json
+data/error.log
+data/radio/mi_musica/
+
+# Audio: el juego lo genera solo al arrancar (sonidos por defecto, radio y música de ambiente).
+# Los packs de sonidos se publican aparte, como archivo de una versión, no dentro del repositorio.
+data/sonidos/
+data/radio/
+data/musica/
+
+# Mods propios: solo se versionan los de serie
+data/mods/*
+!data/mods/costa_dorada.json
+!data/mods/oficios_y_recados.json
+!data/mods/valdeolmos.json
+!data/mods/motor_y_asfalto.json
+!data/mods/LEEME_mods.txt
+
+# Sistema y editores
+desktop.ini
+Thumbs.db
+.vscode/
+.idea/
+.claude/
+*.tmp
+*.bak
+*.log

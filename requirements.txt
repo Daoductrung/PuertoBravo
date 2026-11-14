@@ -1,0 +1,8 @@
+pygame-ce>=2.5.7
+numpy>=2.4
+sounddevice>=0.5.5
+soundfile>=0.13
+accessible-output2>=0.17
+wxPython>=4.2.3
+cx_Freeze>=8.7
+pytest>=9.0

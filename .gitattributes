@@ -1,0 +1,11 @@
+* text=auto
+*.py text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.bat text eol=crlf
+*.txt text
+*.wav binary
+*.ogg binary
+*.mp3 binary
+*.flac binary

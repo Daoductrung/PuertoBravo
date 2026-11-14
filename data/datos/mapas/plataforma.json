@@ -1,0 +1,23 @@
+{
+  "id": "plataforma",
+  "tipo": "isla",
+  "nombre": "Plataforma Neptuno",
+  "trafico": 0,
+  "peatones": 0,
+  "policia": false,
+  "aparcados": false,
+  "nombre_objeto": "Pieza de la sala de máquinas",
+  "avenidas": ["Pasarela oeste", "Pasarela este"],
+  "calles": ["Pasarela sur", "Pasarela norte"],
+  "barrios": [
+    {"id": "plataforma", "nombre": "Plataforma Neptuno", "i": [0, 0], "j": [0, 0], "ambiente": "amb_mar", "vehiculos": [], "descripcion": "Una plataforma petrolífera abandonada en mitad del Mar de Poniente. Hierro oxidado, viento y gaviotas. Se llega en barco o en helicóptero."}
+  ],
+  "bloques": {"0,0": "muelle"},
+  "lugares": [
+    {"id": "pl_embarcadero", "nombre": "Pantalán de la plataforma", "tipo": "embarcadero", "bloque": [0, 0], "lado": "S", "pos": 36, "a_mapa": "mar", "a_lugar": "mar_plataforma", "desc": "Una escalera de hierro baja hasta el agua."},
+    {"id": "pl_helipuerto", "nombre": "Helipuerto de la plataforma", "tipo": "helipuerto", "bloque": [0, 0], "xy": [36, 52], "vehiculo": "helicoptero", "precio": 200, "desc": ""},
+    {"id": "pl_control", "nombre": "Sala de control", "tipo": "monumento", "bloque": [0, 0], "xy": [54, 22], "desc": ""},
+    {"id": "pl_cantina", "nombre": "Cantina de la plataforma", "tipo": "comida", "bloque": [0, 0], "lado": "N", "pos": 20, "desc": "Una máquina de bocadillos que, milagrosamente, sigue funcionando."}
+  ],
+  "casetes": [[30, 40]]
+}

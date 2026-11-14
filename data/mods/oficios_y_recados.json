@@ -1,0 +1,193 @@
+{
+ "info": {
+  "nombre": "Oficios y recados",
+  "autor": "Puerto Bravo",
+  "version": "1.0",
+  "descripcion": "Más vida honrada en Puerto Bravo: una academia de puntería deportiva, un banco de alimentos, una casa, un negocio, una moto de mensajería, un personaje y dos encargos de recadero."
+ },
+ "lugares": [
+  {
+   "id": "of_tiro",
+   "nombre": "Club de Tiro Olímpico",
+   "tipo": "academia",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    6,
+    5
+   ],
+   "lado": "S",
+   "pos": 20,
+   "desc": "Tiro deportivo con monitor. Aquí la puntería se aprende sin hacer daño a nadie.",
+   "cursos": [
+    "punteria"
+   ]
+  },
+  {
+   "id": "of_alimentos",
+   "nombre": "Banco de Alimentos del Barrio Viejo",
+   "tipo": "ong",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    2,
+    4
+   ],
+   "lado": "S",
+   "pos": 20,
+   "desc": "Voluntarios, cajas de fruta y mucha cola a final de mes."
+  },
+  {
+   "id": "of_mensajeria",
+   "nombre": "Mensajería Relámpago",
+   "tipo": "negocio",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    4,
+    5
+   ],
+   "lado": "S",
+   "pos": 20,
+   "desc": "Una empresa de mensajería en venta. En la puerta hay siempre una moto de reparto: súbete y pulsa J.",
+   "sonido": "lugar_empleo",
+   "vehiculo": "of_moto",
+   "precio": 9000,
+   "ingresos": 260
+  },
+  {
+   "id": "of_piso",
+   "nombre": "Piso de la calle de los Herreros",
+   "tipo": "casa",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    3,
+    5
+   ],
+   "lado": "S",
+   "pos": 50,
+   "desc": "Un tercero sin ascensor, pequeño y luminoso, con una plaza de garaje.",
+   "precio": 3900,
+   "garaje": 1
+  }
+ ],
+ "misiones": [
+  {
+   "id": "of01",
+   "titulo": "Cajas para el banco de alimentos",
+   "capitulo": 23,
+   "contacto": "Reme",
+   "lugar": "of_alimentos",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Trabajo honrado: el Banco de Alimentos necesita un transportista.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Reme",
+       "Tenemos una donación esperando en el mercado y nadie con carné. ¿Tú conduces?"
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Recoge la furgoneta que os presta Mensajería Relámpago. Está abierta.",
+     "lugar": "of_mensajeria",
+     "modelo": "furgoneta",
+     "nombre": "la furgoneta prestada",
+     "abierto": true
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Lleva la furgoneta con las cajas al Banco de Alimentos, sin golpes.",
+     "lugar": "of_alimentos",
+     "salud_min": 70
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Reme",
+       "Con esto comen cuarenta familias. Gracias, de verdad."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 150
+   }
+  },
+  {
+   "id": "of02",
+   "titulo": "Contrarreloj",
+   "capitulo": 23,
+   "contacto": "El encargado",
+   "lugar": "of_mensajeria",
+   "requiere": [
+    "of01"
+   ],
+   "resumen": "Trabajo honrado: un sobre urgente tiene que llegar al hospital.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El encargado",
+       "Sobre urgente para el hospital. Si llegas en tres minutos, hay propina."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva el sobre al Hospital General en tres minutos.",
+     "lugar": "hospital",
+     "limite": 180
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Una doctora firma el recibo sin levantar la vista. Trabajo hecho."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 220
+   }
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "of_moto",
+   "nombre": "Moto de mensajería",
+   "vel_max": 27,
+   "acel": 12.0,
+   "freno": 16,
+   "salud": 75,
+   "motor": "motor_moto",
+   "tono": 1.0,
+   "valor": 350,
+   "precio": 1900,
+   "trabajo": "paqueteria",
+   "desc": "Una moto de reparto con un cajón detrás. Con la tecla J haces de mensajero."
+  }
+ ],
+ "capitulos": {
+  "23": "Oficios y recados"
+ },
+ "personajes": [
+  {
+   "id": "of_noa",
+   "nombre": "Noa",
+   "apellido": "Santos",
+   "desc": "Trabajó diez años de mensajera en bicicleta. Empieza con muy buen nombre entre los vecinos, buen ánimo, resistencia al nivel tres y dos botiquines: ideal para una vida honrada.",
+   "dinero": 150,
+   "animo": 80,
+   "ciudadania": 60,
+   "resistencia": 3,
+   "botiquines": 2
+  }
+ ]
+}

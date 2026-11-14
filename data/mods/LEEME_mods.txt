@@ -1,0 +1,10 @@
+Carpeta de mods de Puerto Bravo: Ley del Asfalto.
+
+Cada archivo .json que dejes aquí se carga al arrancar el juego y se suma a los datos originales.
+El formato está explicado en data\docs\crear_mods.html.
+
+El archivo ejemplo_mod.json.desactivado es un mod de muestra: añade un bar y una misión.
+Para probarlo, quítale la terminación «.desactivado» para que acabe en .json.
+
+Para cambiar sonidos o música no hace falta ningún mod: sustituye el archivo en data\sonidos\por_defecto
+o en data\radio. Lo explica data\docs\cambiar_sonidos.html.

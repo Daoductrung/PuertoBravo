@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Manual del editor de mods de Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 54em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+a { color: #8fd0ff; }
+code { color: #9fe89f; }
+kbd { border: 1px solid #aaa; border-radius: 4px; padding: 0 .35em; background: #2a2a2a; }
+li { margin-bottom: .3em; }
+</style>
+</head>
+<body>
+<h1>Manual del editor de mods de Puerto Bravo</h1>
+<p>El editor de mods es un programa aparte, con ventanas y controles normales de Windows, pensado para usarse con lector de pantalla y teclado. Con él se crea todo lo que admite un mod sin escribir ni una línea a mano. Este manual está organizado por encabezados.</p>
+
+<h2>1. Abrir el editor</h2>
+<ul>
+<li>En el juego compilado: ejecuta <strong>EditorMods.exe</strong>, que está junto a <strong>PuertoBravo.exe</strong>.</li>
+<li>Con el código fuente: ejecuta <strong>editor.bat</strong>.</li>
+</ul>
+<p>El editor guarda los mods en la carpeta <code>data\mods</code>, que es de donde los lee el juego. Un mod es un único archivo con extensión <code>.json</code>.</p>
+<p>Los mods que guarda el editor quedan protegidos: el archivo está cifrado y firmado, y no se puede leer ni retocar con un editor de texto. El editor abre igual los mods protegidos, los que vienen con el juego y los escritos a mano en JSON normal; al guardar, siempre protege.</p>
+
+<h2>2. La ventana principal</h2>
+<p>Tiene dos listas y una fila de botones. Con <kbd>Tabulador</kbd> pasas de una a otra.</p>
+<ul>
+<li>Secciones: los tipos de contenido. Al moverte por ella con las flechas, la segunda lista cambia.</li>
+<li>Elementos: lo que tu mod tiene en la sección elegida.</li>
+<li>Botones: Añadir, Editar, Duplicar, Borrar, Subir, Bajar y Copiar del juego original.</li>
+</ul>
+<p>Cada lista y cada botón tiene su letra de acceso: pulsa <kbd>Alt</kbd> y la letra que anuncia tu lector para saltar a él.</p>
+<h3>Secciones</h3>
+<ul>
+<li>Lugares: comercios, casas, negocios, bancos, oficinas de empleo, academias, comedores sociales y todos los demás tipos, con su posición, su sonido y sus opciones.</li>
+<li>Misiones: con su lugar de inicio, sus requisitos, su recompensa y todos sus pasos.</li>
+<li>Armas, vehículos y carreras.</li>
+<li>Comidas, objetos y peces.</li>
+<li>Personajes para elegir al empezar la partida.</li>
+<li>Capítulos de la historia.</li>
+<li>Mapas: localidades enteras, con sus barrios, sus calles y sus islas.</li>
+<li>Para el contenido para adultos: personas, actividades, regalos y sustancias.</li>
+</ul>
+
+<h2>3. Teclas</h2>
+<h3>En cualquier parte del editor</h3>
+<ul>
+<li><kbd>Control H</kbd>: dice el nombre y la explicación del control en el que estás. Úsala siempre que dudes de para qué sirve un campo.</li>
+<li><kbd>F1</kbd>: abre este manual.</li>
+<li><kbd>Alt</kbd>: va a la barra de menús.</li>
+</ul>
+<h3>Menú Archivo</h3>
+<ul>
+<li><kbd>Control N</kbd>: mod nuevo.</li>
+<li><kbd>Control O</kbd>: abrir un mod de la carpeta de mods.</li>
+<li><kbd>Control S</kbd>: guardar.</li>
+<li><kbd>Control Mayúsculas S</kbd>: guardar con otro nombre.</li>
+<li><kbd>Control Q</kbd>: salir. Si hay cambios sin guardar, pregunta antes.</li>
+</ul>
+<h3>Menú Mod</h3>
+<ul>
+<li><kbd>Control D</kbd>: datos del mod: nombre, autor, versión y descripción.</li>
+<li><kbd>F5</kbd>: comprobar el mod.</li>
+<li><kbd>Control M</kbd>: activar o desactivar mods, para elegir cuáles carga el juego.</li>
+<li><kbd>Control B</kbd>: abrir la carpeta de mods en el Explorador.</li>
+<li><kbd>F9</kbd>: guardar, comprobar y abrir el juego para probar el mod.</li>
+</ul>
+<h3>En las listas de elementos</h3>
+<ul>
+<li><kbd>Flechas</kbd>: recorrer la lista.</li>
+<li><kbd>Intro</kbd>: editar el elemento elegido.</li>
+<li><kbd>Suprimir</kbd>: borrarlo. Pide confirmación.</li>
+</ul>
+<h3>En los formularios</h3>
+<ul>
+<li><kbd>Tabulador</kbd> y <kbd>Mayúsculas Tabulador</kbd>: campo siguiente y anterior.</li>
+<li><kbd>Alt</kbd> más la letra del campo: saltar a ese campo.</li>
+<li><kbd>Control Tabulador</kbd>: en los formularios con pestañas, pasar a la pestaña siguiente.</li>
+<li><kbd>Intro</kbd>: aceptar. <kbd>Escape</kbd>: cancelar sin guardar los cambios del formulario.</li>
+</ul>
+
+<h2>4. Crear un elemento</h2>
+<ol>
+<li>Elige la sección.</li>
+<li>Pulsa Añadir. Se abre un formulario con los campos de ese tipo de contenido.</li>
+<li>Rellena los campos. Los obligatorios lo dicen en su nombre. <kbd>Control H</kbd> explica cada uno.</li>
+<li>Acepta. Si falta algo obligatorio, el editor te lleva al campo y te dice qué falta.</li>
+</ol>
+<p>Los formularios largos están repartidos en pestañas. Solo aparecen los campos que tienen sentido: por ejemplo, al elegir el tipo de lugar «academia» aparece el campo de los cursos que imparte.</p>
+<h3>Campos que son listas</h3>
+<p>Algunos campos contienen a su vez una lista: los pasos de una misión, las frases de un diálogo, los enemigos de un paso o los barrios de un mapa. Se editan con un botón que abre otra ventana con su lista y sus botones Añadir, Editar, Duplicar, Borrar, Subir y Bajar. El orden importa: los pasos de una misión se juegan de arriba abajo.</p>
+<h3>Campos que eligen algo del juego</h3>
+<p>Donde hay que indicar un lugar, un arma, un vehículo, un sonido o una misión, el editor ofrece un desplegable con todo lo que existe: lo del juego, lo de los demás mods y lo de tu propio mod. No hay que recordar identificadores.</p>
+<h3>Copiar del juego original</h3>
+<p>El botón Copiar del juego original trae a tu mod una copia de un elemento original para modificarlo. Si le dejas el mismo identificador, sustituye al original; si se lo cambias, se añade como uno nuevo. Es la manera más rápida de aprender: copia una misión que te guste y mira cómo está hecha.</p>
+
+<h3>Aprender de los mods de ejemplo</h3>
+<p>En la carpeta de mods hay cuatro mods completos: Costa Dorada, Valdeolmos, Oficios y recados, y Motor y asfalto. Ábrelos con <kbd>Control O</kbd>: <code>costa_dorada.json</code> tiene un ejemplo de cada cosa que se puede crear, incluido un mapa entero y misiones con los nueve tipos de paso.</p>
+
+<h2>5. Las misiones</h2>
+<p>Una misión es una lista de pasos. Cada paso tiene un tipo:</p>
+<ul>
+<li>Diálogo: frases que dice cada personaje.</li>
+<li>Ir: llegar a un lugar, a pie o en vehículo, con o sin tiempo límite.</li>
+<li>Dar: el juego te entrega un arma, dinero o un objeto.</li>
+<li>Robar: conseguir un vehículo concreto.</li>
+<li>Entregar: llevar el vehículo a un lugar, con un daño máximo permitido.</li>
+<li>Eliminar: acabar con unos enemigos.</li>
+<li>Recoger: recoger uno o varios objetos.</li>
+<li>Policía: te pone un nivel de búsqueda, o te pide perderla.</li>
+<li>Perseguir: alcanzar a un vehículo que huye.</li>
+</ul>
+<p>En los textos puedes escribir Dani: el juego lo cambia por el nombre del personaje que haya elegido quien juega.</p>
+
+<h2>6. Los sonidos</h2>
+<p>Todo lo que añadas debe sonar. Cada lugar tiene un campo de sonido, que es el que se oye al pasar por su puerta y de fondo al entrar. Elige en el desplegable uno de los sonidos del juego. Si quieres uno nuevo, copia tu archivo en <code>data\sonidos\por_defecto</code> con el nombre que quieras y aparecerá en la lista la próxima vez que abras el editor. La guía <a href="cambiar_sonidos.html">cambiar_sonidos.html</a> describe todos los sonidos.</p>
+
+<h2>7. Comprobar y probar</h2>
+<p><kbd>F5</kbd> revisa el mod y lista lo que encuentra: referencias a cosas que no existen, lugares fuera del mapa o sobre un edificio, misiones sin pasos, identificadores repetidos y pasos incoherentes. Cada aviso dice en qué elemento está. Corrige y vuelve a comprobar hasta que no quede ninguno.</p>
+<p><kbd>F9</kbd> guarda, comprueba y abre el juego. Empieza una partida nueva o carga una, y ve a ver tu contenido.</p>
+
+<h2>8. Activar y desactivar mods</h2>
+<p>Con <kbd>Control M</kbd> se abre una lista de casillas con todos los mods de la carpeta. Los marcados son los que carga el juego. Un mod desactivado no se borra: su archivo cambia de extensión y el juego lo ignora.</p>
+
+<h2>9. Compartir un mod</h2>
+<p>Envía el archivo <code>.json</code> de la carpeta <code>data\mods</code>. Quien lo reciba solo tiene que copiarlo en su carpeta <code>data\mods</code>. Si tu mod usa sonidos nuevos, envía también esos archivos, que van en <code>data\sonidos\por_defecto</code>.</p>
+
+<h2>10. Problemas frecuentes</h2>
+<ul>
+<li>El lector no dice el nombre de un campo: pulsa <kbd>Control H</kbd>.</li>
+<li>El juego no muestra mi contenido: comprueba con <kbd>Control M</kbd> que el mod está activado y con <kbd>F5</kbd> que no tiene errores. Los lugares con contenido para adultos solo aparecen con esa opción activada en el juego.</li>
+<li>He estropeado un mod: los originales del juego no se tocan nunca. Desactiva o borra el archivo del mod y el juego vuelve a estar como antes.</li>
+</ul>
+<p>El formato interno de los archivos, por si quieres editarlos a mano, está en <a href="crear_mods.html">crear_mods.html</a>.</p>
+</body>
+</html>

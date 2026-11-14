@@ -1,0 +1,232 @@
+{
+  "capitulos": {"5": "Encargos de Puerto Bravo", "6": "Historias de Villaseca", "7": "Historias del mar", "8": "Historias de San Lucero"},
+  "misiones": [
+    {"id": "e01", "titulo": "Los recados de Paco", "capitulo": 5, "contacto": "Paco", "lugar": "tienda_paco", "requiere": ["m02"],
+     "resumen": "Paco, el de los ultramarinos, necesita que alguien le haga el reparto.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Paco", "¡Dani! Qué alegría. Oye, tengo la espalda fatal y tres pedidos sin repartir. ¿Me los llevas? Te doy una propina y te cuento un secreto."],
+         ["Dani", "¿Qué secreto?"],
+         ["Paco", "Primero el reparto, que te conozco desde que ibas en pañales."]]},
+       {"tipo": "ir", "lugar": "farmacia", "texto": "Lleva el primer pedido a la Farmacia Luna."},
+       {"tipo": "ir", "lugar": "gimnasio_pb", "texto": "Lleva el segundo pedido al Gimnasio El Yunque."},
+       {"tipo": "ir", "lugar": "iglesia", "texto": "Lleva el último pedido a la Iglesia de San Telmo."},
+       {"tipo": "ir", "lugar": "tienda_paco", "texto": "Vuelve a Ultramarinos Paco."},
+       {"tipo": "dialogo", "lineas": [
+         ["Paco", "Eres un sol. Ahí va el secreto: por toda la comarca hay cintas de casete, botellas y doblones escondidos. Un coleccionista paga doscientos cincuenta euros por cada uno."],
+         ["Paco", "Suenan como un tintineo que sube y baja. Si oyes algo así, acércate y pulsa Intro. Y si te aburres, en la bodega La Cepa se contratan guardaespaldas."]]}
+     ],
+     "recompensa": {"dinero": 300}},
+
+    {"id": "e02", "titulo": "Noche de carreras", "capitulo": 5, "contacto": "Chispas", "lugar": "recta", "requiere": ["m08"],
+     "resumen": "El Chispas te espera en la Recta del Polígono con una idea descabellada.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Chispas", "Esta noche hay carrera grande y me falta montura. En Motos Relámpago tienen una Tábano de cross recién llegada."],
+         ["Dani", "Y quieres que te la traiga antes de que empiece."],
+         ["Chispas", "Dos minutos desde que te subas. Ni uno más."]]},
+       {"tipo": "robar", "modelo": "cross", "lugar": "motos_pb", "nombre": "Moto Tábano de carreras", "busqueda": 1, "texto": "Roba la moto de cross aparcada ante Motos Relámpago, en el Centro."},
+       {"tipo": "entregar", "lugar": "recta", "limite": 120, "salud_min": 30, "texto": "¡Lleva la moto a la Recta del Polígono en menos de dos minutos!"},
+       {"tipo": "dialogo", "lineas": [["Chispas", "¡Justo a tiempo! Cuando quieras correr tú, ven aquí con cualquier vehículo. Hay carreras en el polígono, en San Lucero, en Villaseca y hasta regatas en el mar."]]}
+     ],
+     "recompensa": {"dinero": 1500}},
+
+    {"id": "e03", "titulo": "El furgón", "capitulo": 5, "contacto": "La Rusa", "lugar": "almacen_rusa", "requiere": ["m09"],
+     "resumen": "La Rusa sabe cuándo sale el furgón blindado del banco.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["La Rusa", "Cada lunes, furgón blindado sale del Banco Mercantil con dinero de Belmonte. Hoy es lunes."],
+         ["Dani", "Eso tiene más chapa que un tanque."],
+         ["La Rusa", "Por eso te doy granadas. Lánzalas con Espacio hacia el objetivo fijado. Y no te quedes cerca."]]},
+       {"tipo": "dar", "arma": "granada", "balas": 4},
+       {"tipo": "perseguir", "modelo": "blindado", "lugar": "banco", "nombre": "Furgón blindado del banco", "salud": 320, "texto": "Persigue el furgón blindado y reviéntalo con granadas o a golpes. Pulsa Q para fijarlo."},
+       {"tipo": "recoger", "aqui": true, "objeto": "Sacas de dinero", "texto": "Recoge las sacas de dinero."},
+       {"tipo": "policia", "nivel": 3, "texto": "¡Despista a la policía!"},
+       {"tipo": "ir", "lugar": "almacen_rusa", "texto": "Lleva el dinero al Almacén Siete."},
+       {"tipo": "dialogo", "lineas": [["La Rusa", "Mitad para ti, mitad para mí. Así da gusto trabajar."]]}
+     ],
+     "recompensa": {"dinero": 7000}},
+
+    {"id": "v01", "titulo": "El tractor de Anselmo", "capitulo": 6, "contacto": "Anselmo", "lugar": "vs_cooperativa", "requiere": ["m03"],
+     "resumen": "En el pueblo de Villaseca, al norte, la cooperativa busca a alguien de fuera.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Anselmo", "¿Tú eres de Puerto Bravo? Mala gente, los de la capital. Pero me hace falta alguien que no sea del pueblo."],
+         ["Anselmo", "Unos cuatreros me han robado el tractor nuevo y lo tienen en La Era, tan tranquilos. Aquí todos son primos de alguien y nadie quiere líos."],
+         ["Dani", "Yo no soy primo de nadie."],
+         ["Anselmo", "Por eso. Échalos y tráeme el tractor."]]},
+       {"tipo": "eliminar", "lugar": "vs_era", "enemigos": [{"n": 2, "tipo": "Cuatrero", "arma": "bate", "salud": 60}], "texto": "Ve a La Era y echa a los dos cuatreros."},
+       {"tipo": "robar", "modelo": "tractor", "lugar": "vs_era", "abierto": true, "nombre": "Tractor de Anselmo", "texto": "Sube al tractor de Anselmo, aparcado junto a La Era."},
+       {"tipo": "entregar", "lugar": "vs_cooperativa", "salud_min": 40, "texto": "Lleva el tractor a la Cooperativa agrícola. Paciencia: corre poco."},
+       {"tipo": "dialogo", "lineas": [["Anselmo", "Entero y todo. Pues igual no sois tan mala gente los de la capital. Vuelve cuando quieras, que trabajo no falta."]]}
+     ],
+     "recompensa": {"dinero": 700}},
+
+    {"id": "v02", "titulo": "Cosecha urgente", "capitulo": 6, "contacto": "Anselmo", "lugar": "vs_cooperativa", "requiere": ["v01"],
+     "resumen": "Anselmo tiene que mandar la cosecha a San Lucero.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Anselmo", "El camionero me ha dejado tirado y tengo la camioneta cargada de tomates para doña Remedios, la del Mercado de Abastos de San Lucero."],
+         ["Anselmo", "Sal por la carretera del este. Y que no se me machaque la fruta, ¿eh?"]]},
+       {"tipo": "robar", "modelo": "pickup", "lugar": "vs_cooperativa", "abierto": true, "nombre": "Camioneta de la cooperativa", "texto": "Sube a la camioneta de la cooperativa."},
+       {"tipo": "entregar", "lugar": "sl_mercado", "salud_min": 50, "texto": "Lleva la camioneta al Mercado de Abastos de San Lucero sin golpearla. El GPS te guía hasta la salida del pueblo: allí, pulsa Intro para coger la carretera."},
+       {"tipo": "dialogo", "lineas": [
+         ["Remedios", "¿Los tomates de Anselmo? Ya era hora. Toma, lo tuyo. Y oye, tienes pinta de saber arreglar problemas. Pásate a verme otro día, que en este mercado sobran."]]}
+     ],
+     "recompensa": {"dinero": 1500}},
+
+    {"id": "v03", "titulo": "Los cuatreros", "capitulo": 6, "contacto": "Anselmo", "lugar": "vs_cooperativa", "requiere": ["v02"],
+     "resumen": "Los cuatreros han vuelto a Villaseca, y esta vez vienen armados.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Anselmo", "Han vuelto. Se han hecho fuertes en el molino viejo y han robado las escrituras de medio pueblo. Sin escrituras, cualquiera nos quita las tierras."],
+         ["Dani", "¿Cualquiera con nombre y apellidos?"],
+         ["Anselmo", "Dicen que les paga un señor de Puerto Bravo. Uno con torre."]]},
+       {"tipo": "eliminar", "lugar": "vs_molino", "enemigos": [{"n": 3, "tipo": "Cuatrero", "arma": "escopeta", "salud": 70}, {"n": 2, "tipo": "Cuatrero", "arma": "pistola", "salud": 70}], "texto": "Ve al Molino viejo, campo a través, y acaba con los cinco cuatreros."},
+       {"tipo": "recoger", "lugar": "vs_molino", "objeto": "Escrituras del pueblo", "texto": "Recoge las escrituras."},
+       {"tipo": "ir", "lugar": "vs_cooperativa", "texto": "Devuelve las escrituras a la Cooperativa."},
+       {"tipo": "dialogo", "lineas": [["Anselmo", "El pueblo entero te debe una. Toma, la escopeta de mi padre, que yo ya no veo para apuntar. Tú le darás mejor uso."]]}
+     ],
+     "recompensa": {"dinero": 3000, "arma": "escopeta_combate", "balas": 24}},
+
+    {"id": "v04", "titulo": "El capataz", "capitulo": 6, "contacto": "Anselmo", "lugar": "vs_bodega", "requiere": ["v03", "m10"],
+     "resumen": "El capataz de Belmonte está en la bodega de Villaseca amenazando a los dueños.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Anselmo", "¡Dani! El capataz de Belmonte acaba de salir de la bodega. Les ha dado un día para vender. Va en un todoterreno negro."],
+         ["Dani", "Pues no va a llegar a dar el parte."]]},
+       {"tipo": "perseguir", "modelo": "todoterreno", "lugar": "vs_bodega", "nombre": "Todoterreno del capataz", "salud": 190, "texto": "Persigue el todoterreno del capataz por las calles del pueblo y destrúyelo. Pulsa Q para fijarlo."},
+       {"tipo": "dialogo", "lineas": [
+         ["Anselmo", "Ese no vuelve. Mira, la bodega está en venta de verdad, pero a un precio justo. Si un día quieres ser de aquí, ya sabes."],
+         ["Narrador", "Villaseca vuelve a ser un pueblo tranquilo. Puedes comprar la Bodega Villaseca y la Granja Los Olivos."]]}
+     ],
+     "recompensa": {"dinero": 4000}},
+
+    {"id": "x01", "titulo": "Lobo de mar", "capitulo": 7, "contacto": "Mendoza", "lugar": "cb_taberna", "requiere": ["m05"],
+     "resumen": "En Cala Brava, por la carretera de la costa, un viejo capitán busca tripulación.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Mendoza", "¿Sabes llevar un barco? No, claro. Los de ciudad no sabéis ni nadar. Pues hoy aprendes."],
+         ["Mendoza", "Tengo unas nasas de langosta en el Bajo de los Meros, al suroeste, mar adentro. Baja al muelle, coge una lancha y tráemelas."],
+         ["Mendoza", "En el mar no hay calles: tú llevas el timón con las flechas y el GPS te canta el rumbo. La baliza suena hacia donde tienes que ir."]]},
+       {"tipo": "ir", "lugar": "mar_bajo", "texto": "Ve al Muelle pesquero de Cala Brava, alquila una lancha y navega hasta el Bajo de los Meros."},
+       {"tipo": "recoger", "aqui": true, "objeto": "Nasas de langosta", "texto": "Recoge las nasas: pulsa Intro."},
+       {"tipo": "ir", "lugar": "cb_taberna", "texto": "Vuelve al muelle de Cala Brava, atraca con Intro y lleva las langostas a la Taberna del Capitán."},
+       {"tipo": "dialogo", "lineas": [
+         ["Mendoza", "¡Y sin hundir la lancha! Tienes madera. Si quieres ganarte unos euros, pulsa P en el mar para pescar y vende las capturas en la cofradía. Los peces gordos están lejos de la costa."]]}
+     ],
+     "recompensa": {"dinero": 800}},
+
+    {"id": "x02", "titulo": "Mercancía mojada", "capitulo": 7, "contacto": "Mendoza", "lugar": "cb_taberna", "requiere": ["x01"],
+     "resumen": "El capitán Mendoza ha visto luces raras junto al pecio del Santa Clara.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Mendoza", "Hay contrabandistas usando el pecio del Santa Clara. Tiran fardos al agua y otros los recogen de noche. Esta cala ha sido siempre de pescadores, no de maleantes."],
+         ["Mendoza", "Coge el fardo antes que ellos y síguelos hasta su escondite. Apostaría mi barco a que está en Isla Tortuga."]]},
+       {"tipo": "recoger", "lugar": "mar_pecio", "objeto": "Fardo flotante", "texto": "Navega hasta el Pecio del Santa Clara, al sur, y recoge el fardo."},
+       {"tipo": "eliminar", "lugar": "it_cueva", "enemigos": [{"n": 3, "tipo": "Contrabandista", "arma": "pistola", "salud": 70}], "texto": "Navega hasta el Muelle de Isla Tortuga, desembarca y acaba con los contrabandistas de la Cueva del Tuerto."},
+       {"tipo": "ir", "lugar": "cb_taberna", "texto": "Vuelve a la Taberna del Capitán, en Cala Brava."},
+       {"tipo": "dialogo", "lineas": [["Mendoza", "La cala vuelve a ser nuestra. Por cierto, en esa cueva dicen que el pirata Tuerto escondió su tesoro. Yo tengo medio mapa. La otra mitad... ya hablaremos."]]}
+     ],
+     "recompensa": {"dinero": 2500}},
+
+    {"id": "x03", "titulo": "El tesoro del Tuerto", "capitulo": 7, "contacto": "Mendoza", "lugar": "cb_taberna", "requiere": ["x02"],
+     "resumen": "Mendoza ha conseguido la otra mitad del mapa del tesoro.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Mendoza", "¡Lo tengo! El mapa dice: desde el faro de la isla, donde la calavera mira al mar. El cofre está en la cueva, pero hay que ir primero al faro a por la llave."],
+         ["Mendoza", "Ve con cuidado. No soy el único que ha comprado un trozo de ese mapa."]]},
+       {"tipo": "recoger", "lugar": "it_faro", "objeto": "Llave oxidada", "texto": "Navega a Isla Tortuga y recoge la llave escondida en el faro."},
+       {"tipo": "recoger", "lugar": "it_cueva", "objeto": "Cofre del Tuerto", "texto": "Lleva la llave a la Cueva del Tuerto y recoge el cofre."},
+       {"tipo": "eliminar", "lugar": "it_cueva", "ya": true, "enemigos": [{"n": 3, "tipo": "Buscador de tesoros", "arma": "pistola", "salud": 80}, {"n": 1, "tipo": "Buscador de tesoros", "arma": "subfusil", "salud": 80}], "texto": "¡Otros buscadores de tesoros! Acaba con ellos."},
+       {"tipo": "ir", "lugar": "cb_taberna", "texto": "Lleva el cofre a la Taberna del Capitán."},
+       {"tipo": "dialogo", "lineas": [
+         ["Mendoza", "Doblones. Doblones de verdad. Con mi parte arreglo el barco y con la tuya haz lo que quieras. Y toma esto, que lo guardaba para una ocasión."],
+         ["Narrador", "Has completado las historias del mar. Quedan botellas con mensaje flotando por el Mar de Poniente y doblones enterrados en Isla Tortuga."]]}
+     ],
+     "recompensa": {"dinero": 6000, "arma": "fusil", "balas": 90}},
+
+    {"id": "s01", "titulo": "Bienvenida al mercado", "capitulo": 8, "contacto": "Remedios", "lugar": "sl_mercado", "requiere": ["m05"],
+     "resumen": "En San Lucero, la ciudad universitaria, doña Remedios tiene un problema con una banda.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Remedios", "Mira qué bien, alguien con cara de pocos amigos. Me llamo Remedios y llevo cuarenta años vendiendo especias en este mercado."],
+         ["Remedios", "Hay una banda nueva, Los Lagartos, que cobra por dejar trabajar. Ahora mismo hay tres en la plaza de la Catedral, junto a la Fuente de los Leones, asustando a los tenderos."],
+         ["Dani", "¿Y la policía?"],
+         ["Remedios", "La policía de aquí es honrada, hijo. Por eso no da abasto."]]},
+       {"tipo": "eliminar", "lugar": "sl_fuente", "enemigos": [{"n": 2, "tipo": "Lagarto", "arma": "navaja", "salud": 60}, {"n": 1, "tipo": "Lagarto", "arma": "pistola", "salud": 60}], "texto": "Ve a la Fuente de los Leones y encárgate de los tres Lagartos."},
+       {"tipo": "ir", "lugar": "sl_mercado", "texto": "Vuelve al Mercado de Abastos."},
+       {"tipo": "dialogo", "lineas": [["Remedios", "Limpio y rápido. Te voy a presentar a un amigo: le llaman El Profesor y vive en el sótano de la Universidad. Dile que vas de mi parte."]]}
+     ],
+     "recompensa": {"dinero": 1000}},
+
+    {"id": "s02", "titulo": "El Profesor", "capitulo": 8, "contacto": "El Profesor", "lugar": "sl_universidad", "requiere": ["s01"],
+     "resumen": "El Profesor te espera en la Universidad de San Lucero.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["El Profesor", "¿De parte de Remedios? Pasa y no toques nada. Llevo meses siguiendo las cuentas de Los Lagartos. Lavan el dinero en el Bingo La Suerte."],
+         ["El Profesor", "En el despacho del bingo hay un disco duro con todo. Yo no sé ni abrir una lata. Tú, en cambio..."]]},
+       {"tipo": "recoger", "lugar": "sl_bingo", "objeto": "Disco duro del bingo", "texto": "Ve al Bingo La Suerte, en El Ensanche, y recoge el disco duro."},
+       {"tipo": "policia", "nivel": 2, "texto": "¡Ha saltado la alarma del bingo! Despista a la policía."},
+       {"tipo": "ir", "lugar": "sl_universidad", "texto": "Lleva el disco duro a la Universidad."},
+       {"tipo": "dialogo", "lineas": [["El Profesor", "Fascinante. Su jefe se hace llamar El Caimán y no se fía de los bancos: lo guarda todo en efectivo. Dame unos días."]]}
+     ],
+     "recompensa": {"dinero": 2000}},
+
+    {"id": "s03", "titulo": "Coche de prácticas", "capitulo": 8, "contacto": "El Profesor", "lugar": "sl_universidad", "requiere": ["s02"],
+     "resumen": "El Profesor necesita un coche muy concreto para un experimento.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["El Profesor", "El Caimán acaba de encargar un deportivo en Autos San Lucero. Quiero instalarle un localizador antes de que se lo entreguen."],
+         ["Dani", "O sea, que lo robo, lo traes al taller y lo devuelvo."],
+         ["El Profesor", "Devolverlo no hace falta. Con que llegue a Talleres Campus me vale."]]},
+       {"tipo": "robar", "modelo": "deportivo", "lugar": "sl_concesionario", "nombre": "Deportivo de El Caimán", "busqueda": 2, "texto": "Roba el deportivo de El Caimán, aparcado ante Autos San Lucero."},
+       {"tipo": "policia", "nivel": 2, "texto": "Despista a la policía."},
+       {"tipo": "entregar", "lugar": "sl_taller", "salud_min": 40, "texto": "Lleva el deportivo a Talleres Campus, en el Barrio Universitario."},
+       {"tipo": "dialogo", "lineas": [["El Profesor", "Perfecto. Ahora sabremos adónde va cada noche. Mi apuesta: al puerto deportivo."]]}
+     ],
+     "recompensa": {"dinero": 2500}},
+
+    {"id": "s04", "titulo": "Limpieza en La Marina", "capitulo": 8, "contacto": "Remedios", "lugar": "sl_mercado", "requiere": ["s03"],
+     "resumen": "Los Lagartos se han adueñado del puerto deportivo de San Lucero.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Remedios", "El Profesor tenía razón. Los Lagartos guardan su lancha y medio arsenal en el puerto deportivo. Los pescadores no se atreven ni a acercarse."],
+         ["Remedios", "Échalos de allí. Y si encuentras las llaves de esa lancha, quédatela, que te la has ganado."]]},
+       {"tipo": "eliminar", "lugar": "sl_embarcadero", "enemigos": [{"n": 4, "tipo": "Lagarto", "arma": "pistola", "salud": 75}, {"n": 2, "tipo": "Lagarto", "arma": "subfusil", "salud": 75}], "texto": "Ve al Puerto deportivo de San Lucero y acaba con los seis Lagartos."},
+       {"tipo": "recoger", "lugar": "sl_embarcadero", "objeto": "Llaves de la lancha", "texto": "Recoge las llaves de la lancha rápida."},
+       {"tipo": "ir", "lugar": "sl_mercado", "texto": "Vuelve al Mercado de Abastos."},
+       {"tipo": "dialogo", "lineas": [["Remedios", "La Marina vuelve a oler a marisco y no a pólvora. La lancha es tuya: la tienes amarrada en el puerto deportivo."]]}
+     ],
+     "recompensa": {"dinero": 4000, "barco": {"modelo": "lancha_rapida", "en": "sl_embarcadero"}}},
+
+    {"id": "s05", "titulo": "El golpe del bingo", "capitulo": 8, "contacto": "El Profesor", "lugar": "sl_universidad", "requiere": ["s04", "m12"],
+     "resumen": "El Profesor ha descifrado la combinación de la caja fuerte del bingo.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["El Profesor", "Ocho, quince, dieciséis, veintitrés. La combinación de la caja fuerte del bingo. Todo el efectivo de El Caimán está ahí dentro."],
+         ["Dani", "Y cinco gorilas en la puerta, me imagino."],
+         ["El Profesor", "Cinco exactamente. Me encanta la gente con intuición estadística."]]},
+       {"tipo": "eliminar", "lugar": "sl_bingo", "enemigos": [{"n": 3, "tipo": "Lagarto", "arma": "pistola", "salud": 85}, {"n": 2, "tipo": "Lagarto", "arma": "escopeta", "salud": 85}], "texto": "Ve al Bingo La Suerte y elimina a los cinco guardias."},
+       {"tipo": "recoger", "lugar": "sl_bingo", "objeto": "Efectivo de El Caimán", "texto": "Vacía la caja fuerte."},
+       {"tipo": "policia", "nivel": 3, "texto": "¡Despista a la policía de San Lucero!"},
+       {"tipo": "ir", "lugar": "sl_mercado", "texto": "Lleva el dinero al Mercado de Abastos."},
+       {"tipo": "dialogo", "lineas": [["Remedios", "Con esto devolvemos a cada tendero lo que le quitaron, y aún sobra para ti. Ahora El Caimán saldrá de su agujero. Estate al tanto."]]}
+     ],
+     "recompensa": {"dinero": 9000}},
+
+    {"id": "s06", "titulo": "El rey de San Lucero", "capitulo": 8, "contacto": "Remedios", "lugar": "sl_hotel", "requiere": ["s05"],
+     "resumen": "El Caimán intenta huir de San Lucero en su limusina.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [
+         ["Remedios", "¡Dani! El Caimán acaba de salir del Gran Hotel en su limusina blindada. Si se escapa, volverá con más gente."],
+         ["Dani", "No se escapa."]]},
+       {"tipo": "perseguir", "modelo": "limusina", "lugar": "sl_hotel", "nombre": "Limusina de El Caimán", "salud": 240, "limite": 240, "texto": "Persigue la limusina de El Caimán y destrúyela antes de que se acabe el tiempo. Pulsa Q para fijarla."},
+       {"tipo": "dialogo", "lineas": [
+         ["Narrador", "El Caimán sale a rastras de la limusina, directo a los brazos de la policía de San Lucero, que por una vez llega a tiempo."],
+         ["Remedios", "Se acabaron Los Lagartos. En San Lucero siempre tendrás un plato en mi mesa. Y un chaleco nuevo, que el tuyo da pena."],
+         ["Narrador", "Has completado las historias de San Lucero."]]}
+     ],
+     "recompensa": {"dinero": 12000, "chaleco": true}}
+  ]
+}

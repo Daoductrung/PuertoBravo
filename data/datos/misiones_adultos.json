@@ -1,0 +1,202 @@
+{
+ "capitulos": {
+  "11": "Historias para adultos"
+ },
+ "misiones": [
+  {
+   "id": "a01",
+   "titulo": "El Gordo",
+   "capitulo": 11,
+   "adultos": true,
+   "contacto": "El Gordo",
+   "lugar": "trastienda",
+   "requiere": [
+    "m05"
+   ],
+   "resumen": "En el puerto hay una trastienda donde se mueve otro tipo de mercancía.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Gordo",
+       "Así que tú eres Dani. La Rusa habla bien de ti, y La Rusa no habla bien ni de su madre."
+      ],
+      [
+       "El Gordo",
+       "Te explico el negocio. Yo compro y vendo. Los precios cambian cada día, y en cada pueblo son distintos. Compras donde está barato, vendes donde está caro."
+      ],
+      [
+       "El Gordo",
+       "O lo vendes tú por la calle, que se paga mejor: sin arma en la mano, te pones junto a alguien y pulsas E. Pero ojo, que uno de cada doce es policía de paisano."
+      ],
+      [
+       "El Gordo",
+       "Toma, diez bolsitas de hierba para empezar. Llévale un sobre mío al portero del Club Paraíso y son tuyas."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "sustancia": "hierba",
+     "cantidad": 10
+    },
+    {
+     "tipo": "ir",
+     "lugar": "club_paraiso",
+     "texto": "Lleva el sobre al Club Paraíso, en el puerto."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El portero coge el sobre sin mirarte. Ya eres parte del negocio. Tus sustancias están en el móvil y con Mayúsculas Z. Recuerda: todo lo que tomes tiene efecto, bajón y riesgo de engancharte."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 300
+   }
+  },
+  {
+   "id": "a02",
+   "titulo": "Mal de amores",
+   "capitulo": 11,
+   "adultos": true,
+   "contacto": "Lucía",
+   "lugar": "chiringuito",
+   "requiere": [
+    "m02"
+   ],
+   "resumen": "La camarera del Chiringuito El Espeto tiene un problema con alguien que no acepta un no.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Lucía",
+       "Perdona, hoy estoy que no doy una. Mi ex lleva una semana esperándome a la salida. Dice que solo quiere hablar. Ayer me rompió el retrovisor."
+      ],
+      [
+       "Dani",
+       "¿Dónde está ahora?"
+      ],
+      [
+       "Lucía",
+       "En la heladería de enfrente, mirando hacia aquí. No quiero que le hagas nada grave. Solo que entienda que se acabó."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "heladeria",
+     "enemigos": [
+      {
+       "n": 1,
+       "tipo": "Ex de Lucía",
+       "arma": "punos",
+       "salud": 60
+      }
+     ],
+     "texto": "Ve a la Heladería Polo Norte y haz que el ex de Lucía entienda que se acabó."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "chiringuito",
+     "texto": "Vuelve al Chiringuito El Espeto."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Lucía",
+       "Se ha ido con el rabo entre las piernas. Gracias, de verdad. Oye, salgo a las once. Si te apetece dar un paseo por la playa, ya sabes dónde encontrarme."
+      ],
+      [
+       "Narrador",
+       "Lucía aparece ahora en Vida social, en el móvil. Hay otras cinco personas por la comarca: preséntate cuando estés en su lugar habitual."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 200,
+    "afinidad": {
+     "lucia": 25
+    }
+   }
+  },
+  {
+   "id": "a03",
+   "titulo": "Fiesta en el yate",
+   "capitulo": 11,
+   "adultos": true,
+   "contacto": "El Gordo",
+   "lugar": "trastienda",
+   "requiere": [
+    "a01",
+    "x01"
+   ],
+   "resumen": "El Gordo tiene un pedido grande para una fiesta en alta mar.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Gordo",
+       "Hay una fiesta en un yate fondeado junto al Arrecife de las Sirenas. Gente de Las Torres, con más dinero que sentido. Quieren pastillas, y las mejores las hace La Química, en San Lucero."
+      ],
+      [
+       "El Gordo",
+       "Recoge el paquete en su piso y llévalo al arrecife en barco. Y date prisa: me han dicho que los de San Lucero quieren quedarse con mi cliente."
+      ]
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "sl_quimica",
+     "objeto": "Paquete de La Química",
+     "texto": "Ve al Piso de La Química, en el Barrio Universitario de San Lucero, y recoge el paquete."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mar_arrecife",
+     "texto": "Lleva el paquete en barco al Arrecife de las Sirenas."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Entregas el paquete por la borda y recibes un fajo de billetes. La música del yate se oye a media milla. Al dar la vuelta, tres lanchas te cortan el paso en el muelle."
+      ]
+     ]
+    },
+    {
+     "tipo": "policia",
+     "nivel": 2,
+     "texto": "Alguien ha dado el chivatazo: la policía te espera en tierra. Atraca donde quieras y despístala."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "trastienda",
+     "texto": "Vuelve a la Trastienda de El Gordo, en Puerto Bravo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Gordo",
+       "Cliente contento, Gordo contento. Tu parte. Y un consejo gratis: no te metas lo que vendes. He visto a muchos acabar mal."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 3500
+   }
+  }
+ ]
+}

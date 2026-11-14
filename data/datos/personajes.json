@@ -1,0 +1,12 @@
+{
+  "personajes": [
+    {"id": "dani", "nombre": "Dani", "apellido": "Roca", "botiquines": 1,
+     "desc": "Equilibrado. Se crio en el Barrio Viejo, conoce a todo el mundo y cae bien. Empieza con un botiquín y sin puntos débiles."},
+    {"id": "alex", "nombre": "Álex", "apellido": "Montes", "conduccion": 5, "ganzuas": 3, "botiquines": 1,
+     "desc": "Fue piloto de rallies hasta que le retiraron la licencia. Empieza con la conducción al nivel cinco y tres juegos de ganzúas: nadie abre y lleva un coche como Álex."},
+    {"id": "sam", "nombre": "Sam", "apellido": "Ferrer", "punteria": 4, "resistencia": 2, "salud_max": 120, "arma": "navaja", "botiquines": 2,
+     "desc": "Pasó ocho años en el ejército. Empieza con la puntería al nivel cuatro, más salud, una navaja y dos botiquines. Lo suyo es resolver los problemas de frente."},
+    {"id": "cris", "nombre": "Cris", "apellido": "Navarro", "dinero": 800, "animo": 75, "reputacion": 10, "ciudadania": 45, "pesca": 2, "botiquines": 1,
+     "desc": "Vendía seguros y sabe ganarse a cualquiera. Empieza con ochocientos euros, buen ánimo, algo de fama y el aprecio de los vecinos: cobra más en los trabajos honrados y la policía le pasa por alto las faltas pequeñas."}
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "isla_tortuga",
+  "tipo": "isla",
+  "nombre": "Isla Tortuga",
+  "trafico": 0,
+  "peatones": 1,
+  "policia": false,
+  "aparcados": false,
+  "nombre_objeto": "Doblón de oro",
+  "avenidas": ["Sendero del Oeste", "Sendero del Medio", "Sendero del Este"],
+  "calles": ["Senda de la Playa", "Senda del Palmeral", "Senda del Faro"],
+  "barrios": [
+    {"id": "isla_tortuga", "nombre": "Isla Tortuga", "i": [0, 1], "j": [0, 1], "ambiente": "amb_playa", "vehiculos": [], "descripcion": "Isla Tortuga, un pedazo de arena y palmeras en mitad del Mar de Poniente. Sin coches, sin policía y, dicen, con el tesoro del pirata Tuerto."}
+  ],
+  "bloques": {"0,0": "arena", "1,0": "arena", "0,1": "hierba", "1,1": "hierba"},
+  "lugares": [
+    {"id": "it_muelle", "nombre": "Muelle de Isla Tortuga", "tipo": "embarcadero", "bloque": [0, 0], "lado": "S", "pos": 36, "a_mapa": "mar", "a_lugar": "mar_isla", "desc": "Un pantalán de tablas medio podridas, el único punto de atraque de la isla."},
+    {"id": "it_chiringuito", "nombre": "Chiringuito del Náufrago", "tipo": "comida", "bloque": [1, 0], "lado": "N", "pos": 36, "desc": "Cuatro cañas, un techo de palma y el mejor pulpo a la brasa del mundo."},
+    {"id": "it_cueva", "nombre": "Cueva del Tuerto", "tipo": "monumento", "bloque": [1, 1], "xy": [50, 50], "desc": ""},
+    {"id": "it_faro", "nombre": "Faro de Isla Tortuga", "tipo": "monumento", "bloque": [0, 1], "xy": [20, 55], "desc": ""},
+    {"id": "it_cabana", "nombre": "Cabaña del ermitaño", "tipo": "casa", "bloque": [0, 1], "lado": "S", "pos": 36, "precio": 15000, "garaje": 0, "desc": "Una cabaña de madera frente al mar. No tiene garaje, ni falta que hace."},
+    {"id": "it_pesca", "nombre": "Roca de los pescadores", "tipo": "pesca", "bloque": [1, 0], "xy": [55, 15], "desc": ""},
+    {"id": "it_palmeral", "nombre": "Palmeral", "tipo": "monumento", "bloque": [0, 0], "xy": [40, 45], "desc": ""},
+    {"id": "it_helipuerto", "nombre": "Claro del helicóptero", "tipo": "helipuerto", "bloque": [1, 1], "xy": [20, 20], "precio": 200, "desc": ""},
+    {"id": "it_cala", "nombre": "Cala del Tuerto", "tipo": "tesoro", "bloque": [0, 0], "xy": [15, 20], "desc": "La cala donde, según la leyenda, el pirata Tuerto enterró lo que no le cabía en la cueva."}
+  ],
+  "casetes": [[25, 150], [150, 35], [160, 160]]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "villaseca",
+  "tipo": "pueblo",
+  "nombre": "Villaseca",
+  "trafico": 2,
+  "peatones": 3,
+  "avenidas": ["Camino de la Sierra", "Calle Real", "Calle de la Fuente", "Camino del Molino"],
+  "calles": ["Carretera de Puerto Bravo", "Calle de la Iglesia", "Calle de las Eras", "Camino de San Lucero"],
+  "barrios": [
+    {"id": "villaseca", "nombre": "Villaseca", "i": [0, 2], "j": [0, 2], "ambiente": "amb_campo", "vehiculos": ["tractor", "pickup", "utilitario", "furgoneta", "quad", "bici"], "descripcion": "Villaseca, un pueblo de la sierra rodeado de olivos y girasoles. Trescientos vecinos, un bar y mucho silencio."}
+  ],
+  "bloques": {"1,1": "plaza", "0,2": "hierba", "2,2": "hierba", "2,0": "hierba"},
+  "lugares": [
+    {"id": "vs_salida_sur", "nombre": "Salida sur, carretera de Puerto Bravo", "tipo": "salida", "bloque": [1, 0], "lado": "S", "pos": 36, "a_mapa": "puerto_bravo", "a_lugar": "salida_norte", "km": 18, "horas": 0.5, "desc": "La carretera que baja a Puerto Bravo."},
+    {"id": "vs_salida_este", "nombre": "Salida este, carretera de San Lucero", "tipo": "salida", "bloque": [2, 1], "lado": "E", "pos": 36, "a_mapa": "san_lucero", "a_lugar": "sl_salida_sur", "km": 35, "horas": 0.8, "desc": "La carretera del interior hasta San Lucero."},
+    {"id": "vs_estacion", "nombre": "Parada del autobús de Villaseca", "tipo": "estacion", "bloque": [0, 0], "lado": "N", "pos": 36, "precio": 15, "desc": "Una marquesina y un banco. El autobús pasa cuando pasa."},
+    {"id": "vs_bar", "nombre": "Bar El Cazador", "tipo": "taberna", "bloque": [0, 1], "lado": "E", "pos": 36, "desc": "El único bar del pueblo. Aquí se sabe todo antes de que ocurra."},
+    {"id": "vs_tienda", "nombre": "Colmado Anselma", "tipo": "tienda", "bloque": [1, 0], "lado": "N", "pos": 36, "desc": "Pan, chorizo, pilas y cotilleos."},
+    {"id": "vs_iglesia", "nombre": "Iglesia de San Isidro", "tipo": "monumento", "bloque": [1, 2], "lado": "S", "pos": 36, "sonido": "lugar_iglesia", "desc": "La iglesia del pueblo, con un nido de cigüeñas en el campanario."},
+    {"id": "vs_fuente", "nombre": "Fuente de la plaza de Villaseca", "tipo": "monumento", "bloque": [1, 1], "xy": [36, 36], "sonido": "lugar_fuente", "desc": ""},
+    {"id": "vs_cooperativa", "nombre": "Cooperativa agrícola", "tipo": "monumento", "bloque": [0, 1], "lado": "N", "pos": 36, "vehiculo": "tractor", "desc": "La cooperativa del pueblo. La preside el tío Anselmo, que no se fía de nadie de la capital."},
+    {"id": "vs_granja", "nombre": "Granja Los Olivos", "tipo": "casa", "bloque": [2, 2], "lado": "S", "pos": 36, "precio": 7000, "garaje": 3, "desc": "Una casa de labranza con corral. Tranquilidad total y sitio para tres vehículos."},
+    {"id": "vs_taller", "nombre": "Taller agrícola Hermanos Pardo", "tipo": "taller", "bloque": [2, 0], "lado": "N", "pos": 36, "desc": "Arreglan tractores, y lo que les echen."},
+    {"id": "vs_gasolinera", "nombre": "Gasolinera de Villaseca", "tipo": "tienda", "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Un surtidor y una tienda diminuta."},
+    {"id": "vs_casa_rural", "nombre": "Casa rural El Nogal", "tipo": "hotel", "bloque": [2, 1], "lado": "S", "pos": 36, "precio_noche": 45, "desc": "Habitaciones con chimenea y desayuno de pueblo."},
+    {"id": "vs_consultorio", "nombre": "Consultorio médico", "tipo": "hospital", "bloque": [1, 2], "lado": "O", "pos": 36, "desc": "El consultorio del pueblo. El médico viene desde San Lucero."},
+    {"id": "vs_cuartel", "nombre": "Cuartel de la Guardia", "tipo": "comisaria", "bloque": [0, 2], "lado": "S", "pos": 36, "desc": "Dos guardias y un todoterreno. Poco trabajo, hasta que llegas tú."},
+    {"id": "vs_armeria", "nombre": "Armería del Cazador", "tipo": "armeria", "bloque": [2, 1], "lado": "N", "pos": 36, "desc": "Escopetas, rifles y cartuchos para la temporada de caza."},
+    {"id": "vs_bodega", "nombre": "Bodega Villaseca", "tipo": "negocio", "bloque": [1, 2], "lado": "E", "pos": 36, "precio": 15000, "ingresos": 450, "desc": "Una bodega familiar con buen vino. Los hombres de Belmonte quieren comprarla por las malas."},
+    {"id": "vs_era", "nombre": "La Era", "tipo": "carrera", "bloque": [0, 2], "lado": "E", "pos": 50, "desc": "La explanada donde se trilla en verano. Los mozos corren aquí con lo que tengan."},
+    {"id": "vs_molino", "nombre": "Molino viejo", "tipo": "monumento", "bloque": [2, 2], "xy": [52, 50], "desc": ""},
+    {"id": "vs_girasoles", "nombre": "Campo de girasoles", "tipo": "monumento", "bloque": [2, 0], "xy": [36, 30], "desc": ""},
+    {"id": "vs_salida_norte", "nombre": "Salida norte, carretera de Monteferro", "tipo": "salida", "bloque": [1, 2], "lado": "N", "pos": 36, "a_mapa": "monteferro", "a_lugar": "mf_salida_sur", "km": 30, "horas": 0.7, "desc": "La carretera de montaña que sube a la ciudad minera de Monteferro."},
+    {"id": "vs_panaderia", "nombre": "Horno de la Tía Paca", "tipo": "comida", "bloque": [0, 1], "lado": "S", "pos": 36, "desc": "Pan de leña y empanadas recién hechas."},
+    {"id": "vs_cultivo", "nombre": "Invernadero del Tío Lucas", "tipo": "proveedor", "bloque": [2, 2], "xy": [20, 20], "adultos": true, "factor": {"hierba": 0.5, "polvo": 1.5, "pastillas": 1.4, "cristal": 1.5}, "desc": "Un invernadero entre los olivos. Lo que cultiva el tío Lucas no son tomates."}
+  ],
+  "casetes": [[40, 230], [230, 50], [240, 235]]
+}

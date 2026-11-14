@@ -1,0 +1,1179 @@
+{
+ "info": {
+  "nombre": "Costa Dorada",
+  "autor": "Puerto Bravo",
+  "version": "1.0",
+  "descripcion": "Un pueblo pesquero nuevo al oeste de Puerto Bravo, con su historia en cinco misiones, trabajo honrado, armas, vehículos, un velero, un autogiro, una carrera y dos personajes. Sirve de ejemplo de todo lo que puede llevar un mod."
+ },
+ "lugares": [
+  {
+   "id": "pb_salida_costa",
+   "nombre": "Salida oeste, carretera de Costa Dorada",
+   "tipo": "salida",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    0,
+    4
+   ],
+   "lado": "O",
+   "pos": 36,
+   "desc": "La carretera de la costa, que lleva a Costa Dorada.",
+   "a_mapa": "costa_dorada",
+   "a_lugar": "cd_salida",
+   "km": 22,
+   "horas": 0.6
+  },
+  {
+   "id": "mar_costa",
+   "nombre": "Embarcadero de Costa Dorada, desde el mar",
+   "tipo": "muelle",
+   "mapa": "mar",
+   "xy": [
+    60,
+    1100
+   ],
+   "desc": "El muelle de tablones de Costa Dorada, al oeste de Puerto Bravo.",
+   "a_mapa": "costa_dorada",
+   "a_lugar": "cd_embarcadero"
+  }
+ ],
+ "misiones": [
+  {
+   "id": "cd01",
+   "titulo": "Bienvenido a Costa Dorada",
+   "capitulo": 20,
+   "contacto": "Amparo",
+   "lugar": "cd_taberna",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En la Taberna El Ancla, Amparo necesita a alguien que no sea del pueblo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amparo",
+       "Tú no eres de aquí. Mejor. Aquí todos son primos de alguien y nadie quiere líos."
+      ],
+      [
+       "Amparo",
+       "Eres Dani, ¿no? Me han hablado de ti. Sube al Faro Viejo y mira si es verdad que alguien ha roto el candado. Yo no puedo dejar la barra."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Sube al Faro Viejo, al noreste del pueblo, y mira el candado.",
+     "lugar": "cd_faro",
+     "radio": 14
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El candado está cortado con una cizalla. Dentro hay cajas de madera sin marcar, y huele a gasóleo."
+      ],
+      [
+       "Narrador",
+       "Alguien usa el faro de almacén. Vuelves a contárselo a Amparo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 250
+   }
+  },
+  {
+   "id": "cd02",
+   "titulo": "La furgoneta del pescado",
+   "capitulo": 20,
+   "contacto": "Amparo",
+   "lugar": "cd_taberna",
+   "requiere": [
+    "cd01"
+   ],
+   "resumen": "La furgoneta de la lonja lleva dos días sin repartir y el arroz no espera.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amparo",
+       "El chaval del reparto no aparece y la furgoneta sigue en la lonja, con las llaves puestas. Llévala a La Barraca antes de que se eche a perder el género."
+      ],
+      [
+       "Amparo",
+       "Y con cuidado, que si llega abollada el Sento no te paga."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Recoge la furgoneta del pescado junto a la Lonja. Está abierta.",
+     "lugar": "cd_lonja",
+     "modelo": "cd_reparto",
+     "nombre": "la furgoneta del pescado",
+     "abierto": true
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Lleva la furgoneta a la Arrocería La Barraca en cuatro minutos y sin destrozarla.",
+     "lugar": "cd_restaurante",
+     "limite": 240,
+     "salud_min": 60
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Sento",
+       "¡Por fin! Otro día sin gamba y cierro. Toma, y dile a Amparo que le debo una paella."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 400
+   }
+  },
+  {
+   "id": "cd03",
+   "titulo": "Los de la lancha",
+   "capitulo": 20,
+   "contacto": "Amparo",
+   "lugar": "cd_taberna",
+   "requiere": [
+    "cd02"
+   ],
+   "resumen": "Los dueños de las cajas del faro han venido a por el chaval del reparto.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amparo",
+       "Ya sé dónde está el chaval. Lo tienen los de la lancha negra en el embarcadero, porque vio lo que no debía."
+      ],
+      [
+       "Amparo",
+       "Toma el fusil de arpones de mi difunto marido. Un tiro cada vez, así que apunta."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "cd_arpon",
+     "balas": 8
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve al embarcadero y acaba con los de la lancha negra.",
+     "lugar": "cd_embarcadero",
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Contrabandista",
+       "arma": "pistola",
+       "salud": 60
+      },
+      {
+       "n": 1,
+       "tipo": "Patrón de la lancha",
+       "arma": "cd_remo",
+       "salud": 90
+      }
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el cuaderno de entregas que ha quedado en el muelle.",
+     "lugar": "cd_embarcadero",
+     "objeto": "el cuaderno de entregas"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El chaval sale de debajo de una lona, blanco como la cal, y echa a correr hacia el pueblo."
+      ],
+      [
+       "Narrador",
+       "El cuaderno tiene fechas, matrículas y un nombre que se repite: el Bodeguero."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 600,
+    "arma": "cd_arpon",
+    "balas": 6
+   }
+  },
+  {
+   "id": "cd04",
+   "titulo": "Sirenas en el paseo",
+   "capitulo": 20,
+   "contacto": "Amparo",
+   "lugar": "cd_taberna",
+   "requiere": [
+    "cd03"
+   ],
+   "resumen": "Hay que sacar las cajas del faro antes de que alguien avise a la Guardia Civil.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amparo",
+       "Si encuentran esas cajas en el faro, cierran el pueblo entero. Hay un buggy cargado junto al helipuerto. Tíralo todo al desguace del Naranjo."
+      ],
+      [
+       "Amparo",
+       "Te van a ver, eso seguro. Piérdelos antes de entregar."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Hazte con el buggy cargado que hay junto al Helipuerto del Faro Viejo.",
+     "lugar": "cd_helipuerto",
+     "modelo": "cd_buggy",
+     "nombre": "el buggy cargado",
+     "busqueda": 2
+    },
+    {
+     "tipo": "policia",
+     "texto": "Te han visto. Despista a la policía.",
+     "nivel": 2
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Lleva el buggy al Taller Mecánico Naranjo.",
+     "lugar": "cd_taller",
+     "salud_min": 30
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Naranjo",
+       "Mañana esto es chatarra y aquí no ha pasado nada."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 900,
+    "chaleco": true
+   }
+  },
+  {
+   "id": "cd05",
+   "titulo": "El Bodeguero se escapa",
+   "capitulo": 20,
+   "contacto": "Amparo",
+   "lugar": "cd_taberna",
+   "requiere": [
+    "cd04"
+   ],
+   "resumen": "El Bodeguero ha cargado lo que le queda y sale del pueblo por la carretera.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amparo",
+       "Se va. Ha cargado su todoterreno y tira para la carretera de Puerto Bravo. Si llega, vuelve con más gente."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "balas": 6,
+     "balas_arma": "cd_arpon"
+    },
+    {
+     "tipo": "dar",
+     "arma": "cd_bengala",
+     "balas": 3
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y destroza el todoterreno del Bodeguero antes de que pasen cinco minutos.",
+     "lugar": "cd_salida",
+     "limite": 300,
+     "modelo": "todoterreno",
+     "nombre": "el todoterreno del Bodeguero",
+     "salud": 220
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la llave del almacén que ha saltado del todoterreno.",
+     "objeto": "la llave del almacén",
+     "aqui": true
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Costa Dorada vuelve a oler solo a brea y a arroz."
+      ],
+      [
+       "Amparo",
+       "El pueblo te debe una, Dani. El velero de mi marido es tuyo: está amarrado en el embarcadero."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "dinero": 500
+    }
+   ],
+   "recompensa": {
+    "dinero": 2000,
+    "barco": {
+     "modelo": "cd_velero",
+     "en": "cd_embarcadero"
+    }
+   }
+  },
+  {
+   "id": "cd06",
+   "titulo": "Un día de mercado",
+   "capitulo": 21,
+   "contacto": "La boticaria",
+   "lugar": "cd_farmacia",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Trabajo honrado: recados por el pueblo antes de que cierre el mercado.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La boticaria",
+       "¿Tú haces recados? Tres cosas, y rápido, que cierro a las dos."
+      ],
+      [
+       "La boticaria",
+       "Lleva este jarabe a la Despensa Solidaria, pasa por la Cofradía a por mis papeles y tráeme azafrán de los ultramarinos."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva el jarabe a la Despensa Solidaria en dos minutos y medio.",
+     "lugar": "cd_caritas",
+     "limite": 150
+    },
+    {
+     "tipo": "ir",
+     "texto": "Pasa por la Cofradía de pescadores.",
+     "lugar": "cd_empleo"
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el azafrán en Ultramarinos Azafrán.",
+     "lugar": "cd_tienda",
+     "objeto": "el azafrán"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a la Farmacia del Mercado.",
+     "lugar": "cd_farmacia"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La boticaria",
+       "Así da gusto. Toma, y un botiquín de regalo, que con la vida que llevas te hará falta."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 350
+   }
+  },
+  {
+   "id": "cda1",
+   "titulo": "Orujo de hierbas",
+   "capitulo": 22,
+   "contacto": "Marina",
+   "lugar": "cd_club",
+   "requiere": [
+    "cd01"
+   ],
+   "resumen": "En la Sala Marejada, Marina necesita que alguien lleve una caja sin hacer preguntas.",
+   "adultos": true,
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marina",
+       "El orujo del Bodeguero es lo único que se vende aquí en invierno. Llévale estas botellas a Amparo, a El Ancla, y quédate dos para ti."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "sustancia": "cd_licor",
+     "cantidad": 2
+    },
+    {
+     "tipo": "ir",
+     "texto": "Lleva las botellas a la Taberna El Ancla.",
+     "lugar": "cd_taberna"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amparo",
+       "Dile a Marina que la próxima vez venga ella, que hace un mes que no la veo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 300,
+    "afinidad": {
+     "cd_marina": 15
+    }
+   }
+  }
+ ],
+ "armas": [
+  {
+   "id": "cd_arpon",
+   "nombre": "Fusil de arpones",
+   "tipo": "fuego",
+   "dano": 85,
+   "alcance": 28,
+   "cadencia": 1.6,
+   "precision": 0.9,
+   "cargador": 1,
+   "sonido": "disparo_rifle",
+   "ruido": 1,
+   "precio": 900,
+   "balas": 6,
+   "precio_balas": 60,
+   "desc": "Un solo arpón por disparo y tarda en recargar, pero casi no hace ruido y donde da, se queda."
+  },
+  {
+   "id": "cd_remo",
+   "nombre": "Remo de madera",
+   "tipo": "cuerpo",
+   "dano": 30,
+   "alcance": 3.2,
+   "cadencia": 0.8,
+   "precision": 0.95,
+   "sonido": "navaja",
+   "ruido": 0,
+   "precio": 40,
+   "desc": "Largo, pesado y siempre a mano en un pueblo de pescadores."
+  },
+  {
+   "id": "cd_bengala",
+   "nombre": "Bengala de señales",
+   "tipo": "explosivo",
+   "dano": 60,
+   "alcance": 22,
+   "cadencia": 1.2,
+   "precision": 1,
+   "cargador": 1,
+   "radio": 6,
+   "sonido": "lanzar",
+   "ruido": 3,
+   "precio": 180,
+   "balas": 2,
+   "precio_balas": 200,
+   "desc": "Se lanza como una granada. Arde, asusta y hace menos daño que una de verdad."
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "cd_buggy",
+   "nombre": "Buggy de playa",
+   "vel_max": 30,
+   "acel": 8.5,
+   "freno": 15,
+   "salud": 80,
+   "motor": "motor_coche",
+   "tono": 1.4,
+   "valor": 700,
+   "precio": 5200,
+   "desc": "Ligero y nervioso. Acelera como un demonio y se rompe con mirarlo."
+  },
+  {
+   "id": "cd_reparto",
+   "nombre": "Furgoneta de reparto del pescado",
+   "vel_max": 22,
+   "acel": 5.0,
+   "freno": 11,
+   "salud": 140,
+   "motor": "motor_furgoneta",
+   "tono": 1.0,
+   "valor": 600,
+   "precio": 4200,
+   "trabajo": "paqueteria",
+   "desc": "Huele a lonja. Con la tecla J haces el reparto de paquetes."
+  },
+  {
+   "id": "cd_velero",
+   "nombre": "Velero Tramontana",
+   "vel_max": 17,
+   "acel": 3.5,
+   "freno": 5,
+   "salud": 180,
+   "motor": "motor_lancha",
+   "tono": 0.9,
+   "valor": 0,
+   "precio": 16000,
+   "trabajo": "mensajeria",
+   "barco": true,
+   "desc": "Un velero de dos palos. Silencioso y marinero."
+  },
+  {
+   "id": "cd_autogiro",
+   "nombre": "Autogiro Libélula",
+   "vel_max": 34,
+   "acel": 7.0,
+   "freno": 9,
+   "salud": 110,
+   "motor": "motor_helicoptero",
+   "tono": 1.0,
+   "valor": 0,
+   "precio": 52000,
+   "vuela": true,
+   "desc": "Un autogiro de dos plazas. Vuela por encima de todo, como el helicóptero, pero más despacio."
+  }
+ ],
+ "carreras": [
+  {
+   "id": "cd_c1",
+   "nombre": "Vuelta a Costa Dorada",
+   "mapa": "costa_dorada",
+   "premio": 350,
+   "tiempo": 80,
+   "puntos": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     0,
+     1
+    ]
+   ]
+  }
+ ],
+ "mapas": [
+  {
+   "id": "costa_dorada",
+   "nombre": "Costa Dorada",
+   "tipo": "pueblo",
+   "avenidas": [
+    "Avenida del Espigón",
+    "Calle de las Redes",
+    "Calle del Azafrán",
+    "Avenida de los Naranjos",
+    "Camino del Faro Viejo"
+   ],
+   "calles": [
+    "Paseo de la Costa",
+    "Calle de la Lonja",
+    "Calle del Mercado",
+    "Carretera de Puerto Bravo"
+   ],
+   "barrios": [
+    {
+     "id": "cd_marina",
+     "nombre": "La Marina",
+     "i": [
+      0,
+      3
+     ],
+     "j": [
+      0,
+      0
+     ],
+     "ambiente": "amb_playa",
+     "vehiculos": [
+      "utilitario",
+      "bici",
+      "cd_buggy"
+     ],
+     "descripcion": "La Marina de Costa Dorada: redes tendidas al sol, olor a brea y barcas varadas en la arena."
+    },
+    {
+     "id": "cd_pueblo",
+     "nombre": "El Pueblo",
+     "i": [
+      0,
+      3
+     ],
+     "j": [
+      1,
+      2
+     ],
+     "ambiente": "amb_residencial",
+     "vehiculos": [
+      "utilitario",
+      "furgoneta",
+      "cd_reparto"
+     ],
+     "descripcion": "El Pueblo: casas encaladas, naranjos en las aceras y una plaza con mercado todas las mañanas."
+    }
+   ],
+   "bloques": {
+    "0,0": "arena",
+    "1,0": "arena",
+    "3,0": "muelle",
+    "1,1": "plaza",
+    "3,2": "hierba"
+   },
+   "trafico": 2,
+   "peatones": 4,
+   "casetes": [
+    [
+     50,
+     110
+    ],
+    [
+     300,
+     200
+    ]
+   ],
+   "lugares": [
+    {
+     "id": "cd_salida",
+     "nombre": "Salida norte, carretera de Puerto Bravo",
+     "tipo": "salida",
+     "bloque": [
+      2,
+      2
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "La carretera de la costa, que lleva a Puerto Bravo.",
+     "a_mapa": "puerto_bravo",
+     "a_lugar": "pb_salida_costa",
+     "km": 22,
+     "horas": 0.6
+    },
+    {
+     "id": "cd_estacion",
+     "nombre": "Parada del autobús de Costa Dorada",
+     "tipo": "estacion",
+     "bloque": [
+      0,
+      2
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Una marquesina junto al mercado.",
+     "precio": 15
+    },
+    {
+     "id": "cd_embarcadero",
+     "nombre": "Embarcadero de Costa Dorada",
+     "tipo": "embarcadero",
+     "bloque": [
+      3,
+      0
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Un muelle de tablones con cuatro barcas.",
+     "a_mapa": "mar",
+     "a_lugar": "mar_costa"
+    },
+    {
+     "id": "cd_taberna",
+     "nombre": "Taberna El Ancla",
+     "tipo": "taberna",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "N",
+     "pos": 20,
+     "desc": "Vino de la tierra, dados y un tablón con encargos."
+    },
+    {
+     "id": "cd_lonja",
+     "nombre": "Lonja de Costa Dorada",
+     "tipo": "pescaderia",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Aquí se subasta el pescado al amanecer. Compran todo lo que traigas.",
+     "sonido": "lugar_tienda"
+    },
+    {
+     "id": "cd_restaurante",
+     "nombre": "Arrocería La Barraca",
+     "tipo": "comida",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "El mejor arroz de la costa."
+    },
+    {
+     "id": "cd_tienda",
+     "nombre": "Ultramarinos Azafrán",
+     "tipo": "tienda",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "De todo un poco, y amuletos de pescador."
+    },
+    {
+     "id": "cd_armeria",
+     "nombre": "Efectos Navales Poniente",
+     "tipo": "armeria",
+     "bloque": [
+      3,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Arpones, remos, bengalas y lo que haga falta en la mar."
+    },
+    {
+     "id": "cd_farmacia",
+     "nombre": "Farmacia del Mercado",
+     "tipo": "farmacia",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Tiritas, botiquines y consejos de la boticaria."
+    },
+    {
+     "id": "cd_taller",
+     "nombre": "Taller Mecánico Naranjo",
+     "tipo": "taller",
+     "bloque": [
+      3,
+      1
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Repara, pinta y no pregunta."
+    },
+    {
+     "id": "cd_banco",
+     "nombre": "Caja Rural de la Costa",
+     "tipo": "banco",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Una sucursal pequeña con un cajero de los de antes."
+    },
+    {
+     "id": "cd_gimnasio",
+     "nombre": "Club de Remo",
+     "tipo": "gimnasio",
+     "bloque": [
+      2,
+      2
+     ],
+     "lado": "S",
+     "pos": 20,
+     "desc": "Remo en seco, pesas y combates los viernes."
+    },
+    {
+     "id": "cd_hostal",
+     "nombre": "Hostal La Marea",
+     "tipo": "hotel",
+     "bloque": [
+      0,
+      2
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Sábanas limpias y el mar de fondo.",
+     "precio_noche": 35
+    },
+    {
+     "id": "cd_casa",
+     "nombre": "Casa del pescador",
+     "tipo": "casa",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Una casita encalada frente a la playa, con cobertizo para dos vehículos.",
+     "precio": 4800,
+     "garaje": 2
+    },
+    {
+     "id": "cd_conservera",
+     "nombre": "Conservera La Dorada",
+     "tipo": "negocio",
+     "bloque": [
+      3,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Una fábrica de conservas en venta. Da dinero cada medianoche.",
+     "sonido": "lugar_taller",
+     "precio": 22000,
+     "ingresos": 520
+    },
+    {
+     "id": "cd_empleo",
+     "nombre": "Cofradía de pescadores, bolsa de trabajo",
+     "tipo": "empleo",
+     "bloque": [
+      1,
+      2
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Aquí se reparten las jornadas y los oficios del pueblo."
+    },
+    {
+     "id": "cd_escuela",
+     "nombre": "Escuela Náutica",
+     "tipo": "academia",
+     "bloque": [
+      1,
+      2
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Cursos de pesca y de resistencia.",
+     "cursos": [
+      "pesca",
+      "resistencia"
+     ]
+    },
+    {
+     "id": "cd_caritas",
+     "nombre": "Despensa Solidaria",
+     "tipo": "ong",
+     "bloque": [
+      0,
+      2
+     ],
+     "lado": "N",
+     "pos": 20,
+     "desc": "Reparten comida a quien la necesita. Siempre faltan manos."
+    },
+    {
+     "id": "cd_concesionario",
+     "nombre": "Automóviles de Ocasión Levante",
+     "tipo": "concesionario",
+     "bloque": [
+      2,
+      2
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Coches de segunda mano y los buggies de la playa.",
+     "modelos": [
+      "cd_buggy",
+      "cd_reparto",
+      "utilitario"
+     ]
+    },
+    {
+     "id": "cd_nautica",
+     "nombre": "Náutica Costa Dorada",
+     "tipo": "nautica",
+     "bloque": [
+      2,
+      0
+     ],
+     "lado": "S",
+     "pos": 60,
+     "desc": "Venden veleros y los dejan amarrados en el embarcadero.",
+     "embarcadero": "cd_embarcadero"
+    },
+    {
+     "id": "cd_taxi",
+     "nombre": "Parada de taxis del Mercado",
+     "tipo": "taxi",
+     "bloque": [
+      1,
+      2
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Dos taxis y un taxista dormido.",
+     "vehiculo": "taxi"
+    },
+    {
+     "id": "cd_circuito",
+     "nombre": "Salida del circuito de la playa",
+     "tipo": "carrera",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Los domingos se corre con buggies."
+    },
+    {
+     "id": "cd_helipuerto",
+     "nombre": "Helipuerto del Faro Viejo",
+     "tipo": "helipuerto",
+     "bloque": [
+      3,
+      2
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Una explanada con una manga de viento.",
+     "vehiculo": "cd_autogiro",
+     "precio": 120
+    },
+    {
+     "id": "cd_plaza",
+     "nombre": "Plaza del Mercado",
+     "tipo": "monumento",
+     "bloque": [
+      1,
+      1
+     ],
+     "xy": [
+      36,
+      36
+     ],
+     "desc": "Una fuente, cuatro naranjos y los puestos del mercado.",
+     "sonido": "lugar_fuente"
+    },
+    {
+     "id": "cd_faro",
+     "nombre": "El Faro Viejo",
+     "tipo": "monumento",
+     "bloque": [
+      3,
+      2
+     ],
+     "xy": [
+      45,
+      50
+     ],
+     "desc": "Un faro apagado hace cuarenta años. Dicen que quien sube ve hasta Isla Tortuga.",
+     "sonido": "lugar_iglesia"
+    },
+    {
+     "id": "cd_espigon",
+     "nombre": "Espigón de Costa Dorada",
+     "tipo": "pesca",
+     "bloque": [
+      1,
+      0
+     ],
+     "xy": [
+      40,
+      20
+     ],
+     "desc": "El mejor sitio para la dorada de roca."
+    },
+    {
+     "id": "cd_cala",
+     "nombre": "Cala de los Detectores",
+     "tipo": "tesoro",
+     "bloque": [
+      0,
+      0
+     ],
+     "xy": [
+      30,
+      20
+     ],
+     "desc": "Los turistas pierden aquí de todo."
+    },
+    {
+     "id": "cd_club",
+     "nombre": "Sala Marejada",
+     "tipo": "club",
+     "bloque": [
+      3,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Copas, espectáculo y la gente guapa de la costa.",
+     "adultos": true
+    },
+    {
+     "id": "cd_bodeguero",
+     "nombre": "Almacén del Bodeguero",
+     "tipo": "proveedor",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Orujo de hierbas de contrabando y lo que traigan las lanchas.",
+     "adultos": true,
+     "factor": {
+      "hierba": 0.8,
+      "polvo": 1.3,
+      "pastillas": 1.0,
+      "cristal": 1.4,
+      "cd_licor": 0.7
+     }
+    }
+   ]
+  }
+ ],
+ "comidas": [
+  {
+   "nombre": "Arroz a banda",
+   "precio": 14,
+   "salud": 45
+  },
+  {
+   "nombre": "Horchata con fartons",
+   "precio": 5,
+   "salud": 12
+  }
+ ],
+ "objetos": [
+  {
+   "id": "cd_amuleto",
+   "nombre": "Amuleto de pescador",
+   "precio": 25,
+   "desc": "Una caracola con un cordel. No sirve para nada, pero da conversación."
+  }
+ ],
+ "peces": [
+  {
+   "nombre": "una dorada de roca",
+   "valor": 38,
+   "peso": 12
+  },
+  {
+   "nombre": "un pulpo de Costa Dorada",
+   "valor": 55,
+   "peso": 6
+  }
+ ],
+ "capitulos": {
+  "20": "Costa Dorada",
+  "21": "Costa Dorada: vida honrada",
+  "22": "Costa Dorada: historias para adultos"
+ },
+ "personajes": [
+  {
+   "id": "cd_vicenta",
+   "nombre": "Vicenta",
+   "apellido": "Ribera",
+   "desc": "Patrona de pesca de Costa Dorada. Empieza con la pesca al nivel cinco, buena resistencia, un remo, trescientos euros y el respeto de los vecinos.",
+   "dinero": 300,
+   "ciudadania": 30,
+   "resistencia": 2,
+   "pesca": 5,
+   "arma": "cd_remo",
+   "botiquines": 1
+  },
+  {
+   "id": "cd_quico",
+   "nombre": "Quico",
+   "apellido": "Marí",
+   "desc": "Hizo de todo en las lanchas del contrabando. Empieza con conducción al nivel tres, algo de puntería, fama en la calle y dos juegos de ganzúas.",
+   "reputacion": 20,
+   "conduccion": 3,
+   "punteria": 2,
+   "botiquines": 1,
+   "ganzuas": 2
+  }
+ ],
+ "personas": [
+  {
+   "id": "cd_marina",
+   "nombre": "Marina",
+   "edad": 33,
+   "lugar": "cd_club",
+   "gustos": [
+    "cd_velada",
+    "paseo"
+   ],
+   "regalo": "cd_perla",
+   "desc": "Lleva la Sala Marejada desde que murió su tío. Seria de día, otra persona de noche. Conoce todos los secretos del pueblo y no cuenta ninguno."
+  }
+ ],
+ "sustancias": [
+  {
+   "id": "cd_licor",
+   "nombre": "Orujo de hierbas",
+   "unidad": "botella",
+   "legal": true,
+   "precio": 18,
+   "duracion": 110,
+   "animo": 9,
+   "punteria": -0.05,
+   "deriva": 0.22,
+   "tono": 0.012,
+   "adiccion": 2.0,
+   "sobredosis": 4,
+   "bajon": {
+    "animo": -4,
+    "duracion": 60
+   },
+   "desc": "Orujo de hierbas de contrabando. Sube el ánimo más que una copa y tumba antes: a la cuarta seguida acabas en el hospital."
+  }
+ ],
+ "actividades": [
+  {
+   "id": "cd_velada",
+   "nombre": "Cenar arroz en La Barraca",
+   "precio": 40,
+   "horas": 3
+  }
+ ],
+ "regalos": [
+  {
+   "id": "cd_perla",
+   "nombre": "Una perla de la lonja",
+   "precio": 120,
+   "afinidad": 12
+  }
+ ]
+}

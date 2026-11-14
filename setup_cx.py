@@ -1,0 +1,35 @@
+"""Compilación con cx_Freeze. Lo usa compilar.bat:
+
+    .venv\\Scripts\\python.exe setup_cx.py build_exe
+
+El resultado queda en dist\\PuertoBravo, con dos programas: PuertoBravo.exe (el juego) y EditorMods.exe (el editor de mods). La carpeta data la copia compilar.bat al lado del ejecutable.
+"""
+import os
+import sys
+
+from cx_Freeze import Executable, setup
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from juego import NOMBRE, VERSION  # noqa: E402
+
+opciones = {
+    "build_exe": os.path.join("dist", "PuertoBravo"),
+    "packages": ["juego", "editor", "wx", "pygame", "numpy", "sounddevice", "_sounddevice_data", "soundfile", "_soundfile_data",
+                 "accessible_output2", "libloader", "platform_utils", "win32com", "pythoncom", "pywintypes"],
+    "includes": ["juego.app"],
+    "excludes": ["tkinter", "pytest", "_pytest", "unittest", "pydoc_data", "PyInstaller", "setuptools", "pip", "numpy.f2py", "numpy.testing"],
+    "zip_include_packages": [],
+    "zip_exclude_packages": ["*"],
+    "include_msvcr": True,
+    "optimize": 1,
+    "silent_level": 1,
+}
+
+setup(
+    name="PuertoBravo",
+    version=VERSION,
+    description=NOMBRE,
+    options={"build_exe": opciones},
+    executables=[Executable("main.py", base="gui", target_name="PuertoBravo.exe"),
+                 Executable("editor_mods.py", base="gui", target_name="EditorMods.exe")],
+)

@@ -1,0 +1,31 @@
+{
+  "id": "mar",
+  "tipo": "mar",
+  "nombre": "Mar de Poniente",
+  "ancho": 2400,
+  "alto": 1500,
+  "trafico": 4,
+  "descripcion": "El Mar de Poniente: la costa queda al norte, con Puerto Bravo al oeste, Cala Brava en el centro y San Lucero al este. Al sur, mar adentro, está Isla Tortuga.",
+  "barcos": ["lancha", "pesquero", "pesquero", "velero", "lancha_rapida", "moto_agua", "yate", "remolcador", "catamaran"],
+  "islas": [
+    {"x": 1500, "y": 400, "r": 130, "nombre": "Isla Tortuga"},
+    {"x": 600, "y": 640, "r": 40, "nombre": "Islote de las Gaviotas"},
+    {"x": 2000, "y": 800, "r": 30, "nombre": "Roca del Diablo"}
+  ],
+  "lugares": [
+    {"id": "mar_puerto", "nombre": "Bocana del puerto de Puerto Bravo", "tipo": "muelle", "xy": [300, 1440], "a_mapa": "puerto_bravo", "a_lugar": "emb_puerto", "desc": "La entrada al puerto comercial de Puerto Bravo."},
+    {"id": "mar_playa", "nombre": "Puerto deportivo de Playa Dorada", "tipo": "muelle", "xy": [700, 1440], "a_mapa": "puerto_bravo", "a_lugar": "emb_playa", "desc": "Los pantalanes de Playa Dorada, en Puerto Bravo."},
+    {"id": "mar_cala", "nombre": "Muelle de Cala Brava", "tipo": "muelle", "xy": [1300, 1440], "a_mapa": "cala_brava", "a_lugar": "cb_embarcadero", "desc": "El muelle pesquero de Cala Brava."},
+    {"id": "mar_sanlucero", "nombre": "Puerto deportivo de San Lucero", "tipo": "muelle", "xy": [2100, 1440], "a_mapa": "san_lucero", "a_lugar": "sl_embarcadero", "desc": "El puerto deportivo de San Lucero."},
+    {"id": "mar_isla", "nombre": "Muelle de Isla Tortuga", "tipo": "muelle", "xy": [1500, 560], "a_mapa": "isla_tortuga", "a_lugar": "it_muelle", "desc": "El pantalán de Isla Tortuga, al norte de la isla."},
+    {"id": "mar_bajo", "nombre": "Bajo de los Meros", "tipo": "pesca", "xy": [900, 500], "desc": "Un bajo de roca donde se esconden los meros más grandes de la costa. Pulsa P para pescar."},
+    {"id": "mar_atunes", "nombre": "Banco de los atunes", "tipo": "pesca", "xy": [1950, 300], "desc": "Mar adentro, donde pasan los atunes rojos. Pulsa P para pescar."},
+    {"id": "mar_boya", "nombre": "Boya de salida de las regatas", "tipo": "carrera", "xy": [800, 1200], "desc": "La boya donde empiezan las regatas de lanchas."},
+    {"id": "mar_pecio", "nombre": "Pecio del Santa Clara", "tipo": "tesoro", "xy": [1100, 250], "desc": "Bajo estas aguas descansa el Santa Clara, un mercante hundido hace cien años. Con botellas de buceo se puede bajar a registrarlo."},
+    {"id": "mar_gaviotas", "nombre": "Islote de las Gaviotas", "tipo": "monumento", "xy": [600, 700], "sonido": "gaviota", "desc": "Un peñasco blanco de guano. El griterío de las gaviotas se oye a media milla."},
+    {"id": "mar_plataforma", "nombre": "Plataforma Neptuno", "tipo": "muelle", "xy": [350, 450], "a_mapa": "plataforma", "a_lugar": "pl_embarcadero", "desc": "Una vieja plataforma petrolífera en mitad del mar, al suroeste. Tiene un pantalán para atracar."},
+    {"id": "mar_calamar", "nombre": "Fosa del Calamar", "tipo": "pesca", "xy": [2250, 950], "desc": "Aguas profundas donde viven los calamares gigantes. Pulsa P para pescar."},
+    {"id": "mar_arrecife", "nombre": "Arrecife de las Sirenas", "tipo": "tesoro", "xy": [1750, 1150], "desc": "Un arrecife poco profundo donde han encallado barcos durante siglos. Buen sitio para bucear."}
+  ],
+  "casetes": [[200, 900], [1000, 900], [1800, 1100], [2300, 500], [400, 200], [1500, 150], [1250, 650], [2150, 1200]]
+}

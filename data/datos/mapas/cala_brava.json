@@ -1,0 +1,32 @@
+{
+  "id": "cala_brava",
+  "tipo": "pueblo",
+  "nombre": "Cala Brava",
+  "trafico": 2,
+  "peatones": 4,
+  "avenidas": ["Cuesta del Faro", "Calle de las Redes", "Calle del Ancla", "Camino de Levante"],
+  "calles": ["Paseo de la Cala", "Calle Mayor de Cala Brava", "Carretera de la Costa"],
+  "barrios": [
+    {"id": "cala_brava", "nombre": "Cala Brava", "i": [0, 2], "j": [0, 1], "ambiente": "amb_playa", "vehiculos": ["utilitario", "pickup", "furgoneta", "quad", "moto", "bici", "scooter"], "descripcion": "Cala Brava, un pueblo de pescadores encajado entre dos acantilados. Huele a brea y a pescado frito."}
+  ],
+  "bloques": {"0,0": "arena", "1,0": "muelle", "2,0": "arena"},
+  "lugares": [
+    {"id": "cb_salida_oeste", "nombre": "Salida oeste, carretera de Puerto Bravo", "tipo": "salida", "bloque": [0, 1], "lado": "O", "pos": 36, "a_mapa": "puerto_bravo", "a_lugar": "salida_este", "km": 12, "horas": 0.3, "desc": "La carretera de la costa hacia Puerto Bravo."},
+    {"id": "cb_salida_este", "nombre": "Salida este, carretera de San Lucero", "tipo": "salida", "bloque": [2, 1], "lado": "E", "pos": 36, "a_mapa": "san_lucero", "a_lugar": "sl_salida_oeste", "km": 25, "horas": 0.5, "desc": "La carretera de la costa hacia San Lucero."},
+    {"id": "cb_embarcadero", "nombre": "Muelle pesquero de Cala Brava", "tipo": "embarcadero", "bloque": [1, 0], "lado": "S", "pos": 36, "a_mapa": "mar", "a_lugar": "mar_cala", "desc": "El muelle de los pescadores. De aquí salen las barcas al amanecer."},
+    {"id": "cb_taberna", "nombre": "Taberna del Capitán", "tipo": "taberna", "bloque": [1, 1], "lado": "S", "pos": 36, "desc": "La taberna del capitán Mendoza, que conoce cada roca del Mar de Poniente."},
+    {"id": "cb_cofradia", "nombre": "Cofradía de pescadores", "tipo": "pescaderia", "bloque": [1, 0], "lado": "N", "pos": 18, "desc": "Aquí se vende la pesca del día. Pagan bien el pescado grande."},
+    {"id": "cb_tienda", "nombre": "Ultramarinos La Red", "tipo": "tienda", "bloque": [0, 1], "lado": "S", "pos": 36, "desc": "Conservas, aparejos y botiquines."},
+    {"id": "cb_pension", "nombre": "Pensión La Caracola", "tipo": "hotel", "bloque": [2, 1], "lado": "S", "pos": 36, "precio_noche": 35, "desc": "Cuatro habitaciones que dan al mar."},
+    {"id": "cb_casa", "nombre": "Casita del acantilado", "tipo": "casa", "bloque": [0, 1], "lado": "N", "pos": 36, "precio": 8000, "garaje": 2, "desc": "Una casita blanca colgada sobre el mar, con sitio para dos vehículos."},
+    {"id": "cb_faro", "nombre": "Faro de Cala Brava", "tipo": "monumento", "bloque": [0, 0], "xy": [15, 15], "desc": ""},
+    {"id": "cb_nautica", "nombre": "Efectos Navales Mendoza", "tipo": "nautica", "bloque": [1, 0], "lado": "N", "pos": 56, "embarcadero": "cb_embarcadero", "desc": "El sobrino del capitán vende barcos. Baratos no, pero buenos."},
+    {"id": "cb_estacion", "nombre": "Parada del autobús de Cala Brava", "tipo": "estacion", "bloque": [1, 1], "lado": "N", "pos": 36, "precio": 15, "desc": "La parada del autobús de la costa."},
+    {"id": "cb_espigon", "nombre": "Espigón de Cala Brava", "tipo": "pesca", "bloque": [2, 0], "xy": [50, 20], "desc": ""},
+    {"id": "cb_chiringuito", "nombre": "Freiduría La Ola", "tipo": "comida", "bloque": [2, 0], "lado": "N", "pos": 36, "desc": "Pescado frito recién sacado del mar."},
+    {"id": "cb_gimnasio", "nombre": "Club de remo de Cala Brava", "tipo": "gimnasio", "bloque": [2, 1], "lado": "N", "pos": 36, "desc": "Remos, pesas y un cuadrilátero improvisado entre barcas."},
+    {"id": "cb_playa_tesoros", "nombre": "Playa de los Naufragios", "tipo": "tesoro", "bloque": [0, 0], "xy": [50, 40], "desc": "Cada temporal deja en esta playa restos de barcos antiguos."},
+    {"id": "cb_contrabando", "nombre": "Almacén de redes", "tipo": "proveedor", "bloque": [1, 0], "xy": [10, 36], "adultos": true, "factor": {"hierba": 1.2, "polvo": 0.6, "pastillas": 1.2, "cristal": 1.1}, "desc": "Entre redes y boyas llegan por mar fardos que no vienen de pescar."}
+  ],
+  "casetes": [[30, 40], [230, 130]]
+}

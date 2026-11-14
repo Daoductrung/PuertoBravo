@@ -1,0 +1,389 @@
+"""Trabajos secundarios: taxi, ambulancia, autobús, vigilante, transporte, pizzas y carreras."""
+import math
+import random
+
+from . import mundo as M
+
+NOMBRE_TRABAJO = {"taxi": "taxista", "ambulancia": "conductor de ambulancia", "autobus": "conductor de autobús",
+                  "vigilante": "vigilante", "camion": "transportista", "helados": "heladero", "mensajeria": "mensajero del mar",
+                  "bomberos": "bombero", "grua": "conductor de grúa", "paqueteria": "mensajero"}
+
+
+class Trabajos:
+    def _destino_azar(self, minimo=150, maximo=650, excluir=None):
+        x, y = self.pos()
+        todos = [l for l in self.mundo.lugares.values() if l.tipo not in ("salida", "muelle", "embarcadero") and "xy" not in l.d]
+        ops = [l for l in todos if minimo <= math.hypot(l.x - x, l.y - y) <= maximo and l is not excluir]
+        return random.choice(ops or todos or list(self.mundo.lugares.values()))
+
+    def _dist(self, l):
+        """Distancia al lugar, o infinito si está en otro mapa."""
+        if l.mapa != self.mundo.id:
+            return 1e9
+        x, y = self.pos()
+        return math.hypot(l.x - x, l.y - y)
+
+    def _parado_en(self, l, radio=18):
+        v = self.j.veh
+        return self._dist(l) <= radio and (v is None or abs(v.vel) < 2.5)
+
+    def terminar_trabajo(self, texto):
+        if not self.trabajo:
+            return
+        t = self.trabajo
+        self.trabajo = None
+        if self.gps and self.gps.get("auto"):
+            self.cancelar_gps()
+        o = t.get("objetivo")
+        if o is not None and not o.muerto:
+            self.quitar_vehiculo(o)
+        if t.get("canal") is not None:
+            t["canal"].parar()
+        if texto:
+            resumen = ""
+            if t.get("hechas"):
+                resumen = f" Has completado {t['hechas']} servicios y ganado {t['ganado']} euros."
+            self.decir(texto + resumen)
+
+    # ----------------------------------------------- trabajos con vehículo (J)
+    def alternar_trabajo(self):
+        j = self.j
+        v = j.veh
+        if self.trabajo and self.trabajo.get("veh") is v:
+            self.terminar_trabajo("Fin del servicio.")
+            return
+        tipo = v.modelo.get("trabajo") if v else None
+        if not tipo:
+            self.decir("Este vehículo no sirve para trabajar. Prueba con un taxi, una ambulancia, un autobús, un coche patrulla o un camión.", True)
+            return
+        if self.mision:
+            self.decir("No puedes trabajar durante una misión.", True)
+            return
+        if j.estrellas:
+            self.decir("No puedes trabajar mientras te busca la policía.", True)
+            return
+        if tipo == "mensajeria" and self.mundo.tipo != "mar":
+            self.decir("Zarpa primero: los repartos se hacen por mar.", True)
+            return
+        if tipo == "ambulancia" and not any(l.tipo == "hospital" for l in self.mundo.lugares.values()):
+            self.decir("Aquí no hay hospital al que llevar a los heridos.", True)
+            return
+        if self.trabajo:
+            self.terminar_trabajo(None)
+        self.trabajo = {"tipo": tipo, "veh": v, "hechas": 0, "ganado": 0, "limite": None}
+        self.decir(f"Empiezas a trabajar de {NOMBRE_TRABAJO[tipo]}. Pulsa J otra vez para terminar.")
+        self._servicio_nuevo()
+
+    def _servicio_nuevo(self):
+        t = self.trabajo
+        tipo = t["tipo"]
+        if tipo == "taxi":
+            l = self._destino_azar(80, 350)
+            t.update(fase="recoger", lugar=l, limite=None, texto=f"Taxi: recoge al cliente en {l.nombre}.")
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo == "ambulancia":
+            l = self._destino_azar(120, 500)
+            d = self._dist(l)
+            t.update(fase="recoger", lugar=l, limite=45 + d / 6.0, texto=f"Ambulancia: hay un herido en {l.nombre}. ¡Date prisa!")
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo in ("autobus", "helados"):
+            if not t.get("paradas"):
+                t["paradas"] = [self._destino_azar(100, 900) for _ in range(5)]
+                t["n"] = 0
+            l = t["paradas"][t["n"]]
+            d = self._dist(l)
+            que = "Autobús" if tipo == "autobus" else "Helados"
+            t.update(lugar=l, limite=50 + d / 5.0, texto=f"{que}: parada {t['n'] + 1} de {len(t['paradas'])}, {l.nombre}.")
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo == "mensajeria":
+            x, y = self.pos()
+            ops = [l for l in self.mundo.lugares.values() if math.hypot(l.x - x, l.y - y) > 350]
+            l = random.choice(ops or list(self.mundo.lugares.values()))
+            d = self._dist(l)
+            t.update(lugar=l, limite=None, dist=d, texto=f"Mensajería del mar: lleva el paquete a {l.nombre}.")
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo == "vigilante":
+            l = self._destino_azar(150, 450)
+            x, y, d = self.mundo.plaza_junto_a(l)
+            m = self.mundo
+            x, y = (x, m.carril("H", m._idx(y, m.NY), d)) if d in (1, 3) else (m.carril("V", m._idx(x, m.NX), d), y)
+            modelo = random.choice(["sedan", "utilitario", "deportivo", "furgoneta"])
+            o = self.crear_vehiculo(modelo, x, y, d, "huida", "Vehículo del sospechoso", "objetivo")
+            o.ocupado = True
+            o.hostil = True
+            o.vel_obj = min(o.modelo["vel_max"] * 0.6, 19.0)
+            t.update(objetivo=o, limite=200.0, texto=f"Vigilante: detén el vehículo del sospechoso, visto junto a {l.nombre}. Embístelo o dispárale.")
+            self.objetivo = o
+            self.fijar_gps(o.x, o.y, o.nombre, sigue=o, auto=True, callar=True)
+        elif tipo == "bomberos":
+            l = self._destino_azar(150, 700)
+            d = self._dist(l)
+            if t.get("canal") is not None:
+                t["canal"].parar()
+            t.update(lugar=l, limite=60 + d / 6.0, apagando=0.0, canal=self.son("fuego", bucle=True, xy=(l.x, l.y), ref=10, maxd=120),
+                     texto=f"Bomberos: hay un incendio en {l.nombre}. ¡Corre!")
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo == "grua":
+            l = self._destino_azar(120, 600)
+            x, y, d = self.mundo.plaza_junto_a(l)
+            self._despejar_plaza(x, y)
+            mo = random.choice(["utilitario", "sedan", "furgoneta", "deportivo"])
+            o = self.crear_vehiculo(mo, x, y, d, "aparcado", None, "grua")
+            o.cerrado = True
+            t.update(fase="recoger", lugar=l, objetivo=o, limite=None, texto=f"Grúa: retira el {o.nombre} mal aparcado junto a {l.nombre}.")
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo == "paqueteria":
+            l = self._destino_azar(120, 500)
+            d = self._dist(l)
+            t.update(lugar=l, limite=35 + d / 4.0, texto=f"Mensajería: entrega el paquete en {l.nombre}.")
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo == "camion":
+            otros = [m for m in self.mapas.values() if m.id != self.mundo.id and m.tipo != "mar"
+                     and any(l.tipo == "salida" for l in m.lugares.values())]
+            if not otros or not any(l.tipo == "salida" for l in self.mundo.lugares.values()):
+                self.terminar_trabajo("Desde aquí no sale ninguna carretera para los camiones.")
+                return
+            m = random.choice(otros)
+            ops = [l for l in m.lugares.values() if l.tipo in ("tienda", "taller", "negocio", "comida", "desguace", "armeria", "pescaderia")]
+            l = random.choice(ops or list(m.lugares.values()))
+            t.update(lugar=l, limite=None, texto=f"Transporte: lleva la carga a {l.nombre}, en {m.nombre}.")
+            self.gps_a_lugar(l, auto=True, callar=True)
+        self.decir(t["texto"])
+        if self.trabajo and self.gps:
+            self.repetir_gps_suave()
+
+    def _cobrar(self, paga, texto):
+        t = self.trabajo
+        paga = int(paga * self.mult_trabajo(t["tipo"]))
+        t["hechas"] += 1
+        t["ganado"] += paga
+        self.j.stats["servicios"] = self.j.stats.get("servicios", 0) + 1
+        self.dar_dinero(paga, texto)
+        self.servicio_hecho(t["tipo"], NOMBRE_TRABAJO.get(t["tipo"], "trabajador"))
+
+    # ----------------------------------------------------------------- pizzas
+    def empezar_pizzas(self):
+        if self.mision:
+            self.decir("No puedes trabajar durante una misión.", True)
+            return
+        if self.trabajo:
+            self.terminar_trabajo(None)
+        self.trabajo = {"tipo": "pizza", "quedan": 4, "ganado": 0, "limite": None}
+        self.decir("Trabajo de repartidor: entrega cuatro pizzas antes de que se enfríen. Puedes ir a pie o en cualquier vehículo.")
+        self._pizza_siguiente()
+
+    def _pizza_siguiente(self):
+        t = self.trabajo
+        l = self._destino_azar(120, 420)
+        d = self._dist(l)
+        t.update(lugar=l, limite=40 + d / 3.0, texto=f"Pizzas: entrega en {l.nombre}. Quedan {t['quedan']}.")
+        self.decir(t["texto"])
+        self.gps_a_lugar(l, auto=True)
+
+    # --------------------------------------------------------------- carreras
+    def empezar_carrera(self, c):
+        j = self.j
+        if not j.veh:
+            self.decir("Necesitas un vehículo para correr.", True)
+            return
+        if self.mision:
+            self.decir("No puedes correr durante una misión.", True)
+            return
+        if self.trabajo:
+            self.terminar_trabajo(None)
+        if c.get("xy"):
+            pts = [(float(x), float(y)) for x, y in c["puntos"]]
+        else:
+            pts = [(i * M.B, jj * M.B) for i, jj in c["puntos"]]
+        self.trabajo = {"tipo": "carrera", "def": c, "puntos": pts, "idx": 1, "limite": float(c["tiempo"]),
+                        "total": float(c["tiempo"]), "texto": f"Carrera {c['nombre']}."}
+        self.decir(f"Carrera {c['nombre']}: {len(pts) - 1} puntos de control y {c['tiempo']} segundos. ¡Ya!")
+        self.son("claxon", vol=0.6)
+        self._carrera_punto()
+
+    def _carrera_punto(self):
+        t = self.trabajo
+        x, y = t["puntos"][t["idx"]]
+        nombre = f"punto {t['idx']} de {len(t['puntos']) - 1}"
+        if not t["def"].get("xy"):
+            i, jj = int(round(x / M.B)), int(round(y / M.B))
+            nombre += f", cruce de {self.mundo.calles[jj]} con {self.mundo.avenidas[i]}"
+        t["texto"] = f"Carrera {t['def']['nombre']}: {nombre}."
+        self.fijar_gps(x, y, nombre, auto=True, radio=14)
+
+    # ------------------------------------------------------------ actualización
+    def actualizar_trabajo(self, dt):
+        t = self.trabajo
+        if not t:
+            return
+        j = self.j
+        x, y = self.pos()
+        if t.get("limite") is not None:
+            antes = t["limite"]
+            t["limite"] -= dt
+            for marca in (60, 30, 10):
+                if antes > marca >= t["limite"]:
+                    self.decir(f"Quedan {marca} segundos.")
+            if t["limite"] < 10 and int(antes) != int(t["limite"]):
+                self.son("reloj", cat="interfaz")
+        tipo = t["tipo"]
+        if "veh" in t:
+            if j.veh is not t["veh"]:
+                self.terminar_trabajo("Has dejado el vehículo de trabajo.")
+                return
+            if j.estrellas >= 2:
+                self.terminar_trabajo("Con la policía detrás se acabó el trabajo.")
+                return
+        if tipo == "taxi":
+            l = t["lugar"]
+            if t["fase"] == "recoger" and self._parado_en(l):
+                self.son("puerta_coche")
+                dest = self._destino_azar(200, 700, l)
+                d = math.hypot(dest.x - l.x, dest.y - l.y)
+                t.update(fase="llevar", lugar=dest, limite=35 + d / 7.0, dist=d, texto=f"Taxi: lleva al cliente a {dest.nombre}.")
+                self.decir(f"El cliente sube. Quiere ir a {dest.nombre}.")
+                self.gps_a_lugar(dest, auto=True)
+            elif t["fase"] == "llevar":
+                if self._parado_en(l):
+                    j.stats["carreras_taxi"] += 1
+                    self.son("puerta_coche")
+                    self._cobrar(int(15 + t["dist"] * 0.12 + max(0, t["limite"]) * 1.5), "Carrera cobrada")
+                    self._servicio_nuevo()
+                elif t["limite"] <= 0:
+                    self.son("puerta_coche")
+                    self.decir("El cliente se ha hartado de esperar y se baja sin pagar.")
+                    self._servicio_nuevo()
+        elif tipo == "ambulancia":
+            l = t["lugar"]
+            if t["limite"] <= 0:
+                self.decir("Has llegado tarde. Otra ambulancia se ha hecho cargo.")
+                self._servicio_nuevo()
+            elif self._parado_en(l):
+                self.son("puerta_coche")
+                if t["fase"] == "recoger":
+                    h = min((q for q in self.mundo.lugares.values() if q.tipo == "hospital"), key=lambda q: math.hypot(q.x - x, q.y - y))
+                    d = self._dist(h)
+                    t.update(fase="llevar", lugar=h, limite=40 + d / 6.0, dist=d, texto=f"Ambulancia: lleva al herido a {h.nombre}.")
+                    self.decir(f"Herido a bordo. Llévalo a {h.nombre} cuanto antes.")
+                    self.gps_a_lugar(h, auto=True)
+                else:
+                    self._cobrar(int(60 + t["dist"] * 0.15 + max(0, t["limite"]) * 2), "Herido entregado en urgencias")
+                    self._servicio_nuevo()
+        elif tipo == "mensajeria":
+            l = t["lugar"]
+            if self._parado_en(l, 32):
+                self.son("salpicadura", vol=0.5)
+                self._cobrar(int(40 + t["dist"] * 0.22), "Paquete entregado")
+                self._servicio_nuevo()
+        elif tipo in ("autobus", "helados"):
+            l = t["lugar"]
+            if self._parado_en(l):
+                self.son("lugar_estacion" if tipo == "autobus" else "claxon_helados", vol=0.5)
+                self._cobrar(int(18 + max(0, t["limite"]) * 0.6), "Parada hecha")
+                t["n"] += 1
+                if t["n"] >= len(t["paradas"]):
+                    self.dar_dinero(100, "Línea completa, prima")
+                    t["paradas"] = None
+                self._servicio_nuevo()
+            elif t["limite"] <= 0:
+                self.decir("Vas con retraso y los viajeros protestan. Siguiente parada.")
+                t["n"] += 1
+                if t["n"] >= len(t["paradas"]):
+                    t["paradas"] = None
+                self._servicio_nuevo()
+        elif tipo == "vigilante":
+            o = t.get("objetivo")
+            if o is None or o.muerto:
+                t["objetivo"] = None
+                self._cobrar(int(220 + max(0, t["limite"])), "Sospechoso detenido")
+                self._servicio_nuevo()
+            elif t["limite"] <= 0 or o.dist(x, y) > 700:
+                self.quitar_vehiculo(o)
+                t["objetivo"] = None
+                self.decir("El sospechoso se ha escapado.")
+                self._servicio_nuevo()
+        elif tipo == "camion":
+            l = t["lugar"]
+            if self._parado_en(l):
+                self.son("puerta_coche")
+                self._cobrar(random.randint(350, 600), "Carga entregada")
+                self._servicio_nuevo()
+        elif tipo == "bomberos":
+            l = t["lugar"]
+            if self._parado_en(l, 22):
+                if t["apagando"] == 0.0:
+                    self.decir("Mangueras fuera. Aguanta junto al fuego unos segundos.")
+                t["apagando"] += dt
+                if t["apagando"] >= 5.0:
+                    t["canal"].parar()
+                    t["canal"] = None
+                    self.son("salpicadura", vol=0.6)
+                    self._cobrar(int(90 + max(0, t["limite"]) * 1.5), "Incendio apagado")
+                    self._servicio_nuevo()
+            elif t["limite"] <= 0:
+                self.decir("Has llegado tarde: el edificio ha ardido entero.")
+                self._servicio_nuevo()
+        elif tipo == "grua":
+            l = t["lugar"]
+            if t["fase"] == "recoger" and self._parado_en(l, 16):
+                o = t.get("objetivo")
+                if o is not None and not o.muerto:
+                    self.quitar_vehiculo(o)
+                t["objetivo"] = None
+                self.son("reparar", vol=0.6)
+                des = [q for q in self.mundo.lugares.values() if q.tipo == "desguace"]
+                dest = min(des, key=lambda q: math.hypot(q.x - x, q.y - y)) if des else self._destino_azar(200, 700, l)
+                t.update(fase="llevar", lugar=dest, dist=self._dist(dest), texto=f"Grúa: lleva el coche enganchado a {dest.nombre}.")
+                self.decir(f"Coche enganchado. Llévalo a {dest.nombre}.")
+                self.gps_a_lugar(dest, auto=True)
+            elif t["fase"] == "llevar" and self._parado_en(l):
+                self.son("reparar", vol=0.6)
+                self._cobrar(int(110 + t["dist"] * 0.18), "Coche entregado en el depósito")
+                self._servicio_nuevo()
+        elif tipo == "paqueteria":
+            l = t["lugar"]
+            if self._parado_en(l):
+                self._cobrar(int(15 + max(0, t["limite"] or 0) * 0.8), "Paquete entregado")
+                self._servicio_nuevo()
+            elif t["limite"] <= 0:
+                self.decir("Vas tarde: este paquete ya no tiene propina.")
+                t["limite"] = None
+        elif tipo == "pizza":
+            l = t["lugar"]
+            if self._dist(l) <= (18 if j.veh else 7) and (not j.veh or abs(j.veh.vel) < 2.5):
+                paga = int(20 + max(0, t["limite"]) * 0.8)
+                t["quedan"] -= 1
+                t["ganado"] += paga
+                j.stats["pizzas"] += 1
+                self.dar_dinero(paga, "Pizza entregada")
+                if t["quedan"] <= 0:
+                    self.dar_dinero(60, "Propina por completar el reparto")
+                    self.terminar_trabajo(f"Reparto terminado. Has ganado {t['ganado'] + 60} euros.")
+                else:
+                    self._pizza_siguiente()
+            elif t["limite"] <= 0:
+                self.terminar_trabajo("La pizza se ha enfriado. Te quedas sin trabajo por hoy.")
+        elif tipo == "carrera":
+            if not j.veh:
+                self.terminar_trabajo("Te has bajado del vehículo: carrera abandonada.")
+                return
+            px, py = t["puntos"][t["idx"]]
+            if math.hypot(px - x, py - y) <= (25 if t["def"].get("xy") else 14):
+                t["idx"] += 1
+                self.son("llegada", cat="interfaz")
+                if t["idx"] >= len(t["puntos"]):
+                    c = t["def"]
+                    tiempo = t["total"] - t["limite"]
+                    primera = c["id"] not in j.stats["carreras"]
+                    premio = c["premio"] if primera else c["premio"] // 3
+                    if primera:
+                        j.stats["carreras"].append(c["id"])
+                    self.trabajo = None
+                    self.cancelar_gps()
+                    self.app.son("mision_ok")
+                    self.decir(f"¡Meta! Has terminado {c['nombre']} en {int(tiempo)} segundos.")
+                    self.dar_dinero(premio, "Premio")
+                else:
+                    self._carrera_punto()
+            elif t["limite"] <= 0:
+                self.terminar_trabajo("Se acabó el tiempo. Has perdido la carrera.")

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Manual de Puerto Bravo: Ley del Asfalto</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 52em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.15em; }
+h1, h2, h3 { color: #ffd84d; }
+a { color: #8fd0ff; }
+kbd { border: 1px solid #aaa; border-radius: 4px; padding: 0 .35em; background: #2a2a2a; }
+li { margin-bottom: .3em; }
+</style>
+</head>
+<body>
+<h1>Puerto Bravo: Ley del Asfalto</h1>
+<p>Manual del juego, versión 1.3. Audiojuego de mundo abierto, totalmente en español y totalmente accesible: se juega solo con el oído, con el teclado o con un mando de Xbox o de PlayStation, y con tu lector de pantalla.</p>
+<p>Las demás guías están en la misma carpeta, <strong>data\docs</strong>: <a href="teclas.html">teclas y botones</a>, <a href="novedades.html">novedades de cada versión</a>, <a href="cambiar_sonidos.html">cambiar los sonidos y la música</a>, <a href="crear_mods.html">formato de los mods</a> y <a href="editor_mods.html">manual del editor de mods</a>.</p>
+<p>Este manual está organizado por encabezados. Con NVDA o JAWS puedes saltar de sección en sección con la tecla <kbd>H</kbd>.</p>
+
+<h2>1. Qué es este juego</h2>
+<p>Al empezar eliges entre <span data-n="personajes">4</span> personajes, cada uno con sus ventajas. Con el primero te llamas Dani Roca y acabas de salir de la cárcel tras cumplir tres años por un robo que no cometiste. Vuelves a tu ciudad, Puerto Bravo, que ahora controla el empresario Octavio Belmonte. A partir de ahí, haz lo que quieras: sigue la historia, o no.</p>
+<ul>
+<li>Un mundo abierto con <span data-n="mapas">9</span> mapas: las ciudades de Puerto Bravo, San Lucero y Monteferro; los pueblos de Villaseca, Cala Brava y Fuentefría; la Isla Tortuga, la Plataforma Neptuno y el Mar de Poniente, navegable en barco.</li>
+<li><span data-n="lugares">264</span> lugares: casas, comercios, bancos, talleres, casinos, gimnasios, cines, hospitales, embarcaderos, helipuertos y monumentos, cada uno con su sonido y su descripción.</li>
+<li><span data-n="misiones">53</span> misiones entre la historia principal y las historias secundarias del resto de localidades. Además, encargos que se pueden repetir sin fin.</li>
+<li><span data-n="vehiculos">38</span> vehículos: coches, motos, bicicleta, camiones, vehículos de emergencias, un coche de carreras, 8 embarcaciones y un helicóptero.</li>
+<li><span data-n="armas">22</span> armas, de los puños a la ametralladora rotativa, con armas silenciosas y explosivos.</li>
+<li>Trabajos: taxista, repartidor de pizzas, conductor de ambulancia y de autobús, vigilante, transportista, heladero, mensajero del mar y pescador.</li>
+<li>Encargos repetibles: contratos del tablón de las tabernas, encargos de coches en los desguaces, combates de boxeo en los gimnasios y atracos a bancos.</li>
+<li>Sucesos callejeros al azar, cuatro habilidades que mejoran con la práctica y <span data-n="logros">32</span> logros.</li>
+<li>9 carreras y regatas, casino con tragaperras, blackjack y ruleta, galería de tiro, dados, lotería, banco, propiedades, negocios que dan dinero y guardaespaldas.</li>
+<li>Policía con cinco niveles de búsqueda, día y noche, lluvia, tráfico con semáforos y peatones.</li>
+<li>Dos formas de vivir, que se pueden mezclar: la vida honrada, con oficina de empleo, oficios con ascensos, cursos y voluntariado, y la vida delictiva.</li>
+<li>Música de ambiente con varias piezas por situación, que se calla cuando pones la radio.</li>
+<li>Un modo opcional con contenido para mayores de 18 años, desactivado de serie.</li>
+<li>Un editor de mods accesible para crear tus propias ampliaciones.</li>
+<li>Siete emisoras de radio con música original, una de noticias que comenta lo que haces y otra con tu propia música.</li>
+</ul>
+
+<h2>2. Requisitos y arranque</h2>
+<ul>
+<li>Windows 10 u 11.</li>
+<li>Auriculares estéreo. Son imprescindibles: el juego coloca cada sonido en su sitio alrededor de ti.</li>
+<li>Un lector de pantalla abierto, como NVDA o JAWS. Si no hay ninguno, el juego habla con la voz de Windows.</li>
+</ul>
+<p>Ejecuta <strong>PuertoBravo.exe</strong>, o <strong>jugar.bat</strong> si usas el código fuente. El juego no instala nada: todo lo que usa o genera está en la carpeta <strong>data</strong>, junto al ejecutable. Puedes copiar la carpeta entera del juego a otro equipo.</p>
+<p>La ventana muestra en letras grandes y con alto contraste el último mensaje hablado, por si juegas con resto visual o con alguien que ve.</p>
+
+<h2>3. Los menús</h2>
+<ul>
+<li><kbd>Flecha arriba</kbd> y <kbd>Flecha abajo</kbd>: moverte por las opciones.</li>
+<li><kbd>Intro</kbd>: elegir.</li>
+<li><kbd>Flecha izquierda</kbd> y <kbd>Flecha derecha</kbd>: cambiar el valor de una opción.</li>
+<li><kbd>Escape</kbd>: volver atrás.</li>
+<li><kbd>Inicio</kbd> y <kbd>Fin</kbd>: primera y última opción.</li>
+<li>Una letra: salta a la siguiente opción que empieza por ella.</li>
+<li><kbd>F1</kbd>: explicación de la opción actual.</li>
+<li><kbd>Re Pág</kbd> y <kbd>Av Pág</kbd>: repasar los mensajes anteriores.</li>
+</ul>
+<p>En los diálogos de la historia, <kbd>Intro</kbd> pasa a la frase siguiente, <kbd>Flecha arriba</kbd> repite la frase, <kbd>Flecha izquierda</kbd> vuelve a la anterior y <kbd>Escape</kbd> salta el diálogo entero. Ningún diálogo avanza solo: lees a tu ritmo.</p>
+
+<h2>4. Cómo orientarte</h2>
+<h3>La ciudad</h3>
+<p>Las ciudades y pueblos son una cuadrícula. Las calles van de oeste a este y las avenidas de sur a norte, con un cruce cada 90 metros. Cada calle tiene la calzada en el centro y una acera a cada lado. Las manzanas son edificios macizos, salvo las plazas, los parques, las playas y los muelles, por los que puedes caminar.</p>
+<h3>El sonido</h3>
+<p>Lo que suena a tu derecha está a tu derecha. Lo que suena apagado, como a través de una manta, está detrás de ti. Cuanto más lejos, más flojo. A pie, en el modo brújula, tu oído mira siempre al norte: el norte es delante, el este es la derecha. Al volante, el sonido gira con el vehículo.</p>
+<h3>Herramientas de orientación</h3>
+<p>Ninguna es obligatoria y casi todas se pueden desactivar en Opciones. Usa las que te gusten.</p>
+<ul>
+<li><kbd>C</kbd>, dónde estoy: calle, entre qué avenidas, barrio y hacia dónde miras. Con <kbd>Mayúsculas</kbd> añade las coordenadas.</li>
+<li><kbd>W</kbd>, <kbd>A</kbd>, <kbd>S</kbd> y <kbd>D</kbd>, escáner direccional: tu bastón. Dice qué hay delante, a la izquierda, detrás y a la derecha: personas, vehículos, puertas, dónde empieza la calzada y a cuántos metros está la pared. Además suena un tono desde la pared.</li>
+<li><kbd>Tabulador</kbd>, radar: recorre todo lo que hay cerca, de lo más cercano a lo más lejano, con distancia y dirección, y hace sonar cada cosa desde su posición. <kbd>Mayúsculas Tabulador</kbd> va hacia atrás. <kbd>F6</kbd> filtra por lugares, vehículos, personas u objetos.</li>
+<li><kbd>B</kbd>: pone el GPS hacia lo último que dijo el radar.</li>
+<li><kbd>L</kbd>, lista de lugares: por categorías y en orden alfabético. Incluye una lista de lugares sin visitar y las demás localidades. <kbd>Intro</kbd> marca el destino.</li>
+<li><kbd>F9</kbd>, explorador de mapa: mueve un cursor de cruce en cruce con las flechas, sin mover al personaje, para aprenderte la localidad. <kbd>Tabulador</kbd> recorre los lugares junto al cursor, <kbd>N</kbd> los describe, <kbd>D</kbd> dice a qué distancia queda de ti, <kbd>Inicio</kbd> vuelve a tu posición e <kbd>Intro</kbd> marca el destino. También funciona en el mar.</li>
+<li>Marcadores personales: en el móvil puedes guardar el punto exacto en el que estás y volver a él con el GPS.</li>
+<li><kbd>G</kbd>, GPS: repite la indicación. Dice la distancia y el giro siguiente. <kbd>Mayúsculas G</kbd> lo cancela.</li>
+<li>Baliza sonora: una campanita que suena en la dirección que debes seguir, más rápida cuanto más cerca. A pie suena en la esquina de la acera, no en mitad del cruce. Se activa y desactiva con <kbd>F4</kbd>.</li>
+<li>Sonido de los lugares: cada tipo de lugar tiene su firma sonora, que oyes al acercarte. Una armería suena a arma que se amartilla, un bar a música a través de la pared, una tienda a timbre de puerta. Están todos en el menú <em>Aprender los sonidos</em>.</li>
+<li>Pasos: suenan distinto en acera, asfalto, césped, arena y muelle.</li>
+<li>Semáforos acústicos: en cada cruce, un tictac rápido indica que puedes cruzar la calle andando hacia el norte o el sur, y un pío lento, que puedes cruzar la avenida hacia el este o el oeste.</li>
+<li><kbd>N</kbd>: descripción del lugar o del barrio. <kbd>K</kbd>: hacia dónde miras, con un tono que suena desde el norte. <kbd>T</kbd>: hora y tiempo. <kbd>V</kbd>: tu estado.</li>
+</ul>
+<h3>Caminar solo</h3>
+<p>Con un destino marcado en el GPS, la tecla <kbd>U</kbd> a pie hace que el personaje siga la ruta él solo hasta llegar, por las aceras y doblando las esquinas. Mantén <kbd>Mayúsculas</kbd> para que corra. Cualquier flecha, o la <kbd>U</kbd> otra vez, lo detiene. Sigues oyendo los cruces, los lugares y el tráfico, y los coches no se paran por ti: al cruzar, escucha. Al volante existe lo mismo con la tecla <kbd>Y</kbd>, el piloto del GPS.</p>
+<h3>Formato de las direcciones</h3>
+<p>En Opciones eliges cómo se dicen: con puntos cardinales, con horas del reloj o con delante, derecha, detrás e izquierda.</p>
+
+<h2>5. Teclas</h2>
+<p>Esta lista sale del propio juego, así que está siempre completa. Dentro del juego la tienes con <kbd>F1</kbd>, y también en el documento <a href="teclas.html">teclas.html</a>.</p>
+<!-- TECLAS:INICIO -->
+<h3>En cualquier momento</h3>
+<ul>
+<li><kbd>C</kbd>: dónde estoy: calle, barrio y hacia dónde miro. Con Mayúsculas añade las coordenadas.</li>
+<li><kbd>V</kbd>: estado: salud, dinero, arma, nivel de búsqueda y vehículo.</li>
+<li><kbd>T</kbd>: hora, día y tiempo que hace.</li>
+<li><kbd>O</kbd>: objetivo de la misión o del trabajo en curso.</li>
+<li><kbd>N</kbd>: descripción del lugar o del barrio en el que estás.</li>
+<li><kbd>K</kbd>: hacia dónde miras o conduces, y hace sonar un tono desde el norte para orientarte.</li>
+<li><kbd>F9</kbd>: explorador de mapa: recorre la localidad con un cursor, cruce a cruce, sin mover al personaje. Tabulador dice los lugares junto al cursor e Intro marca el destino.</li>
+<li><kbd>Tabulador y Mayúsculas Tabulador</kbd>: radar: recorre lo que hay alrededor, de lo más cercano a lo más lejano.</li>
+<li><kbd>B</kbd>: pone el GPS y la baliza hacia lo último que dijo el radar.</li>
+<li><kbd>F6</kbd>: cambia el filtro del radar: todo, lugares, vehículos, personas u objetos.</li>
+<li><kbd>L</kbd>: lista de lugares de la ciudad para marcar un destino.</li>
+<li><kbd>G</kbd>: repite la indicación del GPS. Mayúsculas G lo cancela.</li>
+<li><kbd>M</kbd>: abre el móvil: misiones, lugares, explorador de mapa, marcadores, servicios, habilidades, logros, propiedades y estadísticas.</li>
+<li><kbd>Intro</kbd>: interactuar: entrar en un lugar, empezar una misión, recoger un objeto o hablar.</li>
+<li><kbd>F</kbd>: subir a un vehículo o bajarte.</li>
+<li><kbd>Q</kbd>: fija al enemigo más cercano; púlsala otra vez para pasar al siguiente. Mayúsculas Q fija a cualquiera.</li>
+<li><kbd>Números del 1 al 9</kbd>: eligen arma. La coma pasa a la siguiente y Mayúsculas coma a la anterior.</li>
+<li><kbd>I</kbd>: abre la lista de tus armas para elegir una.</li>
+<li><kbd>P</kbd>: en el mar, lanza la caña para pescar; cuando oigas que pican, pulsa Espacio. En vehículos de emergencias, enciende la sirena.</li>
+<li><kbd>Z</kbd>: usa un botiquín.</li>
+<li><kbd>Re Pág y Av Pág</kbd>: repasan los mensajes anteriores. El punto repite el último.</li>
+<li><kbd>F1</kbd>: esta ayuda.</li>
+<li><kbd>F2</kbd>: cambia entre conducción asistida y libre.</li>
+<li><kbd>F3</kbd>: cambia el movimiento a pie entre brújula y giros.</li>
+<li><kbd>F4</kbd>: activa o desactiva la baliza sonora del GPS.</li>
+<li><kbd>F5</kbd>: guardado rápido, fuera de las misiones.</li>
+<li><kbd>F7 y F8</kbd>: bajan y suben el volumen de la música.</li>
+<li><kbd>Escape</kbd>: menú de pausa.</li>
+</ul>
+<h3>A pie</h3>
+<ul>
+<li><kbd>Flechas</kbd>: caminar. En modo brújula cada flecha va hacia un punto cardinal: arriba es norte, derecha es este. En modo giros, izquierda y derecha giran 45 grados y arriba avanza.</li>
+<li><kbd>Mayúsculas con las flechas</kbd>: correr.</li>
+<li><kbd>W, A, S y D</kbd>: escáner direccional: dice qué hay delante, a la izquierda, detrás y a la derecha, y a qué distancia está la pared.</li>
+<li><kbd>Espacio</kbd>: atacar o disparar. Con armas automáticas, mantenla pulsada.</li>
+<li><kbd>R</kbd>: recargar.</li>
+<li><kbd>X</kbd>: agacharte o levantarte. Agachado te aciertan menos, pero vas más lento.</li>
+<li><kbd>H</kbd>: gritar para espantar a los peatones.</li>
+<li><kbd>E</kbd>: con un arma en la mano, atracar al peatón que tengas al lado.</li>
+<li><kbd>Y</kbd>: si tienes perro, le pides que busque por el olfato el objeto más cercano.</li>
+<li><kbd>U</kbd>: caminar solo: con un destino marcado en el GPS, el personaje sigue la ruta él solo hasta llegar. Mantén Mayúsculas para que corra. Cualquier flecha, o la U otra vez, lo detiene.</li>
+</ul>
+<h3>Al volante, en barco y en helicóptero</h3>
+<ul>
+<li><kbd>Flecha arriba</kbd>: acelerar.</li>
+<li><kbd>Flecha abajo</kbd>: frenar y, parado, marcha atrás.</li>
+<li><kbd>Espacio</kbd>: freno de mano.</li>
+<li><kbd>Flechas izquierda y derecha</kbd>: en conducción asistida ponen el intermitente: el coche girará solo en el próximo cruce. En conducción libre giran el volante.</li>
+<li><kbd>A y D</kbd>: en conducción asistida, mantenlas para cambiar de carril: A invade el carril contrario para adelantar y D te arrima a la acera.</li>
+<li><kbd>Frenada automática</kbd>: en conducción asistida el coche frena solo si hay un vehículo delante en tu carril. Se desactiva en Opciones.</li>
+<li><kbd>U</kbd>: media vuelta, con el coche casi parado.</li>
+<li><kbd>Y</kbd>: piloto del GPS: el coche gira solo siguiendo la ruta marcada.</li>
+<li><kbd>E</kbd>: en conducción libre, endereza el coche hacia el punto cardinal más cercano.</li>
+<li><kbd>W</kbd>: velocidad actual.</li>
+<li><kbd>H</kbd>: claxon.</li>
+<li><kbd>R</kbd>: cambia de emisora. Mayúsculas R apaga la radio.</li>
+<li><kbd>Control</kbd>: disparar desde el vehículo con armas de fuego.</li>
+<li><kbd>J</kbd>: empieza o termina un trabajo con el vehículo: taxi, ambulancia, autobús, coche patrulla o camión.</li>
+<li><kbd>Helicóptero</kbd>: vuela por encima de edificios y tráfico. Se pilota a mano como un barco. Para bajarte, detente sobre una calle o un espacio abierto. En un helipuerto, Intro te lleva volando a otra localidad.</li>
+<li><kbd>En el mar</kbd>: los barcos se llevan siempre a mano: izquierda y derecha giran el timón y se anuncia el rumbo. Intro junto a un muelle sirve para atracar.</li>
+</ul>
+<!-- TECLAS:FIN -->
+
+<h2>Jugar con mando</h2>
+<p>El juego reconoce solo los mandos de Xbox, los de PlayStation, DualShock 4 y DualSense, y los compatibles. Conéctalo por cable o por Bluetooth, antes o después de abrir el juego: se anuncia al detectarlo. Mando y teclado se pueden usar a la vez. Todo lo que hace el teclado se puede hacer con el mando.</p>
+<p>La ayuda del juego, con <kbd>F1</kbd> o con el botón Y o Triángulo dentro de un menú, dice qué hace cada botón con los nombres de tu mando.</p>
+<h3>En los menús</h3>
+<ul>
+<li>Cruceta o palanca izquierda: moverte. A o Equis: elegir. B o Círculo: volver.</li>
+<li>Y o Triángulo: ayuda de la opción. X o Cuadrado: repetir. LB y RB, o L1 y R1: repasar los mensajes anteriores.</li>
+</ul>
+<h3>A pie</h3>
+<ul>
+<li>Palanca izquierda: caminar hacia donde la empujes; a fondo, correr.</li>
+<li>Palanca derecha: escáner direccional. Empújala hacia un lado y te dice qué hay allí.</li>
+<li>A o Equis: interactuar. Y o Triángulo: subir a un vehículo. X o Cuadrado: recargar. B o Círculo: agacharte.</li>
+<li>Gatillo derecho o R2: atacar. Gatillo izquierdo o L2: fijar al enemigo. LB y RB, o L1 y R1: cambiar de arma.</li>
+<li>Cruceta arriba: dónde estoy. Cruceta abajo: estado. Cruceta a los lados: radar.</li>
+<li>Pulsar la palanca izquierda: repetir el GPS. Pulsar la derecha: botiquín.</li>
+<li>Botón Vista o Share: móvil. Botón Menú u Options: pausa. Panel táctil: explorador de mapa.</li>
+</ul>
+<h3>Al volante, en barco y en helicóptero</h3>
+<ul>
+<li>Gatillo derecho o R2: acelerar. Gatillo izquierdo o L2: frenar y marcha atrás. B o Círculo: freno de mano.</li>
+<li>Palanca izquierda a los lados: un toque pone el intermitente en conducción asistida; en conducción libre, en barcos y en helicópteros es el volante.</li>
+<li>Palanca derecha a los lados: cambiar de carril. Arriba: emisora siguiente. Abajo: pescar en el mar o sirena.</li>
+<li>X o Cuadrado: claxon. Y o Triángulo: bajarte. A o Equis: interactuar y, con la caña echada, tirar del sedal.</li>
+<li>LB o L1: fijar objetivo. RB o R1: disparar. Pulsar la palanca izquierda: media vuelta. Pulsar la derecha: trabajo.</li>
+</ul>
+<h3>Vibración</h3>
+<p>El mando vibra cuando te hieren, en los choques y las explosiones, al subir el nivel de búsqueda, al llegar a un destino y, sobre todo, cuando pica un pez. En conducción libre, el bordillo vibra por el lado correspondiente. La vibración refuerza el sonido, nunca lo sustituye, y se puede desactivar.</p>
+<h3>Cambiar los botones</h3>
+<p>En Opciones, Mando, puedes ver qué hace cada botón, reasignar cualquiera a pie y al volante, probar la vibración y volver a la asignación original. La asignación se guarda en <strong>data\config\mando.json</strong>.</p>
+
+<h2>6. Conducir</h2>
+<h3>Conducción asistida, la opción por defecto</h3>
+<p>El coche sigue su carril él solo. Tú decides la velocidad y dónde girar. Antes de cada cruce el juego te dice con qué calle te cruzas; si quieres girar, pulsa izquierda o derecha y oirás el intermitente. Si no pulsas nada, sigues recto.</p>
+<ul>
+<li>Sensor de proximidad: un pitido que se acelera cuando tienes un vehículo delante.</li>
+<li>Frenada automática: el coche frena solo para no embestir al de delante. Mantén <kbd>A</kbd> para adelantar por el carril contrario. Se puede desactivar.</li>
+<li>Piloto del GPS, con <kbd>Y</kbd>: con un destino marcado, el coche gira solo en los cruces. Tú solo aceleras y frenas.</li>
+</ul>
+<h3>Conducción libre</h3>
+<p>Tú llevas el volante. Un ruido grave te avisa, por el lado correspondiente, cuando te sales de la calzada. <kbd>E</kbd> endereza el coche hacia el punto cardinal más cercano. Puedes ir campo a través por parques y playas.</p>
+<h3>Conseguir un vehículo</h3>
+<p>Búscalo con el radar, ponte a su lado y pulsa <kbd>F</kbd>. Un coche aparcado hay que forzarlo: tarda unos segundos y puede saltar la alarma, salvo que lleves ganzúas. Si está en marcha, sacas al conductor. También puedes comprarlos en un concesionario y guardarlos en el garaje de tus casas. Ante hospitales, comisarías, estaciones y paradas de taxi hay vehículos de servicio.</p>
+
+<h3>Helicóptero</h3>
+<p>El helicóptero vuela por encima de edificios, tráfico y policía. Se pilota a mano, como un barco: izquierda y derecha giran, arriba acelera, y el juego anuncia el rumbo. No choca con nada, pero solo puedes bajarte si estás detenido sobre una calle o un espacio abierto; la tecla <kbd>C</kbd> te dice sobre qué estás. Hay helicópteros en los helipuertos. En un helipuerto, <kbd>Intro</kbd> te lleva volando a otra localidad: gratis con tu helicóptero, o pagando un vuelo si vas a pie.</p>
+
+<h2>7. Combate</h2>
+<ul>
+<li><kbd>Q</kbd> fija al enemigo más cercano. Oirás un tono que sale de donde está: grave y doble si lo tienes a tiro, agudo si está fuera de alcance.</li>
+<li><kbd>Espacio</kbd> dispara al enemigo fijado. Cuanto más cerca, más aciertas.</li>
+<li>Medio segundo antes de dispararte, el enemigo amartilla el arma. Agáchate con <kbd>X</kbd> para que te den menos.</li>
+<li><kbd>R</kbd> recarga. <kbd>Z</kbd> usa un botiquín. Con poca salud oirás tu corazón.</li>
+<li>Los explosivos se lanzan hacia el enemigo fijado y dañan todo alrededor. No los uses de cerca.</li>
+<li>En Opciones puedes cambiar la ayuda de puntería a manual y elegir la dificultad.</li>
+</ul>
+<p>Si caes, despiertas en el hospital más cercano y pagas la cuenta. Si te detienen, pierdes las armas de fuego y una multa. El dinero del banco está siempre a salvo.</p>
+
+<h2>8. La policía</h2>
+<p>Los delitos solo cuentan si alguien los ve. El nivel de búsqueda va de 1 a 5. Con nivel 1 intentan detenerte; a partir del 2, disparan. Para librarte:</p>
+<ul>
+<li>Aléjate de las sirenas. Cuando no hay policías cerca oyes un latido grave: aguanta unos segundos y dejan de buscarte.</li>
+<li>Pinta el vehículo en un taller.</li>
+<li>Escóndete en una de tus casas, cámbiate de ropa en una tienda o paga un soborno en la comisaría.</li>
+<li>Sal de la localidad por carretera o hazte a la mar.</li>
+</ul>
+
+<h2>9. El móvil</h2>
+<p>Con <kbd>M</kbd> abres el móvil: objetivo actual, misiones disponibles, lugares y GPS, explorador de mapa, marcadores personales, servicios, habilidades y logros, inventario, propiedades, barrios y estadísticas.</p>
+<p>En Servicios puedes pedir que te traigan un vehículo de tus garajes, llamar a un guardaespaldas, pedir una ambulancia que te cure donde estés o un taxi para viajar rápido.</p>
+
+<h2>10. Viajar entre localidades</h2>
+<ul>
+<li>Por carretera: lleva un vehículo hasta una salida de la localidad y pulsa <kbd>Intro</kbd>. Llegas con tu vehículo.</li>
+<li>En autobús: ve a pie a una estación y compra el billete.</li>
+<li>En helicóptero: desde un helipuerto, pilotando o pagando el vuelo.</li>
+<li>En barco: en un embarcadero puedes alquilar una lancha, zarpar con un barco tuyo o robar uno. En el mar, acércate a un muelle y pulsa <kbd>Intro</kbd> para atracar.</li>
+</ul>
+<p>Si marcas en el GPS un lugar de otra localidad, te guía hasta la salida, la estación o el embarcadero adecuado y continúa al llegar.</p>
+<p>Monteferro, la ciudad minera, está en la sierra, más allá de Villaseca; Fuentefría queda aún más arriba. La Plataforma Neptuno está en mitad del mar, al suroeste.</p>
+<p>Isla Tortuga solo es accesible por mar o en helicóptero. El Mar de Poniente tiene la costa al norte, con Puerto Bravo al oeste, Cala Brava en el centro y San Lucero al este; la isla queda al sur.</p>
+
+<h2>11. Ganarse la vida</h2>
+<ul>
+<li>Misiones: marcadas con un sonido cálido que late. Pulsa <kbd>Intro</kbd> en el lugar.</li>
+<li>Trabajos con vehículo, con <kbd>J</kbd>: taxi, ambulancia, autobús, coche patrulla, camión, furgoneta de helados y, en el mar, mensajería con cualquier barco.</li>
+<li>Tablón de encargos de las tabernas: contratos cada vez más difíciles y mejor pagados.</li>
+<li>Encargos de coches: en un desguace, a pie, te piden un modelo concreto.</li>
+<li>Boxeo: en los gimnasios, combates a puñetazos con premio creciente.</li>
+<li>Galería de tiro: en las armerías. Suena una diana a un lado y pulsas esa flecha.</li>
+<li>Sucesos callejeros: de vez en cuando hay un atraco, unos pandilleros o un maletín perdido cerca. Ayudar es opcional y tiene recompensa.</li>
+<li>Repartir pizzas: en la Pizzería Vesubio.</li>
+<li>Pescar: en el mar con <kbd>P</kbd>, o desde los espigones. Se vende en lonjas y pescaderías.</li>
+<li>Desguaces: compran cualquier vehículo.</li>
+<li>Carreras: en la Recta del Polígono, en San Lucero, en Villaseca y en la boya de regatas.</li>
+<li>Negocios: cómpralos y cobra cada medianoche.</li>
+<li>Casino con tragaperras, blackjack y ruleta, bingo, dados y lotería.</li>
+<li>Objetos de colección: cintas de casete, botellas con mensaje y doblones, que suenan como un tintineo que sube y baja.</li>
+<li>Más trabajos con la tecla <kbd>J</kbd>: bombero con el camión de bomberos, conductor de grúa, y mensajero en bicicleta, scooter o moto.</li>
+<li>Perro compañero: adóptalo en una protectora de animales. Te sigue a todas partes, gruñe cuando hay enemigos cerca y, a pie, con la tecla <kbd>Y</kbd>, busca por el olfato el objeto más cercano y te marca el camino.</li>
+<li>Guerras de territorio: desde el móvil puedes conquistar los barrios de las tres ciudades. Son tres oleadas de pandilleros, y cada barrio conquistado te paga cada medianoche.</li>
+<li>Bolsa: en cualquier banco puedes comprar y vender acciones de cinco empresas. Los precios cambian cada día y reaccionan a la historia.</li>
+<li>Máquina de memoria de sonidos, en las ferias y recreativos: repite con las flechas una secuencia de notas cada vez más larga.</li>
+<li>Buscar tesoros: buceando en el pecio y en el arrecife, o con detector de metales en algunas playas. Es un juego de frío o caliente con el oído: el pitido se acelera y se agudiza al acercarte.</li>
+<li>Menos honrado: atracar tiendas, peatones y bancos, o reventar un furgón blindado.</li>
+</ul>
+<h3>Habilidades y logros</h3>
+<ul>
+<li>Conducción, puntería, resistencia y pesca suben solas con la práctica, hasta el nivel diez.</li>
+<li>La salud máxima sube entrenando en un gimnasio.</li>
+<li>Hay <span data-n="logros">32</span> logros. Se consultan en el móvil.</li>
+</ul>
+
+<h2>12. Casas, guardado y opciones</h2>
+<p>En tus casas puedes guardar, descansar, esconderte y usar el garaje. Además puedes guardar en cualquier sitio desde el menú de pausa o con <kbd>F5</kbd>, salvo durante una misión. El juego guarda solo al terminar cada misión. Si fallas una misión, puedes reintentarla al momento sin repetir el camino.</p>
+<h3>Las opciones, por secciones</h3>
+<p>Las opciones están agrupadas. Pulsa <kbd>Intro</kbd> sobre una sección para entrar; dentro, la última opción es siempre Volver, y también sirve <kbd>Escape</kbd>. <kbd>F1</kbd> explica la opción en la que estás.</p>
+<ul>
+<li>Sonido y música: los cinco volúmenes, la música de ambiente con su propio volumen, el pack de sonidos, el igualado de volumen y el ajuste de cada sonido por separado.</li>
+<li>Movimiento y conducción: movimiento a pie con brújula o con giros, conducción asistida o libre, frenada automática, piloto del GPS y sensor de proximidad.</li>
+<li>Orientación y avisos: formato de las direcciones, voz y baliza del GPS, anuncios de cruces, lugares, barrios y suelo, sonido de los lugares y semáforos acústicos.</li>
+<li>Combate y dificultad: dificultad, ayuda de puntería, sucesos callejeros y las dos asistencias.</li>
+<li>Mando: qué hace cada botón, reasignarlos y la vibración.</li>
+<li>Voz: lector de pantalla o voz de Windows.</li>
+<li>Contenido para adultos: activarlo o desactivarlo.</li>
+</ul>
+<p>También hay dos asistencias para quien quiera explorar sin presión: no recibir daño y jugar sin policía. Y se pueden desactivar los sucesos callejeros.</p>
+
+<h2>13. La radio y tu música</h2>
+<p>Al subir a un vehículo suena la radio. Con <kbd>R</kbd> cambias de emisora. Para oír tu música, copia tus canciones en la carpeta <strong>data\radio\mi_musica</strong> y elige la emisora <em>Mi música</em>; dentro de ella, <kbd>R</kbd> pasa a la canción siguiente. Cualquier archivo de audio que dejes directamente en <strong>data\radio</strong> es una emisora nueva.</p>
+<h3>Música de ambiente</h3>
+<p>Fuera de los vehículos, o con la radio apagada, suena una música de fondo suave que cambia con la situación: el menú principal, explorar de día, la noche, el mar y los momentos de tensión, con la policía detrás o enemigos cerca. Cada situación tiene varias piezas: se empieza por una al azar y, cuando termina, suena otra distinta. Al encender la radio de un vehículo la música de ambiente se calla, y vuelve cuando apagas la radio con <kbd>Mayúsculas R</kbd> o te bajas. Se desactiva y se ajusta en Opciones, Sonido y música. Puedes añadir tu propia música a cada situación copiando archivos en <strong>data\musica</strong>, en la carpeta de esa situación: se usan todos los que haya, al azar, sean cuantos sean y se llamen como se llamen. Toda la música, la de ambiente y la de la radio, se nivela sola al cargarla, así que ninguna pista suena más fuerte que otra.</p>
+<h3>Packs de sonidos</h3>
+<p>En Opciones, Sonido y música, la opción Pack de sonidos cambia con las flechas izquierda y derecha entre los sonidos por defecto y los packs. Todos están en <strong>data\sonidos</strong>, cada uno en su subcarpeta: <strong>por_defecto</strong> son los de serie, que el juego vuelve a crear si falta alguno, y cada una de las demás subcarpetas es un pack. El cambio se oye al momento. Vienen instalados tres packs completos, con todos los sonidos del juego. Realista y Alternativo usan grabaciones reales de dominio público para pasos, puertas, armas, voces, vehículos, sirenas, ambientes, agua, viento, avisos y menús; Retro suena como una consola antigua. Los tres sustituyen todo lo que no es orientación y conservan el sonido original en balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. Un pack tuyo puede traer solo algunos sonidos: los demás siguen con el original. Puedes añadir los tuyos copiando su carpeta en <strong>data\sonidos</strong>.</p>
+<p>Como cada grabación viene a un volumen distinto, el juego iguala el volumen de cada sonido cambiado al del original. Además, en Ajustar el volumen de cada sonido están todos los sonidos por grupos: <kbd>Intro</kbd> lo hace sonar y las flechas izquierda y derecha suben o bajan ese sonido en concreto.</p>
+<h3>Cambiar los sonidos y la música</h3>
+<p>Todos los efectos de sonido y toda la música son archivos normales, en <strong>data\sonidos\por_defecto</strong>, <strong>data\radio</strong> y <strong>data\musica</strong>. Puedes sustituir cualquiera por una grabación tuya. La guía <strong>data\docs\cambiar_sonidos.html</strong> explica cómo y describe cada archivo.</p>
+
+<h2>14. Ampliar el juego</h2>
+<p>Todo el contenido está en archivos JSON dentro de la carpeta <strong>data\datos</strong>: mapas, lugares, misiones, armas y vehículos. Para añadir contenido sin tocar los originales, crea archivos JSON en la carpeta <strong>data\mods</strong>. En <strong>data\docs\crear_mods.html</strong> se explica el formato con ejemplos.</p>
+<h3>Mods de ejemplo</h3>
+<p>El juego trae cuatro mods completos, ya activados, que además sirven de modelo: ábrelos con el editor para ver cómo están hechos.</p>
+<ul>
+<li>Costa Dorada: un pueblo pesquero nuevo al oeste de Puerto Bravo, al que se llega por la salida oeste, en autobús o por mar. Tiene su historia en cinco misiones, un encargo honrado, casi todos los tipos de lugar, tres armas, un buggy, una furgoneta de reparto, un velero y un autogiro, una carrera, comidas, peces y dos personajes para elegir. Con el contenido para adultos, además, un club, un proveedor, una persona, un regalo, un plan y una sustancia.</li>
+<li>Oficios y recados: más vida honrada en Puerto Bravo, con un club de tiro deportivo, un banco de alimentos, una empresa de mensajería, un piso, una moto de reparto, un personaje y dos encargos.</li>
+<li>Valdeolmos: un pueblo de viñas al norte, al que se llega por la salida noreste de Puerto Bravo o en autobús. Tres misiones sobre un fraude de vino, un encargo honrado, una carrera de tractores, pesca de río, una escopeta de caza, una hoz, un tractor con remolque y un personaje.</li>
+<li>Motor y asfalto: para quien solo quiere conducir. Tres coches y una moto nuevos, la Escudería Viento Sur con su taller y su escuela de pilotos, tres carreras por Puerto Bravo, un piloto para elegir y dos misiones al volante.</li>
+</ul>
+<p>Para quitar uno, desactívalo en el editor con <kbd>Control M</kbd> o borra su archivo de <strong>data\mods</strong>.</p>
+<h3>El editor de mods</h3>
+<p>No hace falta escribir los archivos a mano. El programa <strong>EditorMods.exe</strong>, que está junto al juego (o <strong>editor.bat</strong> si usas el código fuente), es un editor accesible con lector de pantalla con el que se crea todo lo que admite un mod: lugares, misiones con todos sus pasos, armas, vehículos, carreras, comida, objetos, peces, personajes, mapas enteros y, para el modo adulto, personas, actividades, regalos y sustancias. Comprueba el mod antes de guardarlo y lo deja en <strong>data\mods</strong>. Su manual es <a href="editor_mods.html">editor_mods.html</a>, y se abre desde el propio editor con <kbd>F1</kbd>.</p>
+<h3>La carpeta data</h3>
+<ul>
+<li><strong>data\datos</strong>: mapas, lugares, misiones, armas y vehículos.</li>
+<li><strong>data\sonidos</strong>: los efectos de sonido, en subcarpetas. <strong>por_defecto</strong> tiene los de serie, un archivo por sonido, y cada una de las demás es un pack.</li>
+<li><strong>data\radio</strong>: la música de las emisoras, y dentro <strong>mi_musica</strong>.</li>
+<li><strong>data\musica</strong>: la música de ambiente, una carpeta por situación.</li>
+<li><strong>data\config</strong>: tus opciones y la asignación de botones del mando.</li>
+<li><strong>data\partidas</strong>: las partidas guardadas.</li>
+<li><strong>data\mods</strong>: ampliaciones.</li>
+<li><strong>data\docs</strong>: este manual y las guías.</li>
+</ul>
+<p>Para llevarte tus partidas a otro equipo, copia la carpeta <strong>data\partidas</strong>.</p>
+
+
+<h2>15. Elegir personaje</h2>
+<p>Al empezar una partida nueva eliges personaje. La historia es la misma para todos, y los demás te llaman por el nombre del que elijas; cambian las ventajas con las que empiezas.</p>
+<ul>
+<li>Dani Roca: equilibrado. Empieza con un botiquín y sin puntos débiles.</li>
+<li>Álex Montes: fue piloto de rallies. Empieza con la conducción al nivel cinco y tres juegos de ganzúas.</li>
+<li>Sam Ferrer: ocho años en el ejército. Empieza con la puntería al nivel cuatro, más salud, una navaja y dos botiquines.</li>
+<li>Cris Navarro: vendía seguros. Empieza con ochocientos euros, buen ánimo, algo de fama y el aprecio de los vecinos.</li>
+</ul>
+<p>Se pueden añadir personajes con el editor de mods.</p>
+
+<h2>16. La vida honrada</h2>
+<p>Se puede terminar el juego rico sin cometer un solo delito. Todo lo honrado sube tu prestigio entre los vecinos; los delitos lo bajan. Con buen prestigio cobras más en los trabajos y la policía te pasa por alto las faltas pequeñas.</p>
+<ul>
+<li>Oficina de empleo, una en cada ciudad: reúne todos los trabajos. Las jornadas son trabajos sin vehículo: pasan ocho horas y cobras; solo una al día. En los oficios con vehículo, <kbd>Intro</kbd> marca en el GPS dónde hay uno aparcado; sube con <kbd>F</kbd> y pulsa <kbd>J</kbd>.</li>
+<li>Ascensos: cada ocho servicios en un oficio asciendes de rango y cobras un doce por ciento más. Suena una fanfarria corta.</li>
+<li>Academias y autoescuelas: un curso cuesta 250 euros y cuatro horas, y sube una habilidad mucho más deprisa que la práctica. Uno al día.</li>
+<li>Comedores sociales y bancos de alimentos: puedes donar dinero o hacer cuatro horas de voluntariado, que no se cobra pero sube mucho el ánimo y el prestigio.</li>
+<li>Sucesos callejeros: ayudar también cuenta.</li>
+<li>Tu carrera: en el móvil, resume tu vida honrada y tu vida delictiva, con tus rangos en cada oficio.</li>
+</ul>
+<h3>Lo que se oye</h3>
+<p>Al entrar en un local suena la puerta y, mientras estás dentro, su ambiente de fondo; al salir, la puerta otra vez. Un gallo anuncia el amanecer, un búho el anochecer y unas campanadas la medianoche.</p>
+
+<h2>17. Ánimo y fama</h2>
+<p>La tecla <kbd>V</kbd> dice tu estado: salud, dinero, arma, nivel de búsqueda y vehículo. El ánimo sube al comer bien, descansar, ganar, hacer deporte o ayudar, y baja con las heridas, las detenciones y los fracasos; con el ánimo bajo rindes peor. La fama en la calle sube con los golpes y abre puertas en el mundo del delito. El prestigio entre los vecinos es la otra cara: sube con la vida honrada.</p>
+
+<h2>18. Contenido para mayores de 18 años</h2>
+<p>Viene desactivado. Se activa en Opciones, Contenido para adultos, confirmando que eres mayor de edad. Desactivado, nada de esto aparece en el juego: ni los lugares, ni las misiones, ni las opciones del móvil. Todo está contado sin escenas explícitas y todos los personajes son adultos.</p>
+<ul>
+<li>Vida social, en el móvil: conoces a gente en bares y otros lugares. Puedes charlar, proponer una cita, hacer un regalo, pedir que sea tu pareja, pasar la noche juntos o romper. La afinidad sube y baja con lo que haces, y hay celos si llevas más de una relación.</li>
+<li>Clubes nocturnos: copas, espectáculo y compañía de pago.</li>
+<li>Sustancias: cada una tiene su efecto, su sonido al tomarla y su bajón. El abuso crea dependencia, con síndrome de abstinencia, y puede acabar en sobredosis. En los hospitales hay desintoxicación.</li>
+<li>Trapicheo: los proveedores venden mercancía a un precio que cambia cada día y en cada sitio. A pie, con mercancía encima, la tecla <kbd>E</kbd> junto a un peatón le ofrece un trato; puede aceptar, rechazarlo o ser un policía de paisano.</li>
+<li>Todo afecta: al ánimo, a la salud, a la fama, al prestigio entre los vecinos y a tus relaciones.</li>
+</ul>
+
+<h3>Archivos protegidos</h3>
+<p>En el juego compilado, los datos (mapas, misiones, armas, vehículos), los mods y las partidas guardadas van protegidos: conservan la extensión <strong>.json</strong>, pero su contenido está cifrado y firmado, así que no se pueden abrir con un editor de texto para cambiarlos, y un archivo manipulado o estropeado se rechaza. Para crear o cambiar contenido se usa el editor de mods, que abre tanto los archivos protegidos como los escritos a mano y siempre guarda protegido. Un mod escrito a mano en JSON normal sigue funcionando.</p>
+
+<h2>19. Qué distribuir y qué es tuyo</h2>
+<p>El juego compilado es portable: una carpeta que se puede copiar o comprimir tal cual. Lo personal son solo <strong>data\partidas</strong>, <strong>data\config</strong>, lo que hayas puesto en <strong>data\radio\mi_musica</strong> y tus mods. La compilación que genera <strong>compilar.bat</strong> sale limpia, sin nada de eso.</p>
+
+<h2>20. Problemas frecuentes</h2>
+<ul>
+<li>No se oye nada: comprueba que los auriculares son el dispositivo de salida predeterminado de Windows antes de abrir el juego.</li>
+<li>El lector no habla: abre NVDA o JAWS antes que el juego, o activa en Opciones la voz de Windows.</li>
+<li>Izquierda y derecha suenan al revés: tienes los auriculares cambiados de lado.</li>
+<li>El juego se cierra: se guarda automáticamente y deja los detalles en el archivo <strong>data\error.log</strong>.</li>
+<li>El mando no responde: comprueba que Windows lo reconoce y que la ventana del juego está en primer plano. Si los nombres de los botones no coinciden con los de tu mando, cámbialos en Opciones, Mando.</li>
+</ul>
+</body>
+</html>

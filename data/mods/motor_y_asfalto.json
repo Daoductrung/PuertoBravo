@@ -1,0 +1,341 @@
+{
+ "info": {
+  "nombre": "Motor y asfalto",
+  "autor": "Puerto Bravo",
+  "version": "1.0",
+  "descripcion": "Para quien solo quiere conducir: tres coches y una moto nuevos, un concesionario y un taller de preparación, tres carreras por Puerto Bravo, un piloto para elegir y dos misiones al volante."
+ },
+ "lugares": [
+  {
+   "id": "ma_escuderia",
+   "nombre": "Escudería Viento Sur",
+   "tipo": "concesionario",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    8,
+    5
+   ],
+   "lado": "S",
+   "pos": 20,
+   "desc": "Coches preparados para correr. Se oye un motor al ralentí en el taller del fondo.",
+   "modelos": [
+    "ma_gt",
+    "ma_rally",
+    "ma_clasico",
+    "ma_cafe"
+   ]
+  },
+  {
+   "id": "ma_boxes",
+   "nombre": "Boxes de la Escudería",
+   "tipo": "taller",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    8,
+    5
+   ],
+   "lado": "E",
+   "pos": 36,
+   "desc": "Reparan y pintan en lo que tardas en tomarte un café."
+  },
+  {
+   "id": "ma_parrilla",
+   "nombre": "Parrilla de salida de la Ronda",
+   "tipo": "carrera",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    8,
+    6
+   ],
+   "lado": "S",
+   "pos": 36,
+   "desc": "Aquí se queda para las carreras de la Escudería."
+  },
+  {
+   "id": "ma_autoescuela",
+   "nombre": "Escuela de Pilotos Viento Sur",
+   "tipo": "academia",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    8,
+    6
+   ],
+   "lado": "O",
+   "pos": 36,
+   "desc": "Cursos de conducción deportiva en circuito cerrado.",
+   "cursos": [
+    "conduccion"
+   ]
+  }
+ ],
+ "misiones": [
+  {
+   "id": "ma01",
+   "titulo": "Coche de pruebas",
+   "capitulo": 26,
+   "contacto": "Paula",
+   "lugar": "ma_escuderia",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "La jefa de la Escudería Viento Sur busca un probador.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Paula",
+       "¿Tú eres Dani? Dicen que conduces sin romper nada. Tengo un Brisa Rally recién montado y un cliente esperando en el concesionario Autos Platino."
+      ],
+      [
+       "Paula",
+       "Llévaselo en tres minutos y sin un rasguño. Si llega bien, hay más trabajo."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Recoge el Brisa Rally junto a los Boxes de la Escudería.",
+     "lugar": "ma_boxes",
+     "modelo": "ma_rally",
+     "nombre": "el Brisa Rally de pruebas",
+     "abierto": true
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Llévalo a Autos Platino en tres minutos y casi intacto.",
+     "lugar": "concesionario",
+     "limite": 180,
+     "salud_min": 85
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El cliente da una vuelta alrededor del coche, pasa un dedo por el capó y asiente."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 500
+   }
+  },
+  {
+   "id": "ma02",
+   "titulo": "El que no paga",
+   "capitulo": 26,
+   "contacto": "Paula",
+   "lugar": "ma_escuderia",
+   "requiere": [
+    "ma01"
+   ],
+   "resumen": "Un cliente se ha llevado un Viento GT sin pagar.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Paula",
+       "El del Viento GT se ha ido sin pagar. Sale por la carretera del norte. No quiero el coche roto, pero prefiero roto a perdido."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza el Viento GT y páralo a golpes antes de cuatro minutos.",
+     "lugar": "salida_norte",
+     "limite": 240,
+     "modelo": "ma_gt",
+     "nombre": "el Viento GT robado",
+     "salud": 180
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a la Escudería Viento Sur.",
+     "lugar": "ma_escuderia"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Paula",
+       "Chapa y pintura, tres días. Mejor eso que nada. Toma lo tuyo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1200
+   }
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "ma_gt",
+   "nombre": "Viento GT",
+   "vel_max": 46,
+   "acel": 11.5,
+   "freno": 20,
+   "salud": 110,
+   "motor": "motor_deportivo",
+   "tono": 1.3,
+   "valor": 9000,
+   "precio": 78000,
+   "desc": "El coche más rápido de la comarca. Frena tarde y acelera pronto."
+  },
+  {
+   "id": "ma_rally",
+   "nombre": "Brisa Rally",
+   "vel_max": 34,
+   "acel": 10.0,
+   "freno": 19,
+   "salud": 150,
+   "motor": "motor_coche",
+   "tono": 1.35,
+   "valor": 2500,
+   "precio": 16500,
+   "desc": "Un utilitario preparado: no corre tanto, pero sale de las curvas como un tiro."
+  },
+  {
+   "id": "ma_clasico",
+   "nombre": "Clásico Seiscientos Especial",
+   "vel_max": 22,
+   "acel": 5.0,
+   "freno": 11,
+   "salud": 90,
+   "motor": "motor_coche",
+   "tono": 1.5,
+   "valor": 3000,
+   "precio": 9000,
+   "desc": "Pequeño, ruidoso y con más encanto que caballos."
+  },
+  {
+   "id": "ma_cafe",
+   "nombre": "Moto Café Racer",
+   "vel_max": 40,
+   "acel": 12.0,
+   "freno": 16,
+   "salud": 65,
+   "motor": "motor_moto",
+   "tono": 1.0,
+   "valor": 2200,
+   "precio": 14000,
+   "trabajo": "paqueteria",
+   "desc": "Una moto ligera y rapidísima. Un golpe y al suelo."
+  }
+ ],
+ "carreras": [
+  {
+   "id": "ma_c1",
+   "nombre": "Gran Premio de la Ronda",
+   "mapa": "puerto_bravo",
+   "premio": 900,
+   "tiempo": 110,
+   "puntos": [
+    [
+     8,
+     6
+    ],
+    [
+     10,
+     6
+    ],
+    [
+     10,
+     2
+    ],
+    [
+     6,
+     2
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     8,
+     6
+    ]
+   ]
+  },
+  {
+   "id": "ma_c2",
+   "nombre": "Contrarreloj del Paseo Marítimo",
+   "mapa": "puerto_bravo",
+   "premio": 600,
+   "tiempo": 70,
+   "puntos": [
+    [
+     8,
+     6
+    ],
+    [
+     8,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     1,
+     3
+    ]
+   ]
+  },
+  {
+   "id": "ma_c3",
+   "nombre": "Vuelta larga a Puerto Bravo",
+   "mapa": "puerto_bravo",
+   "premio": 1500,
+   "tiempo": 170,
+   "puntos": [
+    [
+     8,
+     6
+    ],
+    [
+     10,
+     6
+    ],
+    [
+     10,
+     1
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     8,
+     6
+    ]
+   ]
+  }
+ ],
+ "capitulos": {
+  "26": "Motor y asfalto"
+ },
+ "personajes": [
+  {
+   "id": "ma_leo",
+   "nombre": "Leo",
+   "apellido": "Carrasco",
+   "desc": "Probador de la Escudería Viento Sur hasta que estrelló el coche del jefe. Empieza con la conducción al nivel seis: nadie conduce mejor. A cambio, casi no tiene dinero.",
+   "dinero": 100,
+   "conduccion": 6,
+   "botiquines": 1,
+   "ganzuas": 1
+  }
+ ]
+}
