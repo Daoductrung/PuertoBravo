@@ -1,7 +1,7 @@
 """Puerto Bravo: Ley del Asfalto. Audiojuego de mundo abierto totalmente accesible."""
 
 NOMBRE = "Puerto Bravo: Ley del Asfalto"
-VERSION = "1.6.0"
+VERSION = "1.6.2"
 AUTOR = "Héctor J. Benítez Corredera"
 ANIO = "2026"
 WEB = "https://github.com/hxebolax/PuertoBravo"

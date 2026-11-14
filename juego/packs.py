@@ -159,7 +159,8 @@ def cargar(mez, cfg):
         vol = m.get("volumenes") if isinstance(m.get("volumenes"), dict) else {}
         for nombre, archivo in _archivos(ruta).items():
             try:
-                d = sintesis.leer_audio(archivo)
+                fondo = sintesis.es_fondo(nombre)
+                d = sintesis.leer_audio(archivo, mono=not fondo, maximo=sintesis.MAX_FONDO if fondo else None)
             except Exception:
                 continue
             if len(d) <= 8:

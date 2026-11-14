@@ -666,24 +666,44 @@ def es_bucle(nombre):
     return nombre in BUCLES or nombre.startswith(PREFIJOS_BUCLE)
 
 
-def leer_audio(ruta, mono=True):
-    """Lee un archivo de audio y lo adapta al motor: 44100 Hz, mono si hace falta."""
+# Sonidos de fondo: no vienen de ningún punto, así que se dejan en estéreo, tal como se grabaron.
+FONDOS = {"lluvia"}
+MAX_FONDO = 90                    # segundos: un ambiente más largo se recorta, para no llenar la memoria
+
+
+def es_fondo(nombre):
+    return nombre.startswith("amb_") or nombre in FONDOS
+
+
+def _remuestrear(d, sr):
+    """Cambia la frecuencia de muestreo sin estropear los agudos: por trozos, en el dominio de la frecuencia."""
+    n = max(2, int(round(len(d) * SR / sr)))
+    canales = d[:, None] if d.ndim == 1 else d
+    salida = np.empty((n, canales.shape[1]), np.float32)
+    for c in range(canales.shape[1]):
+        espectro = np.fft.rfft(canales[:, c].astype(np.float64))
+        m = n // 2 + 1
+        nuevo = np.zeros(m, np.complex128)
+        k = min(m, len(espectro))
+        nuevo[:k] = espectro[:k]
+        salida[:, c] = np.fft.irfft(nuevo, n) * (n / len(d))
+    return salida[:, 0] if d.ndim == 1 else salida
+
+
+def leer_audio(ruta, mono=True, maximo=None):
+    """Lee un archivo de audio y lo adapta al motor: 44100 Hz, y mono o estéreo según se pida."""
     import soundfile as sf
     d, sr = sf.read(ruta, dtype="float32", always_2d=True)
+    if maximo and len(d) > maximo * sr:
+        d = d[:int(maximo * sr)]
     if mono:
         d = d.mean(axis=1)
     elif d.shape[1] == 1:
-        d = np.repeat(d, 2, axis=1)
+        d = d[:, 0]                                  # un archivo mono se queda mono: no se gana nada duplicándolo
     else:
         d = d[:, :2]
     if sr != SR and len(d) > 1:
-        n = max(2, int(len(d) * SR / sr))
-        x = np.linspace(0, len(d) - 1, n)
-        base = np.arange(len(d))
-        if d.ndim == 1:
-            d = np.interp(x, base, d)
-        else:
-            d = np.stack([np.interp(x, base, d[:, 0]), np.interp(x, base, d[:, 1])], axis=1)
+        d = _remuestrear(d, sr)
     return np.ascontiguousarray(d, dtype=np.float32)
 
 
@@ -704,7 +724,7 @@ def cargar(mezclador, carpeta):
         nombre, ext = os.path.splitext(f)
         if ext.lower() in (".wav", ".ogg", ".flac", ".mp3") and nombre not in S:
             try:
-                d = leer_audio(os.path.join(carpeta, f))
+                d = leer_audio(os.path.join(carpeta, f), mono=not es_fondo(nombre), maximo=MAX_FONDO if es_fondo(nombre) else None)
                 if len(d) > 8:
                     S[nombre] = d
             except Exception:

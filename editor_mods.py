@@ -7,8 +7,12 @@ if getattr(sys, "frozen", False):
 
 
 def main():
-    from juego import registro
+    from juego import procesador, registro
     registro.iniciar("editor")
+    if not procesador.preparar():
+        procesador.avisar_incompatible(registro)
+        registro.cerrar()
+        return
     registro.escribir_sistema([])
     try:
         from editor.ventana import ejecutar

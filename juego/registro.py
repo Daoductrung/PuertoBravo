@@ -63,6 +63,10 @@ _RE_UNIDAD = re.compile(r"[A-Za-z]:[\\/](?:Users|Usuarios|Documents and Settings
 
 
 # ----------------------------------------------------------------- privacidad
+# Cualquier otra ruta completa de Windows (las de quien compiló el juego, las de otros programas): se deja solo el archivo.
+_RE_RUTA = re.compile(r"(?<![\w<>])[A-Za-z]:[\\/](?:[^\\/\"'<>|:*?\r\n]+[\\/])*")
+
+
 def limpiar(texto):
     """Quita de un texto cualquier cosa personal antes de escribirlo."""
     t = str(texto)
@@ -72,6 +76,7 @@ def limpiar(texto):
             t = re.sub(re.escape(ruta.replace("\\", "/")), lambda m: nombre, t, flags=re.I)
             t = re.sub(re.escape(ruta.replace("\\", "\\\\")), lambda m: nombre, t, flags=re.I)
     t = _RE_UNIDAD.sub("<carpeta de usuario>", t)
+    t = _RE_RUTA.sub("", t)
     t = _RE_URL.sub("<dirección>", t)
     t = _RE_CORREO.sub("<correo>", t)
     t = _RE_IP.sub("<ip>", t)
@@ -132,6 +137,7 @@ def iniciar(programa="juego", raiz=None, version=None, graves=True):
     try:
         os.makedirs(raiz, exist_ok=True)
         _podar(raiz, MAX_SESIONES - 1)                 # sitio para la nueva: quedan, como mucho, cinco
+        _sanear_anteriores(raiz)
         ahora = datetime.datetime.now()
         nombre = ahora.strftime("%Y-%m-%d_%H-%M-%S") + "_" + programa
         carpeta = os.path.join(raiz, nombre)
@@ -185,6 +191,30 @@ def _preparar_filtro():
             _ocultos.add(v)
 
 
+def _sanear(ruta):
+    """fallo_grave.log lo escribe Python directamente, sin pasar por el filtro: se limpia después, línea a línea."""
+    try:
+        with open(ruta, encoding="utf-8", errors="replace") as f:
+            lineas = f.read().splitlines()
+        limpio = [limpiar(l) for l in lineas]
+        if limpio != lineas:
+            with open(ruta, "w", encoding="utf-8", newline="\r\n") as f:
+                f.write("\n".join(limpio) + "\n")
+    except OSError:
+        pass
+
+
+def _sanear_anteriores(raiz):
+    """Si una sesión anterior se cerró de golpe, su fallo_grave.log quedó sin limpiar: se limpia ahora."""
+    try:
+        for nombre in os.listdir(raiz):
+            grave = os.path.join(raiz, nombre, "fallo_grave.log")
+            if os.path.isfile(grave) and os.path.join(raiz, nombre) != _sesion and os.path.getsize(grave) > 0:
+                _sanear(grave)
+    except OSError:
+        pass
+
+
 def _escribir_leeme(carpeta):
     texto = """REGISTRO DE UNA SESIÓN DE PUERTO BRAVO: LEY DEL ASFALTO
 
@@ -236,6 +266,8 @@ def cerrar():
             grave = os.path.join(_sesion, "fallo_grave.log")
             if os.path.getsize(grave) == 0:
                 os.remove(grave)
+            else:
+                _sanear(grave)
         except OSError:
             pass
         _sesion = _log = _errores = _grave = _estado_fn = None
@@ -459,8 +491,10 @@ def escribir_sistema(secciones):
     if _sesion is None:
         return
     from . import VERSION
+    from . import procesador
     base = [("Programa", {"programa": _programa, "versión": VERSION, "compilado": "sí" if getattr(sys, "frozen", False) else "no, código fuente",
                           "Python": platform.python_version()}),
+            ("Procesador", procesador.resumen()),
             ("Equipo", {"sistema": platform.platform(), "arquitectura": platform.machine(), "procesadores": os.cpu_count(), "memoria": _memoria()})]
     try:
         libre = shutil.disk_usage(rutas.DATA).free

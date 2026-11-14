@@ -76,6 +76,14 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo Poniendo la biblioteca para procesadores antiguos...
+".venv\Scripts\python.exe" herramientas\poner_numpy_antiguo.py "%D%"
+if errorlevel 1 (
+    echo ERROR: falta la biblioteca para procesadores antiguos. Ejecuta herramientas\compilar_numpy_antiguo.bat
+    pause
+    exit /b 1
+)
+
 echo Comprobando que la compilacion esta limpia...
 ".venv\Scripts\python.exe" herramientas\comprobar_limpio.py "%D%"
 if errorlevel 1 (

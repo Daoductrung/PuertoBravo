@@ -7,6 +7,7 @@ por sounddevice, de modo que también se puede variar el tono (motores, sirenas)
 """
 import math
 import threading
+import time
 
 import numpy as np
 from . import registro
@@ -84,6 +85,10 @@ class Mezclador:
         self.oyente = (0.0, 0.0, 0.0)
         self.vols = {"maestro": 0.8, "efectos": 1.0, "ambiente": 0.6, "musica": 0.5, "interfaz": 0.8}
         self.mundo_pausado = False
+        self.mono = False           # los dos oídos oyen lo mismo: para quien oye por uno solo
+        self.atenuar = True         # bajar el ambiente y la música mientras habla la voz
+        self.duck = 1.0             # cuánto están bajados ahora mismo (1 = nada)
+        self.duck_hasta = 0.0
         self.tono_mundo = 1.0       # multiplica el tono de todos los sonidos del mundo (efectos de sustancias)
         self.stream = None
         self.error = None
@@ -180,8 +185,14 @@ class Mezclador:
     def situar_oyente(self, x, y, rumbo):
         self.oyente = (x, y, rumbo)
 
+    def hablando(self, texto):
+        """La voz va a decir algo: durante lo que tarde, el ambiente y la música bajan para que se entienda."""
+        self.duck_hasta = max(self.duck_hasta, time.time() + min(9.0, 0.7 + len(str(texto)) / 15.0))
+
     def _calcular(self, c):
         g = c.vol * self.vols.get(c.cat, 1.0)
+        if c.cat in ("ambiente", "musica"):
+            g *= self.duck
         if c.xy is None:
             p = max(-1.0, min(1.0, c.pan))
             a = (p + 1.0) * math.pi / 4.0
@@ -229,6 +240,8 @@ class Mezclador:
         with self._lock:
             self.canales = [c for c in self.canales if not c.fin]
             lista = list(self.canales)
+        objetivo = 0.45 if self.atenuar and time.time() < self.duck_hasta else 1.0
+        self.duck += (objetivo - self.duck) * (0.35 if objetivo < self.duck else 0.08)      # baja rápido y vuelve despacio
         for c in lista:
             self._calcular(c)
 
@@ -306,6 +319,10 @@ class Mezclador:
             if c.parando and gl1 == 0.0:
                 c.fin = True
         mix *= self.vols["maestro"]
+        if self.mono:
+            m = mix.mean(axis=1)
+            mix[:, 0] = m
+            mix[:, 1] = m
         np.tanh(mix, out=mix)
         return mix
 

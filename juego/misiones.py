@@ -8,6 +8,18 @@ from .entidades import Objeto, Persona
 from .menus import Dialogo, Menu, Opcion
 
 
+def paso_seguro(pasos, k):
+    """¿Se puede poner un punto de control al empezar el paso k? No, si a esas alturas llevas un vehículo de la misión
+    que todavía hay que entregar: al volver, ese vehículo ya no existiría."""
+    pendiente = False
+    for p in pasos[:k]:
+        if p["tipo"] == "robar":
+            pendiente = True
+        elif p["tipo"] == "entregar":
+            pendiente = False
+    return not pendiente
+
+
 class Misiones:
     def misiones_disponibles(self):
         hechas = set(self.completadas)
@@ -104,6 +116,13 @@ class Misiones:
         ms["recogido"] = False
         tipo = p["tipo"]
         l = self._lugar_paso(p)
+        if (tipo not in ("dialogo", "dar") and not ms.get("reanudando") and paso_seguro(pasos, ms["paso"])
+                and any(q["tipo"] not in ("dialogo", "dar") for q in pasos[:ms["paso"]])):          # con algo ya hecho: si no, es el principio
+            # Punto de control: si fallas más adelante, puedes volver aquí en lugar de al principio.
+            x, y = self.pos()
+            ms["control"] = {"paso": ms["paso"], "copia": copy.deepcopy(self.j.a_dict()), "reloj": self.reloj, "dia": self.dia,
+                             "mapa": self.mundo.id, "x": x, "y": y}
+        ms["reanudando"] = False
         if tipo == "dialogo":
             from . import voces
             self.app.abrir(Dialogo(self.app, [(self.txt(q), self.txt(tx)) for q, tx in p["lineas"]], self._siguiente_paso,
@@ -412,8 +431,33 @@ class Misiones:
         m = ms["def"]
         copia = ms["copia"]
         reloj, dia = ms["reloj"], ms["dia"]
+        control = ms.get("control")
         self._limpiar_mision()
         self.app.son("mision_fallo")
+
+        def desde_control():
+            self.app.cerrar(menu)
+            stats = dict(self.j.stats)
+            self.j.de_dict(copy.deepcopy(control["copia"]))
+            self.j.stats.update({k: stats[k] for k in ("muertes", "detenciones", "tiempo")})
+            self.reloj, self.dia = control["reloj"], control["dia"]
+            self._fin_persecucion()
+            if self.j.veh:
+                v = self.j.veh
+                self.salir_vehiculo(forzado=True)
+                self.quitar_vehiculo(v)
+            if control["mapa"] != self.mundo.id:
+                self.cambiar_mapa(control["mapa"], control["x"], control["y"])
+            self.teletransportar(control["x"], control["y"])
+            if self.trabajo:
+                self.terminar_trabajo("")
+            self.cancelar_gps()
+            self.mision = {"def": m, "paso": control["paso"] - 1, "veh": None, "enemigos": [], "objeto": None, "limite": None,
+                           "copia": copia, "reloj": reloj, "dia": dia, "generado": False, "recogido": False, "restos": None,
+                           "avisos": set(), "quedan": None, "control": control, "reanudando": True}
+            self.app.son("notificacion")
+            self.decir(f"Vuelves al último punto de control de {m['titulo']}.", True)
+            self._siguiente_paso()
 
         def reintentar():
             self.app.cerrar(menu)
@@ -436,8 +480,10 @@ class Misiones:
             self.app.cerrar(menu)
             self.decir("Misión abandonada. Puedes volver a intentarla cuando quieras desde el mismo lugar.")
 
+        extra = [Opcion("Reintentar desde el último punto de control", desde_control,
+                        ayuda="Vuelves al momento en que empezó el último tramo que habías alcanzado, con lo que tenías entonces. No repites lo anterior.")] if control else []
         menu = Menu(self.app, f"Misión fallida: {m['titulo']}. {motivo}",
-                    [Opcion("Reintentar desde el principio de la misión", reintentar, ayuda="Vuelves al lugar donde empieza la misión, con el dinero, la salud y las armas que tenías al aceptarla."),
+                    extra + [Opcion("Reintentar desde el principio de la misión", reintentar, ayuda="Vuelves al lugar donde empieza la misión, con el dinero, la salud y las armas que tenías al aceptarla."),
                      Opcion("Dejarlo por ahora", abandonar)], escapable=False)
         self.app.abrir(menu)
 

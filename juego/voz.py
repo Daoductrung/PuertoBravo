@@ -11,6 +11,7 @@ class Voz:
         self.muda = muda
         self.salida = None
         self.registro = []          # usado por las pruebas
+        self.al_hablar = None       # función(texto): el juego baja el ambiente mientras se habla
         if not muda:
             self._iniciar(sapi)
 
@@ -35,6 +36,8 @@ class Voz:
             return
         texto = str(texto)
         registro.voz(texto)
+        if self.al_hablar is not None:
+            self.al_hablar(texto)
         if guardar:
             self.historial.append(texto)
             self.cursor = len(self.historial) - 1

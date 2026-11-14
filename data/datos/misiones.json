@@ -1,302 +1,1481 @@
 {
-  "capitulos": {"1": "Capítulo uno: De vuelta al barrio", "2": "Capítulo dos: Los Calaveras", "3": "Capítulo tres: La familia Belmonte", "4": "Capítulo cuatro: Ley del asfalto"},
-  "misiones": [
-    {"id": "m01", "titulo": "Bienvenida a casa", "capitulo": 1, "contacto": "Encarna", "lugar": "bar_gaviota", "requiere": [],
-     "resumen": "Tu tía Encarna te espera en el Bar La Gaviota.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "¡Dani! ¡Pero mírate! Tres años en Monteferro y sigues con la misma cara de no haber roto un plato."],
-         ["Dani", "Hola, tía. He salido esta mañana. No tengo ni para un café."],
-         ["Encarna", "El café te lo pongo yo. Y las llaves del piso de la abuela, que en paz descanse. Está en la Calle Mayor, aquí al lado."],
-         ["Encarna", "Sube, deja el petate y descansa. Mañana hablamos de cómo te ganas la vida, que esta ciudad ha cambiado mucho. Ahora manda un tal Belmonte."]]},
-       {"tipo": "ir", "lugar": "casa_abuela", "texto": "Ve al Piso de la abuela, en la Calle Mayor. El GPS y la baliza sonora te guían: pulsa G para repetir la indicación."},
-       {"tipo": "dialogo", "lineas": [
-         ["Narrador", "El piso sigue igual: el hule de la mesa, el reloj de cuco, la foto de tu padre junto a su taxi. Dejas el petate en el suelo. Estás en casa."],
-         ["Narrador", "En tus casas puedes guardar la partida, descansar para recuperar salud y dejar vehículos en el garaje. Pulsa Intro ante la puerta para entrar."]]}
+ "capitulos": {
+  "0": "Aprender a jugar",
+  "1": "Capítulo uno: De vuelta al barrio",
+  "2": "Capítulo dos: Los Calaveras",
+  "3": "Capítulo tres: La familia Belmonte",
+  "4": "Capítulo cuatro: Ley del asfalto"
+ },
+ "misiones": [
+  {
+   "id": "m01",
+   "titulo": "Bienvenida a casa",
+   "capitulo": 1,
+   "contacto": "Encarna",
+   "lugar": "bar_gaviota",
+   "requiere": [],
+   "resumen": "Tu tía Encarna te espera en el Bar La Gaviota.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "¡Dani! ¡Pero mírate! Tres años en Monteferro y sigues con la misma cara de no haber roto un plato."
+      ],
+      [
+       "Dani",
+       "Hola, tía. He salido esta mañana. No tengo ni para un café."
+      ],
+      [
+       "Encarna",
+       "El café te lo pongo yo. Y las llaves del piso de la abuela, que en paz descanse. Está en la Calle Mayor, aquí al lado."
+      ],
+      [
+       "Encarna",
+       "Sube, deja el petate y descansa. Mañana hablamos de cómo te ganas la vida, que esta ciudad ha cambiado mucho. Ahora manda un tal Belmonte."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "casa_abuela",
+     "texto": "Ve al Piso de la abuela, en la Calle Mayor. El GPS y la baliza sonora te guían: pulsa G para repetir la indicación."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El piso sigue igual: el hule de la mesa, el reloj de cuco, la foto de tu padre junto a su taxi. Dejas el petate en el suelo. Estás en casa."
+      ],
+      [
+       "Narrador",
+       "En tus casas puedes guardar la partida, descansar para recuperar salud y dejar vehículos en el garaje. Pulsa Intro ante la puerta para entrar."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 100
+   }
+  },
+  {
+   "id": "m02",
+   "titulo": "El recado",
+   "capitulo": 1,
+   "contacto": "Encarna",
+   "lugar": "bar_gaviota",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Encarna necesita que le hagas un recado en el barrio.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Buenos días, dormilón. Hazme un favor: Paco, el de los ultramarinos, me guarda un paquete. Tráemelo."
+      ],
+      [
+       "Dani",
+       "¿Qué hay en el paquete?"
+      ],
+      [
+       "Encarna",
+       "Jamón del bueno, malpensado. Y no te entretengas, que te conozco."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "tienda_paco",
+     "texto": "Ve a Ultramarinos Paco, en la Avenida del Faro."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "tienda_paco",
+     "objeto": "Paquete de Encarna",
+     "texto": "Recoge el paquete: sigue su sonido y pulsa Intro cuando estés encima."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "bar_gaviota",
+     "texto": "Lleva el paquete al Bar La Gaviota."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Así me gusta. Toma, por las molestias. Y pásate luego: un amigo mío, El Chispas, anda buscando gente con manos rápidas para su taller."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 150
+   }
+  },
+  {
+   "id": "m03",
+   "titulo": "Ruedas prestadas",
+   "capitulo": 1,
+   "contacto": "Chispas",
+   "lugar": "taller_chispas",
+   "requiere": [
+    "m02"
+   ],
+   "resumen": "El Chispas, el mecánico del Polígono, tiene trabajo para ti.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chispas",
+       "Así que tú eres el sobrino de Encarna. O la sobrina. Con este ruido no me entero de nada."
+      ],
+      [
+       "Dani",
+       "Dani. Me han dicho que buscas gente."
+      ],
+      [
+       "Chispas",
+       "Busco coches. Hay un sedán aparcado junto a la iglesia de San Telmo. Su dueño me debe dinero. Tráemelo entero."
+      ],
+      [
+       "Chispas",
+       "Acércate al coche y pulsa F para forzar la puerta. Si salta la alarma, date prisa en largarte."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "sedan",
+     "lugar": "iglesia",
+     "nombre": "Sedán del moroso",
+     "texto": "Roba el sedán aparcado junto a la Iglesia de San Telmo. Pulsa F a su lado para entrar."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "taller_chispas",
+     "texto": "Lleva el sedán a Talleres El Chispas sin destrozarlo. Flecha arriba acelera, flecha abajo frena, y las flechas laterales ponen el intermitente para girar en el siguiente cruce."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chispas",
+       "¡Ni un arañazo! Bueno, casi. Tienes futuro. Cuando quieras ganarte un dinero, tráeme coches al desguace de aquí al lado: pagan según el modelo y el estado."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 400
+   }
+  },
+  {
+   "id": "m04",
+   "titulo": "Morosos",
+   "capitulo": 1,
+   "contacto": "Encarna",
+   "lugar": "bar_gaviota",
+   "requiere": [
+    "m03"
+   ],
+   "resumen": "Unos matones molestan al proveedor de Encarna en la lonja.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Dani, tengo un problema. Dos chavales de Los Calaveras están en la lonja pidiéndole dinero a Ramiro, el que me trae el pescado."
+      ],
+      [
+       "Encarna",
+       "No quiero muertos. Solo que se les quiten las ganas de volver. Toma, el bate de tu abuelo."
+      ],
+      [
+       "Dani",
+       "¿El abuelo jugaba al béisbol?"
+      ],
+      [
+       "Encarna",
+       "No."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "bate"
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "lonja",
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Calavera",
+       "arma": "punos",
+       "salud": 50
+      }
      ],
-     "recompensa": {"dinero": 100}},
-
-    {"id": "m02", "titulo": "El recado", "capitulo": 1, "contacto": "Encarna", "lugar": "bar_gaviota", "requiere": ["m01"],
-     "resumen": "Encarna necesita que le hagas un recado en el barrio.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "Buenos días, dormilón. Hazme un favor: Paco, el de los ultramarinos, me guarda un paquete. Tráemelo."],
-         ["Dani", "¿Qué hay en el paquete?"],
-         ["Encarna", "Jamón del bueno, malpensado. Y no te entretengas, que te conozco."]]},
-       {"tipo": "ir", "lugar": "tienda_paco", "texto": "Ve a Ultramarinos Paco, en la Avenida del Faro."},
-       {"tipo": "recoger", "lugar": "tienda_paco", "objeto": "Paquete de Encarna", "texto": "Recoge el paquete: sigue su sonido y pulsa Intro cuando estés encima."},
-       {"tipo": "ir", "lugar": "bar_gaviota", "texto": "Lleva el paquete al Bar La Gaviota."},
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "Así me gusta. Toma, por las molestias. Y pásate luego: un amigo mío, El Chispas, anda buscando gente con manos rápidas para su taller."]]}
+     "texto": "Ve a la Lonja de pescado y dales una lección a los dos Calaveras. Pulsa Q para fijar un enemigo y Espacio para atacar."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "bar_gaviota",
+     "texto": "Vuelve al Bar La Gaviota."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Me ha llamado Ramiro. Dice que has estado muy convincente. Pero ojo: Los Calaveras no olvidan. Vas a necesitar algo mejor que un bate."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 500
+   }
+  },
+  {
+   "id": "m05",
+   "titulo": "Compras de hierro",
+   "capitulo": 1,
+   "contacto": "La Rusa",
+   "lugar": "almacen_rusa",
+   "requiere": [
+    "m04"
+   ],
+   "resumen": "Encarna te manda al Almacén Siete del puerto a conocer a La Rusa.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Rusa",
+       "Tú eres Dani. Encarna dice que eres de fiar. Yo digo que ya veremos."
+      ],
+      [
+       "Dani",
+       "Necesito protección."
+      ],
+      [
+       "La Rusa",
+       "Todos necesitan. Toma: pistola de nueve milímetros, limpia. Primera es regalo. La segunda, ya no."
+      ],
+      [
+       "La Rusa",
+       "Espera. Oigo motores. Tus amigos Calaveras te han seguido. Buen momento para probar el regalo, ¿no?"
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "pistola",
+     "balas": 48
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "almacen_rusa",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Calavera",
+       "arma": "pistola",
+       "salud": 55
+      },
+      {
+       "n": 1,
+       "tipo": "Calavera",
+       "arma": "navaja",
+       "salud": 55
+      }
      ],
-     "recompensa": {"dinero": 150}},
-
-    {"id": "m03", "titulo": "Ruedas prestadas", "capitulo": 1, "contacto": "Chispas", "lugar": "taller_chispas", "requiere": ["m02"],
-     "resumen": "El Chispas, el mecánico del Polígono, tiene trabajo para ti.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Chispas", "Así que tú eres el sobrino de Encarna. O la sobrina. Con este ruido no me entero de nada."],
-         ["Dani", "Dani. Me han dicho que buscas gente."],
-         ["Chispas", "Busco coches. Hay un sedán aparcado junto a la iglesia de San Telmo. Su dueño me debe dinero. Tráemelo entero."],
-         ["Chispas", "Acércate al coche y pulsa F para forzar la puerta. Si salta la alarma, date prisa en largarte."]]},
-       {"tipo": "robar", "modelo": "sedan", "lugar": "iglesia", "nombre": "Sedán del moroso", "texto": "Roba el sedán aparcado junto a la Iglesia de San Telmo. Pulsa F a su lado para entrar."},
-       {"tipo": "entregar", "lugar": "taller_chispas", "texto": "Lleva el sedán a Talleres El Chispas sin destrozarlo. Flecha arriba acelera, flecha abajo frena, y las flechas laterales ponen el intermitente para girar en el siguiente cruce."},
-       {"tipo": "dialogo", "lineas": [
-         ["Chispas", "¡Ni un arañazo! Bueno, casi. Tienes futuro. Cuando quieras ganarte un dinero, tráeme coches al desguace de aquí al lado: pagan según el modelo y el estado."]]}
+     "texto": "Defiende el almacén: acaba con los tres Calaveras. Q fija al enemigo, Espacio dispara, R recarga y X te agacha para que te den menos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Rusa",
+       "No está mal. Disparas como principiante, pero principiante con suerte. Desde hoy mi almacén está abierto para ti, y a mejor precio que la armería del centro."
+      ],
+      [
+       "Narrador",
+       "Fin del capítulo uno. Los Calaveras te han declarado la guerra: a partir de ahora te atacarán en cuanto te vean por el puerto."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 600
+   }
+  },
+  {
+   "id": "m06",
+   "titulo": "Entrega urgente",
+   "capitulo": 2,
+   "contacto": "Chispas",
+   "lugar": "taller_chispas",
+   "requiere": [
+    "m05"
+   ],
+   "resumen": "El Chispas tiene que entregar una furgoneta contrarreloj.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chispas",
+       "¡Dani! Menos mal. Tengo una furgoneta cargada de recambios que tiene que estar en el Hotel Miramar en tres minutos, o pierdo al cliente."
+      ],
+      [
+       "Dani",
+       "¿Recambios para un hotel?"
+      ],
+      [
+       "Chispas",
+       "Tú conduce y no preguntes. Y con cuidado, que la mercancía es delicada."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "furgoneta",
+     "lugar": "taller_chispas",
+     "abierto": true,
+     "nombre": "Furgoneta de reparto",
+     "texto": "Sube a la furgoneta de reparto que hay junto al taller."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "hotel",
+     "limite": 180,
+     "salud_min": 30,
+     "texto": "Lleva la furgoneta al Hotel Miramar, en Playa Dorada, antes de que se acabe el tiempo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El portero del hotel abre las puertas traseras, mira dentro, silba y te pone un sobre en la mano sin decir palabra."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 900
+   }
+  },
+  {
+   "id": "m07",
+   "titulo": "La periodista",
+   "capitulo": 2,
+   "contacto": "Marta",
+   "lugar": "periodico",
+   "requiere": [
+    "m05"
+   ],
+   "resumen": "Una periodista de El Faro quiere hablar contigo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marta",
+       "Dani Roca. Te cayeron tres años por un robo que no cometiste, y el atestado lo firmó el comisario Varela. Me llamo Marta Salgado y quiero saber por qué."
+      ],
+      [
+       "Dani",
+       "Yo también querría saberlo."
+      ],
+      [
+       "Marta",
+       "Una fuente me ha dejado unos documentos en la consigna del Hotel Miramar. Si voy yo, me siguen. A ti aún no te conocen."
+      ]
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "hotel",
+     "objeto": "Maletín de documentos",
+     "texto": "Ve al Hotel Miramar y recoge el maletín de documentos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "En cuanto coges el maletín, un hombre con pinganillo te señala y grita. ¡Era una trampa de la policía!"
+      ]
+     ]
+    },
+    {
+     "tipo": "policia",
+     "nivel": 2,
+     "texto": "Despista a la policía: aléjate de las sirenas hasta que dejen de buscarte, o pasa por un taller de pintura."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "periodico",
+     "texto": "Lleva el maletín a la Redacción de El Faro."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marta",
+       "Aquí está todo: pagos mensuales de una empresa de Belmonte a una cuenta de Varela. Pero necesito más pruebas antes de publicarlo. Seguiremos en contacto."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1000
+   }
+  },
+  {
+   "id": "m08",
+   "titulo": "Deportivo de encargo",
+   "capitulo": 2,
+   "contacto": "Chispas",
+   "lugar": "taller_chispas",
+   "requiere": [
+    "m06"
+   ],
+   "resumen": "Un cliente del Chispas quiere un deportivo muy concreto.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chispas",
+       "Tengo un cliente caprichoso. Quiere el Centella rojo que hay en el escaparate de Autos Platino, en Las Torres."
+      ],
+      [
+       "Dani",
+       "Eso tendrá alarma, cámaras y de todo."
+      ],
+      [
+       "Chispas",
+       "Por eso te lo pido a ti y no voy yo. Cuando lo tengas, despista a la policía y llévalo al desguace, que allí le cambiamos hasta el nombre."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "deportivo",
+     "lugar": "concesionario",
+     "nombre": "Centella rojo",
+     "busqueda": 2,
+     "texto": "Roba el Centella rojo de Autos Platino, en Las Torres."
+    },
+    {
+     "tipo": "policia",
+     "nivel": 2,
+     "texto": "¡Ha saltado la alarma! Despista a la policía."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "desguace",
+     "salud_min": 40,
+     "texto": "Lleva el Centella al Desguace Hierro Viejo sin destrozarlo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chispas",
+       "¡Qué maravilla! Escucha ese motor. Eres un artista, Dani."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1800
+   }
+  },
+  {
+   "id": "m09",
+   "titulo": "Fuego en el muelle",
+   "capitulo": 2,
+   "contacto": "La Rusa",
+   "lugar": "almacen_rusa",
+   "requiere": [
+    "m07"
+   ],
+   "resumen": "Los Calaveras le han robado un cargamento a La Rusa.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Rusa",
+       "Los Calaveras me han robado una caja. Una caja importante. La tienen en su guarida, la vieja conservera."
+      ],
+      [
+       "Dani",
+       "¿Y quieres que entre yo solo ahí?"
+      ],
+      [
+       "La Rusa",
+       "Quiero mi caja. Cómo entras es problema tuyo. Toma munición."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "balas_arma": "pistola",
+     "balas": 36
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "guarida",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Calavera",
+       "arma": "pistola",
+       "salud": 60
+      },
+      {
+       "n": 1,
+       "tipo": "Calavera",
+       "arma": "escopeta",
+       "salud": 70
+      }
      ],
-     "recompensa": {"dinero": 400}},
-
-    {"id": "m04", "titulo": "Morosos", "capitulo": 1, "contacto": "Encarna", "lugar": "bar_gaviota", "requiere": ["m03"],
-     "resumen": "Unos matones molestan al proveedor de Encarna en la lonja.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "Dani, tengo un problema. Dos chavales de Los Calaveras están en la lonja pidiéndole dinero a Ramiro, el que me trae el pescado."],
-         ["Encarna", "No quiero muertos. Solo que se les quiten las ganas de volver. Toma, el bate de tu abuelo."],
-         ["Dani", "¿El abuelo jugaba al béisbol?"],
-         ["Encarna", "No."]]},
-       {"tipo": "dar", "arma": "bate"},
-       {"tipo": "eliminar", "lugar": "lonja", "enemigos": [{"n": 2, "tipo": "Calavera", "arma": "punos", "salud": 50}], "texto": "Ve a la Lonja de pescado y dales una lección a los dos Calaveras. Pulsa Q para fijar un enemigo y Espacio para atacar."},
-       {"tipo": "ir", "lugar": "bar_gaviota", "texto": "Vuelve al Bar La Gaviota."},
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "Me ha llamado Ramiro. Dice que has estado muy convincente. Pero ojo: Los Calaveras no olvidan. Vas a necesitar algo mejor que un bate."]]}
+     "texto": "Asalta la Guarida de Los Calaveras y elimina a los cuatro que la vigilan."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "guarida",
+     "objeto": "Caja de La Rusa",
+     "texto": "Recoge la caja de La Rusa."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "almacen_rusa",
+     "texto": "Lleva la caja al Almacén Siete."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Rusa",
+       "Mi caja. Bien. ¿Sabes una cosa? Los Calaveras no tienen dinero para estas armas. Alguien se las paga. Alguien con torre propia."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2000,
+    "arma": "escopeta",
+    "balas": 12
+   }
+  },
+  {
+   "id": "m10",
+   "titulo": "El mensajero",
+   "capitulo": 2,
+   "contacto": "Marta",
+   "lugar": "periodico",
+   "requiere": [
+    "m09",
+    "m08"
+   ],
+   "resumen": "Marta ha localizado al mensajero que lleva los pagos de Belmonte.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marta",
+       "Lo tengo. Cada viernes un mensajero de Los Calaveras sale de la lonja con un sobre para Varela. Hoy es viernes."
+      ],
+      [
+       "Dani",
+       "Quieres ese sobre."
+      ],
+      [
+       "Marta",
+       "Quiero ese sobre. Consigue un coche rápido, alcánzalo y páralo como sea. Embístelo o dispárale, pero que no llegue a la comisaría."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "modelo": "sedan",
+     "lugar": "lonja",
+     "nombre": "Coche del mensajero",
+     "salud": 110,
+     "texto": "Persigue el coche del mensajero y destrúyelo a golpes o a tiros. Pulsa Q para fijarlo: oirás dónde está."
+    },
+    {
+     "tipo": "recoger",
+     "aqui": true,
+     "objeto": "Sobre de los pagos",
+     "texto": "Recoge el sobre entre los restos del coche."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "periodico",
+     "texto": "Lleva el sobre a la Redacción de El Faro."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marta",
+       "Billetes, y una nota con el membrete del Casino Belmonte. Ya no hay duda de quién paga. Ten cuidado, Dani: ahora Belmonte sabe que existes."
+      ],
+      [
+       "Narrador",
+       "Fin del capítulo dos."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2500
+   }
+  },
+  {
+   "id": "m11",
+   "titulo": "La invitación",
+   "capitulo": 3,
+   "contacto": "Belmonte",
+   "lugar": "casino",
+   "requiere": [
+    "m10"
+   ],
+   "resumen": "Octavio Belmonte te ha mandado llamar al casino.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Belmonte",
+       "Así que tú eres quien anda revolviendo mi ciudad. Siéntate. ¿Whisky?"
+      ],
+      [
+       "Dani",
+       "No bebo con desconocidos."
+      ],
+      [
+       "Belmonte",
+       "Me gusta. Mira, podría hacerte desaparecer, pero el talento escasea. Trabaja para mí y olvidamos lo del mensajero."
+      ],
+      [
+       "Dani",
+       "(Si entro en su organización, conseguiré las pruebas que necesita Marta.) ¿Qué hay que hacer?"
+      ],
+      [
+       "Belmonte",
+       "Para empezar, llevarme a casa. Mi chófer ha tenido un accidente. Sin baches, sin prisas y sin un solo rasguño en el coche."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "lujo",
+     "lugar": "casino",
+     "abierto": true,
+     "nombre": "Platino GT de Belmonte",
+     "texto": "Sube al Platino GT de Belmonte, aparcado frente al casino."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "mansion",
+     "salud_min": 85,
+     "limite": 200,
+     "texto": "Lleva a Belmonte a su mansión de La Colina. Conduce con suavidad: el coche no puede sufrir daños."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Belmonte",
+       "Correcto. Puntual y discreto. Vuelve al casino mañana, tendré algo más interesante."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 3000
+   }
+  },
+  {
+   "id": "m12",
+   "titulo": "Cobro pendiente",
+   "capitulo": 3,
+   "contacto": "Belmonte",
+   "lugar": "casino",
+   "requiere": [
+    "m11"
+   ],
+   "resumen": "Belmonte quiere que cobres unas deudas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Belmonte",
+       "Tres negocios me deben la cuota de protección: el Club Neón, el Restaurante Sibarita y el Chiringuito El Espeto."
+      ],
+      [
+       "Belmonte",
+       "Los dos primeros pagarán en cuanto te vean. El del chiringuito se ha buscado guardaespaldas. Convéncelos."
+      ]
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "club_neon",
+     "objeto": "Sobre del Club Neón",
+     "texto": "Ve al Club Neón y recoge el sobre."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "restaurante",
+     "objeto": "Sobre del Restaurante Sibarita",
+     "texto": "Ve al Restaurante Sibarita, en La Colina, y recoge el sobre."
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "chiringuito",
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Guardaespaldas",
+       "arma": "pistola",
+       "salud": 80
+      },
+      {
+       "n": 1,
+       "tipo": "Guardaespaldas",
+       "arma": "bate",
+       "salud": 80
+      }
      ],
-     "recompensa": {"dinero": 500}},
-
-    {"id": "m05", "titulo": "Compras de hierro", "capitulo": 1, "contacto": "La Rusa", "lugar": "almacen_rusa", "requiere": ["m04"],
-     "resumen": "Encarna te manda al Almacén Siete del puerto a conocer a La Rusa.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["La Rusa", "Tú eres Dani. Encarna dice que eres de fiar. Yo digo que ya veremos."],
-         ["Dani", "Necesito protección."],
-         ["La Rusa", "Todos necesitan. Toma: pistola de nueve milímetros, limpia. Primera es regalo. La segunda, ya no."],
-         ["La Rusa", "Espera. Oigo motores. Tus amigos Calaveras te han seguido. Buen momento para probar el regalo, ¿no?"]]},
-       {"tipo": "dar", "arma": "pistola", "balas": 48},
-       {"tipo": "eliminar", "lugar": "almacen_rusa", "ya": true, "enemigos": [{"n": 2, "tipo": "Calavera", "arma": "pistola", "salud": 55}, {"n": 1, "tipo": "Calavera", "arma": "navaja", "salud": 55}], "texto": "Defiende el almacén: acaba con los tres Calaveras. Q fija al enemigo, Espacio dispara, R recarga y X te agacha para que te den menos."},
-       {"tipo": "dialogo", "lineas": [
-         ["La Rusa", "No está mal. Disparas como principiante, pero principiante con suerte. Desde hoy mi almacén está abierto para ti, y a mejor precio que la armería del centro."],
-         ["Narrador", "Fin del capítulo uno. Los Calaveras te han declarado la guerra: a partir de ahora te atacarán en cuanto te vean por el puerto."]]}
+     "texto": "Ve al Chiringuito El Espeto y encárgate de los guardaespaldas."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "chiringuito",
+     "objeto": "Sobre del chiringuito",
+     "texto": "Recoge el sobre del chiringuito."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "casino",
+     "texto": "Lleva el dinero al Casino Belmonte."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Belmonte",
+       "Todo. Hasta el último billete. Empiezo a pensar que puedo confiar en ti."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 4000
+   }
+  },
+  {
+   "id": "m13",
+   "titulo": "El chivato",
+   "capitulo": 3,
+   "contacto": "Belmonte",
+   "lugar": "casino",
+   "requiere": [
+    "m12"
+   ],
+   "resumen": "Belmonte tiene un encargo delicado en el parque.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Belmonte",
+       "Alguien de mi contabilidad está hablando con una periodista. Lo he citado junto al estanque del Parque de la Alameda. Ve y que no vuelva a hablar."
+      ],
+      [
+       "Dani",
+       "(La fuente de Marta. Tengo que llegar antes que nadie.)"
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "parque",
+     "texto": "Ve al estanque del Parque de la Alameda."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Contable",
+       "¿Tú eres Dani? Marta me dijo que podía fiarme. Toma, en este lápiz de memoria está la contabilidad entera de Belmonte."
+      ],
+      [
+       "Contable",
+       "¡Cuidado! ¡No has venido solo! ¡Belmonte no se fiaba de ti!"
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "parque",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Sicario de Belmonte",
+       "arma": "pistola",
+       "salud": 80
+      },
+      {
+       "n": 1,
+       "tipo": "Sicario de Belmonte",
+       "arma": "subfusil",
+       "salud": 80
+      }
      ],
-     "recompensa": {"dinero": 600}},
-
-    {"id": "m06", "titulo": "Entrega urgente", "capitulo": 2, "contacto": "Chispas", "lugar": "taller_chispas", "requiere": ["m05"],
-     "resumen": "El Chispas tiene que entregar una furgoneta contrarreloj.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Chispas", "¡Dani! Menos mal. Tengo una furgoneta cargada de recambios que tiene que estar en el Hotel Miramar en tres minutos, o pierdo al cliente."],
-         ["Dani", "¿Recambios para un hotel?"],
-         ["Chispas", "Tú conduce y no preguntes. Y con cuidado, que la mercancía es delicada."]]},
-       {"tipo": "robar", "modelo": "furgoneta", "lugar": "taller_chispas", "abierto": true, "nombre": "Furgoneta de reparto", "texto": "Sube a la furgoneta de reparto que hay junto al taller."},
-       {"tipo": "entregar", "lugar": "hotel", "limite": 180, "salud_min": 30, "texto": "Lleva la furgoneta al Hotel Miramar, en Playa Dorada, antes de que se acabe el tiempo."},
-       {"tipo": "dialogo", "lineas": [
-         ["Narrador", "El portero del hotel abre las puertas traseras, mira dentro, silba y te pone un sobre en la mano sin decir palabra."]]}
+     "texto": "¡Emboscada! Acaba con los sicarios de Belmonte."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "periodico",
+     "texto": "Lleva el lápiz de memoria a la Redacción de El Faro."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marta",
+       "Con esto cae Belmonte. Pero mientras Varela siga en la comisaría, ningún juez verá estos papeles. Hay que ir a por el comisario."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 5000,
+    "arma": "subfusil",
+    "balas": 90
+   }
+  },
+  {
+   "id": "m14",
+   "titulo": "El coche del comisario",
+   "capitulo": 3,
+   "contacto": "Marta",
+   "lugar": "periodico",
+   "requiere": [
+    "m13"
+   ],
+   "resumen": "Marta tiene un plan para desenmascarar al comisario Varela.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marta",
+       "Varela guarda en su coche patrulla una grabadora con todas sus conversaciones con Belmonte. Se cubre las espaldas, el muy zorro."
+      ],
+      [
+       "Dani",
+       "Y quieres que robe un coche de policía. De la puerta de la comisaría."
+      ],
+      [
+       "Marta",
+       "Dicho así suena fatal. Llévalo a la Nave industrial del polígono; un técnico amigo mío sacará la grabación."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "patrulla",
+     "lugar": "comisaria",
+     "nombre": "Coche patrulla de Varela",
+     "busqueda": 3,
+     "texto": "Roba el coche patrulla de Varela, aparcado ante la Comisaría Central."
+    },
+    {
+     "tipo": "policia",
+     "nivel": 3,
+     "texto": "¡Tienes a media comisaría detrás! Despista a la policía."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "nave",
+     "salud_min": 20,
+     "texto": "Lleva el coche patrulla a la Nave industrial del Polígono Hierro."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marta",
+       "¡Lo tenemos! Dos años de conversaciones. Varela está acabado... si sobrevivimos para publicarlo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 6000
+   }
+  },
+  {
+   "id": "m15",
+   "titulo": "Golpe al casino",
+   "capitulo": 3,
+   "contacto": "Encarna",
+   "lugar": "bar_gaviota",
+   "requiere": [
+    "m14"
+   ],
+   "resumen": "Encarna y El Chispas quieren golpear a Belmonte donde más le duele.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Belmonte ya sabe que le has traicionado. Va a venir a por nosotros, así que vamos a ir nosotros primero."
+      ],
+      [
+       "Chispas",
+       "La caja fuerte del casino. Hoy guarda la recaudación de todo el mes. Yo te abro la puerta de atrás; tú entras, limpias y sales."
+      ],
+      [
+       "Dani",
+       "Tía, ¿desde cuándo planeas atracos?"
+      ],
+      [
+       "Encarna",
+       "Hijo, ¿tú con qué te crees que se pagó este bar?"
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "casino",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Guardia del casino",
+       "arma": "pistola",
+       "salud": 90
+      },
+      {
+       "n": 2,
+       "tipo": "Guardia del casino",
+       "arma": "subfusil",
+       "salud": 90
+      }
      ],
-     "recompensa": {"dinero": 900}},
-
-    {"id": "m07", "titulo": "La periodista", "capitulo": 2, "contacto": "Marta", "lugar": "periodico", "requiere": ["m05"],
-     "resumen": "Una periodista de El Faro quiere hablar contigo.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Marta", "Dani Roca. Te cayeron tres años por un robo que no cometiste, y el atestado lo firmó el comisario Varela. Me llamo Marta Salgado y quiero saber por qué."],
-         ["Dani", "Yo también querría saberlo."],
-         ["Marta", "Una fuente me ha dejado unos documentos en la consigna del Hotel Miramar. Si voy yo, me siguen. A ti aún no te conocen."]]},
-       {"tipo": "recoger", "lugar": "hotel", "objeto": "Maletín de documentos", "texto": "Ve al Hotel Miramar y recoge el maletín de documentos."},
-       {"tipo": "dialogo", "lineas": [["Narrador", "En cuanto coges el maletín, un hombre con pinganillo te señala y grita. ¡Era una trampa de la policía!"]]},
-       {"tipo": "policia", "nivel": 2, "texto": "Despista a la policía: aléjate de las sirenas hasta que dejen de buscarte, o pasa por un taller de pintura."},
-       {"tipo": "ir", "lugar": "periodico", "texto": "Lleva el maletín a la Redacción de El Faro."},
-       {"tipo": "dialogo", "lineas": [
-         ["Marta", "Aquí está todo: pagos mensuales de una empresa de Belmonte a una cuenta de Varela. Pero necesito más pruebas antes de publicarlo. Seguiremos en contacto."]]}
+     "texto": "Ve al Casino Belmonte y elimina a los cinco guardias."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "casino",
+     "objeto": "Botín del casino",
+     "texto": "Recoge el botín de la caja fuerte."
+    },
+    {
+     "tipo": "policia",
+     "nivel": 4,
+     "texto": "¡Toda la policía de la ciudad te busca! Despístalos."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "bar_gaviota",
+     "texto": "Lleva el botín al Bar La Gaviota."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "¡Virgen del Carmen, cuánto billete! Con esto arreglo el tejado y aún sobra para invitar al barrio entero."
+      ],
+      [
+       "Narrador",
+       "Fin del capítulo tres. Belmonte ha perdido su dinero, a su contable y a su comisario. Ahora solo le queda la rabia."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 15000
+   }
+  },
+  {
+   "id": "m16",
+   "titulo": "Represalia",
+   "capitulo": 4,
+   "contacto": "Encarna",
+   "lugar": "casa_abuela",
+   "requiere": [
+    "m15"
+   ],
+   "resumen": "Suena el teléfono en el piso de la abuela. Algo va mal.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "¡Dani! ¡Están aquí! ¡Los hombres de Belmonte están destrozando el bar! ¡Corre!"
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "bar_gaviota",
+     "limite": 150,
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Sicario de Belmonte",
+       "arma": "pistola",
+       "salud": 80
+      },
+      {
+       "n": 2,
+       "tipo": "Sicario de Belmonte",
+       "arma": "escopeta",
+       "salud": 85
+      }
      ],
-     "recompensa": {"dinero": 1000}},
-
-    {"id": "m08", "titulo": "Deportivo de encargo", "capitulo": 2, "contacto": "Chispas", "lugar": "taller_chispas", "requiere": ["m06"],
-     "resumen": "Un cliente del Chispas quiere un deportivo muy concreto.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Chispas", "Tengo un cliente caprichoso. Quiere el Centella rojo que hay en el escaparate de Autos Platino, en Las Torres."],
-         ["Dani", "Eso tendrá alarma, cámaras y de todo."],
-         ["Chispas", "Por eso te lo pido a ti y no voy yo. Cuando lo tengas, despista a la policía y llévalo al desguace, que allí le cambiamos hasta el nombre."]]},
-       {"tipo": "robar", "modelo": "deportivo", "lugar": "concesionario", "nombre": "Centella rojo", "busqueda": 2, "texto": "Roba el Centella rojo de Autos Platino, en Las Torres."},
-       {"tipo": "policia", "nivel": 2, "texto": "¡Ha saltado la alarma! Despista a la policía."},
-       {"tipo": "entregar", "lugar": "desguace", "salud_min": 40, "texto": "Lleva el Centella al Desguace Hierro Viejo sin destrozarlo."},
-       {"tipo": "dialogo", "lineas": [["Chispas", "¡Qué maravilla! Escucha ese motor. Eres un artista, Dani."]]}
+     "texto": "¡Corre al Bar La Gaviota y acaba con los cinco sicarios antes de que sea tarde!"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Estoy bien, estoy bien. Me he escondido detrás de la barra con la escopeta del abuelo. Pero mira cómo han dejado esto."
+      ],
+      [
+       "Dani",
+       "Esto se acaba, tía. Voy a ir a por él."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 3000
+   }
+  },
+  {
+   "id": "m17",
+   "titulo": "Arsenal",
+   "capitulo": 4,
+   "contacto": "La Rusa",
+   "lugar": "almacen_rusa",
+   "requiere": [
+    "m16"
+   ],
+   "resumen": "Para asaltar la mansión necesitas armas serias. La Rusa sabe dónde hay.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Rusa",
+       "Para la mansión de Belmonte necesitas más que una pistola. Yo tengo rifles. Bueno, tenía."
+      ],
+      [
+       "La Rusa",
+       "Los Calaveras los guardan para Belmonte en la fábrica abandonada del polígono. Recupéralos y uno es para ti."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "fabrica",
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Calavera",
+       "arma": "pistola",
+       "salud": 70
+      },
+      {
+       "n": 2,
+       "tipo": "Calavera",
+       "arma": "subfusil",
+       "salud": 70
+      }
      ],
-     "recompensa": {"dinero": 1800}},
-
-    {"id": "m09", "titulo": "Fuego en el muelle", "capitulo": 2, "contacto": "La Rusa", "lugar": "almacen_rusa", "requiere": ["m07"],
-     "resumen": "Los Calaveras le han robado un cargamento a La Rusa.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["La Rusa", "Los Calaveras me han robado una caja. Una caja importante. La tienen en su guarida, la vieja conservera."],
-         ["Dani", "¿Y quieres que entre yo solo ahí?"],
-         ["La Rusa", "Quiero mi caja. Cómo entras es problema tuyo. Toma munición."]]},
-       {"tipo": "dar", "balas_arma": "pistola", "balas": 36},
-       {"tipo": "eliminar", "lugar": "guarida", "enemigos": [{"n": 3, "tipo": "Calavera", "arma": "pistola", "salud": 60}, {"n": 1, "tipo": "Calavera", "arma": "escopeta", "salud": 70}], "texto": "Asalta la Guarida de Los Calaveras y elimina a los cuatro que la vigilan."},
-       {"tipo": "recoger", "lugar": "guarida", "objeto": "Caja de La Rusa", "texto": "Recoge la caja de La Rusa."},
-       {"tipo": "ir", "lugar": "almacen_rusa", "texto": "Lleva la caja al Almacén Siete."},
-       {"tipo": "dialogo", "lineas": [
-         ["La Rusa", "Mi caja. Bien. ¿Sabes una cosa? Los Calaveras no tienen dinero para estas armas. Alguien se las paga. Alguien con torre propia."]]}
+     "texto": "Ve a la Fábrica abandonada y elimina a los seis Calaveras."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "fabrica",
+     "objeto": "Caja de rifles",
+     "texto": "Recoge la caja de rifles."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "almacen_rusa",
+     "texto": "Lleva los rifles al Almacén Siete."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Rusa",
+       "Trato es trato. Toma tu rifle. Y un chaleco, regalo de la casa. No quiero perder a mi mejor cliente."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 4000,
+    "arma": "rifle",
+    "balas": 20,
+    "chaleco": true
+   }
+  },
+  {
+   "id": "m18",
+   "titulo": "La caída de Varela",
+   "capitulo": 4,
+   "contacto": "Marta",
+   "lugar": "periodico",
+   "requiere": [
+    "m16"
+   ],
+   "resumen": "El Faro ha publicado la historia. El comisario Varela intenta huir.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marta",
+       "¡Lo hemos publicado! Está en todas las radios. Pero Varela ha vaciado su despacho y sale ahora mismo de la comisaría hacia la carretera del norte."
+      ],
+      [
+       "Dani",
+       "No va a llegar."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "modelo": "patrulla",
+     "lugar": "comisaria",
+     "nombre": "Coche de Varela",
+     "salud": 160,
+     "texto": "Persigue el coche del comisario Varela y detenlo. Pulsa Q para fijarlo."
+    },
+    {
+     "tipo": "recoger",
+     "aqui": true,
+     "objeto": "Placa del comisario",
+     "texto": "Recoge la placa de Varela entre los restos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Varela sale del coche con las manos en alto, justo cuando llegan los agentes honrados que quedan en la ciudad. Uno de ellos te mira, asiente y hace como que no te ha visto."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 6000
+   }
+  },
+  {
+   "id": "m19",
+   "titulo": "Asalto a la mansión",
+   "capitulo": 4,
+   "contacto": "Encarna",
+   "lugar": "bar_gaviota",
+   "requiere": [
+    "m17",
+    "m18"
+   ],
+   "resumen": "Ha llegado la hora de ir a por Belmonte a su propia casa.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Sin comisario y sin dinero, a Belmonte solo le queda su libro de cuentas: los nombres de todos los políticos que tiene comprados. Lo guarda en la mansión."
+      ],
+      [
+       "Chispas",
+       "Con ese libro, no le salva ni el Papa. Pero tiene la casa llena de guardias."
+      ],
+      [
+       "Dani",
+       "Pues habrá que llamar a la puerta."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "mansion",
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Guardia de la mansión",
+       "arma": "pistola",
+       "salud": 90
+      },
+      {
+       "n": 2,
+       "tipo": "Guardia de la mansión",
+       "arma": "subfusil",
+       "salud": 90
+      },
+      {
+       "n": 1,
+       "tipo": "Jefe de seguridad",
+       "arma": "escopeta",
+       "salud": 140
+      }
      ],
-     "recompensa": {"dinero": 2000, "arma": "escopeta", "balas": 12}},
-
-    {"id": "m10", "titulo": "El mensajero", "capitulo": 2, "contacto": "Marta", "lugar": "periodico", "requiere": ["m09", "m08"],
-     "resumen": "Marta ha localizado al mensajero que lleva los pagos de Belmonte.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Marta", "Lo tengo. Cada viernes un mensajero de Los Calaveras sale de la lonja con un sobre para Varela. Hoy es viernes."],
-         ["Dani", "Quieres ese sobre."],
-         ["Marta", "Quiero ese sobre. Consigue un coche rápido, alcánzalo y páralo como sea. Embístelo o dispárale, pero que no llegue a la comisaría."]]},
-       {"tipo": "perseguir", "modelo": "sedan", "lugar": "lonja", "nombre": "Coche del mensajero", "salud": 110, "texto": "Persigue el coche del mensajero y destrúyelo a golpes o a tiros. Pulsa Q para fijarlo: oirás dónde está."},
-       {"tipo": "recoger", "aqui": true, "objeto": "Sobre de los pagos", "texto": "Recoge el sobre entre los restos del coche."},
-       {"tipo": "ir", "lugar": "periodico", "texto": "Lleva el sobre a la Redacción de El Faro."},
-       {"tipo": "dialogo", "lineas": [
-         ["Marta", "Billetes, y una nota con el membrete del Casino Belmonte. Ya no hay duda de quién paga. Ten cuidado, Dani: ahora Belmonte sabe que existes."],
-         ["Narrador", "Fin del capítulo dos."]]}
-     ],
-     "recompensa": {"dinero": 2500}},
-
-    {"id": "m11", "titulo": "La invitación", "capitulo": 3, "contacto": "Belmonte", "lugar": "casino", "requiere": ["m10"],
-     "resumen": "Octavio Belmonte te ha mandado llamar al casino.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Belmonte", "Así que tú eres quien anda revolviendo mi ciudad. Siéntate. ¿Whisky?"],
-         ["Dani", "No bebo con desconocidos."],
-         ["Belmonte", "Me gusta. Mira, podría hacerte desaparecer, pero el talento escasea. Trabaja para mí y olvidamos lo del mensajero."],
-         ["Dani", "(Si entro en su organización, conseguiré las pruebas que necesita Marta.) ¿Qué hay que hacer?"],
-         ["Belmonte", "Para empezar, llevarme a casa. Mi chófer ha tenido un accidente. Sin baches, sin prisas y sin un solo rasguño en el coche."]]},
-       {"tipo": "robar", "modelo": "lujo", "lugar": "casino", "abierto": true, "nombre": "Platino GT de Belmonte", "texto": "Sube al Platino GT de Belmonte, aparcado frente al casino."},
-       {"tipo": "entregar", "lugar": "mansion", "salud_min": 85, "limite": 200, "texto": "Lleva a Belmonte a su mansión de La Colina. Conduce con suavidad: el coche no puede sufrir daños."},
-       {"tipo": "dialogo", "lineas": [["Belmonte", "Correcto. Puntual y discreto. Vuelve al casino mañana, tendré algo más interesante."]]}
-     ],
-     "recompensa": {"dinero": 3000}},
-
-    {"id": "m12", "titulo": "Cobro pendiente", "capitulo": 3, "contacto": "Belmonte", "lugar": "casino", "requiere": ["m11"],
-     "resumen": "Belmonte quiere que cobres unas deudas.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Belmonte", "Tres negocios me deben la cuota de protección: el Club Neón, el Restaurante Sibarita y el Chiringuito El Espeto."],
-         ["Belmonte", "Los dos primeros pagarán en cuanto te vean. El del chiringuito se ha buscado guardaespaldas. Convéncelos."]]},
-       {"tipo": "recoger", "lugar": "club_neon", "objeto": "Sobre del Club Neón", "texto": "Ve al Club Neón y recoge el sobre."},
-       {"tipo": "recoger", "lugar": "restaurante", "objeto": "Sobre del Restaurante Sibarita", "texto": "Ve al Restaurante Sibarita, en La Colina, y recoge el sobre."},
-       {"tipo": "eliminar", "lugar": "chiringuito", "enemigos": [{"n": 2, "tipo": "Guardaespaldas", "arma": "pistola", "salud": 80}, {"n": 1, "tipo": "Guardaespaldas", "arma": "bate", "salud": 80}], "texto": "Ve al Chiringuito El Espeto y encárgate de los guardaespaldas."},
-       {"tipo": "recoger", "lugar": "chiringuito", "objeto": "Sobre del chiringuito", "texto": "Recoge el sobre del chiringuito."},
-       {"tipo": "ir", "lugar": "casino", "texto": "Lleva el dinero al Casino Belmonte."},
-       {"tipo": "dialogo", "lineas": [["Belmonte", "Todo. Hasta el último billete. Empiezo a pensar que puedo confiar en ti."]]}
-     ],
-     "recompensa": {"dinero": 4000}},
-
-    {"id": "m13", "titulo": "El chivato", "capitulo": 3, "contacto": "Belmonte", "lugar": "casino", "requiere": ["m12"],
-     "resumen": "Belmonte tiene un encargo delicado en el parque.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Belmonte", "Alguien de mi contabilidad está hablando con una periodista. Lo he citado junto al estanque del Parque de la Alameda. Ve y que no vuelva a hablar."],
-         ["Dani", "(La fuente de Marta. Tengo que llegar antes que nadie.)"]]},
-       {"tipo": "ir", "lugar": "parque", "texto": "Ve al estanque del Parque de la Alameda."},
-       {"tipo": "dialogo", "lineas": [
-         ["Contable", "¿Tú eres Dani? Marta me dijo que podía fiarme. Toma, en este lápiz de memoria está la contabilidad entera de Belmonte."],
-         ["Contable", "¡Cuidado! ¡No has venido solo! ¡Belmonte no se fiaba de ti!"]]},
-       {"tipo": "eliminar", "lugar": "parque", "ya": true, "enemigos": [{"n": 3, "tipo": "Sicario de Belmonte", "arma": "pistola", "salud": 80}, {"n": 1, "tipo": "Sicario de Belmonte", "arma": "subfusil", "salud": 80}], "texto": "¡Emboscada! Acaba con los sicarios de Belmonte."},
-       {"tipo": "ir", "lugar": "periodico", "texto": "Lleva el lápiz de memoria a la Redacción de El Faro."},
-       {"tipo": "dialogo", "lineas": [
-         ["Marta", "Con esto cae Belmonte. Pero mientras Varela siga en la comisaría, ningún juez verá estos papeles. Hay que ir a por el comisario."]]}
-     ],
-     "recompensa": {"dinero": 5000, "arma": "subfusil", "balas": 90}},
-
-    {"id": "m14", "titulo": "El coche del comisario", "capitulo": 3, "contacto": "Marta", "lugar": "periodico", "requiere": ["m13"],
-     "resumen": "Marta tiene un plan para desenmascarar al comisario Varela.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Marta", "Varela guarda en su coche patrulla una grabadora con todas sus conversaciones con Belmonte. Se cubre las espaldas, el muy zorro."],
-         ["Dani", "Y quieres que robe un coche de policía. De la puerta de la comisaría."],
-         ["Marta", "Dicho así suena fatal. Llévalo a la Nave industrial del polígono; un técnico amigo mío sacará la grabación."]]},
-       {"tipo": "robar", "modelo": "patrulla", "lugar": "comisaria", "nombre": "Coche patrulla de Varela", "busqueda": 3, "texto": "Roba el coche patrulla de Varela, aparcado ante la Comisaría Central."},
-       {"tipo": "policia", "nivel": 3, "texto": "¡Tienes a media comisaría detrás! Despista a la policía."},
-       {"tipo": "entregar", "lugar": "nave", "salud_min": 20, "texto": "Lleva el coche patrulla a la Nave industrial del Polígono Hierro."},
-       {"tipo": "dialogo", "lineas": [["Marta", "¡Lo tenemos! Dos años de conversaciones. Varela está acabado... si sobrevivimos para publicarlo."]]}
-     ],
-     "recompensa": {"dinero": 6000}},
-
-    {"id": "m15", "titulo": "Golpe al casino", "capitulo": 3, "contacto": "Encarna", "lugar": "bar_gaviota", "requiere": ["m14"],
-     "resumen": "Encarna y El Chispas quieren golpear a Belmonte donde más le duele.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "Belmonte ya sabe que le has traicionado. Va a venir a por nosotros, así que vamos a ir nosotros primero."],
-         ["Chispas", "La caja fuerte del casino. Hoy guarda la recaudación de todo el mes. Yo te abro la puerta de atrás; tú entras, limpias y sales."],
-         ["Dani", "Tía, ¿desde cuándo planeas atracos?"],
-         ["Encarna", "Hijo, ¿tú con qué te crees que se pagó este bar?"]]},
-       {"tipo": "eliminar", "lugar": "casino", "enemigos": [{"n": 3, "tipo": "Guardia del casino", "arma": "pistola", "salud": 90}, {"n": 2, "tipo": "Guardia del casino", "arma": "subfusil", "salud": 90}], "texto": "Ve al Casino Belmonte y elimina a los cinco guardias."},
-       {"tipo": "recoger", "lugar": "casino", "objeto": "Botín del casino", "texto": "Recoge el botín de la caja fuerte."},
-       {"tipo": "policia", "nivel": 4, "texto": "¡Toda la policía de la ciudad te busca! Despístalos."},
-       {"tipo": "ir", "lugar": "bar_gaviota", "texto": "Lleva el botín al Bar La Gaviota."},
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "¡Virgen del Carmen, cuánto billete! Con esto arreglo el tejado y aún sobra para invitar al barrio entero."],
-         ["Narrador", "Fin del capítulo tres. Belmonte ha perdido su dinero, a su contable y a su comisario. Ahora solo le queda la rabia."]]}
-     ],
-     "recompensa": {"dinero": 15000}},
-
-    {"id": "m16", "titulo": "Represalia", "capitulo": 4, "contacto": "Encarna", "lugar": "casa_abuela", "requiere": ["m15"],
-     "resumen": "Suena el teléfono en el piso de la abuela. Algo va mal.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "¡Dani! ¡Están aquí! ¡Los hombres de Belmonte están destrozando el bar! ¡Corre!"]]},
-       {"tipo": "eliminar", "lugar": "bar_gaviota", "limite": 150, "enemigos": [{"n": 3, "tipo": "Sicario de Belmonte", "arma": "pistola", "salud": 80}, {"n": 2, "tipo": "Sicario de Belmonte", "arma": "escopeta", "salud": 85}], "texto": "¡Corre al Bar La Gaviota y acaba con los cinco sicarios antes de que sea tarde!"},
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "Estoy bien, estoy bien. Me he escondido detrás de la barra con la escopeta del abuelo. Pero mira cómo han dejado esto."],
-         ["Dani", "Esto se acaba, tía. Voy a ir a por él."]]}
-     ],
-     "recompensa": {"dinero": 3000}},
-
-    {"id": "m17", "titulo": "Arsenal", "capitulo": 4, "contacto": "La Rusa", "lugar": "almacen_rusa", "requiere": ["m16"],
-     "resumen": "Para asaltar la mansión necesitas armas serias. La Rusa sabe dónde hay.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["La Rusa", "Para la mansión de Belmonte necesitas más que una pistola. Yo tengo rifles. Bueno, tenía."],
-         ["La Rusa", "Los Calaveras los guardan para Belmonte en la fábrica abandonada del polígono. Recupéralos y uno es para ti."]]},
-       {"tipo": "eliminar", "lugar": "fabrica", "enemigos": [{"n": 4, "tipo": "Calavera", "arma": "pistola", "salud": 70}, {"n": 2, "tipo": "Calavera", "arma": "subfusil", "salud": 70}], "texto": "Ve a la Fábrica abandonada y elimina a los seis Calaveras."},
-       {"tipo": "recoger", "lugar": "fabrica", "objeto": "Caja de rifles", "texto": "Recoge la caja de rifles."},
-       {"tipo": "ir", "lugar": "almacen_rusa", "texto": "Lleva los rifles al Almacén Siete."},
-       {"tipo": "dialogo", "lineas": [["La Rusa", "Trato es trato. Toma tu rifle. Y un chaleco, regalo de la casa. No quiero perder a mi mejor cliente."]]}
-     ],
-     "recompensa": {"dinero": 4000, "arma": "rifle", "balas": 20, "chaleco": true}},
-
-    {"id": "m18", "titulo": "La caída de Varela", "capitulo": 4, "contacto": "Marta", "lugar": "periodico", "requiere": ["m16"],
-     "resumen": "El Faro ha publicado la historia. El comisario Varela intenta huir.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Marta", "¡Lo hemos publicado! Está en todas las radios. Pero Varela ha vaciado su despacho y sale ahora mismo de la comisaría hacia la carretera del norte."],
-         ["Dani", "No va a llegar."]]},
-       {"tipo": "perseguir", "modelo": "patrulla", "lugar": "comisaria", "nombre": "Coche de Varela", "salud": 160, "texto": "Persigue el coche del comisario Varela y detenlo. Pulsa Q para fijarlo."},
-       {"tipo": "recoger", "aqui": true, "objeto": "Placa del comisario", "texto": "Recoge la placa de Varela entre los restos."},
-       {"tipo": "dialogo", "lineas": [["Narrador", "Varela sale del coche con las manos en alto, justo cuando llegan los agentes honrados que quedan en la ciudad. Uno de ellos te mira, asiente y hace como que no te ha visto."]]}
-     ],
-     "recompensa": {"dinero": 6000}},
-
-    {"id": "m19", "titulo": "Asalto a la mansión", "capitulo": 4, "contacto": "Encarna", "lugar": "bar_gaviota", "requiere": ["m17", "m18"],
-     "resumen": "Ha llegado la hora de ir a por Belmonte a su propia casa.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Encarna", "Sin comisario y sin dinero, a Belmonte solo le queda su libro de cuentas: los nombres de todos los políticos que tiene comprados. Lo guarda en la mansión."],
-         ["Chispas", "Con ese libro, no le salva ni el Papa. Pero tiene la casa llena de guardias."],
-         ["Dani", "Pues habrá que llamar a la puerta."]]},
-       {"tipo": "eliminar", "lugar": "mansion", "enemigos": [{"n": 4, "tipo": "Guardia de la mansión", "arma": "pistola", "salud": 90}, {"n": 2, "tipo": "Guardia de la mansión", "arma": "subfusil", "salud": 90}, {"n": 1, "tipo": "Jefe de seguridad", "arma": "escopeta", "salud": 140}], "texto": "Asalta la Mansión Belmonte y elimina a los siete guardias."},
-       {"tipo": "recoger", "lugar": "mansion", "objeto": "Libro de cuentas", "texto": "Recoge el libro de cuentas de Belmonte."},
-       {"tipo": "dialogo", "lineas": [["Narrador", "El despacho está vacío y la caja fuerte abierta. Sobre la mesa, el libro de cuentas y un teléfono que suena. Es El Chispas: Belmonte acaba de salir de su torre en dirección al ferry."]]}
-     ],
-     "recompensa": {"dinero": 8000}},
-
-    {"id": "m20", "titulo": "Ley del asfalto", "capitulo": 4, "contacto": "Chispas", "lugar": "torre", "requiere": ["m19"],
-     "resumen": "Belmonte huye hacia el ferry. Es ahora o nunca.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Chispas", "¡Dani! Acaba de salir con su Platino blindado. Si llega al ferry de medianoche, no lo volvemos a ver. ¡Písale!"]]},
-       {"tipo": "perseguir", "modelo": "lujo", "lugar": "torre", "nombre": "Platino blindado de Belmonte", "salud": 260, "limite": 240, "texto": "Persigue el Platino blindado de Belmonte y detenlo antes de que se acabe el tiempo. Pulsa Q para fijarlo."},
-       {"tipo": "dialogo", "lineas": [
-         ["Belmonte", "Espera. Espera. Tengo dinero. Más del que has visto en tu vida. Dime una cifra."],
-         ["Dani", "Tres años. Me debes tres años, y eso no hay quien lo pague."],
-         ["Narrador", "Las sirenas se acercan. Esta vez no vienen a por ti. Marta baja de un coche con la grabadora en la mano, y detrás de ella, la jueza."],
-         ["Marta", "Octavio Belmonte, tiene usted derecho a permanecer en silencio. Aunque, sinceramente, ya lo ha dicho todo."],
-         ["Narrador", "Esa noche, en La Gaviota, Encarna invita a todo el barrio. El Chispas canta, La Rusa casi sonríe y tú miras por la ventana tu ciudad. Puerto Bravo vuelve a ser de su gente."],
-         ["Narrador", "Has completado la historia de Puerto Bravo: Ley del Asfalto. La ciudad sigue abierta: negocios, carreras, encargos y secretos te esperan. Gracias por jugar."]]}
-     ],
-     "recompensa": {"dinero": 25000}}
-  ]
+     "texto": "Asalta la Mansión Belmonte y elimina a los siete guardias."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "mansion",
+     "objeto": "Libro de cuentas",
+     "texto": "Recoge el libro de cuentas de Belmonte."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El despacho está vacío y la caja fuerte abierta. Sobre la mesa, el libro de cuentas y un teléfono que suena. Es El Chispas: Belmonte acaba de salir de su torre en dirección al ferry."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 8000
+   }
+  },
+  {
+   "id": "m20",
+   "titulo": "Ley del asfalto",
+   "capitulo": 4,
+   "contacto": "Chispas",
+   "lugar": "torre",
+   "requiere": [
+    "m19"
+   ],
+   "resumen": "Belmonte huye hacia el ferry. Es ahora o nunca.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chispas",
+       "¡Dani! Acaba de salir con su Platino blindado. Si llega al ferry de medianoche, no lo volvemos a ver. ¡Písale!"
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "modelo": "lujo",
+     "lugar": "torre",
+     "nombre": "Platino blindado de Belmonte",
+     "salud": 260,
+     "limite": 240,
+     "texto": "Persigue el Platino blindado de Belmonte y detenlo antes de que se acabe el tiempo. Pulsa Q para fijarlo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Belmonte",
+       "Espera. Espera. Tengo dinero. Más del que has visto en tu vida. Dime una cifra."
+      ],
+      [
+       "Dani",
+       "Tres años. Me debes tres años, y eso no hay quien lo pague."
+      ],
+      [
+       "Narrador",
+       "Las sirenas se acercan. Esta vez no vienen a por ti. Marta baja de un coche con la grabadora en la mano, y detrás de ella, la jueza."
+      ],
+      [
+       "Marta",
+       "Octavio Belmonte, tiene usted derecho a permanecer en silencio. Aunque, sinceramente, ya lo ha dicho todo."
+      ],
+      [
+       "Narrador",
+       "Esa noche, en La Gaviota, Encarna invita a todo el barrio. El Chispas canta, La Rusa casi sonríe y tú miras por la ventana tu ciudad. Puerto Bravo vuelve a ser de su gente."
+      ],
+      [
+       "Narrador",
+       "Has completado la historia de Puerto Bravo: Ley del Asfalto. La ciudad sigue abierta: negocios, carreras, encargos y secretos te esperan. Gracias por jugar."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 25000
+   }
+  },
+  {
+   "id": "tut01",
+   "titulo": "Aprende a moverte",
+   "capitulo": 0,
+   "contacto": "Tutorial",
+   "lugar": "casa_abuela",
+   "requiere": [],
+   "resumen": "Tutorial jugable: tres ejercicios cortos para aprender a orientarte, a usar el GPS y el radar y a conducir. No se puede fallar.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Esto es un tutorial jugable. Son tres ejercicios cortos y no se puede fallar: no hay tiempo, ni enemigos, ni policía. Con Escape, en el menú de pausa, puedes dejarlo cuando quieras."
+      ],
+      [
+       "Narrador",
+       "Lo primero, saber dónde estás. La tecla C te dice la calle, el barrio y hacia dónde miras. La K hace sonar un tono desde el norte. La N describe el lugar o el barrio."
+      ],
+      [
+       "Narrador",
+       "A pie caminas con las flechas: arriba es el norte, derecha el este, abajo el sur e izquierda el oeste. Con Mayúsculas corres."
+      ],
+      [
+       "Narrador",
+       "Primer ejercicio: ir andando a la Farmacia Luna. Pulsa L, busca la farmacia en la lista y pulsa Intro. El GPS te dirá por dónde ir y oirás una baliza: camina hacia donde suena. Con G repites la indicación."
+      ],
+      [
+       "Narrador",
+       "Si no quieres caminar tú, pulsa U y el personaje sigue la ruta él solo. Cualquier flecha lo detiene."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "farmacia",
+     "radio": 12,
+     "texto": "Primer ejercicio: llega a la Farmacia Luna. Pulsa L para marcarla en el GPS y sigue la baliza, o pulsa U para caminar solo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Muy bien. Has usado el GPS. Ahora, el radar y el escáner."
+      ],
+      [
+       "Narrador",
+       "El Tabulador recorre lo que tienes alrededor, de lo más cercano a lo más lejano, y cada cosa suena desde donde está. Mayúsculas Tabulador va hacia atrás. Con F6 eliges si quieres oír todo, solo lugares, vehículos, personas u objetos."
+      ],
+      [
+       "Narrador",
+       "Cuando el radar diga algo que te interesa, pulsa B: pone el GPS y la baliza hacia ello."
+      ],
+      [
+       "Narrador",
+       "El escáner son las teclas W, A, S y D: te dicen qué hay delante, a la izquierda, detrás y a la derecha, y a qué distancia está la pared. Úsalo como un bastón."
+      ],
+      [
+       "Narrador",
+       "Segundo ejercicio: llegar a Ultramarinos Paco usando el radar. Pulsa F6 hasta oír lugares, luego Tabulador hasta oír Ultramarinos Paco, y entonces B."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "tienda_paco",
+     "radio": 12,
+     "texto": "Segundo ejercicio: llega a Ultramarinos Paco. Búscalo con el Tabulador y márcalo con la B."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Perfecto. Ya sabes orientarte a pie. Queda conducir."
+      ],
+      [
+       "Narrador",
+       "Junto a la tienda hay un coche de prácticas abierto. Acércate y pulsa F para subir. La misma tecla sirve para bajar."
+      ],
+      [
+       "Narrador",
+       "En conducción asistida el coche sigue su carril él solo. Tú aceleras con flecha arriba y frenas con flecha abajo. Antes de un cruce, flecha izquierda o derecha ponen el intermitente y el coche gira solo."
+      ],
+      [
+       "Narrador",
+       "Y si no quieres conducir, pulsa la Y: es el piloto del GPS. Con un destino marcado, el coche acelera, frena, gira, espera en los semáforos y se detiene al llegar."
+      ],
+      [
+       "Narrador",
+       "Tercer ejercicio: llevar el coche al Gimnasio El Yunque. Cuando subas, el destino se marca solo. Conduce tú, o pulsa Y y deja que te lleve."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "lugar": "tienda_paco",
+     "modelo": "utilitario",
+     "nombre": "el coche de prácticas",
+     "abierto": true,
+     "texto": "Tercer ejercicio: sube al coche de prácticas que hay junto a Ultramarinos Paco. Acércate y pulsa F."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "gimnasio_pb",
+     "salud_min": 0,
+     "texto": "Lleva el coche al Gimnasio El Yunque. Conduce con las flechas, o pulsa Y para que el coche vaya solo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Hecho. Ya sabes lo fundamental: orientarte, usar el GPS y el radar, y conducir."
+      ],
+      [
+       "Narrador",
+       "Tres teclas más para recordar. La V dice tu estado: salud, dinero y arma. La O, el objetivo de la misión en curso. La M abre el móvil, con las misiones, los lugares, los servicios y mucho más."
+      ],
+      [
+       "Narrador",
+       "F1 dice todas las teclas en cualquier momento, y en el menú principal está Aprender los sonidos del juego, para oír qué significa cada uno."
+      ],
+      [
+       "Narrador",
+       "Tu tía Encarna te espera en el Bar La Gaviota, aquí al lado. Allí empieza la historia. Buena suerte."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 50
+   }
+  }
+ ]
 }

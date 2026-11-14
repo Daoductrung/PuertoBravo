@@ -15,6 +15,11 @@ class Opcion:
         return self._texto() if callable(self._texto) else self._texto
 
 
+# Si la última opción de un menú empieza por una de estas palabras, el menú ya tiene su forma de volver.
+SALIDAS = ("Volver", "Salir", "Dejarlo", "Cancelar", "Seguir", "Cerrar", "No", "Despedirte", "Colgar", "Marcharte", "Irte", "Ahora no", "Más tarde",
+           "Continuar", "Levantarte", "Plantarte", "Retirarte", "Terminar", "Reanudar")
+
+
 class Menu:
     pausa_mundo = True
 
@@ -35,9 +40,15 @@ class Menu:
 
     def refrescar(self, hablar=True):
         self.opciones = list(self._fuente() if callable(self._fuente) else self._fuente)
+        # Todo menú del que se puede salir con Escape tiene también, al final, una opción para volver.
+        if self.escapable and not any(o.texto.startswith(SALIDAS) for o in self.opciones[-2:]):
+            self.opciones.append(Opcion("Volver", self._volver, ayuda="Vuelve atrás. También sirve Escape."))
         self.i = max(0, min(self.i, len(self.opciones) - 1))
         if hablar:
             self.leer()
+
+    def _volver(self):
+        self.app.cerrar(self)
 
     def al_entrar(self):
         self.refrescar(False)
@@ -51,7 +62,8 @@ class Menu:
 
     def leer(self):
         if self.opciones:
-            self.app.decir(self.opciones[self.i].texto, True)
+            pos = f". {self.i + 1} de {len(self.opciones)}" if self.app.cfg["menu_posicion"] else ""
+            self.app.decir(self.opciones[self.i].texto + pos, True)
 
     def _mover(self, nuevo):
         n = len(self.opciones)

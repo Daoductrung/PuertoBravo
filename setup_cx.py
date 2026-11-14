@@ -17,11 +17,13 @@ opciones = {
     "packages": ["juego", "editor", "wx", "pygame", "numpy", "sounddevice", "_sounddevice_data", "soundfile", "_soundfile_data",
                  "accessible_output2", "libloader", "platform_utils", "win32com", "pythoncom", "pywintypes"],
     "includes": ["juego.app"],
-    "excludes": ["tkinter", "pytest", "_pytest", "unittest", "pydoc_data", "PyInstaller", "setuptools", "pip", "numpy.f2py", "numpy.testing"],
+    "excludes": ["tkinter", "pytest", "_pytest", "unittest", "pydoc_data", "PyInstaller", "setuptools", "pip", "numpy.f2py", "numpy.testing", "win32comext"],
     "zip_include_packages": [],
     "zip_exclude_packages": ["*"],
     "include_msvcr": True,
     "optimize": 1,
+    # Sin esto, cada módulo compilado lleva dentro la ruta completa del equipo donde se compiló, y sale en las trazas de error.
+    "replace_paths": [("*", "")],
     "silent_level": 1,
 }
 

@@ -68,6 +68,8 @@ def sonar(app, ruta):
     from .sintesis import leer_audio
     try:
         datos = leer_audio(ruta, mono=False)
+        if datos.ndim == 1:
+            datos = datos.reshape(-1)
     except Exception as e:
         registro.una_vez("voces", "Una voz grabada no se pudo leer", error=type(e).__name__)
         return None

@@ -1224,10 +1224,15 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if b["id"] != self.barrio_act:
             primera = self.barrio_act is None
             self.barrio_act = b["id"]
-            if b["id"] not in j.barrios_vistos:
+            nuevo = b["id"] not in j.barrios_vistos
+            if nuevo:
                 j.barrios_vistos.append(b["id"])
             if self.cfg["anunciar_barrios"] and not primera:
-                self.decir(f"Entras en {b['nombre']}.")
+                # la primera vez que pisas un barrio, además del nombre, cómo es
+                if nuevo and self.cfg["describir_zonas"] and b.get("descripcion"):
+                    self.decir(f"Entras en {b['nombre']} por primera vez. {b['descripcion']}")
+                else:
+                    self.decir(f"Entras en {b['nombre']}.")
         if not j.veh or not self.modo_asistido():
             c = self.mundo.cruce(x, y)
             if c != self.cruce_act:

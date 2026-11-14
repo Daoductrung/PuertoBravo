@@ -211,7 +211,8 @@ class Mando:
         if not self.app.cfg["mando_vibracion"] or self.ctrl is None:
             return
         try:
-            self.ctrl.rumble(max(0.0, min(1.0, grave)), max(0.0, min(1.0, agudo)), int(ms))
+            f = max(0.2, min(1.0, float(self.app.cfg["vibracion_fuerza"])))
+            self.ctrl.rumble(max(0.0, min(1.0, grave * f)), max(0.0, min(1.0, agudo * f)), int(ms))
         except Exception:
             pass
 

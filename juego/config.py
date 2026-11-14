@@ -44,6 +44,12 @@ POR_DEFECTO = {
     "ia_servicio": "auto",         # auto | local | gemini | otro | openai | anthropic
     "ia_url_otro": "",             # dirección de un servicio compatible con OpenAI; vacío = OpenRouter
     "ia_modelo_otro": "",          # modelo de ese servicio; vacío = lo elige el juego
+    "teclas": {},                  # teclas cambiadas: función original -> tecla física
+    "sonido_mono": False,          # los dos oídos oyen lo mismo
+    "atenuar_al_hablar": True,     # bajar ambiente y música mientras habla la voz
+    "describir_zonas": True,       # la primera vez que entras en un barrio, lo describe
+    "menu_posicion": False,        # decir «3 de 9» al moverse por los menús
+    "vibracion_fuerza": 1.0,       # intensidad de la vibración del mando, de 0.2 a 1
     "voces_grabadas": True,        # en las escenas, usar las voces grabadas que haya en data/voces
     "atraccion": "todos",          # contenido para adultos: quién te atrae
     "mi_genero": "x",              # contenido para adultos: cómo te ven los demás (x = no dicho)

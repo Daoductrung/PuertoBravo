@@ -37,7 +37,11 @@ li { margin-bottom: .3em; }
 <ul>
 <li>WAV, OGG, FLAC y MP3. Si dejas dos archivos con el mismo nombre y distinta extensión, se usa el primero por orden alfabético; lo más sencillo es borrar el original.</li>
 <li>Cualquier frecuencia de muestreo: el juego la convierte a 44100 hercios.</li>
-<li>Mono o estéreo. Los efectos se pasan siempre a mono, porque es el juego quien coloca cada sonido a tu izquierda, a tu derecha, delante o detrás.</li>
+<li>Mono o estéreo. Los efectos se pasan a mono, porque es el juego quien coloca cada sonido a tu izquierda, a tu derecha, delante o detrás.</li>
+<li>Los ambientes son la excepción: los diez sonidos que empiezan por <strong>amb_</strong> y la <strong>lluvia</strong> se quedan en estéreo, tal como los grabaste, porque son fondos que no vienen de ningún punto. Ahí sí merece la pena una grabación envolvente.</li>
+<li>Un consejo para los ambientes en estéreo: que sean fondos difusos, como rumor de ciudad, viento, mar o campo. Evita los que tienen sonidos sueltos y claros a un lado, como un perro ladrando a la izquierda, porque el ambiente no gira cuando tú te giras y ese perro despistaría a quien se orienta de oído.</li>
+<li>Duración de los ambientes: hasta minuto y medio. Lo que pase de ahí se recorta. Con treinta segundos o un minuto ya no se nota la repetición.</li>
+<li>Calidad: da igual a qué frecuencia esté grabado el archivo. El juego lo convierte sin estropear los agudos.</li>
 </ul>
 <h3>Recuperar un sonido original</h3>
 <p>Borra el archivo. La próxima vez que arranque, el juego volverá a crear el sonido original. Para recuperarlos todos, borra la carpeta <code>data\sonidos\por_defecto</code> entera.</p>

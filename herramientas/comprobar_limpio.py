@@ -16,6 +16,27 @@ MODS_DE_SERIE = ("costa_dorada.pbm", "oficios_y_recados.pbm", "valdeolmos.pbm", 
 SOLO_DESARROLLO = (("data", "docs", "crear_mods.html"), ("data", "actualizacion"), ("data", "logs"), ("data", "error.log"), ("herramientas",), ("pruebas",))
 
 
+def rutas_de_este_equipo(raiz):
+    """Ningún módulo compilado debe llevar dentro la ruta del equipo donde se compiló: saldría en los registros de los jugadores."""
+    proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    marcas = [m.encode("utf-8") for m in {proyecto, proyecto.replace("\\", "/"), os.path.expanduser("~")} if len(m) > 3]
+    marcas += [m.lower() for m in marcas]
+    malos = []
+    for base, _, archivos in os.walk(raiz):
+        for a in archivos:
+            if a.endswith((".pyc", ".zip")):
+                try:
+                    with open(os.path.join(base, a), "rb") as f:
+                        datos = f.read()
+                except OSError:
+                    continue
+                if any(m in datos or m in datos.lower() for m in marcas):
+                    malos.append(os.path.relpath(os.path.join(base, a), raiz))
+    if malos:
+        return [f"{len(malos)} módulos llevan dentro rutas de este equipo, por ejemplo {malos[0]}"]
+    return []
+
+
 def comprobar(raiz):
     problemas = []
     data = os.path.join(raiz, "data")
@@ -26,9 +47,10 @@ def comprobar(raiz):
     for necesario in (("PuertoBravo.exe",), ("EditorMods.exe",), ("data", "datos", "ciudad.pbd"), ("data", "docs", "manual.html"),
                       ("data", "docs", "teclas.html"), ("data", "docs", "cambiar_sonidos.html"), ("data", "docs", "editor_mods.html"),
                       ("data", "docs", "novedades.html"), ("data", "sonidos", "por_defecto"), ("data", "sonidos", "realista"), ("data", "sonidos", "alternativo"), ("data", "sonidos", "retro"),
-                      ("data", "radio"), ("data", "musica")) + tuple(("data", "mods", m) for m in MODS_DE_SERIE):
+                      ("data", "radio"), ("data", "musica"), ("lib", "numpy"), ("lib_antiguo", "numpy")) + tuple(("data", "mods", m) for m in MODS_DE_SERIE):
         if not hay(*necesario):
             problemas.append("Falta " + os.path.join(*necesario))
+    problemas += rutas_de_este_equipo(raiz)
     for sobra in SOLO_DESARROLLO:
         if hay(*sobra):
             problemas.append("Es solo para desarrollo y no debe repartirse: " + os.path.join(*sobra))

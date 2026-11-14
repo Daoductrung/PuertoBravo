@@ -204,12 +204,50 @@ def sonidos(app):
     app.abrir(Menu(app, "Aprender los sonidos", ops, intro="Pulsa Intro sobre cada elemento para escuchar su sonido"))
 
 
+def opciones_teclado(app):
+    """Cambiar con qué tecla se hace cada función del juego."""
+    from . import teclado
+    cfg = app.cfg
+
+    def cambiar(funcion, que):
+        def abrir():
+            def elegida(k):
+                desplazada = teclado.cambiar(cfg, funcion, k)
+                cfg.guardar()
+                app.son("guardado")
+                extra = f" Lo que hacía {teclado.nombre(k)} pasa a {teclado.nombre(teclado.tecla_de(cfg, desplazada))}." if desplazada is not None else ""
+                app.decir(f"Hecho: {que.split(':')[0].split('.')[0]}, con {teclado.nombre(k)}.{extra}", True)
+            app.abrir(teclado.Captura(app, f"Tecla nueva para: {que.split('.')[0]}", elegida))
+        return abrir
+
+    def restablecer():
+        teclado.restablecer(cfg)
+        cfg.guardar()
+        app.decir("Teclas originales restablecidas.", True)
+
+    def ops():
+        lista = [Opcion(lambda: f"Teclas cambiadas: {len(teclado.cambios(cfg))}. Las teclas solo cambian jugando; en los menús son las de siempre")]
+        for k, ctx, que in teclado.funciones():
+            actual = teclado.tecla_de(cfg, k)
+            marca = f", ahora con {teclado.nombre(actual)}" if actual != k else ""
+            lista.append(Opcion(f"{ctx}. {teclado.nombre(k).capitalize()}{marca}: {que}", cambiar(k, que),
+                                ayuda="Intro, y después pulsa la tecla que quieres usar. Las dos teclas se intercambian, así que ninguna función se queda sin tecla."))
+        lista.append(Opcion("Restablecer las teclas originales", restablecer))
+        return lista
+    app.abrir(Menu(app, "Teclado: cambiar las teclas", ops, al_cerrar=cfg.guardar,
+                   intro="Elige una función y pulsa Intro. No se pueden cambiar Escape, Intro, F1, F12 ni las teclas de mayúsculas, control y alt"))
+
+
 def ayuda_teclas(app, contexto):
     grupos = {"pie": ["pie", "general"], "coche": ["coche", "general"], "todo": ["general", "pie", "coche"]}[contexto]
     titulos = {"general": "En cualquier momento", "pie": "A pie", "coche": "Al volante"}
-    ops = []
+    from . import teclado
+    ops = [Opcion(f"Tecla cambiada. {c}.") for c in teclado.cambios(app.cfg)]
     for g in grupos:
         for tecla, que in ayuda.TECLAS[g]:
+            k = teclado._codigo(tecla)
+            if k is not None and teclado.tecla_de(app.cfg, k) != k:
+                tecla = teclado.nombre(teclado.tecla_de(app.cfg, k)).capitalize()        # la ayuda dice la tecla que has puesto tú
             ops.append(Opcion(f"{titulos[g]}. {tecla}: {que}."))
     md = app.mando
     if md.conectado or contexto == "todo":
@@ -328,6 +366,12 @@ def opciones(app):
             vol("vol_ambiente_musical", "Volumen de la música de ambiente", "Respecto a la radio. Cámbialo con las flechas izquierda y derecha."),
             Opcion(lambda: f"Pack de sonidos: {nombre_pack()}", ajuste=cambiar_pack,
                    ayuda="Elige con las flechas izquierda y derecha entre los sonidos por defecto y los packs, que son las subcarpetas de data, sonidos. Se aplica al momento. Los sonidos que el pack no trae siguen sonando con el original."),
+            si_no("sonido_mono", "Sonido mono, lo mismo por los dos oídos",
+                  "Para quien oye por un solo oído o usa un solo auricular. Se pierde la sensación de izquierda y derecha: oriéntate con el radar, el escáner y el GPS hablado.",
+                  al_cambiar=app.aplicar_volumenes),
+            si_no("atenuar_al_hablar", "Bajar el ambiente y la música mientras habla la voz",
+                  "Cada vez que el juego dice algo, el sonido de fondo y la música bajan un momento para que se entienda mejor. Los efectos importantes, como motores, pasos y disparos, no bajan.",
+                  al_cambiar=app.aplicar_volumenes),
             si_no("igualar_volumen", "Igualar el volumen de los sonidos cambiados", "Lleva cada sonido de un pack, o que hayas sustituido a mano, al mismo nivel que tenía el original, para que ninguno quede demasiado fuerte ni demasiado flojo.", al_cambiar=app.recargar_sonidos),
             Opcion("Ajustar el volumen de cada sonido", lambda: volumen_sonidos(app), ayuda="Lista de todos los sonidos del juego. Intro los hace sonar y las flechas izquierda y derecha suben o bajan ese sonido en concreto."),
         ], "Volúmenes, música de ambiente y packs de sonidos."),
@@ -347,6 +391,8 @@ def opciones(app):
             si_no("anunciar_cruces", "Anunciar los cruces"),
             si_no("anunciar_lugares", "Anunciar los lugares al llegar a su puerta"),
             si_no("anunciar_barrios", "Anunciar los cambios de barrio"),
+            si_no("describir_zonas", "Describir cada barrio la primera vez que entras",
+                  "La primera vez que pisas un barrio, además de su nombre, el juego dice cómo es. Las demás veces solo dice el nombre. La tecla N lo repite cuando quieras."),
             si_no("anunciar_superficie", "Anunciar los cambios de suelo", "Dice acera, calzada, césped o arena cada vez que cambia el suelo que pisas."),
             si_no("localizador", "Sonido propio de cada lugar cercano"),
             si_no("semaforos", "Semáforos acústicos en los cruces"),
@@ -361,9 +407,13 @@ def opciones(app):
         ], "Dificultad, puntería y asistencias."),
         Opcion("Personas e inteligencia artificial", lambda: __import__("juego.menus_charla", fromlist=["x"]).opciones_ia(app),
                ayuda="Cómo contestan las personas de la calle cuando les escribes lo que quieres: con el motor del juego o con una inteligencia artificial."),
+        Opcion("Teclado: cambiar las teclas", lambda: opciones_teclado(app),
+               ayuda="Elige con qué tecla se hace cada cosa mientras juegas. Sirve si tu teclado es distinto, si juegas con una mano o si alguna tecla choca con tu lector de pantalla."),
         Opcion("Mando", mando, ayuda="Mandos de Xbox y PlayStation: ver qué hace cada botón, reasignarlos y activar la vibración."),
         seccion("Voz", [
             si_no("voz_sapi", "Usar la voz de Windows en lugar del lector de pantalla", al_cambiar=lambda: app.voz.cambiar(cfg["voz_sapi"])),
+            si_no("menu_posicion", "Decir la posición en los menús, por ejemplo 3 de 9",
+                  "Al moverte por un menú, después de cada opción dice cuál es y cuántas hay."),
             si_no("voces_grabadas", "Voces grabadas en las escenas, solo con el personaje Dani",
                   ayuda_="Con sí, las escenas de las misiones que tengan grabaciones suenan con voces de actores, en lugar de leerlas tu lector de pantalla, y el texto sigue saliendo en braille. "
                          "Solo cuando juegas con Dani, porque las grabaciones le llaman por su nombre. Con no, o con otro personaje, todo lo dice tu lector de pantalla o, si no usas lector, la voz de Windows."),

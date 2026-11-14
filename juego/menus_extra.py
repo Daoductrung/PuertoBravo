@@ -383,6 +383,10 @@ def opciones_mando(app):
         if cfg["mando_vibracion"]:
             md.vibrar(0.7, 0.7, 300)
 
+    def fuerza(d):
+        cfg["vibracion_fuerza"] = round(max(0.2, min(1.0, cfg["vibracion_fuerza"] + 0.2 * (d or 1))), 1)
+        md.vibrar(0.7, 0.7, 300)
+
     def probar():
         if not md.conectado:
             app.decir("No hay ningún mando conectado.", True)
@@ -419,6 +423,8 @@ def opciones_mando(app):
     app.abrir(Menu(app, "Mando", [
         Opcion(estado),
         Opcion("Qué hace cada botón", ayuda_mando),
+        Opcion(lambda: f"Fuerza de la vibración: {int(cfg['vibracion_fuerza'] * 100)} por ciento", ajuste=fuerza,
+               ayuda="Izquierda y derecha la bajan y la suben, del veinte al cien por cien. Cada cambio hace vibrar el mando para que la notes."),
         Opcion(lambda: f"Vibración: {'sí' if cfg['mando_vibracion'] else 'no'}", ajuste=vib, ayuda="El mando vibra con los golpes, los disparos que recibes, las explosiones y cuando pica un pez."),
         Opcion("Probar la vibración", probar),
         Opcion(lambda: f"Nombres de los botones: {'PlayStation' if md.tipo == 'ps' else 'Xbox'}", ajuste=tipo, ayuda="Se detecta solo al conectar el mando, pero puedes cambiarlo a mano."),

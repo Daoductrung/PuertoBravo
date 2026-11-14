@@ -131,6 +131,17 @@ La clave se crea una sola vez con `.venv\Scripts\python.exe herramientas\publica
 
 La verificación de la firma está implementada con la biblioteca estándar, siguiendo el RFC 8032, y se comprueba en las pruebas con sus vectores oficiales. Si el paquete `cryptography` está instalado, se usa ese.
 
+### Procesadores antiguos: las dos numpy
+
+La numpy oficial (2.4 en adelante) exige un procesador con las instrucciones de x86-64-v2 (SSE4.2, SSSE3, POPCNT y demás). En uno anterior, cargarla hace que Windows cierre el programa con el código 0xC000001D. Para Python 3.15 no hay ruedas de numpy anteriores a esa exigencia, así que el juego compilado lleva dos:
+
+- `lib\numpy`: la oficial de PyPI, para los procesadores actuales.
+- `lib_antiguo\numpy`: la misma versión, compilada sin exigencias con `-Dcpu-baseline=none` y sin BLAS. Sigue usando las instrucciones modernas cuando el procesador las tiene, porque las elige al arrancar.
+
+`juego/procesador.py` pregunta a Windows qué instrucciones hay (`IsProcessorFeaturePresent`) antes de importar numpy y pone delante la carpeta que toca. Si la elegida no carga, prueba la otra; si no carga ninguna, el juego lo dice en voz alta y se cierra con normalidad. La variable de entorno `PUERTOBRAVO_NUMPY=antigua` (u `oficial`) fuerza una, para probar.
+
+La rueda para procesadores antiguos está en `terceros/numpy_antiguo`, lista para usar: `compilar.bat` la coloca en la compilación con `herramientas/poner_numpy_antiguo.py`. Solo hay que rehacerla si cambia la versión de numpy o la de Python, con `herramientas\compilar_numpy_antiguo.bat`, que necesita Visual Studio con las herramientas de C++. numpy tiene licencia BSD de tres cláusulas.
+
 ### Registro de sesión
 
 `juego/registro.py` crea en `data/logs` una carpeta por sesión, con un máximo de cinco. Dentro quedan `sistema.txt` (versión, Windows, lector, sonido, mods, opciones), `sesion.log` (pantallas, teclas, todo lo que dice el juego, una foto del estado de la partida cada quince segundos, red, actualizaciones, fotogramas lentos y avisos), `errores.log` (cada error con su traza, el estado de la partida y las últimas teclas y sonidos) y `fallo_grave.log` si el proceso cae de golpe. Captura también las excepciones sin tratar del hilo principal y de los demás hilos.

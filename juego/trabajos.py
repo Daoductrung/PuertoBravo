@@ -9,6 +9,15 @@ NOMBRE_TRABAJO = {"taxi": "taxista", "ambulancia": "conductor de ambulancia", "a
                   "bomberos": "bombero", "grua": "conductor de grúa", "paqueteria": "mensajero"}
 
 
+def _agotado(t):
+    """¿Se ha acabado el tiempo del servicio? Un servicio sin tiempo límite (None) no se agota nunca."""
+    return t.get("limite") is not None and t["limite"] <= 0
+
+
+def _resto(t):
+    """Segundos que quedan, para calcular la propina. Sin límite, o ya pasado, cero."""
+    return max(0, t.get("limite") or 0)
+
 class Trabajos:
     def _destino_azar(self, minimo=150, maximo=650, excluir=None):
         x, y = self.pos()
@@ -247,15 +256,15 @@ class Trabajos:
                 if self._parado_en(l):
                     j.stats["carreras_taxi"] += 1
                     self.son("puerta_coche")
-                    self._cobrar(int(15 + t["dist"] * 0.12 + max(0, t["limite"]) * 1.5), "Carrera cobrada")
+                    self._cobrar(int(15 + t["dist"] * 0.12 + _resto(t) * 1.5), "Carrera cobrada")
                     self._servicio_nuevo()
-                elif t["limite"] <= 0:
+                elif _agotado(t):
                     self.son("puerta_coche")
                     self.decir("El cliente se ha hartado de esperar y se baja sin pagar.")
                     self._servicio_nuevo()
         elif tipo == "ambulancia":
             l = t["lugar"]
-            if t["limite"] <= 0:
+            if _agotado(t):
                 self.decir("Has llegado tarde. Otra ambulancia se ha hecho cargo.")
                 self._servicio_nuevo()
             elif self._parado_en(l):
@@ -267,7 +276,7 @@ class Trabajos:
                     self.decir(f"Herido a bordo. Llévalo a {h.nombre} cuanto antes.")
                     self.gps_a_lugar(h, auto=True)
                 else:
-                    self._cobrar(int(60 + t["dist"] * 0.15 + max(0, t["limite"]) * 2), "Herido entregado en urgencias")
+                    self._cobrar(int(60 + t["dist"] * 0.15 + _resto(t) * 2), "Herido entregado en urgencias")
                     self._servicio_nuevo()
         elif tipo == "mensajeria":
             l = t["lugar"]
@@ -279,13 +288,13 @@ class Trabajos:
             l = t["lugar"]
             if self._parado_en(l):
                 self.son("lugar_estacion" if tipo == "autobus" else "claxon_helados", vol=0.5)
-                self._cobrar(int(18 + max(0, t["limite"]) * 0.6), "Parada hecha")
+                self._cobrar(int(18 + _resto(t) * 0.6), "Parada hecha")
                 t["n"] += 1
                 if t["n"] >= len(t["paradas"]):
                     self.dar_dinero(100, "Línea completa, prima")
                     t["paradas"] = None
                 self._servicio_nuevo()
-            elif t["limite"] <= 0:
+            elif _agotado(t):
                 self.decir("Vas con retraso y los viajeros protestan. Siguiente parada.")
                 t["n"] += 1
                 if t["n"] >= len(t["paradas"]):
@@ -295,9 +304,9 @@ class Trabajos:
             o = t.get("objetivo")
             if o is None or o.muerto:
                 t["objetivo"] = None
-                self._cobrar(int(220 + max(0, t["limite"])), "Sospechoso detenido")
+                self._cobrar(int(220 + _resto(t)), "Sospechoso detenido")
                 self._servicio_nuevo()
-            elif t["limite"] <= 0 or o.dist(x, y) > 700:
+            elif _agotado(t) or o.dist(x, y) > 700:
                 self.quitar_vehiculo(o)
                 t["objetivo"] = None
                 self.decir("El sospechoso se ha escapado.")
@@ -318,9 +327,9 @@ class Trabajos:
                     t["canal"].parar()
                     t["canal"] = None
                     self.son("salpicadura", vol=0.6)
-                    self._cobrar(int(90 + max(0, t["limite"]) * 1.5), "Incendio apagado")
+                    self._cobrar(int(90 + _resto(t) * 1.5), "Incendio apagado")
                     self._servicio_nuevo()
-            elif t["limite"] <= 0:
+            elif _agotado(t):
                 self.decir("Has llegado tarde: el edificio ha ardido entero.")
                 self._servicio_nuevo()
         elif tipo == "grua":
@@ -343,15 +352,15 @@ class Trabajos:
         elif tipo == "paqueteria":
             l = t["lugar"]
             if self._parado_en(l):
-                self._cobrar(int(15 + max(0, t["limite"] or 0) * 0.8), "Paquete entregado")
+                self._cobrar(int(15 + _resto(t) * 0.8), "Paquete entregado")
                 self._servicio_nuevo()
-            elif t["limite"] <= 0:
+            elif _agotado(t):
                 self.decir("Vas tarde: este paquete ya no tiene propina.")
                 t["limite"] = None
         elif tipo == "pizza":
             l = t["lugar"]
             if self._dist(l) <= (18 if j.veh else 7) and (not j.veh or abs(j.veh.vel) < 2.5):
-                paga = int(20 + max(0, t["limite"]) * 0.8)
+                paga = int(20 + _resto(t) * 0.8)
                 t["quedan"] -= 1
                 t["ganado"] += paga
                 j.stats["pizzas"] += 1
@@ -361,7 +370,7 @@ class Trabajos:
                     self.terminar_trabajo(f"Reparto terminado. Has ganado {t['ganado'] + 60} euros.")
                 else:
                     self._pizza_siguiente()
-            elif t["limite"] <= 0:
+            elif _agotado(t):
                 self.terminar_trabajo("La pizza se ha enfriado. Te quedas sin trabajo por hoy.")
         elif tipo == "carrera":
             if not j.veh:
@@ -385,5 +394,5 @@ class Trabajos:
                     self.dar_dinero(premio, "Premio")
                 else:
                     self._carrera_punto()
-            elif t["limite"] <= 0:
+            elif _agotado(t):
                 self.terminar_trabajo("Se acabó el tiempo. Has perdido la carrera.")

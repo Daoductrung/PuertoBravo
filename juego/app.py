@@ -85,6 +85,9 @@ class App:
     def aplicar_volumenes(self):
         for k in ("maestro", "efectos", "ambiente", "musica", "interfaz"):
             self.mez.vols[k] = self.cfg["vol_" + k]
+        self.mez.mono = bool(self.cfg["sonido_mono"])
+        self.mez.atenuar = bool(self.cfg["atenuar_al_hablar"])
+        self.voz.al_hablar = self.mez.hablando
 
     def son(self, nombre, **kw):
         kw.setdefault("cat", "interfaz")
@@ -187,7 +190,16 @@ class App:
         self.activo = False
 
     # ------------------------------------------------------------------ bucle
+    def _jugando(self):
+        return bool(self.pila) and type(self.pila[-1]).__name__ == "Partida"
+
     def evento_tecla(self, ev):
+        if self.cfg["teclas"] and self._jugando():
+            # jugando, cada tecla hace la función que el jugador le haya puesto
+            from . import teclado
+            k = teclado.traducir(self.cfg, ev.key)
+            if k != ev.key:
+                ev = EventoFalso(k, getattr(ev, "mod", 0) or 0, getattr(ev, "unicode", ""))
         self.teclas.add(ev.key)
         if registro.activo():
             from .menus import EntradaTexto
@@ -235,6 +247,9 @@ class App:
         self.evento_tecla(EventoFalso(key, mod, unicode))
         if soltar:
             self.teclas.discard(key)
+            if self.cfg["teclas"]:
+                from . import teclado
+                self.teclas.discard(teclado.traducir(self.cfg, key))
 
     def _dibujar(self, forzar=None):
         if not self.pantalla:
@@ -272,6 +287,9 @@ class App:
                         self.evento_tecla(ev)
                     elif ev.type == pygame.KEYUP:
                         self.teclas.discard(ev.key)
+                        if self.cfg["teclas"]:
+                            from . import teclado
+                            self.teclas.discard(teclado.traducir(self.cfg, ev.key))
                     elif ev.type in (pygame.WINDOWFOCUSLOST,):
                         self.teclas.clear()
                 self.paso(dt)
