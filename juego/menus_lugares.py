@@ -73,10 +73,14 @@ def estacion(p, l):
             if not p.pagar(precio):
                 return
             app.cerrar(m)
-            p.pasar_horas(1.5)
             p.son("lugar_estacion", cat="interfaz")
-            p.cambiar_mapa(dest.mapa, dest.x, dest.y, None,
-                           f"El autobús te deja en {dest.nombre}, {p.mapas[dest.mapa].nombre}. Son las {p.hora_txt()}.")
+
+            def llegar():
+                p.pasar_horas(1.5)
+                p.cambiar_mapa(dest.mapa, dest.x, dest.y, None,
+                               f"El autobús te deja en {dest.nombre}, {p.mapas[dest.mapa].nombre}. Son las {p.hora_txt()}.")
+            from .pantallas import viajar as trayecto
+            trayecto(app, 50.0, llegar, autobus=True, destino=p.mapas[dest.mapa].nombre)
         return f
     ops = [Opcion(f"Billete a {p.mapas[e.mapa].nombre}: {int(e.get('precio', 20))} euros", viajar(e), ayuda=p.mapas[e.mapa].barrios[0].get("descripcion", ""))
            for e in p.lugares.values() if e.tipo == "estacion" and e.mapa != p.mundo.id]

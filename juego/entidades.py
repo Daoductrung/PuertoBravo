@@ -43,6 +43,9 @@ class Jugador:
         self.adiccion = {}
         self.ultima_dosis = {}
         self.territorios = []
+        self.banda = 0               # cuánta gente tienes en tu banda
+        self.banda_nombre = ""
+        self.dia_nevera = -1         # último día que comiste de la nevera de casa
         self.acciones = {}
         self.bolsa = {}
         self.gimnasio_dia = 0

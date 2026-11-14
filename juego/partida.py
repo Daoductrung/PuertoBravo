@@ -1194,6 +1194,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.cobrar_banco()
         self.sorteo_loteria()
         self.ingresos_territorios()
+        from . import sistemas
+        sistemas.paga(self)
         self.mover_bolsa()
         self.dia_adultos()
         self.dia_intimidad()

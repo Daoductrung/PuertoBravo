@@ -409,11 +409,12 @@ class Conduccion:
         v = j.veh
         t = self.app.teclas
         mo = v.modelo
-        freno = mo["freno"] * (0.6 if self.lluvia else 1.0)
+        from . import sistemas                          # las mejoras del taller cambian cómo va el vehículo
+        freno = mo["freno"] * (0.6 if self.lluvia else 1.0) * sistemas.factor_frenada(v)
         if v.ardiendo >= 0:
             v.vel -= math.copysign(min(abs(v.vel), 6 * dt), v.vel)
         elif pygame.K_UP in t:
-            v.vel += mo["acel"] * dt * (2.5 if v.vel < 0 else 1.0)
+            v.vel += mo["acel"] * sistemas.factor_aceleracion(v) * dt * (2.5 if v.vel < 0 else 1.0)
         elif pygame.K_DOWN in t:
             if v.vel > 0.3:
                 v.vel = max(0.0, v.vel - freno * dt)
@@ -428,7 +429,7 @@ class Conduccion:
                 self.t_frenazo = self.t
                 self.son("frenazo", vol=0.5)
             v.vel -= math.copysign(min(abs(v.vel), freno * 1.7 * dt), v.vel)
-        vmax = mo["vel_max"] * (0.55 + 0.45 * min(1.0, v.salud / (0.5 * v.salud_max))) * (1 + 0.01 * self.nivel("conduccion"))
+        vmax = mo["vel_max"] * sistemas.factor_velocidad(v) * (0.55 + 0.45 * min(1.0, v.salud / (0.5 * v.salud_max))) * (1 + 0.01 * self.nivel("conduccion"))
         v.vel = min(v.vel, vmax)
         x0, y0 = v.x, v.y
         if self.modo_asistido():
@@ -445,7 +446,7 @@ class Conduccion:
         self.ganar_xp("conduccion", math.hypot(v.x - x0, v.y - y0) / 60.0)
         if v.canal:
             carga = 0.12 if pygame.K_UP in t else 0.0
-            v.canal.tono(mo["tono"] * (0.6 + carga + 1.3 * abs(v.vel) / mo["vel_max"]))
+            v.canal.tono(mo["tono"] * sistemas.factor_tono(v) * (0.6 + carga + 1.3 * abs(v.vel) / mo["vel_max"]))
         if getattr(self, "rodadura", None):
             self.rodadura.volumen(min(0.5, abs(v.vel) / 50.0))
             self.rodadura.tono(0.7 + abs(v.vel) / 40.0)

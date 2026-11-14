@@ -275,6 +275,51 @@
    "recompensa": {
     "dinero": 280
    }
+  },
+  {
+   "id": "voo1",
+   "titulo": "La madrina",
+   "capitulo": 24,
+   "contacto": "El mesonero",
+   "lugar": "vo_meson",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "La madrina de la boda está en la bodega y la ceremonia empieza ya.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El mesonero",
+       "La madrina se ha quedado en la bodega probando el vino y la boda empieza en la parroquia. Ve a por ella y tráela, que yo no puedo dejar los fogones."
+      ],
+      [
+       "El mesonero",
+       "Va con tacones, así que paciencia. Si llevas coche, mejor."
+      ]
+     ]
+    },
+    {
+     "tipo": "escoltar",
+     "texto": "Recoge a la madrina en la bodega y acompáñala hasta la parroquia.",
+     "lugar": "vo_bodega",
+     "destino": "vo_parroquia",
+     "persona": "la madrina"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La madrina",
+       "¡Llegamos! Y con el peinado en su sitio. Ven luego al convite, que te has ganado un plato."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 250
+   }
   }
  ],
  "armas": [

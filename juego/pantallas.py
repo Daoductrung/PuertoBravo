@@ -394,3 +394,88 @@ class BuscaTesoro:
             self._fin(False, "Lo dejas.")
         elif k == pygame.K_F1:
             self.app.decir(f"Flechas para moverte, Intro para buscar. Te quedan {self.intentos} intentos y {int(self.tiempo)} segundos.", True)
+
+
+class Viaje:
+    """El trayecto de un taxi o de un autobús: se oye el motor, la calzada y la radio durante un rato, y luego llegas.
+
+    Intro o Escape llegan ya. Cualquier otra tecla dice cuánto falta.
+    """
+    pausa_mundo = True
+
+    def __init__(self, app, segundos, al_llegar, autobus=False, destino=""):
+        self.app, self.total, self.al_llegar, self.autobus, self.destino = app, max(4.0, float(segundos)), al_llegar, autobus, destino
+        self.t = 0.0
+        self.canales = []
+        self.motor = None
+        self.t_suceso = random.uniform(5, 9)
+        self.avisado = False
+        self.hecho = False
+
+    def al_entrar(self):
+        app = self.app
+        if self.motor is not None:
+            return
+        app.son("puerta_coche")
+        self.motor = app.son("motor_camion" if self.autobus else "motor_coche", bucle=True, vol=0.32)
+        self.canales = [self.motor, app.son("rodadura", bucle=True, vol=0.18)]
+        emisora = ""
+        try:
+            n = len(app.radio.emisoras)
+            emisora = app.radio.sintonizar(random.randrange(1, n)) if n > 1 else ""
+        except Exception:
+            emisora = ""
+        quien = "El autobús arranca" if self.autobus else "Subes al taxi"
+        radio = f" En la radio, {emisora}." if emisora else ""
+        app.decir(f"{quien}, camino de {self.destino}.{radio} Pulsa Intro si quieres llegar ya.", True)
+
+    def _fin(self):
+        if self.hecho:
+            return
+        self.hecho = True
+        for c in self.canales:
+            c.parar()
+        try:
+            self.app.radio.apagar()
+        except Exception:
+            pass
+        self.app.cerrar(self)
+        self.app.son("puerta_coche")
+        self.al_llegar()
+
+    def tecla(self, ev):
+        if ev.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
+            self._fin()
+        else:
+            self.app.decir(f"Vas de camino a {self.destino}. Quedan unos {max(1, int(self.total - self.t))} segundos. Intro para llegar ya.", True)
+
+    def actualizar(self, dt):
+        if self.hecho:
+            return
+        self.t += dt
+        f = self.t / self.total
+        # el motor sube al arrancar, se mantiene y baja al llegar
+        tono = 0.75 + 0.55 * min(1.0, f / 0.15) if f < 0.8 else 0.75 + 0.55 * max(0.0, (1.0 - f) / 0.2)
+        if self.motor is not None:
+            self.motor.tono(tono + 0.04 * math.sin(self.t * 1.7))
+        self.t_suceso -= dt
+        if self.t_suceso <= 0 and f < 0.85:
+            self.t_suceso = random.uniform(6, 11)
+            self.app.son(random.choice(["claxon_lejano", "intermitente", "cruce", "claxon_lejano"]), vol=0.35, pan=random.uniform(-0.8, 0.8))
+        if not self.avisado and f >= 0.8:
+            self.avisado = True
+            self.app.decir("Ya casi estás." if not self.autobus else "Próxima parada.")
+        if self.t >= self.total:
+            self._fin()
+
+    def cerrado(self):
+        if not self.hecho:                      # si algo cierra la pantalla por fuera, se llega igual
+            self._fin()
+
+
+def viajar(app, segundos, al_llegar, autobus=False, destino=""):
+    """Hace el trayecto si el jugador lo quiere; si no, llega al momento, como antes."""
+    if not app.cfg["viajes_trayecto"] or (app.pruebas and not getattr(app, "viajes_en_pruebas", False)):
+        al_llegar()
+        return
+    app.abrir(Viaje(app, segundos, al_llegar, autobus, destino))

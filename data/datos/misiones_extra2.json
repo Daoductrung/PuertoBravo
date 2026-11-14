@@ -1,205 +1,1146 @@
 {
-  "capitulos": {"9": "Historias de Monteferro", "10": "Historias de la sierra y más encargos"},
-  "misiones": [
-    {"id": "t01", "titulo": "La ciudad de hierro", "capitulo": 9, "contacto": "Carmela", "lugar": "mf_taberna", "requiere": ["m05"],
-     "resumen": "En Monteferro, la ciudad minera de la sierra, el sindicato busca ayuda de fuera.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Carmela", "Yo a ti te conozco. Tú eres Dani Roca. Mi hermano compartió celda contigo ahí arriba, en el penal. Dice que eres de ley."],
-         ["Dani", "Tu hermano roncaba como una locomotora. ¿Qué pasa en Monteferro?"],
-         ["Carmela", "Pasa que la mina es de Belmonte. Llevamos un mes de huelga y ha mandado matones para romperla. Ahora mismo hay tres en la bocamina apaleando a los piquetes."],
-         ["Carmela", "Soy la presidenta del sindicato, no una asesina. Pero tú no estás en el sindicato."]]},
-       {"tipo": "eliminar", "lugar": "mf_mina", "enemigos": [{"n": 2, "tipo": "Rompehuelgas", "arma": "bate", "salud": 70}, {"n": 1, "tipo": "Rompehuelgas", "arma": "pistola", "salud": 70}], "texto": "Ve a la Mina La Esperanza, en el Barrio Alto, y échalos."},
-       {"tipo": "ir", "lugar": "mf_taberna", "texto": "Vuelve a la Taberna del Sindicato."},
-       {"tipo": "dialogo", "lineas": [["Carmela", "Los compañeros te mandan esto. No es mucho, que estamos en huelga, pero es de corazón. Y aquí tienes casa siempre que quieras."]]}
+ "capitulos": {
+  "9": "Historias de Monteferro",
+  "10": "Historias de la sierra y más encargos",
+  "11": "Encargos de oído"
+ },
+ "misiones": [
+  {
+   "id": "t01",
+   "titulo": "La ciudad de hierro",
+   "capitulo": 9,
+   "contacto": "Carmela",
+   "lugar": "mf_taberna",
+   "requiere": [
+    "m05"
+   ],
+   "resumen": "En Monteferro, la ciudad minera de la sierra, el sindicato busca ayuda de fuera.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "Yo a ti te conozco. Tú eres Dani Roca. Mi hermano compartió celda contigo ahí arriba, en el penal. Dice que eres de ley."
+      ],
+      [
+       "Dani",
+       "Tu hermano roncaba como una locomotora. ¿Qué pasa en Monteferro?"
+      ],
+      [
+       "Carmela",
+       "Pasa que la mina es de Belmonte. Llevamos un mes de huelga y ha mandado matones para romperla. Ahora mismo hay tres en la bocamina apaleando a los piquetes."
+      ],
+      [
+       "Carmela",
+       "Soy la presidenta del sindicato, no una asesina. Pero tú no estás en el sindicato."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "mf_mina",
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Rompehuelgas",
+       "arma": "bate",
+       "salud": 70
+      },
+      {
+       "n": 1,
+       "tipo": "Rompehuelgas",
+       "arma": "pistola",
+       "salud": 70
+      }
      ],
-     "recompensa": {"dinero": 1200}},
-
-    {"id": "t02", "titulo": "Dinamita", "capitulo": 9, "contacto": "Carmela", "lugar": "mf_taberna", "requiere": ["t01"],
-     "resumen": "Los matones de Belmonte quieren volar la mina y culpar al sindicato.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Carmela", "Nos hemos enterado de una cosa fea. Los de Belmonte han escondido una caja de dinamita en la mina. Quieren volarla esta noche y decir que hemos sido nosotros."],
-         ["Dani", "Así cierran la mina, cobran el seguro y os meten en la cárcel."],
-         ["Carmela", "Veo que has estudiado. Saca esa caja de ahí antes de que anochezca."]]},
-       {"tipo": "recoger", "lugar": "mf_mina", "limite": 200, "objeto": "Caja de dinamita", "texto": "Ve a la Mina La Esperanza y recoge la caja de dinamita antes de que se acabe el tiempo."},
-       {"tipo": "eliminar", "lugar": "mf_mina", "ya": true, "enemigos": [{"n": 3, "tipo": "Matón de Belmonte", "arma": "pistola", "salud": 75}], "texto": "¡Te han descubierto! Acaba con los matones."},
-       {"tipo": "ir", "lugar": "mf_taberna", "texto": "Lleva la dinamita a la Taberna del Sindicato."},
-       {"tipo": "dialogo", "lineas": [["Carmela", "Quédate con unos cartuchos, que a ti te harán más falta. Se lanzan como las granadas. Y gracias, Dani. Esta ciudad te debe la mina."]]}
+     "texto": "Ve a la Mina La Esperanza, en el Barrio Alto, y échalos."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mf_taberna",
+     "texto": "Vuelve a la Taberna del Sindicato."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "Los compañeros te mandan esto. No es mucho, que estamos en huelga, pero es de corazón. Y aquí tienes casa siempre que quieras."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1200
+   }
+  },
+  {
+   "id": "t02",
+   "titulo": "Dinamita",
+   "capitulo": 9,
+   "contacto": "Carmela",
+   "lugar": "mf_taberna",
+   "requiere": [
+    "t01"
+   ],
+   "resumen": "Los matones de Belmonte quieren volar la mina y culpar al sindicato.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "Nos hemos enterado de una cosa fea. Los de Belmonte han escondido una caja de dinamita en la mina. Quieren volarla esta noche y decir que hemos sido nosotros."
+      ],
+      [
+       "Dani",
+       "Así cierran la mina, cobran el seguro y os meten en la cárcel."
+      ],
+      [
+       "Carmela",
+       "Veo que has estudiado. Saca esa caja de ahí antes de que anochezca."
+      ]
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "mf_mina",
+     "limite": 200,
+     "objeto": "Caja de dinamita",
+     "texto": "Ve a la Mina La Esperanza y recoge la caja de dinamita antes de que se acabe el tiempo."
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "mf_mina",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Matón de Belmonte",
+       "arma": "pistola",
+       "salud": 75
+      }
      ],
-     "recompensa": {"dinero": 1800, "arma": "granada", "balas": 4}},
-
-    {"id": "t03", "titulo": "El expediente", "capitulo": 9, "contacto": "Carmela", "lugar": "mf_taberna", "requiere": ["t02", "m07"],
-     "resumen": "El hermano de Carmela sabe dónde está la prueba de que eres inocente.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Carmela", "Mi hermano limpia el despacho del director del penal. Dice que hay un expediente con tu nombre y una nota de puño y letra del comisario Varela: fabricar pruebas, a petición del señor Belmonte."],
-         ["Dani", "Tres años. Tres años por una nota."],
-         ["Carmela", "Esta noche hay cambio de guardia. Los tres del turno están comprados y van armados. Tú verás."]]},
-       {"tipo": "eliminar", "lugar": "mf_prision", "enemigos": [{"n": 3, "tipo": "Guardia corrupto", "arma": "pistola", "salud": 85}], "texto": "Ve a la Prisión de Monteferro, en El Penal, y encárgate de los tres guardias corruptos."},
-       {"tipo": "recoger", "lugar": "mf_prision", "objeto": "Tu expediente", "texto": "Recoge tu expediente."},
-       {"tipo": "policia", "nivel": 3, "texto": "¡Suena la sirena del penal! Despista a la policía."},
-       {"tipo": "ir", "lugar": "mf_taberna", "texto": "Lleva el expediente a la Taberna del Sindicato."},
-       {"tipo": "dialogo", "lineas": [
-         ["Narrador", "Lees la nota tres veces. Tu nombre, la firma de Varela, el sello de Belmonte. Tres años de tu vida en media cuartilla."],
-         ["Carmela", "Guárdalo bien. El día que eso llegue a un juez, se acaba todo."]]}
+     "texto": "¡Te han descubierto! Acaba con los matones."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mf_taberna",
+     "texto": "Lleva la dinamita a la Taberna del Sindicato."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "Quédate con unos cartuchos, que a ti te harán más falta. Se lanzan como las granadas. Y gracias, Dani. Esta ciudad te debe la mina."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1800,
+    "arma": "granada",
+    "balas": 4
+   }
+  },
+  {
+   "id": "t03",
+   "titulo": "El expediente",
+   "capitulo": 9,
+   "contacto": "Carmela",
+   "lugar": "mf_taberna",
+   "requiere": [
+    "t02",
+    "m07"
+   ],
+   "resumen": "El hermano de Carmela sabe dónde está la prueba de que eres inocente.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "Mi hermano limpia el despacho del director del penal. Dice que hay un expediente con tu nombre y una nota de puño y letra del comisario Varela: fabricar pruebas, a petición del señor Belmonte."
+      ],
+      [
+       "Dani",
+       "Tres años. Tres años por una nota."
+      ],
+      [
+       "Carmela",
+       "Esta noche hay cambio de guardia. Los tres del turno están comprados y van armados. Tú verás."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "mf_prision",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Guardia corrupto",
+       "arma": "pistola",
+       "salud": 85
+      }
      ],
-     "recompensa": {"dinero": 4000}},
-
-    {"id": "t04", "titulo": "Pájaro de acero", "capitulo": 9, "contacto": "Carmela", "lugar": "mf_taberna", "requiere": ["t03"],
-     "resumen": "El sindicato necesita llevar algo urgente a Puerto Bravo, y solo hay una manera rápida.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Carmela", "Hay que llevar una copia del expediente a la periodista de Puerto Bravo antes de que Belmonte cierre las carreteras. Y las ha cerrado hace una hora."],
-         ["Dani", "Entonces no hay manera."],
-         ["Carmela", "Por carretera no. En el helipuerto está el helicóptero de la compañía. ¿Has pilotado alguna vez?"],
-         ["Dani", "No."],
-         ["Carmela", "Pues hoy es un buen día. Sube, despega y, sin salir del helipuerto, pulsa Intro para poner rumbo a Puerto Bravo."]]},
-       {"tipo": "robar", "modelo": "helicoptero", "lugar": "mf_helipuerto", "nombre": "Helicóptero de la compañía", "busqueda": 2, "texto": "Roba el helicóptero de la compañía en el Helipuerto de Monteferro."},
-       {"tipo": "entregar", "lugar": "helipuerto_pb", "salud_min": 20, "texto": "Vuela hasta el Helipuerto de Las Torres, en Puerto Bravo. En el helipuerto, pulsa Intro y elige el destino."},
-       {"tipo": "dialogo", "lineas": [
-         ["Marta", "¿Has venido en helicóptero? Madre mía, Dani. Dame eso. Mañana está en portada."],
-         ["Narrador", "Ya sabes pilotar. En los helipuertos puedes coger un helicóptero o pagar un vuelo, y en Autos San Lucero los venden."]]}
+     "texto": "Ve a la Prisión de Monteferro, en El Penal, y encárgate de los tres guardias corruptos."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "mf_prision",
+     "objeto": "Tu expediente",
+     "texto": "Recoge tu expediente."
+    },
+    {
+     "tipo": "policia",
+     "nivel": 3,
+     "texto": "¡Suena la sirena del penal! Despista a la policía."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mf_taberna",
+     "texto": "Lleva el expediente a la Taberna del Sindicato."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Lees la nota tres veces. Tu nombre, la firma de Varela, el sello de Belmonte. Tres años de tu vida en media cuartilla."
+      ],
+      [
+       "Carmela",
+       "Guárdalo bien. El día que eso llegue a un juez, se acaba todo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 4000
+   }
+  },
+  {
+   "id": "t04",
+   "titulo": "Pájaro de acero",
+   "capitulo": 9,
+   "contacto": "Carmela",
+   "lugar": "mf_taberna",
+   "requiere": [
+    "t03"
+   ],
+   "resumen": "El sindicato necesita llevar algo urgente a Puerto Bravo, y solo hay una manera rápida.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "Hay que llevar una copia del expediente a la periodista de Puerto Bravo antes de que Belmonte cierre las carreteras. Y las ha cerrado hace una hora."
+      ],
+      [
+       "Dani",
+       "Entonces no hay manera."
+      ],
+      [
+       "Carmela",
+       "Por carretera no. En el helipuerto está el helicóptero de la compañía. ¿Has pilotado alguna vez?"
+      ],
+      [
+       "Dani",
+       "No."
+      ],
+      [
+       "Carmela",
+       "Pues hoy es un buen día. Sube, despega y, sin salir del helipuerto, pulsa Intro para poner rumbo a Puerto Bravo."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "helicoptero",
+     "lugar": "mf_helipuerto",
+     "nombre": "Helicóptero de la compañía",
+     "busqueda": 2,
+     "texto": "Roba el helicóptero de la compañía en el Helipuerto de Monteferro."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "helipuerto_pb",
+     "salud_min": 20,
+     "texto": "Vuela hasta el Helipuerto de Las Torres, en Puerto Bravo. En el helipuerto, pulsa Intro y elige el destino."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Marta",
+       "¿Has venido en helicóptero? Madre mía, Dani. Dame eso. Mañana está en portada."
+      ],
+      [
+       "Narrador",
+       "Ya sabes pilotar. En los helipuertos puedes coger un helicóptero o pagar un vuelo, y en Autos San Lucero los venden."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 5000
+   }
+  },
+  {
+   "id": "t05",
+   "titulo": "El convoy",
+   "capitulo": 9,
+   "contacto": "Carmela",
+   "lugar": "mf_taberna",
+   "requiere": [
+    "t04"
+   ],
+   "resumen": "Belmonte quiere sacar de Monteferro la caja de la compañía.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "La compañía se lleva hoy la caja: los sueldos que nos deben de seis meses, en un camión blindado que sale del Banco Minero."
+      ],
+      [
+       "Dani",
+       "Eso es vuestro dinero."
+      ],
+      [
+       "Carmela",
+       "Por eso no es un robo. Es un cobro."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "modelo": "blindado",
+     "lugar": "mf_banco",
+     "nombre": "Camión de la compañía",
+     "salud": 340,
+     "texto": "Persigue el camión blindado de la compañía y detenlo como sea. Pulsa Q para fijarlo."
+    },
+    {
+     "tipo": "recoger",
+     "aqui": true,
+     "objeto": "Caja de los sueldos",
+     "texto": "Recoge la caja de los sueldos."
+    },
+    {
+     "tipo": "policia",
+     "nivel": 3,
+     "texto": "Despista a la policía."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mf_taberna",
+     "texto": "Lleva la caja a la Taberna del Sindicato."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "Seis meses de sueldo para trescientas familias. Hoy en Monteferro cena todo el mundo. Tu parte, que te la has ganado."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 8000
+   }
+  },
+  {
+   "id": "t06",
+   "titulo": "Huelga general",
+   "capitulo": 9,
+   "contacto": "Carmela",
+   "lugar": "mf_taberna",
+   "requiere": [
+    "t05"
+   ],
+   "resumen": "Belmonte ha mandado a todos sus hombres a tomar las oficinas de la mina.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "Se acabó. Belmonte ha llenado las oficinas de la compañía de pistoleros y dice que mañana entra la maquinaria a desmantelar la mina."
+      ],
+      [
+       "Dani",
+       "¿Cuántos son?"
+      ],
+      [
+       "Carmela",
+       "Siete. Los compañeros quieren ir con los picos. No voy a dejar que los maten."
+      ],
+      [
+       "Dani",
+       "No hará falta que vaya nadie más."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "mf_oficinas",
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Pistolero de Belmonte",
+       "arma": "pistola",
+       "salud": 85
+      },
+      {
+       "n": 2,
+       "tipo": "Pistolero de Belmonte",
+       "arma": "subfusil",
+       "salud": 85
+      },
+      {
+       "n": 1,
+       "tipo": "Capataz armado",
+       "arma": "escopeta",
+       "salud": 130
+      }
      ],
-     "recompensa": {"dinero": 5000}},
-
-    {"id": "t05", "titulo": "El convoy", "capitulo": 9, "contacto": "Carmela", "lugar": "mf_taberna", "requiere": ["t04"],
-     "resumen": "Belmonte quiere sacar de Monteferro la caja de la compañía.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Carmela", "La compañía se lleva hoy la caja: los sueldos que nos deben de seis meses, en un camión blindado que sale del Banco Minero."],
-         ["Dani", "Eso es vuestro dinero."],
-         ["Carmela", "Por eso no es un robo. Es un cobro."]]},
-       {"tipo": "perseguir", "modelo": "blindado", "lugar": "mf_banco", "nombre": "Camión de la compañía", "salud": 340, "texto": "Persigue el camión blindado de la compañía y detenlo como sea. Pulsa Q para fijarlo."},
-       {"tipo": "recoger", "aqui": true, "objeto": "Caja de los sueldos", "texto": "Recoge la caja de los sueldos."},
-       {"tipo": "policia", "nivel": 3, "texto": "Despista a la policía."},
-       {"tipo": "ir", "lugar": "mf_taberna", "texto": "Lleva la caja a la Taberna del Sindicato."},
-       {"tipo": "dialogo", "lineas": [["Carmela", "Seis meses de sueldo para trescientas familias. Hoy en Monteferro cena todo el mundo. Tu parte, que te la has ganado."]]}
+     "texto": "Ve a las Oficinas de la Compañía Minera, en La Ladera, y acaba con los siete pistoleros."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "mf_oficinas",
+     "objeto": "Escrituras de la mina",
+     "texto": "Recoge las escrituras de la mina."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mf_taberna",
+     "texto": "Lleva las escrituras a la Taberna del Sindicato."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Carmela",
+       "Con estas escrituras la mina pasa a la cooperativa de los trabajadores. Se acabó la compañía y se acabó Belmonte en Monteferro."
+      ],
+      [
+       "Carmela",
+       "Toma. Era de mi padre, que la trajo de la guerra. Yo no la quiero en casa, y tú sabrás usarla."
+      ],
+      [
+       "Narrador",
+       "Has completado las historias de Monteferro."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 10000,
+    "arma": "carabina",
+    "balas": 60
+   }
+  },
+  {
+   "id": "f01",
+   "titulo": "Aguas turbias",
+   "capitulo": 10,
+   "contacto": "Doña Ángela",
+   "lugar": "ff_balneario",
+   "requiere": [
+    "v01"
+   ],
+   "resumen": "En el pueblo de montaña de Fuentefría, más allá de Monteferro, el balneario tiene un problema.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Ángela",
+       "Bienvenido al balneario. Lo siento, hoy no hay baños: el agua baja negra. Alguien está vertiendo porquería en la Poza del Río Frío."
+      ],
+      [
+       "Dani",
+       "¿Y la Guardia?"
+      ],
+      [
+       "Ángela",
+       "Aquí arriba la Guardia sube los martes. Hoy es jueves."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "ff_rio",
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Vertedor ilegal",
+       "arma": "bate",
+       "salud": 60
+      },
+      {
+       "n": 1,
+       "tipo": "Vertedor ilegal",
+       "arma": "pistola",
+       "salud": 60
+      }
      ],
-     "recompensa": {"dinero": 8000}},
-
-    {"id": "t06", "titulo": "Huelga general", "capitulo": 9, "contacto": "Carmela", "lugar": "mf_taberna", "requiere": ["t05"],
-     "resumen": "Belmonte ha mandado a todos sus hombres a tomar las oficinas de la mina.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Carmela", "Se acabó. Belmonte ha llenado las oficinas de la compañía de pistoleros y dice que mañana entra la maquinaria a desmantelar la mina."],
-         ["Dani", "¿Cuántos son?"],
-         ["Carmela", "Siete. Los compañeros quieren ir con los picos. No voy a dejar que los maten."],
-         ["Dani", "No hará falta que vaya nadie más."]]},
-       {"tipo": "eliminar", "lugar": "mf_oficinas", "enemigos": [{"n": 4, "tipo": "Pistolero de Belmonte", "arma": "pistola", "salud": 85}, {"n": 2, "tipo": "Pistolero de Belmonte", "arma": "subfusil", "salud": 85}, {"n": 1, "tipo": "Capataz armado", "arma": "escopeta", "salud": 130}], "texto": "Ve a las Oficinas de la Compañía Minera, en La Ladera, y acaba con los siete pistoleros."},
-       {"tipo": "recoger", "lugar": "mf_oficinas", "objeto": "Escrituras de la mina", "texto": "Recoge las escrituras de la mina."},
-       {"tipo": "ir", "lugar": "mf_taberna", "texto": "Lleva las escrituras a la Taberna del Sindicato."},
-       {"tipo": "dialogo", "lineas": [
-         ["Carmela", "Con estas escrituras la mina pasa a la cooperativa de los trabajadores. Se acabó la compañía y se acabó Belmonte en Monteferro."],
-         ["Carmela", "Toma. Era de mi padre, que la trajo de la guerra. Yo no la quiero en casa, y tú sabrás usarla."],
-         ["Narrador", "Has completado las historias de Monteferro."]]}
+     "texto": "Ve a la Poza del Río Frío, campo a través, y echa a los que están vertiendo residuos."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "ff_balneario",
+     "texto": "Vuelve al Balneario de Fuentefría."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Ángela",
+       "El agua ya baja clara. Para ti, el balneario es gratis de por vida. Bueno, casi gratis."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 900
+   }
+  },
+  {
+   "id": "f02",
+   "titulo": "El furtivo",
+   "capitulo": 10,
+   "contacto": "Doña Ángela",
+   "lugar": "ff_balneario",
+   "requiere": [
+    "f01"
+   ],
+   "resumen": "Un cazador furtivo anda matando los ciervos del valle de Fuentefría.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Ángela",
+       "Otra vez tú, qué bien. Hay un furtivo en el valle. Sale del Mirador del Águila en un quad y no deja un ciervo vivo."
+      ],
+      [
+       "Ángela",
+       "Los turistas vienen por los ciervos, hijo. Sin ciervos no hay balneario."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "modelo": "quad",
+     "lugar": "ff_mirador",
+     "nombre": "Quad del furtivo",
+     "salud": 90,
+     "texto": "Persigue el quad del furtivo por las calles del pueblo y destrúyelo. Pulsa Q para fijarlo."
+    },
+    {
+     "tipo": "recoger",
+     "aqui": true,
+     "objeto": "Ballesta del furtivo",
+     "texto": "Recoge la ballesta del furtivo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Ángela",
+       "Quédate la ballesta. No hace ni un ruido, así que nadie se entera de que disparas. Úsala con cabeza."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1500,
+    "arma": "ballesta",
+    "balas": 12
+   }
+  },
+  {
+   "id": "x04",
+   "titulo": "Neptuno",
+   "capitulo": 10,
+   "contacto": "Mendoza",
+   "lugar": "cb_taberna",
+   "requiere": [
+    "x02"
+   ],
+   "resumen": "El capitán Mendoza ha visto luces en la vieja plataforma petrolífera.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mendoza",
+       "La Plataforma Neptuno lleva veinte años cerrada. Pues anoche tenía luz. Y un barco sin bandera amarrado."
+      ],
+      [
+       "Mendoza",
+       "Está al suroeste, mar adentro. Ve en barco, sube por el pantalán y mira qué se cuece. Y vuelve entero, que me debes una ronda."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "pl_control",
+     "texto": "Navega hasta la Plataforma Neptuno, atraca y entra en la Sala de control."
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "pl_control",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Mercenario",
+       "arma": "subfusil",
+       "salud": 85
+      },
+      {
+       "n": 1,
+       "tipo": "Mercenario",
+       "arma": "escopeta",
+       "salud": 90
+      }
      ],
-     "recompensa": {"dinero": 10000, "arma": "carabina", "balas": 60}},
-
-    {"id": "f01", "titulo": "Aguas turbias", "capitulo": 10, "contacto": "Doña Ángela", "lugar": "ff_balneario", "requiere": ["v01"],
-     "resumen": "En el pueblo de montaña de Fuentefría, más allá de Monteferro, el balneario tiene un problema.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Ángela", "Bienvenido al balneario. Lo siento, hoy no hay baños: el agua baja negra. Alguien está vertiendo porquería en la Poza del Río Frío."],
-         ["Dani", "¿Y la Guardia?"],
-         ["Ángela", "Aquí arriba la Guardia sube los martes. Hoy es jueves."]]},
-       {"tipo": "eliminar", "lugar": "ff_rio", "enemigos": [{"n": 2, "tipo": "Vertedor ilegal", "arma": "bate", "salud": 60}, {"n": 1, "tipo": "Vertedor ilegal", "arma": "pistola", "salud": 60}], "texto": "Ve a la Poza del Río Frío, campo a través, y echa a los que están vertiendo residuos."},
-       {"tipo": "ir", "lugar": "ff_balneario", "texto": "Vuelve al Balneario de Fuentefría."},
-       {"tipo": "dialogo", "lineas": [["Ángela", "El agua ya baja clara. Para ti, el balneario es gratis de por vida. Bueno, casi gratis."]]}
+     "texto": "¡Mercenarios! Acaba con ellos."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "pl_control",
+     "objeto": "Cuaderno de bitácora",
+     "texto": "Recoge el cuaderno de bitácora."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "cb_taberna",
+     "texto": "Vuelve a la Taberna del Capitán, en Cala Brava."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mendoza",
+       "Armas. Usaban la plataforma de almacén de armas para Belmonte. Pues ya no. Por cierto, el helicóptero que hay allí arriba ya no tiene dueño."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 5000
+   }
+  },
+  {
+   "id": "x05",
+   "titulo": "Caído del cielo",
+   "capitulo": 10,
+   "contacto": "Mendoza",
+   "lugar": "cb_taberna",
+   "requiere": [
+    "x04",
+    "t04"
+   ],
+   "resumen": "Mendoza necesita llevar medicinas a Isla Tortuga con temporal.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Mendoza",
+       "El del chiringuito de Isla Tortuga está enfermo y hay temporal: no sale un barco. Pero tú ahora sabes volar."
+      ],
+      [
+       "Mendoza",
+       "El helicóptero de la plataforma. Llévalo al claro de la isla con las medicinas."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "helicoptero",
+     "lugar": "pl_helipuerto",
+     "abierto": true,
+     "nombre": "Helicóptero de la plataforma",
+     "texto": "Ve a la Plataforma Neptuno y sube al helicóptero."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "it_helipuerto",
+     "limite": 300,
+     "salud_min": 20,
+     "texto": "Vuela a Isla Tortuga: en el helipuerto pulsa Intro y elige el Claro del helicóptero. Tienes cinco minutos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El dueño del chiringuito se recupera en dos días y jura que mientras viva no pagarás un pulpo en su isla."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 5000
+   }
+  },
+  {
+   "id": "e04",
+   "titulo": "El helado más caro",
+   "capitulo": 10,
+   "contacto": "Chispas",
+   "lugar": "taller_chispas",
+   "requiere": [
+    "m06"
+   ],
+   "resumen": "El Chispas tiene un encargo que le da vergüenza explicar.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chispas",
+       "No te rías. El del Chiringuito El Espeto me ha pedido una furgoneta de helados. Dice que la competencia le está quitando a los niños."
+      ],
+      [
+       "Dani",
+       "¿Quieres que robe la furgoneta de los helados?"
+      ],
+      [
+       "Chispas",
+       "Te he dicho que no te rías. Está delante de la Heladería Polo Norte. Y date prisa, que se derriten."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "heladero",
+     "lugar": "heladeria",
+     "nombre": "Furgoneta de helados",
+     "busqueda": 1,
+     "texto": "Roba la furgoneta de helados aparcada ante la Heladería Polo Norte."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "chiringuito",
+     "limite": 150,
+     "salud_min": 40,
+     "texto": "Lleva la furgoneta al Chiringuito El Espeto antes de que se derrita la mercancía."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El del chiringuito te paga con un sobre y un cucurucho de dos bolas. Si te gusta el oficio, con una furgoneta de helados y la tecla J puedes hacer la ruta."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 800
+   }
+  },
+  {
+   "id": "e05",
+   "titulo": "Guerra en el puerto",
+   "capitulo": 10,
+   "contacto": "La Rusa",
+   "lugar": "almacen_rusa",
+   "requiere": [
+    "m10"
+   ],
+   "resumen": "La Rusa quiere acabar de una vez con Los Calaveras.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Rusa",
+       "Los Calaveras sin Belmonte son perro sin amo. Muerden a todos. A mis clientes también."
+      ],
+      [
+       "La Rusa",
+       "Hoy están todos en la guarida, con su jefe, el Huesos. Ocho. Si entras tú, mañana el puerto es tranquilo. Te doy algo para la fiesta."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "uzi",
+     "balas": 128
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "guarida",
+     "enemigos": [
+      {
+       "n": 5,
+       "tipo": "Calavera",
+       "arma": "pistola",
+       "salud": 75
+      },
+      {
+       "n": 2,
+       "tipo": "Calavera",
+       "arma": "subfusil",
+       "salud": 75
+      },
+      {
+       "n": 1,
+       "tipo": "El Huesos, jefe de Los Calaveras",
+       "arma": "escopeta",
+       "salud": 160
+      }
      ],
-     "recompensa": {"dinero": 900}},
-
-    {"id": "f02", "titulo": "El furtivo", "capitulo": 10, "contacto": "Doña Ángela", "lugar": "ff_balneario", "requiere": ["f01"],
-     "resumen": "Un cazador furtivo anda matando los ciervos del valle de Fuentefría.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Ángela", "Otra vez tú, qué bien. Hay un furtivo en el valle. Sale del Mirador del Águila en un quad y no deja un ciervo vivo."],
-         ["Ángela", "Los turistas vienen por los ciervos, hijo. Sin ciervos no hay balneario."]]},
-       {"tipo": "perseguir", "modelo": "quad", "lugar": "ff_mirador", "nombre": "Quad del furtivo", "salud": 90, "texto": "Persigue el quad del furtivo por las calles del pueblo y destrúyelo. Pulsa Q para fijarlo."},
-       {"tipo": "recoger", "aqui": true, "objeto": "Ballesta del furtivo", "texto": "Recoge la ballesta del furtivo."},
-       {"tipo": "dialogo", "lineas": [["Ángela", "Quédate la ballesta. No hace ni un ruido, así que nadie se entera de que disparas. Úsala con cabeza."]]}
+     "texto": "Asalta la Guarida de Los Calaveras y acaba con los ocho, incluido su jefe."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "almacen_rusa",
+     "texto": "Vuelve al Almacén Siete."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La Rusa",
+       "Se acabaron. Ahora el puerto es de quien trabaja. Bebe conmigo, Dani. Esto, en mi tierra, es casi una boda."
+      ],
+      [
+       "Narrador",
+       "Los Calaveras ya no volverán a atacarte por las calles del puerto."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 5000
+   }
+  },
+  {
+   "id": "e06",
+   "titulo": "El gran premio",
+   "capitulo": 10,
+   "contacto": "Chispas",
+   "lugar": "recta",
+   "requiere": [
+    "e02"
+   ],
+   "resumen": "Un coche de carreras de verdad va a pasar una noche en el estadio.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chispas",
+       "Escucha esto y no te desmayes. Han traído un Fórmula Centella para una exhibición en el Estadio Municipal. Uno de verdad. Cincuenta y cuatro metros por segundo."
+      ],
+      [
+       "Dani",
+       "Y tú quieres dar una vuelta."
+      ],
+      [
+       "Chispas",
+       "Una vuelta, una foto y lo devolvemos. O no. Tráelo a la recta en cien segundos, que lo quiero ver llegar."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "carreras",
+     "lugar": "estadio",
+     "nombre": "Fórmula Centella de exhibición",
+     "busqueda": 2,
+     "texto": "Roba el coche de carreras aparcado ante el Estadio Municipal."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "recta",
+     "limite": 100,
+     "salud_min": 30,
+     "texto": "Lleva el Fórmula a la Recta del Polígono en cien segundos. Cuidado: corre muchísimo y se rompe con nada."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chispas",
+       "¡Qué bonito es, madre mía! Decidido: no lo devolvemos."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 3000
+   }
+  },
+  {
+   "id": "s07",
+   "titulo": "Clase magistral",
+   "capitulo": 10,
+   "contacto": "El Profesor",
+   "lugar": "sl_universidad",
+   "requiere": [
+    "s02"
+   ],
+   "resumen": "El Profesor necesita repartir tres antenas por San Lucero antes de su clase.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Profesor",
+       "Doy clase en cuatro minutos y tengo que colocar tres antenas para escuchar a Los Lagartos. Imposible estar en dos sitios a la vez. He hecho los cálculos."
+      ],
+      [
+       "Dani",
+       "Déjame adivinar."
+      ],
+      [
+       "El Profesor",
+       "Catedral, Bingo y Lonja. En ese orden. El tiempo corre."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "sl_catedral",
+     "limite": 110,
+     "texto": "Coloca la primera antena en la Catedral de San Lucero."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "sl_bingo",
+     "limite": 110,
+     "texto": "Coloca la segunda antena en el Bingo La Suerte."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "sl_lonja",
+     "limite": 120,
+     "texto": "Coloca la tercera antena en la Lonja de San Lucero."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Profesor",
+       "Recibo las tres señales. Matrícula de honor. Si quieres aprenderte una ciudad, pulsa F9: el explorador de mapa te deja recorrerla con un cursor sin moverte del sitio."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1500
+   }
+  },
+  {
+   "id": "eo1",
+   "titulo": "La sombra del prestamista",
+   "capitulo": 11,
+   "contacto": "La redactora",
+   "lugar": "periodico",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En el periódico quieren saber adónde va cada tarde el prestamista del Barrio Viejo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Tú eres Dani, el sobrino de Encarna. Me hace falta alguien que no llame la atención."
+      ],
+      [
+       "La redactora",
+       "Hay un prestamista que sale del banco cada tarde y nadie sabe adónde va. Síguele a pie, de lejos. Escucha sus pasos: si te pegas a él, te ve; si te quedas atrás, lo pierdes."
+      ]
+     ]
+    },
+    {
+     "tipo": "seguir",
+     "lugar": "banco",
+     "destino": "casino",
+     "persona": "el prestamista",
+     "texto": "Ve al banco y sigue al prestamista sin que te descubra. Guíate por el sonido de sus pasos; la tecla O te dice a cuánto va."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El prestamista entra en el casino por la puerta de atrás, como quien entra en su casa."
+      ],
+      [
+       "La redactora",
+       "Al casino. Lo sospechaba. Gracias, Dani: esto te lo pago bien."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 500
+   }
+  },
+  {
+   "id": "eo2",
+   "titulo": "Hasta la puerta de urgencias",
+   "capitulo": 11,
+   "contacto": "El sacristán",
+   "lugar": "iglesia",
+   "requiere": [
+    "eo1"
+   ],
+   "resumen": "Un vecino mayor tiene que llegar al hospital y no se fía de ir solo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El sacristán",
+       "Don Anselmo tiene cita en el hospital y le han dicho que no vaya solo, que el barrio está revuelto."
+      ],
+      [
+       "El sacristán",
+       "Acompáñale tú. Va despacio, pero va. Si coges un coche, sube contigo."
+      ]
+     ]
+    },
+    {
+     "tipo": "escoltar",
+     "lugar": "plaza_vieja",
+     "destino": "hospital",
+     "persona": "don Anselmo",
+     "texto": "Recoge a don Anselmo en la Plaza Vieja y acompáñale hasta el hospital."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Don Anselmo",
+       "Sesenta años en este barrio y nunca me había acompañado nadie al médico. Dios te lo pague, hijo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 300
+   }
+  },
+  {
+   "id": "eo3",
+   "titulo": "Lo que guarda la fábrica",
+   "capitulo": 11,
+   "contacto": "La redactora",
+   "lugar": "periodico",
+   "requiere": [
+    "eo2"
+   ],
+   "resumen": "Los libros del prestamista están en la fábrica vieja, y no está sola.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "El prestamista guarda sus libros de cuentas en la fábrica vieja. Hay tres hombres dando vueltas."
+      ],
+      [
+       "La redactora",
+       "No quiero tiros: si oyen algo, lo queman todo. Entra agachado, sin correr, y escucha por dónde pasean."
+      ]
+     ]
+    },
+    {
+     "tipo": "sigilo",
+     "lugar": "fabrica",
+     "guardias": 3,
+     "objeto": "los libros de cuentas",
+     "texto": "Ve a la fábrica vieja y llega hasta ella sin que te oigan los vigilantes. Agáchate con la X y no corras."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Sales con los libros bajo el brazo. Dentro, los tres hombres siguen dando vueltas."
+      ],
+      [
+       "La redactora",
+       "Aquí está medio barrio apuntado, con intereses que dan miedo. Esto sale el domingo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 900
+   }
+  },
+  {
+   "id": "eo4",
+   "titulo": "Edición especial",
+   "capitulo": 11,
+   "contacto": "La redactora",
+   "lugar": "periodico",
+   "requiere": [
+    "eo3"
+   ],
+   "resumen": "El periódico del domingo tiene que estar en cuatro sitios antes de que nadie lo impida.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Sale lo del prestamista y ya hay quien quiere parar el reparto. Llévalo tú: cuatro paradas, por orden, en cinco minutos."
+      ],
+      [
+       "La redactora",
+       "Coge un coche. Andando no llegas."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "puntos": [
+      "iglesia",
+      "plaza_mayor",
+      "ayuntamiento",
+      "estacion_pb"
      ],
-     "recompensa": {"dinero": 1500, "arma": "ballesta", "balas": 12}},
-
-    {"id": "x04", "titulo": "Neptuno", "capitulo": 10, "contacto": "Mendoza", "lugar": "cb_taberna", "requiere": ["x02"],
-     "resumen": "El capitán Mendoza ha visto luces en la vieja plataforma petrolífera.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Mendoza", "La Plataforma Neptuno lleva veinte años cerrada. Pues anoche tenía luz. Y un barco sin bandera amarrado."],
-         ["Mendoza", "Está al suroeste, mar adentro. Ve en barco, sube por el pantalán y mira qué se cuece. Y vuelve entero, que me debes una ronda."]]},
-       {"tipo": "ir", "lugar": "pl_control", "texto": "Navega hasta la Plataforma Neptuno, atraca y entra en la Sala de control."},
-       {"tipo": "eliminar", "lugar": "pl_control", "ya": true, "enemigos": [{"n": 3, "tipo": "Mercenario", "arma": "subfusil", "salud": 85}, {"n": 1, "tipo": "Mercenario", "arma": "escopeta", "salud": 90}], "texto": "¡Mercenarios! Acaba con ellos."},
-       {"tipo": "recoger", "lugar": "pl_control", "objeto": "Cuaderno de bitácora", "texto": "Recoge el cuaderno de bitácora."},
-       {"tipo": "ir", "lugar": "cb_taberna", "texto": "Vuelve a la Taberna del Capitán, en Cala Brava."},
-       {"tipo": "dialogo", "lineas": [["Mendoza", "Armas. Usaban la plataforma de almacén de armas para Belmonte. Pues ya no. Por cierto, el helicóptero que hay allí arriba ya no tiene dueño."]]}
-     ],
-     "recompensa": {"dinero": 5000}},
-
-    {"id": "x05", "titulo": "Caído del cielo", "capitulo": 10, "contacto": "Mendoza", "lugar": "cb_taberna", "requiere": ["x04", "t04"],
-     "resumen": "Mendoza necesita llevar medicinas a Isla Tortuga con temporal.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Mendoza", "El del chiringuito de Isla Tortuga está enfermo y hay temporal: no sale un barco. Pero tú ahora sabes volar."],
-         ["Mendoza", "El helicóptero de la plataforma. Llévalo al claro de la isla con las medicinas."]]},
-       {"tipo": "robar", "modelo": "helicoptero", "lugar": "pl_helipuerto", "abierto": true, "nombre": "Helicóptero de la plataforma", "texto": "Ve a la Plataforma Neptuno y sube al helicóptero."},
-       {"tipo": "entregar", "lugar": "it_helipuerto", "limite": 300, "salud_min": 20, "texto": "Vuela a Isla Tortuga: en el helipuerto pulsa Intro y elige el Claro del helicóptero. Tienes cinco minutos."},
-       {"tipo": "dialogo", "lineas": [["Narrador", "El dueño del chiringuito se recupera en dos días y jura que mientras viva no pagarás un pulpo en su isla."]]}
-     ],
-     "recompensa": {"dinero": 5000}},
-
-    {"id": "e04", "titulo": "El helado más caro", "capitulo": 10, "contacto": "Chispas", "lugar": "taller_chispas", "requiere": ["m06"],
-     "resumen": "El Chispas tiene un encargo que le da vergüenza explicar.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Chispas", "No te rías. El del Chiringuito El Espeto me ha pedido una furgoneta de helados. Dice que la competencia le está quitando a los niños."],
-         ["Dani", "¿Quieres que robe la furgoneta de los helados?"],
-         ["Chispas", "Te he dicho que no te rías. Está delante de la Heladería Polo Norte. Y date prisa, que se derriten."]]},
-       {"tipo": "robar", "modelo": "heladero", "lugar": "heladeria", "nombre": "Furgoneta de helados", "busqueda": 1, "texto": "Roba la furgoneta de helados aparcada ante la Heladería Polo Norte."},
-       {"tipo": "entregar", "lugar": "chiringuito", "limite": 150, "salud_min": 40, "texto": "Lleva la furgoneta al Chiringuito El Espeto antes de que se derrita la mercancía."},
-       {"tipo": "dialogo", "lineas": [["Narrador", "El del chiringuito te paga con un sobre y un cucurucho de dos bolas. Si te gusta el oficio, con una furgoneta de helados y la tecla J puedes hacer la ruta."]]}
-     ],
-     "recompensa": {"dinero": 800}},
-
-    {"id": "e05", "titulo": "Guerra en el puerto", "capitulo": 10, "contacto": "La Rusa", "lugar": "almacen_rusa", "requiere": ["m10"],
-     "resumen": "La Rusa quiere acabar de una vez con Los Calaveras.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["La Rusa", "Los Calaveras sin Belmonte son perro sin amo. Muerden a todos. A mis clientes también."],
-         ["La Rusa", "Hoy están todos en la guarida, con su jefe, el Huesos. Ocho. Si entras tú, mañana el puerto es tranquilo. Te doy algo para la fiesta."]]},
-       {"tipo": "dar", "arma": "uzi", "balas": 128},
-       {"tipo": "eliminar", "lugar": "guarida", "enemigos": [{"n": 5, "tipo": "Calavera", "arma": "pistola", "salud": 75}, {"n": 2, "tipo": "Calavera", "arma": "subfusil", "salud": 75}, {"n": 1, "tipo": "El Huesos, jefe de Los Calaveras", "arma": "escopeta", "salud": 160}], "texto": "Asalta la Guarida de Los Calaveras y acaba con los ocho, incluido su jefe."},
-       {"tipo": "ir", "lugar": "almacen_rusa", "texto": "Vuelve al Almacén Siete."},
-       {"tipo": "dialogo", "lineas": [
-         ["La Rusa", "Se acabaron. Ahora el puerto es de quien trabaja. Bebe conmigo, Dani. Esto, en mi tierra, es casi una boda."],
-         ["Narrador", "Los Calaveras ya no volverán a atacarte por las calles del puerto."]]}
-     ],
-     "recompensa": {"dinero": 5000}},
-
-    {"id": "e06", "titulo": "El gran premio", "capitulo": 10, "contacto": "Chispas", "lugar": "recta", "requiere": ["e02"],
-     "resumen": "Un coche de carreras de verdad va a pasar una noche en el estadio.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["Chispas", "Escucha esto y no te desmayes. Han traído un Fórmula Centella para una exhibición en el Estadio Municipal. Uno de verdad. Cincuenta y cuatro metros por segundo."],
-         ["Dani", "Y tú quieres dar una vuelta."],
-         ["Chispas", "Una vuelta, una foto y lo devolvemos. O no. Tráelo a la recta en cien segundos, que lo quiero ver llegar."]]},
-       {"tipo": "robar", "modelo": "carreras", "lugar": "estadio", "nombre": "Fórmula Centella de exhibición", "busqueda": 2, "texto": "Roba el coche de carreras aparcado ante el Estadio Municipal."},
-       {"tipo": "entregar", "lugar": "recta", "limite": 100, "salud_min": 30, "texto": "Lleva el Fórmula a la Recta del Polígono en cien segundos. Cuidado: corre muchísimo y se rompe con nada."},
-       {"tipo": "dialogo", "lineas": [["Chispas", "¡Qué bonito es, madre mía! Decidido: no lo devolvemos."]]}
-     ],
-     "recompensa": {"dinero": 3000}},
-
-    {"id": "s07", "titulo": "Clase magistral", "capitulo": 10, "contacto": "El Profesor", "lugar": "sl_universidad", "requiere": ["s02"],
-     "resumen": "El Profesor necesita repartir tres antenas por San Lucero antes de su clase.",
-     "pasos": [
-       {"tipo": "dialogo", "lineas": [
-         ["El Profesor", "Doy clase en cuatro minutos y tengo que colocar tres antenas para escuchar a Los Lagartos. Imposible estar en dos sitios a la vez. He hecho los cálculos."],
-         ["Dani", "Déjame adivinar."],
-         ["El Profesor", "Catedral, Bingo y Lonja. En ese orden. El tiempo corre."]]},
-       {"tipo": "ir", "lugar": "sl_catedral", "limite": 110, "texto": "Coloca la primera antena en la Catedral de San Lucero."},
-       {"tipo": "ir", "lugar": "sl_bingo", "limite": 110, "texto": "Coloca la segunda antena en el Bingo La Suerte."},
-       {"tipo": "ir", "lugar": "sl_lonja", "limite": 120, "texto": "Coloca la tercera antena en la Lonja de San Lucero."},
-       {"tipo": "dialogo", "lineas": [["El Profesor", "Recibo las tres señales. Matrícula de honor. Si quieres aprenderte una ciudad, pulsa F9: el explorador de mapa te deja recorrerla con un cursor sin moverte del sitio."]]}
-     ],
-     "recompensa": {"dinero": 1500}}
-  ]
+     "limite": 300,
+     "texto": "Deja los periódicos en la iglesia, la Plaza Mayor, el ayuntamiento y la estación de autobuses, por ese orden, en cinco minutos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "A media mañana no queda un ejemplar en toda la ciudad."
+      ],
+      [
+       "La redactora",
+       "Cuatro de cuatro. Si alguna vez quieres cambiar de oficio, aquí tienes sitio."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 700
+   }
+  }
+ ]
 }

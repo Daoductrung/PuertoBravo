@@ -439,6 +439,55 @@
      "nn_irene": 18
     }
    }
+  },
+  {
+   "id": "nno1",
+   "titulo": "El cobrador",
+   "capitulo": 32,
+   "contacto": "La churrera",
+   "lugar": "nn_churreria",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Un cobrador pasa cada noche por los locales, y la churrera quiere saber para quién trabaja.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La churrera",
+       "Todas las noches pasa un tipo cobrando a los locales. Nadie sabe para quién. Hoy sale de la sala de conciertos: síguele y dime dónde entrega."
+      ],
+      [
+       "La churrera",
+       "De lejos. De noche se oyen bien los pasos."
+      ]
+     ]
+    },
+    {
+     "tipo": "seguir",
+     "texto": "Ve a la sala de conciertos El Sótano y sigue al cobrador sin que te descubra. Guíate por sus pasos.",
+     "lugar": "nn_sotano",
+     "destino": "nn_hotel",
+     "persona": "el cobrador"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El cobrador entra en el hotel y sube sin pasar por recepción."
+      ],
+      [
+       "La churrera",
+       "En el hotel. Ya sé en qué habitación preguntar. Te debo una docena de churros."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 400
+   }
   }
  ],
  "armas": [

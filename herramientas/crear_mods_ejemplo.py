@@ -718,7 +718,56 @@ def bahia_ocaso():
     return mod_bahia_ocaso.crear(ARMAS, VEHICULOS, SUSTANCIAS, clon)
 
 
+DE_OIDO = {
+    "costa_dorada.json": {"id": "cdo1", "titulo": "El patrón de la lancha", "capitulo": 21, "contacto": "La boticaria", "lugar": "cd_farmacia", "requiere": ["m01"],
+        "resumen": "La boticaria quiere saber dónde se mete el patrón de una lancha que no pesca nada.",
+        "pasos": [D(("La boticaria", "Hay un patrón que sale cada tarde de la lonja con las manos vacías y los bolsillos llenos. Síguele de lejos y dime adónde va."),
+                    ("La boticaria", "A pie y sin acercarte. Se le oye andar: con eso te basta.")),
+                  {"tipo": "seguir", "lugar": "cd_lonja", "destino": "cd_taberna", "persona": "el patrón",
+                   "texto": "Ve a la Lonja de Costa Dorada y sigue al patrón sin que te descubra. Guíate por sus pasos."},
+                  D(("Narrador", "El patrón entra en la Taberna El Ancla y se sienta al fondo, de espaldas a la puerta."),
+                    ("La boticaria", "En El Ancla. Pues ya sé con quién tengo que hablar. Gracias."))],
+        "recompensa": {"dinero": 300}},
+    "valdeolmos.json": {"id": "voo1", "titulo": "La madrina", "capitulo": 24, "contacto": "El mesonero", "lugar": "vo_meson", "requiere": ["m01"],
+        "resumen": "La madrina de la boda está en la bodega y la ceremonia empieza ya.",
+        "pasos": [D(("El mesonero", "La madrina se ha quedado en la bodega probando el vino y la boda empieza en la parroquia. Ve a por ella y tráela, que yo no puedo dejar los fogones."),
+                    ("El mesonero", "Va con tacones, así que paciencia. Si llevas coche, mejor.")),
+                  {"tipo": "escoltar", "lugar": "vo_bodega", "destino": "vo_parroquia", "persona": "la madrina",
+                   "texto": "Recoge a la madrina en la bodega y acompáñala hasta la parroquia."},
+                  D(("La madrina", "¡Llegamos! Y con el peinado en su sitio. Ven luego al convite, que te has ganado un plato."))],
+        "recompensa": {"dinero": 250}},
+    "penas_altas.json": {"id": "pao1", "titulo": "La llave del polvorín", "capitulo": 27, "contacto": "El cantinero", "lugar": "pa_cantina", "requiere": ["m01"],
+        "resumen": "Alguien ha puesto vigilantes en el polvorín viejo, y el pueblo quiere saber qué guardan.",
+        "pasos": [D(("El cantinero", "El polvorín lleva veinte años cerrado y desde el lunes hay dos tipos dando vueltas. Nadie se atreve a mirar."),
+                    ("El cantinero", "Acércate sin que te oigan y tráeme lo que haya en la puerta. Agachado y sin prisa.")),
+                  {"tipo": "sigilo", "lugar": "pa_polvorin", "guardias": 2, "objeto": "un albarán de explosivos",
+                   "texto": "Ve al polvorín y llega hasta la puerta sin que te oigan los vigilantes. Agáchate con la X y no corras."},
+                  D(("El cantinero", "Explosivos, y con fecha de la semana pasada. Esto no es para la cantera. Ya sé a quién enseñárselo."))],
+        "recompensa": {"dinero": 450}},
+    "isla_de_los_vientos.json": {"id": "ivo1", "titulo": "La ronda del farero", "capitulo": 30, "contacto": "Chelo", "lugar": "iv_cantina", "requiere": ["m01"],
+        "resumen": "Antes de que cambie la marea hay que encender las cuatro luces de la isla.",
+        "pasos": [D(("Chelo", "El farero está con fiebre y hoy sube la marea fuerte. Hay que encender las cuatro luces de la isla antes de que oscurezca."),
+                    ("Chelo", "Aquí no hay coches: a pie y corriendo. La torre, el aljibe, la rompiente y el muelle, por ese orden.")),
+                  {"tipo": "ruta", "puntos": ["iv_semaforo", "iv_aljibe", "iv_rompiente", "iv_muelle"], "limite": 420,
+                   "texto": "Enciende las luces de la Torre del Semáforo, el Aljibe, la Rompiente y el Muelle, por ese orden, en siete minutos. A pie."},
+                  D(("Chelo", "Las cuatro encendidas y con luz de sobra. Esta noche no encalla nadie. La casa invita."))],
+        "recompensa": {"dinero": 350}},
+    "noches_de_neon.json": {"id": "nno1", "titulo": "El cobrador", "capitulo": 32, "contacto": "La churrera", "lugar": "nn_churreria", "requiere": ["m01"],
+        "resumen": "Un cobrador pasa cada noche por los locales, y la churrera quiere saber para quién trabaja.",
+        "pasos": [D(("La churrera", "Todas las noches pasa un tipo cobrando a los locales. Nadie sabe para quién. Hoy sale de la sala de conciertos: síguele y dime dónde entrega."),
+                    ("La churrera", "De lejos. De noche se oyen bien los pasos.")),
+                  {"tipo": "seguir", "lugar": "nn_sotano", "destino": "nn_hotel", "persona": "el cobrador",
+                   "texto": "Ve a la sala de conciertos El Sótano y sigue al cobrador sin que te descubra. Guíate por sus pasos."},
+                  D(("Narrador", "El cobrador entra en el hotel y sube sin pasar por recepción."),
+                    ("La churrera", "En el hotel. Ya sé en qué habitación preguntar. Te debo una docena de churros."))],
+        "recompensa": {"dinero": 400}},
+}
+
+
 def escribir(nombre, crudo):
+    extra = DE_OIDO.get(nombre)
+    if extra and not any(m["id"] == extra["id"] for m in crudo.get("misiones", [])):
+        crudo.setdefault("misiones", []).append(extra)
     from editor import modelo
     mod = modelo.Mod.desde_crudo(crudo)
     ruta = os.path.join(rutas.carpeta_data("mods"), nombre)

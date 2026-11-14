@@ -141,6 +141,8 @@ def servicios(p):
             d = j.garajes[pid].pop(k)
             x, y, di = p.plaza_cercana()
             v = p.crear_vehiculo(d["modelo"], x, y, di, None, d.get("nombre"))
+            from . import sistemas
+            sistemas.poner(v, d.get("mejoras"))
             v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
             v.propio = True
             _volver_al_juego(p)
@@ -369,6 +371,11 @@ def territorios(p):
     if not ops:
         ops = [Opcion("Aquí no hay barrios que conquistar. Las guerras de territorio son cosa de las ciudades: Puerto Bravo, San Lucero y Monteferro")]
     ops.append(Opcion(lambda: f"Territorios en tu poder: {len(j.territorios)}"))
+    from . import sistemas
+    from .menus import EntradaTexto
+    ops.append(Opcion(lambda: f"Tu banda: {j.banda_nombre or 'sin nombre'}, {j.banda} de {sistemas.cupo(j)}" if j.territorios else "Tu banda: necesitas un territorio para tenerla",
+                      lambda: sistemas.menu_banda(p, Menu, Opcion, EntradaTexto),
+                      ayuda="Con un territorio puedes reclutar gente. Te siguen, suben a tu vehículo y pelean a tu lado. Cada territorio te deja mantener a uno más."))
     app.abrir(Menu(app, f"Territorios de {p.mundo.nombre}", ops))
 
 

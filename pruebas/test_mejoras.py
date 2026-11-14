@@ -489,3 +489,204 @@ def test_motor_de_sonido_con_respaldo(monkeypatch):
     audio_al.crear(cfg)
     assert creados == [("clasico", True)] * 4
     assert os.path.exists(audio_al.ruta_dll()) and audio_al.MezcladorAL is Roto
+
+
+def test_viajes_en_taxi_y_autobus_con_trayecto(robot):
+    from juego import menus_juego
+    from juego.pantallas import Viaje, viajar
+    app = robot.app
+    p = robot.nueva_partida()
+    j = p.j
+    j.dinero = 500
+    destino = max(p.mundo.lugares.values(), key=lambda l: __import__("math").hypot(l.x - j.x, l.y - j.y))
+    llegadas = []
+    # en las demás pruebas, y con la opción apagada, se llega al momento, como siempre
+    viajar(app, 30, lambda: llegadas.append("ya"), destino="un sitio")
+    assert llegadas == ["ya"] and app.pila[-1] is p
+    app.viajes_en_pruebas = True
+    app.cfg["viajes_trayecto"] = False
+    viajar(app, 30, lambda: llegadas.append("ya"), destino="un sitio")
+    assert llegadas == ["ya", "ya"]
+    app.cfg["viajes_trayecto"] = True
+    # con trayecto: se oye el viaje, dura lo que dura y luego llegas
+    sonidos = []
+    original = app.son
+    app.son = lambda n, **k: (sonidos.append(n), original(n, **k))[1]
+    viajar(app, 6, lambda: llegadas.append("taxi"), destino=destino.nombre)
+    v = app.pila[-1]
+    assert isinstance(v, Viaje) and "motor_coche" in sonidos and "rodadura" in sonidos and "Subes al taxi" in robot.dicho()
+    robot.frames(30 * 3)
+    assert app.pila[-1] is v and llegadas[-1] != "taxi"
+    robot.tecla(pygame.K_c)
+    assert "Quedan unos" in app.voz.registro[-1]
+    robot.frames(30 * 4)
+    assert llegadas[-1] == "taxi" and app.pila[-1] is p and all(c.parando or c.fin for c in v.canales)
+    # con Intro se llega ya; y el autobús usa otro motor
+    viajar(app, 50, lambda: llegadas.append("bus"), autobus=True, destino="San Lucero")
+    assert "motor_camion" in sonidos and "El autobús arranca" in robot.dicho()
+    robot.frames(10)
+    robot.tecla(pygame.K_RETURN)
+    assert llegadas[-1] == "bus" and app.pila[-1] is p
+    app.son = original
+    # el taxi de verdad: paga, viaja y te deja en el sitio
+    menus_juego.menu_viaje(p)
+    lista = app.pila[-1]
+    assert isinstance(lista, Menu)
+    for _ in range(6):                                     # entra en el primer grupo y elige el primer lugar
+        cima = app.pila[-1]
+        if isinstance(cima, Viaje) or cima is p:
+            break
+        cima.i = 0
+        robot.tecla(pygame.K_RETURN)
+    assert isinstance(app.pila[-1], Viaje), type(app.pila[-1]).__name__
+    dinero = j.dinero
+    robot.tecla(pygame.K_RETURN)
+    assert "El taxi te deja en" in robot.dicho() and j.dinero <= 500 and dinero == j.dinero
+    app.viajes_en_pruebas = False
+
+
+def test_mejoras_de_vehiculos(robot):
+    from juego import menus_juego, sistemas
+    p = robot.nueva_partida()
+    j = p.j
+    j.dinero = 20000
+    p.cfg["sucesos"] = False
+    v = p.crear_vehiculo("utilitario", j.x, j.y, 0, None)
+    p._subir(v, False, callar=True)
+    base_salud = v.salud_max
+    taller = next(l for l in p.mundo.lugares.values() if l.tipo == "taller")
+    menus_juego._taller(p, taller)
+    m = robot.app.pila[-1]
+    textos = [o.texto for o in m.opciones]
+    assert any(t.startswith("Mejorar motor: nivel 0 de 3. Subir cuesta 900") for t in textos) and "Sin mejoras" in textos
+    for nombre in ("motor", "frenos", "blindaje"):
+        m.i = next(k for k, o in enumerate(m.opciones) if o.texto.startswith(f"Mejorar {nombre}"))
+        for _ in range(4):                                  # tres niveles; la cuarta vez ya está al máximo
+            robot.tecla(pygame.K_RETURN)
+    assert v.mejoras == {"motor": 3, "frenos": 3, "blindaje": 3} and "ya está al máximo" in robot.dicho()
+    assert j.dinero == 20000 - (900 + 500 + 700) * 6
+    assert v.salud_max == base_salud * 1.75 and sistemas.factor_velocidad(v) > 1.2 and sistemas.factor_frenada(v) > 1.4
+    assert "motor nivel 3" in sistemas.resumen(v)
+    robot.tecla(pygame.K_ESCAPE)
+    # corre más que uno de serie
+    def punta(veh):
+        if j.veh:
+            p.salir_vehiculo(forzado=True)
+        p._subir(veh, False, callar=True)
+        p.cfg["conduccion"] = "asistida"
+        vmax = 0.0
+        for _ in range(40):
+            robot.frames(10, mantener=(pygame.K_UP,))
+            vmax = max(vmax, veh.vel)
+            p.limpiar_busqueda()
+        return vmax
+    rapido = punta(v)
+    otro = p.crear_vehiculo("utilitario", j.x, j.y, 0, None)
+    normal = punta(otro)
+    assert rapido > normal * 1.1, (rapido, normal)
+    # y las mejoras viajan con el vehículo al garaje
+    datos = {"modelo": "utilitario", "salud": 50.0, "mejoras": dict(v.mejoras)}
+    nuevo = p.crear_vehiculo("utilitario", j.x, j.y, 0, None)
+    sistemas.poner(nuevo, datos["mejoras"])
+    assert nuevo.mejoras == v.mejoras and nuevo.salud_max == v.salud_max
+    sistemas.poner(nuevo, {"motor": 99, "cosa_rara": 2})
+    assert nuevo.mejoras == {"motor": 3} and nuevo.salud_max == base_salud
+
+
+def test_banda_propia(robot):
+    from juego import sistemas
+    p = robot.nueva_partida()
+    j = p.j
+    j.dinero = 5000
+    assert sistemas.cupo(j) == 0 and sistemas.reclutar(p)[0] is False and "territorio" in sistemas.reclutar(p)[1]
+    j.territorios = [p.mundo.barrios[0]["id"]]
+    assert sistemas.cupo(j) == 2
+    ok, frase = sistemas.reclutar(p)
+    assert ok and j.banda == 1 and j.banda_nombre and j.dinero == 5000 - sistemas.PRECIO_RECLUTA
+    assert sistemas.reclutar(p)[0] and j.banda == 2 and sistemas.reclutar(p)[0] is False        # con un territorio, dos como mucho
+    n, frase = sistemas.llamar(p)
+    assert n == 2 and len(sistemas.miembros_presentes(p)) == 2 and j.banda_nombre in frase
+    assert sistemas.llamar(p)[0] == 0
+    robot.frames(60)                                       # te siguen sin romper nada
+    dinero = j.dinero
+    sistemas.paga(p)
+    assert j.dinero == dinero - 2 * sistemas.SUELDO
+    j.dinero = 10
+    sistemas.paga(p)
+    assert j.banda == 1 and "Uno se marcha" in robot.dicho()
+    sistemas.despedir(p)
+    assert not sistemas.miembros_presentes(p)
+    j.territorios = []
+    sistemas.paga(p)
+    assert j.banda == 0
+    # el menú, desde Territorios
+    from juego import menus_extra
+    j.territorios = [p.mundo.barrios[0]["id"]]
+    j.dinero = 2000
+    menus_extra.territorios(p)
+    m = robot.app.pila[-1]
+    m.i = next(k for k, o in enumerate(m.opciones) if o.texto.startswith("Tu banda"))
+    robot.tecla(pygame.K_RETURN)
+    b = robot.app.pila[-1]
+    assert b is not m and "Tu banda" in b.titulo and b.opciones[-1].texto == "Volver"
+    b.i = 0
+    robot.tecla(pygame.K_RETURN)
+    assert j.banda == 1
+    # se guarda con la partida
+    d = j.a_dict()
+    assert d["banda"] == 1 and d["banda_nombre"] == j.banda_nombre
+
+
+def test_recorrer_la_casa(robot):
+    from juego import menus_juego, sistemas
+    p = robot.nueva_partida()
+    j = p.j
+    casa = next(l for l in p.mundo.lugares.values() if l.tipo == "casa" and int(l.get("garaje", 0)))
+    j.propiedades.append(casa.id) if casa.id not in j.propiedades else None
+    p.teletransportar(casa.x, casa.y)
+    menus_juego._casa(p, casa)
+    m = robot.app.pila[-1]
+    m.i = next(k for k, o in enumerate(m.opciones) if o.texto == "Recorrer la casa por dentro")
+    robot.tecla(pygame.K_RETURN)
+    inte = robot.app.pila[-1]
+    assert isinstance(inte, sistemas.Interior) and "por dentro" in robot.dicho() and len(inte.habitaciones) == 6
+    robot.tecla(pygame.K_LEFT)
+    assert "Pared" in robot.app.voz.registro[-1] and inte.i == 0
+    robot.tecla(pygame.K_RIGHT)
+    assert robot.app.voz.registro[-1].startswith("El salón.")
+    animo = j.animo
+    robot.tecla(pygame.K_RETURN)
+    assert j.animo > animo
+    robot.tecla(pygame.K_RIGHT)
+    j.salud = 40
+    robot.tecla(pygame.K_RETURN)
+    assert j.salud == 65 and "nevera" in robot.app.voz.registro[-1]
+    robot.tecla(pygame.K_RETURN)
+    assert j.salud == 65 and "Mañana habrá más" in robot.app.voz.registro[-1]      # una vez al día
+    robot.tecla(pygame.K_RIGHT)
+    robot.tecla(pygame.K_RETURN)                           # baño
+    robot.tecla(pygame.K_RIGHT)
+    dia, hora = p.dia, p.reloj
+    robot.tecla(pygame.K_RETURN)                           # dormitorio: dormir
+    assert j.salud == j.salud_max and (p.dia, p.reloj) != (dia, hora)
+    robot.tecla(pygame.K_RIGHT)
+    robot.tecla(pygame.K_RETURN)
+    assert "Garaje:" in robot.app.voz.registro[-1]
+    robot.tecla(pygame.K_ESCAPE)
+    assert robot.app.pila[-1] is m
+
+
+def test_misiones_de_oido_en_la_historia_y_en_los_mods(robot):
+    p = robot.nueva_partida()
+    por_id = {m["id"]: m for m in p.datos["misiones"]}
+    esperado = {"eo1": "seguir", "eo2": "escoltar", "eo3": "sigilo", "eo4": "ruta", "cdo1": "seguir", "voo1": "escoltar", "pao1": "sigilo", "ivo1": "ruta", "nno1": "seguir"}
+    for ident, tipo in esperado.items():
+        m = por_id[ident]
+        paso = next(x for x in m["pasos"] if x["tipo"] == tipo)
+        for clave in ("lugar", "destino"):
+            if paso.get(clave):
+                assert paso[clave] in p.lugares, (ident, paso[clave])
+        for punto in paso.get("puntos", []):
+            assert punto in p.lugares, (ident, punto)
+        assert m["lugar"] in p.lugares and p.datos["capitulos"][str(m["capitulo"])]
+    assert p.datos["capitulos"]["11"] == "Encargos de oído"

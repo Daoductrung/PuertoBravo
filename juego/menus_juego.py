@@ -385,6 +385,8 @@ def opciones(app):
             lista("movimiento", "Movimiento a pie", "En modo brújula el oído mira siempre al norte. Con giros, el sonido gira contigo."),
             lista("conduccion", "Conducción", "También se cambia durante el juego con F2."),
             si_no("frenada_auto", "Frenada automática ante el tráfico", "En conducción asistida, el coche frena solo para no chocar con el vehículo de delante. Mantén A para adelantarlo."),
+            si_no("viajes_trayecto", "Viajes en taxi y en autobús con trayecto",
+                  "Con sí, al coger un taxi o un autobús se oye el viaje durante un rato: el motor, la calzada y la radio. Dura entre doce segundos y un minuto según la distancia, y con Intro llegas ya. Con no, llegas al momento."),
             si_no("piloto_gps", "Piloto del GPS, el coche va solo hasta el destino",
                   "Con un destino marcado en el GPS y en conducción asistida, el coche conduce solo: acelera, frena, gira, espera en los semáforos y se detiene al llegar. "
                   "Con cualquier flecha o el espacio mandas tú. Se activa también con la tecla Y al volante."),
@@ -664,10 +666,14 @@ def menu_viaje(p):
         coste = int(10 + d * 0.05)
         if not p.pagar(coste):
             return
-        p.teletransportar(l.x, l.y)
-        p.pasar_horas(d / 600.0)
-        p.app.son("puerta_coche")
-        p.decir(f"El taxi te deja en {l.nombre} por {coste} euros. Son las {p.hora_txt()}.")
+
+        def llegar():
+            p.teletransportar(l.x, l.y)
+            p.pasar_horas(d / 600.0)
+            p.app.son("puerta_coche")
+            p.decir(f"El taxi te deja en {l.nombre} por {coste} euros. Son las {p.hora_txt()}.")
+        from .pantallas import viajar as trayecto
+        trayecto(p.app, max(12.0, min(45.0, d / 14.0)), llegar, destino=l.nombre)
     if p.mundo.tipo == "mar":
         p.app.decir("En mitad del mar no hay taxis.", True)
         return
@@ -821,7 +827,7 @@ def _casa(p, l):
             app.son("error")
             app.decir("El garaje está lleno.", True)
             return
-        garaje.append({"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre})
+        garaje.append({"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "mejoras": dict(getattr(v, "mejoras", {}))})
         p.salir_vehiculo(forzado=True)
         p.quitar_vehiculo(v)
         j.x, j.y = l.x, l.y
@@ -834,6 +840,8 @@ def _casa(p, l):
             d = garaje.pop(k)
             x, y, di = p.mundo.plaza_junto_a(l)
             v = p.crear_vehiculo(d["modelo"], x, y, di, None, d.get("nombre"))
+            from . import sistemas
+            sistemas.poner(v, d.get("mejoras"))
             v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
             v.propio = True
             app.cerrar(m)
@@ -853,7 +861,17 @@ def _casa(p, l):
         for k, d in enumerate(garaje):
             lista.append(Opcion(f"Sacar del garaje: {d.get('nombre', d['modelo'])}", sacar(k)))
         lista.append(Opcion(f"Garaje: {len(garaje)} de {l.get('garaje', 0)} plazas ocupadas"))
+        if not j.veh:
+            lista.append(Opcion("Recorrer la casa por dentro", recorrer,
+                                ayuda="Entras y vas de una habitación a otra con las flechas: salón, cocina, baño, dormitorio y garaje. En cada una, Intro hace lo suyo."))
         return lista
+
+    def recorrer():
+        from . import sistemas
+        app.son("puerta_entrar")
+        app.abrir(sistemas.Interior(p, l, {"descansar": descansar, "garaje": lambda: app.decir(
+            f"Garaje: {len(garaje)} de {l.get('garaje', 0)} plazas ocupadas" + ("." if not garaje else ": " + ", ".join(d.get("nombre", d["modelo"]) for d in garaje) + ".") +
+            " Para sacar un vehículo, usa el menú de la casa.", True)}))
     m = _menu_lugar(p, l, ops)
 
 
@@ -1012,8 +1030,10 @@ def _taller(p, l):
             p.son("pintura", cat="interfaz")
             p._fin_persecucion()
             app.decir("Pintura nueva y matrículas nuevas. La policía ya no busca este vehículo.", True)
+    from . import sistemas
     _menu_lugar(p, l, [Opcion(lambda: f"Reparar {v.nombre}: {coste()} euros. Estado {int(100 * v.salud / v.salud_max)} por ciento", reparar),
-                       Opcion("Pintar y cambiar matrículas: 300 euros. Elimina la búsqueda policial", pintar)])
+                       Opcion("Pintar y cambiar matrículas: 300 euros. Elimina la búsqueda policial", pintar)] + sistemas.opciones_taller(p, v, Opcion) +
+                [Opcion(lambda: sistemas.resumen(v))])
 
 
 def _desguace(p, l):

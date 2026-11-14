@@ -271,6 +271,55 @@
    "recompensa": {
     "dinero": 230
    }
+  },
+  {
+   "id": "ivo1",
+   "titulo": "La ronda del farero",
+   "capitulo": 30,
+   "contacto": "Chelo",
+   "lugar": "iv_cantina",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Antes de que cambie la marea hay que encender las cuatro luces de la isla.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chelo",
+       "El farero está con fiebre y hoy sube la marea fuerte. Hay que encender las cuatro luces de la isla antes de que oscurezca."
+      ],
+      [
+       "Chelo",
+       "Aquí no hay coches: a pie y corriendo. La torre, el aljibe, la rompiente y el muelle, por ese orden."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "texto": "Enciende las luces de la Torre del Semáforo, el Aljibe, la Rompiente y el Muelle, por ese orden, en siete minutos. A pie.",
+     "limite": 420,
+     "puntos": [
+      "iv_semaforo",
+      "iv_aljibe",
+      "iv_rompiente",
+      "iv_muelle"
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Chelo",
+       "Las cuatro encendidas y con luz de sobra. Esta noche no encalla nadie. La casa invita."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 350
+   }
   }
  ],
  "armas": [

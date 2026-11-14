@@ -45,6 +45,7 @@ POR_DEFECTO = {
     "ia_url_otro": "",             # dirección de un servicio compatible con OpenAI; vacío = OpenRouter
     "ia_modelo_otro": "",          # modelo de ese servicio; vacío = lo elige el juego
     "teclas": {},                  # teclas cambiadas: función original -> tecla física
+    "viajes_trayecto": True,       # en taxi y autobús se oye el trayecto durante un rato; con no, se llega al momento
     "motor_sonido": "clasico",     # clasico | envolvente (binaural con OpenAL Soft; se aplica al abrir el juego)
     "sonido_mono": False,          # los dos oídos oyen lo mismo
     "atenuar_al_hablar": True,     # bajar ambiente y música mientras habla la voz

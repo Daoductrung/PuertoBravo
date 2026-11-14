@@ -449,6 +449,55 @@
      "cd_marina": 15
     }
    }
+  },
+  {
+   "id": "cdo1",
+   "titulo": "El patrón de la lancha",
+   "capitulo": 21,
+   "contacto": "La boticaria",
+   "lugar": "cd_farmacia",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "La boticaria quiere saber dónde se mete el patrón de una lancha que no pesca nada.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La boticaria",
+       "Hay un patrón que sale cada tarde de la lonja con las manos vacías y los bolsillos llenos. Síguele de lejos y dime adónde va."
+      ],
+      [
+       "La boticaria",
+       "A pie y sin acercarte. Se le oye andar: con eso te basta."
+      ]
+     ]
+    },
+    {
+     "tipo": "seguir",
+     "texto": "Ve a la Lonja de Costa Dorada y sigue al patrón sin que te descubra. Guíate por sus pasos.",
+     "lugar": "cd_lonja",
+     "destino": "cd_taberna",
+     "persona": "el patrón"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El patrón entra en la Taberna El Ancla y se sienta al fondo, de espaldas a la puerta."
+      ],
+      [
+       "La boticaria",
+       "En El Ancla. Pues ya sé con quién tengo que hablar. Gracias."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 300
+   }
   }
  ],
  "armas": [

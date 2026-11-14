@@ -381,6 +381,51 @@
      "pa_olalla": 15
     }
    }
+  },
+  {
+   "id": "pao1",
+   "titulo": "La llave del polvorín",
+   "capitulo": 27,
+   "contacto": "El cantinero",
+   "lugar": "pa_cantina",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Alguien ha puesto vigilantes en el polvorín viejo, y el pueblo quiere saber qué guardan.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El cantinero",
+       "El polvorín lleva veinte años cerrado y desde el lunes hay dos tipos dando vueltas. Nadie se atreve a mirar."
+      ],
+      [
+       "El cantinero",
+       "Acércate sin que te oigan y tráeme lo que haya en la puerta. Agachado y sin prisa."
+      ]
+     ]
+    },
+    {
+     "tipo": "sigilo",
+     "texto": "Ve al polvorín y llega hasta la puerta sin que te oigan los vigilantes. Agáchate con la X y no corras.",
+     "lugar": "pa_polvorin",
+     "guardias": 2,
+     "objeto": "un albarán de explosivos"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El cantinero",
+       "Explosivos, y con fecha de la semana pasada. Esto no es para la cantera. Ya sé a quién enseñárselo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 450
+   }
   }
  ],
  "armas": [
