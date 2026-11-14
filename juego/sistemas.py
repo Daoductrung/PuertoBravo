@@ -137,7 +137,7 @@ def llamar(p):
         a.salud = 95.0
         a.arma = random.choice(["pistola", "pistola", "bate", "navaja"])
         a.de_banda = True
-    p.son("silbido" if "silbido" in p.mez.sonidos else "grito", cat="interfaz", vol=0.5)
+    p.son("notificacion", cat="interfaz", vol=0.5)
     return faltan, f"{'Llega' if faltan == 1 else 'Llegan'} {faltan} de {j.banda_nombre} y se {'pone' if faltan == 1 else 'ponen'} a tu lado."
 
 
@@ -238,7 +238,7 @@ class Interior:
                 return
             self.i = nuevo
             for n in range(3):                          # tres pasos sobre el suelo de casa
-                self.app.son("paso_acera" + str(n % 2), vol=0.5, pan=0.5 * paso)
+                self.app.son(("paso_acera0", "paso_acera1")[n % 2], vol=0.5, pan=0.5 * paso)
             self._decir()
         elif k in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
             self._usar()

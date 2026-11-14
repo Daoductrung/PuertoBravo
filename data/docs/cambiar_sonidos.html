@@ -37,11 +37,7 @@ li { margin-bottom: .3em; }
 <ul>
 <li>WAV, OGG, FLAC y MP3. Si dejas dos archivos con el mismo nombre y distinta extensión, se usa el primero por orden alfabético; lo más sencillo es borrar el original.</li>
 <li>Cualquier frecuencia de muestreo: el juego la convierte a 44100 hercios.</li>
-<li>Mono o estéreo. Los efectos se pasan a mono, porque es el juego quien coloca cada sonido a tu izquierda, a tu derecha, delante o detrás.</li>
-<li>Los ambientes son la excepción: los diez sonidos que empiezan por <strong>amb_</strong> y la <strong>lluvia</strong> se quedan en estéreo, tal como los grabaste, porque son fondos que no vienen de ningún punto. Ahí sí merece la pena una grabación envolvente.</li>
-<li>Un consejo para los ambientes en estéreo: que sean fondos difusos, como rumor de ciudad, viento, mar o campo. Evita los que tienen sonidos sueltos y claros a un lado, como un perro ladrando a la izquierda, porque el ambiente no gira cuando tú te giras y ese perro despistaría a quien se orienta de oído.</li>
-<li>Duración de los ambientes: hasta minuto y medio. Lo que pase de ahí se recorta. Con treinta segundos o un minuto ya no se nota la repetición.</li>
-<li>Calidad: da igual a qué frecuencia esté grabado el archivo. El juego lo convierte sin estropear los agudos.</li>
+<li>Mono o estéreo. Los efectos se pasan siempre a mono, porque es el juego quien coloca cada sonido a tu izquierda, a tu derecha, delante o detrás.</li>
 </ul>
 <h3>Recuperar un sonido original</h3>
 <p>Borra el archivo. La próxima vez que arranque, el juego volverá a crear el sonido original. Para recuperarlos todos, borra la carpeta <code>data\sonidos\por_defecto</code> entera.</p>
@@ -63,7 +59,7 @@ li { margin-bottom: .3em; }
 <ul>
 <li>Un pack tuyo no tiene que traerlos todos: los sonidos que no traiga siguen sonando con el original.</li>
 <li>El volumen de cada sonido del pack se iguala al del original, como se explica arriba.</li>
-<li>De serie vienen instalados los packs «Alternativo», con 223 sonidos, «Realista», con 223 sonidos, «Retro», con 223 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
+<li>De serie vienen instalados los packs «Alternativo», con 223 sonidos, «Envolvente», con 223 sonidos, «Realista», con 223 sonidos, «Retro», con 223 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
 </ul>
 <h3>Hacer tu propio pack</h3>
 <ol>
@@ -85,9 +81,6 @@ li { margin-bottom: .3em; }
 <li><code>volumenes</code>: retoque por sonido que se aplica después de igualar. 1 lo deja como está, 0.8 lo baja un veinte por ciento.</li>
 </ul>
 <p>Para compartir un pack, comprime su carpeta. Quien lo reciba la descomprime dentro de su <code>data\sonidos</code>.</p>
-
-<h3>El pack Envolvente</h3>
-<p>Es el pack para oír cómo quedan los ambientes en estéreo. Lleva los sonidos del pack realista, más once ambientes grabados de verdad, de un minuto cada uno. Trae los mismos archivos que los demás packs. Los de orientación, es decir, el GPS, el radar, los semáforos, los localizadores y las firmas de los lugares, son los de serie, que es con los que se aprende a jugar. Sirve de modelo si quieres preparar tus propios ambientes. En su carpeta, el archivo CREDITOS.txt dice de dónde sale cada grabación.</p>
 
 <h2>4. La radio</h2>
 <h3>Cambiar la música de una emisora</h3>

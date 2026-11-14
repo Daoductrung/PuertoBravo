@@ -87,7 +87,7 @@ def test_el_editor_guarda_protegido_y_abre_las_dos_formas(tmp_path):
     assert modelo.ruta_protegida("x.json.desactivado") == "x.pbm.desactivado" and modelo.ruta_protegida("x") == "x.pbm"
     otra_vez = modelo.Mod.cargar(ruta)                                     # y abre el protegido
     assert otra_vez.crudo() == mod.crudo()
-    assert otra_vez.info["nombre"] == "Costa Dorada" and len(otra_vez.secciones["misiones"]) == 7
+    assert otra_vez.info["nombre"] == "Costa Dorada" and len(otra_vez.secciones["misiones"]) == 8
     errores, _ = modelo.comprobar(otra_vez, modelo.Catalogo())
     assert not [e for e in errores if "repetido dentro del mod" in e]
 
