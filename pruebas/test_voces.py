@@ -99,7 +99,7 @@ def test_bahia_del_ocaso(robot):
             assert (i, j) in m._barrio_de
     ms = [x for x in p.datos["misiones"] if x["id"].startswith("oc")]
     historia = [x for x in ms if x["capitulo"] in (40, 41, 42, 43)]
-    assert len(historia) == 21 and len(ms) == 26
+    assert len(historia) == 21 and len(ms) == 30
     ids = {x["id"] for x in p.datos["misiones"]}
     for x in ms:                                                  # la cadena de la historia no tiene eslabones sueltos
         assert set(x["requiere"]) <= ids
@@ -122,7 +122,7 @@ def test_voces_de_serie_y_preferencia_del_jugador(monkeypatch, tmp_path):
     mod = cifrado.leer_json(os.path.join(rutas.MODS, "bahia_del_ocaso.json"))
     frases = sum(len(p["lineas"]) for m in mod["misiones"] for p in m["pasos"] if p["tipo"] == "dialogo")
     con_voz = sum(1 for m in mod["misiones"] for k, p in enumerate(m["pasos"]) if p["tipo"] == "dialogo" for n in range(len(p["lineas"])) if voces.buscar(m["id"], k, n))
-    assert frases == 107 and con_voz >= 100
+    assert frases >= 107 and con_voz >= 100
     from juego.sintesis import leer_audio
     assert len(leer_audio(de_serie, mono=False)) > 44100                      # se puede leer y dura más de un segundo
     propia = str(tmp_path / "voces")

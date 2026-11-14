@@ -9,6 +9,9 @@ from .entidades import Objeto, Persona, Vehiculo
 from .menus import Dialogo
 
 UMBRAL = [1, 4, 8, 13, 20]
+# Cuántas patrullas persiguen como mucho con cada nivel de búsqueda, y cada cuántos segundos llega una nueva.
+PATRULLAS = {1: 1, 2: 1, 3: 2, 4: 3, 5: 4}
+RITMO_PATRULLAS = {1: 9.0, 2: 7.0, 3: 6.0, 4: 5.0, 5: 4.0}
 
 
 class Combate:
@@ -401,6 +404,9 @@ class Combate:
         j = self.j
         n = sum(1 for u in UMBRAL if j.puntos_busqueda >= u)
         if n > j.estrellas:
+            if j.estrellas == 0:
+                self.t_policia = 5.0 if not j.veh else 3.0          # la primera patrulla tarda en salir: da tiempo a reaccionar
+                self.patrulla_enviada = False
             self.son("estrella_sube", cat="interfaz")
             self.app.vibrar(0.5, 0.5, 250)
             pista = " Aléjate de las sirenas hasta que dejen de buscarte, o pinta el vehículo en un taller." if j.estrellas == 0 else ""
@@ -409,25 +415,30 @@ class Combate:
         if n == 0:
             return
         x, y = self.pos()
-        cerca = any(p.tipo == "policia" and not p.muerto and p.dist(x, y) < 70 for p in self.personas) or \
-            any(v.ia == "policia" and not v.muerto and v.dist(x, y) < 80 for v in self.vehiculos)
+        # A pie se te ve menos que en un coche: basta con alejarse media manzana para que te pierdan.
+        r_p, r_v = (70, 80) if j.veh else (38, 45)
+        cerca = any(p.tipo == "policia" and not p.muerto and p.dist(x, y) < r_p for p in self.personas) or \
+            any(v.ia == "policia" and not v.muerto and v.dist(x, y) < r_v for v in self.vehiculos)
         if cerca:
             self.t_evasion = 0.0
         else:
-            self.t_evasion += dt
+            if getattr(self, "patrulla_enviada", True):
+                self.t_evasion += dt                              # solo cuenta cuando ya hay alguien buscándote
             self.t_buscando -= dt
             if self.t_buscando <= 0:
                 self.t_buscando = 1.0
                 self.son("buscando", vol=0.6, cat="interfaz")
-            if self.t_evasion >= 9 + 4 * n:
+            if self.t_evasion >= (9 + 4 * n if j.veh else 7 + 3 * n):
                 self.limpiar_busqueda()
                 return
         self.t_policia -= dt
         if self.t_policia <= 0:
-            self.t_policia = 3.0
-            total = sum(1 for v in self.vehiculos if v.ia == "policia" and not v.desplegado)
-            if total < min(4, n) and self.t_evasion < 6 and self.mundo.policia:
+            self.t_policia = RITMO_PATRULLAS.get(n, 5.0)
+            total = sum(1 for v in self.vehiculos if v.ia == "policia" and not v.muerto)
+            tope = PATRULLAS.get(n, 4) - (1 if self.cfg["dificultad"] == "facil" and n >= 3 else 0)
+            if total < tope and self.t_evasion < 6 and self.mundo.policia:
                 self._llegar_patrulla(x, y)
+            self.patrulla_enviada = True
         for v in self.vehiculos:
             if v.ia == "policia":
                 v.hostil = True
@@ -435,7 +446,7 @@ class Combate:
     def _llegar_patrulla(self, x, y):
         m = self.mundo
         for _ in range(6):
-            dist = random.uniform(110, 170) * random.choice([-1, 1])
+            dist = random.uniform(150, 230) * random.choice([-1, 1])
             if random.random() < 0.5:
                 jj = m._idx(y, m.NY)
                 vx = x + dist

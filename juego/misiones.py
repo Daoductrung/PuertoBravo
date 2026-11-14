@@ -3,6 +3,8 @@ import copy
 import math
 import random
 
+import pygame
+
 from . import mundo as M
 from .entidades import Objeto, Persona
 from .menus import Dialogo, Menu, Opcion
@@ -39,6 +41,18 @@ class Misiones:
             t = f"Misión {self.mision['def']['titulo']}. {p.get('texto', '')}"
             if self.mision.get("limite") is not None:
                 t += f" Te quedan {int(self.mision['limite'])} segundos."
+            x, y = self.pos()
+            o = self.mision.get("movil")
+            if p["tipo"] == "seguir" and o:
+                t += f" {o['nombre'].capitalize()} va a {int(math.hypot(o['x'] - x, o['y'] - y))} metros, {self.direccion_txt(o['x'], o['y'])}. Síguele por el sonido de sus pasos, sin acercarte a menos de seis metros."
+            e = self.mision.get("escolta")
+            if p["tipo"] == "escoltar" and e:
+                t += f" {e['nombre'].capitalize()} " + (f"está a {int(math.hypot(e['x'] - x, e['y'] - y))} metros de ti." if e["contigo"] else "te espera en el punto de recogida.")
+            if p["tipo"] == "sigilo" and self.mision.get("guardias"):
+                cerca = min(math.hypot(g["x"] - x, g["y"] - y) for g in self.mision["guardias"])
+                t += f" Hay {len(self.mision['guardias'])} vigilantes; el más cercano, a {int(cerca)} metros. Agachado, con la X, te oyen mucho menos. No corras."
+            if p["tipo"] == "ruta":
+                t += f" Vas por el punto {self.mision.get('ruta_i', 0) + 1} de {len(p.get('puntos', []))}."
             if p["tipo"] == "eliminar" and self.mision.get("generado"):
                 t += f" Quedan {sum(1 for e in self.mision['enemigos'] if not e.muerto)} enemigos."
             return t
@@ -164,6 +178,35 @@ class Misiones:
             self.gps_a_lugar(l, auto=True, callar=True)
             return
         ms["pendiente"] = False
+        if tipo == "seguir" and l:
+            d = self.lugares.get(p.get("destino", ""))
+            ruta = self.mundo.ruta(l.x, l.y, d.x, d.y) if d is not None and d.mapa == l.mapa else [(l.x, l.y)]
+            ms["movil"] = {"x": l.x, "y": l.y, "ruta": list(ruta), "i": 0, "t_paso": 0.0, "cerca": 0.0, "lejos": 0.0, "t_aviso": 0.0,
+                           "vel": float(p.get("velocidad", 2.3)), "nombre": self.txt(p.get("persona") or "tu objetivo"), "espera": 6.0}
+            self.cancelar_gps()
+            return
+        if tipo == "escoltar" and l:
+            ms["escolta"] = {"x": l.x, "y": l.y, "t_paso": 0.0, "t_aviso": 0.0, "nombre": self.txt(p.get("persona") or "tu acompañante"), "contigo": False}
+            self.gps_a_lugar(l, auto=True, callar=True)
+            return
+        if tipo == "sigilo" and l:
+            n = max(1, int(p.get("guardias", 3)))
+            guardias = []
+            for k in range(n):
+                a = 2 * math.pi * k / n + 0.6
+                r = 9.0 + 3.0 * (k % 2)
+                gx, gy = l.x + math.sin(a) * r, l.y + math.cos(a) * r
+                if not self.mundo.transitable(gx, gy):
+                    gx, gy = self.mundo.punto_libre(gx, gy)
+                guardias.append({"x": gx, "y": gy, "x0": gx, "y0": gy, "a": a + math.pi / 2, "fase": k * 1.7, "t_paso": 0.3 * k})
+            ms["guardias"] = guardias
+            ms["t_aviso"] = 0.0
+            self.gps_a_lugar(l, auto=True, callar=True)
+            return
+        if tipo == "ruta":
+            ms["ruta_i"] = 0
+            self._ruta_siguiente(p, primero=True)
+            return
         if tipo in ("ir", "entregar") and l:
             self.gps_a_lugar(l, auto=True)
         elif tipo == "robar" and l:
@@ -283,7 +326,22 @@ class Misiones:
                 if tipo == "robar" and j.veh is not None and j.veh is ms.get("veh"):
                     self._paso_hecho()
                 return
-        if tipo == "ir":
+        if tipo == "seguir":
+            self._paso_seguir(ms, p, x, y, dt)
+        elif tipo == "escoltar":
+            self._paso_escoltar(ms, p, x, y, dt)
+        elif tipo == "sigilo":
+            self._paso_sigilo(ms, p, l, x, y, dt)
+        elif tipo == "ruta":
+            punto = self.lugares.get(p.get("puntos", [""])[min(ms.get("ruta_i", 0), len(p.get("puntos", [""])) - 1)])
+            if punto and punto.mapa == self.mundo.id and math.hypot(punto.x - x, punto.y - y) <= (20 if j.veh else 10):
+                ms["ruta_i"] += 1
+                if ms["ruta_i"] >= len(p["puntos"]):
+                    self._paso_hecho()
+                else:
+                    self.app.son("llegada")
+                    self._ruta_siguiente(p)
+        elif tipo == "ir":
             radio = 28 if self.mundo.tipo == "mar" else 17 if j.veh else p.get("radio", 8)
             if l and math.hypot(l.x - x, l.y - y) <= radio and (not j.veh or abs(j.veh.vel) < 3):
                 self._paso_hecho()
@@ -340,6 +398,118 @@ class Misiones:
                 self._paso_hecho()
             elif j.veh and self.gps is None:
                 self.fijar_gps(vo.x, vo.y, vo.nombre, sigue=vo, auto=True, callar=True)
+
+    # ------------------------------------------------- pasos de oído: seguir, escoltar, sigilo y ruta
+    def _ruta_siguiente(self, p, primero=False):
+        ms = self.mision
+        puntos = p.get("puntos", [])
+        l = self.lugares.get(puntos[ms["ruta_i"]]) if ms["ruta_i"] < len(puntos) else None
+        if l is None:
+            return
+        self.gps_a_lugar(l, auto=True, callar=True)
+        self.decir(f"Punto {ms['ruta_i'] + 1} de {len(puntos)}: {self.nombre_lugar(l)}." if not primero else
+                   f"Son {len(puntos)} puntos. El primero: {self.nombre_lugar(l)}.")
+
+    def _paso_seguir(self, ms, p, x, y, dt):
+        """Seguir a alguien de oído: ni tan cerca que te vea, ni tan lejos que lo pierdas."""
+        o = ms.get("movil")
+        if o is None:
+            return
+        j = self.j
+        d = math.hypot(o["x"] - x, o["y"] - y)
+        if o["espera"] > 0:                                   # al principio se queda quieto un momento: te da tiempo a localizarlo
+            o["espera"] -= dt
+        elif o["i"] < len(o["ruta"]):
+            tx, ty = o["ruta"][o["i"]]
+            r = math.hypot(tx - o["x"], ty - o["y"])
+            paso = o["vel"] * dt
+            if r <= paso:
+                o["x"], o["y"] = tx, ty
+                o["i"] += 1
+            else:
+                o["x"] += (tx - o["x"]) / r * paso
+                o["y"] += (ty - o["y"]) / r * paso
+        o["t_paso"] -= dt
+        if o["t_paso"] <= 0:
+            o["t_paso"] = 0.55
+            self.son("paso_npc", xy=(o["x"], o["y"]), ref=5, maxd=75, vol=1.0)
+        limite_cerca = 12.0 if j.veh else 3.5 if j.agachado else 6.0
+        o["cerca"] = o["cerca"] + dt if d < limite_cerca else 0.0
+        o["lejos"] = o["lejos"] + dt if d > 55 else 0.0
+        o["t_aviso"] -= dt
+        if o["t_aviso"] <= 0 and (d < limite_cerca + 4 or d > 40):
+            o["t_aviso"] = 5.0
+            self.decir("Estás demasiado cerca. Quédate atrás." if d < limite_cerca + 4 else f"Se te aleja: va a {int(d)} metros, {self.direccion_txt(o['x'], o['y'])}.")
+        if o["cerca"] > 1.5:
+            self.fallar_mision(f"{o['nombre'].capitalize()} se ha dado cuenta de que le seguías.")
+        elif o["lejos"] > 9:
+            self.fallar_mision(f"Has perdido de vista a {o['nombre']}.")
+        elif o["i"] >= len(o["ruta"]) and d < 55:
+            self._paso_hecho()
+
+    def _paso_escoltar(self, ms, p, x, y, dt):
+        """Llevar a alguien hasta un sitio: te sigue a pie y sube contigo si coges un vehículo."""
+        e = ms.get("escolta")
+        if e is None:
+            return
+        j = self.j
+        d = math.hypot(e["x"] - x, e["y"] - y)
+        dest = self.lugares.get(p.get("destino", ""))
+        if not e["contigo"]:
+            if d < 6:
+                e["contigo"] = True
+                self.app.son("llegada")
+                self.decir(f"{e['nombre'].capitalize()} va contigo. Te sigue a pie y sube al vehículo que cojas." +
+                           (f" Llévale a {self.nombre_lugar(dest)}." if dest else ""))
+                if dest:
+                    self.gps_a_lugar(dest, auto=True, callar=True)
+            return
+        if j.veh:
+            e["x"], e["y"] = x, y                             # va de pasajero
+        elif d > 3.0:
+            paso = min(d - 2.5, (6.5 if d > 12 else 4.0) * dt)
+            e["x"] += (x - e["x"]) / d * paso
+            e["y"] += (y - e["y"]) / d * paso
+            e["t_paso"] -= dt
+            if e["t_paso"] <= 0:
+                e["t_paso"] = 0.45
+                self.son("paso_npc", xy=(e["x"], e["y"]), ref=4, maxd=40, vol=0.8)
+        if dest and dest.mapa == self.mundo.id and math.hypot(dest.x - x, dest.y - y) <= (17 if j.veh else p.get("radio", 9)) \
+                and (not j.veh or abs(j.veh.vel) < 3) and math.hypot(e["x"] - x, e["y"] - y) < 15:
+            self._paso_hecho()
+
+    def _paso_sigilo(self, ms, p, l, x, y, dt):
+        """Llegar a un punto vigilado sin que te oigan: agachado se te oye menos; corriendo, mucho más."""
+        j = self.j
+        t = self.app.teclas
+        corriendo = (pygame.K_LSHIFT in t or pygame.K_RSHIFT in t) and not j.agachado
+        oido = 22.0 if j.veh else 2.6 if j.agachado else 11.0 if corriendo else 6.0
+        cerca = 999.0
+        for g in ms.get("guardias", []):
+            g["fase"] += dt * 0.35                             # cada guardia pasea de un lado a otro de su puesto
+            k = math.sin(g["fase"]) * 5.0
+            nx, ny = g["x0"] + math.sin(g["a"]) * k, g["y0"] + math.cos(g["a"]) * k
+            if self.mundo.transitable(nx, ny):
+                g["x"], g["y"] = nx, ny
+            g["t_paso"] -= dt
+            if g["t_paso"] <= 0:
+                g["t_paso"] = 0.8
+                self.son("paso_npc", xy=(g["x"], g["y"]), ref=3, maxd=35, vol=1.0)
+            cerca = min(cerca, math.hypot(g["x"] - x, g["y"] - y))
+        ms["t_aviso"] = ms.get("t_aviso", 0.0) - dt
+        if cerca <= oido:
+            self.son("grito", xy=(x, y), vol=0.6)
+            self.fallar_mision("Un vigilante te ha oído.")
+            return
+        if cerca < oido + 4 and ms["t_aviso"] <= 0:
+            ms["t_aviso"] = 4.0
+            self.son("buscando", cat="interfaz", vol=0.6)
+            self.decir(f"Tienes un vigilante a {int(cerca)} metros. " + ("Agáchate con la X." if not j.agachado else "No te muevas hacia él."))
+        if l and math.hypot(l.x - x, l.y - y) <= 2.5 and not j.veh:
+            if p.get("objeto"):
+                self.son("recoger", cat="interfaz")
+                self.decir(f"Tienes {self.txt(p['objeto'])}.")
+            self._paso_hecho()
 
     def _paso_hecho(self):
         if self.gps and self.gps.get("auto"):

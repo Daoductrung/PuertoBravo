@@ -309,3 +309,101 @@ def test_reasignar_teclas_del_teclado(robot):
     robot.tecla(pygame.K_RETURN)
     assert cfg["teclas"] == {} and teclado.traducir(cfg, pygame.K_p) == pygame.K_p
     app.cerrar(m)
+
+
+def test_la_policia_da_tiempo_y_no_llega_en_tropel(robot):
+    """A pie hay tiempo de reaccionar, las patrullas tienen un tope por nivel y no se acumulan."""
+    from juego.combate import PATRULLAS, UMBRAL
+    p = robot.nueva_partida()
+    j = p.j
+    p.cfg["sucesos"] = False
+    p.cfg["dificultad"] = "normal"
+
+    def patrullas():
+        return sum(1 for v in p.vehiculos if v.ia == "policia" and not v.muerto)
+    for v in [v for v in p.vehiculos if v.ia == "policia"]:
+        p.quitar_vehiculo(v)
+    j.puntos_busqueda = UMBRAL[0]
+    robot.frames(30 * 5)                                         # cinco segundos después del delito, a pie
+    assert j.estrellas == 1 and patrullas() == 0
+    robot.frames(30 * 6)
+    assert patrullas() == 1                                      # llega una, no cuatro
+    for nivel in (2, 3, 4, 5):
+        j.puntos_busqueda = UMBRAL[nivel - 1]
+        for _ in range(40):
+            p.t_evasion = 0.0                                    # como si no dejaran de verte
+            robot.frames(30)
+            j.salud = j.salud_max
+            assert patrullas() <= PATRULLAS[nivel], (nivel, patrullas())
+        assert patrullas() <= PATRULLAS[nivel]
+    assert PATRULLAS[1] == 1 and PATRULLAS[2] == 1 and PATRULLAS[5] == 4
+    # las sirenas se reparten el volumen
+    sirenas = sorted(v.sirena.vol for v in p.vehiculos if v.ia == "policia" and v.sirena is not None)
+    assert len(sirenas) < 2 or sirenas[0] < 0.8
+
+
+def _empezar(robot, ident):
+    p = robot.p
+    m = next(x for x in p.datos["misiones"] if x["id"] == ident)
+    l = p.lugares[m["lugar"]]
+    p.cambiar_mapa(l.mapa, l.x, l.y)
+    p.cfg["sucesos"] = False
+    p.iniciar_mision(m)
+    robot.saltar_dialogos()
+    paso = m["pasos"][p.mision["paso"]]
+    ini = p.lugares[paso["lugar"]] if paso.get("lugar") else None
+    if ini is not None:
+        p.teletransportar(*p.mundo.punto_libre(ini.x + 10, ini.y))
+        robot.frames(3)
+    return p, m
+
+
+def test_seguir_a_alguien_de_oido(robot):
+    robot.nueva_partida()
+    p, m = _empezar(robot, "ocs1")
+    o = p.mision["movil"]
+    assert o["nombre"] == "el contable" and len(o["ruta"]) >= 2 and "va a" in p.objetivo_txt()
+    sonidos = []
+    original = p.son
+    p.son = lambda n, **k: (sonidos.append(n), original(n, **k))[1]
+    robot.frames(60)
+    assert "paso_npc" in sonidos                                   # se le oye andar
+    p.son = original
+    # pegarte a él: te descubre
+    p.teletransportar(o["x"] + 2, o["y"])
+    robot.frames(70)
+    assert p.mision is None and "se ha dado cuenta" in robot.app.pila[-1].titulo
+    robot.app.cerrar(robot.app.pila[-1])
+    # quedarte muy atrás: lo pierdes
+    p, m = _empezar(robot, "ocs1")
+    o = p.mision["movil"]
+    o["espera"] = 0
+    p.teletransportar(*p.mundo.punto_libre(o["x"] + 80, o["y"]))
+    robot.frames(30 * 11)
+    assert p.mision is None and "Has perdido de vista" in robot.app.pila[-1].titulo
+
+
+def test_escoltar_y_sigilo(robot):
+    robot.nueva_partida()
+    p, m = _empezar(robot, "ocs2")
+    e = p.mision["escolta"]
+    assert not e["contigo"]
+    p.teletransportar(e["x"] + 2, e["y"])
+    robot.frames(5)
+    assert e["contigo"] and "va contigo" in robot.dicho() and p.gps
+    x0, y0 = p.pos()
+    p.teletransportar(*p.mundo.punto_libre(x0 + 9, y0))
+    robot.frames(90)
+    assert __import__("math").hypot(e["x"] - p.pos()[0], e["y"] - p.pos()[1]) < 4      # te sigue
+    p.abandonar_mision()
+    # sigilo: de pie y corriendo te oyen; agachado y despacio, no
+    p, m = _empezar(robot, "ocs3")
+    g = p.mision["guardias"][0]
+    assert len(p.mision["guardias"]) == 3 and "vigilantes" in p.objetivo_txt()
+    p.j.agachado = True
+    p.teletransportar(g["x"] + 4, g["y"])
+    robot.frames(10)
+    assert p.mision is not None                                    # a cuatro metros, agachado, no te oye
+    p.j.agachado = False
+    robot.frames(10)
+    assert p.mision is None and "te ha oído" in robot.app.pila[-1].titulo

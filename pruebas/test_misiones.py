@@ -101,6 +101,40 @@ def _jugar_mision(robot, m):
             else:
                 j.x, j.y = o.x, o.y
             robot.tecla(pygame.K_RETURN)
+        elif tipo == "seguir":
+            if ms.get("pendiente"):
+                _ir_a(robot, l)
+                robot.frames(3)
+            o = ms["movil"]
+            o["espera"], o["i"] = 0, len(o["ruta"])                  # el seguido llega a su destino...
+            o["x"], o["y"] = o["ruta"][-1]
+            p.teletransportar(*p.mundo.punto_libre(o["x"] + 14, o["y"]))    # ...y tú detrás, a buena distancia
+        elif tipo == "escoltar":
+            if ms.get("pendiente"):
+                _ir_a(robot, l)
+                robot.frames(3)
+            e = ms["escolta"]
+            j.x, j.y = e["x"], e["y"]
+            robot.frames(3)
+            assert e["contigo"], f"{m['id']}: no se une. {robot.dicho()}"
+            _ir_a(robot, p.lugares[paso["destino"]])
+            e["x"], e["y"] = p.pos()
+        elif tipo == "sigilo":
+            if ms.get("pendiente"):
+                _ir_a(robot, l)
+                robot.frames(2)
+            for g in ms["guardias"]:
+                g["x0"] += 60                                          # los vigilantes, lejos
+            if j.veh:
+                p.salir_vehiculo(forzado=True)
+            j.agachado = True
+            j.x, j.y = l.x, l.y
+        elif tipo == "ruta":
+            for ident in paso["puntos"][ms.get("ruta_i", 0):]:
+                _ir_a(robot, p.lugares[ident])
+                if j.veh:
+                    j.veh.vel = 0
+                robot.frames(4)
         elif tipo == "policia":
             robot.frames(3)
             assert j.estrellas >= 1

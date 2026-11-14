@@ -986,7 +986,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.forzando = None
             self.decir("Dejas de forzar la cerradura.")
         correr = (pygame.K_LSHIFT in t or pygame.K_RSHIFT in t) and not j.agachado
-        vel = (1.3 if j.agachado else 5.2 * (1 + 0.015 * self.nivel("resistencia")) if correr else 2.4) * self.mod_velocidad() * self.mod_necesidades()
+        vel = (1.3 if j.agachado else 6.0 * (1 + 0.015 * self.nivel("resistencia")) if correr else 2.6) * self.mod_velocidad() * self.mod_necesidades()
         n = math.hypot(dx, dy)
         if self.cfg["movimiento"] == "brujula" and not solo:
             j.rumbo = M.rumbo_a(dx, dy)

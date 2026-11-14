@@ -764,7 +764,9 @@ class Conduccion:
                 return 0.0, self._decidir_trafico
             return 11.0, self._decidir_trafico
         if v.sirena is None:
-            v.sirena = self.son("sirena", bucle=True, xy=(v.x, v.y), ref=14, maxd=260, vol=0.8)
+            # Con varias patrullas, cada sirena suena más floja: juntas no deben tapar ni saturar todo lo demás.
+            otras = sum(1 for o in self.vehiculos if o is not v and o.sirena is not None)
+            v.sirena = self.son("sirena", bucle=True, xy=(v.x, v.y), ref=14, maxd=260, vol=0.8 / (1 + 0.6 * otras))
         if v.desplegado:
             return 0.0, self._decidir_policia
         vel_j = abs(j.veh.vel) if j.veh else 0.0

@@ -1622,6 +1622,203 @@
    }
   },
   {
+   "id": "ocs1",
+   "titulo": "El contable",
+   "capitulo": 46,
+   "contacto": "Nerea",
+   "lugar": "oc_periodico",
+   "requiere": [
+    "oc05"
+   ],
+   "resumen": "Nerea quiere saber adónde lleva el contable de la empresa del agua un sobre cada tarde.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "Cada tarde, el contable de Aguas del Ocaso sale del banco con un sobre. Quiero saber adónde lo lleva."
+      ],
+      [
+       "Nerea",
+       "Síguele a pie, de lejos. No hace falta verle: escucha sus pasos. Si te acercas demasiado, se da cuenta. Si te quedas atrás, lo pierdes."
+      ]
+     ]
+    },
+    {
+     "tipo": "seguir",
+     "texto": "Ve al Banco de la Bahía y sigue al contable sin que te descubra. Guíate por el sonido de sus pasos. La tecla O te dice a cuánto va.",
+     "lugar": "oc_banco",
+     "destino": "oc_casino",
+     "persona": "el contable",
+     "velocidad": 2.3
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El contable entra en el Casino La Última Luz por la puerta de servicio. Sale sin el sobre."
+      ],
+      [
+       "Nerea",
+       "Al casino. Así que el dinero de los recibos se blanquea en la ruleta. Buen trabajo, Dani."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 700
+   }
+  },
+  {
+   "id": "ocs2",
+   "titulo": "La testigo",
+   "capitulo": 46,
+   "contacto": "Nerea",
+   "lugar": "oc_periodico",
+   "requiere": [
+    "ocs1"
+   ],
+   "resumen": "Una empleada del casino quiere hablar, pero no se atreve a cruzar la ciudad sola.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "Una crupier del casino está dispuesta a contarlo todo. Tiene miedo, y con razón. Ve a buscarla al cine de verano y tráemela aquí."
+      ],
+      [
+       "Nerea",
+       "Irá pegada a ti. Si coges un coche, sube contigo."
+      ]
+     ]
+    },
+    {
+     "tipo": "escoltar",
+     "texto": "Recoge a la crupier en el Cine de Verano Palmeras y acompáñala a El Faro del Ocaso.",
+     "lugar": "oc_cine",
+     "destino": "oc_periodico",
+     "persona": "la crupier"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La crupier",
+       "No me sueltes hasta que esté dentro. Gracias. Empiezo por el principio: el sobre lo recoge siempre el mismo hombre, uno al que le faltan dedos."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 800
+   }
+  },
+  {
+   "id": "ocs3",
+   "titulo": "El libro de caja",
+   "capitulo": 46,
+   "contacto": "Nerea",
+   "lugar": "oc_periodico",
+   "requiere": [
+    "ocs2"
+   ],
+   "resumen": "El libro de caja del casino está en un cobertizo del muelle, con tres vigilantes dando vueltas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "La crupier dice que el libro de caja de verdad no está en el casino. Lo guardan en un cobertizo junto a la lonja, con tres vigilantes."
+      ],
+      [
+       "Nerea",
+       "No vayas a tiros: si hay jaleo, lo queman. Entra sin que te oigan. Agachado, despacio, y escucha por dónde pasean."
+      ]
+     ]
+    },
+    {
+     "tipo": "sigilo",
+     "texto": "Ve a la Lonja del Ocaso y llega hasta la puerta sin que te oigan los vigilantes. Agáchate con la X, no corras y escucha sus pasos.",
+     "lugar": "oc_lonja",
+     "guardias": 3,
+     "objeto": "el libro de caja"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Sales con el libro bajo la camisa. Nadie ha oído nada."
+      ],
+      [
+       "Nerea",
+       "Tres años de ruleta amañada, con fechas y cantidades. Esto va a doler."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1200
+   }
+  },
+  {
+   "id": "ocs4",
+   "titulo": "Reparto de madrugada",
+   "capitulo": 46,
+   "contacto": "Nerea",
+   "lugar": "oc_periodico",
+   "requiere": [
+    "ocs3"
+   ],
+   "resumen": "El periódico tiene que estar en cuatro puntos de la ciudad antes de que amanezca.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "Mañana sale lo del casino. Los repartidores no se atreven, así que me queda una persona de confianza: tú."
+      ],
+      [
+       "Nerea",
+       "Cuatro paradas, en este orden, y cinco minutos para todas. Coge un coche."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "texto": "Deja los periódicos en la estación, el hospital, el ayuntamiento y el Gran Hotel, por ese orden, en cinco minutos.",
+     "limite": 300,
+     "puntos": [
+      "oc_estacion",
+      "oc_hospital",
+      "oc_ayuntamiento",
+      "oc_hotel"
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "A las siete, media ciudad lee la portada en la cola del agua."
+      ],
+      [
+       "Nerea",
+       "Cuatro de cuatro. Si algún día te cansas de las cisternas, aquí tienes trabajo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 900
+   }
+  },
+  {
    "id": "oca1",
    "titulo": "Última copa",
    "capitulo": 45,
@@ -2901,7 +3098,8 @@
   "42": "Bahía del Ocaso: Los Vigías",
   "43": "Bahía del Ocaso: el agua es de todos",
   "44": "Bahía del Ocaso: vida honrada",
-  "45": "Bahía del Ocaso: historias para adultos"
+  "45": "Bahía del Ocaso: historias para adultos",
+  "46": "Bahía del Ocaso: encargos de oído"
  },
  "personajes": [
   {
