@@ -1,5 +1,6 @@
 """Menús y diálogos hablados. Todo se maneja con flechas, Intro y Escape."""
 import pygame
+from . import registro
 
 
 class Opcion:
@@ -216,9 +217,17 @@ class EntradaTexto:
         return f"{len(self.texto)} caracteres escritos" if self.secreto else self.texto
 
     def al_entrar(self):
+        with registro.privado():
+            self._al_entrar()
+
+    def _al_entrar(self):
         self.app.decir(f"{self.titulo}. Escribe y pulsa Intro. Escape cancela. {self._leer()}", True)
 
     def tecla(self, ev):
+        with registro.privado():               # lo que se escribe y lo que se lee al escribir no se registra
+            self._tecla(ev)
+
+    def _tecla(self, ev):
         k = ev.key
         mod = getattr(ev, "mod", 0)
         if k in (pygame.K_RETURN, pygame.K_KP_ENTER):

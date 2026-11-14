@@ -9,6 +9,7 @@ import math
 import threading
 
 import numpy as np
+from . import registro
 
 SR = 44100
 ITD_MAX = 28.0      # muestras de retardo máximo entre oídos
@@ -114,6 +115,7 @@ class Mezclador:
             except Exception as e:  # sin tarjeta de sonido: el juego sigue, mudo
                 self.error = str(e)
                 self.stream = None
+                registro.aviso("sonido", "No se pudo abrir la salida de sonido con esta configuración", error=e, bloque=tam, exclusivo=bool(extra))
 
     # ---------------------------------------------------------------- sonidos
     def registrar(self, nombre, datos):
@@ -145,8 +147,10 @@ class Mezclador:
         c = Canal()
         d = self.sonidos.get(nombre)
         if d is None:
+            registro.sonido_falta(nombre)
             c.fin = True
             return c
+        registro.sonido(nombre)
         with self._lock:
             if len(self.canales) >= 56 and not bucle and cat != "interfaz":
                 c.fin = True

@@ -30,6 +30,7 @@ TECLAS = {
         ("F4", "activa o desactiva la baliza sonora del GPS"),
         ("F5", "guardado rápido, fuera de las misiones"),
         ("F7 y F8", "bajan y suben el volumen de la música"),
+        ("F12", "pone una marca en el registro de la sesión. Púlsala cuando notes algo raro: así, quien revise el registro sabrá en qué momento fue"),
         ("Escape", "menú de pausa"),
     ],
     "pie": [

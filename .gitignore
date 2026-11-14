@@ -22,6 +22,7 @@ data/radio/mi_musica/
 herramientas/claves/
 publicar_destino.txt
 data/actualizacion/
+data/logs/
 
 # Restos de pruebas
 data/sonidos/_prueba/

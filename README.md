@@ -62,6 +62,8 @@ Todo lo que ocurre tiene su sonido, colocado a tu alrededor: lo que suena a la d
 
 Descarga la última versión, descomprime la carpeta donde quieras y ejecuta `PuertoBravo.exe`. No instala nada: es portable. Dentro del juego, `F1` dice las teclas en cualquier momento, y el menú principal abre el manual completo, que está en `data\docs\manual.html` y se navega por encabezados.
 
+Si algo falla, el juego deja un registro de cada sesión en `data\logs`, sin datos personales: comprimes la carpeta de la sesión y la adjuntas a una [incidencia](https://github.com/hxebolax/PuertoBravo/issues), o la envías por Mastodon a [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX). El manual explica cómo.
+
 El juego se actualiza desde sus propias opciones. Puedes elegir de dónde: el servidor del juego, GitHub, los dos o una dirección tuya. Tus partidas, tus opciones, tu música y tus mods no se tocan.
 
 ---
@@ -126,6 +128,12 @@ El juego se actualiza leyendo un archivo `version.json` firmado con Ed25519. La 
 La clave se crea una sola vez con `.venv\Scripts\python.exe herramientas\publicar.py clave` y queda en `herramientas\claves`. Esa carpeta y `publicar_destino.txt` están en `.gitignore`: la clave privada no debe estar nunca en el repositorio ni en el servidor. Guarda una copia fuera del equipo. Si haces un fork y quieres publicar tus propias versiones, crea tu clave y cambia en `juego/actualizador.py` la clave pública, la dirección del servidor y el repositorio.
 
 La verificación de la firma está implementada con la biblioteca estándar, siguiendo el RFC 8032, y se comprueba en las pruebas con sus vectores oficiales. Si el paquete `cryptography` está instalado, se usa ese.
+
+### Registro de sesión
+
+`juego/registro.py` crea en `data/logs` una carpeta por sesión, con un máximo de cinco. Dentro quedan `sistema.txt` (versión, Windows, lector, sonido, mods, opciones), `sesion.log` (pantallas, teclas, todo lo que dice el juego, una foto del estado de la partida cada quince segundos, red, actualizaciones, fotogramas lentos y avisos), `errores.log` (cada error con su traza, el estado de la partida y las últimas teclas y sonidos) y `fallo_grave.log` si el proceso cae de golpe. Captura también las excepciones sin tratar del hilo principal y de los demás hilos.
+
+Todo pasa por un filtro antes de escribirse: rutas del usuario, nombre de usuario y de equipo, direcciones IP y de internet, correos, claves y los nombres de los jugadores en red se sustituyen. Lo que se teclea en los cuadros de texto y los mensajes del chat no llegan a registrarse. Hay una prueba que juega una sesión con datos señuelo y falla si alguno aparece en la carpeta. Al añadir algo que maneje datos del jugador, usa `registro.privado()` o `registro.ocultar()`.
 
 ### Accesibilidad
 

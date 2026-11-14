@@ -1,12 +1,11 @@
 """Aplicación: ventana, bucle principal y pila de pantallas."""
 import os
 import sys
-import traceback
 
 import pygame
 
 from . import NOMBRE, VERSION, rutas
-from . import menus_juego, mundo, packs, sintesis
+from . import menus_juego, mundo, packs, registro, sintesis
 from .audio import Mezclador
 from .config import Config
 from .mando import Mando
@@ -48,15 +47,29 @@ class App:
             self.fuente_g = pygame.font.SysFont("segoeui,arial", 38, bold=True)
             self._dibujar("Cargando sonidos...")
             self.voz.decir(f"{NOMBRE}. Cargando, espera un momento.", True)
+        registro.info("arranque", "Voz y mezclador listos", error_de_sonido=self.mez.error or "ninguno")
         self.info_sonidos = packs.cargar(self.mez, self.cfg)
+        registro.info("arranque", "Sonidos cargados", cuantos=len(self.mez.sonidos), pack=self.cfg["pack_sonidos"] or "por defecto")
         self.radio = Radio(self.mez, rutas.carpeta_data("radio"))
         self.ambiente = MusicaAmbiente(self.mez, rutas.carpeta_data("musica"))
         self.datos = mundo.cargar_datos()
         self.mapas = mundo.crear_mapas(self.datos)
         self.mundo = self.mapas.get("puerto_bravo") or next(iter(self.mapas.values()))
         self.aplicar_adultos()
+        registro.info("arranque", "Datos y mapas cargados", mapas=len(self.mapas), misiones=len(self.datos.get("misiones", [])),
+                      errores_de_mods=len(self.datos["errores_mods"]))
+        for e in self.datos["errores_mods"]:
+            registro.aviso("mods", "Error en un mod: " + str(e))
         self.reloj = pygame.time.Clock()
         self.mando = Mando(self)
+        self.t_estado = 0.0
+        self.lentos = 0
+        if registro.activo():
+            try:
+                registro.escribir_sistema(registro.datos_del_juego(self))
+            except Exception:
+                registro.excepcion("registro", "No se pudo escribir sistema.txt")
+            registro.vigilar_estado(self.estado_registro)
         if self.mez.error and not pruebas:
             self.voz.decir("Aviso: no se ha podido abrir la tarjeta de sonido. El juego funcionará sin audio.")
         for e in self.datos["errores_mods"]:
@@ -106,7 +119,19 @@ class App:
         self.mando.vibrar(grave, agudo, ms)
 
     # ------------------------------------------------------------------- pila
+    def estado_registro(self):
+        """Foto del estado para el registro: sin nada personal."""
+        cima = self.pila[-1] if self.pila else None
+        d = {"pantalla": type(cima).__name__ if cima is not None else "ninguna", "pila": len(self.pila), "canales_de_sonido": len(self.mez.canales)}
+        p = self.partida
+        if p is not None:
+            d.update(p.estado_registro())
+        else:
+            d["partida"] = "no"
+        return d
+
     def abrir(self, pantalla):
+        registro.pantalla("abre", pantalla)
         self.pila.append(pantalla)
         self.teclas.clear()
         pantalla.al_entrar()
@@ -119,6 +144,7 @@ class App:
         if pantalla not in self.pila:
             return
         era_cima = self.pila[-1] is pantalla
+        registro.pantalla("cierra", pantalla)
         self.pila.remove(pantalla)
         self.teclas.clear()
         cima = self.pila[-1] if self.pila else None
@@ -135,6 +161,7 @@ class App:
         if self.partida:
             self.partida.silenciar()
         self.pila.clear()
+        registro.info("partida", "Empieza una partida", cargada=bool(guardado), personaje=(personaje or {}).get("id", "") if isinstance(personaje, dict) else str(personaje or ""))
         self.partida = Partida(self, guardado, personaje)
         self.mez.mundo_pausado = False
         self.pila.append(self.partida)
@@ -145,6 +172,7 @@ class App:
         self.partida.al_entrar()
 
     def volver_al_menu(self):
+        registro.info("partida", "Vuelta al menú principal")
         if self.partida:
             self.partida.silenciar()
         self.partida = None
@@ -158,10 +186,34 @@ class App:
     # ------------------------------------------------------------------ bucle
     def evento_tecla(self, ev):
         self.teclas.add(ev.key)
+        if registro.activo():
+            from .menus import EntradaTexto
+            if ev.key == pygame.K_F12 and not (self.pila and isinstance(self.pila[-1], EntradaTexto)):
+                registro.marca()
+                self.son("guardado")
+                self.decir("Marca añadida al registro de la sesión.", True)
+                return
+            en_texto = bool(self.pila) and isinstance(self.pila[-1], EntradaTexto)
+            try:
+                nombre = pygame.key.name(ev.key) or str(ev.key)
+            except Exception:
+                nombre = str(ev.key)
+            mod = getattr(ev, "mod", 0) or 0
+            prefijo = ("ctrl+" if mod & pygame.KMOD_CTRL else "") + ("mayús+" if mod & pygame.KMOD_SHIFT else "") + ("alt+" if mod & pygame.KMOD_ALT else "")
+            registro.tecla(prefijo + nombre.replace(" ", "_"), en_texto)
         if self.pila:
             self.pila[-1].tecla(ev)
 
     def paso(self, dt):
+        if registro.activo():
+            if dt > 0.25:
+                self.lentos += 1
+                if self.lentos <= 40:
+                    registro.aviso("rendimiento", f"Fotograma lento: {dt * 1000:.0f} ms")
+            self.t_estado += dt
+            if self.t_estado >= registro.CADA_ESTADO:
+                self.t_estado = 0.0
+                registro.estado()
         if self.pila:
             cima = self.pila[-1]
             self.mez.mundo_pausado = getattr(cima, "pausa_mundo", True)
@@ -229,21 +281,22 @@ class App:
             self.cerrar_todo()
 
     def _registrar_error(self):
-        texto = traceback.format_exc()
-        try:
-            with open(rutas.data("error.log"), "a", encoding="utf-8") as f:
-                f.write(texto + "\n")
-        except OSError:
-            pass
+        registro.excepcion("juego", "El juego se ha cerrado por un error inesperado")
         if self.partida and not self.partida.mision:
             try:
                 menus_juego.escribir_ranura(self.partida, "auto")
             except Exception:
                 pass
-        self.voz.decir("Ha ocurrido un error inesperado y el juego debe cerrarse. Tu partida se ha guardado automáticamente. Los detalles están en el archivo error punto log de la carpeta data.", True)
-        pygame.time.wait(6000)
+        sesion = os.path.basename(registro.carpeta_sesion() or "")
+        self.voz.decir("Ha ocurrido un error inesperado y el juego debe cerrarse. Tu partida se ha guardado automáticamente. "
+                       "Para ayudar a arreglarlo, comprime la carpeta de esta sesión, que está dentro de data, logs" + (f", y se llama {sesion}" if sesion else "") +
+                       ", y envíala. No contiene datos personales.", True)
+        if not self.pruebas:
+            pygame.time.wait(9000)
 
     def cerrar_todo(self):
+        registro.estado()
+        registro.vigilar_estado(None)
         self.cfg.guardar()
         for cargador in (self.radio, self.ambiente):       # si aún están cargando música, se paran antes de cerrar
             try:
@@ -252,3 +305,5 @@ class App:
                 pass
         self.mez.cerrar()
         pygame.quit()
+        if not self.pruebas:
+            registro.cerrar()

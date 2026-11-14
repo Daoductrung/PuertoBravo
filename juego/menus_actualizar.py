@@ -5,7 +5,7 @@ import threading
 
 import pygame
 
-from . import VERSION, actualizador as A
+from . import VERSION, actualizador as A, registro
 from .menus import EntradaTexto, Menu, Opcion
 
 TEXTO_FUENTE = {"servidor": "el servidor del juego", "github": "GitHub", "ambas": "las dos, el servidor del juego y GitHub", "personalizada": "una dirección personalizada"}
@@ -87,6 +87,8 @@ def buscar(app, al_no_haber=None):
         return A.comprobar(cfg["act_fuente"], cfg["act_url"], abrir=_abrir(app), claves=getattr(app, "act_claves", None))
 
     def fin(info, error):
+        registro.info("actualizar", "Búsqueda de versión nueva", fuente=cfg["act_fuente"], encontrada=getattr(info, "version", "ninguna"),
+                      error=f"{type(error).__name__}: {error}" if error is not None else "ninguno")
         if error is not None:
             app.son("error")
             app.decir(str(error) if isinstance(error, A.ErrorActualizacion) else "No se pudo comprobar si hay una versión nueva.", True)
@@ -140,6 +142,8 @@ def descargar(app, info):
         return A.escribir_instalador(nueva, version=info.version)
 
     def fin(bat, error):
+        registro.info("actualizar", "Descarga de la versión nueva", version=info.version, megas=info.tamano // 2 ** 20,
+                      error=f"{type(error).__name__}: {error}" if error is not None else "ninguno")
         if error is not None:
             if not isinstance(error, A.Cancelado):
                 app.son("error")
@@ -206,9 +210,11 @@ def al_arrancar(app):
     """Tras actualizar, lo dice y limpia. Si está activado, busca una versión nueva sin molestar."""
     if A.ARG_TRAS_ACTUALIZAR in sys.argv:
         A.limpiar()
+        registro.info("actualizar", "Primera sesión tras actualizar", version=VERSION)
         app.decir(f"Juego actualizado a la versión {VERSION}. Las novedades están en el manual.")
     elif "--actualizacion-fallida" in sys.argv:
         A.limpiar()
+        registro.aviso("actualizar", "La actualización anterior falló y se restauró la versión que había")
         app.decir("La actualización no se pudo instalar y se ha dejado la versión que tenías.")
     app.act_aviso = None
     if app.pruebas or not app.cfg["act_auto"]:
@@ -217,7 +223,9 @@ def al_arrancar(app):
     def mirar():
         try:
             app.act_aviso = A.comprobar(app.cfg["act_fuente"], app.cfg["act_url"])
-        except Exception:
+            registro.info("actualizar", "Comprobación al arrancar", fuente=app.cfg["act_fuente"], encontrada=getattr(app.act_aviso, "version", "ninguna"))
+        except Exception as e:
+            registro.info("actualizar", "Comprobación al arrancar sin resultado", fuente=app.cfg["act_fuente"], motivo=f"{type(e).__name__}: {e}")
             app.act_aviso = None             # sin conexión o sin fuente: al arrancar no se molesta con errores
     threading.Thread(target=mirar, daemon=True).start()
 

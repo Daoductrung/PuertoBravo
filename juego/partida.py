@@ -131,6 +131,25 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
     def lug(self, ident):
         return self.lugares.get(ident)
 
+    def estado_registro(self):
+        """Lo que se anota de la partida en el registro de la sesión. Nada personal."""
+        j = self.j
+        x, y = self.pos()
+        v = j.veh
+        m = self.mision
+        d = {"partida": "sí", "mapa": self.mundo.id, "x": round(x, 1), "y": round(y, 1), "dia": self.dia, "hora": f"{int(self.reloj // 60) % 24:02d}:{int(self.reloj % 60):02d}",
+             "llueve": bool(self.lluvia), "dia_tipo": getattr(self, "dia_azar", {}).get("id", "?"),
+             "vehiculo": v.modelo["id"] if v else "a pie", "velocidad": round(abs(v.vel), 1) if v else 0, "salud": round(j.salud), "salud_max": round(j.salud_max),
+             "dinero": j.dinero, "busqueda": j.estrellas, "arma": j.arma,
+             "mision": f"{m['def']['id']} paso {m.get('paso')}" if m else "ninguna", "completadas": len(self.completadas),
+             "trabajo": (self.trabajo.get("tipo", "sí") if isinstance(self.trabajo, dict) else "sí") if self.trabajo else "no",
+             "interior": getattr(self.interior, "id", "sí") if self.interior else "no",
+             "vehiculos": len(self.vehiculos), "personas": len(self.personas), "objetos": len(self.objetos),
+             "gps": "sí" if self.gps else "no", "adultos": bool(self.cfg["adultos"]), "vida_realista": bool(self.cfg["vida_realista"]),
+             "red": ("anfitrión" if self.es_anfitrion() else "invitado") + f" con {len(self.remotos)}" if self.online_activo() else "no",
+             "actividad": (self.coop or {}).get("tipo", "no") if self.coop else "no"}
+        return d
+
     def reconstruir_lugares(self):
         self.lugares = {l.id: l for m in self.mapas.values() for l in m.lugares.values()}
         for c in self.canales_lugar.values():

@@ -8,8 +8,16 @@ os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
 
 
 def main():
-    from juego.app import App
-    App().bucle()
+    from juego import registro
+    registro.iniciar("juego")
+    try:
+        from juego.app import App
+        app = App()
+    except Exception:
+        registro.excepcion("arranque", "El juego no ha podido arrancar")
+        registro.cerrar()
+        raise
+    app.bucle()
 
 
 if __name__ == "__main__":

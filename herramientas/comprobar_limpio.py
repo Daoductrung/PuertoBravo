@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MODS_DE_SERIE = ("costa_dorada.pbm", "oficios_y_recados.pbm", "valdeolmos.pbm", "motor_y_asfalto.pbm",
                  "penas_altas.pbm", "isla_de_los_vientos.pbm", "noches_de_neon.pbm")
 # La documentación que se reparte es para quien juega: nada de programación.
-SOLO_DESARROLLO = (("data", "docs", "crear_mods.html"), ("data", "actualizacion"), ("herramientas",), ("pruebas",))
+SOLO_DESARROLLO = (("data", "docs", "crear_mods.html"), ("data", "actualizacion"), ("data", "logs"), ("data", "error.log"), ("herramientas",), ("pruebas",))
 
 
 def comprobar(raiz):

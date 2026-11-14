@@ -3,6 +3,7 @@ import math
 
 from . import mundo as M
 from . import red
+from . import registro
 
 
 class Remoto:
@@ -74,6 +75,9 @@ class Online:
             return False, r
         self.servidor, self.red = srv, cli
         self.remotos = {}
+        if self.cfg["red_nombre"]:
+            registro.ocultar(self.cfg["red_nombre"])
+        registro.info("red", "Abre su partida a los amigos", con_clave=bool(clave), puerto=srv.puerto)
         self.son("amigo_entra", cat="interfaz")
         return True, ("Partida abierta a tus amigos, " + ("protegida con contraseña" if clave else "sin contraseña") + f", en el puerto {srv.puerto}.")
 
@@ -83,14 +87,18 @@ class Online:
         d = red.analizar_direccion(texto)
         if d is None:
             return False, "No entiendo esa dirección. Tiene que ser como puertobravo, dos puntos, barra, barra, el número de tu amigo, dos puntos y el puerto."
+        if self.cfg["red_nombre"]:
+            registro.ocultar(self.cfg["red_nombre"])
         cli = red.Cliente()
         ok, r = cli.conectar(d[0], d[1], self.nombre_online(), clave)
+        registro.info("red", "Intenta unirse a una partida", conseguido=ok, con_clave=bool(clave), motivo="" if ok else r)
         if not ok:
             return False, r
         self.red = cli
         self._red_union = (d[0], d[1], clave)        # para volver a entrar solo si se corta
         self.remotos = {}
         for j in r.get("jugadores", []):
+            registro.ocultar(j["nombre"])
             self.remotos[j["id"]] = Remoto(j["id"], j["nombre"])
         self.cfg["red_ultima"] = red.direccion(d[0], d[1])
         self.son("amigo_entra", cat="interfaz")
@@ -110,6 +118,8 @@ class Online:
         if getattr(self, "servidor", None) is not None:
             self.servidor.detener()
             self.servidor = None
+        if era:
+            registro.info("red", "Se desconecta de la partida en red", motivo=motivo or "a petición propia")
         if era and motivo:
             self.son("amigo_sale", cat="interfaz")
             self.decir(motivo)
@@ -217,7 +227,9 @@ class Online:
                 r.mapa = e.get("m")
                 r.veh = e.get("v") if e.get("v") in self.modelos else ("utilitario" if e.get("v") else None)
         elif t == "entra":
+            registro.ocultar(m.get("nombre"))
             self.remotos[m["id"]] = Remoto(m["id"], str(m.get("nombre", "Invitado")))
+            registro.info("red", "Entra un jugador", ahora=len(self.remotos) + 1)
             self.son("amigo_entra", cat="interfaz")
             self.decir(f"{m.get('nombre', 'Alguien')} se ha unido a la partida.")
         elif t == "sale":
@@ -231,7 +243,9 @@ class Online:
             self.chat.append(linea)
             del self.chat[:-30]
             self.son("chat", cat="interfaz")
-            self.decir(f"{m.get('nombre', 'Alguien')} dice: {m.get('texto', '')}")
+            with registro.privado():           # los mensajes del chat no se registran
+                self.decir(f"{m.get('nombre', 'Alguien')} dice: {m.get('texto', '')}")
+            registro.info("red", "Llega un mensaje de chat", letras=len(str(m.get("texto", ""))))
         elif t == "act":
             self._coop_mensaje(m.get("de"), str(m.get("nombre", "Alguien")), m.get("d") or {})
         elif t == "evento":
@@ -255,6 +269,7 @@ class Online:
             self._red_union = None
             self.desconectar_online("El anfitrión ha cerrado la partida.")
         elif t == "desconectado":
+            registro.aviso("red", "Se ha cortado la conexión", anfitrion=self.es_anfitrion())
             union = getattr(self, "_red_union", None)
             if union and not self.es_anfitrion() and not getattr(self, "_red_reintentando", False):
                 # un corte suelto (wifi, un filtro de red): se intenta volver a entrar una vez, sin molestar

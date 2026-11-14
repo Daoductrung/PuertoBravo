@@ -319,6 +319,8 @@ def opciones(app):
         seccion("Voz", [
             si_no("voz_sapi", "Usar la voz de Windows en lugar del lector de pantalla", al_cambiar=lambda: app.voz.cambiar(cfg["voz_sapi"])),
         ], "Con qué voz habla el juego."),
+        Opcion("Registro para informar de fallos", lambda: __import__("juego.menus_registro", fromlist=["x"]).opciones(app),
+               ayuda="El juego anota lo que pasa en cada sesión para poder encontrar los fallos. Aquí ves dónde está, qué contiene y cómo enviarlo."),
         Opcion("Actualizaciones", lambda: __import__("juego.menus_actualizar", fromlist=["x"]).opciones(app),
                ayuda="Buscar una versión nueva del juego e instalarla, y elegir de dónde se actualiza: el servidor del juego, GitHub, los dos o una dirección tuya."),
         seccion("Contenido para adultos", [

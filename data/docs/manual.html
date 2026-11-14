@@ -14,7 +14,7 @@ li { margin-bottom: .3em; }
 </head>
 <body>
 <h1>Puerto Bravo: Ley del Asfalto</h1>
-<p>Manual del juego, versión 1.4. Audiojuego de mundo abierto, totalmente en español y totalmente accesible: se juega solo con el oído, con el teclado o con un mando de Xbox o de PlayStation, y con tu lector de pantalla.</p>
+<p>Manual del juego, versión 1.5. Audiojuego de mundo abierto, totalmente en español y totalmente accesible: se juega solo con el oído, con el teclado o con un mando de Xbox o de PlayStation, y con tu lector de pantalla.</p>
 <p>Las demás guías están en la misma carpeta, <strong>data\docs</strong>: <a href="teclas.html">teclas y botones</a>, <a href="novedades.html">novedades de cada versión</a>, <a href="cambiar_sonidos.html">cambiar los sonidos y la música</a> y <a href="editor_mods.html">manual del editor de mods</a>.</p>
 <p>Este manual está organizado por encabezados. Con NVDA o JAWS puedes saltar de sección en sección con la tecla <kbd>H</kbd>.</p>
 
@@ -123,6 +123,7 @@ li { margin-bottom: .3em; }
 <li><kbd>F4</kbd>: activa o desactiva la baliza sonora del GPS.</li>
 <li><kbd>F5</kbd>: guardado rápido, fuera de las misiones.</li>
 <li><kbd>F7 y F8</kbd>: bajan y suben el volumen de la música.</li>
+<li><kbd>F12</kbd>: pone una marca en el registro de la sesión. Púlsala cuando notes algo raro: así, quien revise el registro sabrá en qué momento fue.</li>
 <li><kbd>Escape</kbd>: menú de pausa.</li>
 </ul>
 <h3>A pie</h3>
@@ -285,6 +286,7 @@ li { margin-bottom: .3em; }
 <li>Mando: qué hace cada botón, reasignarlos y la vibración.</li>
 <li>Voz: lector de pantalla o voz de Windows.</li>
 <li>Personas e inteligencia artificial: cómo contestan las personas de la calle.</li>
+<li>Registro para informar de fallos: dónde está el registro de la sesión, qué contiene y cómo enviarlo.</li>
 <li>Actualizaciones: buscar una versión nueva y elegir de dónde se actualiza.</li>
 <li>Contenido para adultos: activarlo o desactivarlo, y decir quién te atrae.</li>
 </ul>
@@ -452,7 +454,37 @@ li { margin-bottom: .3em; }
 <li>Si no consigue conectar y usas AdGuard, un antivirus con protección de red o un cortafuegos, añade Puerto Bravo a sus excepciones.</li>
 </ul>
 
-<h2>24. Tus archivos</h2>
+<h2>24. Si algo falla: el registro de la sesión</h2>
+<p>Cada vez que abres el juego, anota en una carpeta lo que va pasando. Sirve para que, si algo falla, quien hace el juego pueda ver qué ocurrió sin estar delante. No hay que activar nada.</p>
+<ul>
+<li>Los registros están en la carpeta <strong>data\logs</strong>. Cada sesión tiene su propia carpeta, con la fecha y la hora en el nombre, por ejemplo <strong>2026-11-14_18-30-05_juego</strong>. El editor de mods guarda las suyas ahí también, terminadas en <strong>editor</strong>.</li>
+<li>Se conservan las cinco últimas sesiones. Al empezar una nueva, la más antigua se borra sola, así que nunca ocupan mucho.</li>
+<li>Dentro de cada carpeta hay un archivo <strong>LEEME.txt</strong> que explica lo que contiene. Son archivos de texto: puedes leerlos antes de enviarlos.</li>
+</ul>
+<h3>Qué se anota</h3>
+<ul>
+<li>La versión del juego y de Windows, el lector de pantalla, el sonido, los mods, los packs y tus opciones de juego.</li>
+<li>Las pantallas y menús que abres, las teclas que pulsas jugando y lo que el juego dice.</li>
+<li>El estado de la partida cada pocos segundos: localidad, posición, vehículo, salud, misión en curso.</li>
+<li>Lo que pasa con la red y con las actualizaciones, los avisos y, sobre todo, los errores con todo su detalle.</li>
+</ul>
+<h3>Qué no se anota nunca</h3>
+<ul>
+<li>Nada de lo que escribes en los cuadros de texto: mensajes, contraseñas, direcciones ni claves.</li>
+<li>Los mensajes del chat, tu nombre en la red y el de tus amigos.</li>
+<li>Direcciones de internet, tu nombre de usuario de Windows, el nombre de tu equipo y las rutas de tus carpetas.</li>
+<li>Los nombres de tu música y el contenido de tus partidas.</li>
+</ul>
+<h3>Cómo enviar un fallo</h3>
+<ol>
+<li>Si notas algo raro mientras juegas, pulsa <kbd>F12</kbd>: deja una marca en el registro, y así se sabe en qué momento fue. Puedes pulsarla las veces que quieras.</li>
+<li>Cierra el juego. Si el juego se cerró solo por un error, él mismo te dice el nombre de la carpeta de la sesión.</li>
+<li>Entra en <strong>data\logs</strong> y busca la carpeta de la sesión en la que falló. La última es la más reciente. En Opciones, Registro para informar de fallos, hay una opción que te abre la carpeta directamente.</li>
+<li>Comprímela en un ZIP: en el Explorador de Windows, sobre la carpeta, menú contextual, Enviar a, Carpeta comprimida.</li>
+<li>Envíala contando qué estabas haciendo. Lo mejor es abrir una incidencia en la página del proyecto, <a href="https://github.com/hxebolax/PuertoBravo/issues">github.com/hxebolax/PuertoBravo/issues</a>, y adjuntar ahí el ZIP. También puedes enviarlo por Mastodon a <a href="https://comunidad.nvda.es/@HXeBoLaX">@HXeBoLaX en comunidad.nvda.es</a>.</li>
+</ol>
+
+<h2>25. Tus archivos</h2>
 <p>El juego no instala nada: es una carpeta que se puede copiar tal cual a otro equipo o a una memoria. Todo lo que usa está en la carpeta <strong>data</strong>, junto al ejecutable.</p>
 <ul>
 <li><strong>data\partidas</strong>: tus partidas guardadas. Para llevártelas a otro equipo, copia esta carpeta.</li>
@@ -461,16 +493,17 @@ li { margin-bottom: .3em; }
 <li><strong>data\mods</strong>: los mods, los que vienen con el juego y los tuyos.</li>
 <li><strong>data\sonidos</strong>, <strong>data\radio</strong> y <strong>data\musica</strong>: los sonidos y la música, que puedes cambiar como explica la guía <a href="cambiar_sonidos.html">cambiar_sonidos.html</a>.</li>
 <li><strong>data\docs</strong>: este manual y las guías.</li>
+<li><strong>data\logs</strong>: los registros de las cinco últimas sesiones, para informar de fallos.</li>
 </ul>
 <p>Los datos del juego, los mods, las partidas y las opciones van protegidos: no se pueden abrir con un editor de texto para cambiarlos, y un archivo manipulado o estropeado se rechaza en lugar de cargarse a medias. Para crear o cambiar contenido se usa el editor de mods.</p>
 <p>Si pasas el juego a otra persona, no le pases tus carpetas <strong>data\partidas</strong> y <strong>data\config</strong>.</p>
 
-<h2>25. Problemas frecuentes</h2>
+<h2>26. Problemas frecuentes</h2>
 <ul>
 <li>No se oye nada: comprueba que los auriculares son el dispositivo de salida predeterminado de Windows antes de abrir el juego.</li>
 <li>El lector no habla: abre NVDA o JAWS antes que el juego, o activa en Opciones la voz de Windows.</li>
 <li>Izquierda y derecha suenan al revés: tienes los auriculares cambiados de lado.</li>
-<li>El juego se cierra: se guarda automáticamente y deja los detalles en el archivo <strong>data\error.log</strong>.</li>
+<li>El juego se cierra o hace algo raro: tu partida se guarda automáticamente, y lo ocurrido queda en el registro de la sesión, en <strong>data\logs</strong>. El apartado 24 explica cómo enviarlo.</li>
 <li>Un amigo no consigue entrar en mi partida: comprueba que le has dado la dirección de internet y no la de casa, que el puerto está abierto en el router y que ni tu cortafuegos ni un filtro como AdGuard bloquean el juego.</li>
 <li>El juego dice al arrancar que un mod no está preparado: ábrelo con el editor de mods y guárdalo.</li>
 <li>No encuentra actualizaciones o no conecta: comprueba tu conexión y, en Opciones, Actualizaciones, prueba a actualizar desde la otra fuente.</li>

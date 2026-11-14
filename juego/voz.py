@@ -1,6 +1,8 @@
 """Salida de voz y braille mediante el lector de pantalla (NVDA, JAWS...) o SAPI."""
 from collections import deque
 
+from . import registro
+
 
 class Voz:
     def __init__(self, sapi=False, muda=False):
@@ -21,6 +23,7 @@ class Voz:
                 from accessible_output2.outputs.auto import Auto
                 self.salida = Auto()
         except Exception:
+            registro.excepcion("voz", "No se pudo abrir la salida de voz")
             self.salida = None
 
     def cambiar(self, sapi):
@@ -31,6 +34,7 @@ class Voz:
         if not texto:
             return
         texto = str(texto)
+        registro.voz(texto)
         if guardar:
             self.historial.append(texto)
             self.cursor = len(self.historial) - 1

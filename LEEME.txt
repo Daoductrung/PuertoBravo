@@ -1,5 +1,5 @@
 PUERTO BRAVO: LEY DEL ASFALTO
-Audiojuego de mundo abierto, en español y totalmente accesible. Versión 1.4.
+Audiojuego de mundo abierto, en español y totalmente accesible. Versión 1.5.
 Se juega con el oído, con teclado o con mando de Xbox o de PlayStation.
 
 PARA JUGAR
@@ -24,6 +24,14 @@ PARA JUGAR CON AMIGOS
 PARA ACTUALIZAR
   En el juego, Opciones, Actualizaciones. Puedes elegir de dónde se actualiza.
   Tus partidas, tus opciones, tu música y tus mods no se tocan.
+
+SI ALGO FALLA
+  El juego anota lo que pasa en cada sesión en la carpeta data\logs, una carpeta por sesión,
+  con la fecha y la hora en el nombre. Guarda las cinco últimas. No contiene datos personales.
+  Comprime en un ZIP la carpeta de la sesión en la que falló y envíala, contando qué hacías:
+    https://github.com/hxebolax/PuertoBravo/issues
+    o por Mastodon: https://comunidad.nvda.es/@HXeBoLaX
+  Jugando, F12 pone una marca en el registro en el momento en que notes algo raro.
 
 PARA CREAR MODS
   Ejecuta EditorMods.exe. Es un editor accesible con lector de pantalla.
