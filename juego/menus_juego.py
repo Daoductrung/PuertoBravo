@@ -366,6 +366,12 @@ def opciones(app):
             vol("vol_ambiente_musical", "Volumen de la música de ambiente", "Respecto a la radio. Cámbialo con las flechas izquierda y derecha."),
             Opcion(lambda: f"Pack de sonidos: {nombre_pack()}", ajuste=cambiar_pack,
                    ayuda="Elige con las flechas izquierda y derecha entre los sonidos por defecto y los packs, que son las subcarpetas de data, sonidos. Se aplica al momento. Los sonidos que el pack no trae siguen sonando con el original."),
+            Opcion(lambda: f"Motor de sonido: {'envolvente, binaural' if cfg['motor_sonido'] == 'envolvente' else 'clásico'}" +
+                   (". Se aplicará al volver a abrir el juego" if (cfg["motor_sonido"] == "envolvente") != bool(getattr(app.mez, "envolvente", False)) else ""),
+                   ajuste=lambda d: cfg.__setitem__("motor_sonido", "clasico" if cfg["motor_sonido"] == "envolvente" else "envolvente"),
+                   ayuda="El motor envolvente usa sonido binaural: con auriculares se distingue si algo suena delante o detrás, y no solo a izquierda o derecha. "
+                         "Además mezcla el sonido fuera del programa, así que no da tirones cuando hay muchos sonidos a la vez. El clásico es el de siempre. "
+                         "El cambio se aplica al cerrar y volver a abrir el juego. En ordenadores con procesador antiguo, y con el sonido mono activado, se usa siempre el clásico."),
             si_no("sonido_mono", "Sonido mono, lo mismo por los dos oídos",
                   "Para quien oye por un solo oído o usa un solo auricular. Se pierde la sensación de izquierda y derecha: oriéntate con el radar, el escáner y el GPS hablado.",
                   al_cambiar=app.aplicar_volumenes),

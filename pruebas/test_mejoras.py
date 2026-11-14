@@ -446,3 +446,46 @@ def test_pack_envolvente(app):
     finally:
         app.cfg["pack_sonidos"] = anterior
         app.recargar_sonidos()
+
+
+def test_motor_de_sonido_con_respaldo(monkeypatch):
+    """El motor envolvente solo se usa si se ha elegido y se puede; en cualquier otro caso, el clásico, sin fallar."""
+    from juego import audio_al, procesador
+    creados = []
+
+    class Clasico:
+        def __init__(self, dispositivo=True):
+            creados.append(("clasico", dispositivo))
+
+    class Envolvente:
+        def __init__(self):
+            creados.append(("envolvente",))
+    monkeypatch.setattr(audio_al, "Mezclador", Clasico)
+    monkeypatch.setattr(audio_al, "MezcladorAL", Envolvente)
+    monkeypatch.setattr(procesador, "moderno", lambda ins=None: True)
+    monkeypatch.setattr(audio_al, "disponible", lambda: True)
+    monkeypatch.delenv("PUERTOBRAVO_MOTOR", raising=False)
+    cfg = {"motor_sonido": "clasico", "sonido_mono": False}
+    audio_al.crear(cfg, pruebas=True)
+    audio_al.crear(cfg)
+    cfg["motor_sonido"] = "envolvente"
+    audio_al.crear(cfg)
+    assert creados == [("clasico", False), ("clasico", True), ("envolvente",)]
+    creados.clear()
+    cfg["sonido_mono"] = True                                  # con sonido mono, el clásico
+    audio_al.crear(cfg)
+    cfg["sonido_mono"] = False
+    monkeypatch.setattr(procesador, "moderno", lambda ins=None: False)      # procesador antiguo: el clásico
+    audio_al.crear(cfg)
+    monkeypatch.setattr(procesador, "moderno", lambda ins=None: True)
+    monkeypatch.setattr(audio_al, "disponible", lambda: False)              # falta la biblioteca: el clásico
+    audio_al.crear(cfg)
+    monkeypatch.setattr(audio_al, "disponible", lambda: True)
+
+    class Roto:
+        def __init__(self):
+            raise OSError("no arranca")
+    monkeypatch.setattr(audio_al, "MezcladorAL", Roto)                      # no arranca: el clásico
+    audio_al.crear(cfg)
+    assert creados == [("clasico", True)] * 4
+    assert os.path.exists(audio_al.ruta_dll()) and audio_al.MezcladorAL is Roto

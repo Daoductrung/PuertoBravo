@@ -45,6 +45,7 @@ POR_DEFECTO = {
     "ia_url_otro": "",             # dirección de un servicio compatible con OpenAI; vacío = OpenRouter
     "ia_modelo_otro": "",          # modelo de ese servicio; vacío = lo elige el juego
     "teclas": {},                  # teclas cambiadas: función original -> tecla física
+    "motor_sonido": "clasico",     # clasico | envolvente (binaural con OpenAL Soft; se aplica al abrir el juego)
     "sonido_mono": False,          # los dos oídos oyen lo mismo
     "atenuar_al_hablar": True,     # bajar ambiente y música mientras habla la voz
     "describir_zonas": True,       # la primera vez que entras en un barrio, lo describe
@@ -72,6 +73,7 @@ OPCIONES = {
     "atraccion": ["todos", "mujeres", "hombres"],
     "mi_genero": ["x", "h", "m"],
     "act_fuente": ["servidor", "github", "ambas", "personalizada"],
+    "motor_sonido": ["clasico", "envolvente"],
     "ia_servicio": ["auto", "local", "gemini", "otro", "openai", "anthropic"],
 }
 

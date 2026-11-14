@@ -51,6 +51,8 @@ def test_mono(robot):
               pygame.K_F2, pygame.K_F5, pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_y, pygame.K_e, pygame.K_o,
               pygame.K_n, pygame.K_HOME, pygame.K_END, pygame.K_PAGEUP, pygame.K_COMMA, pygame.K_LCTRL, pygame.K_v]
     robot.app.partida.j.dinero = 5000
+    salidas = []
+    robot.app.salir = lambda: salidas.append(1)        # elegir Salir en un menú es válido, pero aquí la prueba tiene que seguir
     for n in range(6000):
         if not robot.app.pila or not robot.app.activo:
             break

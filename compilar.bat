@@ -76,6 +76,12 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo Copiando la biblioteca del motor de sonido envolvente...
+if exist "terceros\openal_soft\soft_oal.dll" (
+    copy /y "terceros\openal_soft\soft_oal.dll" "%D%\lib\soft_oal.dll" >nul
+    copy /y "terceros\openal_soft\LICENCIA_OpenAL_Soft.txt" "%D%\LICENCIA_OpenAL_Soft.txt" >nul
+)
+
 echo Poniendo la biblioteca para procesadores antiguos...
 ".venv\Scripts\python.exe" herramientas\poner_numpy_antiguo.py "%D%"
 if errorlevel 1 (

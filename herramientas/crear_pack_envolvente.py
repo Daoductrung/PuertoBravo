@@ -112,7 +112,7 @@ def crear():
     meta = {"nombre": "Envolvente",
             "descripcion": "Los sonidos del pack realista, con ambientes de barrio grabados en estéreo. Los sonidos de orientación son los de serie.",
             "licencia": "CC0, dominio público", "sonidos": copiados, "ambientes_en_estereo": estereo,
-            "autor": "Montado para Puerto Bravo con sonidos libres. El detalle está en CREDITOS.txt", "igualar": False}
+            "autor": "Montado para Puerto Bravo con sonidos libres. El detalle está en CREDITOS.txt", "igualar": True}
     json.dump(meta, open(os.path.join(DESTINO, "pack.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     return copiados, nuevos
 

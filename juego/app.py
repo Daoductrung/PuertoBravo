@@ -29,7 +29,8 @@ class App:
             self.cfg.v = dict(POR_DEFECTO)
             self.cfg.guardar = lambda: None
         self.voz = Voz(self.cfg["voz_sapi"], muda=pruebas)
-        self.mez = Mezclador(dispositivo=not pruebas)
+        from . import audio_al
+        self.mez = audio_al.crear(self.cfg, pruebas)          # el motor envolvente si se ha elegido y se puede; si no, el clásico
         self.aplicar_volumenes()
         self.pila = []
         self.teclas = set()

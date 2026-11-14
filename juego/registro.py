@@ -524,8 +524,12 @@ def datos_del_juego(app):
         pass
     secciones.append(("Voz", {"salida": motor, "voz de Windows forzada": "sí" if app.cfg["voz_sapi"] else "no"}))
     mez = app.mez
-    sonido_ = {"abierto": "no" if mez.error or getattr(mez, "stream", None) is None else "sí", "error": mez.error or "ninguno",
+    envolvente = bool(getattr(mez, "envolvente", False))
+    sonido_ = {"motor": "envolvente, OpenAL Soft" + (", binaural" if getattr(mez, "binaural", False) else ", sin binaural") if envolvente else "clásico",
+               "abierto": "sí" if envolvente else "no" if mez.error or getattr(mez, "stream", None) is None else "sí", "error": mez.error or "ninguno",
                "sonidos cargados": len(mez.sonidos)}
+    if envolvente:
+        sonido_["frecuencia"] = getattr(mez, "frecuencia", 0)
     try:
         st = mez.stream
         sonido_["frecuencia"] = int(st.samplerate)

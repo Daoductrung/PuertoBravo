@@ -142,6 +142,12 @@ La numpy oficial (2.4 en adelante) exige un procesador con las instrucciones de 
 
 La rueda para procesadores antiguos está en `terceros/numpy_antiguo`, lista para usar: `compilar.bat` la coloca en la compilación con `herramientas/poner_numpy_antiguo.py`. Solo hay que rehacerla si cambia la versión de numpy o la de Python, con `herramientas\compilar_numpy_antiguo.bat`, que necesita Visual Studio con las herramientas de C++. numpy tiene licencia BSD de tres cláusulas.
 
+### Los dos motores de sonido
+
+`juego/audio.py` es el mezclador clásico: mezcla en Python con numpy, con paneo estéreo, retardo entre oídos y atenuación por distancia. `juego/audio_al.py` hereda de él toda la lógica y cambia solo la salida: mantiene una fuente de OpenAL Soft por cada sonido y deja que la biblioteca haga la mezcla en binaural (HRTF). Se llama por `ctypes`, sin paquetes de Python, así que no depende de la versión de Python. `audio_al.crear()` decide cuál se usa: el envolvente solo si el jugador lo ha elegido, la biblioteca está y el procesador es moderno; en cualquier otro caso, o si falla al arrancar, el clásico.
+
+La biblioteca, `soft_oal.dll` (OpenAL Soft 1.25.2, LGPL), está en `terceros/openal_soft` con su licencia, y `compilar.bat` la copia a `lib`. `herramientas/probar_motor_envolvente.py` hace una prueba real con el dispositivo de sonido.
+
 ### Registro de sesión
 
 `juego/registro.py` crea en `data/logs` una carpeta por sesión, con un máximo de cinco. Dentro quedan `sistema.txt` (versión, Windows, lector, sonido, mods, opciones), `sesion.log` (pantallas, teclas, todo lo que dice el juego, una foto del estado de la partida cada quince segundos, red, actualizaciones, fotogramas lentos y avisos), `errores.log` (cada error con su traza, el estado de la partida y las últimas teclas y sonidos) y `fallo_grave.log` si el proceso cae de golpe. Captura también las excepciones sin tratar del hilo principal y de los demás hilos.
