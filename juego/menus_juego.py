@@ -513,6 +513,9 @@ def opciones(app):
                    ayuda="Añade relaciones sentimentales y sexuales, ligar con cualquiera, aventuras, compañía de pago, drogas y trapicheo, contado de forma sensual pero sin escenas explícitas. Todo tiene consecuencias en el ánimo, la salud, la reputación y las relaciones. Desactivado, nada de eso aparece en el juego."),
             lista("atraccion", "Me atraen", "Con quién puedes coquetear."),
             lista("mi_genero", "Soy", "Sirve para saber a quién le puedes gustar. Si prefieres no decirlo, le puedes gustar a cualquiera."),
+            si_no("noche_por_pasos", "La noche con alguien, paso a paso",
+                  "Con sí, cuando pasas la noche con alguien decides tú qué haces en cada momento y la otra persona responde. Fijarte en lo que quiere, y parar si te lo pide, es lo que hace que salga bien. "
+                  "Se sigue contando de forma sensual, sin escenas explícitas. Con no, la noche se cuenta en un par de frases, como antes."),
         ], "Activa o desactiva los temas para mayores de 18 años."),
     ]
     principal_ = Menu(app, "Opciones", secciones + [Opcion("Volver", lambda: app.cerrar(principal_), ayuda="Cierra las opciones. También sirve Escape.")],
@@ -995,6 +998,8 @@ def _casa(p, l):
         for k, d in enumerate(garaje):
             lista.append(Opcion(f"Sacar del garaje: {d.get('nombre', d['modelo'])}", sacar(k)))
         lista.append(Opcion(f"Garaje: {len(garaje)} de {l.get('garaje', 0)} plazas ocupadas"))
+        from . import laboratorio
+        lista += laboratorio.opciones_casa(p, l, Menu, Opcion)
         if not j.veh:
             lista.append(Opcion("Recorrer la casa por dentro", recorrer,
                                 ayuda="Entras y vas de una habitación a otra con las flechas: salón, cocina, baño, dormitorio y garaje. En cada una, Intro hace lo suyo."))

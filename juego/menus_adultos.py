@@ -414,6 +414,8 @@ def proveedor(p, l):
             precio, nota = p.precio_sustancia(s["id"], l)
             marca = {"ganga": ", ganga", "escasez": ", escasez"}.get(nota, "")
             lista.append(Opcion(f"{s['nombre']}: {precio} euros{marca}. Llevas {j.sustancias.get(s['id'], 0)}", (lambda s=s: tratar(s)), ayuda=s["desc"]))
+        from . import laboratorio
+        lista.append(laboratorio.opcion_proveedor(p, Opcion))
         lista.append(Opcion(f"Mochila: {p.carga()} de 100 unidades. En la calle, {p.reputacion_txt()}",
                             ayuda="Los precios cambian cada día y en cada localidad: compra donde esté barato y vende donde esté caro, o al menudeo en la calle, que se paga mejor pero es más arriesgado."))
         lista.append(Opcion("Volver", lambda: app.cerrar()))

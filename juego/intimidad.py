@@ -133,11 +133,27 @@ class Intimidad:
             return " No habéis usado protección."
         return " No lleváis protección." if desconocido else ""
 
-    def encuentro(self, nombre, tipo, donde, desconocido=False, pid=None):
-        """Una noche con alguien. Se cuenta sin detalles explícitos y tiene efectos en el ánimo, la salud y la relación."""
+    def encuentro(self, nombre, tipo, donde, desconocido=False, pid=None, sintonia=None):
+        """Una noche con alguien. Se cuenta sin detalles explícitos y tiene efectos en el ánimo, la salud y la relación.
+
+        Con la opción «la noche, paso a paso», antes se juega: decides tú qué haces y la otra persona responde. Lo bien
+        que os entendáis (sintonía, de 0 a 1) cambia el ánimo que te deja y lo que os acerca.
+        """
         from .menus import Dialogo
         j = self.j
+        if self.cfg["noche_por_pasos"] and sintonia is None:
+            from .laboratorio import Noche
+            while len(self.app.pila) > 1 and self.app.pila[-1] is not self:
+                self.app.pila.pop()
+            self.app.teclas.clear()
+            self.son("puerta_entrar", cat="interfaz", vol=0.6)
+            Noche(self, nombre, donde, lambda s: self.encuentro(nombre, tipo, donde, desconocido, pid, sintonia=s)).empezar()
+            return
         titulo, frases, animo, horas = ENCUENTROS[tipo]
+        if sintonia is not None:
+            animo = int(animo * (0.6 + 0.6 * sintonia))
+            if pid:
+                self.sumar_afinidad(pid, int(round(6 * sintonia)))
         extra = ""
         mejora = MEJORA.get(tipo)
         if mejora and j.intimos.get(mejora, 0) > 0:

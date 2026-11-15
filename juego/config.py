@@ -46,6 +46,7 @@ POR_DEFECTO = {
     "mod_enemigos": False,         # modificador: los enemigos aguantan la mitad más
     "mod_policia": False,          # modificador: los delitos cuentan la mitad más
     "mod_dinero": False,           # modificador: las misiones pagan la mitad
+    "noche_por_pasos": True,       # contenido para adultos: la noche con alguien se juega paso a paso
     "multas": True,                # con poca búsqueda, al cogerte puedes pagar la multa o intentar un soborno
     "aviso_acierto": True,         # un toque y una vibración cuando das en el blanco
     "correr_alternar": False,      # correr con una pulsación de Mayúsculas en vez de mantenerla

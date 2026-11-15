@@ -45,6 +45,8 @@ class Jugador:
         self.territorios = []
         self.banda = 0               # cuánta gente tienes en tu banda
         self.banda_nombre = ""
+        self.laboratorios = []       # casas tuyas con laboratorio (contenido para adultos)
+        self.material = 0            # tandas de material de laboratorio que te quedan
         self.ciclo = 0               # cuántas veces has vuelto a empezar conservando lo ganado
         self.amenaza = None          # una banda rival ataca un territorio tuyo: {"territorio", "banda", "dia"}
         self.oferta_pacto = None     # una banda te ofrece un pacto: {"banda", "precio", "dia"}
