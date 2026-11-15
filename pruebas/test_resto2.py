@@ -114,3 +114,86 @@ def test_detalle_de_voz_y_voz_de_windows(robot):
     assert v.salida.puesto == {}                                                  # con lector de pantalla no toca nada
     for clave in ("voz_velocidad", "voz_tono", "voz_volumen", "vol_senales", "aviso_acierto", "correr_alternar", "detalle_voz"):
         assert clave in app.cfg.datos if hasattr(app.cfg, "datos") else app.cfg[clave] is not None
+
+
+def test_formato_de_las_partidas_guardadas(robot):
+    import pytest
+    from juego import partida as P
+    p = robot.nueva_partida()
+    d = p.a_dict()
+    assert d["version"] == P.FORMATO == 3 and "momento" in d and d["fallos"] == {} and d["decisiones"] == {}
+    vieja = {k: v for k, v in d.items() if k not in ("fallos", "decisiones", "saltadas", "momento")}
+    vieja["version"] = 2
+    vieja["jugador"] = {k: v for k, v in d["jugador"].items() if k not in ("rep_bandas", "foco")}
+    nueva = P.migrar(vieja)
+    assert nueva["version"] == 3 and nueva["fallos"] == {} and nueva["jugador"]["rep_bandas"] == {} and vieja["version"] == 2
+    sin_numero = dict(vieja)
+    sin_numero.pop("version")
+    assert P.migrar(sin_numero)["version"] == 3
+    assert set(P.CONVERSIONES) == set(range(2, P.FORMATO))                    # hay conversión para cada formato anterior
+    futura = dict(d, version=P.FORMATO + 1)
+    with pytest.raises(P.PartidaMasNueva):
+        P.migrar(futura)
+    # una partida más nueva no se carga ni rompe nada: se avisa y sigues donde estabas
+    antes = robot.app.partida
+    robot.app.empezar_partida(futura)
+    assert robot.app.partida is antes and "versión más nueva" in robot.app.voz.registro[-1] and robot.app.pila[-1] is antes
+    # una vieja sí se carga, convertida
+    robot.app.empezar_partida(vieja)
+    assert robot.app.partida is not antes and robot.app.partida.fallos == {} and robot.app.partida.j.rep_bandas == {}
+
+
+def test_saltar_repetir_diario_y_resumen(robot):
+    import time
+    from juego import menus_juego
+    p = robot.nueva_partida()
+    app = robot.app
+    p.cfg["sucesos"] = False
+    m = next(x for x in p.datos["misiones"] if x["id"] == "m01")
+    assert "Todavía no has hecho ninguna misión" in p.resumen_historia() and m["titulo"] in p.resumen_historia()
+    # fallar tres veces deja saltarse la misión
+    for n in range(3):
+        p.iniciar_mision(m)
+        robot.saltar_dialogos()
+        if p.mision is None:
+            break
+        p.fallar_mision("Prueba.")
+        menu = app.pila[-1]
+        textos = [o.texto for o in menu.opciones]
+        assert ("Saltarte esta misión" in textos) == (n == 2), (n, textos)
+        if n < 2:
+            app.cerrar(menu)
+    assert p.fallos["m01"] == 3
+    dinero = p.j.dinero
+    menu.i = textos.index("Saltarte esta misión")
+    robot.tecla(pygame.K_RETURN)
+    assert "m01" in p.completadas and "m01" in p.saltadas and p.j.dinero == dinero and "m01" not in p.fallos and p.mision is None
+    assert "Llevas 1 misión de la historia" in p.resumen_historia()
+    # el diario la muestra como saltada y deja repetirla, sin recompensa
+    robot.tecla(pygame.K_m)
+    movil = app.pila[-1]
+    movil.i = next(k for k, o in enumerate(movil.opciones) if o.texto.startswith("Diario"))
+    robot.tecla(pygame.K_RETURN)
+    diario = app.pila[-1]
+    assert diario.opciones[0].texto.startswith("Llevas 1 misión")
+    diario.i = next(k for k, o in enumerate(diario.opciones) if o.texto.startswith(m["titulo"]) and "saltada" in o.texto)
+    robot.tecla(pygame.K_RETURN)
+    robot.tecla(pygame.K_RETURN)                                              # sí, repetirla
+    robot.saltar_dialogos()
+    assert p.mision is not None and p.mision["repeticion"] and app.pila[-1] is p
+    n_hechas, dinero = len(p.completadas), p.j.dinero
+    p.mision["paso"] = len(m["pasos"]) - 1
+    p._siguiente_paso()
+    robot.saltar_dialogos()
+    assert p.mision is None and len(p.completadas) == n_hechas and p.j.dinero == dinero and "Has repetido" in robot.dicho()
+    # al volver tras varios días, el juego recuerda por dónde ibas
+    d = p.a_dict()
+    d["momento"] = time.time() - 5 * 86400
+    app.empezar_partida(d)
+    p = app.partida
+    assert p.resumen_pendiente and p.saltadas == ["m01"]
+    robot.frames(80)
+    assert not p.resumen_pendiente and "Hace días que no jugabas" in robot.dicho()
+    d["momento"] = time.time()
+    app.empezar_partida(d)
+    assert not app.partida.resumen_pendiente

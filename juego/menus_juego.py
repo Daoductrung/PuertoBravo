@@ -663,9 +663,56 @@ def movil(p):
         ops.append(Opcion(f"Blindaje: {int(j.blindaje)}"))
         app.abrir(Menu(app, "Inventario", ops))
 
+    def diario():
+        """Lo que ha pasado en la historia, de lo último a lo primero. Desde aquí se repite cualquier misión ya hecha."""
+        por_id = {m["id"]: m for m in p.datos["misiones"]}
+
+        def repetir(m):
+            def f():
+                if p.mision:
+                    app.son("error")
+                    app.decir("Termina o abandona antes la misión que tienes en curso.", True)
+                    return
+                l = p.lugares.get(m["lugar"])
+                if l is None:
+                    app.son("error")
+                    app.decir("Esa misión es de un mod que ahora no está cargado.", True)
+                    return
+
+                def si():
+                    while app.pila and app.pila[-1] is not p:
+                        app.cerrar(app.pila[-1])
+                    if l.mapa != p.mundo.id:
+                        if j.veh:
+                            v = j.veh
+                            p.salir_vehiculo(forzado=True)
+                            p.quitar_vehiculo(v)
+                        p.cambiar_mapa(l.mapa, l.x, l.y)
+                    p.teletransportar(l.x, l.y)
+                    p.iniciar_mision(m, repeticion=True)
+                app.abrir(Menu(app, f"¿Repetir {m['titulo']}? Te lleva al lugar donde empieza. No cuenta ni da recompensa",
+                               [Opcion("Sí, repetirla", si), Opcion("No", lambda: app.cerrar())]))
+            return f
+
+        def ops_d():
+            lista = [Opcion(p.resumen_historia)]
+            for clave, valor in p.decisiones.items():
+                if isinstance(valor, dict) and valor.get("texto"):
+                    lista.append(Opcion(f"Decisión: {valor['texto']}"))
+            for ident in reversed(p.completadas):
+                m = por_id.get(ident)
+                if m is None or (m.get("adultos") and not app.cfg["adultos"]):
+                    continue
+                nota = ", saltada" if ident in p.saltadas else ""
+                lista.append(Opcion(f"{m['titulo']}{nota}. {p.txt(m.get('resumen', ''))}", repetir(m), ayuda="Intro para volver a jugar esta misión. Repetirla no da recompensa ni cambia la historia."))
+            return lista
+        app.abrir(Menu(app, f"Diario. {len(p.completadas)} misiones hechas", ops_d, intro="Arriba, por dónde vas. Debajo, lo que has hecho, de lo último a lo primero. Intro repite una misión"))
+
     def ops():
         lista = [Opcion("Objetivo actual", lambda: app.decir(p.objetivo_txt(), True)),
-                 Opcion("Misiones disponibles", misiones)]
+                 Opcion("Misiones disponibles", misiones),
+                 Opcion("Diario: lo que ha pasado y repetir misiones", diario,
+                        ayuda="Un resumen de por dónde vas en la historia y la lista de las misiones que has hecho. Desde ahí puedes repetir cualquiera.")]
         if p.mision:
             lista.append(Opcion("Abandonar la misión en curso", abandonar))
         from . import menus_extra as mx

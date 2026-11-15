@@ -45,6 +45,8 @@ class Jugador:
         self.territorios = []
         self.banda = 0               # cuánta gente tienes en tu banda
         self.banda_nombre = ""
+        self.rep_bandas = {}         # cómo te llevas con cada banda: de -100 a 100
+        self.foco = 100.0            # medidor del tiempo lento
         self.dia_nevera = -1         # último día que comiste de la nevera de casa
         self.acciones = {}
         self.bolsa = {}

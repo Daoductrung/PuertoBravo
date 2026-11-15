@@ -1,6 +1,7 @@
 """La partida en curso: movimiento a pie, orientación, GPS, radar y ambiente."""
 import math
 import random
+import time
 
 import pygame
 
@@ -22,6 +23,44 @@ from .trabajos import Trabajos
 from .vida import Vida
 
 UMBRAL_ESTRELLAS = [1, 4, 8, 13, 20]
+
+# ------------------------------------------------------------------ formato de las partidas guardadas
+# Cada vez que cambia lo que se guarda, sube el número y se añade aquí cómo convertir una partida del formato anterior.
+FORMATO = 3
+
+
+def _a_formato_3(d):
+    """La 1.6.2 añade las decisiones tomadas, los fallos por misión, las misiones saltadas y el momento del guardado."""
+    d.setdefault("fallos", {})
+    d.setdefault("decisiones", {})
+    d.setdefault("saltadas", [])
+    j = d.setdefault("jugador", {})
+    j.setdefault("rep_bandas", {})
+    return d
+
+
+CONVERSIONES = {2: _a_formato_3}
+
+
+class PartidaMasNueva(ValueError):
+    """La partida se guardó con una versión del juego posterior a esta."""
+
+
+def migrar(d):
+    """Lleva una partida guardada al formato actual, paso a paso. Las anteriores a la 1.0 no llevaban número: cuentan como 2."""
+    d = dict(d)
+    try:
+        v = int(d.get("version", 2))
+    except (TypeError, ValueError):
+        v = 2
+    v = max(2, v)
+    if v > FORMATO:
+        raise PartidaMasNueva(f"Esta partida es de una versión más nueva del juego, formato {v}. Actualiza el juego para cargarla.")
+    while v < FORMATO:
+        d = CONVERSIONES[v](d)
+        v += 1
+    d["version"] = FORMATO
+    return d
 FRASES = [
     "Buenos días.", "¿Tienes hora? Da igual, voy tarde.", "Dicen que va a llover.", "Con Belmonte esta ciudad ya no es lo que era.",
     "Cuidado por el puerto, que andan Los Calaveras.", "¿Has probado las sardinas del Espeto? Gloria bendita.",
@@ -63,6 +102,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.objetos = []
         self.mision = None
         self.completadas = []
+        self.fallos = {}                # cuántas veces has fallado cada misión
+        self.decisiones = {}            # lo que has decidido en la historia: clave -> opción elegida
+        self.saltadas = []              # misiones que te has saltado
+        self.resumen_pendiente = False
         self.trabajo = None
         self.gps = None
         self.objetivo = None
@@ -259,7 +302,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         j["x"], j["y"] = px, py
         j["mapa"] = self.mundo.id
         j["guardaespaldas"] = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto)
-        d = {"version": 2, "jugador": j, "reloj": self.reloj, "dia": self.dia,
+        d = {"version": FORMATO, "jugador": j, "reloj": self.reloj, "dia": self.dia, "momento": time.time(),
+             "fallos": dict(self.fallos), "decisiones": dict(self.decisiones), "saltadas": list(self.saltadas),
              "completadas": list(self.completadas), "lluvia": self.lluvia, "atracadas": self.atracadas,
              "lugar": f"{self.mundo.describir(px, py)}, {self.mundo.nombre}"}
         v = self.j.veh
@@ -268,7 +312,14 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         return d
 
     def cargar_dict(self, d):
+        d = migrar(d)
         self.j.de_dict(d.get("jugador", {}))
+        self.fallos = {str(k): int(v) for k, v in dict(d.get("fallos", {})).items()}
+        self.decisiones = dict(d.get("decisiones", {}))
+        self.saltadas = list(d.get("saltadas", []))
+        fecha = d.get("momento")
+        # si hace días que no juegas, al volver se te recuerda por dónde ibas
+        self.resumen_pendiente = isinstance(fecha, (int, float)) and time.time() - fecha > 2 * 86400
         self.mundo = self.mapas.get(self.j.mapa) or self.app.mundo
         self.j.mapa = self.mundo.id
         self.veh_guardado = d.get("veh")
@@ -282,6 +333,23 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.j.x, self.j.y = self.mundo.punto_libre(self.j.x, self.j.y)
         if self.j.arma not in self.j.armas:
             self.j.arma = "punos"
+
+    def resumen_historia(self):
+        """Por dónde vas en la historia, en dos o tres frases."""
+        por_id = {m["id"]: m for m in self.datos["misiones"]}
+        hechas = [por_id[i] for i in self.completadas if i in por_id and not por_id[i].get("tutorial")]
+        if not hechas:
+            t = "Todavía no has hecho ninguna misión de la historia."
+        else:
+            u = hechas[-1]
+            t = f"Llevas {len(hechas)} {'misión' if len(hechas) == 1 else 'misiones'} de la historia. La última fue {u['titulo']}: {self.txt(u.get('resumen', ''))}".rstrip()
+        disp = [m for m in self.misiones_disponibles() if not m.get("tutorial")]
+        if disp:
+            m = disp[0]
+            t += f" Lo siguiente: {m['titulo']}, en {self.nombre_lugar(self.lugares[m['lugar']])}. {self.txt(m.get('resumen', ''))}".rstrip()
+        elif hechas:
+            t += " No te queda ninguna misión pendiente."
+        return t
 
     def _crear_casetes(self):
         for k, (x, y) in enumerate(self.mundo.casetes):
@@ -1098,7 +1166,12 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             total = self.total_casetes()
             self.dar_dinero(250)
             self.decir(f"Has encontrado un objeto de colección, {o.nombre}: llevas {n} de {total}. Premio de 250 euros.")
+            if n % 5 == 0 and n != total:                      # cada cinco, un premio y algo de fama
+                self.dar_dinero(1000)
+                self.cambiar_reputacion(2)
+                self.decir(f"Ya son {n}. Un coleccionista te adelanta 1000 euros y tu nombre empieza a sonar.")
             if n == total:
+                self.cambiar_reputacion(5)
                 self.dar_dinero(20000)
                 self.decir("¡Has encontrado todos los objetos de colección! Un coleccionista te paga 20000 euros por el lote completo.")
         elif o.tipo == "mision":
@@ -1133,6 +1206,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         dt = min(dt, 0.05)
         j = self.j
         self.t += dt
+        if self.resumen_pendiente and self.t > 2.0 and not self.mision:
+            self.resumen_pendiente = False
+            self.decir("Hace días que no jugabas. " + self.resumen_historia() + " Lo tienes también en el móvil, en Diario.")
         j.stats["tiempo"] += dt
         self._tiempo(dt)
         if j.veh:

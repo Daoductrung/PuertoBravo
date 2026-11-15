@@ -76,15 +76,15 @@ class Misiones:
         return "Has completado todas las misiones de la historia. La ciudad es tuya."
 
     # ----------------------------------------------------------------- inicio
-    def iniciar_mision(self, m, reintento=False):
+    def iniciar_mision(self, m, reintento=False, repeticion=False):
         if self.trabajo:
             self.terminar_trabajo("Dejas el trabajo para empezar la misión.")
         self.cancelar_gps()
         self.mision = {"def": m, "paso": -1, "veh": None, "enemigos": [], "objeto": None, "limite": None,
                        "copia": copy.deepcopy(self.j.a_dict()), "reloj": self.reloj, "dia": self.dia,
-                       "generado": False, "recogido": False, "restos": None, "avisos": set(), "quedan": None}
+                       "generado": False, "recogido": False, "restos": None, "avisos": set(), "quedan": None, "repeticion": bool(repeticion)}
         self.app.son("notificacion")
-        self.decir(f"Misión: {m['titulo']}.", True)
+        self.decir(f"Misión: {m['titulo']}." + (" La repites: no cuenta ni da recompensa." if repeticion else ""), True)
         self._siguiente_paso()
 
     def _lugar_paso(self, p):
@@ -763,6 +763,11 @@ class Misiones:
         self.mision = None
         if self.gps and self.gps.get("auto"):
             self.cancelar_gps()
+        if ms.get("repeticion"):                               # repetir una misión ya hecha es por gusto: no cambia nada
+            self.app.son("mision_ok")
+            self.decir(f"Has repetido {m['titulo']}.")
+            return
+        self.fallos.pop(m["id"], None)
         if m.get("territorio") and m["territorio"] not in self.j.territorios:
             self.j.territorios.append(m["territorio"])
             self.son("territorio", cat="interfaz")
@@ -815,8 +820,24 @@ class Misiones:
         copia = ms["copia"]
         reloj, dia = ms["reloj"], ms["dia"]
         control = ms.get("control")
+        repeticion = bool(ms.get("repeticion"))
         self._limpiar_mision()
         self.app.son("mision_fallo")
+        if not repeticion:
+            self.fallos[m["id"]] = self.fallos.get(m["id"], 0) + 1
+
+        def saltar():
+            self.app.cerrar(menu)
+            antes = {x["id"] for x in self.misiones_disponibles()}
+            self.completadas.append(m["id"])
+            self.saltadas.append(m["id"])
+            self.fallos.pop(m["id"], None)
+            self.app.son("notificacion")
+            self.decir(f"Te saltas {m['titulo']}. Cuenta como hecha, sin recompensa. Puedes repetirla cuando quieras desde el diario del móvil.")
+            for x in [x for x in self.misiones_disponibles() if x["id"] not in antes][:3]:
+                self.decir(f"Nueva misión disponible: {x['titulo']}, en {self.nombre_lugar(self.lugares[x['lugar']])}.")
+            from . import menus_juego
+            menus_juego.autoguardar(self)
 
         def desde_control():
             self.app.cerrar(menu)
@@ -835,7 +856,7 @@ class Misiones:
             if self.trabajo:
                 self.terminar_trabajo("")
             self.cancelar_gps()
-            self.mision = {"def": m, "paso": control["paso"] - 1, "veh": None, "enemigos": [], "objeto": None, "limite": None,
+            self.mision = {"def": m, "paso": control["paso"] - 1, "veh": None, "enemigos": [], "objeto": None, "limite": None, "repeticion": repeticion,
                            "copia": copia, "reloj": reloj, "dia": dia, "generado": False, "recogido": False, "restos": None,
                            "avisos": set(), "quedan": None, "control": control, "reanudando": True}
             self.app.son("notificacion")
@@ -857,7 +878,7 @@ class Misiones:
                     self.quitar_vehiculo(v)
                 self.cambiar_mapa(l.mapa, l.x, l.y)
             self.teletransportar(l.x, l.y)
-            self.iniciar_mision(m, True)
+            self.iniciar_mision(m, True, repeticion)
 
         def abandonar():
             self.app.cerrar(menu)
@@ -865,6 +886,9 @@ class Misiones:
 
         extra = [Opcion("Reintentar desde el último punto de control", desde_control,
                         ayuda="Vuelves al momento en que empezó el último tramo que habías alcanzado, con lo que tenías entonces. No repites lo anterior.")] if control else []
+        if not repeticion and not m.get("repetible") and self.fallos.get(m["id"], 0) >= 3:
+            extra.append(Opcion("Saltarte esta misión", saltar,
+                                ayuda="La has fallado tres veces o más. Si te la saltas, cuenta como hecha y la historia sigue, pero no cobras la recompensa. Luego puedes repetirla desde el diario del móvil."))
         menu = Menu(self.app, f"Misión fallida: {m['titulo']}. {motivo}",
                     extra + [Opcion("Reintentar desde el principio de la misión", reintentar, ayuda="Vuelves al lugar donde empieza la misión, con el dinero, la salud y las armas que tenías al aceptarla."),
                      Opcion("Dejarlo por ahora", abandonar)], escapable=False)

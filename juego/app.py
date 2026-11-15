@@ -167,7 +167,14 @@ class App:
             pantalla.cerrado()             # lo que diga la respuesta se oye después del menú, no tapado por él
 
     def empezar_partida(self, guardado, personaje=None):
-        from .partida import Partida
+        from .partida import Partida, PartidaMasNueva, migrar
+        if guardado:
+            try:
+                guardado = migrar(guardado)            # las partidas de versiones anteriores se convierten al cargar
+            except PartidaMasNueva as e:
+                self.son("error")
+                self.decir(str(e), True)
+                return
         if self.partida:
             self.partida.silenciar()
         self.pila.clear()
