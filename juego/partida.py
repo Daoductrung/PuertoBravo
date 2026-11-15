@@ -1596,7 +1596,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         radio = 26 if self.mundo.tipo == "mar" else 16 if j.veh else 7
         mejor = None
         activos = set()
-        marcas = {m["lugar"] for m in self.misiones_disponibles()} if not self.mision else set()
+        marcas = {m["lugar"] for m in self.misiones_disponibles() if not m.get("tutorial") or m["id"] == "tut01"} if not self.mision else set()
         for l in self.mundo.lugares.values():
             d = math.hypot(l.x - x, l.y - y)
             if d <= radio and (mejor is None or d < mejor[0]):

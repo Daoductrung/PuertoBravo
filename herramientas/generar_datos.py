@@ -62,12 +62,13 @@ __ESTILO__
 <ol>
 <li>Busca en la lista del final el nombre del sonido que quieres cambiar, por ejemplo <code>claxon</code>.</li>
 <li>Prepara tu grabación y ponle exactamente ese nombre: <code>claxon.wav</code>.</li>
-<li>Cópiala en <code>data\\sonidos\\por_defecto</code>, sustituyendo el archivo que hay.</li>
+<li>Cópiala en <code>data\\sonidos\\por_defecto</code>. No hace falta borrar el archivo del juego, que se llama <code>claxon.flac</code>: si hay dos con el mismo nombre, suena el tuyo.</li>
 <li>Cierra el juego y vuelve a abrirlo. Los sonidos se cargan al arrancar.</li>
 </ol>
 <h3>Formatos admitidos</h3>
 <ul>
-<li>WAV, OGG, FLAC y MP3. Si dejas dos archivos con el mismo nombre y distinta extensión, se usa el primero por orden alfabético; lo más sencillo es borrar el original.</li>
+<li>WAV, OGG, FLAC y MP3. Los sonidos que trae el juego están en FLAC. Si hay dos archivos con el mismo nombre y distinta extensión, se usa el que no es FLAC, que es el tuyo. Para volver al sonido del juego, borra el tuyo.</li>
+<li>Por qué FLAC: comprime sin pérdida. Al leerlo salen exactamente las mismas muestras que de un WAV, pero ocupa menos de la mitad. Hasta la versión 1.6.1 los sonidos del juego eran WAV; al actualizar, el juego borra los WAV antiguos que sean idénticos a los nuevos y respeta los que hayas cambiado tú. OGG y MP3 ocupan aún menos, pero pierden algo de calidad: valen para tus grabaciones si no te importa, y el juego solo los usa donde el original ya venía así, que son la música, la radio, las voces y los ambientes largos del pack Envolvente.</li>
 <li>Cualquier frecuencia de muestreo: el juego la convierte a 44100 hercios.</li>
 <li>Mono o estéreo. Los efectos se pasan siempre a mono, porque es el juego quien coloca cada sonido a tu izquierda, a tu derecha, delante o detrás.</li>
 </ul>
@@ -142,7 +143,7 @@ __AMBIENTES__
 </ul>
 
 <h2>6. Lista completa de sonidos</h2>
-<p>El nombre del archivo es el que aparece al principio de cada línea, con la extensión <code>.wav</code>.</p>
+<p>El nombre del archivo es el que aparece al principio de cada línea, con la extensión <code>.flac</code> en los que trae el juego. Los tuyos pueden llevar cualquiera de las admitidas.</p>
 """
 
 
@@ -273,7 +274,7 @@ def cifras():
     armas = d["armas"]
     armas = armas if isinstance(armas, list) else list(armas.values())
     return {"mapas": len(mapas), "lugares": lugares, "misiones": len(d["misiones"]), "vehiculos": len(d["vehiculos"]), "armas": len(armas),
-            "logros": len(LOGROS), "personajes": len(d.get("personajes", [])), "sonidos": len([f for f in os.listdir(rutas.carpeta_sonidos()) if f.endswith(".wav")])}
+            "logros": len(LOGROS), "personajes": len(d.get("personajes", [])), "sonidos": len([f for f in os.listdir(rutas.carpeta_sonidos()) if f.lower().endswith((".flac", ".wav", ".ogg", ".mp3"))])}
 
 
 def actualizar_manual():

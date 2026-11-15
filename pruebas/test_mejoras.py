@@ -419,7 +419,7 @@ def test_pack_envolvente(app):
     meta = json.load(open(os.path.join(carpeta, "pack.json"), encoding="utf-8"))
     assert meta["nombre"] == "Envolvente" and meta["ambientes_en_estereo"] == 11 and "CC0" in meta["licencia"]
     nombres = {os.path.splitext(f)[0] for f in os.listdir(carpeta) if f.endswith((".wav", ".ogg", ".flac", ".mp3"))}
-    realista = {os.path.splitext(f)[0] for f in os.listdir(os.path.join(os.path.dirname(carpeta), "realista")) if f.endswith(".wav")}
+    realista = {os.path.splitext(f)[0] for f in os.listdir(os.path.join(os.path.dirname(carpeta), "realista")) if f.endswith(".flac")}
     assert nombres == realista and len(nombres) == 230          # los mismos archivos que los demás packs
     serie = os.path.join(os.path.dirname(carpeta), "por_defecto")
     orientacion = {k for k, g in enumerate(cat.GRUPOS) if g[0] in ("Orientación y GPS", "Localizadores", "Firmas de los lugares")}
@@ -427,7 +427,7 @@ def test_pack_envolvente(app):
     for n in nombres:                                   # los de orientación son, byte a byte, los de serie
         if cat.grupo_de(n) in orientacion:
             vistos += 1
-            assert open(os.path.join(carpeta, n + ".wav"), "rb").read() == open(os.path.join(serie, n + ".wav"), "rb").read(), n
+            assert open(os.path.join(carpeta, n + ".flac"), "rb").read() == open(os.path.join(serie, n + ".flac"), "rb").read(), n
     assert vistos >= 40
     creditos = open(os.path.join(carpeta, "CREDITOS.txt"), encoding="utf-8-sig").read()
     for n in ("amb_ciudad", "amb_playa", "amb_noche", "lluvia"):

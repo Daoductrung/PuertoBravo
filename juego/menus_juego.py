@@ -636,6 +636,17 @@ def movil(p):
                     app.cerrar(menu)
                     p.gps_a_lugar(l)
                 donde = p.situar(l.x, l.y, l.nombre) if l.mapa == p.mundo.id else p.nombre_lugar(l)
+                if m.get("tutorial") and m["id"] != "tut01":
+                    def empezar(m=m):
+                        if p.mision:
+                            app.son("error")
+                            app.decir("Termina o abandona antes la misión que tienes en curso.", True)
+                            return
+                        while app.pila and app.pila[-1] is not p:
+                            app.cerrar(app.pila[-1])
+                        p.iniciar_mision(m)
+                    lista.append(Opcion(f"Tutorial: {m['titulo']}. {p.txt(m['resumen'])}", empezar, ayuda="Pulsa Intro para empezarlo ahora, estés donde estés. El tutorial te dice adónde ir."))
+                    continue
                 lista.append(Opcion(f"{m['titulo']}. {p.txt(m['resumen'])} {donde}", ir, ayuda="Pulsa Intro para marcar el lugar en el GPS."))
             return lista or [Opcion("No hay misiones disponibles ahora mismo")]
         mm = Menu(app, "Misiones disponibles", ops, intro="Intro marca en el GPS el lugar donde empieza")

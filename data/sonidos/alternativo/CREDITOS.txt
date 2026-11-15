@@ -83,188 +83,188 @@ COLECCIONES USADAS
   Wind: https://opengameart.org/content/wind
 
 QUÉ SONIDO SALE DE DÓNDE
-  abstinencia.wav: old-man-cough.flac, de old man cough. Dura 1,20 segundos.
-  afinidad_baja.wav: negative_sound2.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,47 segundos.
-  afinidad_sube.wav: chimes.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 1,10 segundos.
-  agacharse.wav: cloth2.ogg, de 50 RPG sound effects, de Kenney. Dura 0,25 segundos.
-  alarma.wav: alarm_03.ogg, de 30 CC0 SFX loops. Dura 0,80 segundos.
-  amartillar.wav: metalClick.ogg, de 50 RPG sound effects, de Kenney. Dura 0,30 segundos.
-  amb_campo.wav: Forest Birds 2.wav, de forest bird sounds. Dura 4,50 segundos.
-  amb_ciudad.wav: calle_1713.wav, de BigSoundBank.com y LaSonotheque.org. Dura 9,00 segundos.
-  amb_industrial.wav: machine_11.ogg, de 30 CC0 SFX loops. Dura 5,00 segundos.
-  amb_mar.wav: wave_02_cc0-18363__jasinski__alkaibeach.flac, de beach ocean waves. Dura 2,10 segundos.
-  amb_montana.wav: short_wind_sound.wav, de short wind sound. Dura 3,60 segundos.
-  amb_noche.wav: cricket_1.ogg, de swamp environment audio. Dura 8,00 segundos.
-  amb_parque.wav: birds-isaiah658_0.ogg, de ambient bird sounds. Dura 9,00 segundos.
-  amb_playa.wav: beach.wav, de 18 random video game sound effects. Dura 3,50 segundos.
-  amb_puerto.wav: puerto_2571.wav, de BigSoundBank.com y LaSonotheque.org. Dura 9,00 segundos.
-  amb_residencial.wav: pueblo_1347.wav, de BigSoundBank.com y LaSonotheque.org. Dura 8,00 segundos.
-  amigo_entra.wav: maximize_004.ogg, de Interface Sounds, de Kenney. Dura 0,39 segundos.
-  amigo_sale.wav: minimize_004.ogg, de Interface Sounds, de Kenney. Dura 0,41 segundos.
-  animo_baja.wav: dum.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,31 segundos.
-  animo_sube.wav: Ding.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,34 segundos.
-  arranque.wav: Car_Engine_Start_Up.ogg, de Car Sound Effects Pack. Dura 1,82 segundos.
-  ascenso.wav: sboe.wav, de hyper ultra fanfare. Dura 1,60 segundos.
-  bajo_agua.wav: bajo_agua.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 8,00 segundos.
-  bajon.wav: ghostbreath.flac, de ghost breath. Dura 1,60 segundos.
-  bala_impacto.wav: impactMetal_light_000.ogg, de Impact Sounds, de Kenney. Dura 0,18 segundos.
-  bala_silbido.wav: tube-plastic-whoosh-01.wav, de fantasy sound effects tinysized sfx. Dura 0,19 segundos.
-  bolsa.wav: paper_01.ogg, de 100 CC0 SFX. Dura 0,41 segundos.
-  brazada.wav: brazada.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 0,90 segundos.
-  buho.wav: buho_1763.wav, de BigSoundBank.com y LaSonotheque.org. Dura 2,20 segundos.
-  buscando.wav: click2.wav, de 51 UI sound effects, de Kenney. Dura 0,05 segundos.
-  caja.wav: coin3.wav, de RPG Sound Pack. Dura 0,28 segundos.
-  campana_ring.wav: impactBell_heavy_001.ogg, de Impact Sounds, de Kenney. Dura 1,16 segundos.
-  campanadas.wav: bell_ding1.wav, de bell dingschimes. Dura 0,50 segundos.
-  carrete.wav: reel.wav, de fisheefects. Dura 0,90 segundos.
-  celda.wav: metal_close_01.ogg, de 100 cc0 metal and wood sfx. Dura 0,30 segundos.
-  chat.wav: confirmation_002.ogg, de Interface Sounds, de Kenney. Dura 0,49 segundos.
-  choque.wav: bfh1_breaking_01.ogg, de 75 CC0 breaking, falling, hit SFX. Dura 0,99 segundos.
-  choque_leve.wav: bfh1_metal_hit_03.ogg, de 75 CC0 breaking, falling, hit SFX. Dura 0,27 segundos.
-  choque_pared.wav: impactSoft_heavy_000.ogg, de Impact Sounds, de Kenney. Dura 0,20 segundos.
-  cita.wav: beso_2196.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,05 segundos.
-  claxon.wav: Car_Horn.ogg, de Car Sound Effects Pack. Dura 0,41 segundos.
-  claxon_bici.wav: bicycle_horn-1.ogg, de Bicycle sounds. Dura 0,70 segundos.
-  claxon_camion.wav: claxon_camion_2721.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,90 segundos.
-  claxon_helados.wav: 24.wav, de bell arpeggio 24. Dura 1,60 segundos.
-  claxon_lejano.wav: Car_Horn.ogg, de Car Sound Effects Pack. Dura 0,41 segundos.
-  cohete.wav: rocket_01.ogg, de 50 cc0 sci fi sfx. Dura 1,00 segundos.
-  comer.wav: crunch.5.ogg, de 7 eating crunches. Dura 0,61 segundos.
-  cristal.wav: bfh1_glass_breaking_03.ogg, de 75 CC0 breaking, falling, hit SFX. Dura 0,59 segundos.
-  curar.wav: Chime_Confirm.mp3, de Chimey UI sounds. Dura 0,97 segundos.
-  dados.wav: dice-shake-1.ogg, de Casino Audio, de Kenney. Dura 1,28 segundos.
-  dialogo.wav: drop_001.ogg, de Interface Sounds, de Kenney. Dura 0,06 segundos.
-  diana.wav: impactWood_light_000.ogg, de Impact Sounds, de Kenney. Dura 0,08 segundos.
-  diana_ok.wav: pleasing-bell.wav, de pleasing bell sound effect. Dura 0,62 segundos.
-  dinero.wav: handleCoins2.ogg, de 50 RPG sound effects, de Kenney. Dura 0,28 segundos.
-  diploma.wav: Ability Learn.mp3, de 7 assorted sound effects, menu and level up. Dura 1,50 segundos.
-  disparo_escopeta.wav: O_17P.wav, de The Free Firearm Sound Library. Dura 0,90 segundos.
-  disparo_fusil.wav: D_24P.wav, de The Free Firearm Sound Library. Dura 0,35 segundos.
-  disparo_pistola.wav: A_34P.wav, de The Free Firearm Sound Library. Dura 0,60 segundos.
-  disparo_revolver.wav: S_11P.wav, de The Free Firearm Sound Library. Dura 0,70 segundos.
-  disparo_rifle.wav: M_21P.wav, de The Free Firearm Sound Library. Dura 1,00 segundos.
-  disparo_silenciado.wav: R_30P.wav, de The Free Firearm Sound Library. Dura 0,30 segundos.
-  disparo_subfusil.wav: P_22P.wav, de The Free Firearm Sound Library. Dura 0,22 segundos.
-  dolor.wav: slightscream-05.flac, de 15 vocal male strain, hurt, pain, jump sounds. Dura 0,52 segundos.
-  dolor_npc.wav: slightscream-07.flac, de 15 vocal male strain, hurt, pain, jump sounds. Dura 0,45 segundos.
-  donativo.wav: coin.wav, de RPG Sound Pack. Dura 0,56 segundos.
-  error.wav: Menu Error.mp3, de 7 assorted sound effects, menu and level up. Dura 0,32 segundos.
-  esposas.wav: chain_02.ogg, de 80 CC0 RPG SFX. Dura 0,34 segundos.
-  estrella_baja.wav: Chime_Cancel.mp3, de Chimey UI sounds. Dura 0,80 segundos.
-  estrella_sube.wav: alarm_0.ogg, de short alarm. Dura 0,50 segundos.
-  evento.wav: chirptone.wav, de modern ringtone chirptone. Dura 0,80 segundos.
-  explosion.wav: cannon_01.ogg, de 25 CC0 bang, firework SFX. Dura 0,69 segundos.
-  fama.wav: applause-clapping-church-crowd-immersive.wav, de applause in a large hall or church. Dura 0,80 segundos.
-  frenazo.wav: frenazo_2370.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,20 segundos.
-  fuego.wav: fire.wav, de fireplace sound loop. Dura 5,00 segundos.
-  gallo.wav: gallo_0283.wav, de BigSoundBank.com y LaSonotheque.org. Dura 2,08 segundos.
-  ganzua.wav: llave_1320.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,20 segundos.
-  gaviota.wav: Seagull_Ambient_5.wav, de solo seagull sound effects. Dura 1,39 segundos.
-  golpe.wav: hit09.mp3.flac, de 37 hits and punches. Dura 0,40 segundos.
-  golpe_aire.wav: swing3.wav, de RPG Sound Pack. Dura 0,10 segundos.
-  grito.wav: scream2.ogg, de War on Water sound effects. Dura 0,73 segundos.
-  guardado.wav: Chime_Load.mp3, de Chimey UI sounds. Dura 1,26 segundos.
-  hospital_despertar.wav: monitor_0457.wav, de BigSoundBank.com y LaSonotheque.org. Dura 2,40 segundos.
-  intermitente.wav: blinker03.wav, de car blinker sfx. Dura 0,56 segundos.
-  jornada.wav: tickloop-amp.wav, de clock wind sounds. Dura 1,22 segundos.
-  ladrido.wav: Dog Bark 3.wav, de Dog sounds. Dura 0,30 segundos.
-  lanzar.wav: swing.wav, de RPG Sound Pack. Dura 0,11 segundos.
-  latido.wav: heartbeat_fast_0.wav, de heartbeat sounds. Dura 0,93 segundos.
-  levantarse.wav: cloth1.ogg, de 50 RPG sound effects, de Kenney. Dura 0,25 segundos.
-  llegada.wav: bell.wav, de correct bell. Dura 1,56 segundos.
-  lluvia.wav: loop_rain.ogg, de 40 CC0 water, splash, slime SFX. Dura 6,00 segundos.
-  logro.wav: sfx_-_success.ogg, de 16bit success sound. Dura 1,25 segundos.
-  lugar_fuente.wav: loop_water_01.ogg, de 40 CC0 water, splash, slime SFX. Dura 2,80 segundos.
-  lugar_rio.wav: loop_water_02.ogg, de 40 CC0 water, splash, slime SFX. Dura 6,00 segundos.
-  martillo.wav: impactMining_002.ogg, de Impact Sounds, de Kenney. Dura 0,43 segundos.
-  menu_ajuste.wav: click3.wav, de 51 UI sound effects, de Kenney. Dura 0,05 segundos.
-  menu_atras.wav: switch7.wav, de 51 UI sound effects, de Kenney. Dura 0,10 segundos.
-  menu_borde.wav: switch13.wav, de 51 UI sound effects, de Kenney. Dura 0,03 segundos.
-  menu_mover.wav: rollover2.wav, de 51 UI sound effects, de Kenney. Dura 0,04 segundos.
-  menu_ok.wav: switch2.wav, de 51 UI sound effects, de Kenney. Dura 0,09 segundos.
-  mision_fallo.wav: negative_sound.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,98 segundos.
-  mision_ok.wav: sfx_-_success.ogg, de 16bit success sound. Dura 1,25 segundos.
-  motor_avioneta.wav: motor_avioneta.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 4,00 segundos.
-  motor_barco.wav: friendlyboat.ogg, de War on Water sound effects. Dura 2,20 segundos.
-  motor_bici.wav: bicycle_spokes-1.ogg, de Bicycle sounds. Dura 0,90 segundos.
-  motor_camion.wav: motor_camion_1442.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,50 segundos.
-  motor_coche.wav: Car_Engine_Loop.ogg, de Car Sound Effects Pack. Dura 2,40 segundos.
-  motor_deportivo.wav: loop_2_0.wav, de racing car engine sound loops. Dura 0,46 segundos.
-  motor_furgoneta.wav: Car_Engine_Loop_2.ogg, de Car Sound Effects Pack. Dura 3,20 segundos.
-  motor_helicoptero.wav: helicopter_0.mp3, de helicopter sounds. Dura 4,00 segundos.
-  motor_lancha.wav: motorboat2.ogg, de War on Water sound effects. Dura 0,75 segundos.
-  motor_moto.wav: motor_looping_0.mp3, de motor sound effect. Dura 0,75 segundos.
-  motor_tractor.wav: tractor_0132.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,50 segundos.
-  movil.wav: maximize_001.ogg, de Interface Sounds, de Kenney. Dura 0,25 segundos.
-  muerte_npc.wav: slightscream-15.flac, de 15 vocal male strain, hurt, pain, jump sounds. Dura 0,68 segundos.
-  multitud.wav: charla_2968.wav, de BigSoundBank.com y LaSonotheque.org. Dura 6,00 segundos.
-  murmullo.wav: charla_2968.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,40 segundos.
-  navaja.wav: drawKnife1.ogg, de 50 RPG sound effects, de Kenney. Dura 0,27 segundos.
-  nivel.wav: Level Up.mp3, de 7 assorted sound effects menu level up. Dura 1,50 segundos.
-  noche_juntos.wav: ding_deep.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,88 segundos.
-  notificacion.wav: lowRing.wav, de patreon menu soundpacks. Dura 0,97 segundos.
-  paisano.wav: alarm2.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,43 segundos.
-  pajaro.wav: bird2.wav, de Bird, cricket, frog and mosquito sounds. Dura 0,22 segundos.
-  pareja.wav: bell_ding3.wav, de bell dingschimes. Dura 1,21 segundos.
-  pasan_horas.wav: Chime_Sleep.mp3, de Chimey UI sounds. Dura 1,33 segundos.
-  paso_acera0.wav: sfx100v2_footstep_01.ogg, de 100 CC0 SFX #2. Dura 0,28 segundos.
-  paso_acera1.wav: sfx100v2_footstep_02.ogg, de 100 CC0 SFX #2. Dura 0,20 segundos.
-  paso_arena0.wav: Fantozzi-SandL2.flac, de Fantozzi's Footsteps. Dura 0,32 segundos.
-  paso_arena1.wav: Fantozzi-SandR2.flac, de Fantozzi's Footsteps. Dura 0,33 segundos.
-  paso_calzada0.wav: footstep_concrete_003.ogg, de Impact Sounds, de Kenney. Dura 0,05 segundos.
-  paso_calzada1.wav: footstep_concrete_004.ogg, de Impact Sounds, de Kenney. Dura 0,05 segundos.
-  paso_hierba0.wav: leaves01.ogg, de Different steps on wood, stone, leaves, gravel and mud. Dura 0,30 segundos.
-  paso_hierba1.wav: leaves02.ogg, de Different steps on wood, stone, leaves, gravel and mud. Dura 0,30 segundos.
-  paso_muelle0.wav: sfx100v2_footstep_wood_01.ogg, de 100 CC0 SFX #2. Dura 0,21 segundos.
-  paso_muelle1.wav: sfx100v2_footstep_wood_02.ogg, de 100 CC0 SFX #2. Dura 0,21 segundos.
-  paso_npc.wav: footstep00.ogg, de 50 RPG sound effects, de Kenney. Dura 0,15 segundos.
-  paso_plaza0.wav: Fantozzi-StoneL3.flac, de Fantozzi's Footsteps. Dura 0,33 segundos.
-  paso_plaza1.wav: Fantozzi-StoneR3.flac, de Fantozzi's Footsteps. Dura 0,34 segundos.
-  perro_olfatea.wav: perro_respira_1547.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,45 segundos.
-  pesca_lanzar.wav: plop_02.ogg, de 100 CC0 SFX. Dura 0,14 segundos.
-  pez_pica.wav: splash_10.ogg, de 40 CC0 water, splash, slime SFX. Dura 0,21 segundos.
-  pintura.wav: compressed-air-spray-01.wav, de fantasy sound effects tinysized sfx. Dura 0,44 segundos.
-  policia_perdida.wav: Chime_Exit.mp3, de Chimey UI sounds. Dura 1,23 segundos.
-  precio_escasez.wav: error_005.ogg, de Interface Sounds, de Kenney. Dura 0,14 segundos.
-  precio_ganga.wav: coin3.wav, de RPG Sound Pack. Dura 0,28 segundos.
-  prestigio.wav: bell_ding2.wav, de bell dingschimes. Dura 0,89 segundos.
-  puerta_coche.wav: Car_Hood_Close.ogg, de Car Sound Effects Pack. Dura 0,50 segundos.
-  puerta_entrar.wav: doorOpen_1.ogg, de 50 RPG sound effects, de Kenney. Dura 0,87 segundos.
-  puerta_salir.wav: doorClose_1.ogg, de 50 RPG sound effects, de Kenney. Dura 0,42 segundos.
-  radio_cambio.wav: scratch_004.ogg, de Interface Sounds, de Kenney. Dura 0,31 segundos.
-  recarga.wav: Rack.mp3, de Shotgun reload sound effects. Dura 0,46 segundos.
-  rechazo.wav: error_001.ogg, de Interface Sounds, de Kenney. Dura 0,15 segundos.
-  recoger.wav: Item Pickup.mp3, de 7 assorted sound effects, menu and level up. Dura 0,38 segundos.
-  regalo.wav: cover-paper-tear-01.wav, de fantasy sound effects tinysized sfx. Dura 0,60 segundos.
-  reloj.wav: ticking clock - tick2.wav, de Ticking clock. Dura 0,18 segundos.
-  reparar.wav: tools_03.ogg, de 100 CC0 SFX. Dura 0,53 segundos.
-  rodadura.wav: rolling.ogg, de 30 CC0 SFX loops. Dura 0,84 segundos.
-  ruleta.wav: qubodup-bowling_roll.ogg, de bowling ball rolling. Dura 2,40 segundos.
-  ruptura.wav: cover-paper-tear-02.wav, de fantasy sound effects tinysized sfx. Dura 1,01 segundos.
-  salpicadura.wav: splash_05.ogg, de 40 CC0 water, splash, slime SFX. Dura 0,71 segundos.
-  simon_0.wav: Instrument__001.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.
-  simon_1.wav: Instrument__002.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.
-  simon_2.wav: Instrument__003.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.
-  simon_3.wav: Instrument__004.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.
-  sin_balas.wav: gunempty.ogg, de War on Water sound effects. Dura 0,23 segundos.
-  sirena.wav: policia_0886.wav, de BigSoundBank.com y LaSonotheque.org. Dura 4,00 segundos.
-  sirena_ambulancia.wav: ambulancia_1463.wav, de BigSoundBank.com y LaSonotheque.org. Dura 3,00 segundos.
-  sirena_barco.wav: steam_whistle.wav, de steam whistle. Dura 2,31 segundos.
-  sirena_lejana.wav: policia_0886.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,90 segundos.
-  sobredosis.wav: heartbeat_fast_reverb.wav, de heartbeat sounds. Dura 1,11 segundos.
-  territorio.wav: gong_01.ogg, de 100 CC0 SFX. Dura 1,09 segundos.
-  tomar_copa.wav: bottle.wav, de RPG Sound Pack. Dura 0,35 segundos.
-  tomar_cristal.wav: Cigarette_Lighter_04.wav, de 58 random sound effects. Dura 0,07 segundos.
-  tomar_hierba.wav: match-light-01.wav, de fantasy sound effects tinysized sfx. Dura 0,48 segundos.
-  tomar_pastillas.wav: bottle-pills-shake-02.wav, de fantasy accessory sfx library. Dura 0,27 segundos.
-  tomar_polvo.wav: esnifar_0784.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,00 segundos.
-  tranvia.wav: tranvia.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 8,00 segundos.
-  tranvia_campana.wav: tranvia_campana.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 1,47 segundos.
-  trato.wav: handleCoins2.ogg, de 50 RPG sound effects, de Kenney. Dura 0,28 segundos.
-  tren.wav: tren.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 8,00 segundos.
-  tren_silbato.wav: tren_silbato.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 3,00 segundos.
-  trueno.wav: sfx100v2_thunder_01.ogg, de 100 CC0 SFX #2. Dura 4,04 segundos.
-  viento_playa.wav: Wind2.ogg, de Wind. Dura 6,00 segundos.
+  abstinencia.flac: old-man-cough.flac, de old man cough. Dura 1,20 segundos.
+  afinidad_baja.flac: negative_sound2.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,47 segundos.
+  afinidad_sube.flac: chimes.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 1,10 segundos.
+  agacharse.flac: cloth2.ogg, de 50 RPG sound effects, de Kenney. Dura 0,25 segundos.
+  alarma.flac: alarm_03.ogg, de 30 CC0 SFX loops. Dura 0,80 segundos.
+  amartillar.flac: metalClick.ogg, de 50 RPG sound effects, de Kenney. Dura 0,30 segundos.
+  amb_campo.flac: Forest Birds 2.wav, de forest bird sounds. Dura 4,50 segundos.
+  amb_ciudad.flac: calle_1713.wav, de BigSoundBank.com y LaSonotheque.org. Dura 9,00 segundos.
+  amb_industrial.flac: machine_11.ogg, de 30 CC0 SFX loops. Dura 5,00 segundos.
+  amb_mar.flac: wave_02_cc0-18363__jasinski__alkaibeach.flac, de beach ocean waves. Dura 2,10 segundos.
+  amb_montana.flac: short_wind_sound.wav, de short wind sound. Dura 3,60 segundos.
+  amb_noche.flac: cricket_1.ogg, de swamp environment audio. Dura 8,00 segundos.
+  amb_parque.flac: birds-isaiah658_0.ogg, de ambient bird sounds. Dura 9,00 segundos.
+  amb_playa.flac: beach.wav, de 18 random video game sound effects. Dura 3,50 segundos.
+  amb_puerto.flac: puerto_2571.wav, de BigSoundBank.com y LaSonotheque.org. Dura 9,00 segundos.
+  amb_residencial.flac: pueblo_1347.wav, de BigSoundBank.com y LaSonotheque.org. Dura 8,00 segundos.
+  amigo_entra.flac: maximize_004.ogg, de Interface Sounds, de Kenney. Dura 0,39 segundos.
+  amigo_sale.flac: minimize_004.ogg, de Interface Sounds, de Kenney. Dura 0,41 segundos.
+  animo_baja.flac: dum.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,31 segundos.
+  animo_sube.flac: Ding.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,34 segundos.
+  arranque.flac: Car_Engine_Start_Up.ogg, de Car Sound Effects Pack. Dura 1,82 segundos.
+  ascenso.flac: sboe.wav, de hyper ultra fanfare. Dura 1,60 segundos.
+  bajo_agua.flac: bajo_agua.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 8,00 segundos.
+  bajon.flac: ghostbreath.flac, de ghost breath. Dura 1,60 segundos.
+  bala_impacto.flac: impactMetal_light_000.ogg, de Impact Sounds, de Kenney. Dura 0,18 segundos.
+  bala_silbido.flac: tube-plastic-whoosh-01.wav, de fantasy sound effects tinysized sfx. Dura 0,19 segundos.
+  bolsa.flac: paper_01.ogg, de 100 CC0 SFX. Dura 0,41 segundos.
+  brazada.flac: brazada.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 0,90 segundos.
+  buho.flac: buho_1763.wav, de BigSoundBank.com y LaSonotheque.org. Dura 2,20 segundos.
+  buscando.flac: click2.wav, de 51 UI sound effects, de Kenney. Dura 0,05 segundos.
+  caja.flac: coin3.wav, de RPG Sound Pack. Dura 0,28 segundos.
+  campana_ring.flac: impactBell_heavy_001.ogg, de Impact Sounds, de Kenney. Dura 1,16 segundos.
+  campanadas.flac: bell_ding1.wav, de bell dingschimes. Dura 0,50 segundos.
+  carrete.flac: reel.wav, de fisheefects. Dura 0,90 segundos.
+  celda.flac: metal_close_01.ogg, de 100 cc0 metal and wood sfx. Dura 0,30 segundos.
+  chat.flac: confirmation_002.ogg, de Interface Sounds, de Kenney. Dura 0,49 segundos.
+  choque.flac: bfh1_breaking_01.ogg, de 75 CC0 breaking, falling, hit SFX. Dura 0,99 segundos.
+  choque_leve.flac: bfh1_metal_hit_03.ogg, de 75 CC0 breaking, falling, hit SFX. Dura 0,27 segundos.
+  choque_pared.flac: impactSoft_heavy_000.ogg, de Impact Sounds, de Kenney. Dura 0,20 segundos.
+  cita.flac: beso_2196.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,05 segundos.
+  claxon.flac: Car_Horn.ogg, de Car Sound Effects Pack. Dura 0,41 segundos.
+  claxon_bici.flac: bicycle_horn-1.ogg, de Bicycle sounds. Dura 0,70 segundos.
+  claxon_camion.flac: claxon_camion_2721.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,90 segundos.
+  claxon_helados.flac: 24.wav, de bell arpeggio 24. Dura 1,60 segundos.
+  claxon_lejano.flac: Car_Horn.ogg, de Car Sound Effects Pack. Dura 0,41 segundos.
+  cohete.flac: rocket_01.ogg, de 50 cc0 sci fi sfx. Dura 1,00 segundos.
+  comer.flac: crunch.5.ogg, de 7 eating crunches. Dura 0,61 segundos.
+  cristal.flac: bfh1_glass_breaking_03.ogg, de 75 CC0 breaking, falling, hit SFX. Dura 0,59 segundos.
+  curar.flac: Chime_Confirm.mp3, de Chimey UI sounds. Dura 0,97 segundos.
+  dados.flac: dice-shake-1.ogg, de Casino Audio, de Kenney. Dura 1,28 segundos.
+  dialogo.flac: drop_001.ogg, de Interface Sounds, de Kenney. Dura 0,06 segundos.
+  diana.flac: impactWood_light_000.ogg, de Impact Sounds, de Kenney. Dura 0,08 segundos.
+  diana_ok.flac: pleasing-bell.wav, de pleasing bell sound effect. Dura 0,62 segundos.
+  dinero.flac: handleCoins2.ogg, de 50 RPG sound effects, de Kenney. Dura 0,28 segundos.
+  diploma.flac: Ability Learn.mp3, de 7 assorted sound effects, menu and level up. Dura 1,50 segundos.
+  disparo_escopeta.flac: O_17P.wav, de The Free Firearm Sound Library. Dura 0,90 segundos.
+  disparo_fusil.flac: D_24P.wav, de The Free Firearm Sound Library. Dura 0,35 segundos.
+  disparo_pistola.flac: A_34P.wav, de The Free Firearm Sound Library. Dura 0,60 segundos.
+  disparo_revolver.flac: S_11P.wav, de The Free Firearm Sound Library. Dura 0,70 segundos.
+  disparo_rifle.flac: M_21P.wav, de The Free Firearm Sound Library. Dura 1,00 segundos.
+  disparo_silenciado.flac: R_30P.wav, de The Free Firearm Sound Library. Dura 0,30 segundos.
+  disparo_subfusil.flac: P_22P.wav, de The Free Firearm Sound Library. Dura 0,22 segundos.
+  dolor.flac: slightscream-05.flac, de 15 vocal male strain, hurt, pain, jump sounds. Dura 0,52 segundos.
+  dolor_npc.flac: slightscream-07.flac, de 15 vocal male strain, hurt, pain, jump sounds. Dura 0,45 segundos.
+  donativo.flac: coin.wav, de RPG Sound Pack. Dura 0,56 segundos.
+  error.flac: Menu Error.mp3, de 7 assorted sound effects, menu and level up. Dura 0,32 segundos.
+  esposas.flac: chain_02.ogg, de 80 CC0 RPG SFX. Dura 0,34 segundos.
+  estrella_baja.flac: Chime_Cancel.mp3, de Chimey UI sounds. Dura 0,80 segundos.
+  estrella_sube.flac: alarm_0.ogg, de short alarm. Dura 0,50 segundos.
+  evento.flac: chirptone.wav, de modern ringtone chirptone. Dura 0,80 segundos.
+  explosion.flac: cannon_01.ogg, de 25 CC0 bang, firework SFX. Dura 0,69 segundos.
+  fama.flac: applause-clapping-church-crowd-immersive.wav, de applause in a large hall or church. Dura 0,80 segundos.
+  frenazo.flac: frenazo_2370.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,20 segundos.
+  fuego.flac: fire.wav, de fireplace sound loop. Dura 5,00 segundos.
+  gallo.flac: gallo_0283.wav, de BigSoundBank.com y LaSonotheque.org. Dura 2,08 segundos.
+  ganzua.flac: llave_1320.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,20 segundos.
+  gaviota.flac: Seagull_Ambient_5.wav, de solo seagull sound effects. Dura 1,39 segundos.
+  golpe.flac: hit09.mp3.flac, de 37 hits and punches. Dura 0,40 segundos.
+  golpe_aire.flac: swing3.wav, de RPG Sound Pack. Dura 0,10 segundos.
+  grito.flac: scream2.ogg, de War on Water sound effects. Dura 0,73 segundos.
+  guardado.flac: Chime_Load.mp3, de Chimey UI sounds. Dura 1,26 segundos.
+  hospital_despertar.flac: monitor_0457.wav, de BigSoundBank.com y LaSonotheque.org. Dura 2,40 segundos.
+  intermitente.flac: blinker03.wav, de car blinker sfx. Dura 0,56 segundos.
+  jornada.flac: tickloop-amp.wav, de clock wind sounds. Dura 1,22 segundos.
+  ladrido.flac: Dog Bark 3.wav, de Dog sounds. Dura 0,30 segundos.
+  lanzar.flac: swing.wav, de RPG Sound Pack. Dura 0,11 segundos.
+  latido.flac: heartbeat_fast_0.wav, de heartbeat sounds. Dura 0,93 segundos.
+  levantarse.flac: cloth1.ogg, de 50 RPG sound effects, de Kenney. Dura 0,25 segundos.
+  llegada.flac: bell.wav, de correct bell. Dura 1,56 segundos.
+  lluvia.flac: loop_rain.ogg, de 40 CC0 water, splash, slime SFX. Dura 6,00 segundos.
+  logro.flac: sfx_-_success.ogg, de 16bit success sound. Dura 1,25 segundos.
+  lugar_fuente.flac: loop_water_01.ogg, de 40 CC0 water, splash, slime SFX. Dura 2,80 segundos.
+  lugar_rio.flac: loop_water_02.ogg, de 40 CC0 water, splash, slime SFX. Dura 6,00 segundos.
+  martillo.flac: impactMining_002.ogg, de Impact Sounds, de Kenney. Dura 0,43 segundos.
+  menu_ajuste.flac: click3.wav, de 51 UI sound effects, de Kenney. Dura 0,05 segundos.
+  menu_atras.flac: switch7.wav, de 51 UI sound effects, de Kenney. Dura 0,10 segundos.
+  menu_borde.flac: switch13.wav, de 51 UI sound effects, de Kenney. Dura 0,03 segundos.
+  menu_mover.flac: rollover2.wav, de 51 UI sound effects, de Kenney. Dura 0,04 segundos.
+  menu_ok.flac: switch2.wav, de 51 UI sound effects, de Kenney. Dura 0,09 segundos.
+  mision_fallo.flac: negative_sound.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,98 segundos.
+  mision_ok.flac: sfx_-_success.ogg, de 16bit success sound. Dura 1,25 segundos.
+  motor_avioneta.flac: motor_avioneta.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 4,00 segundos.
+  motor_barco.flac: friendlyboat.ogg, de War on Water sound effects. Dura 2,20 segundos.
+  motor_bici.flac: bicycle_spokes-1.ogg, de Bicycle sounds. Dura 0,90 segundos.
+  motor_camion.flac: motor_camion_1442.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,50 segundos.
+  motor_coche.flac: Car_Engine_Loop.ogg, de Car Sound Effects Pack. Dura 2,40 segundos.
+  motor_deportivo.flac: loop_2_0.wav, de racing car engine sound loops. Dura 0,46 segundos.
+  motor_furgoneta.flac: Car_Engine_Loop_2.ogg, de Car Sound Effects Pack. Dura 3,20 segundos.
+  motor_helicoptero.flac: helicopter_0.mp3, de helicopter sounds. Dura 4,00 segundos.
+  motor_lancha.flac: motorboat2.ogg, de War on Water sound effects. Dura 0,75 segundos.
+  motor_moto.flac: motor_looping_0.mp3, de motor sound effect. Dura 0,75 segundos.
+  motor_tractor.flac: tractor_0132.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,50 segundos.
+  movil.flac: maximize_001.ogg, de Interface Sounds, de Kenney. Dura 0,25 segundos.
+  muerte_npc.flac: slightscream-15.flac, de 15 vocal male strain, hurt, pain, jump sounds. Dura 0,68 segundos.
+  multitud.flac: charla_2968.wav, de BigSoundBank.com y LaSonotheque.org. Dura 6,00 segundos.
+  murmullo.flac: charla_2968.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,40 segundos.
+  navaja.flac: drawKnife1.ogg, de 50 RPG sound effects, de Kenney. Dura 0,27 segundos.
+  nivel.flac: Level Up.mp3, de 7 assorted sound effects menu level up. Dura 1,50 segundos.
+  noche_juntos.flac: ding_deep.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,88 segundos.
+  notificacion.flac: lowRing.wav, de patreon menu soundpacks. Dura 0,97 segundos.
+  paisano.flac: alarm2.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,43 segundos.
+  pajaro.flac: bird2.wav, de Bird, cricket, frog and mosquito sounds. Dura 0,22 segundos.
+  pareja.flac: bell_ding3.wav, de bell dingschimes. Dura 1,21 segundos.
+  pasan_horas.flac: Chime_Sleep.mp3, de Chimey UI sounds. Dura 1,33 segundos.
+  paso_acera0.flac: sfx100v2_footstep_01.ogg, de 100 CC0 SFX #2. Dura 0,28 segundos.
+  paso_acera1.flac: sfx100v2_footstep_02.ogg, de 100 CC0 SFX #2. Dura 0,20 segundos.
+  paso_arena0.flac: Fantozzi-SandL2.flac, de Fantozzi's Footsteps. Dura 0,32 segundos.
+  paso_arena1.flac: Fantozzi-SandR2.flac, de Fantozzi's Footsteps. Dura 0,33 segundos.
+  paso_calzada0.flac: footstep_concrete_003.ogg, de Impact Sounds, de Kenney. Dura 0,05 segundos.
+  paso_calzada1.flac: footstep_concrete_004.ogg, de Impact Sounds, de Kenney. Dura 0,05 segundos.
+  paso_hierba0.flac: leaves01.ogg, de Different steps on wood, stone, leaves, gravel and mud. Dura 0,30 segundos.
+  paso_hierba1.flac: leaves02.ogg, de Different steps on wood, stone, leaves, gravel and mud. Dura 0,30 segundos.
+  paso_muelle0.flac: sfx100v2_footstep_wood_01.ogg, de 100 CC0 SFX #2. Dura 0,21 segundos.
+  paso_muelle1.flac: sfx100v2_footstep_wood_02.ogg, de 100 CC0 SFX #2. Dura 0,21 segundos.
+  paso_npc.flac: footstep00.ogg, de 50 RPG sound effects, de Kenney. Dura 0,15 segundos.
+  paso_plaza0.flac: Fantozzi-StoneL3.flac, de Fantozzi's Footsteps. Dura 0,33 segundos.
+  paso_plaza1.flac: Fantozzi-StoneR3.flac, de Fantozzi's Footsteps. Dura 0,34 segundos.
+  perro_olfatea.flac: perro_respira_1547.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,45 segundos.
+  pesca_lanzar.flac: plop_02.ogg, de 100 CC0 SFX. Dura 0,14 segundos.
+  pez_pica.flac: splash_10.ogg, de 40 CC0 water, splash, slime SFX. Dura 0,21 segundos.
+  pintura.flac: compressed-air-spray-01.wav, de fantasy sound effects tinysized sfx. Dura 0,44 segundos.
+  policia_perdida.flac: Chime_Exit.mp3, de Chimey UI sounds. Dura 1,23 segundos.
+  precio_escasez.flac: error_005.ogg, de Interface Sounds, de Kenney. Dura 0,14 segundos.
+  precio_ganga.flac: coin3.wav, de RPG Sound Pack. Dura 0,28 segundos.
+  prestigio.flac: bell_ding2.wav, de bell dingschimes. Dura 0,89 segundos.
+  puerta_coche.flac: Car_Hood_Close.ogg, de Car Sound Effects Pack. Dura 0,50 segundos.
+  puerta_entrar.flac: doorOpen_1.ogg, de 50 RPG sound effects, de Kenney. Dura 0,87 segundos.
+  puerta_salir.flac: doorClose_1.ogg, de 50 RPG sound effects, de Kenney. Dura 0,42 segundos.
+  radio_cambio.flac: scratch_004.ogg, de Interface Sounds, de Kenney. Dura 0,31 segundos.
+  recarga.flac: Rack.mp3, de Shotgun reload sound effects. Dura 0,46 segundos.
+  rechazo.flac: error_001.ogg, de Interface Sounds, de Kenney. Dura 0,15 segundos.
+  recoger.flac: Item Pickup.mp3, de 7 assorted sound effects, menu and level up. Dura 0,38 segundos.
+  regalo.flac: cover-paper-tear-01.wav, de fantasy sound effects tinysized sfx. Dura 0,60 segundos.
+  reloj.flac: ticking clock - tick2.wav, de Ticking clock. Dura 0,18 segundos.
+  reparar.flac: tools_03.ogg, de 100 CC0 SFX. Dura 0,53 segundos.
+  rodadura.flac: rolling.ogg, de 30 CC0 SFX loops. Dura 0,84 segundos.
+  ruleta.flac: qubodup-bowling_roll.ogg, de bowling ball rolling. Dura 2,40 segundos.
+  ruptura.flac: cover-paper-tear-02.wav, de fantasy sound effects tinysized sfx. Dura 1,01 segundos.
+  salpicadura.flac: splash_05.ogg, de 40 CC0 water, splash, slime SFX. Dura 0,71 segundos.
+  simon_0.flac: Instrument__001.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.
+  simon_1.flac: Instrument__002.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.
+  simon_2.flac: Instrument__003.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.
+  simon_3.flac: Instrument__004.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.
+  sin_balas.flac: gunempty.ogg, de War on Water sound effects. Dura 0,23 segundos.
+  sirena.flac: policia_0886.wav, de BigSoundBank.com y LaSonotheque.org. Dura 4,00 segundos.
+  sirena_ambulancia.flac: ambulancia_1463.wav, de BigSoundBank.com y LaSonotheque.org. Dura 3,00 segundos.
+  sirena_barco.flac: steam_whistle.wav, de steam whistle. Dura 2,31 segundos.
+  sirena_lejana.flac: policia_0886.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,90 segundos.
+  sobredosis.flac: heartbeat_fast_reverb.wav, de heartbeat sounds. Dura 1,11 segundos.
+  territorio.flac: gong_01.ogg, de 100 CC0 SFX. Dura 1,09 segundos.
+  tomar_copa.flac: bottle.wav, de RPG Sound Pack. Dura 0,35 segundos.
+  tomar_cristal.flac: Cigarette_Lighter_04.wav, de 58 random sound effects. Dura 0,07 segundos.
+  tomar_hierba.flac: match-light-01.wav, de fantasy sound effects tinysized sfx. Dura 0,48 segundos.
+  tomar_pastillas.flac: bottle-pills-shake-02.wav, de fantasy accessory sfx library. Dura 0,27 segundos.
+  tomar_polvo.flac: esnifar_0784.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,00 segundos.
+  tranvia.flac: tranvia.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 8,00 segundos.
+  tranvia_campana.flac: tranvia_campana.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 1,47 segundos.
+  trato.flac: handleCoins2.ogg, de 50 RPG sound effects, de Kenney. Dura 0,28 segundos.
+  tren.flac: tren.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 8,00 segundos.
+  tren_silbato.flac: tren_silbato.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 3,00 segundos.
+  trueno.flac: sfx100v2_thunder_01.ogg, de 100 CC0 SFX #2. Dura 4,04 segundos.
+  viento_playa.flac: Wind2.ogg, de Wind. Dura 6,00 segundos.
 
 SONIDOS ORIGINALES DEL JUEGO INCLUIDOS PARA QUE EL PACK ESTÉ COMPLETO
   Sustituye cualquiera de ellos por una grabación tuya con el mismo nombre.

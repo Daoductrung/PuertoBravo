@@ -76,8 +76,8 @@ def test_pack_se_carga_igualado(app, pack_prueba):
 
 def test_sonido_sustituido_a_mano_se_iguala(app):
     carpeta = packs.carpeta_defecto()
-    ruta = os.path.join(carpeta, "gaviota.wav")
-    copia = open(ruta, "rb").read()
+    ruta = os.path.join(carpeta, "gaviota.wav")              # el jugador pone su grabación junto a la del juego
+    assert not os.path.exists(ruta)
     refs = packs.referencias(carpeta)
     try:
         sintesis.escribir_wav(ruta, _tono(0.02, 1.0))
@@ -85,7 +85,7 @@ def test_sonido_sustituido_a_mano_se_iguala(app):
         assert info["igualados"] >= 1
         assert abs(packs.nivel(app.mez.sonidos["gaviota"]) - refs["gaviota"][0]) < refs["gaviota"][0] * 0.06
     finally:
-        open(ruta, "wb").write(copia)
+        os.remove(ruta)
     assert app.recargar_sonidos()["igualados"] == 0                              # los originales no se tocan
 
 

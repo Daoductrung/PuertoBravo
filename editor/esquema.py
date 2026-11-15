@@ -101,6 +101,7 @@ ESQUEMAS = {
         c("tutorial", "Es un tutorial: mientras dura, la policía no acude", "si_no"),
         c("si_clave", "Solo aparece si se tomó la decisión", ayuda="Vacío, la misión aparece siempre. Si escribes el nombre de una decisión, solo aparece cuando se eligió la opción que indiques debajo. Sirve para que la historia se bifurque."),
         c("si_opcion", "Número de la opción elegida", "entero", "La primera opción es la 1.", minimo=1, maximo=4, defecto=1),
+        c("final_titulo", "Nombre de este final", ayuda="Cómo se apunta en el diario. Por ejemplo: Final honrado. Si lo dejas vacío, se usa el título de la misión."),
         c("final", "Texto del final de la historia", "largo", "Si lo rellenas, al completar esta misión se dice este texto como final y queda apuntado en el diario. Con varias misiones así, cada una tras una decisión distinta, la historia tiene varios finales."),
         c("adultos", "Solo con el contenido para adultos", "si_no"),
         c("pasos", "Pasos", "lista", "Se cumplen en orden.", sub="paso", req=True),

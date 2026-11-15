@@ -108,15 +108,7 @@ def _meta(ruta):
 
 
 def _archivos(ruta):
-    out = {}
-    try:
-        for f in sorted(os.listdir(ruta)):
-            nombre, ext = os.path.splitext(f)
-            if ext.lower() in rutas.EXT_AUDIO and nombre not in out:
-                out[nombre] = os.path.join(ruta, f)
-    except OSError:
-        pass
-    return out
+    return sintesis.archivos_de(ruta)
 
 
 def listar():
@@ -172,6 +164,7 @@ def cargar(mez, cfg):
     pack = cfg["pack_sonidos"]
     ruta = os.path.join(carpeta_packs(), pack) if pack else ""
     if pack and pack != rutas.POR_DEFECTO and os.path.isdir(ruta):
+        sintesis.limpiar_formato_anterior(ruta)               # los WAV de una versión anterior que ya están en FLAC
         m = _meta(ruta)
         vol = m.get("volumenes") if isinstance(m.get("volumenes"), dict) else {}
         for nombre, archivo in _archivos(ruta).items():

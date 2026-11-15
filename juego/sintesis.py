@@ -741,23 +741,78 @@ def escribir_wav(ruta, datos):
     sf.write(ruta, np.clip(datos, -1.0, 1.0), SR, subtype="PCM_16")
 
 
-def cargar(mezclador, carpeta):
-    """Carga todos los sonidos de data/sonidos. Los que falten se generan y se guardan como WAV.
+# Desde la versión 1.6.2 los sonidos del juego se guardan en FLAC en lugar de WAV. FLAC comprime sin pérdida:
+# al leerlo salen exactamente las mismas muestras que del WAV, pero el archivo ocupa menos de la mitad.
+# OGG y MP3 ocupan aún menos, pero pierden calidad; por eso solo se usan donde el original ya venía así.
+FORMATO = ".flac"
+EXT_AUDIO = (".wav", ".ogg", ".flac", ".mp3")
 
-    Cada sonido es un archivo con su nombre: para cambiar uno basta con sustituir el archivo
-    (WAV, OGG, FLAC o MP3). Si se borra un archivo, el juego vuelve a crear el original.
+
+def escribir_audio(ruta_sin_extension, datos):
+    """Guarda un sonido en el formato del juego (FLAC, sin pérdida). Devuelve la ruta escrita."""
+    ruta = ruta_sin_extension + FORMATO
+    escribir_wav(ruta, datos)
+    return ruta
+
+
+def archivos_de(carpeta):
+    """{nombre: ruta} de los sonidos de una carpeta. Si un sonido está en dos formatos, manda el que no es FLAC:
+    es el que ha puesto el jugador para sustituir al de serie."""
+    out = {}
+    try:
+        nombres = sorted(os.listdir(carpeta))
+    except OSError:
+        return out
+    for f in nombres:
+        nombre, ext = os.path.splitext(f)
+        ext = ext.lower()
+        if ext in EXT_AUDIO and (nombre not in out or (out[nombre].lower().endswith(FORMATO) and ext != FORMATO)):
+            out[nombre] = os.path.join(carpeta, f)
+    return out
+
+
+def limpiar_formato_anterior(carpeta):
+    """Tras actualizar desde una versión anterior quedan los WAV antiguos junto a los FLAC nuevos. Aquí se borran los
+    que son el mismo sonido, para que no ocupen sitio sin usarse. Un WAV distinto del FLAC es un sonido que el jugador
+    cambió a mano: ese no se toca, y es el que suena. Devuelve cuántos archivos ha borrado."""
+    import soundfile as sf
+    try:
+        nombres = os.listdir(carpeta)
+    except OSError:
+        return 0
+    flac = {os.path.splitext(f)[0] for f in nombres if f.lower().endswith(FORMATO)}
+    borrados = 0
+    for f in nombres:
+        nombre, ext = os.path.splitext(f)
+        if ext.lower() != ".wav" or nombre not in flac:
+            continue
+        try:
+            viejo, sr1 = sf.read(os.path.join(carpeta, f), dtype="int16")
+            nuevo, sr2 = sf.read(os.path.join(carpeta, nombre + FORMATO), dtype="int16")
+            if sr1 == sr2 and viejo.shape == nuevo.shape and np.array_equal(viejo, nuevo):
+                os.remove(os.path.join(carpeta, f))
+                borrados += 1
+        except Exception:
+            continue
+    return borrados
+
+
+def cargar(mezclador, carpeta):
+    """Carga todos los sonidos de data/sonidos. Los que falten se generan y se guardan en FLAC.
+
+    Cada sonido es un archivo con su nombre: para cambiar uno basta con poner al lado un archivo con el mismo
+    nombre (WAV, OGG, FLAC o MP3). Si se borra un archivo, el juego vuelve a crear el original.
     """
     os.makedirs(carpeta, exist_ok=True)
+    limpiar_formato_anterior(carpeta)
     S = {}
-    for f in sorted(os.listdir(carpeta)):
-        nombre, ext = os.path.splitext(f)
-        if ext.lower() in (".wav", ".ogg", ".flac", ".mp3") and nombre not in S:
-            try:
-                d = leer_audio(os.path.join(carpeta, f), mono=not es_fondo(nombre), maximo=MAX_FONDO if es_fondo(nombre) else None)
-                if len(d) > 8:
-                    S[nombre] = d
-            except Exception:
-                pass
+    for nombre, ruta in archivos_de(carpeta).items():
+        try:
+            d = leer_audio(ruta, mono=not es_fondo(nombre), maximo=MAX_FONDO if es_fondo(nombre) else None)
+            if len(d) > 8:
+                S[nombre] = d
+        except Exception:
+            pass
     marca = os.path.join(carpeta, "_version.txt")
     try:
         al_dia = open(marca, encoding="utf-8").read().strip() == str(VERSION_CACHE)
@@ -769,7 +824,7 @@ def cargar(mezclador, carpeta):
             if nombre not in S:
                 S[nombre] = d
                 try:
-                    escribir_wav(os.path.join(carpeta, nombre + ".wav"), d)
+                    escribir_audio(os.path.join(carpeta, nombre), d)
                 except Exception:
                     pass
         try:
@@ -785,7 +840,7 @@ def cargar(mezclador, carpeta):
                 if nombre in faltan:
                     S[nombre] = faltan[nombre]
                     try:
-                        escribir_wav(os.path.join(carpeta, nombre + ".wav"), faltan[nombre])
+                        escribir_audio(os.path.join(carpeta, nombre), faltan[nombre])
                     except Exception:
                         pass
         if faltan:
@@ -793,7 +848,7 @@ def cargar(mezclador, carpeta):
                 if nombre not in S:
                     S[nombre] = d
                     try:
-                        escribir_wav(os.path.join(carpeta, nombre + ".wav"), d)
+                        escribir_audio(os.path.join(carpeta, nombre), d)
                     except Exception:
                         pass
     for k, v in S.items():

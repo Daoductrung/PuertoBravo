@@ -11,7 +11,7 @@ from juego.menus import Dialogo, Menu
 def test_carpeta_data(app):
     for sub in ("datos", "sonidos", "radio", "config", "docs", "mods"):
         assert os.path.isdir(rutas.data(sub)), sub
-    wavs = [f for f in os.listdir(rutas.SONIDOS) if f.endswith(".wav")]
+    wavs = [f for f in os.listdir(rutas.SONIDOS) if f.endswith(".flac")]              # los sonidos del juego van en FLAC, sin pérdida
     assert len(wavs) >= 170
     assert set(os.path.splitext(f)[0] for f in wavs) <= set(app.mez.sonidos)
     app.radio.esperar()
@@ -32,14 +32,22 @@ def test_sonido_sustituido_y_emisora_nueva(app):
         carpeta = os.path.join(tmp, "sonidos")
         m = Mezclador(dispositivo=False)
         S = sintesis.cargar(m, carpeta)
-        assert os.path.exists(os.path.join(carpeta, "claxon.wav"))
+        assert os.path.exists(os.path.join(carpeta, "claxon.flac")) and not os.path.exists(os.path.join(carpeta, "claxon.wav"))
         import soundfile as sf
+        # un WAV idéntico al FLAC es un resto de una versión anterior: se borra solo. Uno distinto es del jugador: se queda y manda
+        igual, sr = sf.read(os.path.join(carpeta, "gaviota.flac"), dtype="int16")
+        sf.write(os.path.join(carpeta, "gaviota.wav"), igual, sr, subtype="PCM_16")
         sf.write(os.path.join(carpeta, "claxon.wav"), np.zeros((22050, 2), dtype="float32") + 0.25, 22050)      # estéreo y a otra frecuencia
-        os.remove(os.path.join(carpeta, "baliza.wav"))
+        os.remove(os.path.join(carpeta, "baliza.flac"))
         m2 = Mezclador(dispositivo=False)
         S2 = sintesis.cargar(m2, carpeta)
         assert S2["claxon"].ndim == 1 and abs(len(S2["claxon"]) - 44100) < 10 and abs(float(S2["claxon"].mean()) - 0.25) < 0.01
-        assert "baliza" in S2 and os.path.exists(os.path.join(carpeta, "baliza.wav"))       # el borrado se regenera
+        assert "baliza" in S2 and os.path.exists(os.path.join(carpeta, "baliza.flac"))      # el borrado se regenera
+        assert not os.path.exists(os.path.join(carpeta, "gaviota.wav")) and os.path.exists(os.path.join(carpeta, "gaviota.flac"))
+        assert os.path.exists(os.path.join(carpeta, "claxon.wav")) and os.path.exists(os.path.join(carpeta, "claxon.flac"))
+        assert sintesis.archivos_de(carpeta)["claxon"].endswith(".wav") and sintesis.archivos_de(carpeta)["baliza"].endswith(".flac")
+        d1, _ = sf.read(os.path.join(carpeta, "gaviota.flac"), dtype="int16")
+        assert np.array_equal(d1, igual)                                                    # FLAC no pierde nada
         radio = os.path.join(tmp, "radio")
         os.makedirs(radio)
         sf.write(os.path.join(radio, "mi_emisora_pirata.wav"), np.zeros((4410, 2), dtype="float32"), 44100)

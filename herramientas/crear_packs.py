@@ -405,14 +405,14 @@ def montar(clave, pack):
         if len(d) < 64:
             faltan.append(f"{sonido}: queda vacío")
             continue
-        sintesis.escribir_wav(os.path.join(dest, sonido + ".wav"), d)
+        sintesis.escribir_audio(os.path.join(dest, sonido), d)
         hechos.append((sonido, col, os.path.basename(ruta), len(d) / SR))
         usadas[col] = True
     # el pack queda completo: los sonidos para los que no hay grabación llevan el sonido original del juego
     originales = []
     for sonido, d in sorted(ORIGINALES.items()):
-        if not os.path.exists(os.path.join(dest, sonido + ".wav")):
-            sintesis.escribir_wav(os.path.join(dest, sonido + ".wav"), d)
+        if not os.path.exists(os.path.join(dest, sonido + sintesis.FORMATO)):
+            sintesis.escribir_audio(os.path.join(dest, sonido), d)
             originales.append(sonido)
     with open(os.path.join(dest, "pack.json"), "w", encoding="utf-8") as f:
         json.dump({"nombre": pack["nombre"], "descripcion": pack["descripcion"], "licencia": "CC0, dominio público",
@@ -428,7 +428,7 @@ def montar(clave, pack):
               "  Opciones, Sonido y música, Pack de sonidos.", "", "COLECCIONES USADAS"]
     lineas += [f"  {info(c)[1]}: {info(c)[2]}" for c in usadas]
     lineas += ["", "QUÉ SONIDO SALE DE DÓNDE"]
-    lineas += [f"  {s}.wav: {a}, de {info(c)[1]}. Dura " + f"{dur:.2f}".replace(".", ",") + " segundos." for s, c, a, dur in hechos]
+    lineas += [f"  {s}{sintesis.FORMATO}: {a}, de {info(c)[1]}. Dura " + f"{dur:.2f}".replace(".", ",") + " segundos." for s, c, a, dur in hechos]
     lineas += ["", "SONIDOS ORIGINALES DEL JUEGO INCLUIDOS PARA QUE EL PACK ESTÉ COMPLETO",
                "  Sustituye cualquiera de ellos por una grabación tuya con el mismo nombre.", "  " + ", ".join(originales)]
     with open(os.path.join(dest, "CREDITOS.txt"), "w", encoding="utf-8-sig", newline="\r\n") as f:

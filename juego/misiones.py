@@ -57,8 +57,8 @@ class Misiones:
 
     def mision_en_lugar(self, lugar_id):
         for m in self.misiones_disponibles():
-            if m["lugar"] == lugar_id:
-                return m
+            if m["lugar"] == lugar_id and (not m.get("tutorial") or m["id"] == "tut01"):
+                return m                    # los demás tutoriales se empiezan desde el móvil: no deben estorbar en la oficina de empleo o en el embarcadero
         return None
 
     def objetivo_txt(self):

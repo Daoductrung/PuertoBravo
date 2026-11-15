@@ -269,10 +269,10 @@ def test_sonidos_nuevos_en_todos_los_packs():
     assert len(set(cuentas.values())) == 1 and cuentas["por_defecto"] == 230, cuentas       # todos los packs, los mismos archivos
     # en los packs de grabaciones son grabaciones de verdad, no el sonido de serie
     for n in ("tren", "tranvia", "bajo_agua"):
-        serie = open(os.path.join(base, "por_defecto", n + ".wav"), "rb").read()
-        assert open(os.path.join(base, "realista", n + ".wav"), "rb").read() != serie
+        serie = open(os.path.join(base, "por_defecto", n + ".flac"), "rb").read()
+        assert open(os.path.join(base, "realista", n + ".flac"), "rb").read() != serie
     creditos = open(os.path.join(base, "realista", "CREDITOS.txt"), encoding="utf-8-sig").read()
-    assert "Freesound" in creditos and "tren.wav" in creditos
+    assert "Freesound" in creditos and "tren.flac" in creditos
     # están en el catálogo, con descripción, y en Aprender los sonidos
     grupo = next(k for k, g in enumerate(cat.GRUPOS) if g[0] == "Tren, tranvía y agua")
     for n in nuevos:

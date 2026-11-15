@@ -167,7 +167,7 @@ def test_todas_las_teclas_estan_documentadas(app):
     descripciones = " ".join(d for grupo in ayuda.TECLAS.values() for _, d in grupo).lower()
     nombres = {"ESCAPE": "escape", "TAB": "tabulador", "RETURN": "intro", "KP_ENTER": "intro", "SPACE": "espacio", "COMMA": "coma", "PERIOD": "punto",
                "PAGEUP": "re pág", "PAGEDOWN": "av pág", "LCTRL": "control", "RCTRL": "control", "UP": "flecha", "DOWN": "flecha", "LEFT": "flecha", "RIGHT": "flecha",
-               "LSHIFT": "mayúsculas", "RSHIFT": "mayúsculas"}
+               "LSHIFT": "mayúsculas", "RSHIFT": "mayúsculas", "BACKSPACE": "retroceso"}
     faltan = []
     for t in sorted(teclas):
         nombre = nombres.get(t, t.lower())

@@ -53,7 +53,7 @@ def _jugar_mision(robot, m):
         p.quitar_vehiculo(v)
     _ir_a(robot, p.lugares[m["lugar"]])
     robot.frames(15)
-    assert p.mision_en_lugar(m["lugar"]) is not None, f"{m['id']}: no disponible"
+    assert p.mision_en_lugar(m["lugar"]) is not None or m.get("tutorial"), f"{m['id']}: no disponible"      # los tutoriales se empiezan desde el móvil
     p.iniciar_mision(m)
     for vuelta in range(400):
         robot.saltar_dialogos()
