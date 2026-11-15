@@ -129,6 +129,15 @@ li { margin-bottom: .3em; }
 <p>En el mod Bahía del Ocaso, las misiones ocs1 a ocs6 son un ejemplo de cada uno.</p>
 <h3>Tutoriales y muñecos de prácticas</h3>
 <p>Una misión puede marcarse como tutorial: mientras dura, la policía no acude, haga lo que haga el jugador. Y en un grupo de enemigos, la casilla No ataca los convierte en muñecos de prácticas: se les puede fijar y tumbar, pero no se mueven ni hacen daño. Con las dos cosas se hace un tutorial de combate en el que no se puede fallar.</p>
+<h3>Decisiones, ramas y finales</h3>
+<p>El tipo de paso Una decisión del jugador abre un menú con las opciones que escribas, de dos a cuatro. Cada opción tiene el texto que elige el jugador, una explicación para F1, lo que se cuenta al elegirla, y sus consecuencias: dinero, fama, ánimo y relación con una banda.</p>
+<ul>
+<li>Ponle un nombre a la decisión, una palabra sin espacios. Con ese nombre, otras misiones y otros pasos pueden depender de lo que se eligió.</li>
+<li>En una misión, Solo aparece si se tomó la decisión y Número de la opción elegida hacen que esa misión exista solo en una rama de la historia. La primera opción es la 1.</li>
+<li>En un paso, los mismos dos campos hacen que ese paso se juegue solo en una rama; en las demás se salta.</li>
+<li>En una misión, Texto del final de la historia la convierte en un final: al completarla se dice ese texto y queda apuntado en el diario. Con varias misiones así, cada una tras una opción distinta, la historia tiene varios finales.</li>
+</ul>
+<p>En la historia principal, las misiones fd1 a fd4 son un ejemplo: una decisión con tres opciones y un final para cada una.</p>
 
 <h3>Dar voz a los personajes</h3>
 <p>Las frases de los diálogos las lee el lector de pantalla de quien juega. Si quieres que suenen con voces grabadas, no hay que tocar nada en el mod: basta con dejar las grabaciones en la carpeta de voces del juego.</p>
@@ -140,7 +149,7 @@ li { margin-bottom: .3em; }
 <li>Vuelve a pulsar <kbd>Control G</kbd> cuando quieras: las frases que ya tienen archivo salen marcadas con la palabra GRABADA.</li>
 </ol>
 <p>Las frases sin grabación las sigue leyendo el lector, así que se puede grabar poco a poco. Si después cambias el orden de los pasos o de las frases de una misión, cambian sus números: vuelve a sacar el guion y renombra los archivos.</p>
-<p>Para compartir un mod con voces, pasa el archivo del mod y, aparte, una carpeta con las grabaciones para copiar en <strong>data\voces</strong>. Usa voces propias o voces sintéticas que tengas permiso para usar: no voces clonadas de personas reales ni sacadas de otros juegos o películas.</p>
+<p>Para compartir un mod con voces, pasa el archivo del mod y, aparte, una carpeta con las grabaciones para copiar en <strong>data\voces\propias</strong>. Usa voces propias o voces sintéticas que tengas permiso para usar: no voces clonadas de personas reales ni sacadas de otros juegos o películas.</p>
 
 <h2>6. Los sonidos</h2>
 <p>Todo lo que añadas debe sonar. Cada lugar tiene un campo de sonido, que es el que se oye al pasar por su puerta y de fondo al entrar. Elige en el desplegable uno de los sonidos del juego. Si quieres uno nuevo, copia tu archivo en <code>data\sonidos\por_defecto</code> con el nombre que quieras y aparecerá en la lista la próxima vez que abras el editor. La guía <a href="cambiar_sonidos.html">cambiar_sonidos.html</a> describe todos los sonidos.</p>
