@@ -128,7 +128,7 @@ def sonar(app, ruta):
     """Reproduce una grabación por el canal de la interfaz. Devuelve el canal, o None si no se pudo leer."""
     from .sintesis import leer_audio
     try:
-        datos = leer_audio(ruta, mono=False)
+        datos = leer_audio(ruta, mono=False, maximo=180)          # una frase no dura tres minutos: si el archivo es enorme, se corta
         if datos.ndim == 1:
             datos = datos.reshape(-1)
     except Exception as e:

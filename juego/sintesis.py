@@ -721,6 +721,7 @@ def es_bucle(nombre):
 
 # Sonidos de fondo: no vienen de ningún punto, así que se dejan en estéreo, tal como se grabaron.
 FONDOS = {"lluvia"}
+MAX_EFECTO = 60                   # segundos: un efecto de sonido más largo se recorta. Nadie pone un claxon de una hora a propósito
 MAX_FONDO = 90                    # segundos: un ambiente más largo se recorta, para no llenar la memoria
 
 
@@ -743,12 +744,28 @@ def _remuestrear(d, sr):
     return salida[:, 0] if d.ndim == 1 else salida
 
 
-def leer_audio(ruta, mono=True, maximo=None):
-    """Lee un archivo de audio y lo adapta al motor: 44100 Hz, y mono o estéreo según se pida."""
+def duracion_audio(ruta):
+    """Segundos que dura un archivo de audio, sin leerlo. Cero si no se puede saber."""
     import soundfile as sf
-    d, sr = sf.read(ruta, dtype="float32", always_2d=True)
-    if maximo and len(d) > maximo * sr:
-        d = d[:int(maximo * sr)]
+    try:
+        i = sf.info(ruta)
+        return i.frames / float(i.samplerate) if i.samplerate else 0.0
+    except Exception:
+        return 0.0
+
+
+def leer_audio(ruta, mono=True, maximo=None, desde=0.0):
+    """Lee un archivo de audio y lo adapta al motor: 44100 Hz, y mono o estéreo según se pida.
+
+    Con `maximo` se leen como mucho esos segundos, y con `desde`, a partir de ese segundo. Del disco solo sale lo que
+    se pide: un archivo de una hora no se carga entero para quedarse con un minuto.
+    """
+    import soundfile as sf
+    with sf.SoundFile(ruta) as f:
+        sr = f.samplerate
+        if desde > 0:
+            f.seek(min(int(desde * sr), f.frames))
+        d = f.read(frames=int(maximo * sr) if maximo else -1, dtype="float32", always_2d=True)
     if mono:
         d = d.mean(axis=1)
     elif d.shape[1] == 1:
@@ -832,7 +849,7 @@ def cargar(mezclador, carpeta):
     S = {}
     for nombre, ruta in archivos_de(carpeta).items():
         try:
-            d = leer_audio(ruta, mono=not es_fondo(nombre), maximo=MAX_FONDO if es_fondo(nombre) else None)
+            d = leer_audio(ruta, mono=not es_fondo(nombre), maximo=MAX_FONDO if es_fondo(nombre) else MAX_EFECTO)
             if len(d) > 8:
                 S[nombre] = d
         except Exception:

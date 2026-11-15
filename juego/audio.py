@@ -91,6 +91,7 @@ class Mezclador:
         self._ar = np.arange(8192 + PAD, dtype=np.float64)
         self.oyente = (0.0, 0.0, 0.0)
         self.vols = {"maestro": 0.8, "efectos": 1.0, "ambiente": 0.6, "musica": 0.5, "interfaz": 0.8, "senales": 1.0}
+        self._lock_cadena = threading.Lock()
         self.diferidos = {}         # sonidos largos que se cargan cuando hacen falta: nombre -> función que los lee
         self._provisional = {}      # lo que suena mientras tanto: el sonido de serie
         self._dif_estado = {}       # nombre -> "cargando" o "listo"
@@ -202,6 +203,20 @@ class Mezclador:
         return 0.0 if d is None else len(d) / SR
 
     # ------------------------------------------------------------ reproducir
+    def posicion(self, c):
+        """Por qué muestra va un canal."""
+        return float(c.pos)
+
+    def encadenar(self, viejo, nombre, corte, **kw):
+        """Hace sonar `nombre` a continuación de un canal que ya suena, alineado con él: la muestra `corte` del viejo es
+        la muestra cero del nuevo. Sirve para tocar una canción larga por tramos sin que se note la costura."""
+        with self._lock_cadena:
+            desde = max(0.0, self.posicion(viejo) - corte) if viejo is not None and not viejo.fin else 0.0
+            c = self.sonar(nombre, **kw)
+            if not c.fin:
+                c.pos = min(desde, max(0.0, c.largo - 1.0))
+        return c
+
     def sonar(self, nombre, vol=1.0, tono=1.0, bucle=False, xy=None, pan=0.0,
               ref=5.0, maxd=70.0, cat="efectos"):
         c = Canal()

@@ -4,6 +4,7 @@ Cada emisora es un bucle estéreo compuesto al vuelo a partir de una semilla.
 Además, cualquier archivo de audio que el jugador deje en la carpeta
 radio_usuario se convierte en la emisora «Mi música».
 """
+import math
 import os
 import random
 import threading
@@ -216,6 +217,12 @@ EXT = (".wav", ".ogg", ".flac", ".mp3")
 # una pieza generada con una IA y la música de serie suenan igual de fuertes, y lo único que manda
 # es el volumen que elijas en Opciones.
 NIVEL_RADIO = 0.15        # nivel medio (RMS) al que queda cada canción de la radio
+# Una canción larga no se carga entera: una hora de música son más de siete gigas de memoria mientras se prepara,
+# y eso deja colgado el ordenador. A partir de cinco minutos se lee y suena por tramos de un minuto, uno tras otro.
+LARGA = 300.0             # segundos a partir de los cuales una canción se toca por tramos
+TROZO = 60.0              # lo que dura cada tramo
+SOLAPE = 0.25             # los tramos se pisan un cuarto de segundo, fundidos, para que no se note la costura
+MAX_PIEZA = 600.0         # la música de ambiente se corta a los diez minutos
 NIVEL_AMBIENTE = 0.11     # y cada pieza de música de ambiente
 
 
@@ -276,6 +283,10 @@ class Radio:
         self.pendiente = False
         self._pedido = 0
         self._listo = None
+        self._larga = None           # la canción larga que suena por tramos: {"ruta", "trozo", "total", "g"}
+        self._prox = None            # el tramo siguiente, ya leído: (pedido, número de tramo, datos)
+        self._leyendo = False
+        self._nombre_pista = ""
         self._cargador = None
         os.makedirs(self.usuario, exist_ok=True)
         fijas = [e for e in EMISORAS if "estilo" in e]
@@ -347,6 +358,8 @@ class Radio:
         self._pedido += 1                # lo que se estuviera cargando ya no interesa
         self.pendiente = False
         self.sonando = None
+        self._larga = None
+        self._prox = None
         if self.canal is not None:
             self.canal.parar()
             self.canal = None
@@ -373,37 +386,140 @@ class Radio:
         self.pendiente = True
 
         def cargar():
+            larga = None
             try:
                 if ruta.startswith("memoria:"):
                     datos = self.memoria.get(ruta[8:])
+                    datos = normalizar_musica(datos, NIVEL_RADIO) if datos is not None and len(datos) > 100 else None
                 else:
-                    datos = leer_audio(ruta, mono=False)
-                datos = normalizar_musica(datos, NIVEL_RADIO) if datos is not None and len(datos) > 100 else None
+                    from .sintesis import duracion_audio
+                    dur = duracion_audio(ruta)
+                    if dur > LARGA:                  # larga: solo el primer tramo, y la ganancia para toda la canción
+                        larga = {"ruta": ruta, "trozo": 0, "total": max(1, int(math.ceil(dur / TROZO))), "g": self._ganancia_larga(ruta, dur)}
+                        datos = self._leer_trozo(larga, 0)
+                    else:
+                        datos = leer_audio(ruta, mono=False)
+                        datos = normalizar_musica(datos, NIVEL_RADIO) if datos is not None and len(datos) > 100 else None
             except Exception:
-                datos = None
-            self._listo = (n, datos, ruta)
+                datos, larga = None, None
+            self._listo = (n, datos, ruta, larga)
         self._cargador = threading.Thread(target=cargar, daemon=True)
         self._cargador.start()
+
+    # ------------------------------------------------------------- canciones largas, por tramos
+    def _ganancia_larga(self, ruta, dur):
+        """El volumen de una canción larga se decide con ocho muestras de cinco segundos repartidas por toda ella,
+        para que todos los tramos suenen al mismo nivel sin tener que leerla entera."""
+        from .sintesis import leer_audio
+        niveles, pico = [], 0.0
+        for k in range(8):
+            try:
+                m = leer_audio(ruta, mono=False, desde=dur * (k + 0.5) / 8.0, maximo=5.0)
+            except Exception:
+                continue
+            if len(m) > 100:
+                niveles.append(nivel_musica(m))
+                pico = max(pico, float(np.max(np.abs(m))))
+        niveles = [x for x in niveles if x > 1e-5]
+        if not niveles:
+            return 1.0
+        g = NIVEL_RADIO / (sum(niveles) / len(niveles))
+        return g * 0.98 / (pico * g) if pico * g > 0.98 else g
+
+    def _leer_trozo(self, larga, k):
+        """Lee del disco solo el tramo k, ya nivelado y con los fundidos de sus extremos."""
+        from .sintesis import leer_audio
+        d = leer_audio(larga["ruta"], mono=False, desde=k * TROZO, maximo=TROZO + SOLAPE)
+        if d is None or len(d) < 100:
+            return None
+        d = np.clip(d * larga["g"], -1.0, 1.0).astype(np.float32)
+        n = min(int(SOLAPE * SR), len(d) // 2)
+        rampa = np.linspace(0.0, 1.0, n, dtype=np.float32)
+        if d.ndim == 2:
+            rampa = rampa[:, None]
+        if k > 0:
+            d[:n] *= rampa                               # entra fundiéndose con el final del tramo anterior
+        if k < larga["total"] - 1 and len(d) >= int(TROZO * SR):
+            d[-n:] *= rampa[::-1]                        # y sale fundiéndose con el principio del siguiente
+        return d
+
+    def _pedir_trozo(self, k):
+        """Lee en segundo plano el tramo siguiente, con un minuto de margen."""
+        larga, pedido = self._larga, self._pedido
+        if larga is None or self._leyendo:
+            return
+        self._leyendo = True
+
+        def leer():
+            try:
+                d = self._leer_trozo(larga, k)
+            except Exception:
+                d = None
+            if pedido == self._pedido:
+                self._prox = (pedido, k, d)
+            self._leyendo = False
+        self._lector = threading.Thread(target=leer, daemon=True)
+        self._lector.start()
+
+    def _tocar(self, datos, bucle, tras=None):
+        """Hace sonar unos datos. Los tramos alternan entre dos nombres: uno entra mientras el otro aún se apaga.
+        Con `tras`, entra alineado con ese canal, muestra a muestra, para que la costura no se oiga."""
+        nombre = "radio_pista_b" if self._nombre_pista == "radio_pista" else "radio_pista"
+        self._nombre_pista = nombre
+        self.mez.registrar(nombre, datos)
+        if tras is not None:
+            self.canal = self.mez.encadenar(tras, nombre, TROZO * SR, bucle=bucle, cat="musica")
+        else:
+            self.canal = self.mez.sonar(nombre, bucle=bucle, cat="musica")
+        self.t_fin = len(datos) / SR
 
     def actualizar(self, dt):
         """Se llama en cada fotograma: arranca la canción recién cargada y pasa a la siguiente cuando acaba una."""
         listo = self._listo
         if listo is not None:
             self._listo = None
-            n, datos, ruta = listo
+            n, datos, ruta, larga = listo
             if n == self._pedido and self.pendiente:
                 self.pendiente = False
                 if self.canal is not None:
                     self.canal.parar()
                     self.canal = None
+                self._larga, self._prox = None, None
                 if datos is None:
                     self._siguiente()                    # archivo ilegible: se prueba con otro
                 else:
-                    self.mez.registrar("radio_pista", datos)
-                    self.canal = self.mez.sonar("radio_pista", bucle=not self._rota(), cat="musica")
+                    self._larga = larga
+                    self._tocar(datos, bucle=larga is None and not self._rota())
                     self.sonando = ruta
-                    self.t_fin = len(datos) / SR
-        elif self.canal is not None and not self.pendiente and self._rota():
+                    if larga is not None and larga["total"] > 1:
+                        self._pedir_trozo(1)
+            return
+        if self.canal is None or self.pendiente:
+            return
+        larga = self._larga
+        if larga is not None:
+            ultimo = larga["trozo"] >= larga["total"] - 1
+            por_donde = self.mez.posicion(self.canal)    # se va por lo que de verdad ha sonado, no por el reloj
+            if not ultimo and (por_donde >= TROZO * SR or self.canal.fin):       # toca empalmar con el tramo siguiente
+                prox = self._prox
+                if prox is not None and prox[0] == self._pedido and prox[1] == larga["trozo"] + 1:
+                    self._prox = None
+                    if prox[2] is None:                  # el archivo se acaba antes de lo que decía: se da por terminado
+                        larga["trozo"] = larga["total"] - 1
+                    else:
+                        larga["trozo"] += 1
+                        self._tocar(prox[2], bucle=False, tras=self.canal)       # el canal anterior termina solo, fundido
+                        if larga["trozo"] < larga["total"] - 1:
+                            self._pedir_trozo(larga["trozo"] + 1)
+                elif not self._leyendo:
+                    self._pedir_trozo(larga["trozo"] + 1)        # no estaba pedido: se pide; habrá un silencio corto
+            elif ultimo and self.canal.fin:
+                if self._rota():
+                    self._siguiente()
+                else:
+                    self._pedir(larga["ruta"])           # una sola canción larga: vuelve a empezar
+            return
+        if self._rota():
             self.t_fin -= dt
             if self.t_fin <= 1.0:
                 self._siguiente()
@@ -629,7 +745,7 @@ class MusicaAmbiente:
         if clave in self.mez.sonidos or not ruta:
             return clave in self.mez.sonidos
         try:
-            datos = leer_audio(ruta, mono=False)
+            datos = leer_audio(ruta, mono=False, maximo=MAX_PIEZA)       # una pieza de ambiente más larga se corta: no se carga entera
         except Exception:
             return False
         if len(datos) < 1000 or self.cancelado:

@@ -23,6 +23,7 @@ AL_POSITION, AL_GAIN, AL_PITCH, AL_LOOPING, AL_BUFFER, AL_SOURCE_STATE = 0x1004,
 AL_PLAYING, AL_PAUSED, AL_ORIENTATION, AL_SOURCE_RELATIVE = 0x1012, 0x1013, 0x100F, 0x202
 AL_ROLLOFF_FACTOR, AL_FORMAT_MONO16, AL_FORMAT_STEREO16, AL_NONE = 0x1021, 0x1101, 0x1103, 0
 ALC_HRTF_SOFT, ALC_HRTF_STATUS_SOFT, ALC_FREQUENCY = 0x1992, 0x1993, 0x1007
+AL_SAMPLE_OFFSET = 0x1025
 _CATS_MUNDO = ("efectos", "ambiente")
 # Efectos (extensión EFX): un único eco, que cambia según dónde esté el oyente.
 AL_EFFECT_TYPE, AL_EFFECT_REVERB, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_GAIN, AL_AUXILIARY_SEND_FILTER = 0x8001, 0x0001, 0x0001, 0x0002, 0x20006
@@ -192,6 +193,9 @@ class MezcladorAL(Mezclador):
         c._g = 0.0 if c.bucle else None                  # los bucles entran con fundido
         self.al.alSourcei(c._src, AL_BUFFER, b)
         self.al.alSourcei(c._src, AL_LOOPING, 1 if c.bucle else 0)
+        if c.pos > 0:                                    # empieza a mitad: es la continuación de otro sonido
+            self.al.alSourcei(c._src, AL_SAMPLE_OFFSET, int(c.pos))
+            self.al.alGetError()
         self.al.alSourcef(c._src, AL_ROLLOFF_FACTOR, 0.0)
         if self._eco_slot and (c.cat == "efectos" or c.eco):          # lo que suena en el mundo lleva el eco del lugar
             self.al.alSource3i(c._src, AL_AUXILIARY_SEND_FILTER, self._eco_slot, 0, 0)
@@ -248,6 +252,14 @@ class MezcladorAL(Mezclador):
         self.al.alSourcef(c._src, AL_PITCH, float(max(0.05, min(8.0, tono))))
 
     # ------------------------------------------------------------------ interfaz del mezclador
+    def posicion(self, c):
+        s = getattr(c, "_src", 0)
+        if not s:
+            return float(c.pos)
+        v = ctypes.c_int(0)
+        self.al.alGetSourcei(s, AL_SAMPLE_OFFSET, ctypes.byref(v))
+        return float(v.value)
+
     def sonar(self, nombre, **kw):
         c = super().sonar(nombre, **kw)
         c._src = 0

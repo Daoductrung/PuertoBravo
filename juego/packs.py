@@ -176,7 +176,7 @@ def cargar(mez, cfg):
                 info["del_pack"] += 1
                 continue
             try:
-                d = sintesis.leer_audio(archivo, mono=not fondo, maximo=sintesis.MAX_FONDO if fondo else None)
+                d = sintesis.leer_audio(archivo, mono=not fondo, maximo=sintesis.MAX_FONDO if fondo else sintesis.MAX_EFECTO)
             except Exception:
                 continue
             if len(d) <= 8:
