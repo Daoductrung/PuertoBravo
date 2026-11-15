@@ -721,3 +721,55 @@ def test_todo_el_transporte_publico(robot):
     assert viajes["tranvia"] == 44 and viajes["tren"] == 90 and viajes["avion"] == 12, viajes
     j = app.partida.j
     assert j.stats["tranvias"] >= 48 and j.stats["trenes"] == 90 and j.stats["vuelos"] == 12
+
+
+def test_veinte_minutos_junto_a_las_vias_en_cada_ciudad(robot):
+    """En cada ciudad, veinte minutos de juego junto a las vías, y cruzándolas a pie: pasan tranvías, se oyen, paran, y todo sigue coherente."""
+    p = robot.nueva_partida()
+    t = Total(robot)
+    app = robot.app
+    p.cfg["sucesos"] = False
+    p.cfg["anunciar_superficie"] = True
+    for mapa in [m for m in p.mapas.values() if m.tipo == "ciudad"]:
+        linea = mapa.linea_tranvia()
+        t.ir(mapa.id, linea[0].x, linea[0].y)
+        p = app.partida
+        j = p.j
+        robot.frames(2)
+        assert p.tranvias and p._transporte_mapa == mapa.id, mapa.id
+        pasadas, oidos, paradas_vistas = 0, 0, set()
+        cerca_antes = False
+        for vuelta in range(120):                                             # 120 tandas de diez segundos
+            robot.frames(200, dt=1 / 20)                                      # el juego no admite pasos de más de una vigésima de segundo
+            t.sano()
+            for tr in p.tranvias:
+                x, y = mapa.via_punto(tr["s"])
+                assert mapa.en_via(x, y) and 0 <= tr["s"] < mapa.via_largo + 1e-6, (mapa.id, tr["s"])     # nunca se sale de las vías
+                if tr["espera"] > 0:
+                    paradas_vistas.add(round(tr["s"]))
+            cerca = any(math.hypot(mapa.via_punto(tr["s"])[0] - j.x, mapa.via_punto(tr["s"])[1] - j.y) < 60 for tr in p.tranvias)
+            if cerca and not cerca_antes:
+                pasadas += 1
+            cerca_antes = cerca
+            oidos += sum(1 for tr in p.tranvias if tr["canal"] is not None)
+            assert sum(1 for tr in p.tranvias if tr["canal"] is not None) <= len(p.tranvias)
+            if vuelta % 30 == 10:                                             # de vez en cuando se cruzan las vías a pie
+                x, y = mapa.via_punto(mapa.via_marca(linea[0]) + 30)
+                ax, ay = mapa.fuera_de_la_via(x, y)
+                j.x, j.y = ax, ay
+                n0 = len(app.voz.registro)
+                robot.frames(200, mantener=(pygame.K_UP if abs(ay - y) > abs(ax - x) and ay < y else pygame.K_DOWN if abs(ay - y) > abs(ax - x) else
+                                            pygame.K_RIGHT if ax < x else pygame.K_LEFT,))
+                assert "Vías del tranvía." in app.voz.registro[n0:], (mapa.id, app.voz.registro[n0:][:6])
+                j.x, j.y = mapa.fuera_de_la_via(x, y)
+            _coherente(p, f"junto a las vías de {mapa.nombre}")
+        assert pasadas >= 3 and oidos >= 2 * pasadas, (mapa.id, pasadas, oidos)         # han pasado tranvías y se han oído
+        assert len(paradas_vistas) >= min(len(mapa.via_marcas), 6), (mapa.id, len(paradas_vistas))        # y han ido parando por la línea
+        t.voz(f"vías de {mapa.nombre}")
+        # al irse de la ciudad no queda ningún tranvía sonando
+        canales = [tr["canal"] for tr in p.tranvias if tr["canal"] is not None]
+        otro = next(m for m in p.mapas.values() if m.tipo == "pueblo")
+        l = next(iter(otro.lugares.values()))
+        p.cambiar_mapa(otro.id, l.x, l.y)
+        robot.frames(3)
+        assert p.tranvias == [] and all(c.parando or c.fin for c in canales), mapa.id
