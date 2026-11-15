@@ -191,10 +191,10 @@ def test_todas_las_misiones(robot):
         assert robot.app.pila[-1] is p or isinstance(robot.app.pila[-1], (Dialogo, Menu))
         robot.saltar_dialogos()
     # Una partida solo recorre una rama de cada decisión: las misiones de las otras ramas no le salen nunca.
-    otras_ramas = [m["id"] for m in p.datos["misiones"] if m.get("si_clave") and not p.cumple_decision(m)]
+    otras_ramas = [m["id"] for m in p.datos["misiones"] if (m.get("si_clave") or m.get("si_cruce")) and not p.cumple_decision(m)]
     faltan = [m["id"] for m in p.datos["misiones"] if m["id"] not in p.completadas and not m.get("adultos") and m["id"] not in otras_ramas]
     assert not faltan, f"faltan: {faltan}"
-    assert len(p.completadas) == total - len(otras_ramas) and len(otras_ramas) == 6
+    assert len(p.completadas) == total - len(otras_ramas) and len(otras_ramas) == 8          # seis de las encrucijadas y dos de los tres finales cruzados
     assert set(p.decisiones) >= {"concejal", "cooperativa", "trono", "oc_nombre", "_final"}          # ha pasado por las cuatro encrucijadas
     assert p.j.dinero > 100000
     assert any(b["modelo"] == "lancha_rapida" for b in p.j.barcos)

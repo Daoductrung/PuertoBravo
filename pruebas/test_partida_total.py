@@ -710,17 +710,19 @@ def test_todo_el_transporte_publico(robot):
             t.ir(origen.mapa, origen.x, origen.y)
             menus_juego.lugar(p, origen)
             m = app.pila[-1]
-            vuelos = [o for o in m.opciones if o.texto.startswith("Vuelo a ")]
+            vuelos = [o for o in m.opciones if o.texto.startswith(("Vuelo a ", "Avioneta de línea a "))]      # avión entre ciudades, avioneta si hay un aeródromo
             assert len(vuelos) == len(aeropuertos) - 1, origen.id
-            m.i = k
+            assert all(o.texto.startswith("Avioneta") == bool(origen.get("aerodromo") or "Aeródromo" in o.texto or any(
+                d.get("aerodromo") and p.mapas[d.mapa].nombre in o.texto for d in aeropuertos)) for o in vuelos), origen.id
+            m.i = m.opciones.index(vuelos[k])
             robot.tecla(pygame.K_RETURN)
             assert app.pila[-1] is app.partida and app.partida.mundo.id != origen.mapa, origen.id
             viajes["avion"] += 1
         t.voz(f"vuelos desde {origen.nombre}")
         _coherente(app.partida, f"vuelos desde {origen.nombre}")
-    assert viajes["tranvia"] == 44 and viajes["tren"] == 90 and viajes["avion"] == 12, viajes
+    assert viajes["tranvia"] == 44 and viajes["tren"] == 90 and viajes["avion"] == 90, viajes
     j = app.partida.j
-    assert j.stats["tranvias"] >= 48 and j.stats["trenes"] == 90 and j.stats["vuelos"] == 12
+    assert j.stats["tranvias"] >= 48 and j.stats["trenes"] == 90 and j.stats["vuelos"] == 90
 
 
 def test_veinte_minutos_junto_a_las_vias_en_cada_ciudad(robot):
