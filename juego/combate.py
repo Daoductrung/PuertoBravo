@@ -427,6 +427,8 @@ class Combate:
             return
         if self.mision and self.mision["def"].get("tutorial"):        # en un tutorial no viene la policía
             return
+        if self.cfg["mod_policia"]:
+            puntos *= 1.5
         x, y = self.pos()
         if not siempre:
             testigo = any((p.tipo == "civil" and not p.muerto and p.dist(x, y) < 35) or

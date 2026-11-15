@@ -79,6 +79,20 @@ class Online:
             registro.ocultar(self.cfg["red_nombre"])
         registro.info("red", "Abre su partida a los amigos", con_clave=bool(clave), puerto=srv.puerto)
         self.son("amigo_entra", cat="interfaz")
+        self._upnp = None
+        self._upnp_aviso = None
+        if self.cfg["red_upnp"] and (not self.app.pruebas or getattr(self, "upnp_en_pruebas", None)):
+            # en segundo plano: preguntar al router tarda un par de segundos y el juego no debe pararse
+            import threading
+
+            def intentar(puerto=srv.puerto):
+                from . import upnp
+                ok, datos, motivo = upnp.abrir(puerto, buscar=getattr(self, "upnp_en_pruebas", None) or upnp.descubrir)
+                self._upnp = datos
+                self._upnp_aviso = upnp.FRASES.get(motivo, upnp.FRASES["rechazado"])
+                registro.info("red", "Apertura automática del puerto", conseguido=ok, motivo=motivo)
+            self._upnp_hilo = threading.Thread(target=intentar, daemon=True)
+            self._upnp_hilo.start()
         return True, ("Partida abierta a tus amigos, " + ("protegida con contraseña" if clave else "sin contraseña") + f", en el puerto {srv.puerto}.")
 
     def unirse_a_amigo(self, texto, clave=""):
@@ -118,6 +132,11 @@ class Online:
         if getattr(self, "servidor", None) is not None:
             self.servidor.detener()
             self.servidor = None
+            datos, self._upnp = getattr(self, "_upnp", None), None
+            if datos:                                        # el puerto que se abrió en el router se vuelve a cerrar
+                import threading
+                from . import upnp
+                threading.Thread(target=upnp.cerrar, args=(datos,), daemon=True).start()
         if era:
             registro.info("red", "Se desconecta de la partida en red", motivo=motivo or "a petición propia")
         if era and motivo:

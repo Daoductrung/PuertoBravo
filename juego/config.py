@@ -42,6 +42,10 @@ POR_DEFECTO = {
     "voz_volumen": 100,            # de 0 a 100
     "detalle_voz": "normal",       # cuánto explica el juego al hablar: mucho, normal o poco
     "vol_senales": 1.0,            # volumen propio de balizas, radar, tonos de puntería y sonidos de los lugares
+    "red_upnp": True,              # al abrir tu partida, intentar abrir el puerto del router automáticamente
+    "mod_enemigos": False,         # modificador: los enemigos aguantan la mitad más
+    "mod_policia": False,          # modificador: los delitos cuentan la mitad más
+    "mod_dinero": False,           # modificador: las misiones pagan la mitad
     "multas": True,                # con poca búsqueda, al cogerte puedes pagar la multa o intentar un soborno
     "aviso_acierto": True,         # un toque y una vibración cuando das en el blanco
     "correr_alternar": False,      # correr con una pulsación de Mayúsculas en vez de mantenerla

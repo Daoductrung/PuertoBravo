@@ -299,7 +299,7 @@ class Misiones:
                 else:
                     x, y = l.x, l.y
                 e = Persona("enemigo", x, y, grupo.get("tipo", "Enemigo"))
-                e.salud = float(grupo.get("salud", 60))
+                e.salud = float(grupo.get("salud", 60)) * (1.5 if self.cfg["mod_enemigos"] else 1.0) * (1.0 + 0.15 * min(4, self.j.ciclo))
                 e.arma = grupo.get("arma", "pistola")
                 e.hostil = True
                 e.estado = "ataca"
@@ -786,9 +786,10 @@ class Misiones:
         self.app.son("mision_ok")
         txt = f"{'Encargo cumplido' if m.get('repetible') else 'Misión completada'}: {m['titulo']}."
         if r.get("dinero"):
-            self.j.dinero += r["dinero"]
-            self.j.stats["dinero_ganado"] += r["dinero"]
-            txt += f" Recompensa: {r['dinero']} euros."
+            paga = int(r["dinero"] * (0.5 if self.cfg["mod_dinero"] else 1.0))
+            self.j.dinero += paga
+            self.j.stats["dinero_ganado"] += paga
+            txt += f" Recompensa: {paga} euros."
         self.decir(txt)
         if r.get("arma"):
             self.dar_arma(r["arma"], r.get("balas", 0))

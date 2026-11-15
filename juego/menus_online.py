@@ -182,6 +182,9 @@ def amigos(p):
                 Opcion("Abrir mi partida a mis amigos", abrir, ayuda="Tu ordenador hace de servidor y tú sigues jugando con normalidad. Después te digo la dirección que tienes que darles."),
                 Opcion(lambda: "Contraseña de mi partida: " + ("puesta" if estado["clave"] else "ninguna, entra quien tenga la dirección"), poner_clave,
                        ayuda="Intro para escribirla. Con contraseña solo entra quien la sepa."),
+                Opcion(lambda: f"Abrir el puerto del router automáticamente: {'sí' if cfg['red_upnp'] else 'no'}", ajuste=lambda d: cfg.__setitem__("red_upnp", not cfg["red_upnp"]),
+                       ayuda="Al abrir tu partida, el juego le pide a tu router que abra el puerto, para que entren amigos de fuera de casa sin que tengas que configurar nada. "
+                             "Al cerrar la partida, le pide que lo cierre. Si tu router no lo permite, el juego te lo dice y queda la manera manual, que explica el manual."),
                 Opcion(lambda: f"Puerto: {cfg['red_puerto']}", ajuste=puerto, ayuda="Cámbialo con izquierda y derecha solo si el de serie está ocupado. Es el número que hay que abrir en el router."),
                 Opcion("Unirme a la partida de un amigo", unirse, ayuda="Te pedirá la dirección que te ha dado tu amigo y la contraseña, si tiene."),
                 Opcion(lambda: f"Mi nombre para los amigos: {p.nombre_online()}", poner_nombre),

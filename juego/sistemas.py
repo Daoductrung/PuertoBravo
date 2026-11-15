@@ -644,3 +644,103 @@ def visita_con_acompanante(p, lugar):
         a["puntos"] += 4
         p.cambiar_animo(2)
         p.decir(f"A {a['nombre']} le gusta el plan: {lugar.nombre}.")
+
+
+# ============================================================ la siete y media, en bares y tabernas
+PALOS = ("oros", "copas", "espadas", "bastos")
+FIGURAS = {10: "sota", 11: "caballo", 12: "rey"}
+
+
+def baraja(azar):
+    """Baraja española de cuarenta cartas, barajada: (nombre, valor). Las figuras valen medio punto."""
+    cartas = [(f"{'as' if n == 1 else FIGURAS.get(n, str(n))} de {palo}", 0.5 if n >= 10 else float(n)) for palo in PALOS for n in (1, 2, 3, 4, 5, 6, 7, 10, 11, 12)]
+    azar.shuffle(cartas)
+    return cartas
+
+
+def _puntos_txt(x):
+    entero, medio = int(x), x - int(x) > 0.1
+    return (f"{entero} y media" if entero else "media") if medio else str(entero)
+
+
+def siete_y_media(p, Menu, Opcion, azar=None):
+    """Una mano contra la banca: pedir cartas sin pasarse de siete y media. La banca gana los empates."""
+    import random
+    azar = azar or random
+    app = p.app
+    j = p.j
+    est = {"apuesta": 0, "mazo": [], "mias": 0.0, "fin": True}
+
+    def cerrar_mano(texto, gano):
+        est["fin"] = True
+        if gano > 0:
+            p.dar_dinero(gano)
+            app.son("dinero")
+        else:
+            app.son("error")
+        app.decir(texto + f" Tienes {j.dinero} euros.", True)
+        m.refrescar(False)
+
+    def apostar(n):
+        def f():
+            if not est["fin"]:
+                return
+            if not p.pagar(n):
+                return
+            est.update({"apuesta": n, "mazo": baraja(azar), "mias": 0.0, "fin": False})
+            carta()
+        return f
+
+    def carta():
+        if est["fin"]:
+            return
+        nombre, valor = est["mazo"].pop()
+        est["mias"] += valor
+        app.son("menu_mover")
+        if est["mias"] > 7.5:
+            cerrar_mano(f"{nombre.capitalize()}. Llevas {_puntos_txt(est['mias'])}: te has pasado. Pierdes {est['apuesta']} euros.", 0)
+        else:
+            app.decir(f"{nombre.capitalize()}. Llevas {_puntos_txt(est['mias'])}.", True)
+            m.refrescar(False)
+
+    def plantarse():
+        if est["fin"]:
+            return
+        banca, cartas = 0.0, []
+        while banca < est["mias"] and banca <= 7.5:
+            nombre, valor = est["mazo"].pop()
+            banca += valor
+            cartas.append(nombre)
+        relato = f"Te plantas con {_puntos_txt(est['mias'])}. La banca saca {', '.join(cartas)}: {_puntos_txt(banca)}."
+        if banca > 7.5:
+            doble = est["mias"] == 7.5
+            cerrar_mano(relato + f" Se pasa. Ganas {est['apuesta'] * (3 if doble else 2)} euros" + (", el doble por hacer siete y media." if doble else "."), est["apuesta"] * (3 if doble else 2))
+        else:
+            cerrar_mano(relato + f" La banca gana. Pierdes {est['apuesta']} euros.", 0)
+
+    def ops():
+        if est["fin"]:
+            return [Opcion(f"Apostar {n} euros", apostar(n), ayuda="Te dan una carta. Pide más o plántate. Las figuras valen medio punto y las demás, su número. Si pasas de siete y media, pierdes. "
+                           "Cuando te plantas, la banca saca cartas hasta igualarte o pasarse: si te iguala, gana ella. Ganar paga el doble de lo apostado; ganar con siete y media justas, el triple.")
+                    for n in (10, 50, 200)] + [Opcion("Levantarte de la mesa", lambda: app.cerrar(m))]
+        return [Opcion(lambda: f"Pedir carta. Llevas {_puntos_txt(est['mias'])}", carta), Opcion("Plantarte", plantarse)]
+    m = Menu(app, lambda: f"Siete y media. Tienes {j.dinero} euros", ops, intro="Baraja española. Elige cuánto apuestas")
+    app.abrir(m)
+    return m, est
+
+
+def con_cartas(p, menu, Menu, Opcion):
+    """Añade la mesa de cartas al menú de un bar o una taberna."""
+    fuente = menu._fuente
+    from .menus import SALIDAS
+
+    def ops():
+        lista = list(fuente() if callable(fuente) else fuente)
+        if any(o.texto.startswith("Jugar a la siete y media") for o in lista):
+            return lista
+        o = Opcion("Jugar a la siete y media", lambda: siete_y_media(p, Menu, Opcion),
+                   ayuda="Un juego de cartas con baraja española contra la banca. Se apuestan diez, cincuenta o doscientos euros.")
+        lista.insert(len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista), o)
+        return lista
+    menu._fuente = ops
+    menu.refrescar(False)

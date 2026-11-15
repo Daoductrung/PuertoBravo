@@ -45,6 +45,7 @@ class Jugador:
         self.territorios = []
         self.banda = 0               # cuánta gente tienes en tu banda
         self.banda_nombre = ""
+        self.ciclo = 0               # cuántas veces has vuelto a empezar conservando lo ganado
         self.amenaza = None          # una banda rival ataca un territorio tuyo: {"territorio", "banda", "dia"}
         self.oferta_pacto = None     # una banda te ofrece un pacto: {"banda", "precio", "dia"}
         self.pacto_hasta = 0         # día hasta el que dura el pacto

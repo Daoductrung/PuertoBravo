@@ -127,6 +127,40 @@ def menu_cargar(app):
     app.abrir(Menu(app, "Cargar partida", lambda: [Opcion(texto_ranura(r), hacer(r)) for r in RANURAS]))
 
 
+# Lo que pasa de una partida a la siguiente al empezar de nuevo conservando lo ganado.
+CONSERVA = ("dinero", "banco", "armas", "arma", "objetos", "hab", "logros", "propiedades", "garajes", "barcos", "salud_max", "ropa", "casetes", "stats",
+            "bolsa", "negocios", "personaje", "nombre", "apellido", "perro", "conocidos")
+
+
+def partida_mas(app):
+    """Nueva partida conservando lo ganado en una partida guardada."""
+    from .partida import PartidaMasNueva, migrar
+
+    def empezar(r):
+        def f():
+            try:
+                d = migrar(leer_ranura(r))
+            except (PartidaMasNueva, TypeError):
+                app.son("error")
+                app.decir("Esa partida no se puede leer con esta versión del juego.", True)
+                return
+            viejo = d.get("jugador", {})
+            app.empezar_partida(None, personaje=viejo.get("personaje"))
+            p = app.partida
+            for k in CONSERVA:
+                if k in viejo and hasattr(p.j, k):
+                    setattr(p.j, k, viejo[k])
+            p.j.ciclo = int(viejo.get("ciclo", 0)) + 1
+            p.j.salud = p.j.salud_max
+            if p.j.arma not in p.j.armas:
+                p.j.arma = "punos"
+            app.decir(f"Empiezas de nuevo con lo que tenías: {p.j.dinero} euros, {len(p.j.armas)} armas y {len(p.j.propiedades)} propiedades. "
+                      f"Es tu vuelta número {p.j.ciclo + 1}: los enemigos de las misiones aguantan algo más.")
+        return f
+    ops = [Opcion(texto_ranura(r), empezar(r)) for r in RANURAS if leer_ranura(r) is not None]
+    app.abrir(Menu(app, "Nueva partida conservando lo ganado. Elige de qué partida guardada", ops or [Opcion("No hay ninguna partida guardada")]))
+
+
 # ====================================================================== principal
 def principal(app):
     def ops():
@@ -137,6 +171,9 @@ def principal(app):
         lista += [
             Opcion("Nueva partida", lambda: __import__("juego.menus_vida", fromlist=["x"]).elegir_personaje(app)),
             Opcion("Cargar partida", lambda: menu_cargar(app)),
+            Opcion("Nueva partida conservando lo ganado", lambda: partida_mas(app),
+                   ayuda="Empiezas la historia desde el principio, pero con el dinero, las armas, las habilidades, las casas, los vehículos y los barcos de una partida guardada. "
+                         "Los enemigos de las misiones aguantan algo más cada vez. La partida guardada no se toca."),
             Opcion("Jugar con amigos", lambda: app.decir("Para jugar con amigos, empieza o carga tu partida, abre el móvil con la tecla M y entra en Jugar con amigos. "
                                                         "Desde ahí puedes abrir tu partida, con o sin contraseña, y darles tu dirección, o unirte a la de un amigo.", True),
                    ayuda="El propio juego monta el servidor en tu ordenador. No hace falta ningún programa más."),
@@ -439,6 +476,9 @@ def opciones(app):
             lista("punteria", "Ayuda de puntería"),
             si_no("aviso_acierto", "Aviso al dar en el blanco", "Cada vez que aciertas a un enemigo o a un vehículo suena un toque agudo y el mando da un golpe corto. Al fijar un objetivo con la Q, el mando también avisa.",
                   al_cambiar=lambda: cfg["aviso_acierto"] and app.mez.sonar("tono_objetivo", cat="interfaz", vol=0.45, tono=2.0)),
+            si_no("mod_enemigos", "Modificador: enemigos más duros", "Los enemigos de las misiones aguantan la mitad más. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
+            si_no("mod_policia", "Modificador: policía más severa", "Cada delito cuenta la mitad más, así que la búsqueda sube antes. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
+            si_no("mod_dinero", "Modificador: misiones peor pagadas", "Las misiones pagan la mitad. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
             si_no("multas", "Multa o soborno cuando te cogen por poco",
                   "Con uno o dos niveles de búsqueda y dinero suficiente, cuando un agente te coge puedes pagar la multa en el acto, intentar sobornarle o dejarte detener. Con no, te detienen siempre, como antes."),
             si_no("sucesos", "Sucesos callejeros al azar", "Atracos, pandilleros y maletines perdidos que aparecen de vez en cuando por la calle."),
@@ -834,6 +874,9 @@ def lugar(p, l):
     if p.acompanante:
         from . import sistemas
         sistemas.visita_con_acompanante(p, l)
+    if l.tipo in ("bar", "taberna") and not en_coche and app.pila and isinstance(app.pila[-1], Menu) and app.pila[-1] is not p:
+        from . import sistemas
+        sistemas.con_cartas(p, app.pila[-1], Menu, Opcion)
 
 
 def _menu_lugar(p, l, ops, intro=None):

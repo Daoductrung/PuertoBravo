@@ -58,6 +58,7 @@ class Extras2:
 
     def ganar_xp(self, hab, n):
         antes = self.nivel(hab)
+        n *= 1.0 + 0.25 * sum(1 for k in ("mod_enemigos", "mod_policia", "mod_dinero") if self.cfg[k])      # jugar más difícil enseña más deprisa
         self.j.hab[hab] = self.j.hab.get(hab, 0.0) + n
         ahora = self.nivel(hab)
         if ahora > antes:

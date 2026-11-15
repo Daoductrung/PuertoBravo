@@ -1293,6 +1293,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.resumen_pendiente and self.t > 2.0 and not self.mision:
             self.resumen_pendiente = False
             self.decir("Hace días que no jugabas. " + self.resumen_historia() + " Lo tienes también en el móvil, en Diario.")
+        if getattr(self, "_upnp_aviso", None):
+            aviso, self._upnp_aviso = self._upnp_aviso, None
+            self.decir(aviso)
         dt = self._paso_lento(dt)
         if self.cubierto and (j.veh or math.hypot(j.x - self.cubierto[0], j.y - self.cubierto[1]) > 0.8):
             self.dejar_cobertura()
