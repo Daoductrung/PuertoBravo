@@ -96,7 +96,7 @@ def test_bahia_del_ocaso(robot):
             assert (i, j) in m._barrio_de
     ms = [x for x in p.datos["misiones"] if x["id"].startswith("oc")]
     historia = [x for x in ms if x["capitulo"] in (40, 41, 42, 43)]
-    assert len(historia) == 21 and len(ms) == 32
+    assert len(historia) == 21 and len(ms) == 34
     ids = {x["id"] for x in p.datos["misiones"]}
     for x in ms:                                                  # la cadena de la historia no tiene eslabones sueltos
         assert set(x["requiere"]) <= ids

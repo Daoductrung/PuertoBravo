@@ -8,6 +8,7 @@ from juego.menus import Dialogo, Menu
 
 
 def _activar(robot):
+    robot.app.cfg["noche_por_pasos"] = False             # aquí se prueba la noche contada; la noche paso a paso tiene su propia prueba
     robot.app.cfg["adultos"] = True
     robot.app.aplicar_adultos()
 

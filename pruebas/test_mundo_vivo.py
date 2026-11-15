@@ -159,6 +159,7 @@ def test_vida_realista_hambre_y_sueno(robot):
 
 # ====================================================================== modo adulto, a fondo
 def _adulto(robot):
+    robot.app.cfg["noche_por_pasos"] = False             # aquí se prueba la noche contada; la noche paso a paso tiene su propia prueba
     robot.app.cfg["adultos"] = True
     robot.app.aplicar_adultos()
 
