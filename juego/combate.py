@@ -55,13 +55,19 @@ class Combate:
             t += f", {m['cargador']} balas y {m['reserva']} de reserva"
         self.decir(t, True)
 
+    def capacidad(self, ident):
+        """Balas que caben en el cargador de un arma tuya: la mitad más si lleva el cargador ampliado."""
+        a = self.armas_d.get(ident) or {}
+        n = int(a.get("cargador", 0))
+        return int(n * 1.5) if self.j.armas.get(ident, {}).get("ampliado") and a.get("tipo") == "fuego" else n
+
     def recargar(self):
         j = self.j
         a = self.arma()
         if a["tipo"] not in ("fuego", "explosivo"):
             return
         m = j.armas[j.arma]
-        falta = a["cargador"] - m["cargador"]
+        falta = self.capacidad(j.arma) - m["cargador"]
         if falta <= 0:
             self.decir("El cargador está lleno.", True)
         elif m["reserva"] <= 0:
@@ -132,9 +138,12 @@ class Combate:
                     self.decir("Sin munición.", True)
                 return
             m["cargador"] -= 1
-            self.son(a["sonido"], vol=0.75, tono=random.uniform(0.96, 1.04))
-            if a.get("ruido", 2) > 0:
-                self._ruido_disparo(x, y)
+            if m.get("silenciador"):                             # con silenciador: un chasquido seco, y nadie se entera
+                self.son(a["sonido"], vol=0.3, tono=random.uniform(1.5, 1.6))
+            else:
+                self.son(a["sonido"], vol=0.75, tono=random.uniform(0.96, 1.04))
+                if a.get("ruido", 2) > 0:
+                    self._ruido_disparo(x, y)
         else:
             self.son("golpe_aire", vol=0.5)
         j.t_ataque = a["cadencia"]
@@ -168,6 +177,8 @@ class Combate:
         if self.cfg["dificultad"] == "facil":
             prob = min(1.0, prob + 0.12)
         prob = max(0.05, min(1.0, prob + 0.012 * self.nivel("punteria") + self.mod_punteria()))
+        if getattr(self, "cubierto", None):
+            prob *= 0.85                                         # desde detrás de algo se apunta peor
         if random.random() > prob:
             if fuego:
                 self.son("bala_impacto", xy=(o.x + random.uniform(-2, 2), o.y + random.uniform(-2, 2)), ref=8, maxd=120, vol=0.6)
@@ -237,6 +248,51 @@ class Combate:
         if d < r and not j.veh:
             self.danar_jugador(e["dano"] * 0.5 * (1 - d / r), (x, y))
 
+    def _trato_policia(self):
+        """Te han cogido por algo menor: pagar la multa, intentar un soborno o dejarte detener."""
+        from .menus import Menu, Opcion
+        j = self.j
+        app = self.app
+        multa = self.coste_multa()
+        soborno = int(multa * 0.6)
+        prob = max(0.25, min(0.9, 0.45 + j.reputacion / 200.0))
+
+        def fuera(texto):
+            app.cerrar(menu)
+            for p in self.personas:
+                if p.tipo == "policia":
+                    p.t_arresto = 0.0
+            self.limpiar_busqueda(hablar=False)
+            self.decir(texto)
+
+        def pagar():
+            j.dinero -= multa
+            self.son("dinero", cat="interfaz")
+            fuera(f"Pagas {multa} euros de multa. El agente te deja ir y ya no te buscan. Conservas tus armas.")
+
+        def sobornar():
+            j.dinero -= soborno
+            if random.random() < prob:
+                self.son("dinero", cat="interfaz")
+                self.cambiar_reputacion(1)
+                fuera(f"El agente mira a los lados, se guarda los {soborno} euros y se da la vuelta. Ya no te buscan.")
+            else:
+                app.cerrar(menu)
+                app.son("error")
+                self.decir(f"El agente se queda con los {soborno} euros y además te detiene por intento de soborno.")
+                self.detener(sin_trato=True)
+
+        def nada():
+            app.cerrar(menu)
+            self.detener(sin_trato=True)
+        self.son("esposas", cat="interfaz", vol=0.5)
+        menu = Menu(app, f"Un agente te ha cogido. Búsqueda de nivel {j.estrellas}. Tienes {j.dinero} euros",
+                    [Opcion(f"Pagar la multa en el acto: {multa} euros", pagar, ayuda="Pagas, te quitan la búsqueda y te vas. Conservas las armas y no pasas por comisaría."),
+                     Opcion(f"Intentar un soborno: {soborno} euros", sobornar,
+                            ayuda=f"Más barato, pero puede salir mal: ahora mismo sale bien unas {int(prob * 100)} veces de cada cien, más cuanta más fama tengas. Si sale mal, pierdes ese dinero y te detienen."),
+                     Opcion("Dejar que te detengan", nada, ayuda="Lo de siempre: comisaría, una multa mayor y pierdes las armas de fuego.")], escapable=False)
+        app.abrir(menu)
+
     def _ruido_disparo(self, x, y):
         self.delito(0.4, "disparos en la vía pública")
         for p in self.personas:
@@ -290,6 +346,8 @@ class Combate:
         if self.transicion or dano <= 0 or self.cfg["invulnerable"]:
             return
         dano *= self.dificultad() * (1 - 0.02 * self.nivel("resistencia")) * self.mod_dano()
+        if getattr(self, "cubierto", None):
+            dano *= 0.3                                          # a cubierto te llega mucho menos
         antes = j.salud
         if j.blindaje > 0:
             abs_ = min(j.blindaje, dano * 0.8)
@@ -709,11 +767,18 @@ class Combate:
         self.cambiar_mapa(l.mapa, l.x, l.y)
         return l
 
-    def detener(self):
+    def coste_multa(self):
+        j = self.j
+        return 150 * max(1, j.estrellas) + j.dinero // 20
+
+    def detener(self, sin_trato=False):
         if self.transicion:
             return
-        self.transicion = True
         j = self.j
+        if not sin_trato and self.cfg["multas"] and 1 <= j.estrellas <= 2 and j.dinero >= self.coste_multa() and not self.mision:
+            self._trato_policia()                                # con poca búsqueda y dinero en el bolsillo, se puede arreglar
+            return
+        self.transicion = True
         j.stats["detenciones"] += 1
         self.son("esposas", cat="interfaz")
         if j.veh:

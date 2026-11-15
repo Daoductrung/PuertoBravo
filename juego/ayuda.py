@@ -40,6 +40,8 @@ TECLAS = {
         ("Espacio", "atacar o disparar. Con armas automáticas, mantenla pulsada"),
         ("R", "recargar"),
         ("X", "agacharte o levantarte. Agachado te aciertan menos, pero vas más lento"),
+        ("Mayúsculas X", "ponerte a cubierto tras una pared o un vehículo parado, o salir. A cubierto te alcanzan mucho menos; si te mueves, sales"),
+        ("Retroceso", "tiempo lento: todo va más despacio mientras te quede concentración. Otra pulsación lo quita"),
         ("H", "gritar para espantar a los peatones"),
         ("E", "con un arma en la mano, atracar al peatón que tengas al lado"),
         ("Y", "si tienes perro, le pides que busque por el olfato el objeto más cercano"),

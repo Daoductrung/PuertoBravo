@@ -106,6 +106,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.decisiones = {}            # lo que has decidido en la historia: clave -> opción elegida
         self.saltadas = []              # misiones que te has saltado
         self.resumen_pendiente = False
+        self.lento = False              # tiempo lento en marcha
+        self.cubierto = None            # el punto donde estás a cubierto, o None
         self.trabajo = None
         self.gps = None
         self.objetivo = None
@@ -589,8 +591,14 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 menus_adultos.menu_sustancias(self)
             else:
                 self.usar_botiquin()
+        elif k == pygame.K_BACKSPACE:
+            self.alternar_lento()
+        elif k == pygame.K_x and mayus:
+            self.alternar_cobertura()
         elif k == pygame.K_x:
             if not j.veh:
+                if self.cubierto:
+                    self.dejar_cobertura()
                 j.agachado = not j.agachado
                 self.son("agacharse" if j.agachado else "levantarse")
                 self.decir("Te agachas." if j.agachado else "Te levantas.", True)
@@ -606,6 +614,74 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.tecla_coche(ev, mayus)
         else:
             self.tecla_pie(ev, mayus)
+
+    # ------------------------------------------------------------------ tiempo lento
+    def alternar_lento(self):
+        j = self.j
+        if self.lento:
+            self.lento = False
+            self.app.son("menu_atras")
+            self.decir(f"Tiempo normal. Concentración {int(j.foco)} por ciento.", True)
+        elif self.online_activo():
+            self.decir("Con amigos conectados no se puede frenar el tiempo.", True)
+        elif j.foco < 15:
+            self.app.son("error")
+            self.decir(f"Te falta concentración: {int(j.foco)} por ciento. Se recupera sola.", True)
+        else:
+            self.lento = True
+            self.app.son("pasan_horas", vol=0.5, tono=0.6)
+            self.decir(f"Tiempo lento. Concentración {int(j.foco)} por ciento.", True)
+
+    def _paso_lento(self, dt):
+        """Gasta o recupera la concentración. Devuelve el tiempo de mundo que corresponde a este fotograma."""
+        j = self.j
+        if not self.lento:
+            j.foco = min(100.0, j.foco + 3.0 * dt)
+            return dt
+        j.foco -= 20.0 * dt
+        if j.foco <= 0:
+            j.foco = 0.0
+            self.lento = False
+            self.app.son("menu_atras")
+            self.decir("Se te acaba la concentración. Tiempo normal.")
+            return dt
+        return dt * 0.4
+
+    # ------------------------------------------------------------------ cobertura
+    def _hay_parapeto(self):
+        j = self.j
+        for a in range(0, 360, 45):
+            r = math.radians(a)
+            if not self.mundo.transitable(j.x + math.sin(r) * 2.2, j.y + math.cos(r) * 2.2):
+                return "una pared"
+        for v in self.vehiculos:
+            if not v.muerto and v.dist(j.x, j.y) < 3.5 and abs(v.vel) < 1:
+                return v.nombre
+        return None
+
+    def alternar_cobertura(self):
+        j = self.j
+        if j.veh:
+            self.decir("Dentro de un vehículo no puedes cubrirte.", True)
+            return
+        if self.cubierto:
+            self.dejar_cobertura()
+            return
+        que = self._hay_parapeto()
+        if not que:
+            self.app.son("error")
+            self.decir("Aquí no hay nada tras lo que cubrirte. Pégate a una pared o a un vehículo parado.", True)
+            return
+        self.cubierto = (j.x, j.y)
+        j.agachado = True
+        self.son("agacharse")
+        self.decir(f"A cubierto tras {que}. Te alcanzan mucho menos, pero apuntas algo peor. Si te mueves, sales.", True)
+
+    def dejar_cobertura(self, hablar=True):
+        if self.cubierto:
+            self.cubierto = None
+            if hablar:
+                self.decir("Sales de la cobertura.", True)
 
     def corriendo_ahora(self):
         """¿Corre? Con la tecla mantenida o, si el jugador lo prefiere, encendido con una pulsación."""
@@ -679,6 +755,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             t += f"{len(j.pescado)} capturas de pesca. "
         if j.estrellas:
             t += f"Nivel de búsqueda {j.estrellas}. "
+        if j.agachado and not j.veh:
+            t += "Estás a cubierto. " if self.cubierto else "Estás agachado: caminas despacio. "
+        if j.foco < 99:
+            t += f"Concentración {int(j.foco)} por ciento. "
         t += "Arma: " + a["nombre"]
         if a["tipo"] in ("fuego", "explosivo"):
             m = j.armas[j.arma]
@@ -1209,6 +1289,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.resumen_pendiente and self.t > 2.0 and not self.mision:
             self.resumen_pendiente = False
             self.decir("Hace días que no jugabas. " + self.resumen_historia() + " Lo tienes también en el móvil, en Diario.")
+        dt = self._paso_lento(dt)
+        if self.cubierto and (j.veh or math.hypot(j.x - self.cubierto[0], j.y - self.cubierto[1]) > 0.8):
+            self.dejar_cobertura()
         j.stats["tiempo"] += dt
         self._tiempo(dt)
         if j.veh:

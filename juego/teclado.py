@@ -19,7 +19,7 @@ NOMBRES = {pygame.K_LSHIFT: "Mayúsculas izquierda", pygame.K_UP: "flecha arriba
 # Estas no se pueden cambiar ni usar como destino: son las de salir, aceptar, la ayuda, la marca del registro y los modificadores.
 FIJAS = {pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_F1, pygame.K_F12, pygame.K_RSHIFT, pygame.K_LCTRL, pygame.K_RCTRL,
          pygame.K_LALT, pygame.K_RALT, pygame.K_LGUI, pygame.K_RGUI, pygame.K_CAPSLOCK, pygame.K_NUMLOCK, pygame.K_PRINTSCREEN}
-ETIQUETAS = {"espacio": pygame.K_SPACE, "tabulador": pygame.K_TAB, "flecha arriba": pygame.K_UP, "flecha abajo": pygame.K_DOWN}
+ETIQUETAS = {"retroceso": pygame.K_BACKSPACE, "espacio": pygame.K_SPACE, "tabulador": pygame.K_TAB, "flecha arriba": pygame.K_UP, "flecha abajo": pygame.K_DOWN}
 
 
 def nombre(k):

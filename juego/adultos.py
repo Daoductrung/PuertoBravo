@@ -144,9 +144,10 @@ class Adultos:
 
     def actualizar_adultos(self, dt):
         j = self.j
+        base = 0.72 if getattr(self, "lento", False) else 1.0          # con el tiempo lento, todo suena más grave
         if not j.efectos:
-            if self.mez.tono_mundo != 1.0:
-                self.mez.tono_mundo = 1.0
+            if self.mez.tono_mundo != base:
+                self.mez.tono_mundo = base
             return
         tono = 0.0
         for e in list(j.efectos):
@@ -164,7 +165,7 @@ class Adultos:
                         self.cambiar_animo(b.get("animo", 0))
                         if b.get("salud"):
                             j.salud = max(5.0, j.salud + b["salud"])
-        self.mez.tono_mundo = 1.0 + tono * math.sin(self.t * 1.7) if tono else 1.0
+        self.mez.tono_mundo = (1.0 + tono * math.sin(self.t * 1.7) if tono else 1.0) * base
 
     def dia_adultos(self):
         """Lo que cambia cada medianoche: ánimo, adicciones y relaciones."""

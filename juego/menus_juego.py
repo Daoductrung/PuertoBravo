@@ -439,6 +439,8 @@ def opciones(app):
             lista("punteria", "Ayuda de puntería"),
             si_no("aviso_acierto", "Aviso al dar en el blanco", "Cada vez que aciertas a un enemigo o a un vehículo suena un toque agudo y el mando da un golpe corto. Al fijar un objetivo con la Q, el mando también avisa.",
                   al_cambiar=lambda: cfg["aviso_acierto"] and app.mez.sonar("tono_objetivo", cat="interfaz", vol=0.45, tono=2.0)),
+            si_no("multas", "Multa o soborno cuando te cogen por poco",
+                  "Con uno o dos niveles de búsqueda y dinero suficiente, cuando un agente te coge puedes pagar la multa en el acto, intentar sobornarle o dejarte detener. Con no, te detienen siempre, como antes."),
             si_no("sucesos", "Sucesos callejeros al azar", "Atracos, pandilleros y maletines perdidos que aparecen de vez en cuando por la calle."),
             si_no("invulnerable", "Asistencia: no recibir daño", "Para explorar sin preocuparte de nada."),
             si_no("sin_policia", "Asistencia: sin policía", "Los delitos no cuentan y nadie te persigue."),
@@ -961,6 +963,9 @@ def _casa(p, l):
     m = _menu_lugar(p, l, ops)
 
 
+SIN_SILENCIADOR = ("escopeta", "escopeta_combate", "ametralladora", "minigun", "lanzacohetes", "ballesta")
+
+
 def _armeria(p, l):
     app = p.app
     j = p.j
@@ -980,6 +985,15 @@ def _armeria(p, l):
                     app.decir(f"Munición comprada. Reserva: {j.armas[a['id']]['reserva']} balas.", True)
         return f
 
+    def mejorar(a, cual, precio):
+        def f():
+            if p.pagar(int(precio * factor)):
+                j.armas[a["id"]][cual] = True
+                p.son("recarga", cat="interfaz")
+                app.decir(f"{'Silenciador' if cual == 'silenciador' else 'Cargador ampliado'} montado en {a['nombre']}.", True)
+                m.refrescar(False)
+        return f
+
     def ops():
         lista = []
         for a in p.datos["armas"]:
@@ -989,6 +1003,15 @@ def _armeria(p, l):
                 lista.append(Opcion(f"{a['nombre']}: {int(a['precio'] * factor)} euros", comprar(a), ayuda=a["desc"]))
             elif a["tipo"] in ("fuego", "explosivo"):
                 lista.append(Opcion(f"Munición para {a['nombre']}, {a['balas']} balas: {int(a['precio_balas'] * factor)} euros. Tienes {j.armas[a['id']]['reserva']} de reserva", comprar(a), ayuda=a["desc"]))
+        for a in p.datos["armas"]:                              # mejoras para las armas de fuego que ya tienes
+            if a["id"] in j.armas and a["tipo"] == "fuego":
+                mio = j.armas[a["id"]]
+                if not mio.get("silenciador") and a.get("ruido", 2) > 0 and a["id"] not in SIN_SILENCIADOR:
+                    lista.append(Opcion(f"Silenciador para {a['nombre']}: {int(900 * factor)} euros", mejorar(a, "silenciador", 900),
+                                        ayuda="Los disparos dejan de oírse desde lejos: la gente no huye y nadie llama a la policía por el ruido. Lo que hagas a la vista de alguien se sigue viendo. Se pierde con el arma si te detienen."))
+                if not mio.get("ampliado") and a.get("cargador", 0) > 1:
+                    lista.append(Opcion(f"Cargador ampliado para {a['nombre']}, de {a['cargador']} a {int(a['cargador'] * 1.5)} balas: {int(600 * factor)} euros", mejorar(a, "ampliado", 600),
+                                        ayuda="Caben la mitad más de balas, así que recargas menos veces. Se pierde con el arma si te detienen."))
         lista.append(_comprar_objeto(p, "chaleco"))
         lista.append(_comprar_objeto(p, "ganzua"))
         lista.append(Opcion("Galería de tiro: 20 euros la tanda", tiro, ayuda="Diez dianas que suenan a la izquierda, al centro o a la derecha. Mejora tu puntería y da premio con siete aciertos."))
