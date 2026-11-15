@@ -21,7 +21,8 @@
     {"id": "ff_rio", "nombre": "Poza del Río Frío", "tipo": "pesca", "bloque": [0, 1], "xy": [40, 45], "sonido": "lugar_rio", "desc": ""},
     {"id": "ff_mirador", "nombre": "Mirador del Águila", "tipo": "monumento", "bloque": [2, 1], "xy": [45, 45], "desc": ""},
     {"id": "ff_fuente", "nombre": "La Fuente Fría", "tipo": "monumento", "bloque": [1, 0], "xy": [36, 36], "sonido": "lugar_fuente", "desc": ""},
-    {"id": "ff_armeria", "nombre": "Caza y Pesca Río Frío", "tipo": "armeria", "bloque": [1, 1], "lado": "E", "pos": 36, "desc": "Escopetas, ballestas y cañas de pescar."}
+    {"id": "ff_armeria", "nombre": "Caza y Pesca Río Frío", "tipo": "armeria", "bloque": [1, 1], "lado": "E", "pos": 36, "desc": "Escopetas, ballestas y cañas de pescar."},
+    {"id": "fuentefria_tren", "nombre": "Estación de tren de Fuentefría", "tipo": "tren", "bloque": [0, 0], "lado": "S", "pos": 45, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."}
   ],
   "casetes": [[40, 130], [230, 140]]
 }

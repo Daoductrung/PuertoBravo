@@ -35,7 +35,7 @@ GRUPOS = [
      ("tomar_", "precio_"), {"bajon", "abstinencia", "sobredosis", "trato", "rechazo", "paisano"}),
 ]
 
-SUELOS = {"acera": "la acera", "calzada": "el asfalto de la calzada", "hierba": "el césped", "arena": "la arena", "plaza": "las losas de una plaza", "muelle": "los tablones de un muelle"}
+SUELOS = {"via": "las vías del tranvía", "acera": "la acera", "calzada": "el asfalto de la calzada", "hierba": "el césped", "arena": "la arena", "plaza": "las losas de una plaza", "muelle": "los tablones de un muelle"}
 LUGARES = {"armeria": "armería", "comida": "bar, restaurante o chiringuito", "hospital": "hospital o farmacia", "comisaria": "comisaría", "taller": "taller o desguace",
            "casa": "vivienda", "bar": "bar, taberna o discoteca", "casino": "casino o feria", "tienda": "tienda", "banco": "banco o casa de empeños",
            "iglesia": "iglesia", "fuente": "fuente", "contacto": "lugar con una misión", "generico": "lugar sin sonido propio", "taxi": "parada de taxis o salida de carreras",

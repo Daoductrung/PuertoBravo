@@ -2,7 +2,7 @@
 
 Grabaciones reales para pasos, puertas, armas, golpes, cristales, coche, lluvia, agua y monedas.
 
-Trae los 235 sonidos del juego: 184 son grabaciones reales descargadas y 51 son el sonido
+Trae los 237 sonidos del juego: 186 son grabaciones reales descargadas y 51 son el sonido
 original del juego, para los que no hay una grabación libre que encaje o que conviene no tocar
 (balizas, tonos, semáforos, radar y firmas de los lugares: de ellos depende orientarse sin ver).
 Todos proceden de colecciones con licencia CC0 (dominio público): se pueden usar, modificar y
@@ -222,6 +222,8 @@ QUÉ SONIDO SALE DE DÓNDE
   paso_npc.flac: footstep_concrete_002.ogg, de Impact Sounds, de Kenney. Dura 0,07 segundos.
   paso_plaza0.flac: Fantozzi-StoneL2.flac, de Fantozzi's Footsteps. Dura 0,32 segundos.
   paso_plaza1.flac: Fantozzi-StoneR2.flac, de Fantozzi's Footsteps. Dura 0,31 segundos.
+  paso_via0.flac: impactMetal_light_000.ogg, de Impact Sounds, de Kenney. Dura 0,18 segundos.
+  paso_via1.flac: impactMetal_light_001.ogg, de Impact Sounds, de Kenney. Dura 0,14 segundos.
   perro_olfatea.flac: perro_respira_1547.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,45 segundos.
   pesca_lanzar.flac: plop_01.ogg, de 100 CC0 SFX. Dura 0,07 segundos.
   pez_pica.flac: splash_09.ogg, de 40 CC0 water, splash, slime SFX. Dura 0,20 segundos.

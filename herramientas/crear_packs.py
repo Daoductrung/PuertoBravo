@@ -326,6 +326,7 @@ PROPIAS = {
     "tranvia": ("FS162", "tranvia", {"bucle": 8.0, "desde": 10.0}), "tranvia_campana": ("FS162", "tranvia_campana", {"dur": 2.0}),
     "motor_avioneta": ("FS162", "motor_avioneta", {"bucle": 4.0, "desde": 3.0}),
     "bajo_agua": ("FS162", "bajo_agua", {"bucle": 8.0, "desde": 5.0}), "brazada": ("FS162", "brazada", {"dur": 0.9}),
+    "paso_via0": ("K", "impactMetal_light_000", {"dur": 0.25}), "paso_via1": ("K", "impactMetal_light_001", {"dur": 0.25}),
     "avion": ("FS162", "avion", {"bucle": 8.0, "desde": 6.0}), "avion_despegue": ("FS162", "avion_despegue", {"dur": 8.0}),
 }
 for _pack in PACKS.values():

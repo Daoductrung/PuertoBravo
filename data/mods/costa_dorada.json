@@ -35,6 +35,19 @@
    "desc": "El muelle de tablones de Costa Dorada, al oeste de Puerto Bravo.",
    "a_mapa": "costa_dorada",
    "a_lugar": "cd_embarcadero"
+  },
+  {
+   "id": "costa_dorada_tren",
+   "nombre": "Estación de tren de Costa Dorada",
+   "tipo": "tren",
+   "mapa": "costa_dorada",
+   "bloque": [
+    0,
+    2
+   ],
+   "lado": "N",
+   "pos": 45,
+   "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."
   }
  ],
  "misiones": [

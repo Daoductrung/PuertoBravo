@@ -290,6 +290,43 @@ def _mapa_crudo(cat, mod, ident):
     return next((copy.deepcopy(m) for m in cat.base["mapas"] if m["id"] == ident), None)
 
 
+def _comprobar_tranvia(mod, m, crudo, mm, donde, errores, avisos):
+    """Las vías del tranvía: los cruces tienen que existir, y las paradas quedar cerca de las vías."""
+    import math
+    for n, cruce in enumerate(crudo.get("vias") or [], 1):
+        try:
+            i, j = (cruce["a"], cruce["b"]) if isinstance(cruce, dict) else (cruce[0], cruce[1])
+            if not (0 <= int(i) < mm.NX and 0 <= int(j) < mm.NY):
+                errores.append(f"{donde}: el cruce {n} de las vías, avenida {i} y calle {j}, no existe. Las avenidas van de 0 a {mm.NX - 1} y las calles de 0 a {mm.NY - 1}.")
+        except (KeyError, IndexError, TypeError, ValueError):
+            errores.append(f"{donde}: el cruce {n} de las vías no tiene avenida y calle.")
+    paradas = [empaquetar("lugar", l) for l in mod.secciones.get("lugares", []) if l.get("mapa") == m.get("id") and l.get("tipo") == "tranvia"]
+    paradas += [l for l in crudo.get("lugares", []) if l.get("tipo") == "tranvia"]
+    if not paradas:
+        return
+    if len(paradas) == 1:
+        avisos.append(f"{donde}: solo hay una parada de tranvía; hacen falta al menos dos para que haya línea.")
+    ordenes = [l.get("orden") for l in paradas if l.get("orden") is not None]
+    if ordenes and len(ordenes) != len(paradas):
+        avisos.append(f"{donde}: unas paradas de tranvía tienen orden en la línea y otras no; el juego las ordenará él, dando la vuelta a la ciudad.")
+    if len(set(ordenes)) != len(ordenes):
+        avisos.append(f"{donde}: hay paradas de tranvía con el mismo orden en la línea.")
+    try:
+        c2 = dict(crudo)
+        c2["lugares"] = [{k: v for k, v in l.items() if k != "mapa"} for l in paradas]
+        c2["transporte"] = False
+        m2 = M.Mundo(c2)
+        for l in m2.linea_tranvia():
+            s = m2.via_marca(l)
+            if s is not None:
+                px, py = m2.via_punto(s)
+                lejos = math.hypot(px - l.x, py - l.y)
+                if lejos > 60:
+                    avisos.append(f"{donde}: la parada «{l.nombre}» queda a {int(lejos)} metros de las vías; el tranvía parará lejos de ella.")
+    except Exception:
+        pass
+
+
 def comprobar(mod, cat):
     """Revisa el mod entero. Devuelve (errores, avisos), listas de frases."""
     errores, avisos = [], []
@@ -320,11 +357,12 @@ def comprobar(mod, cat):
                 if not crudo.get("barrios"):
                     errores.append(f"{donde}: hace falta al menos un barrio.")
                     continue
-                mm = M.Mundo(crudo)
+                mm = M.Mundo(dict(crudo, transporte=False, lugares=list(crudo["lugares"])))      # al revisar no se añade nada: se mira lo que hay
                 for bi in range(mm.NX - 1):
                     for bj in range(mm.NY - 1):
                         if (bi, bj) not in mm._barrio_de:
                             avisos.append(f"{donde}: la manzana {bi}, {bj} no pertenece a ningún barrio; usará el primero.")
+                _comprobar_tranvia(mod, m, crudo, mm, donde, errores, avisos)
         except Exception as e:
             errores.append(f"{donde}: no se puede construir el mapa: {e}")
     # lugares: su posición tiene que existir y poder pisarse

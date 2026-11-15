@@ -9,7 +9,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 13
+VERSION_CACHE = 14
 PI2 = 2 * np.pi
 
 
@@ -703,6 +703,10 @@ def generar(semilla=7):
     subida = td / 4.0
     desp = _filtro(ruido(4.0), 80, 3500) * (0.25 + 0.75 * subida) + 0.5 * np.sin(PI2 * np.cumsum(90 + 260 * subida) / SR) * subida
     S["avion_despegue"] = _norm(desp * np.minimum(1.0, td / 0.3) * np.minimum(1.0, (4.0 - td) / 0.5), 0.55)
+    for pie, f0 in ((0, 2300.0), (1, 2050.0)):                   # pisar las vías: el raíl suena a metal, y debajo cruje la grava
+        tp = _t(0.2)
+        rail = (np.sin(PI2 * f0 * tp) + 0.5 * np.sin(PI2 * f0 * 1.52 * tp)) * _decae(0.2, 0.035, 0.001)
+        S[f"paso_via{pie}"] = _norm(rail + 0.8 * _filtro(ruido(0.2), 900, 5000) * _decae(0.2, 0.05), 0.4)
     return S
 
 

@@ -141,6 +141,7 @@ SONIDOS = [
     ("motor_lancha", "Motor de lancha", "Una embarcación rápida."),
     ("motor_helicoptero", "Helicóptero", "Las palas de un helicóptero."),
     ("motor_avioneta", "Avioneta", "El zumbido de una hélice."),
+    ("paso_via0", "Pasos sobre las vías del tranvía", "Un toque metálico, del raíl, con grava debajo. Si lo oyes, estás en medio de las vías."),
     ("lugar_tranvia", "Parada de tranvía", "Dos toques de campana."),
     ("lugar_tren", "Estación de tren", "Resoplidos de locomotora."),
     ("lugar_aeropuerto", "Aeropuerto", "El aviso de megafonía: tres notas que bajan."),

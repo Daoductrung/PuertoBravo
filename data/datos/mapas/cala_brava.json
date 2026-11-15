@@ -26,7 +26,8 @@
     {"id": "cb_chiringuito", "nombre": "Freiduría La Ola", "tipo": "comida", "bloque": [2, 0], "lado": "N", "pos": 36, "desc": "Pescado frito recién sacado del mar."},
     {"id": "cb_gimnasio", "nombre": "Club de remo de Cala Brava", "tipo": "gimnasio", "bloque": [2, 1], "lado": "N", "pos": 36, "desc": "Remos, pesas y un cuadrilátero improvisado entre barcas."},
     {"id": "cb_playa_tesoros", "nombre": "Playa de los Naufragios", "tipo": "tesoro", "bloque": [0, 0], "xy": [50, 40], "desc": "Cada temporal deja en esta playa restos de barcos antiguos."},
-    {"id": "cb_contrabando", "nombre": "Almacén de redes", "tipo": "proveedor", "bloque": [1, 0], "xy": [10, 36], "adultos": true, "factor": {"hierba": 1.2, "polvo": 0.6, "pastillas": 1.2, "cristal": 1.1}, "desc": "Entre redes y boyas llegan por mar fardos que no vienen de pescar."}
+    {"id": "cb_contrabando", "nombre": "Almacén de redes", "tipo": "proveedor", "bloque": [1, 0], "xy": [10, 36], "adultos": true, "factor": {"hierba": 1.2, "polvo": 0.6, "pastillas": 1.2, "cristal": 1.1}, "desc": "Entre redes y boyas llegan por mar fardos que no vienen de pescar."},
+    {"id": "cala_brava_tren", "nombre": "Estación de tren de Cala Brava", "tipo": "tren", "bloque": [1, 1], "lado": "S", "pos": 62, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."}
   ],
   "casetes": [[30, 40], [230, 130]]
 }

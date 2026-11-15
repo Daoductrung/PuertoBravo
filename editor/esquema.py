@@ -68,6 +68,8 @@ ESQUEMAS = {
         c("bloque", "Manzana", "par", "Número de avenida desde el oeste y número de calle desde el sur, empezando en cero. Déjalo vacío en el mar.", etiquetas=("Manzana: avenida", "Manzana: calle")),
         c("lado", "Fachada", "opcion", "En qué lado de la manzana está la puerta. Déjalo sin valor si usas una posición interior.", ops=LADOS),
         c("pos", "Posición en la fachada", "entero", "Metros desde la esquina oeste o sur de la manzana, de 0 a 72.", minimo=0, maximo=72),
+        c("orden", "Orden en la línea de tranvía", "entero", "El tranvía recorre las paradas por este orden, de menor a mayor, y después de la última vuelve a la primera. "
+          "Si lo dejas vacío en todas las paradas de la localidad, el juego las ordena dando la vuelta a la ciudad.", si=_es("tranvia"), minimo=1),
         c("xy", "Posición interior o en el mar", "par", "En plazas, parques, playas y muelles: metros dentro de la manzana. En el mar: coordenadas absolutas.", etiquetas=("Posición: metros al este", "Posición: metros al norte"), decimal=True),
         c("desc", "Descripción", "largo", "Lo que dice el juego con la tecla N y en las listas."),
         c("sonido", "Sonido propio", "ref", "Sonido en bucle que emite. Sin valor, usa el de su tipo.", ref="sonido"),
@@ -259,6 +261,11 @@ ESQUEMAS = {
         c("policia", "Hay policía", "si_no", defecto=True, grupo="Vida"), c("aparcados", "Hay coches aparcados", "si_no", defecto=True, grupo="Vida"),
         c("nombre_objeto", "Nombre de los objetos de colección", defecto="Cinta de casete", grupo="Vida"),
         c("casetes", "Posiciones de los objetos de colección", "lista", sub="punto_xy", como_pares=("a", "b"), grupo="Vida"),
+        c("vias", "Recorrido de las vías del tranvía", "lista", "Los cruces por los que pasan las vías, en orden. Basta con poner los cruces donde giran: entre uno y el siguiente, "
+          "las vías van primero por la calle y luego por la avenida. Después del último vuelven al primero. Cada parada para en el punto de las vías que le queda más cerca. "
+          "Si lo dejas vacío, el juego tiende las vías por el cruce más cercano a cada parada.", sub="cruce_via", como_pares=("a", "b"), si=lambda d: d.get("tipo") == "ciudad", grupo="Transporte"),
+        c("transporte", "Poner el transporte público que falte", "si_no", "Con sí, si la localidad no trae paradas de tranvía, estación de tren o aeropuerto, el juego se los pone al cargarla. "
+          "Con no, la localidad tiene solo lo que tú le pongas.", defecto=True, si=lambda d: d.get("tipo") != "mar", grupo="Transporte"),
         c("lugares", "Lugares incluidos en el propio mapa", "lista", "También puedes crearlos en la sección Lugares eligiendo esta localidad.", sub="lugar", grupo="Vida"),
     ]},
     "barrio": {"titulo": "Barrio", "resumen": lambda d: f"{d.get('nombre', '?')}", "campos": [
@@ -274,6 +281,9 @@ ESQUEMAS = {
     "isla": {"titulo": "Isla", "resumen": lambda d: f"{d.get('nombre', '?')}", "campos": [
         c("nombre", "Nombre", req=True), c("x", "Metros al este", "entero", req=True), c("y", "Metros al norte", "entero", req=True),
         c("r", "Radio", "entero", req=True, defecto=40)]},
+    "cruce_via": {"titulo": "Cruce por el que pasan las vías", "resumen": lambda d: f"avenida {d.get('a', '?')}, calle {d.get('b', '?')}", "campos": [
+        c("a", "Número de avenida, desde el oeste, empezando en cero", "entero", req=True, defecto=0, minimo=0),
+        c("b", "Número de calle, desde el sur, empezando en cero", "entero", req=True, defecto=0, minimo=0)]},
     "punto_xy": {"titulo": "Posición", "resumen": lambda d: f"{d.get('a', '?')}, {d.get('b', '?')}", "campos": [
         c("a", "Metros al este", "decimal", req=True, defecto=0), c("b", "Metros al norte", "decimal", req=True, defecto=0)]},
     "personaje": {"titulo": "Personaje para elegir al empezar", "resumen": lambda d: f"{d.get('nombre', '?')} {d.get('apellido', '')}", "campos": [

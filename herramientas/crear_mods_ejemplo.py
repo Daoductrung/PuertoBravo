@@ -827,6 +827,9 @@ def escribir(nombre, crudo):
     for rama in RAMAS.get(nombre, []):
         if not any(m["id"] == rama["id"] for m in crudo.get("misiones", [])):
             crudo.setdefault("misiones", []).append(rama)
+    # el transporte público de cada localidad del mod queda escrito en el propio mod, para que se pueda editar
+    import escribir_transporte
+    escribir_transporte.completar_mod(crudo)
     for mi in crudo.get("misiones", []):
         paso = DECISIONES.get(mi.get("id"))
         if paso and not any(x.get("tipo") == "decision" for x in mi["pasos"]):

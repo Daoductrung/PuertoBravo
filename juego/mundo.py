@@ -20,7 +20,7 @@ APARCA = 6.7       # distancia del eje a la que se aparca (pegado al bordillo, f
 DIRS = [(0, 1), (1, 0), (0, -1), (-1, 0)]       # norte, este, sur, oeste
 NOMBRE_DIR = ["norte", "este", "sur", "oeste"]
 CARDINAL8 = ["norte", "noreste", "este", "sureste", "sur", "suroeste", "oeste", "noroeste"]
-SUPERFICIE_TXT = {"calzada": "calzada", "acera": "acera", "hierba": "césped", "arena": "arena",
+SUPERFICIE_TXT = {"via": "vías del tranvía", "calzada": "calzada", "acera": "acera", "hierba": "césped", "arena": "arena",
                   "plaza": "plaza", "muelle": "muelle", "pared": "pared", "fuera": "límite de la ciudad"}
 
 
@@ -253,8 +253,15 @@ def completar_transporte(c):
                 n += 1
                 calle = c["calles"][bj if lado == "S" else bj + 1]
                 lugares.append({"id": f"{mid}_tranvia_{n}", "nombre": f"Parada de tranvía de {calle}, en {b['nombre']}", "tipo": "tranvia", "bloque": [bi, bj], "lado": lado,
-                                "pos": _hueco(lugares, (bi, bj), lado, 62), "linea": n,
+                                "pos": _hueco(lugares, (bi, bj), lado, 62),
                                 "desc": f"Una marquesina con un banco y el cartel de la línea. El tranvía recorre {c['nombre']} parando en todos los barrios."})
+        # el orden de la línea: dando la vuelta a la ciudad. Queda escrito en cada parada, para poder cambiarlo a mano
+        nuevas = [l for l in lugares if l.get("tipo") == "tranvia"]
+        pos = {l["id"]: (l["bloque"][0] * B + ACERA + l["pos"], l["bloque"][1] * B + (7.5 if l["lado"] == "S" else B - 7.5)) for l in nuevas}
+        cx = sum(x for x, _ in pos.values()) / len(pos)
+        cy = sum(y for _, y in pos.values()) / len(pos)
+        for k, l in enumerate(sorted(nuevas, key=lambda l: (math.atan2(pos[l["id"]][1] - cy, pos[l["id"]][0] - cx), l["id"])), 1):
+            l["orden"] = k
     if por_tierra and "tren" not in tipos:
         bus = next((l for l in lugares if l.get("tipo") == "estacion" and "bloque" in l), None)
         bloque = tuple(bus["bloque"]) if bus else (0, 0)
@@ -313,6 +320,7 @@ class Mundo:
                 for j in range(b["j"][0], b["j"][1] + 1):
                     self._barrio_de[(i, j)] = b
         completar_transporte(c)
+        self._vias_datos = c.get("vias")
         self.lugares = {}
         for d in c["lugares"]:
             try:
@@ -321,8 +329,122 @@ class Mundo:
             except (KeyError, ValueError, TypeError):
                 pass
         self.lugares_todos = dict(self.lugares)
+        self._tender_vias()
         self.casetes = [self.punto_libre(x, y) for x, y in c.get("casetes", [])]
         self.aparcados = self._generar_aparcados() if c.get("aparcados", True) else []
+
+    # ------------------------------------------------------------------ vías del tranvía
+    def linea_tranvia(self):
+        """Las paradas de tranvía, en el orden en que las recorre la línea: dando la vuelta a la ciudad."""
+        paradas = [l for l in self.lugares_todos.values() if l.tipo == "tranvia"]
+        if not paradas:
+            return []
+        if all(isinstance(l.get("orden"), (int, float)) for l in paradas):
+            return sorted(paradas, key=lambda l: (l.get("orden"), l.id))        # el orden que diga cada parada
+        cx = sum(l.x for l in paradas) / len(paradas)
+        cy = sum(l.y for l in paradas) / len(paradas)
+        return sorted(paradas, key=lambda l: (math.atan2(l.y - cy, l.x - cx), l.id))
+
+    def _tender_vias(self):
+        """Tiende las vías: un circuito que pasa por el cruce más cercano a cada parada, siguiendo calles y avenidas.
+
+        Las vías van por el centro de la calzada. `vias` guarda cada tramo de calle que las lleva, para saber si un punto
+        está sobre ellas; `via_ruta` es el circuito, punto a punto, y `via_marcas` a cuántos metros del principio para en
+        cada parada.
+        """
+        self.vias = set()             # ("H", calle, avenida): tramo de esa calle desde esa avenida a la siguiente; ("V", avenida, calle)
+        self.via_ruta, self.via_cum, self.via_marcas, self._via_de_parada = [], [], [], {}
+        self.via_nodos = []           # los cruces del circuito, uno a uno
+        self.via_largo = 0.0
+        linea = self.linea_tranvia()
+        if len(linea) < 2:
+            return
+        escritas = []
+        for n in self._vias_datos or []:                         # el recorrido escrito en el mapa: los cruces por los que pasa
+            try:
+                i, j = (n["a"], n["b"]) if isinstance(n, dict) else (n[0], n[1])
+                escritas.append((max(0, min(self.NX - 1, int(i))), max(0, min(self.NY - 1, int(j)))))
+            except (KeyError, IndexError, TypeError, ValueError):
+                continue
+        # Si el mapa no trae el recorrido, se tiende por el cruce más cercano a cada parada, en el orden de la línea.
+        nodos = escritas if len(escritas) >= 2 else [(max(0, min(self.NX - 1, int(round(l.x / B)))), max(0, min(self.NY - 1, int(round(l.y / B))))) for l in linea]
+        ruta = [nodos[0]]
+        for k in range(1, len(nodos) + 1):
+            (ia, ja), (ib, jb) = ruta[-1], nodos[k % len(nodos)]
+            paso = 1 if ib > ia else -1
+            for i in range(ia + paso, ib + paso, paso) if ib != ia else []:      # primero por la calle
+                ruta.append((i, ja))
+            paso = 1 if jb > ja else -1
+            for j in range(ja + paso, jb + paso, paso) if jb != ja else []:      # luego por la avenida
+                ruta.append((ib, j))
+        if ruta[-1] == ruta[0] and len(ruta) > 1:
+            ruta.pop()                                           # el circuito se cierra solo: el último punto es el primero
+        # cada parada para en el punto del circuito que le queda más cerca
+        indice = {l.id: min(range(len(ruta)), key=lambda n: math.hypot(ruta[n][0] * B - l.x, ruta[n][1] * B - l.y)) for l in linea}
+        self.via_nodos = list(ruta)
+        for n in range(len(ruta)):
+            (ia, ja), (ib, jb) = ruta[n], ruta[(n + 1) % len(ruta)]
+            if ja == jb and ia != ib:
+                self.vias.add(("H", ja, min(ia, ib)))
+            elif ia == ib and ja != jb:
+                self.vias.add(("V", ia, min(ja, jb)))
+        self.via_ruta = [(i * B, j * B) for i, j in ruta]
+        cum = [0.0]
+        for n in range(len(self.via_ruta)):
+            a, b = self.via_ruta[n], self.via_ruta[(n + 1) % len(self.via_ruta)]
+            cum.append(cum[-1] + math.hypot(b[0] - a[0], b[1] - a[1]))
+        self.via_cum = cum
+        self.via_largo = cum[-1]
+        for l in linea:
+            self._via_de_parada[l.id] = cum[min(indice.get(l.id, 0), len(self.via_ruta) - 1)]
+        self.via_marcas = sorted(set(self._via_de_parada.values()))
+
+    def esquinas_de_las_vias(self):
+        """El circuito resumido en los cruces donde gira: es lo que se guarda en el mapa y lo que se edita."""
+        n = len(self.via_nodos)
+        if n < 3:
+            return [list(x) for x in self.via_nodos]
+        out = []
+        for k in range(n):
+            a, b, c = self.via_nodos[k - 1], self.via_nodos[k], self.via_nodos[(k + 1) % n]
+            if (b[0] - a[0], b[1] - a[1]) != (c[0] - b[0], c[1] - b[1]):       # cambia de dirección, o da la vuelta
+                out.append([b[0], b[1]])
+        return out
+
+    def via_marca(self, parada):
+        """A cuántos metros del principio del circuito para el tranvía en esa parada. None si no es de la línea."""
+        return self._via_de_parada.get(getattr(parada, "id", parada))
+
+    def via_punto(self, s):
+        """El punto del circuito que está a s metros de su principio."""
+        if not self.via_ruta:
+            return (0.0, 0.0)
+        s %= self.via_largo
+        n = len(self.via_ruta)
+        for k in range(n):
+            if s <= self.via_cum[k + 1]:
+                a, b = self.via_ruta[k], self.via_ruta[(k + 1) % n]
+                tramo = self.via_cum[k + 1] - self.via_cum[k]
+                f = (s - self.via_cum[k]) / tramo if tramo > 0 else 0.0
+                return (a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f)
+        return self.via_ruta[0]
+
+    def en_via(self, x, y):
+        """¿Está el punto sobre las vías del tranvía? Van por el centro de la calzada, un metro y medio a cada lado del eje."""
+        if not self.vias:
+            return False
+        j = int(round(y / B))
+        if abs(y - j * B) <= 1.6 and (("H", j, int(math.floor((x - 1.6) / B))) in self.vias or ("H", j, int(math.floor((x + 1.6) / B))) in self.vias):
+            return True                                          # en un cruce cuentan los dos tramos que llegan a él
+        i = int(round(x / B))
+        return abs(x - i * B) <= 1.6 and (("V", i, int(math.floor((y - 1.6) / B))) in self.vias or ("V", i, int(math.floor((y + 1.6) / B))) in self.vias)
+
+    def fuera_de_la_via(self, x, y):
+        """El punto de la acera más cercano a un punto de la vía: adonde va a parar quien es apartado de ella."""
+        j, i = int(round(y / B)), int(round(x / B))
+        if abs(y - j * B) <= abs(x - i * B):
+            return (x, j * B + (ACERA - 1.0) * (1 if y >= j * B else -1))
+        return (i * B + (ACERA - 1.0) * (1 if x >= i * B else -1), y)
 
     def filtrar(self, adultos):
         """Oculta o muestra los lugares marcados como contenido para adultos."""

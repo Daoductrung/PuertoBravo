@@ -108,6 +108,11 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.resumen_pendiente = False
         self.lento = False              # tiempo lento en marcha
         self.cubierto = None            # el punto donde estás a cubierto, o None
+        self.tranvias = []              # los tranvías que circulan por la localidad actual
+        self._sonidos_transporte = []
+        self._transporte_mapa = None
+        self.t_tren = 40.0              # cuánto falta para que se oiga un tren en la estación
+        self.t_avion = 55.0             # y un avión despegando en el aeropuerto
         self.nadando = False            # estás en el agua, sin barco
         self.buceando = False
         self.aguante = 100.0            # fuerzas para nadar
@@ -470,6 +475,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         for c in self.canales_lugar.values():
             c.parar()
         self.canales_lugar.clear()
+        from . import transporte
+        transporte.callar(self)                                 # los tranvías de la localidad que se deja
+        self._transporte_mapa = None
         self.plazas_activas.clear()
         self.plazas_usadas.clear()
         self.objetivo = None
@@ -1090,7 +1098,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             g["dest"] = (s.x, s.y)
         x, y = self.pos()
         d = math.hypot(g["dest"][0] - x, g["dest"][1] - y)
-        if not self.j.veh and (d < 30 or (d < 95 and self._linea_libre(x, y, g["dest"][0], g["dest"][1]))):
+        if not self.j.veh and (d < 6 or (d < 95 and self._linea_libre(x, y, g["dest"][0], g["dest"][1]))):       # recto solo si no hay un edificio en medio
             g["ruta"] = [g["dest"]]         # a pie y a la vista: directo al destino
         else:
             ruta = self.mundo.ruta(x, y, g["dest"][0], g["dest"][1])
@@ -1199,12 +1207,14 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             x, y = self.pos()
             d = math.hypot(g["dest"][0] - x, g["dest"][1] - y)
             radio = g["radio"] or (16 if self.j.veh else 5)
-            if d <= radio and g.get("final"):
+            # a pie no se da por llegado en mitad de la calzada: el aviso llega al pisar la acera, delante de la puerta
+            llegado = d <= radio and (self.j.veh is not None or d < 1.5 or self.mundo.tipo == "mar" or self.mundo.superficie(x, y) != "calzada")
+            if llegado and g.get("final"):
                 if not g.get("avisado"):
                     g["avisado"] = True
                     self.app.son("llegada")
                     self.decir(f"{g['nombre']}. Pulsa Intro para continuar el viaje.")
-            elif d <= radio and not g["auto"] and g["sigue"] is None:
+            elif llegado and not g["auto"] and g["sigue"] is None:
                 self.app.son("llegada")
                 self.app.vibrar(0.2, 0.6, 150)
                 self.decir(f"Has llegado a {g['nombre']}.")
@@ -1327,6 +1337,15 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         elif dy and self.mundo.transitable(j.x, ny):
             movido = abs(dy) * paso
             j.y = ny
+        if solo and movido < paso * 0.5:
+            # Caminando solo, si no se puede ir recto hacia el punto (al doblar una esquina se queda un palmo fuera de la acera),
+            # se avanza a paso normal por el lado que esté libre, empezando por el que corrige el desvío.
+            ejes = sorted((((math.copysign(paso, dx), 0.0), abs(dx)), ((0.0, math.copysign(paso, dy)), abs(dy))), key=lambda e: e[1])
+            for (ax, ay), peso in ejes:
+                if peso > 0.02 and self.mundo.transitable(j.x + ax, j.y + ay):
+                    j.x, j.y = j.x + ax, j.y + ay
+                    movido = paso
+                    break
         if solo:
             self.t_paseo_atasco = self.t_paseo_atasco + dt if movido < paso * 0.5 else 0.0
             if self.t_paseo_atasco > 2.5:
@@ -1349,7 +1368,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.dist_paso >= (1.5 if correr else 0.85):
             self.dist_paso = 0.0
             self.pie ^= 1
-            s = self.mundo.superficie(j.x, j.y)
+            s = "via" if self.mundo.tipo != "mar" and self.mundo.en_via(j.x, j.y) else self.mundo.superficie(j.x, j.y)      # sobre las vías se pisa distinto
             nombre = f"paso_{s}{self.pie}"
             if nombre not in self.mez.sonidos:
                 nombre = f"paso_acera{self.pie}"
@@ -1455,6 +1474,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.acompanante:
             from . import sistemas
             sistemas.paso_acompanante(self, dt)
+        if self.mundo.tipo != "mar":
+            from . import transporte
+            transporte.paso(self, dt)                           # tranvías por las vías, y los trenes y aviones que se oyen de lejos
         j.stats["tiempo"] += dt
         self._tiempo(dt)
         if j.veh:
@@ -1586,6 +1608,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                     self.son("cruce", cat="interfaz", vol=0.6)
                     self.decir(self.mundo.describir(x, y) + ".")
         s = self.mundo.superficie(x, y)
+        if not j.veh and self.mundo.tipo != "mar" and self.mundo.en_via(x, y):
+            s = "via"                                           # a pie se avisa al pisar las vías del tranvía, como con la acera o la calzada
         if s != self.sup_act:
             if self.cfg["anunciar_superficie"] and not j.veh and self.sup_act is not None:
                 self.decir(M.SUPERFICIE_TXT[s].capitalize() + ".")
@@ -1845,6 +1869,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
     def silenciar(self):
         """Detiene todos los sonidos del mundo (al salir de la partida)."""
         self.desconectar_online()
+        from . import transporte
+        transporte.callar(self)
         for v in self.vehiculos:
             v.callar()
         for o in self.objetos:

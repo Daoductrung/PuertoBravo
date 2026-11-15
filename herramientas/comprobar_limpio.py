@@ -82,8 +82,8 @@ def comprobar(raiz):
         ruta = os.path.join(data, "sonidos", pack)
         if os.path.isdir(ruta):
             n = len({os.path.splitext(f)[0] for f in os.listdir(ruta) if f.lower().endswith((".flac", ".ogg", ".wav", ".mp3"))})
-            if n != 235:
-                problemas.append(f"El pack {pack} tiene {n} sonidos y deberían ser 235")
+            if n != 237:
+                problemas.append(f"El pack {pack} tiene {n} sonidos y deberían ser 237")
     mods = os.path.join(data, "mods")
     if os.path.isdir(mods):
         for f in os.listdir(mods):

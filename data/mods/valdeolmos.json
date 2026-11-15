@@ -22,6 +22,19 @@
    "a_lugar": "vo_salida",
    "km": 31,
    "horas": 0.8
+  },
+  {
+   "id": "valdeolmos_tren",
+   "nombre": "Estación de tren de Valdeolmos",
+   "tipo": "tren",
+   "mapa": "valdeolmos",
+   "bloque": [
+    0,
+    0
+   ],
+   "lado": "S",
+   "pos": 45,
+   "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."
   }
  ],
  "misiones": [

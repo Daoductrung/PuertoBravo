@@ -94,12 +94,7 @@ PRECIO_TRANVIA = 2
 def linea_tranvia(p, mapa=None):
     """Las paradas de tranvía de una ciudad, en el orden en que las recorre la línea: dando la vuelta a la ciudad."""
     m = p.mapas[mapa] if mapa else p.mundo
-    paradas = [l for l in m.lugares.values() if l.tipo == "tranvia"]
-    if not paradas:
-        return []
-    cx = sum(l.x for l in paradas) / len(paradas)
-    cy = sum(l.y for l in paradas) / len(paradas)
-    return sorted(paradas, key=lambda l: (math.atan2(l.y - cy, l.x - cx), l.id))
+    return m.linea_tranvia() if hasattr(m, "linea_tranvia") else []
 
 
 def recorrido_tranvia(p, origen, destino):
@@ -130,10 +125,13 @@ def tranvia(p, l):
                 return
             app.cerrar(m)
             paradas = recorrido_tranvia(p, l, dest)
+            from . import transporte
+            transporte.subir(p, l)                              # el tranvía que te recoge es uno de los que circulan por la línea
 
             def bajar(parada, cuantas):
                 p.pasar_horas(0.05 * max(1, cuantas))
                 p.teletransportar(parada.x, parada.y)
+                transporte.bajar(p, parada)
                 p.j.stats["tranvias"] = p.j.stats.get("tranvias", 0) + 1
                 p.decir(f"Te bajas del tranvía en {corto(parada)}. {p.mundo.describir(parada.x, parada.y)}. Son las {p.hora_txt()}.")
             from . import pantallas
