@@ -1,6 +1,8 @@
 """Voces grabadas para las escenas: si hay una grabación de una frase, suena en lugar de la voz sintética.
 
-Las grabaciones van en data/voces (o en una subcarpeta), en WAV, OGG, FLAC o MP3. Cada archivo se llama
+Las grabaciones van en data/voces, en WAV, OGG, FLAC o MP3. Las que trae el juego están en una subcarpeta por
+historia. Las del jugador van en data/voces/propias: tienen preferencia y las actualizaciones no las tocan.
+Cada archivo se llama
 como la misión, el número de paso y el número de frase, empezando en uno y separados por guion bajo:
 
     oc01_1_2.ogg      misión oc01, paso 1, frase 2
@@ -18,14 +20,28 @@ SONIDO = "_voz_escena"            # nombre interno con el que se carga la grabac
 _indice = {"t": None, "archivos": {}}
 
 
+PROPIAS = "propias"
+
+
 def carpeta():
-    """Donde el jugador o el autor de un mod dejan sus grabaciones. Las actualizaciones no la tocan."""
+    """Todas las voces: las que trae el juego, en una subcarpeta por historia, y las del jugador."""
     return os.path.join(rutas.DATA, "voces")
 
 
-def carpeta_de_serie():
-    """Las voces que vienen con el juego. Si el jugador pone una grabación con el mismo nombre en su carpeta, gana la suya."""
-    return os.path.join(rutas.DATA, "voces_serie")
+def carpeta_propias():
+    """Donde el jugador o el autor de un mod dejan sus grabaciones. Las actualizaciones no la tocan, y ganan a las de serie."""
+    return os.path.join(carpeta(), PROPIAS)
+
+
+def limpiar_antigua():
+    """Hasta la 1.6.1 las voces del juego iban en data/voces_serie. Ya no se usa: si queda de una versión anterior, se borra."""
+    vieja = os.path.join(rutas.DATA, "voces_serie")
+    if os.path.isdir(vieja):
+        import shutil
+        shutil.rmtree(vieja, ignore_errors=True)
+        registro.info("voces", "Borrada la carpeta de voces de una versión anterior")
+        return True
+    return False
 
 
 def nombre(mision, paso, frase):
@@ -34,18 +50,23 @@ def nombre(mision, paso, frase):
 
 
 def _archivos():
-    carpetas = [c for c in (carpeta(), carpeta_de_serie()) if os.path.isdir(c)]
-    if not carpetas:
+    raiz_voces = carpeta()
+    if not os.path.isdir(raiz_voces):
         return {}
-    marca = tuple(max(os.path.getmtime(base) for base, _, _ in os.walk(c)) for c in carpetas)
+    bases = [(base, nombres) for base, _, nombres in os.walk(raiz_voces)]
+    marca = (carpeta_propias(), max(os.path.getmtime(base) for base, _ in bases))
     if _indice["t"] != marca:
         _indice["t"], _indice["archivos"] = marca, {}
-        for c in carpetas:                                   # primero las del jugador: tienen preferencia
-            for base, _, nombres in os.walk(c):
-                for n in nombres:
-                    raiz, ext = os.path.splitext(n)
-                    if ext.lower() in EXT:
-                        _indice["archivos"].setdefault(raiz.lower(), os.path.join(base, n))
+        propias = os.path.normcase(carpeta_propias())
+
+        def orden(par):                                      # primero las del jugador, luego las sueltas, luego las de serie
+            b = os.path.normcase(par[0])
+            return (0 if b.startswith(propias) else 1 if b == os.path.normcase(raiz_voces) else 2, b)
+        for base, nombres in sorted(bases, key=orden):
+            for n in sorted(nombres):
+                raiz, ext = os.path.splitext(n)
+                if ext.lower() in EXT:
+                    _indice["archivos"].setdefault(raiz.lower(), os.path.join(base, n))
     return _indice["archivos"]
 
 

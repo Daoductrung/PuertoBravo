@@ -48,7 +48,7 @@ MAX_EXPANDIDO = 6 * 1024 ** 3
 MAX_MIEMBROS = 60000
 TIEMPO = 20
 # Carpetas del jugador: la actualización no las pisa ni las borra jamás.
-INTOCABLES = ("partidas", "config", "mi_musica", "actualizacion", "logs", "ia_local", "voces")
+INTOCABLES = ("partidas", "config", "mi_musica", "actualizacion", "logs", "ia_local", "propias")
 
 
 class ErrorActualizacion(Exception):
@@ -380,6 +380,7 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
         "if errorlevel 8 goto fallo",
         'if exist "%NUEVA%\\data\\datos" robocopy "%NUEVA%\\data\\datos" "%APP%\\data\\datos" /mir /r:3 /w:1 /njh /njs /ndl /nfl >nul',
         "if errorlevel 8 goto fallo",
+        'if exist "%APP%\\data\\voces_serie" rmdir /s /q "%APP%\\data\\voces_serie"',     # las voces van ahora en data\voces
         'rmdir /s /q "%NUEVA%"',
         'rmdir /s /q "%COPIA%"',
         f'start "" "%APP%\\{EJECUTABLE}" {ARG_TRAS_ACTUALIZAR}',

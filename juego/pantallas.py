@@ -403,8 +403,9 @@ class Viaje:
     """
     pausa_mundo = True
 
-    def __init__(self, app, segundos, al_llegar, autobus=False, destino=""):
+    def __init__(self, app, segundos, al_llegar, autobus=False, destino="", vuelo=False):
         self.app, self.total, self.al_llegar, self.autobus, self.destino = app, max(4.0, float(segundos)), al_llegar, autobus, destino
+        self.vuelo = vuelo
         self.t = 0.0
         self.canales = []
         self.motor = None
@@ -417,15 +418,19 @@ class Viaje:
         if self.motor is not None:
             return
         app.son("puerta_coche")
-        self.motor = app.son("motor_camion" if self.autobus else "motor_coche", bucle=True, vol=0.32)
-        self.canales = [self.motor, app.son("rodadura", bucle=True, vol=0.18)]
+        if self.vuelo:
+            self.motor = app.son("motor_helicoptero", bucle=True, vol=0.4)
+            self.canales = [self.motor, app.son("viento_playa", bucle=True, vol=0.15)]
+        else:
+            self.motor = app.son("motor_camion" if self.autobus else "motor_coche", bucle=True, vol=0.32)
+            self.canales = [self.motor, app.son("rodadura", bucle=True, vol=0.18)]
         emisora = ""
         try:
             n = len(app.radio.emisoras)
             emisora = app.radio.sintonizar(random.randrange(1, n)) if n > 1 else ""
         except Exception:
             emisora = ""
-        quien = "El autobús arranca" if self.autobus else "Subes al taxi"
+        quien = "El helicóptero despega" if self.vuelo else "El autobús arranca" if self.autobus else "Subes al taxi"
         radio = f" En la radio, {emisora}." if emisora else ""
         app.decir(f"{quien}, camino de {self.destino}.{radio} Pulsa Intro si quieres llegar ya.", True)
 
@@ -459,12 +464,12 @@ class Viaje:
         if self.motor is not None:
             self.motor.tono(tono + 0.04 * math.sin(self.t * 1.7))
         self.t_suceso -= dt
-        if self.t_suceso <= 0 and f < 0.85:
+        if self.t_suceso <= 0 and f < 0.85 and not self.vuelo:
             self.t_suceso = random.uniform(6, 11)
             self.app.son(random.choice(["claxon_lejano", "intermitente", "cruce", "claxon_lejano"]), vol=0.35, pan=random.uniform(-0.8, 0.8))
         if not self.avisado and f >= 0.8:
             self.avisado = True
-            self.app.decir("Ya casi estás." if not self.autobus else "Próxima parada.")
+            self.app.decir("Empezáis a bajar." if self.vuelo else "Ya casi estás." if not self.autobus else "Próxima parada.")
         if self.t >= self.total:
             self._fin()
 
@@ -473,9 +478,9 @@ class Viaje:
             self._fin()
 
 
-def viajar(app, segundos, al_llegar, autobus=False, destino=""):
+def viajar(app, segundos, al_llegar, autobus=False, destino="", vuelo=False):
     """Hace el trayecto si el jugador lo quiere; si no, llega al momento, como antes."""
     if not app.cfg["viajes_trayecto"] or (app.pruebas and not getattr(app, "viajes_en_pruebas", False)):
         al_llegar()
         return
-    app.abrir(Viaje(app, segundos, al_llegar, autobus, destino))
+    app.abrir(Viaje(app, segundos, al_llegar, autobus, destino, vuelo))

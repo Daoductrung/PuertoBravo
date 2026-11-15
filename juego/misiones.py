@@ -772,6 +772,10 @@ class Misiones:
             self.j.territorios.append(m["territorio"])
             self.son("territorio", cat="interfaz")
             self.decir("El barrio es tuyo. Te pagará 300 euros cada medianoche.")
+            # quedarse con un barrio se sabe en toda la ciudad: el primero da mucha fama; los siguientes, cada vez menos
+            self.cambiar_reputacion(max(3, 15 - 3 * (len(self.j.territorios) - 1)))
+        if callable(m.get("al_completar")):
+            m["al_completar"]()
         if m.get("repetible"):
             if m.get("contador"):
                 self.j.stats[m["contador"]] = self.j.stats.get(m["contador"], 0) + 1

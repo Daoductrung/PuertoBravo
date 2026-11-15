@@ -35,10 +35,17 @@ def helipuerto(p, l):
             if precio and not p.pagar(precio):
                 return
             _volver_al_juego(p)
-            p.pasar_horas(0.4)
-            p.son("motor_helicoptero", cat="interfaz", vol=0.6)
-            p.cambiar_mapa(h.mapa, h.x, h.y, None,
-                           f"{'Aterrizas' if not volando else 'Llegas volando'} en {h.nombre}, {p.mapas[h.mapa].nombre}. Son las {p.hora_txt()}.")
+
+            def llegar():
+                p.pasar_horas(0.4)
+                p.son("motor_helicoptero", cat="interfaz", vol=0.6)
+                p.cambiar_mapa(h.mapa, h.x, h.y, None,
+                               f"{'Aterrizas' if not volando else 'Llegas volando'} en {h.nombre}, {p.mapas[h.mapa].nombre}. Son las {p.hora_txt()}.")
+            if volando:
+                llegar()                                 # pilotas tú: no hay trayecto de pasajero
+            else:
+                from .pantallas import viajar as trayecto
+                trayecto(app, 35.0, llegar, destino=p.mapas[h.mapa].nombre, vuelo=True)
         return f
     ops = [Opcion(f"Volar a {h.nombre}, en {p.mapas[h.mapa].nombre}" + ("" if volando else f": {int(h.get('precio', 150))} euros"), volar(h),
                   ayuda=p.mapas[h.mapa].barrios[0].get("descripcion", "")) for h in destinos]
@@ -186,9 +193,19 @@ def servicios(p):
         else:
             _volver_al_juego(p)
             menus_juego.menu_viaje(p)
+    def despedir():
+        n = 0
+        for e in list(p.personas):
+            if e.tipo == "aliado" and not e.muerto and not getattr(e, "de_banda", False):
+                p.personas.remove(e)
+                n += 1
+        app.decir(f"Despides a {'tu guardaespaldas' if n == 1 else f'tus {n} guardaespaldas'}. Ya no te cobrarán." if n else "No llevas guardaespaldas.", True)
+
     app.abrir(Menu(app, lambda: f"Servicios por teléfono. Tienes {j.dinero} euros", [
         Opcion("Que te traigan un vehículo de tus garajes: 150 euros", vehiculos),
         Opcion("Llamar a un guardaespaldas: 350 euros", guardaespaldas),
+        Opcion(lambda: f"Despedir a tus guardaespaldas: llevas {sum(1 for e in p.personas if e.tipo == 'aliado' and not e.muerto and not getattr(e, 'de_banda', False))}", despedir,
+               ayuda="Se marchan y dejan de cobrarte los 200 euros de cada medianoche."),
         Opcion("Pedir una ambulancia: 200 euros", ambulancia),
         Opcion("Pedir un taxi: viaje rápido", taxi)]))
 
@@ -372,6 +389,7 @@ def territorios(p):
         ops = [Opcion("Aquí no hay barrios que conquistar. Las guerras de territorio son cosa de las ciudades: Puerto Bravo, San Lucero y Monteferro")]
     ops.append(Opcion(lambda: f"Territorios en tu poder: {len(j.territorios)}"))
     from . import sistemas
+    ops[0:0] = sistemas.opciones_sucesos(p, Menu, Opcion)
     from .menus import EntradaTexto
     ops.append(Opcion(lambda: f"Tu banda: {j.banda_nombre or 'sin nombre'}, {j.banda} de {sistemas.cupo(j)}" if j.territorios else "Tu banda: necesitas un territorio para tenerla",
                       lambda: sistemas.menu_banda(p, Menu, Opcion, EntradaTexto),

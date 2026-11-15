@@ -355,6 +355,9 @@ class Local(Interior):
     def __init__(self, p, lugar):
         self.p, self.app, self.l, self.acciones = p, p.app, lugar, {}
         self.habitaciones = list(salas_de(lugar) or [_PUERTA])
+        for pers in personas_aqui(p, lugar):                  # la gente de tu vida social está en su sitio, no solo en el móvil
+            if not (p.acompanante and p.acompanante["pid"] == pers["id"]):
+                self.habitaciones.insert(2, (f"donde está {pers['nombre']}", pers["desc"], ("persona", pers["id"])))
         self.i = 0
         self.oidas = 0
 
@@ -366,7 +369,10 @@ class Local(Interior):
     def _usar(self):
         p, app = self.p, self.app
         nombre, desc, que = self.habitaciones[self.i]
-        if que in ("salir", "mostrador"):
+        if isinstance(que, tuple):
+            from . import menus_adultos
+            menus_adultos.vida_social(p, directo=que[1])
+        elif que in ("salir", "mostrador"):
             app.son("menu_atras")
             app.cerrar(self)
         elif que == "sentarse":
@@ -398,9 +404,243 @@ def con_recorrido(p, lugar, menu, Opcion):
         lista = list(fuente() if callable(fuente) else fuente)
         if any(o.texto.startswith("Recorrer") for o in lista):
             return lista
+        for pers in personas_aqui(p, lugar):
+            if not (p.acompanante and p.acompanante["pid"] == pers["id"]):
+                from . import menus_adultos
+                lista.insert(0, Opcion(f"{pers['nombre']} está aquí: acercarte a hablar", lambda pid=pers["id"]: menus_adultos.vida_social(p, directo=pid),
+                                       ayuda="Lo mismo que desde el móvil, pero en persona: charlar, quedar, hacerle un regalo o proponerle salir a dar una vuelta contigo."))
         o = Opcion("Recorrer el local por dentro", lambda: p.app.abrir(Local(p, lugar)),
                    ayuda="Entras y vas de una sala a otra con las flechas izquierda y derecha. En el mostrador vuelves a este menú, que es donde se compra o se pide.")
         lista.insert(len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista), o)
         return lista
     menu._fuente = ops
     menu.refrescar(False)
+
+
+# ============================================================ sucesos de territorio
+# Tener barrios llama la atención: otras bandas los quieren, alguna prefiere pactar, y la policía te pone en su lista.
+def _nombre_barrio(p, ident):
+    for m in p.mapas.values():
+        for b in m.barrios:
+            if b["id"] == ident:
+                return b["nombre"], m
+    return ident, None
+
+
+def sucesos_territorio(p, azar=None):
+    """Cada medianoche: se cumplen los plazos pendientes y, a veces, pasa algo nuevo."""
+    import random
+    from .extras3 import BANDAS
+    azar = azar or random
+    j = p.j
+    # --- plazos que vencen
+    a = j.amenaza
+    if a and p.dia > a["dia"]:
+        j.amenaza = None
+        if a["territorio"] in j.territorios:
+            j.territorios.remove(a["territorio"])
+            p.son("mision_fallo", cat="interfaz")
+            p.decir(f"No defendiste {_nombre_barrio(p, a['territorio'])[0]} y {a['banda']} se lo ha quedado. Ya no te paga.")
+            p.cambiar_reputacion(-4)
+    r = j.redada
+    if r and p.dia > r["dia"]:
+        j.redada = None
+        perdido = min(j.dinero, 300 * len(j.territorios))
+        j.dinero -= perdido
+        p.decir(f"No arreglaste lo de la policía: una redada en tus barrios te cuesta {perdido} euros.")
+    o = j.oferta_pacto
+    if o and p.dia > o["dia"]:
+        j.oferta_pacto = None
+    if not j.territorios or not p.cfg["sucesos"] or j.amenaza or j.redada or j.oferta_pacto:
+        return
+    n = len(j.territorios)
+    if azar.random() > 0.12 + 0.05 * min(n, 5):
+        return
+    banda = azar.choice(BANDAS)
+    tipo = azar.choice(["ataque", "ataque", "policia"] + (["pacto", "pacto"] if n >= 3 else []))
+    if tipo == "ataque" and p.dia <= j.pacto_hasta:
+        return                                                    # hay un pacto en vigor: nadie ataca
+    if tipo == "ataque":
+        t = azar.choice(j.territorios)
+        nombre = _nombre_barrio(p, t)[0]
+        if j.banda >= 2 and azar.random() < min(0.9, 0.25 + 0.15 * j.banda):
+            p.son("territorio", cat="interfaz")
+            p.decir(f"{banda} ha intentado quedarse con {nombre}, pero {j.banda_nombre or 'tu banda'} los ha echado sin que tuvieras que ir.")
+            p.cambiar_reputacion(2)
+            return
+        j.amenaza = {"territorio": t, "banda": banda, "dia": p.dia}
+        p.son("notificacion", cat="interfaz")
+        p.decir(f"{banda} está atacando {nombre}. Tienes hasta la próxima medianoche para defenderlo: en el móvil, Territorios. Si no vas, lo pierdes.")
+    elif tipo == "pacto":
+        j.oferta_pacto = {"banda": banda, "precio": 500 * n, "dia": p.dia}
+        p.son("notificacion", cat="interfaz")
+        p.decir(f"{banda} te propone un pacto: te pagan {500 * n} euros y durante una semana nadie toca los barrios de nadie. Contesta en el móvil, en Territorios, antes de medianoche.")
+    else:
+        j.redada = {"precio": 250 * n, "dia": p.dia}
+        p.son("notificacion", cat="interfaz")
+        p.decir(f"Un inspector te hace saber que estás en su lista. Por {250 * n} euros mirará hacia otro lado. Si no, habrá redada. Arréglalo en el móvil, en Territorios, antes de medianoche.")
+
+
+def defender(p):
+    """Ir a defender el territorio atacado: dos grupos de la banda rival en ese barrio."""
+    import random
+    j = p.j
+    a = j.amenaza
+    if not a:
+        return
+    nombre, mapa = _nombre_barrio(p, a["territorio"])
+    if mapa is None or mapa.id != p.mundo.id:
+        p.app.son("error")
+        p.decir(f"{nombre} está en {mapa.nombre if mapa else 'otra localidad'}. Tienes que ir allí para defenderlo.", True)
+        return
+    ls = [l for l in p.mundo.lugares.values() if p.mundo.barrio(l.x, l.y)["id"] == a["territorio"] and l.tipo not in ("salida", "embarcadero")]
+    if len(ls) < 1:
+        j.amenaza = None
+        return
+    random.shuffle(ls)
+    pasos = []
+    for k, n in enumerate((3, 4)):
+        l = ls[k % len(ls)]
+        pasos.append({"tipo": "eliminar", "lugar": l.id, "texto": f"{['Primer', 'Último'][k]} grupo de {a['banda']}: {n} pandilleros junto a {l.nombre}.",
+                      "enemigos": [{"n": n, "tipo": f"Pandillero de {a['banda']}", "arma": random.choice(["pistola", "pistola", "subfusil"]), "salud": 70 + 8 * k}]})
+
+    def hecho():
+        j.amenaza = None
+        p.cambiar_reputacion(3)
+        p.decir(f"{nombre} sigue siendo tuyo.")
+    p._empezar_repetible({"id": "defensa", "titulo": f"Defensa de {nombre}", "lugar": ls[0].id, "contador": "defensas", "pasos": pasos,
+                          "recompensa": {"dinero": 800}, "al_completar": hecho})
+
+
+def opciones_sucesos(p, Menu, Opcion):
+    """Lo que hay pendiente en tus territorios, para el menú de Territorios."""
+    j = p.j
+    app = p.app
+    ops = []
+    if j.amenaza:
+        a = j.amenaza
+
+        def ir():
+            if p.mision or p.trabajo:
+                app.son("error")
+                app.decir("Termina antes lo que tienes entre manos.", True)
+                return
+            while app.pila and app.pila[-1] is not p:
+                app.cerrar(app.pila[-1])
+            defender(p)
+        ops.append(Opcion(f"Defender {_nombre_barrio(p, a['territorio'])[0]}: lo ataca {a['banda']}", ir,
+                          ayuda="Dos grupos de pandilleros. Si los echas, el barrio sigue siendo tuyo. Si llega la medianoche sin haber ido, lo pierdes. Tu banda pelea a tu lado."))
+    if j.oferta_pacto:
+        o = j.oferta_pacto
+
+        def aceptar():
+            j.oferta_pacto = None
+            j.pacto_hasta = p.dia + 7
+            p.dar_dinero(o["precio"], "Cobras")
+            app.decir(f"Pacto cerrado con {o['banda']}. Una semana sin ataques.", True)
+            app.cerrar()
+
+        def rechazar():
+            j.oferta_pacto = None
+            p.cambiar_reputacion(1)
+            app.decir(f"Le dices a {o['banda']} que no pactas con nadie. En la calle gusta, pero pueden volver.", True)
+            app.cerrar()
+        ops.append(Opcion(f"Pacto con {o['banda']}: te pagan {o['precio']} euros por una semana de paz",
+                          lambda: app.abrir(Menu(app, f"{o['banda']} propone un pacto", [Opcion("Aceptar el pacto", aceptar), Opcion("Rechazarlo", rechazar)])),
+                          ayuda="Si aceptas, cobras y durante siete días nadie ataca tus barrios. Si lo rechazas, ganas algo de fama."))
+    if j.redada:
+        r = j.redada
+
+        def pagar():
+            if p.pagar(r["precio"]):
+                j.redada = None
+                app.decir("El inspector se guarda el sobre. Por ahora, no ha visto nada.", True)
+        ops.append(Opcion(f"Arreglar lo de la policía: {r['precio']} euros", pagar,
+                          ayuda="Si pagas, no hay redada. Si llega la medianoche sin pagar, una redada te cuesta el tributo de un día de todos tus barrios."))
+    if p.dia <= j.pacto_hasta:
+        ops.append(Opcion(f"Pacto en vigor: nadie ataca tus barrios hasta el día {j.pacto_hasta}"))
+    return ops
+
+
+# ============================================================ salir a dar una vuelta con alguien de tu vida social
+def personas_aqui(p, lugar):
+    """La gente de tu vida social que suele estar en este lugar (solo con el contenido para adultos)."""
+    if not p.modo_adulto():
+        return []
+    return [x for x in p.dato_adulto("personas") if x.get("lugar") == lugar.id]
+
+
+def empezar_paseo(p, pers):
+    j = p.j
+    r = p.relacion(pers["id"])
+    if p.acompanante:
+        p.decir(f"Ya vas con {p.acompanante['nombre']}.", True)
+        return False
+    if p._hecho_hoy(r, "paseo"):
+        p.decir(f"Hoy ya habéis salido. {pers['nombre']} tiene cosas que hacer.", True)
+        return False
+    x, y = p.pos()
+    p.acompanante = {"pid": pers["id"], "nombre": pers["nombre"], "lugar": pers["lugar"], "x": x, "y": y, "t_paso": 0.0, "metros": 0.0, "puntos": 0,
+                     "px": x, "py": y, "hasta": p.dia * 1440 + p.reloj + 180, "sitios": []}
+    p.app.son("llegada")
+    p.decir(f"{pers['nombre']} se viene contigo. Te sigue a pie y sube al vehículo que cojas. Llévale a dar una vuelta, a comer o al cine; "
+            f"para despedirte, vuelve a dejarle donde estaba o díselo desde su ficha.", True)
+    return True
+
+
+def terminar_paseo(p, motivo=""):
+    a = p.acompanante
+    if not a:
+        return
+    p.acompanante = None
+    if a["puntos"]:
+        p.sumar_afinidad(a["pid"], a["puntos"])
+        p.cambiar_animo(3)
+    r = p.relacion(a["pid"])
+    r["citas"] = r.get("citas", 0) + (1 if a["puntos"] >= 4 else 0)
+    p.decir((motivo + " " if motivo else "") + (f"{a['nombre']} se despide. Lo ha pasado bien contigo." if a["puntos"] >= 4 else f"{a['nombre']} se despide."))
+
+
+def paso_acompanante(p, dt):
+    """Cada fotograma: te sigue, cuenta el paseo y reacciona a los sitios a los que le llevas."""
+    import math
+    a = p.acompanante
+    j = p.j
+    x, y = p.pos()
+    d = math.hypot(a["x"] - x, a["y"] - y)
+    if j.veh:
+        a["x"], a["y"] = x, y
+    elif d > 3.0:
+        paso = min(d - 2.5, (6.5 if d > 12 else 4.0) * dt)
+        a["x"] += (x - a["x"]) / d * paso
+        a["y"] += (y - a["y"]) / d * paso
+        a["t_paso"] -= dt
+        if a["t_paso"] <= 0:
+            a["t_paso"] = 0.45
+            p.son("paso_npc", xy=(a["x"], a["y"]), ref=4, maxd=40, vol=0.8)
+    a["metros"] += math.hypot(x - a["px"], y - a["py"]) if math.hypot(x - a["px"], y - a["py"]) < 30 else 0.0
+    a["px"], a["py"] = x, y
+    if a["metros"] >= 400 and a["puntos"] < 8:                       # el paseo en sí también cuenta
+        a["metros"] = 0.0
+        a["puntos"] += 1
+    if j.estrellas >= 2 and "susto" not in a["sitios"]:
+        a["sitios"].append("susto")
+        a["puntos"] -= 3
+        p.decir(f"{a['nombre']} se asusta con la policía detrás. No era el plan.")
+    if p.dia * 1440 + p.reloj > a["hasta"]:
+        terminar_paseo(p, "Se ha hecho tarde.")
+
+
+def visita_con_acompanante(p, lugar):
+    """Al entrar en un sitio con tu acompañante: si es un buen plan, le gusta. Si es donde estaba, se queda."""
+    a = p.acompanante
+    if not a:
+        return
+    if lugar.id == a["lugar"] and (a["puntos"] or a["metros"] > 60):
+        terminar_paseo(p, f"Dejas a {a['nombre']} donde estaba.")
+        return
+    if lugar.tipo in ("comida", "pizzeria", "bar", "taberna", "cine", "feria", "casino", "hotel") and lugar.id not in a["sitios"] and lugar.id != a["lugar"]:
+        a["sitios"].append(lugar.id)
+        a["puntos"] += 4
+        p.cambiar_animo(2)
+        p.decir(f"A {a['nombre']} le gusta el plan: {lugar.nombre}.")

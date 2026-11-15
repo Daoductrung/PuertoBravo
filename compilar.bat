@@ -49,7 +49,8 @@ if errorlevel 1 (
 echo Copiando la carpeta data junto a los ejecutables...
 xcopy /e /i /y /q "data\datos" "%D%\data\datos" >nul
 xcopy /e /i /y /q "data\docs" "%D%\data\docs" >nul
-if exist "data\voces_serie" xcopy /e /i /y /q "data\voces_serie" "%D%\data\voces_serie" >nul
+if exist "data\voces" xcopy /e /i /y /q "data\voces" "%D%\data\voces" >nul
+if exist "%D%\data\voces\propias" rmdir /s /q "%D%\data\voces\propias"
 xcopy /e /i /y /q "data\sonidos" "%D%\data\sonidos" >nul
 xcopy /e /i /y /q "data\musica" "%D%\data\musica" >nul
 xcopy /i /y /q "data\radio\*.*" "%D%\data\radio" >nul

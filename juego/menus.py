@@ -4,7 +4,8 @@ from . import registro
 
 
 class Opcion:
-    def __init__(self, texto, accion=None, ajuste=None, ayuda=None):
+    def __init__(self, texto, accion=None, ajuste=None, ayuda=None, callado=False):
+        self.callado = callado    # al elegirla no suena el toque de menú: para opciones que hacen sonar algo
         self._texto = texto
         self.accion = accion
         self.ajuste = ajuste      # función(delta) para opciones que se cambian con izquierda/derecha
@@ -98,7 +99,8 @@ class Menu:
                 return
             o = self.opciones[self.i]
             if o.accion:
-                self.app.son("menu_ok")
+                if not o.callado:
+                    self.app.son("menu_ok")
                 o.accion()
             elif o.ajuste:
                 self.app.son("menu_ajuste")

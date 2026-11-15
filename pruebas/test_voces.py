@@ -19,7 +19,6 @@ def _grabar(carpeta, nombre, segundos=0.3):
 def test_voces_grabadas_en_un_dialogo(robot, monkeypatch, tmp_path):
     carpeta = str(tmp_path / "voces")
     monkeypatch.setattr(voces, "carpeta", lambda: carpeta)
-    monkeypatch.setattr(voces, "carpeta_de_serie", lambda: carpeta + "_serie")
     voces.refrescar()
     assert voces.de_paso("oc01", 0, 3) is None                       # sin carpeta no pasa nada
     _grabar(os.path.join(carpeta, "bahia"), "OC01_1_2")              # vale en subcarpetas y sin mirar mayúsculas
@@ -56,7 +55,6 @@ def test_voces_grabadas_en_un_dialogo(robot, monkeypatch, tmp_path):
 def test_guion_de_voces(monkeypatch, tmp_path):
     carpeta = str(tmp_path / "voces")
     monkeypatch.setattr(voces, "carpeta", lambda: carpeta)
-    monkeypatch.setattr(voces, "carpeta_de_serie", lambda: carpeta + "_serie")
     _grabar(carpeta, "x1_1_1")
     misiones = [{"id": "x1", "titulo": "Prueba", "pasos": [
         {"tipo": "dialogo", "lineas": [["Ana", "Hola."], ["Narrador", "Silencio."]]}, {"tipo": "ir", "lugar": "a"},
@@ -69,7 +67,6 @@ def test_guion_de_voces(monkeypatch, tmp_path):
 def test_la_mision_usa_las_voces(robot, monkeypatch, tmp_path):
     carpeta = str(tmp_path / "voces")
     monkeypatch.setattr(voces, "carpeta", lambda: carpeta)
-    monkeypatch.setattr(voces, "carpeta_de_serie", lambda: carpeta + "_serie")
     _grabar(carpeta, "oc01_1_1")
     p = robot.nueva_partida()
     m = next(x for x in p.datos["misiones"] if x["id"] == "oc01")
@@ -116,7 +113,7 @@ def test_voces_de_serie_y_preferencia_del_jugador(monkeypatch, tmp_path):
     """El juego trae voces para Bahía del Ocaso; si el jugador pone la suya con el mismo nombre, gana la suya."""
     voces.refrescar()
     de_serie = voces.buscar("oc01", 0, 0)
-    assert de_serie and "voces_serie" in de_serie
+    assert de_serie and os.path.join("voces", "bahia_del_ocaso") in de_serie
     import json
     from juego import cifrado, rutas
     mod = cifrado.leer_json(os.path.join(rutas.MODS, "bahia_del_ocaso.json"))
@@ -125,10 +122,22 @@ def test_voces_de_serie_y_preferencia_del_jugador(monkeypatch, tmp_path):
     assert frases >= 107 and con_voz >= 100
     from juego.sintesis import leer_audio
     assert len(leer_audio(de_serie, mono=False)) > 44100                      # se puede leer y dura más de un segundo
-    propia = str(tmp_path / "voces")
-    monkeypatch.setattr(voces, "carpeta", lambda: propia)
-    _grabar(propia, "oc01_1_1")
-    assert voces.buscar("oc01", 0, 0).startswith(propia) and "voces_serie" in voces.buscar("oc01", 0, 1)
+    from juego import actualizador
+    propia = voces.carpeta_propias()
+    assert propia.endswith(os.path.join("voces", "propias")) and "propias" in actualizador.INTOCABLES and "voces" not in actualizador.INTOCABLES
+    import shutil
+    try:
+        _grabar(propia, "oc01_1_1")
+        voces.refrescar()
+        assert voces.buscar("oc01", 0, 0).startswith(propia) and os.path.join("voces", "bahia_del_ocaso") in voces.buscar("oc01", 0, 1)
+    finally:
+        shutil.rmtree(propia, ignore_errors=True)
+    # la carpeta de las versiones anteriores ya no se usa: si queda, se borra al arrancar
+    vieja = os.path.join(rutas.DATA, "voces_serie")
+    assert not os.path.isdir(vieja) and not voces.limpiar_antigua()
+    os.makedirs(vieja)
+    open(os.path.join(vieja, "x.ogg"), "wb").close()
+    assert voces.limpiar_antigua() and not os.path.isdir(vieja)
     voces.refrescar()
 
 

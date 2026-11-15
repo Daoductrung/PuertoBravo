@@ -33,7 +33,7 @@ def alternar_modo(app):
 
 
 # ================================================================== vida social
-def vida_social(p):
+def vida_social(p, directo=None):
     app = p.app
     j = p.j
     aqui = p.lugar_cercano(16)
@@ -191,6 +191,13 @@ def vida_social(p):
             lista.append(Opcion(lambda: f"{estado}. {p.afinidad_txt(p.relacion(pid)).capitalize()}. Habéis tenido {p.relacion(pid).get('citas', 0)} citas"))
             from .intimidad import GESTOS
             lista += [Opcion("Charlar un rato", charlar), Opcion("Proponer una cita", menu_cita), Opcion("Hacerle un regalo", menu_regalo)]
+            from . import sistemas
+            if p.acompanante and p.acompanante["pid"] == pid:
+                lista.append(Opcion("Despedirte: el paseo termina aquí", lambda: (app.cerrar(), sistemas.terminar_paseo(p))))
+            elif aqui is not None and aqui.id == pers["lugar"]:
+                lista.append(Opcion("Proponerle salir contigo a dar una vuelta", lambda: sistemas.empezar_paseo(p, pers) and [app.cerrar(x) for x in list(app.pila) if x is not p],
+                                    ayuda="Se viene contigo de verdad: te sigue a pie y sube al vehículo que lleves. Pasear, llevarle a comer, a un bar, al cine o a la feria le gusta y os acerca. "
+                                          "Si te metes en líos con la policía, no. Una vez al día; dura como mucho tres horas del juego."))
             lista += [Opcion(GESTOS[g][0], (lambda g=g: p.gesto(pid, pers, g)) if True else None, ayuda="Un gesto de cariño. Hace falta cierta confianza, y cada uno se puede repetir una vez al día.") for g in GESTOS]
             lista += [
                       Opcion("Pasar la noche juntos", noche, ayuda="Necesitáis mucha confianza. Vais a una de tus casas en esta localidad o, si no tienes, a un hotel por 70 euros.")]
@@ -224,6 +231,11 @@ def vida_social(p):
         lista.append(Opcion(lambda: f"Tu ánimo es {p.animo_txt()}. En la calle, {p.reputacion_txt()}"))
         lista.append(Opcion("Volver", lambda: app.cerrar()))
         return lista
+    if directo:                                              # desde el propio local, vas derecho a la persona
+        pers = next((x for x in p.dato_adulto("personas") if x["id"] == directo), None)
+        if pers is not None:
+            ficha(pers)
+        return
     app.abrir(Menu(app, "Vida social", ops, intro="Aquí están las personas con las que puedes tener una relación"))
 
 

@@ -108,6 +108,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.resumen_pendiente = False
         self.lento = False              # tiempo lento en marcha
         self.cubierto = None            # el punto donde estás a cubierto, o None
+        self.acompanante = None         # alguien de tu vida social que va contigo a dar una vuelta
         self.trabajo = None
         self.gps = None
         self.objetivo = None
@@ -695,6 +696,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
     def tecla_pie(self, ev, mayus):
         k = ev.key
         j = self.j
+        if k in (pygame.K_LSHIFT, pygame.K_RSHIFT) and j.agachado and not self.cubierto and self.t - getattr(self, "t_aviso_agachado", -99) > 15:
+            self.t_aviso_agachado = self.t
+            self.decir("Estás agachado y por eso vas despacio. Pulsa X para levantarte.")
         if k in (pygame.K_LSHIFT, pygame.K_RSHIFT) and self.cfg["correr_alternar"]:
             self.correr_fijo = not getattr(self, "correr_fijo", False)
             self.app.son("menu_mover")
@@ -1292,6 +1296,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         dt = self._paso_lento(dt)
         if self.cubierto and (j.veh or math.hypot(j.x - self.cubierto[0], j.y - self.cubierto[1]) > 0.8):
             self.dejar_cobertura()
+        if self.acompanante:
+            from . import sistemas
+            sistemas.paso_acompanante(self, dt)
         j.stats["tiempo"] += dt
         self._tiempo(dt)
         if j.veh:
@@ -1374,6 +1381,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.ingresos_territorios()
         from . import sistemas
         sistemas.paga(self)
+        sistemas.sucesos_territorio(self)
         self.mover_bolsa()
         self.dia_adultos()
         self.dia_intimidad()

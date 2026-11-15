@@ -200,7 +200,7 @@ def abrir_manual(app):
 def sonidos(app):
     def tocar(s):
         return lambda: app.mez.sonar(s, cat="interfaz", vol=0.9)
-    ops = [Opcion(f"{nom}. {exp}", tocar(s)) for s, nom, exp in ayuda.SONIDOS if s in app.mez.sonidos]
+    ops = [Opcion(f"{nom}. {exp}", tocar(s), callado=True) for s, nom, exp in ayuda.SONIDOS if s in app.mez.sonidos]      # solo suena el sonido que se está aprendiendo
     app.abrir(Menu(app, "Aprender los sonidos", ops, intro="Pulsa Intro sobre cada elemento para escuchar su sonido"))
 
 
@@ -831,6 +831,9 @@ def lugar(p, l):
     elif not en_coche and app.pila and isinstance(app.pila[-1], Menu):
         from . import sistemas
         sistemas.con_recorrido(p, l, app.pila[-1], Opcion)
+    if p.acompanante:
+        from . import sistemas
+        sistemas.visita_con_acompanante(p, l)
 
 
 def _menu_lugar(p, l, ops, intro=None):
