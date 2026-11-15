@@ -1901,6 +1901,28 @@
      ]
     },
     {
+     "tipo": "decision",
+     "clave": "oc_nombre",
+     "pregunta": "Tienes el nombre de quien firma los pedidos del agua. ¿Qué haces con él?",
+     "opciones": [
+      {
+       "texto": "Dárselo al periódico para que lo publique",
+       "ayuda": "Ganas mucha fama en Bahía del Ocaso. No cobras nada.",
+       "dice": "Lo escribes en un papel y lo dejas encima de la mesa de la redacción.",
+       "fama": 6,
+       "animo": 5
+      },
+      {
+       "texto": "Guardártelo y hacerle una visita: 2500 euros",
+       "ayuda": "Cobras por callar. El agua seguirá igual de cara.",
+       "dice": "El hombre no discute el precio. Tiene el dinero preparado.",
+       "dinero": 2500,
+       "fama": -4,
+       "animo": -4
+      }
+     ]
+    },
+    {
      "tipo": "dialogo",
      "lineas": [
       [

@@ -294,7 +294,7 @@ _PUERTA = ("la puerta", "Por aquí se sale.", "salir")
 _ASEO = ("los aseos", "Un lavabo y un espejo.", "aseo")
 SALAS = {
     "bar": [_PUERTA, ("la barra", "Tazas, botellas y la cafetera silbando. Aquí se pide.", "mostrador"), ("las mesas", "Cuatro mesas y gente hablando bajo.", "escuchar"),
-            ("la máquina del rincón", "Una tragaperras que canta sola.", "mirar"), _ASEO],
+            ("la máquina del rincón", "Una tragaperras que canta sola. Intro para echar unas monedas.", "tragaperras"), _ASEO],
     "taberna": [_PUERTA, ("la barra", "Madera vieja y barriles. Aquí se pide.", "mostrador"), ("las mesas del fondo", "Bancos corridos y partidas de cartas.", "escuchar"), _ASEO],
     "comida": [_PUERTA, ("el mostrador", "La carta colgada y la caja. Aquí se pide.", "mostrador"), ("el comedor", "Mesas con mantel de papel. Huele a fritura.", "sentarse"), _ASEO],
     "pizzeria": [_PUERTA, ("el mostrador", "El horno al fondo y la caja. Aquí se pide.", "mostrador"), ("el comedor", "Mesas pequeñas y una tele encendida.", "sentarse"), _ASEO],
@@ -389,6 +389,9 @@ class Local(Interior):
             p.cambiar_animo(1)
             app.son("salpicadura", vol=0.5)
             app.decir("Te lavas la cara. Mejor.", True)
+        elif que == "tragaperras":
+            from . import menus_juego
+            menus_juego._tragaperras(p)
         else:
             app.decir(f"{nombre.capitalize()}. {desc}", True)
 
@@ -749,7 +752,16 @@ def con_cartas(p, menu, Menu, Opcion):
             return lista
         o = Opcion("Jugar a la siete y media", lambda: siete_y_media(p, Menu, Opcion),
                    ayuda="Un juego de cartas con baraja española contra la banca. Se apuestan diez, cincuenta o doscientos euros.")
-        lista.insert(len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista), o)
+        from . import menus_juego, mesa
+        nuevas = [o,
+                  Opcion("Jugar al dominó", lambda: mesa.domino(p, Menu, Opcion),
+                         ayuda="Dominó de dos contra un parroquiano. Se apuestan veinte o cien euros."),
+                  Opcion("Jugar a los chinos", lambda: mesa.chinos(p, Menu, Opcion),
+                         ayuda="Cada uno esconde monedas en el puño y dice cuántas hay entre los dos. Se apuestan diez o cincuenta euros."),
+                  Opcion("Echar unas monedas a la tragaperras", lambda: menus_juego._tragaperras(p),
+                         ayuda="La máquina del rincón. La misma que hay en el casino.")]
+        donde = len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista)
+        lista[donde:donde] = nuevas
         return lista
     menu._fuente = ops
     menu.refrescar(False)

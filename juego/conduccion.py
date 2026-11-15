@@ -167,8 +167,15 @@ class Conduccion:
 
     def _entrar_salir(self):
         j = self.j
-        if self.mundo.tipo == "mar":
-            self.decir("No puedes bajarte en mitad del mar. Acércate a un muelle y pulsa Intro para atracar.", True)
+        if self.mundo.tipo == "mar" and j.veh:
+            if j.veh.modelo.get("vuela"):
+                self.decir("No puedes bajarte de un helicóptero sobre el mar.", True)
+                return
+            if abs(j.veh.vel) > 3:
+                self.decir("Frena antes de tirarte al agua.", True)
+                return
+            self.salir_vehiculo()                               # te tiras al agua: el barco se queda donde está
+            self.empezar_a_nadar("Te tiras al agua.")
             return
         if j.veh:
             if abs(j.veh.vel) > 3:
@@ -242,6 +249,9 @@ class Conduccion:
 
     def _subir(self, v, robado, callar=False):
         j = self.j
+        if getattr(self, "nadando", False):                  # sales del agua
+            self._fin_agua()
+            self.son("salpicadura", vol=0.6)
         if v.sirena:
             v.sirena.parar()
             v.sirena = None

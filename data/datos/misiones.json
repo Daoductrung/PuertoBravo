@@ -231,6 +231,27 @@
      "texto": "Vuelve al Bar La Gaviota."
     },
     {
+     "tipo": "decision",
+     "clave": "morosos",
+     "pregunta": "El proveedor de Encarna te da las gracias y saca la cartera. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "No cobrarle nada",
+       "ayuda": "Lo has hecho por Encarna. Ganas fama en el barrio y te quedas a gusto.",
+       "dice": "Le cierras la cartera con la mano. En la lonja se va a saber.",
+       "fama": 2,
+       "animo": 4
+      },
+      {
+       "texto": "Aceptar los 400 euros",
+       "ayuda": "Cobras. Un favor que se cobra ya no es un favor.",
+       "dice": "Te guardas los billetes. El hombre asiente, sin sonreír.",
+       "dinero": 400,
+       "fama": -1
+      }
+     ]
+    },
+    {
      "tipo": "dialogo",
      "lineas": [
       [
@@ -568,6 +589,28 @@
      "texto": "Lleva la caja al Almacén Siete."
     },
     {
+     "tipo": "decision",
+     "clave": "muelle",
+     "pregunta": "Tienes lo que Los Calaveras le robaron a La Rusa. El almacén sigue abierto y no hay nadie mirando. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Coger lo robado y marcharte",
+       "ayuda": "Sin más. Los Calaveras sabrán que no fuiste a por ellos.",
+       "dice": "Sales como has entrado. Detrás de ti, el almacén sigue en pie.",
+       "banda": "Los Calaveras",
+       "banda_puntos": 8
+      },
+      {
+       "texto": "Prenderle fuego al almacén",
+       "ayuda": "Un aviso que se ve desde toda la bahía. Ganas fama, y Los Calaveras no te lo van a perdonar.",
+       "dice": "El fuego sube deprisa. Desde el otro lado del muelle alguien grita tu nombre.",
+       "fama": 4,
+       "banda": "Los Calaveras",
+       "banda_puntos": -30
+      }
+     ]
+    },
+    {
      "tipo": "dialogo",
      "lineas": [
       [
@@ -779,6 +822,29 @@
      "tipo": "ir",
      "lugar": "casino",
      "texto": "Lleva el dinero al Casino Belmonte."
+    },
+    {
+     "tipo": "decision",
+     "clave": "cobro",
+     "pregunta": "El último de la lista es un tendero que no llega a fin de mes. Belmonte quiere su dinero. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Poner tú lo que le falta: 300 euros",
+       "ayuda": "Pagas de tu bolsillo y el tendero no se entera hasta más tarde. Ganas fama y ánimo.",
+       "dice": "Le dices que ya está saldado. No entiende nada. Mejor así.",
+       "dinero": -300,
+       "fama": 4,
+       "animo": 5
+      },
+      {
+       "texto": "Cobrarle hasta el último euro",
+       "ayuda": "Lo que manda Belmonte. Te llevas una comisión de 500 euros.",
+       "dice": "El tendero vacía la caja sobre el mostrador sin mirarte.",
+       "dinero": 500,
+       "fama": -2,
+       "animo": -4
+      }
+     ]
     },
     {
      "tipo": "dialogo",

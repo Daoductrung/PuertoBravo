@@ -414,6 +414,26 @@
      "objeto": "un albarán de explosivos"
     },
     {
+     "tipo": "decision",
+     "clave": "pa_albaran",
+     "pregunta": "Tienes el albarán de los explosivos. El capataz de la cantera te ofrece comprártelo. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Llevárselo al cantinero, como quedasteis",
+       "ayuda": "El pueblo sabrá qué se guarda en el polvorín. Ganas fama.",
+       "dice": "Le dices al capataz que no está en venta.",
+       "fama": 4
+      },
+      {
+       "texto": "Vendérselo al capataz por 700 euros",
+       "ayuda": "Cobras bien, y en Peñas Altas nadie sabrá nunca lo que había.",
+       "dice": "El capataz quema el papel delante de ti, sin prisa.",
+       "dinero": 700,
+       "fama": -3
+      }
+     ]
+    },
+    {
      "tipo": "dialogo",
      "lineas": [
       [

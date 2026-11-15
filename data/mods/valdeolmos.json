@@ -308,6 +308,25 @@
      "persona": "la madrina"
     },
     {
+     "tipo": "decision",
+     "clave": "vo_madrina",
+     "pregunta": "La madrina te invita al convite. El mesonero, por su parte, te debe el porte. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Quedarte al convite",
+       "ayuda": "Comes, bailas y te sube el ánimo. No cobras.",
+       "dice": "Te sientan entre los primos del novio. Hay cordero para tres días.",
+       "animo": 9
+      },
+      {
+       "texto": "Cobrar los 100 euros y seguir tu camino",
+       "ayuda": "Dinero en mano.",
+       "dice": "El mesonero te paga sin dejar de remover la olla.",
+       "dinero": 100
+      }
+     ]
+    },
+    {
      "tipo": "dialogo",
      "lineas": [
       [

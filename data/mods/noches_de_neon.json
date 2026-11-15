@@ -472,6 +472,26 @@
      "persona": "el cobrador"
     },
     {
+     "tipo": "decision",
+     "clave": "nn_cobrador",
+     "pregunta": "Sabes dónde entrega el cobrador. Un hombre del hotel te ha visto y te ofrece dinero por olvidarlo. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Decírselo al portero",
+       "ayuda": "Lo que te encargaron. Ganas fama entre los locales.",
+       "dice": "Le dices que tienes mala memoria para las caras, pero buena para los hoteles.",
+       "fama": 3
+      },
+      {
+       "texto": "Aceptar 400 euros y decir que lo perdiste",
+       "ayuda": "Cobras, y el portero se queda sin saberlo.",
+       "dice": "El hombre del hotel te mete el sobre en el bolsillo de la chaqueta.",
+       "dinero": 400,
+       "fama": -2
+      }
+     ]
+    },
+    {
      "tipo": "dialogo",
      "lineas": [
       [

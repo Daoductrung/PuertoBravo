@@ -482,6 +482,26 @@
      "persona": "el patrón"
     },
     {
+     "tipo": "decision",
+     "clave": "cd_patron",
+     "pregunta": "Sabes dónde se mete el patrón. Antes de volver a la botica, el patrón te ve y te hace una seña. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Contárselo todo a la boticaria",
+       "ayuda": "Lo que te encargaron. Ganas fama en Costa Dorada.",
+       "dice": "Pasas de largo y vuelves a la botica.",
+       "fama": 2
+      },
+      {
+       "texto": "Aceptar 200 euros del patrón por callar parte",
+       "ayuda": "Cobras, y la boticaria se queda con media verdad.",
+       "dice": "El patrón te desliza los billetes por debajo de la mesa.",
+       "dinero": 200,
+       "fama": -2
+      }
+     ]
+    },
+    {
      "tipo": "dialogo",
      "lineas": [
       [

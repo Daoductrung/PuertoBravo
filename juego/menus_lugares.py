@@ -82,8 +82,34 @@ def estacion(p, l):
             from .pantallas import viajar as trayecto
             trayecto(app, 50.0, llegar, autobus=True, destino=p.mapas[dest.mapa].nombre)
         return f
-    ops = [Opcion(f"Billete a {p.mapas[e.mapa].nombre}: {int(e.get('precio', 20))} euros", viajar(e), ayuda=p.mapas[e.mapa].barrios[0].get("descripcion", ""))
-           for e in p.lugares.values() if e.tipo == "estacion" and e.mapa != p.mundo.id]
+    def por_rail(dest, medio):
+        def f():
+            precio = precio_rail(dest, medio)
+            if not p.pagar(precio):
+                return
+            app.cerrar(m)
+
+            def llegar():
+                p.pasar_horas(0.4 if medio == "tranvia" else 0.8)
+                p.cambiar_mapa(dest.mapa, dest.x, dest.y, None,
+                               f"El {'tranvía' if medio == 'tranvia' else 'tren'} te deja en {dest.nombre}, {p.mapas[dest.mapa].nombre}. Son las {p.hora_txt()}.")
+            from .pantallas import viajar as trayecto
+            trayecto(app, 25.0 if medio == "tranvia" else 40.0, llegar, destino=p.mapas[dest.mapa].nombre, medio=medio)
+        return f
+
+    def precio_rail(dest, medio):
+        return 8 if medio == "tranvia" else int(dest.get("precio", 20)) * 2
+    destinos = [e for e in p.lugares.values() if e.tipo == "estacion" and e.mapa != p.mundo.id]
+    ops = [Opcion(f"Autobús a {p.mapas[e.mapa].nombre}: {int(e.get('precio', 20))} euros", viajar(e), ayuda=p.mapas[e.mapa].barrios[0].get("descripcion", ""))
+           for e in destinos]
+    for e in destinos:                                       # por raíl solo se llega adonde se llega por tierra
+        medio = p.medio_por_rail(p.mundo.id, e.mapa)
+        if medio == "tranvia":
+            ops.append(Opcion(f"Tranvía a {p.mapas[e.mapa].nombre}: {precio_rail(e, medio)} euros", por_rail(e, medio),
+                              ayuda="El tranvía une las localidades vecinas. Es barato y tarda poco."))
+        elif medio == "tren":
+            ops.append(Opcion(f"Tren a {p.mapas[e.mapa].nombre}: {precio_rail(e, medio)} euros", por_rail(e, medio),
+                              ayuda="El tren llega a cualquier localidad a la que se pueda ir por tierra. Cuesta el doble que el autobús y tarda la mitad."))
     m = _menu(p, l, ops or [Opcion("Hoy no sale ningún autobús")])
 
 

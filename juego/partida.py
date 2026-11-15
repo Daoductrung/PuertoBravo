@@ -108,6 +108,13 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.resumen_pendiente = False
         self.lento = False              # tiempo lento en marcha
         self.cubierto = None            # el punto donde estás a cubierto, o None
+        self.nadando = False            # estás en el agua, sin barco
+        self.buceando = False
+        self.aguante = 100.0            # fuerzas para nadar
+        self.aire = 100.0               # aire que te queda buceando
+        self.t_brazada = 0.0
+        self.t_fondo = 0.0
+        self.agua_canal = None
         self.acompanante = None         # alguien de tu vida social que va contigo a dar una vuelta
         self.trabajo = None
         self.gps = None
@@ -336,6 +343,26 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.j.x, self.j.y = self.mundo.punto_libre(self.j.x, self.j.y)
         if self.j.arma not in self.j.armas:
             self.j.arma = "punos"
+
+    def medio_por_rail(self, origen, destino):
+        """Cómo se va por raíl de una localidad a otra: «tranvia» si son vecinas por carretera, «tren» si se llega por tierra
+        aunque sea dando un rodeo, y None si hay mar por medio."""
+        def vecinos(mid):
+            m = self.mapas.get(mid)
+            if m is None or m.tipo == "mar":
+                return set()
+            return {l.get("a_mapa") for l in m.lugares.values() if l.tipo == "salida" and l.get("a_mapa") in self.mapas and self.mapas[l.get("a_mapa")].tipo != "mar"}
+        if destino in vecinos(origen):
+            return "tranvia"
+        vistos, cola = {origen}, [origen]
+        while cola:
+            for v in vecinos(cola.pop()):
+                if v == destino:
+                    return "tren"
+                if v not in vistos:
+                    vistos.add(v)
+                    cola.append(v)
+        return None
 
     def resumen_historia(self):
         """Por dónde vas en la historia, en dos o tres frases."""
@@ -594,6 +621,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 self.usar_botiquin()
         elif k == pygame.K_BACKSPACE:
             self.alternar_lento()
+        elif k == pygame.K_x and self.nadando:
+            self.alternar_buceo()
         elif k == pygame.K_x and mayus:
             self.alternar_cobertura()
         elif k == pygame.K_x:
@@ -615,6 +644,105 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.tecla_coche(ev, mayus)
         else:
             self.tecla_pie(ev, mayus)
+
+    # ------------------------------------------------------------------ nadar y bucear
+    def empezar_a_nadar(self, antes=""):
+        self.nadando = True
+        self.buceando = False
+        self.aguante = 100.0
+        self.aire = 100.0
+        self.j.agachado = False
+        self.son("salpicadura", vol=0.8)
+        self.decir((antes + " " if antes else "") + "Estás en el agua. Nadas con las flechas. La X te sumerge para bucear y te vuelve a sacar. "
+                   "Para subir a un barco, acércate y pulsa F. Si llegas nadando a un muelle, sales a tierra. No te quedes sin fuerzas: la V te dice cuántas te quedan.")
+
+    def _fin_agua(self):
+        self.nadando = self.buceando = False
+        if self.agua_canal is not None:
+            self.agua_canal.parar()
+            self.agua_canal = None
+
+    def alternar_buceo(self):
+        if self.buceando:
+            self.buceando = False
+            if self.agua_canal is not None:
+                self.agua_canal.parar()
+                self.agua_canal = None
+            self.son("salpicadura", vol=0.7)
+            self.decir(f"Sales a la superficie. Aire {int(self.aire)} por ciento, fuerzas {int(self.aguante)}.", True)
+        elif self.aire < 20:
+            self.app.son("error")
+            self.decir("Aún no has recuperado el aliento.", True)
+        else:
+            self.buceando = True
+            self.t_fondo = 5.0
+            self.son("salpicadura", vol=0.6, tono=0.7)
+            self.agua_canal = self.son("bajo_agua", bucle=True, vol=0.6, cat="ambiente")
+            self.decir("Te sumerges. Aguantas la respiración una media hora de reloj de arena: unos treinta segundos. Con la X vuelves a subir.", True)
+
+    def nadar(self, dt):
+        """Un fotograma en el agua sin barco. Devuelve True si ha cambiado el mapa (te has ahogado o has llegado a tierra)."""
+        j = self.j
+        if not self.nadando:
+            self.empezar_a_nadar()
+        t = self.app.teclas
+        dx = (pygame.K_RIGHT in t) - (pygame.K_LEFT in t)
+        dy = (pygame.K_UP in t) - (pygame.K_DOWN in t)
+        se_mueve = bool(dx or dy)
+        if se_mueve:
+            n = math.hypot(dx, dy)
+            vel = 1.1 if self.buceando else 1.7
+            nx, ny = j.x + dx / n * vel * dt, j.y + dy / n * vel * dt
+            if self.mundo.transitable(nx, ny):
+                j.x, j.y = nx, ny
+            j.rumbo = M.rumbo_a(dx, dy)
+            j.stats["metros_nadando"] = j.stats.get("metros_nadando", 0.0) + vel * dt
+            self.t_brazada -= dt
+            if self.t_brazada <= 0:
+                self.t_brazada = 0.85
+                self.son("brazada", vol=0.3 if self.buceando else 0.7, tono=(0.6 if self.buceando else 1.0) * random.uniform(0.93, 1.07),
+                         pan=-0.3 if int(self.t / 0.85) % 2 else 0.3)
+        self.aguante -= (1.1 if se_mueve else 0.35) * dt
+        if self.buceando:
+            self.aire -= dt * 100.0 / 30.0
+            self.t_fondo -= dt
+            if self.t_fondo <= 0:                                # mirando el fondo, a veces aparece algo
+                self.t_fondo = 5.0
+                if random.random() < 0.3:
+                    que, valor = random.choice([("unas monedas antiguas", 60), ("un reloj de pulsera", 120), ("una caja de aparejos", 35), ("un doblón", 250)])
+                    self.son("recoger", cat="interfaz")
+                    self.dar_dinero(valor, f"En el fondo encuentras {que}. Vale")
+                    j.stats["buceo"] = j.stats.get("buceo", 0) + 1
+            if self.aire <= 25 and "aire" not in getattr(self, "_avisos_agua", set()):
+                self._avisos_agua = {"aire"}
+                self.decir("Te queda poco aire. Sube con la X.")
+            if self.aire <= 0:
+                self.aire = 0.0
+                self.alternar_buceo()
+                self.danar_jugador(15, None)
+                self.decir("Subes a la superficie tragando agua.")
+        else:
+            self.aire = min(100.0, self.aire + 12.0 * dt)
+            if self.aire > 60:
+                self._avisos_agua = set()
+        if self.aguante <= 25 and not getattr(self, "_aviso_fuerzas", False):
+            self._aviso_fuerzas = True
+            self.decir("Te estás quedando sin fuerzas. Busca un barco o un muelle.")
+        if self.aguante > 40:
+            self._aviso_fuerzas = False
+        if self.aguante <= 0 or j.salud <= 0:
+            self._fin_agua()
+            self.naufragar()
+            return True
+        if not self.buceando:
+            for l in self.mundo.lugares.values():               # llegar nadando a un muelle te saca a tierra
+                dest = self.lug(l.get("a_lugar")) if l.get("a_mapa") in self.mapas else None
+                if dest is not None and math.hypot(l.x - j.x, l.y - j.y) < 14:
+                    self._fin_agua()
+                    j.barco_actual = None
+                    self.cambiar_mapa(dest.mapa, dest.x, dest.y, None, f"Llegas nadando a {l.nombre} y sales del agua, chorreando, en {dest.nombre}.")
+                    return True
+        return False
 
     # ------------------------------------------------------------------ tiempo lento
     def alternar_lento(self):
@@ -763,6 +891,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             t += "Estás a cubierto. " if self.cubierto else "Estás agachado: caminas despacio. "
         if j.foco < 99:
             t += f"Concentración {int(j.foco)} por ciento. "
+        if self.nadando:
+            t += f"Estás {'buceando' if self.buceando else 'nadando'}. Fuerzas {int(self.aguante)} por ciento, aire {int(self.aire)}. "
         t += "Arma: " + a["nombre"]
         if a["tipo"] in ("fuego", "explosivo"):
             m = j.armas[j.arma]
@@ -1307,8 +1437,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if j.veh:
             self.conducir(dt)
         elif self.mundo.tipo == "mar":
-            self.naufragar()
-            return
+            if self.nadar(dt):
+                return                                          # te has ahogado o has llegado a un muelle: ha cambiado el mapa
         else:
             self.caminar(dt)
         if self.pesca:

@@ -308,6 +308,26 @@
      ]
     },
     {
+     "tipo": "decision",
+     "clave": "iv_luces",
+     "pregunta": "Las cuatro luces están encendidas. Chelo quiere agradecértelo. ¿Qué le pides?",
+     "opciones": [
+      {
+       "texto": "Nada: una copa y conversación",
+       "ayuda": "Te sube el ánimo y en la isla te tendrán por uno de los suyos.",
+       "dice": "Chelo saca la botella buena, la que no enseña a los de fuera.",
+       "fama": 2,
+       "animo": 7
+      },
+      {
+       "texto": "Que te pague el trabajo: 150 euros",
+       "ayuda": "Dinero en mano.",
+       "dice": "Chelo abre la caja, cuenta los billetes y no dice nada más.",
+       "dinero": 150
+      }
+     ]
+    },
+    {
      "tipo": "dialogo",
      "lineas": [
       [

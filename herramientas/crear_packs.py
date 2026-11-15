@@ -30,6 +30,7 @@ DESTINO = os.path.join(rutas.base(), "adjuntos", "packs")
 
 # colección: (carpeta dentro de adjuntos/fuentes, nombre, página de origen). Todas con licencia CC0.
 COL = {
+    "FS162": ("freesound_162", "Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128", "https://freesound.org"),
     "K": ("kenney_impact-sounds/Audio", "Impact Sounds, de Kenney", "https://kenney.nl/assets/impact-sounds"),
     "RK": ("RPGsounds_Kenney/OGG", "50 RPG sound effects, de Kenney", "https://opengameart.org/content/50-rpg-sound-effects"),
     "UI": ("UI_SFX_Set", "51 UI sound effects, de Kenney", "https://opengameart.org/content/51-ui-sound-effects-buttons-switches-and-clicks"),
@@ -320,6 +321,11 @@ PROPIAS = {
     "hospital_despertar": ("BSB", "monitor_0457", {"bucle": 2.4, "desde": 1.0}),
     "murmullo": ("BSB", "charla_2968", {"bucle": 0.4, "desde": 20.0}), "multitud": ("BSB", "charla_2968", {"bucle": 6.0, "desde": 30.0}),
     "ganzua": ("BSB", "llave_1320", {"bucle": 1.2, "desde": 0.3}),
+    # tren, tranvía, avioneta y agua: grabaciones CC0 de Freesound bajadas para la versión 1.6.2
+    "tren": ("FS162", "tren", {"bucle": 8.0, "desde": 10.0}), "tren_silbato": ("FS162", "tren_silbato", {"dur": 3.0}),
+    "tranvia": ("FS162", "tranvia", {"bucle": 8.0, "desde": 10.0}), "tranvia_campana": ("FS162", "tranvia_campana", {"dur": 2.0}),
+    "motor_avioneta": ("FS162", "motor_avioneta", {"bucle": 4.0, "desde": 3.0}),
+    "bajo_agua": ("FS162", "bajo_agua", {"bucle": 8.0, "desde": 5.0}), "brazada": ("FS162", "brazada", {"dur": 0.9}),
 }
 for _pack in PACKS.values():
     _pack["sonidos"].update(PROPIAS)

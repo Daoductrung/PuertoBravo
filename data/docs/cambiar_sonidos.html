@@ -19,7 +19,7 @@ li { margin-bottom: .3em; }
 <h2>1. Dónde está cada cosa</h2>
 <ul>
 <li><code>data\sonidos</code>: todos los efectos de sonido, repartidos en subcarpetas.</li>
-<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 223 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
+<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 230 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
 <li><code>data\radio</code>: la música de las emisoras, un archivo por emisora.</li>
 <li><code>data\radio\mi_musica</code>: tu propia emisora. Copia aquí las canciones que quieras.</li>
 <li><code>data\musica</code>: la música de ambiente, con una carpeta por situación y varias piezas en cada una.</li>
@@ -59,7 +59,7 @@ li { margin-bottom: .3em; }
 <ul>
 <li>Un pack tuyo no tiene que traerlos todos: los sonidos que no traiga siguen sonando con el original.</li>
 <li>El volumen de cada sonido del pack se iguala al del original, como se explica arriba.</li>
-<li>De serie vienen instalados los packs «Alternativo», con 223 sonidos, «Envolvente», con 223 sonidos, «Realista», con 223 sonidos, «Retro», con 223 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
+<li>De serie vienen instalados los packs «Alternativo», con 230 sonidos, «Envolvente», con 230 sonidos, «Realista», con 230 sonidos, «Retro», con 230 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
 </ul>
 <h3>Hacer tu propio pack</h3>
 <ol>
@@ -220,6 +220,7 @@ li { margin-bottom: .3em; }
 <h3>Motores</h3>
 <p>Se reproducen en bucle y el juego les sube el tono con la velocidad. Graba el motor al ralentí, a régimen constante.</p>
 <ul>
+<li><code>motor_avioneta</code>: Motor de avioneta. En bucle. Dura 1,00 segundos.</li>
 <li><code>motor_barco</code>: Motor de barco grande. En bucle. Dura 1,00 segundos.</li>
 <li><code>motor_bici</code>: Motor de bicicleta, el clic de la cadena. En bucle. Dura 1,00 segundos.</li>
 <li><code>motor_camion</code>: Motor de camión o autobús. En bucle. Dura 1,00 segundos.</li>
@@ -231,6 +232,16 @@ li { margin-bottom: .3em; }
 <li><code>motor_moto</code>: Motor de moto. En bucle. Dura 1,00 segundos.</li>
 <li><code>motor_tractor</code>: Motor de tractor. En bucle. Dura 1,00 segundos.</li>
 <li><code>rodadura</code>: Ruido de neumáticos de tu vehículo. En bucle; el volumen sube con la velocidad. Dura 1,44 segundos.</li>
+</ul>
+<h3>Tren, tranvía y agua</h3>
+<p>Los viajes en tren y en tranvía, y nadar y bucear en el mar. El tren, el tranvía y el fondo de debajo del agua suenan en bucle.</p>
+<ul>
+<li><code>bajo_agua</code>: Lo que se oye buceando: un rumor sordo y burbujas. En bucle. Dura 3,00 segundos.</li>
+<li><code>brazada</code>: Una brazada al nadar. Dura 0,45 segundos.</li>
+<li><code>tranvia</code>: El tranvía en marcha: el zumbido del motor eléctrico y los raíles. En bucle. Dura 2,00 segundos.</li>
+<li><code>tranvia_campana</code>: La campana del tranvía al arrancar: dos toques. Dura 0,90 segundos.</li>
+<li><code>tren</code>: El vagón del tren en marcha, con el traqueteo de los raíles. En bucle. Dura 2,00 segundos.</li>
+<li><code>tren_silbato</code>: El silbato del tren al salir de la estación. Dura 1,60 segundos.</li>
 </ul>
 <h3>Vehículos</h3>
 <p>Cláxones, frenazos, choques, sirenas y demás ruidos de los vehículos.</p>

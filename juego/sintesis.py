@@ -9,7 +9,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 11
+VERSION_CACHE = 12
 PI2 = 2 * np.pi
 
 
@@ -654,12 +654,41 @@ def generar(semilla=7):
     for _ in range(3):
         _poner(mont, pajaro(), rng.uniform(0, 9.0), 0.25)
     S["amb_montana"] = _norm(_bucle(mont, 300), 0.4)
+    # ----------------------------------------------- tren, tranvía, avioneta y agua (versión 1.6.2)
+    tt = _t(2.0)
+    tren = _filtro(ruido(2.0), 30, 420) * (0.75 + 0.25 * np.sin(PI2 * 0.5 * tt))             # el rodar grave del vagón
+    for t0 in (0.0, 0.16, 1.0, 1.16):                                                        # el traqueteo doble de las juntas del raíl
+        _poner(tren, _filtro(ruido(0.07), 300, 2600) * _decae(0.07, 0.018), t0, 3.2)
+    S["tren"] = _norm(tren, 0.5)
+    ts = _t(1.6)
+    silbato = sum(np.sin(PI2 * f * ts * (1.0 - 0.012 * np.exp(-ts * 5))) for f in (370.0, 466.0, 554.0)) + 0.25 * _filtro(ruido(1.6), 800, 5000)
+    S["tren_silbato"] = _norm(silbato * np.minimum(1.0, ts / 0.06) * np.minimum(1.0, (1.6 - ts) / 0.35), 0.45)
+    tv = _t(2.0)
+    tranvia = 0.5 * np.sin(PI2 * 110 * tv) * (1 + 0.3 * np.sin(PI2 * 220 * tv)) + 0.8 * _filtro(ruido(2.0), 120, 1500) * (0.8 + 0.2 * np.sin(PI2 * 1.0 * tv))
+    for t0 in (0.5, 1.5):
+        _poner(tranvia, _filtro(ruido(0.05), 500, 3500) * _decae(0.05, 0.012), t0, 2.0)
+    S["tranvia"] = _norm(tranvia, 0.45)
+    camp = np.zeros(int(SR * 0.9))
+    for t0 in (0.0, 0.32):
+        _poner(camp, sum(np.sin(PI2 * f * _t(0.5)) * a for f, a in ((1568.0, 1.0), (2093.0, 0.5), (3136.0, 0.25))) * _decae(0.5, 0.16), t0)
+    S["tranvia_campana"] = _norm(camp, 0.45)
+    ta = _t(1.0)
+    helice = np.tanh(2.2 * sum(np.sin(PI2 * 92 * k * ta + rng.uniform(0, PI2)) / k for k in range(1, 10))) * (0.75 + 0.25 * np.sin(PI2 * 46 * ta))
+    S["motor_avioneta"] = _norm(helice + 0.35 * _filtro(ruido(1.0), 400, 3000), 0.55)
+    tb = _t(3.0)
+    fondo_agua = _filtro(ruido(3.0), 20, 260) * (0.7 + 0.3 * np.sin(PI2 * (1 / 3.0) * tb))    # el rumor sordo de estar bajo el agua
+    for t0 in rng.uniform(0.1, 2.7, 9):                                                      # burbujas que suben
+        d_ = float(rng.uniform(0.05, 0.12))
+        _poner(fondo_agua, _barrido(float(rng.uniform(350, 700)), float(rng.uniform(900, 1600)), d_) * _decae(d_, d_ / 3), float(t0), 0.5)
+    S["bajo_agua"] = _norm(fondo_agua, 0.5)
+    braz = _filtro(ruido(0.45), 250, 5000) * np.sin(np.pi * _t(0.45) / 0.45) ** 2 + 0.5 * _filtro(ruido(0.45), 80, 500) * _decae(0.45, 0.12)
+    S["brazada"] = _norm(braz, 0.45)
     return S
 
 
 # Sonidos que el juego reproduce en bucle: si los sustituyes, el final debe empalmar con el principio.
 PREFIJOS_BUCLE = ("amb_", "motor_", "lugar_", "loc_")
-BUCLES = {"rodadura", "alarma", "sirena", "sirena_ambulancia", "fuego", "ganzua", "intermitente", "lluvia", "latido", "multitud"}
+BUCLES = {"tren", "tranvia", "bajo_agua", "rodadura", "alarma", "sirena", "sirena_ambulancia", "fuego", "ganzua", "intermitente", "lluvia", "latido", "multitud"}
 
 
 def es_bucle(nombre):

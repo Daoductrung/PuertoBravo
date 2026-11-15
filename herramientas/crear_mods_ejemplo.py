@@ -764,10 +764,42 @@ DE_OIDO = {
 }
 
 
+def _dec(clave, pregunta, *opciones):
+    return {"tipo": "decision", "clave": clave, "pregunta": pregunta,
+            "opciones": [dict(zip(("texto", "ayuda", "dice"), o[:3]), **o[3]) for o in opciones]}
+
+
+# Una decisión con consecuencias en una misión de cada mod, justo antes de su escena final.
+DECISIONES = {
+    "cdo1": _dec("cd_patron", "Sabes dónde se mete el patrón. Antes de volver a la botica, el patrón te ve y te hace una seña. ¿Qué haces?",
+                 ("Contárselo todo a la boticaria", "Lo que te encargaron. Ganas fama en Costa Dorada.", "Pasas de largo y vuelves a la botica.", {"fama": 2}),
+                 ("Aceptar 200 euros del patrón por callar parte", "Cobras, y la boticaria se queda con media verdad.", "El patrón te desliza los billetes por debajo de la mesa.", {"dinero": 200, "fama": -2})),
+    "voo1": _dec("vo_madrina", "La madrina te invita al convite. El mesonero, por su parte, te debe el porte. ¿Qué haces?",
+                 ("Quedarte al convite", "Comes, bailas y te sube el ánimo. No cobras.", "Te sientan entre los primos del novio. Hay cordero para tres días.", {"animo": 9}),
+                 ("Cobrar los 100 euros y seguir tu camino", "Dinero en mano.", "El mesonero te paga sin dejar de remover la olla.", {"dinero": 100})),
+    "pao1": _dec("pa_albaran", "Tienes el albarán de los explosivos. El capataz de la cantera te ofrece comprártelo. ¿Qué haces?",
+                 ("Llevárselo al cantinero, como quedasteis", "El pueblo sabrá qué se guarda en el polvorín. Ganas fama.", "Le dices al capataz que no está en venta.", {"fama": 4}),
+                 ("Vendérselo al capataz por 700 euros", "Cobras bien, y en Peñas Altas nadie sabrá nunca lo que había.", "El capataz quema el papel delante de ti, sin prisa.", {"dinero": 700, "fama": -3})),
+    "ivo1": _dec("iv_luces", "Las cuatro luces están encendidas. Chelo quiere agradecértelo. ¿Qué le pides?",
+                 ("Nada: una copa y conversación", "Te sube el ánimo y en la isla te tendrán por uno de los suyos.", "Chelo saca la botella buena, la que no enseña a los de fuera.", {"animo": 7, "fama": 2}),
+                 ("Que te pague el trabajo: 150 euros", "Dinero en mano.", "Chelo abre la caja, cuenta los billetes y no dice nada más.", {"dinero": 150})),
+    "nno1": _dec("nn_cobrador", "Sabes dónde entrega el cobrador. Un hombre del hotel te ha visto y te ofrece dinero por olvidarlo. ¿Qué haces?",
+                 ("Decírselo al portero", "Lo que te encargaron. Ganas fama entre los locales.", "Le dices que tienes mala memoria para las caras, pero buena para los hoteles.", {"fama": 3}),
+                 ("Aceptar 400 euros y decir que lo perdiste", "Cobras, y el portero se queda sin saberlo.", "El hombre del hotel te mete el sobre en el bolsillo de la chaqueta.", {"dinero": 400, "fama": -2})),
+    "ocs6": _dec("oc_nombre", "Tienes el nombre de quien firma los pedidos del agua. ¿Qué haces con él?",
+                 ("Dárselo al periódico para que lo publique", "Ganas mucha fama en Bahía del Ocaso. No cobras nada.", "Lo escribes en un papel y lo dejas encima de la mesa de la redacción.", {"fama": 6, "animo": 5}),
+                 ("Guardártelo y hacerle una visita: 2500 euros", "Cobras por callar. El agua seguirá igual de cara.", "El hombre no discute el precio. Tiene el dinero preparado.", {"dinero": 2500, "fama": -4, "animo": -4})),
+}
+
+
 def escribir(nombre, crudo):
     extra = DE_OIDO.get(nombre)
     if extra and not any(m["id"] == extra["id"] for m in crudo.get("misiones", [])):
         crudo.setdefault("misiones", []).append(extra)
+    for mi in crudo.get("misiones", []):
+        paso = DECISIONES.get(mi.get("id"))
+        if paso and not any(x.get("tipo") == "decision" for x in mi["pasos"]):
+            mi["pasos"].insert(len(mi["pasos"]) - 1, paso)
     from editor import modelo
     mod = modelo.Mod.desde_crudo(crudo)
     ruta = os.path.join(rutas.carpeta_data("mods"), nombre)

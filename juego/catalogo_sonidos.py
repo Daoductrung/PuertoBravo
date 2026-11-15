@@ -12,6 +12,8 @@ GRUPOS = [
     ("Armas", "Disparos, recargas, impactos y explosiones.", ("disparo_", "bala_"), {"sin_balas", "recarga", "amartillar", "explosion", "navaja", "lanzar", "cohete"}),
     ("Motores", "Se reproducen en bucle y el juego les sube el tono con la velocidad. Graba el motor al ralentí, a régimen constante.",
      ("motor_",), {"rodadura"}),
+    ("Tren, tranvía y agua", "Los viajes en tren y en tranvía, y nadar y bucear en el mar. El tren, el tranvía y el fondo de debajo del agua suenan en bucle.",
+     ("tren", "tranvia"), {"bajo_agua", "brazada"}),
     ("Vehículos", "Cláxones, frenazos, choques, sirenas y demás ruidos de los vehículos.",
      ("claxon", "sirena", "choque"), {"frenazo", "puerta_coche", "alarma", "arranque", "cristal", "ganzua", "intermitente", "radio_cambio", "reparar", "pintura", "fuego"}),
     ("Policía y búsqueda", "Avisos del nivel de búsqueda.", ("estrella_",), {"policia_perdida", "buscando", "esposas"}),
@@ -45,11 +47,14 @@ LUGARES = {"armeria": "armería", "comida": "bar, restaurante o chiringuito", "h
 AMBIENTES = {"playa": "playa, con olas", "puerto": "puerto, con olas y una sirena de barco lejana", "ciudad": "centro de ciudad, con tráfico lejano",
              "industrial": "polígono industrial, con maquinaria", "parque": "parque, con pájaros", "residencial": "barrio tranquilo", "noche": "noche, con grillos",
              "mar": "mar abierto", "campo": "campo, con pájaros y cencerros", "montana": "montaña, con viento"}
-MOTORES = {"coche": "coche", "deportivo": "deportivo", "moto": "moto", "camion": "camión o autobús", "furgoneta": "furgoneta o todoterreno", "lancha": "lancha",
+MOTORES = {"avioneta": "avioneta", "coche": "coche", "deportivo": "deportivo", "moto": "moto", "camion": "camión o autobús", "furgoneta": "furgoneta o todoterreno", "lancha": "lancha",
            "barco": "barco grande", "tractor": "tractor", "helicoptero": "helicóptero", "bici": "bicicleta, el clic de la cadena"}
 ARMAS = {"pistola": "pistola", "revolver": "revólver", "subfusil": "subfusil", "escopeta": "escopeta", "rifle": "rifle", "fusil": "fusil de asalto", "silenciado": "pistola con silenciador"}
 
 DESCRIPCIONES = {
+    "tren": "El vagón del tren en marcha, con el traqueteo de los raíles. En bucle.", "tren_silbato": "El silbato del tren al salir de la estación.",
+    "tranvia": "El tranvía en marcha: el zumbido del motor eléctrico y los raíles. En bucle.", "tranvia_campana": "La campana del tranvía al arrancar: dos toques.",
+    "bajo_agua": "Lo que se oye buceando: un rumor sordo y burbujas. En bucle.", "brazada": "Una brazada al nadar.",
     "menu_mover": "Al pasar de una opción a otra en un menú.", "menu_ok": "Al elegir una opción.", "menu_atras": "Al volver atrás.",
     "menu_borde": "Al llegar al principio o al final de un menú, o al borde del mapa.", "menu_ajuste": "Al cambiar el valor de una opción.",
     "error": "Algo no se puede hacer.", "notificacion": "Aviso general: misión nueva, destino marcado.", "mision_ok": "Misión completada.",

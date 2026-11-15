@@ -213,7 +213,7 @@ def test_recorrer_un_local(robot):
     for tipo in sistemas.SALAS:                                               # todas las salas están bien formadas
         salas = sistemas.SALAS[tipo]
         assert salas[0][2] == "salir" and any(s[2] == "mostrador" for s in salas) and len(salas) >= 3
-        assert all(s[2] in ("salir", "mostrador", "sentarse", "escuchar", "aseo", "mirar") for s in salas)
+        assert all(s[2] in ("salir", "mostrador", "sentarse", "escuchar", "aseo", "mirar", "tragaperras") for s in salas)
     bar = p.lugares["bar_gaviota"]
     p.teletransportar(bar.x, bar.y)
     menus_juego.lugar(p, bar)

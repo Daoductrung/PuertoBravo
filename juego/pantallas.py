@@ -403,9 +403,10 @@ class Viaje:
     """
     pausa_mundo = True
 
-    def __init__(self, app, segundos, al_llegar, autobus=False, destino="", vuelo=False):
+    def __init__(self, app, segundos, al_llegar, autobus=False, destino="", vuelo=False, medio=None):
         self.app, self.total, self.al_llegar, self.autobus, self.destino = app, max(4.0, float(segundos)), al_llegar, autobus, destino
         self.vuelo = vuelo
+        self.medio = medio              # "tren" o "tranvia"; None para taxi, autobús y vuelo
         self.t = 0.0
         self.canales = []
         self.motor = None
@@ -416,6 +417,12 @@ class Viaje:
     def al_entrar(self):
         app = self.app
         if self.motor is not None:
+            return
+        if self.medio in ("tren", "tranvia"):
+            app.son("tren_silbato" if self.medio == "tren" else "tranvia_campana", vol=0.7)
+            self.motor = app.son(self.medio, bucle=True, vol=0.45)
+            self.canales = [self.motor]
+            app.decir(("El tren sale de la estación" if self.medio == "tren" else "El tranvía arranca") + f", camino de {self.destino}. Pulsa Intro si quieres llegar ya.", True)
             return
         app.son("puerta_coche")
         if self.vuelo:
@@ -464,12 +471,12 @@ class Viaje:
         if self.motor is not None:
             self.motor.tono(tono + 0.04 * math.sin(self.t * 1.7))
         self.t_suceso -= dt
-        if self.t_suceso <= 0 and f < 0.85 and not self.vuelo:
+        if self.t_suceso <= 0 and f < 0.85 and not self.vuelo and not self.medio:
             self.t_suceso = random.uniform(6, 11)
             self.app.son(random.choice(["claxon_lejano", "intermitente", "cruce", "claxon_lejano"]), vol=0.35, pan=random.uniform(-0.8, 0.8))
         if not self.avisado and f >= 0.8:
             self.avisado = True
-            self.app.decir("Empezáis a bajar." if self.vuelo else "Ya casi estás." if not self.autobus else "Próxima parada.")
+            self.app.decir("Próxima estación." if self.medio == "tren" else "Próxima parada." if self.medio else "Empezáis a bajar." if self.vuelo else "Ya casi estás." if not self.autobus else "Próxima parada.")
         if self.t >= self.total:
             self._fin()
 
@@ -478,9 +485,9 @@ class Viaje:
             self._fin()
 
 
-def viajar(app, segundos, al_llegar, autobus=False, destino="", vuelo=False):
+def viajar(app, segundos, al_llegar, autobus=False, destino="", vuelo=False, medio=None):
     """Hace el trayecto si el jugador lo quiere; si no, llega al momento, como antes."""
     if not app.cfg["viajes_trayecto"] or (app.pruebas and not getattr(app, "viajes_en_pruebas", False)):
         al_llegar()
         return
-    app.abrir(Viaje(app, segundos, al_llegar, autobus, destino, vuelo))
+    app.abrir(Viaje(app, segundos, al_llegar, autobus, destino, vuelo, medio))
