@@ -195,9 +195,15 @@ def test_tren_y_avion_se_oyen_desde_la_calle(robot):
     p.j.x, p.j.y = p.mundo.punto_libre(est.x + 20, est.y)
     p.t_tren = 0.01
     robot.frames(3)
-    assert ("tren_silbato", (est.x, est.y)) in sonidos and ("tren", (est.x, est.y)) in sonidos and len(p._sonidos_transporte) == 1
-    robot.frames(30 * 10)
-    assert p._sonidos_transporte == []                                        # el tren pasa y se va
+    assert p.tren is not None                                                 # entra un tren en la localidad, por la vía
+    p.tren["s"] = p.mundo.tren_parada - 80 * p.tren["sentido"]                # ya llega al andén
+    robot.frames(30 * 7)
+    assert any(n == "tren" for n, _ in sonidos) and any(n == "tren_silbato" for n, _ in sonidos) and p.tren["parado"]
+    for _ in range(30 * 90):
+        robot.frames(1)
+        if p.tren is None:
+            break
+    assert p.tren is None                                                     # el tren pasa y se va
     p.j.x, p.j.y = p.mundo.punto_libre(aer.x + 30, aer.y)
     p.t_avion = 0.01
     robot.frames(3)
@@ -209,8 +215,11 @@ def test_tren_y_avion_se_oyen_desde_la_calle(robot):
     assert math.hypot(lejos.x - est.x, lejos.y - est.y) > 260
     p.t_tren = 0.01
     robot.frames(3)
+    assert p.tren is not None
+    p.tren["s"] = p.mundo.tren_parada - 80 * p.tren["sentido"]
+    robot.frames(30 * 7)
     p.son = original
-    assert not any(n == "tren_silbato" for n, _ in sonidos)
+    assert not any(n in ("tren_silbato", "tren") for n, _ in sonidos)
 
 
 def test_recorrer_a_pie_todas_las_paradas_estaciones_y_aeropuertos(robot):
@@ -274,13 +283,13 @@ def test_recorrer_a_pie_todas_las_paradas_estaciones_y_aeropuertos(robot):
             robot.tecla(pygame.K_RETURN)
             menu = app.pila[-1]
             assert isinstance(menu, Menu) and menu is not p and l.nombre in menu.titulo, l.id
-            esperado = {"tranvia": "Ir a ", "tren": "Tren a ", "aeropuerto": "Vuelo a "}[l.tipo]
+            esperado = {"tranvia": ("Ir a ",), "tren": ("Tren a ",), "aeropuerto": ("Vuelo a ", "Avioneta de línea a ")}[l.tipo]
             assert any(o.texto.startswith(esperado) for o in menu.opciones), (l.id, [o.texto for o in menu.opciones][:3])
             _al_juego(app)
             # está en la lista de lugares y en el radar
             assert l.id in p.lugares and l in [x for x in p.mundo.lugares.values()]
             visitados[l.tipo] += 1
-    assert visitados == {"tranvia": 44, "tren": 10, "aeropuerto": 4}, visitados
+    assert visitados == {"tranvia": 44, "tren": 10, "aeropuerto": 10}, visitados          # cuatro aeropuertos y seis aeródromos
     assert metros > 6000
 
 

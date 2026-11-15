@@ -29,7 +29,9 @@ def helipuerto(p, l):
         return
     destinos = [h for h in p.lugares.values() if h.tipo in ("helipuerto", "aeropuerto") and h.id != l.id and h.mapa != p.mundo.id]
     if not volando:
-        destinos = [h for h in destinos if h.tipo == "helipuerto"]            # de pasajero, el helicóptero solo va a helipuertos
+        con_heli = {h.mapa for h in destinos if h.tipo == "helipuerto"}
+        # de pasajero, el helicóptero va a los helipuertos y, donde no hay, a la pista del aeródromo del pueblo
+        destinos = [h for h in destinos if h.tipo == "helipuerto" or (h.get("aerodromo") and h.mapa not in con_heli)]
 
     def volar(h):
         def f():

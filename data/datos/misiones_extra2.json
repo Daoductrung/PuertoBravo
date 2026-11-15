@@ -4,7 +4,8 @@
   "10": "Historias de la sierra y más encargos",
   "11": "Encargos de oído",
   "12": "La decisión",
-  "13": "Encrucijadas"
+  "13": "Encrucijadas",
+  "14": "Cuentas cruzadas"
  },
  "misiones": [
   {
@@ -1398,6 +1399,36 @@
        "Gracias, Dani. Esto lo has hecho tú."
       ]
      ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Una cosa más. Me ha llamado la inspectora de San Lucero: lo que declaró el contable del Caimán nombra también a nuestro concejal. Tu nombre sale en los dos sumarios, y en los dos del lado bueno."
+      ]
+     ],
+     "si_cruce": "trono:3"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Y he sabido lo de Villaseca. Una cooperativa que no se vende es noticia: mando a un fotógrafo el lunes."
+      ]
+     ],
+     "si_cruce": "cooperativa:1"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Dicen que en Villaseca cobraste por la firma de la cooperativa. No te lo voy a preguntar. Pero lo sé."
+      ]
+     ],
+     "si_cruce": "cooperativa:2"
     }
    ],
    "recompensa": {
@@ -1450,6 +1481,36 @@
        "Puntual. Así da gusto. El primer día de cada mes, pásate por aquí."
       ]
      ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El hombre del traje",
+       "Por cierto: el fondo que compró la cooperativa de Villaseca también es cliente nuestro. Allí ya te conocen. Todo queda en casa."
+      ]
+     ],
+     "si_cruce": "cooperativa:2"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El hombre del traje",
+       "Al concejal no le ha gustado lo de Villaseca. Esa cooperativa la quería un amigo suyo. Que no se repita."
+      ]
+     ],
+     "si_cruce": "cooperativa:1"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El hombre del traje",
+       "Y dicen que en San Lucero ahora mandas tú. Al concejal le gusta la gente con ambición. Hablaremos."
+      ]
+     ],
+     "si_cruce": "trono:2"
     }
    ],
    "recompensa": {
@@ -1516,6 +1577,26 @@
        "Mitad para nosotros, mitad para ti. Y la palabra: a ti no se te toca."
       ]
      ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Un Calavera",
+       "Los Lagartos de San Lucero preguntan por ti. Dicen que su jefe ahora eres tú. Pues ya somos familia."
+      ]
+     ],
+     "si_cruce": "trono:2"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Un Calavera",
+       "Nos han dicho que en San Lucero fuiste con los libros a la policía. Aquí eso no lo hagas nunca."
+      ]
+     ],
+     "si_cruce": "trono:3"
     }
    ],
    "recompensa": {
@@ -1650,6 +1731,26 @@
        "Ni una cepa quemada. Este año el vino lleva tu nombre en la etiqueta, aunque sea en pequeño."
       ]
      ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Anselmo",
+       "Ha llamado una periodista de Puerto Bravo, de El Faro. Dice que te conoce, y que quiere contar lo de la cooperativa. Le he dicho que venga a comer."
+      ]
+     ],
+     "si_cruce": "concejal:1"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Anselmo",
+       "En el mercado de San Lucero ya no hay que pagar a nadie por descargar. Remedios dice que es cosa tuya. Este año vendemos allí sin intermediarios."
+      ]
+     ],
+     "si_cruce": "trono:1"
     }
    ],
    "recompensa": {
@@ -1704,6 +1805,26 @@
        "Firmado. Ha sido un placer hacer negocios con usted. No hace falta que nos volvamos a ver."
       ]
      ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El comprador",
+       "Tenemos amigos comunes en el ayuntamiento de Puerto Bravo. Me han dicho que con usted se puede hablar. Tenían razón."
+      ]
+     ],
+     "si_cruce": "concejal:2"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El comprador",
+       "Lo de San Lucero nos interesa. Un mercado con un solo dueño es un mercado ordenado. Ya le llamaremos."
+      ]
+     ],
+     "si_cruce": "trono:2"
     }
    ],
    "recompensa": {
@@ -1829,6 +1950,26 @@
        "Ya está. Mañana descargan los barcos sin pagar a nadie, por primera vez en diez años."
       ]
      ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Remedios",
+       "Los de la cooperativa de Villaseca traen el vino ellos mismos, sin nadie por medio. Preguntan por ti cada vez que vienen."
+      ]
+     ],
+     "si_cruce": "cooperativa:1"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Remedios",
+       "He leído lo del concejal de Puerto Bravo en el periódico. Dicen que los papeles los llevaste tú. No me sorprende."
+      ]
+     ],
+     "si_cruce": "concejal:1"
     }
    ],
    "recompensa": {
@@ -1882,6 +2023,26 @@
        "Todos han pagado. Y sin rechistar. San Lucero es tuyo, [jefe|jefa]."
       ]
      ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Un Lagarto",
+       "Los Calaveras de Puerto Bravo mandan recuerdos. Dicen que contigo se puede tratar. Proponen repartir la costa."
+      ]
+     ],
+     "si_cruce": "concejal:3"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Un Lagarto",
+       "Ha venido uno con traje, de parte de un concejal. Dice que ya trabajas para él. Aquí también quiere su sobre."
+      ]
+     ],
+     "si_cruce": "concejal:2"
     }
    ],
    "recompensa": {
@@ -1945,10 +2106,433 @@
        "Ha declarado cuatro horas seguidas. Gracias. Esto no lo va a agradecer nadie en voz alta, así que te lo digo yo."
       ]
      ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La inspectora",
+       "Mis compañeros de Puerto Bravo me han contado lo del concejal. Dos sumarios y en los dos apareces tú, del mismo lado. No es casualidad."
+      ]
+     ],
+     "si_cruce": "concejal:1"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La inspectora",
+       "Te voy a decir una cosa, y solo una vez: sé de quién cobras en Puerto Bravo. Aquí has hecho lo correcto. Allí todavía estás a tiempo."
+      ]
+     ],
+     "si_cruce": "concejal:2"
     }
    ],
    "recompensa": {
     "dinero": 2000
+   }
+  },
+  {
+   "id": "cz1",
+   "titulo": "Tres cartas",
+   "capitulo": 14,
+   "contacto": "Encarna",
+   "lugar": "bar_gaviota",
+   "requiere": [
+    "fd1",
+    "vd1",
+    "sd1"
+   ],
+   "requiere_alguna": "fd2 fd3 fd4; vd2 vd3; sd2 sd3 sd4",
+   "resumen": "Han llegado tres cartas al bar: una de Puerto Bravo, otra de Villaseca y otra de San Lucero. Lo que decidiste en cada sitio empieza a juntarse.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Tres cartas en una mañana, Dani. Y las tres hablan de ti. Siéntate, que te las leo."
+      ]
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "La primera, del periódico. La redactora dice que el juicio del concejal empieza el mes que viene, y que te guarda un sitio en la primera fila."
+      ]
+     ],
+     "si_clave": "concejal",
+     "si_opcion": 1
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "La primera no trae remite. Dentro hay un sobre con billetes y una tarjeta del ayuntamiento. No pregunto. Pero me duele."
+      ]
+     ],
+     "si_clave": "concejal",
+     "si_opcion": 2
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "La primera la ha traído en mano uno de Los Calaveras. Dice que estáis en paz y que el puerto es tan tuyo como suyo. Mal asunto es deberle favores a esa gente."
+      ]
+     ],
+     "si_clave": "concejal",
+     "si_opcion": 3
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "La segunda, de Villaseca. Anselmo manda una caja de vino con tu nombre en la etiqueta y dice que la cooperativa ha repartido beneficios por primera vez en diez años."
+      ]
+     ],
+     "si_clave": "cooperativa",
+     "si_opcion": 1
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "La segunda, de Villaseca. Es de un fondo, con membrete. Te dan las gracias por la gestión y te ofrecen otra parecida en el pueblo de al lado."
+      ]
+     ],
+     "si_clave": "cooperativa",
+     "si_opcion": 2
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Y la tercera, de San Lucero. Doña Remedios dice que en el mercado ya nadie paga por trabajar, y que te guarda azafrán del bueno."
+      ]
+     ],
+     "si_clave": "trono",
+     "si_opcion": 1
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Y la tercera, de San Lucero. No es una carta: es la recaudación de la semana, con una nota que dice «para [el jefe|la jefa]». Ay, Dani."
+      ]
+     ],
+     "si_clave": "trono",
+     "si_opcion": 2
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Y la tercera, de San Lucero, de una inspectora. Dice que el Caimán ha sido condenado, y que si un día quieres un trabajo honrado, la llames."
+      ]
+     ],
+     "si_clave": "trono",
+     "si_opcion": 3
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "¿Sabes lo que veo yo? Que lo de aquí y lo de allí ya se conocen. La redactora y la inspectora se llaman cada semana, y dicen que con los papeles de una y de otra va a caer más gente."
+      ]
+     ],
+     "si_cruce": "concejal:1, trono:3"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "¿Sabes lo que veo yo? Que el vino de Villaseca se vende ahora en el mercado de San Lucero sin que nadie cobre por medio. Eso lo has hecho tú, en dos sitios a la vez."
+      ]
+     ],
+     "si_cruce": "cooperativa:1, trono:1"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "¿Sabes lo que veo yo? Que el dinero del concejal y el del fondo de Villaseca salen del mismo banco. Y tú cobras de los dos."
+      ]
+     ],
+     "si_cruce": "concejal:2, cooperativa:2"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "¿Sabes lo que veo yo? Que Los Calaveras de aquí y Los Lagartos de allí tienen ahora [un amigo|una amiga] en común. Y eso no es una amistad, es una soga."
+      ]
+     ],
+     "si_cruce": "concejal:3, trono:2"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Hay alguien esperándote en el Mirador de la Bahía. No ha querido entrar. Dice que lo que viene ahora depende de todo lo que has hecho hasta hoy."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mirador",
+     "radio": 12,
+     "texto": "Ve al Mirador de la Bahía. Alguien te espera allí."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Desde el mirador se ve toda la comarca: el puerto, la carretera de Villaseca y, al fondo, las luces de San Lucero. En el banco hay tres personas, una de cada sitio."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 500
+   }
+  },
+  {
+   "id": "cz2",
+   "titulo": "La comarca en pie",
+   "capitulo": 14,
+   "contacto": "La redactora",
+   "lugar": "mirador",
+   "requiere": [
+    "cz1"
+   ],
+   "si_cruce": "concejal:1, cooperativa:1, trono:1, trono:3",
+   "si_cruce_min": 3,
+   "resumen": "Puerto Bravo, Villaseca y San Lucero quieren firmar juntos un acuerdo, y a alguien no le conviene que esos papeles lleguen.",
+   "final_titulo": "Final de la comarca: en pie y en paz",
+   "final": "El acuerdo se firma en la Plaza Mayor, con vino de Villaseca y especias de San Lucero. Tres sitios en los que elegiste lo difícil se sostienen ahora unos a otros. Nadie te ha hecho una estatua, y mejor: te saludan por tu nombre en los tres.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Anselmo, doña Remedios y yo hemos tenido una idea. Un acuerdo entre los tres sitios: el vino, el mercado y el periódico, sin dueños por medio."
+      ],
+      [
+       "La redactora",
+       "Hay que registrarlo hoy en el ayuntamiento, y hay que pasar antes por el periódico a por las copias. Lo que queda de la gente del concejal lo sabe."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "puntos": [
+      "periodico",
+      "ayuntamiento"
+     ],
+     "limite": 240,
+     "texto": "Recoge las copias en la Redacción de El Faro y llévalas al Ayuntamiento antes de que cierre el registro: cuatro minutos."
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "ayuntamiento",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Matón sin patrón",
+       "arma": "pistola",
+       "salud": 80
+      }
+     ],
+     "texto": "Los últimos matones del concejal te esperaban en la puerta. Quítatelos de encima."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Registrado. Con sello y todo."
+      ],
+      [
+       "La redactora",
+       "Esto no lo hemos ganado en un día, ni en un sitio. Lo has ido ganando tú, decisión a decisión."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 4000
+   }
+  },
+  {
+   "id": "cz3",
+   "titulo": "Una de cal y otra de arena",
+   "capitulo": 14,
+   "contacto": "Encarna",
+   "lugar": "mirador",
+   "requiere": [
+    "cz1"
+   ],
+   "si_cruce": "concejal:1, cooperativa:1, trono:1, trono:3",
+   "si_cruce_min": 1,
+   "si_cruce_max": 2,
+   "resumen": "En un sitio te deben un favor y en otro te la tienen guardada. Hoy las dos cosas van a encontrarse en el bar de tu tía.",
+   "final_titulo": "Final a medias: una de cal y otra de arena",
+   "final": "El bar sigue abierto, con un cristal nuevo. En un sitio te saludan y en otro cambian de acera, y las dos cosas te las has ganado. La tía Encarna dice que nadie es de una pieza, y te pone el café sin preguntar cuál de las dos personas viene hoy a desayunar.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "De los tres del banco, uno te da la mano y otro no. El tercero mira el reloj."
+      ],
+      [
+       "Narrador",
+       "Te cuentan lo mismo con palabras distintas: los que salieron perdiendo con lo que hiciste han mandado gente al Bar La Gaviota. Y los que salieron ganando han venido a avisarte."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "bar_gaviota",
+     "radio": 14,
+     "limite": 210,
+     "texto": "Vuelve al Bar La Gaviota antes de que lleguen ellos: tres minutos y medio."
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "bar_gaviota",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Cobrador de cuentas viejas",
+       "arma": "bate",
+       "salud": 75
+      }
+     ],
+     "texto": "Han llegado a la vez que tú. Echa del bar a los que vienen a cobrarse lo de entonces."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Encarna",
+       "Me han roto un cristal y media vajilla. Y dos vecinos han salido a ayudarte sin que nadie se lo pidiera."
+      ],
+      [
+       "Encarna",
+       "Eso eres tú, Dani: lo uno y lo otro. Anda, barre."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2500
+   }
+  },
+  {
+   "id": "cz4",
+   "titulo": "Todo tiene dueño",
+   "capitulo": 14,
+   "contacto": "El hombre del traje",
+   "lugar": "mirador",
+   "requiere": [
+    "cz1"
+   ],
+   "si_cruce": "concejal:1, cooperativa:1, trono:1, trono:3",
+   "si_cruce_max": 0,
+   "resumen": "Los tres negocios en los que te metiste quieren sentarse a una mesa. Y solo hay una silla en la cabecera.",
+   "final_titulo": "Final del poder: la comarca tiene dueño",
+   "final": "Desde lo alto de la Torre Belmonte se ven el puerto, Villaseca y San Lucero. En los tres sitios se paga, y en los tres se paga a la misma persona. La tía Encarna ha dejado de preguntar, y en el Barrio Viejo bajan la voz cuando entras. Tienes todo lo que tenía Belmonte. También lo que le quitaba el sueño.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El hombre del traje",
+       "Los tres del banco trabajan para ti, aunque todavía no lo sepan. El ayuntamiento, el campo y el mercado. Falta ordenarlo."
+      ],
+      [
+       "El hombre del traje",
+       "Hay una reunión en la Torre Belmonte. La planta de arriba lleva vacía desde que cayó su dueño. Alguien tiene que ocuparla."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "torre",
+     "radio": 14,
+     "texto": "Ve a la Torre Belmonte."
+    },
+    {
+     "tipo": "decision",
+     "clave": "reparto",
+     "texto": "En la mesa están el concejal, el hombre del fondo y el segundo de Los Lagartos. Los tres te miran.",
+     "opciones": [
+      {
+       "texto": "Repartir la comarca con ellos",
+       "ayuda": "Cada uno se queda lo suyo y tú cobras de los tres: trescientos euros cada medianoche. Nadie sale herido.",
+       "dice": "Firmáis sin papeles. Tres apretones de manos, y ninguno sincero.",
+       "renta": 300,
+       "fama": -2
+      },
+      {
+       "texto": "Quedarte con todo",
+       "ayuda": "Seiscientos euros cada medianoche, pero hoy tendrás que vértelas con la gente de los tres, y mañana con su rencor.",
+       "dice": "Dices que no con la cabeza. Las sillas se mueven todas a la vez.",
+       "renta": 600,
+       "fama": -6,
+       "animo": -6
+      }
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "torre",
+     "ya": true,
+     "si_clave": "reparto",
+     "si_opcion": 2,
+     "enemigos": [
+      {
+       "n": 6,
+       "tipo": "Guardaespaldas",
+       "arma": "pistola",
+       "salud": 85
+      }
+     ],
+     "texto": "Los guardaespaldas de los tres abren fuego. Sal de la torre por encima de ellos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Cuando se cierra la puerta del ascensor, en la planta de arriba solo queda una silla ocupada. La tuya."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 6000
    }
   }
  ]

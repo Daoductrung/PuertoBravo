@@ -182,7 +182,10 @@ def tren(p, l):
         if saltos:
             ops.append(Opcion(f"Tren a {p.mapas[e.mapa].nombre}: {precio(saltos)} euros", ir(e, saltos),
                               ayuda=("Es la localidad vecina. " if saltos == 1 else f"Está a {saltos} localidades de aquí. ") + p.mapas[e.mapa].barrios[0].get("descripcion", "")))
-    m = _menu(p, l, ops or [Opcion("De esta estación no sale ningún tren")], intro="El tren llega a todas las localidades a las que se puede ir por tierra")
+    intro = "El tren llega a todas las localidades a las que se puede ir por tierra"
+    if p.mundo.tren_donde():
+        intro += f". La vía cruza {p.mundo.nombre} por {p.mundo.tren_donde()}: cada minuto y medio, más o menos, pasa un tren, y se le oye venir"
+    m = _menu(p, l, ops or [Opcion("De esta estación no sale ningún tren")], intro=intro)
 
 
 # ------------------------------------------------------------------ aeropuerto: trayectos largos, avionetas y helicópteros
@@ -204,20 +207,26 @@ def aeropuerto(p, l):
         app.decir("En el control de seguridad hay dos agentes mirando una foto tuya. Vuelve cuando no te busquen.", True)
         return
 
-    def volar(dest):
+    def volar(dest, medio):
         def f():
-            precio = int(dest.get("precio", 180))
+            precio = precio_de(dest, medio)
             if not p.pagar(precio):
                 return
             app.cerrar(m)
 
             def llegar():
-                p.pasar_horas(1.0)
+                p.pasar_horas({"avion": 1.0, "avioneta": 0.7, "helicoptero": 0.5}[medio])
                 j.stats["vuelos"] = j.stats.get("vuelos", 0) + 1
-                p.cambiar_mapa(dest.mapa, dest.x, dest.y, None, f"Aterrizas en el {dest.nombre}. Son las {p.hora_txt()}.")
+                p.cambiar_mapa(dest.mapa, dest.x, dest.y, None, (f"Aterrizas en el {dest.nombre}." if dest.tipo == "aeropuerto" else f"Aterrizas en {dest.nombre}, {p.mapas[dest.mapa].nombre}.") + f" Son las {p.hora_txt()}.")
             from .pantallas import viajar as trayecto
-            trayecto(app, 45.0, llegar, destino=p.mapas[dest.mapa].nombre, medio="avion")
+            if medio == "helicoptero":
+                trayecto(app, 35.0, llegar, destino=p.mapas[dest.mapa].nombre, vuelo=True)
+            else:
+                trayecto(app, 45.0 if medio == "avion" else 38.0, llegar, destino=p.mapas[dest.mapa].nombre, medio=medio)
         return f
+
+    def precio_de(dest, medio):
+        return int(dest.get("precio", 180 if medio == "avion" else 120 if medio == "avioneta" else 150))
 
     def alquilar(modelo):
         def f():
@@ -235,14 +244,27 @@ def aeropuerto(p, l):
             p.fijar_gps(x, y, v.nombre, auto=True, radio=4, callar=True)
             p.decir(f"Alquilado: {v.nombre}. Te espera en la pista, {p.situar(x, y, 'está')}. Súbete con F. Se pilota a mano y aterriza en cualquier aeropuerto, helipuerto o espacio abierto.")
         return f
-    ops = [Opcion(f"Vuelo a {p.mapas[a.mapa].nombre}: {int(a.get('precio', 180))} euros", volar(a),
-                  ayuda="Avión de pasajeros, para los trayectos largos entre ciudades. " + p.mapas[a.mapa].barrios[0].get("descripcion", ""))
-           for a in sorted((x for x in p.lugares.values() if x.tipo == "aeropuerto" and x.mapa != p.mundo.id), key=lambda x: x.mapa)]
-    ops += [Opcion(f"Alquilar una avioneta: {ALQUILER['avioneta']} euros", alquilar("avioneta"),
-                   ayuda="Te la dejan en la pista y la pilotas tú. Más rápida que el helicóptero. Con ella puedes ir a cualquier aeropuerto o helipuerto pulsando Intro al llegar."),
-            Opcion(f"Alquilar un helicóptero: {ALQUILER['helicoptero']} euros", alquilar("helicoptero"),
-                   ayuda="Te lo dejan en la pista y lo pilotas tú. Más lento que la avioneta, pero se detiene en el aire y aterriza en menos sitio.")]
-    m = _menu(p, l, ops, intro="Aviones de pasajeros a las otras ciudades, y avionetas y helicópteros de alquiler")
+    pequeno = bool(l.get("aerodromo"))
+    ops = []
+    con_pista = set()
+    for a in sorted((x for x in p.lugares.values() if x.tipo == "aeropuerto" and x.mapa != p.mundo.id), key=lambda x: (bool(x.get("aerodromo")), x.mapa)):
+        con_pista.add(a.mapa)
+        # el avión grande solo va de aeropuerto a aeropuerto; a un aeródromo, o desde él, se va en avioneta de línea
+        medio = "avioneta" if pequeno or a.get("aerodromo") else "avion"
+        ops.append(Opcion(f"{'Vuelo' if medio == 'avion' else 'Avioneta de línea'} a {p.mapas[a.mapa].nombre}: {precio_de(a, medio)} euros", volar(a, medio),
+                          ayuda=("Avión de pasajeros, para los trayectos largos entre ciudades. " if medio == "avion"
+                                 else "Una avioneta de ocho plazas con piloto, que aterriza en las pistas cortas de los pueblos. ") + p.mapas[a.mapa].barrios[0].get("descripcion", "")))
+    # a las islas, donde no cabe una pista, se llega en helicóptero de línea
+    for h in sorted((x for x in p.lugares.values() if x.tipo == "helipuerto" and x.mapa != p.mundo.id and x.mapa not in con_pista), key=lambda x: x.mapa):
+        ops.append(Opcion(f"Helicóptero de línea a {h.nombre}, en {p.mapas[h.mapa].nombre}: {precio_de(h, 'helicoptero')} euros", volar(h, "helicoptero"),
+                          ayuda="Allí no hay pista: se llega en helicóptero con piloto. " + p.mapas[h.mapa].barrios[0].get("descripcion", "")))
+    ops.append(Opcion(f"Alquilar una avioneta: {ALQUILER['avioneta']} euros", alquilar("avioneta"),
+                      ayuda="Te la dejan en la pista y la pilotas tú. Más rápida que el helicóptero. Con ella puedes ir a cualquier aeropuerto, aeródromo o helipuerto pulsando Intro al llegar."))
+    if not pequeno:
+        ops.append(Opcion(f"Alquilar un helicóptero: {ALQUILER['helicoptero']} euros", alquilar("helicoptero"),
+                          ayuda="Te lo dejan en la pista y lo pilotas tú. Más lento que la avioneta, pero se detiene en el aire y aterriza en menos sitio."))
+    m = _menu(p, l, ops, intro="Avionetas de línea a las ciudades, a los otros pueblos y helicópteros a las islas, y avionetas de alquiler" if pequeno
+              else "Aviones de pasajeros a las otras ciudades, avionetas de línea a los pueblos, helicópteros a las islas, y avionetas y helicópteros de alquiler")
 
 
 def _zarpar(p, l, modelo, salud=None, nombre=None, propio=None):

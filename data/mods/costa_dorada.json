@@ -48,6 +48,21 @@
    "lado": "N",
    "pos": 45,
    "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."
+  },
+  {
+   "id": "costa_dorada_aerodromo",
+   "nombre": "Aeródromo de Costa Dorada",
+   "tipo": "aeropuerto",
+   "mapa": "costa_dorada",
+   "bloque": [
+    0,
+    0
+   ],
+   "lado": "S",
+   "pos": 45,
+   "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas.",
+   "precio": 120,
+   "aerodromo": true
   }
  ],
  "misiones": [
@@ -747,6 +762,8 @@
      200
     ]
    ],
+   "tren_eje": "H",
+   "tren_n": 3,
    "lugares": [
     {
      "id": "cd_salida",

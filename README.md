@@ -165,7 +165,7 @@ La accesibilidad es el requisito principal del proyecto. Todo lo que ocurre en e
 
 ## 3. Crear mods
 
-Un mod añade o cambia contenido sin tocar los datos originales: lugares, misiones con todos sus pasos, armas, vehículos, carreras, comidas, objetos, peces, personajes para elegir, capítulos, mapas enteros y, para el modo adulto, personas, planes, regalos y sustancias. Los mods están en `data\mods` y se cargan al arrancar. En cualquier texto, lo que cambia según el protagonista sea hombre o mujer se escribe entre corchetes, con la forma masculina, una barra y la femenina: `Bienvenid[o|a]`, `[el sobrino|la sobrina]`. Lo resuelve `juego/genero.py` justo antes de decir el texto.
+Un mod añade o cambia contenido sin tocar los datos originales: lugares, misiones con todos sus pasos, armas, vehículos, carreras, comidas, objetos, peces, personajes para elegir, capítulos, mapas enteros y, para el modo adulto, personas, planes, regalos y sustancias. Los mods están en `data\mods` y se cargan al arrancar. Una misión o un paso pueden depender de varias decisiones a la vez con `si_cruce` (`"concejal:1, trono:3"`), `si_cruce_min` y `si_cruce_max`, y una misión puede pedir una de cada rama con `requiere_alguna` (`"fd2 fd3 fd4; vd2 vd3"`). Cada mapa dice por dónde va la vía del tren con `tren_eje` y `tren_n`, y un lugar de tipo `aeropuerto` con `"aerodromo": true` es la pista corta de un pueblo. En cualquier texto, lo que cambia según el protagonista sea hombre o mujer se escribe entre corchetes, con la forma masculina, una barra y la femenina: `Bienvenid[o|a]`, `[el sobrino|la sobrina]`. Lo resuelve `juego/genero.py` justo antes de decir el texto.
 
 ### Con el editor
 

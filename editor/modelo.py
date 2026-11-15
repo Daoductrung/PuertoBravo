@@ -293,6 +293,15 @@ def _mapa_crudo(cat, mod, ident):
 def _comprobar_tranvia(mod, m, crudo, mm, donde, errores, avisos):
     """Las vías del tranvía: los cruces tienen que existir, y las paradas quedar cerca de las vías."""
     import math
+    eje, n = crudo.get("tren_eje"), crudo.get("tren_n")
+    if eje in ("H", "V"):
+        tope = (mm.NY if eje == "H" else mm.NX) - 1
+        if not isinstance(n, int) or isinstance(n, bool) or not (0 <= n <= tope):
+            errores.append(f"{donde}: la vía del tren va por una {'calle' if eje == 'H' else 'avenida'} que no existe. Tiene que ser un número de 0 a {tope}.")
+        elif not any(l.tipo == "tren" for l in mm.lugares_todos.values()) and crudo.get("transporte") is False:
+            avisos.append(f"{donde}: tiene vía del tren pero no estación de tren: sin estación, no pasa ningún tren.")
+    elif n is not None and eje is None:
+        avisos.append(f"{donde}: la vía del tren tiene número pero no dice si va por una calle o por una avenida; el juego la pondrá delante de la estación.")
     for n, cruce in enumerate(crudo.get("vias") or [], 1):
         try:
             i, j = (cruce["a"], cruce["b"]) if isinstance(cruce, dict) else (cruce[0], cruce[1])

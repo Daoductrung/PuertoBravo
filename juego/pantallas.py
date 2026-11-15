@@ -413,16 +413,20 @@ class Viaje:
         self.t_suceso = random.uniform(5, 9)
         self.avisado = False
         self.hecho = False
+        self.con_tren = bool(autobus) and random.random() < 0.75      # en autobús, entre localidades: si en este trayecto pasa un tren junto a la carretera
+        self.tren_en = random.uniform(0.25, 0.55)       # y en qué momento
+        self.tren_paso = None
 
     def al_entrar(self):
         app = self.app
         if self.motor is not None:
             return
-        if self.medio in ("tren", "tranvia", "avion"):
-            app.son({"tren": "tren_silbato", "tranvia": "tranvia_campana", "avion": "avion_despegue"}[self.medio], vol=0.7)
-            self.motor = app.son(self.medio, bucle=True, vol=0.45)
+        if self.medio in ("tren", "tranvia", "avion", "avioneta"):
+            app.son({"tren": "tren_silbato", "tranvia": "tranvia_campana", "avion": "avion_despegue", "avioneta": "puerta_coche"}[self.medio], vol=0.7)
+            self.motor = app.son("motor_avioneta" if self.medio == "avioneta" else self.medio, bucle=True, vol=0.45)
             self.canales = [self.motor]
-            app.decir({"tren": "El tren sale de la estación", "tranvia": "El tranvía arranca", "avion": "El avión acelera por la pista y despega"}[self.medio] +
+            app.decir({"tren": "El tren sale de la estación", "tranvia": "El tranvía arranca", "avion": "El avión acelera por la pista y despega",
+                       "avioneta": "La avioneta carretea por la pista y despega"}[self.medio] +
                       f", camino de {self.destino}. Pulsa Intro si quieres llegar ya.", True)
             return
         app.son("puerta_coche")
@@ -475,11 +479,38 @@ class Viaje:
         if self.t_suceso <= 0 and f < 0.85 and not self.vuelo and not self.medio:
             self.t_suceso = random.uniform(6, 11)
             self.app.son(random.choice(["claxon_lejano", "intermitente", "cruce", "claxon_lejano"]), vol=0.35, pan=random.uniform(-0.8, 0.8))
+        self._tren_al_lado(dt, f)
         if not self.avisado and f >= 0.8:
             self.avisado = True
-            self.app.decir("El avión empieza a bajar." if self.medio == "avion" else "Próxima estación." if self.medio == "tren" else "Próxima parada." if self.medio else "Empezáis a bajar." if self.vuelo else "Ya casi estás." if not self.autobus else "Próxima parada.")
+            self.app.decir("El avión empieza a bajar." if self.medio == "avion" else "La avioneta empieza a bajar hacia la pista." if self.medio == "avioneta" else "Próxima estación." if self.medio == "tren" else "Próxima parada." if self.medio else "Empezáis a bajar." if self.vuelo else "Ya casi estás." if not self.autobus else "Próxima parada.")
         if self.t >= self.total:
             self._fin()
+
+    def _tren_al_lado(self, dt, f):
+        """Por carretera, entre una localidad y otra, la vía del tren va junto a la calzada: en casi todos los trayectos
+        un tren te alcanza, pasa a tu lado de un oído al otro y se pierde por delante."""
+        if self.vuelo or self.medio or not self.con_tren:
+            return
+        t = self.tren_paso
+        if t is None:
+            if f >= self.tren_en and self.total - self.t > 9.0:
+                lado = random.choice((-1.0, 1.0))
+                self.app.son("tren_silbato", vol=0.45, pan=-0.8 * lado)
+                c = self.app.son("tren", bucle=True, vol=0.05, pan=-0.9 * lado)
+                self.canales.append(c)
+                self.tren_paso = {"t": 0.0, "canal": c, "lado": lado}
+                self.app.decir("Un tren alcanza al autobús por la vía que va junto a la carretera.")
+            return
+        if t["canal"] is None:
+            return
+        t["t"] += dt
+        k = t["t"] / 8.0                                     # ocho segundos de un lado al otro
+        if k >= 1.0:
+            t["canal"].parar()
+            t["canal"] = None
+            return
+        t["canal"].volumen(0.05 + 0.6 * math.sin(math.pi * k))
+        t["canal"].pan = t["lado"] * (-0.9 + 1.8 * k)
 
     def cerrado(self):
         if not self.hecho:                      # si algo cierra la pantalla por fuera, se llega igual

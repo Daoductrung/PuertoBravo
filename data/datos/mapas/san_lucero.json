@@ -72,6 +72,8 @@
     {"id": "san_lucero_tren", "nombre": "Estación de tren de San Lucero", "tipo": "tren", "bloque": [3, 1], "lado": "N", "pos": 62, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
     {"id": "san_lucero_aeropuerto", "nombre": "Aeropuerto de San Lucero", "tipo": "aeropuerto", "bloque": [5, 0], "lado": "S", "pos": 45, "precio": 180, "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."}
   ],
+  "tren_eje": "H",
+  "tren_n": 2,
   "vias": [[1, 2], [3, 2], [1, 2], [1, 0], [4, 0], [4, 2], [6, 2], [6, 5], [1, 5]],
   "casetes": [[45, 45], [300, 200], [500, 60], [130, 400], [420, 300], [380, 420], [225, 135], [45, 315]]
 }

@@ -82,7 +82,7 @@ def test_mando_en_menus_y_a_pie(robot):
         if isinstance(cima, Dialogo):
             md.boton("b", True); md.boton("b", False)
         elif isinstance(cima, Menu):
-            cima.i = 0 if "personaje" in str(cima.titulo) else len(cima.opciones) - 1
+            cima.i = 0 if "personaje" in str(cima.titulo) or "te hablen" in str(cima.titulo) else len(cima.opciones) - 1
             md.boton("a", True); md.boton("a", False)
         else:
             break

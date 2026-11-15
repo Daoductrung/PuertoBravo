@@ -13,7 +13,7 @@ de un mod, con el nombre de archivo de cada frase, para repartirlo entre quienes
 """
 import os
 
-from . import registro, rutas
+from . import genero, registro, rutas
 
 EXT = (".ogg", ".wav", ".flac", ".mp3")
 SONIDO = "_voz_escena"            # nombre interno con el que se carga la grabación que suena
@@ -154,6 +154,7 @@ def guion(misiones, titulo="", existentes=None):
                 continue
             for n, linea in enumerate(paso.get("lineas", [])):
                 quien, texto = (linea.get("quien"), linea.get("texto")) if isinstance(linea, dict) else (linea[0], linea[1])
+                texto = genero.resolver(texto, "h")              # las voces se graban para el protagonista en masculino
                 if not cab:
                     lineas += [f"Misión {m.get('id')}: {m.get('titulo', '')}", ""]
                     cab = True

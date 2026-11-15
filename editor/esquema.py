@@ -22,7 +22,7 @@ TIPOS_LUGAR = [
     ("estacion", "Estación de autobuses"), ("salida", "Salida por carretera a otra localidad"),
     ("embarcadero", "Embarcadero, de tierra al mar"), ("muelle", "Muelle, del mar a tierra"),
     ("helipuerto", "Helipuerto"), ("tranvia", "Parada de tranvía, para moverse dentro de la ciudad"),
-    ("tren", "Estación de tren, a otras localidades por tierra"), ("aeropuerto", "Aeropuerto: vuelos largos, avionetas y helicópteros"), ("pesca", "Punto de pesca"), ("protectora", "Protectora de animales"),
+    ("tren", "Estación de tren, a otras localidades por tierra"), ("aeropuerto", "Aeropuerto o aeródromo: vuelos, avionetas y helicópteros"), ("pesca", "Punto de pesca"), ("protectora", "Protectora de animales"),
     ("feria", "Feria o recreativos"), ("tesoro", "Zona de búsqueda de tesoros"),
     ("empleo", "Oficina de empleo"), ("academia", "Academia de cursos"), ("ong", "Comedor social u organización benéfica"),
     ("club", "Club nocturno, contenido para adultos"), ("proveedor", "Proveedor de sustancias, contenido para adultos"),
@@ -76,7 +76,9 @@ ESQUEMAS = {
         c("adultos", "Solo con el contenido para adultos", "si_no", "Si se marca, el lugar solo existe con esa opción activada."),
         c("requiere", "Misión necesaria para que abra", "ref", ref="mision"),
         c("vehiculo", "Vehículo siempre aparcado en la puerta", "ref", ref="modelo"),
-        c("precio", "Precio", "entero", "De compra en casas y negocios; del billete o del vuelo en estaciones y helipuertos.", si=_es("casa", "negocio", "estacion", "helipuerto")),
+        c("precio", "Precio", "entero", "De compra en casas y negocios; del billete o del vuelo en estaciones y helipuertos.", si=_es("casa", "negocio", "estacion", "helipuerto", "aeropuerto")),
+        c("aerodromo", "Es un aeródromo, con pista corta", "si_no", "Con sí, es la pista pequeña de un pueblo: llegan y salen avionetas de línea, no aviones grandes, y solo se alquilan avionetas. "
+          "Con no, es un aeropuerto de ciudad.", si=_es("aeropuerto")),
         c("garaje", "Plazas de garaje", "entero", si=_es("casa")),
         c("ingresos", "Ingresos diarios", "entero", si=_es("negocio")),
         c("precio_noche", "Precio por noche", "entero", si=_es("hotel")),
@@ -104,6 +106,12 @@ ESQUEMAS = {
         c("tutorial", "Es un tutorial: mientras dura, la policía no acude", "si_no"),
         c("si_clave", "Solo aparece si se tomó la decisión", ayuda="Vacío, la misión aparece siempre. Si escribes el nombre de una decisión, solo aparece cuando se eligió la opción que indiques debajo. Sirve para que la historia se bifurque."),
         c("si_opcion", "Número de la opción elegida", "entero", "La primera opción es la 1.", minimo=1, maximo=4, defecto=1),
+        c("requiere_alguna", "Y al menos una de cada grupo", ayuda="Para misiones que llegan después de una bifurcación. Escribe los identificadores de las misiones de cada rama separados por espacios, "
+          "y los grupos separados por punto y coma. Por ejemplo: fd2 fd3 fd4; vd2 vd3. La misión aparece cuando se ha completado al menos una de cada grupo."),
+        c("si_cruce", "Solo aparece si se cruzan estas decisiones", ayuda="Mira varias decisiones a la vez, aunque sean de historias distintas. Escribe cada una como nombre de la decisión, dos puntos y número de opción, "
+          "separadas por comas. Por ejemplo: concejal:1, trono:3. Sin más, hacen falta todas."),
+        c("si_cruce_min", "Cuántas de ellas hacen falta como mínimo", "entero", "Vacío, todas. Con un número, basta con que se cumplan esas.", minimo=0, si=lambda d: d.get("si_cruce")),
+        c("si_cruce_max", "Y cuántas como máximo", "entero", "Vacío, sin tope. Con cero, la misión aparece solo si no se cumple ninguna.", minimo=0, si=lambda d: d.get("si_cruce")),
         c("final_titulo", "Nombre de este final", ayuda="Cómo se apunta en el diario. Por ejemplo: Final honrado. Si lo dejas vacío, se usa el título de la misión."),
         c("final", "Texto del final de la historia", "largo", "Si lo rellenas, al completar esta misión se dice este texto como final y queda apuntado en el diario. Con varias misiones así, cada una tras una decisión distinta, la historia tiene varios finales."),
         c("adultos", "Solo con el contenido para adultos", "si_no"),
@@ -119,6 +127,10 @@ ESQUEMAS = {
         c("si_clave", "Solo si se tomó la decisión", ayuda="Vacío, el paso vale siempre. Si escribes el nombre de una decisión, este paso solo se juega cuando se eligió la opción que indiques debajo.",
           si=lambda d: d.get("tipo") != "decision"),
         c("si_opcion", "Número de la opción elegida", "entero", "La primera opción es la 1.", si=lambda d: d.get("tipo") != "decision" and d.get("si_clave"), minimo=1, maximo=4, defecto=1),
+        c("si_cruce", "Solo si se cruzan estas decisiones", ayuda="Como en la misión: varias decisiones a la vez, cada una como nombre, dos puntos y número de opción, separadas por comas. "
+          "Por ejemplo: concejal:2, cooperativa:2. Sirve para que una rama de la historia recuerde lo que decidiste en otra.", si=lambda d: d.get("tipo") != "decision"),
+        c("si_cruce_min", "Cuántas hacen falta como mínimo", "entero", "Vacío, todas.", minimo=0, si=lambda d: d.get("tipo") != "decision" and d.get("si_cruce")),
+        c("si_cruce_max", "Y cuántas como máximo", "entero", "Vacío, sin tope.", minimo=0, si=lambda d: d.get("tipo") != "decision" and d.get("si_cruce")),
         c("lineas", "Frases del diálogo", "lista", sub="linea", como_pares=("quien", "texto"), si=_es("dialogo")),
         c("lugar", "Lugar", "ref", ref="lugar", si=_es("ir", "robar", "entregar", "eliminar", "recoger", "perseguir", "seguir", "escoltar", "sigilo", "vigilar", "carrera")),
         c("limite", "Tiempo límite en segundos", "entero", "Vacío, sin límite.", si=lambda d: d.get("tipo") not in ("dialogo", "dar", "decision")),
@@ -264,7 +276,12 @@ ESQUEMAS = {
         c("vias", "Recorrido de las vías del tranvía", "lista", "Los cruces por los que pasan las vías, en orden. Basta con poner los cruces donde giran: entre uno y el siguiente, "
           "las vías van primero por la calle y luego por la avenida. Después del último vuelven al primero. Cada parada para en el punto de las vías que le queda más cerca. "
           "Si lo dejas vacío, el juego tiende las vías por el cruce más cercano a cada parada.", sub="cruce_via", como_pares=("a", "b"), si=lambda d: d.get("tipo") == "ciudad", grupo="Transporte"),
-        c("transporte", "Poner el transporte público que falte", "si_no", "Con sí, si la localidad no trae paradas de tranvía, estación de tren o aeropuerto, el juego se los pone al cargarla. "
+        c("tren_eje", "La vía del tren va por", "opcion", "La vía del tren cruza la localidad de lado a lado, en línea recta, y pasa por la estación. Por ella pasan trenes que se oyen venir. "
+          "Si lo dejas sin valor, va por la calle o la avenida que pasa por delante de la estación de tren. Sin estación no hay vía.",
+          ops=[("H", "Una calle, de oeste a este"), ("V", "Una avenida, de sur a norte")], si=lambda d: d.get("tipo") != "mar", grupo="Transporte"),
+        c("tren_n", "Número de esa calle o avenida, empezando en cero", "entero", "Las calles se cuentan desde el sur y las avenidas desde el oeste.", minimo=0,
+          si=lambda d: d.get("tipo") != "mar", grupo="Transporte"),
+        c("transporte", "Poner el transporte público que falte", "si_no", "Con sí, si la localidad no trae paradas de tranvía, estación de tren, aeropuerto o aeródromo, el juego se los pone al cargarla. "
           "Con no, la localidad tiene solo lo que tú le pongas.", defecto=True, si=lambda d: d.get("tipo") != "mar", grupo="Transporte"),
         c("lugares", "Lugares incluidos en el propio mapa", "lista", "También puedes crearlos en la sección Lugares eligiendo esta localidad.", sub="lugar", grupo="Vida"),
     ]},

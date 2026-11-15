@@ -22,20 +22,61 @@ def paso_seguro(pasos, k):
     return not pendiente
 
 
+def pares_cruce(valor):
+    """«concejal:1, trono:3», o una lista de eso, como pares (decisión, opción). Lo que no se entienda, se salta."""
+    if not valor:
+        return []
+    trozos = valor.replace(";", ",").split(",") if isinstance(valor, str) else list(valor)
+    pares = []
+    for t in trozos:
+        try:
+            c, o = str(t).split(":")
+            if c.strip():
+                pares.append((c.strip(), int(o)))
+        except ValueError:
+            continue
+    return pares
+
+
+def grupos_alguna(valor):
+    """«fd2 fd3 fd4; vd2 vd3», o una lista de listas: de cada grupo hay que haber completado al menos una misión."""
+    if not valor:
+        return []
+    if isinstance(valor, str):
+        return [g.split() for g in valor.split(";") if g.split()]
+    return [g.split() if isinstance(g, str) else list(g) for g in valor if g]
+
+
 class Misiones:
     def misiones_disponibles(self):
         hechas = set(self.completadas)
         return [m for m in self.datos["misiones"]
                 if m["id"] not in hechas and (self.cfg["adultos"] or not m.get("adultos")) and all(r in hechas for r in m.get("requiere", []))
+                and all(any(r in hechas for r in grupo) for grupo in grupos_alguna(m.get("requiere_alguna")))
                 and m.get("lugar") in self.lugares and self.cumple_decision(m)]
 
     def cumple_decision(self, cosa):
-        """¿Vale esta misión o este paso con lo que has decidido? Sin condición, siempre."""
+        """¿Vale esta misión o este paso con lo que has decidido? Sin condición, siempre.
+
+        `si_clave` y `si_opcion` miran una decisión. `si_cruce` mira varias a la vez, de ramas distintas: es una lista de
+        «decisión:opción», y vale cuando se cumplen todas, o entre `si_cruce_min` y `si_cruce_max` de ellas."""
         clave = cosa.get("si_clave")
-        if not clave:
-            return True
-        hecho = self.decisiones.get(clave)
-        return isinstance(hecho, dict) and hecho.get("opcion") == int(cosa.get("si_opcion", 1))
+        if clave:
+            hecho = self.decisiones.get(clave)
+            if not (isinstance(hecho, dict) and hecho.get("opcion") == int(cosa.get("si_opcion", 1))):
+                return False
+        pares = pares_cruce(cosa.get("si_cruce"))
+        if pares:
+            n = sum(1 for c, o in pares if isinstance(self.decisiones.get(c), dict) and self.decisiones[c].get("opcion") == o)
+            minimo = cosa.get("si_cruce_min")
+            maximo = cosa.get("si_cruce_max")
+            if minimo is None and maximo is None:
+                minimo = len(pares)                              # sin más, hacen falta todas
+            if minimo is not None and n < int(minimo):
+                return False
+            if maximo is not None and n > int(maximo):
+                return False
+        return True
 
     def rentas_decisiones(self):
         """Cada medianoche: lo que te dejan, o te cuestan, las decisiones que tomaste en la historia."""

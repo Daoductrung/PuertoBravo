@@ -35,6 +35,21 @@
    "lado": "S",
    "pos": 45,
    "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."
+  },
+  {
+   "id": "penas_altas_aerodromo",
+   "nombre": "Aeródromo de Peñas Altas",
+   "tipo": "aeropuerto",
+   "mapa": "penas_altas",
+   "bloque": [
+    0,
+    2
+   ],
+   "lado": "N",
+   "pos": 45,
+   "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas.",
+   "precio": 120,
+   "aerodromo": true
   }
  ],
  "misiones": [
@@ -664,6 +679,8 @@
      230
     ]
    ],
+   "tren_eje": "H",
+   "tren_n": 0,
    "lugares": [
     {
      "id": "pa_salida",

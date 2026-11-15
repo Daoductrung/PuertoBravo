@@ -33,7 +33,10 @@
     {"id": "vs_salida_norte", "nombre": "Salida norte, carretera de Monteferro", "tipo": "salida", "bloque": [1, 2], "lado": "N", "pos": 36, "a_mapa": "monteferro", "a_lugar": "mf_salida_sur", "km": 30, "horas": 0.7, "desc": "La carretera de montaña que sube a la ciudad minera de Monteferro."},
     {"id": "vs_panaderia", "nombre": "Horno de la Tía Paca", "tipo": "comida", "bloque": [0, 1], "lado": "S", "pos": 36, "desc": "Pan de leña y empanadas recién hechas."},
     {"id": "vs_cultivo", "nombre": "Invernadero del Tío Lucas", "tipo": "proveedor", "bloque": [2, 2], "xy": [20, 20], "adultos": true, "factor": {"hierba": 0.5, "polvo": 1.5, "pastillas": 1.4, "cristal": 1.5}, "desc": "Un invernadero entre los olivos. Lo que cultiva el tío Lucas no son tomates."},
-    {"id": "villaseca_tren", "nombre": "Estación de tren de Villaseca", "tipo": "tren", "bloque": [0, 0], "lado": "S", "pos": 45, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."}
+    {"id": "villaseca_tren", "nombre": "Estación de tren de Villaseca", "tipo": "tren", "bloque": [0, 0], "lado": "S", "pos": 45, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
+    {"id": "villaseca_aerodromo", "nombre": "Aeródromo de Villaseca", "tipo": "aeropuerto", "aerodromo": true, "bloque": [2, 0], "lado": "S", "pos": 45, "precio": 120, "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas."}
   ],
+  "tren_eje": "H",
+  "tren_n": 0,
   "casetes": [[40, 230], [230, 50], [240, 235]]
 }

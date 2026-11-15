@@ -27,7 +27,8 @@ def test_cada_localidad_tiene_su_transporte(robot):
         por_tierra = "salida" in tipos and m.tipo != "mar"
         ciudad = m.tipo == "ciudad"
         assert (tipos.count("tren") == 1) == por_tierra, m.id                 # estación de tren donde se llega por tierra
-        assert (tipos.count("aeropuerto") == 1) == ciudad, m.id               # aeropuerto en las ciudades
+        assert (tipos.count("aeropuerto") == 1) == (ciudad or por_tierra), m.id          # aeropuerto en las ciudades y aeródromo en los pueblos
+        assert all(bool(l.get("aerodromo")) != ciudad for l in m.lugares.values() if l.tipo == "aeropuerto"), m.id
         paradas = [l for l in m.lugares.values() if l.tipo == "tranvia"]
         assert (len(paradas) >= len(m.barrios)) == ciudad and (ciudad or not paradas), m.id
         if ciudad:

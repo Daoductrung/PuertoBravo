@@ -64,6 +64,8 @@
     {"id": "monteferro_tren", "nombre": "Estación de tren de Monteferro", "tipo": "tren", "bloque": [3, 2], "lado": "N", "pos": 62, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
     {"id": "monteferro_aeropuerto", "nombre": "Aeropuerto de Monteferro", "tipo": "aeropuerto", "bloque": [0, 4], "lado": "N", "pos": 45, "precio": 180, "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."}
   ],
+  "tren_eje": "H",
+  "tren_n": 3,
   "vias": [[1, 0], [6, 0], [6, 3], [4, 3], [6, 3], [6, 5], [3, 5], [3, 3], [1, 3]],
   "casetes": [[45, 45], [230, 320], [405, 130], [500, 400], [135, 225]]
 }

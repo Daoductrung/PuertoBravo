@@ -21,11 +21,11 @@ TIPOS = ("tranvia", "tren", "aeropuerto")
 
 
 def completar(mapa, lugares_fuera=()):
-    """Completa el diccionario de un mapa. Devuelve (lugares nuevos, vías) sin escribir nada.
+    """Completa el diccionario de un mapa. Devuelve (lugares nuevos, vías, vía del tren) sin escribir nada.
 
     `lugares_fuera` son los lugares de ese mapa que el archivo guarda aparte (así los guardan los mods)."""
     if mapa.get("tipo") == "mar" or "avenidas" not in mapa:
-        return [], None
+        return [], None, None
     c = dict(mapa)
     c["lugares"] = [dict(l) for l in mapa.get("lugares", [])] + [dict(l) for l in lugares_fuera]
     antes = {l["id"] for l in c["lugares"]}
@@ -33,7 +33,8 @@ def completar(mapa, lugares_fuera=()):
     nuevos = [l for l in c["lugares"] if l["id"] not in antes]
     m = M.Mundo(c)
     vias = m.esquinas_de_las_vias() if m.via_nodos else None
-    return nuevos, (vias if not mapa.get("vias") else None)
+    tren = (m.tren_eje, m.tren_n) if m.tren_eje and mapa.get("tren_eje") not in ("H", "V") else None
+    return nuevos, (vias if not mapa.get("vias") else None), tren
 
 
 def _linea(l):
@@ -44,8 +45,8 @@ def escribir_en_archivo(ruta):
     """Añade a un archivo de mapa del juego base, sin cambiarle el formato, lo que le falte."""
     texto = open(ruta, encoding="utf-8").read()
     mapa = json.loads(texto)
-    nuevos, vias = completar(mapa)
-    if not nuevos and vias is None:
+    nuevos, vias, tren = completar(mapa)
+    if not nuevos and vias is None and tren is None:
         return 0, False
     if nuevos:
         ini = texto.index('"lugares": [')
@@ -55,6 +56,10 @@ def escribir_en_archivo(ruta):
         ini = texto.index('"lugares": [')
         fin = texto.index("\n  ]", ini) + len("\n  ]")
         texto = texto[:fin] + ",\n  \"vias\": " + json.dumps(vias) + texto[fin:]
+    if tren is not None:
+        ini = texto.index('"lugares": [')
+        fin = texto.index("\n  ]", ini) + len("\n  ]")
+        texto = texto[:fin] + f",\n  \"tren_eje\": \"{tren[0]}\",\n  \"tren_n\": {tren[1]}" + texto[fin:]
     json.loads(texto)                                           # tiene que seguir siendo un JSON válido
     with open(ruta, "w", encoding="utf-8", newline="\n") as f:
         f.write(texto)
@@ -66,7 +71,9 @@ def completar_mod(crudo):
     total = 0
     for mapa in crudo.get("mapas", []):
         fuera = [l for l in crudo.get("lugares", []) if l.get("mapa") == mapa.get("id")]
-        nuevos, vias = completar(mapa, fuera)
+        nuevos, vias, tren = completar(mapa, fuera)
+        if tren is not None:
+            mapa["tren_eje"], mapa["tren_n"] = tren
         for l in nuevos:
             l["mapa"] = mapa["id"]
             crudo.setdefault("lugares", []).append(l)

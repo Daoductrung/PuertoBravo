@@ -2806,6 +2806,8 @@
      5
     ]
    ],
+   "tren_eje": "H",
+   "tren_n": 3,
    "lugares": [
     {
      "id": "oc_embarcadero",

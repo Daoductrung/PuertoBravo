@@ -115,6 +115,14 @@ li { margin-bottom: .3em; }
 <li>Perseguir: alcanzar a un vehículo que huye.</li>
 </ul>
 <p>En los textos puedes escribir Dani: el juego lo cambia por el nombre del personaje que haya elegido quien juega.</p>
+<h3>Historias que se cruzan</h3>
+<p>Una decisión abre una rama: con Solo aparece si se tomó la decisión, una misión o un paso valen solo para quien eligió una opción. Para que una rama recuerde lo decidido en otra, o para juntar varias, hay tres campos más, en las misiones y en los pasos:</p>
+<ul>
+<li>Solo aparece si se cruzan estas decisiones: varias decisiones a la vez, cada una como su nombre, dos puntos y el número de opción, separadas por comas. Por ejemplo, concejal:1, trono:3. Sin más, hacen falta todas.</li>
+<li>Cuántas de ellas hacen falta como mínimo, y cuántas como máximo: para contar. Con una lista de las opciones honradas, un mínimo de tres es el final de quien lo hizo todo bien, un máximo de cero el de quien no hizo bien nada, y de uno a dos, el de en medio.</li>
+<li>En las misiones, Y al menos una de cada grupo: para una misión que llega después de una bifurcación. Se escriben las misiones de cada rama separadas por espacios, y los grupos por punto y coma: fd2 fd3 fd4; vd2 vd3. Aparece cuando se ha completado una de cada grupo.</li>
+</ul>
+<p>Un paso de diálogo con una de estas condiciones, puesto al final de una misión, es la forma más sencilla de que un personaje comente lo que el jugador hizo en otra historia. Si esa decisión no se ha tomado todavía, el paso se salta.</p>
 <p>Quien juega puede ser hombre o mujer. Cuando una frase cambie según a quién se le diga, escribe las dos formas entre corchetes, primero la masculina y después la femenina, separadas por una barra vertical. El juego deja solo la que corresponde:</p>
 <ul>
 <li>Bienvenid[o|a] al pueblo: bienvenido o bienvenida.</li>
@@ -142,6 +150,8 @@ li { margin-bottom: .3em; }
 <ul>
 <li>Cada parada, estación y aeropuerto es un lugar, con su tipo: Parada de tranvía, Estación de tren o Aeropuerto. Puedes cambiarle el nombre, la descripción, la manzana, la fachada y la posición, o borrarlo.</li>
 <li>Cada parada tiene además su Orden en la línea de tranvía: el tranvía las recorre de menor a mayor y vuelve a la primera.</li>
+<li>Un aeropuerto puede ser un aeródromo: marca Es un aeródromo, con pista corta. A los aeródromos llegan avionetas de línea, no aviones grandes, y en ellos solo se alquilan avionetas. Es lo propio de un pueblo.</li>
+<li>La localidad tiene los campos La vía del tren va por, y Número de esa calle o avenida. La vía del tren cruza la localidad de lado a lado, en línea recta: por una calle, de oeste a este, o por una avenida, de sur a norte. Por ella pasan los trenes, que paran en la estación. Si los dejas sin valor, la vía va por delante de la estación de tren. Sin estación de tren no hay vía.</li>
 <li>La localidad tiene el campo Recorrido de las vías del tranvía: la lista de cruces por los que pasan, en orden. Basta con poner los cruces donde giran. Cada parada para en el punto de las vías que le queda más cerca.</li>
 <li>La localidad tiene también el campo Poner el transporte público que falte. Con sí, si a tu localidad le falta alguna de estas cosas, el juego se la pone al cargarla: paradas en todos los barrios y aeropuerto si es una ciudad, y estación de tren si tiene una salida por carretera. Con no, tiene solo lo que tú le pongas.</li>
 </ul>

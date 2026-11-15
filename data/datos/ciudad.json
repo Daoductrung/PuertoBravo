@@ -140,6 +140,8 @@
     {"id": "puerto_bravo_tren", "nombre": "Estación de tren de Puerto Bravo", "tipo": "tren", "bloque": [3, 3], "lado": "S", "pos": 45, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
     {"id": "puerto_bravo_aeropuerto", "nombre": "Aeropuerto de Puerto Bravo", "tipo": "aeropuerto", "bloque": [9, 0], "lado": "S", "pos": 45, "precio": 180, "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."}
   ],
+  "tren_eje": "H",
+  "tren_n": 3,
   "vias": [[1, 0], [4, 0], [4, 2], [6, 2], [6, 0], [8, 0], [8, 2], [10, 2], [10, 5], [7, 5], [10, 5], [10, 8], [4, 8], [5, 8], [5, 5], [1, 5]],
   "casetes": [[40, 200], [130, 20], [395, 40], [520, 110], [760, 30], [880, 150], [230, 310], [60, 390], [495, 215], [640, 330], [850, 240], [770, 400], [120, 500], [300, 660], [45, 700], [405, 590], [490, 680], [600, 500], [800, 590], [860, 680], [705, 465], [315, 420], [585, 610], [870, 30]]
 }

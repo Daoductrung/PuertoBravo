@@ -110,6 +110,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.lento = False              # tiempo lento en marcha
         self.cubierto = None            # el punto donde estás a cubierto, o None
         self.tranvias = []              # los tranvías que circulan por la localidad actual
+        self.tren = None                # el tren que cruza ahora la localidad, si pasa alguno
         self._sonidos_transporte = []
         self._transporte_mapa = None
         self.t_tren = 40.0              # cuánto falta para que se oiga un tren en la estación
@@ -1374,7 +1375,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.dist_paso >= (1.5 if correr else 0.85):
             self.dist_paso = 0.0
             self.pie ^= 1
-            s = "via" if self.mundo.tipo != "mar" and self.mundo.en_via(j.x, j.y) else self.mundo.superficie(j.x, j.y)      # sobre las vías se pisa distinto
+            s = "via" if self.mundo.tipo != "mar" and self.mundo.sobre_vias(j.x, j.y) else self.mundo.superficie(j.x, j.y)      # sobre las vías se pisa distinto
             nombre = f"paso_{s}{self.pie}"
             if nombre not in self.mez.sonidos:
                 nombre = f"paso_acera{self.pie}"
@@ -1614,8 +1615,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                     self.son("cruce", cat="interfaz", vol=0.6)
                     self.decir(self.mundo.describir(x, y) + ".")
         s = self.mundo.superficie(x, y)
-        if not j.veh and self.mundo.tipo != "mar" and self.mundo.en_via(x, y):
-            s = "via"                                           # a pie se avisa al pisar las vías del tranvía, como con la acera o la calzada
+        if not j.veh and self.mundo.tipo != "mar":
+            s = self.mundo.sobre_vias(x, y) or s                # a pie se avisa al pisar las vías, del tranvía o del tren, como con la acera o la calzada
         if s != self.sup_act:
             if self.cfg["anunciar_superficie"] and not j.veh and self.sup_act is not None:
                 self.decir(M.SUPERFICIE_TXT[s].capitalize() + ".")

@@ -20,7 +20,7 @@ APARCA = 6.7       # distancia del eje a la que se aparca (pegado al bordillo, f
 DIRS = [(0, 1), (1, 0), (0, -1), (-1, 0)]       # norte, este, sur, oeste
 NOMBRE_DIR = ["norte", "este", "sur", "oeste"]
 CARDINAL8 = ["norte", "noreste", "este", "sureste", "sur", "suroeste", "oeste", "noroeste"]
-SUPERFICIE_TXT = {"via": "vías del tranvía", "calzada": "calzada", "acera": "acera", "hierba": "césped", "arena": "arena",
+SUPERFICIE_TXT = {"via": "vías del tranvía", "via_tren": "vías del tren", "calzada": "calzada", "acera": "acera", "hierba": "césped", "arena": "arena",
                   "plaza": "plaza", "muelle": "muelle", "pared": "pared", "fuera": "límite de la ciudad"}
 
 
@@ -231,7 +231,8 @@ def completar_transporte(c):
 
     - en las ciudades, paradas de tranvía repartidas por todos los barrios, para moverse dentro de la ciudad;
     - en las localidades a las que se llega por carretera, una estación de tren, para ir a otras localidades;
-    - en las ciudades, un aeropuerto en las afueras, para los trayectos largos.
+    - en las ciudades, un aeropuerto en las afueras, para los trayectos largos;
+    - en los pueblos a los que se llega por carretera, un aeródromo: una pista corta a la que llegan avionetas.
 
     Un mod puede poner sus propias paradas, su estación o su aeropuerto con esos tipos de lugar: entonces no se añade nada
     de ese tipo. Y puede quitarlo todo con "transporte": false en el mapa.
@@ -276,6 +277,13 @@ def completar_transporte(c):
         lugares.append({"id": f"{mid}_aeropuerto", "nombre": f"Aeropuerto de {c['nombre']}", "tipo": "aeropuerto", "bloque": list(bloque), "lado": lado,
                         "pos": _hueco(lugares, bloque, lado, 45), "precio": 180,
                         "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."})
+    if not ciudad and por_tierra and "aeropuerto" not in tipos:
+        esquinas = [(0, 0), (nx - 1, 0), (0, ny - 1), (nx - 1, ny - 1)]
+        bloque = min(esquinas, key=lambda e: sum(1 for l in lugares if tuple(l.get("bloque", (-1, -1))) == e))
+        lado = "S" if bloque[1] == 0 else "N"
+        lugares.append({"id": f"{mid}_aerodromo", "nombre": f"Aeródromo de {c['nombre']}", "tipo": "aeropuerto", "aerodromo": True, "bloque": list(bloque), "lado": lado,
+                        "pos": _hueco(lugares, bloque, lado, 45), "precio": 120,
+                        "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas."})
 
 
 def crear_mapas(datos):
@@ -330,6 +338,7 @@ class Mundo:
                 pass
         self.lugares_todos = dict(self.lugares)
         self._tender_vias()
+        self._tender_tren(c)
         self.casetes = [self.punto_libre(x, y) for x, y in c.get("casetes", [])]
         self.aparcados = self._generar_aparcados() if c.get("aparcados", True) else []
 
@@ -398,6 +407,50 @@ class Mundo:
         for l in linea:
             self._via_de_parada[l.id] = cum[min(indice.get(l.id, 0), len(self.via_ruta) - 1)]
         self.via_marcas = sorted(set(self._via_de_parada.values()))
+
+    # ------------------------------------------------------------------ vía del tren
+    def _tender_tren(self, c):
+        """La vía del tren cruza la localidad de lado a lado, en línea recta, por la calle o la avenida de la estación.
+
+        El mapa puede decir por dónde va con `tren_eje` ("H", por una calle, de oeste a este; "V", por una avenida, de sur
+        a norte) y `tren_n` (el número de esa calle o avenida, empezando en cero). Si no lo dice, va por la que pasa por
+        delante de la estación. Sin estación de tren no hay vía.
+        """
+        self.tren_eje, self.tren_n, self.tren_largo, self.tren_parada = None, 0, 0.0, 0.0
+        est = next((l for l in self.lugares_todos.values() if l.tipo == "tren"), None)
+        if est is None:
+            return
+        eje, n = c.get("tren_eje"), c.get("tren_n")
+        if eje not in ("H", "V") or not isinstance(n, int) or isinstance(n, bool) or not (0 <= n < (self.NY if eje == "H" else self.NX)):
+            j, i = self._idx(est.y, self.NY), self._idx(est.x, self.NX)
+            eje, n = ("H", j) if abs(est.y - j * B) <= abs(est.x - i * B) else ("V", i)      # la que pasa por delante de la estación
+        self.tren_eje, self.tren_n = eje, n
+        self.tren_largo = float(self.ancho if eje == "H" else self.alto)
+        self.tren_parada = max(0.0, min(self.tren_largo, est.x if eje == "H" else est.y))
+
+    def tren_punto(self, s):
+        """El punto de la vía del tren que está a s metros de su principio (el oeste o el sur). Vale fuera del mapa: el tren viene de lejos."""
+        return (s, self.tren_n * B) if self.tren_eje == "H" else (self.tren_n * B, s)
+
+    def en_via_tren(self, x, y):
+        """¿Está el punto sobre la vía del tren? Como la del tranvía, va por el centro de la calzada."""
+        if self.tren_eje == "H":
+            return abs(y - self.tren_n * B) <= 1.6 and -1.0 <= x <= self.ancho + 1.0
+        if self.tren_eje == "V":
+            return abs(x - self.tren_n * B) <= 1.6 and -1.0 <= y <= self.alto + 1.0
+        return False
+
+    def tren_donde(self):
+        """Por dónde va la vía del tren, dicho con palabras."""
+        if self.tren_eje is None:
+            return ""
+        return f"{self.calles[self.tren_n]}, de oeste a este" if self.tren_eje == "H" else f"{self.avenidas[self.tren_n]}, de sur a norte"
+
+    def sobre_vias(self, x, y):
+        """Qué vías pisa ese punto: "via" (tranvía), "via_tren" o None."""
+        if self.en_via(x, y):
+            return "via"
+        return "via_tren" if self.en_via_tren(x, y) else None
 
     def esquinas_de_las_vias(self):
         """El circuito resumido en los cruces donde gira: es lo que se guarda en el mapa y lo que se edita."""
