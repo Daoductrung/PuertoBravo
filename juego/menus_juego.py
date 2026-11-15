@@ -226,7 +226,13 @@ def opciones_teclado(app):
         app.decir("Teclas originales restablecidas.", True)
 
     def ops():
-        lista = [Opcion(lambda: f"Teclas cambiadas: {len(teclado.cambios(cfg))}. Las teclas solo cambian jugando; en los menús son las de siempre")]
+        def en_menus(_d=1):
+            cfg["teclas_menus"] = not cfg["teclas_menus"]
+            cfg.guardar()
+        lista = [Opcion(lambda: f"Teclas cambiadas: {len(teclado.cambios(cfg))}"),
+                 Opcion(lambda: f"Usar también las teclas cambiadas en los menús y los diálogos: {'sí' if cfg['teclas_menus'] else 'no'}", ajuste=en_menus,
+                        ayuda="Con sí, si has puesto el movimiento en otras teclas, los menús también se recorren con ellas. Sirve, por ejemplo, si tu lector de pantalla se queda con las flechas. "
+                              "Al escribir un texto las teclas son siempre las normales. Si te lías, Restablecer las teclas originales lo deja todo como estaba.")]
         for k, ctx, que in teclado.funciones():
             actual = teclado.tecla_de(cfg, k)
             marca = f", ahora con {teclado.nombre(actual)}" if actual != k else ""
@@ -235,7 +241,7 @@ def opciones_teclado(app):
         lista.append(Opcion("Restablecer las teclas originales", restablecer))
         return lista
     app.abrir(Menu(app, "Teclado: cambiar las teclas", ops, al_cerrar=cfg.guardar,
-                   intro="Elige una función y pulsa Intro. No se pueden cambiar Escape, Intro, F1, F12 ni las teclas de mayúsculas, control y alt"))
+                   intro="Elige una función y pulsa Intro. No se pueden cambiar Escape, Intro, F1, F12, la Mayúsculas derecha ni las teclas de control y alt"))
 
 
 def ayuda_teclas(app, contexto):
@@ -372,6 +378,10 @@ def opciones(app):
                    ayuda="El motor envolvente usa sonido binaural: con auriculares se distingue si algo suena delante o detrás, y no solo a izquierda o derecha. "
                          "Además mezcla el sonido fuera del programa, así que no da tirones cuando hay muchos sonidos a la vez. El clásico es el de siempre. "
                          "El cambio se aplica al cerrar y volver a abrir el juego. En ordenadores con procesador antiguo, y con el sonido mono activado, se usa siempre el clásico."),
+            si_no("eco_lugares", "Eco según el lugar, solo con el motor envolvente",
+                  "Con el motor envolvente, los sonidos del mundo llevan el eco del sitio donde estás: poco en el campo y en la playa, algo en la calle, más entre naves, largo en la montaña y corto y cercano dentro de un local. "
+                  "Además, lo que vuela suena por encima, y si vuelas tú, la ciudad suena por debajo. Con el motor clásico esta opción no hace nada.",
+                  al_cambiar=app.aplicar_volumenes),
             si_no("sonido_mono", "Sonido mono, lo mismo por los dos oídos",
                   "Para quien oye por un solo oído o usa un solo auricular. Se pierde la sensación de izquierda y derecha: oriéntate con el radar, el escáner y el GPS hablado.",
                   al_cambiar=app.aplicar_volumenes),
@@ -743,6 +753,9 @@ def lugar(p, l):
     f(p, l)
     if app.pila and app.pila[-1] is p:
         p.salir_interior(silencio=True)
+    elif not en_coche and app.pila and isinstance(app.pila[-1], Menu):
+        from . import sistemas
+        sistemas.con_recorrido(p, l, app.pila[-1], Opcion)
 
 
 def _menu_lugar(p, l, ops, intro=None):

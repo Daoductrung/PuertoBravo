@@ -1141,6 +1141,110 @@
    "recompensa": {
     "dinero": 700
    }
+  },
+  {
+   "id": "eo5",
+   "titulo": "Quién recoge los sobres",
+   "capitulo": 11,
+   "contacto": "La redactora",
+   "lugar": "periodico",
+   "requiere": [
+    "eo4"
+   ],
+   "resumen": "Alguien sigue cobrando por el prestamista en la terminal del ferry. La redactora quiere saber quién.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "El prestamista está en boca de todos, pero alguien sigue cobrando por él. Me dicen que los sobres se entregan en la terminal del ferry."
+      ],
+      [
+       "La redactora",
+       "No entres. Quédate cerca, sin moverte mucho, y escucha quién entra y quién sale. De vez en cuando sale uno a mirar: cuando oigas pasos que se acercan, quieto o agachado."
+      ]
+     ]
+    },
+    {
+     "tipo": "vigilar",
+     "lugar": "ferry",
+     "segundos": 50,
+     "radio": 25,
+     "resultado": "Has contado tres entregas. Los tres sobres se los ha llevado el mismo hombre, y ha subido a un coche del ayuntamiento.",
+     "texto": "Ve a la terminal del ferry y vigílala desde cerca, sin que te vean. Cuando oigas pasos que se acercan, quédate quieto o agáchate con la X."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Un coche del ayuntamiento. Esto ya no es un prestamista de barrio: es otra cosa. Buen trabajo, Dani."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 800
+   }
+  },
+  {
+   "id": "eo6",
+   "titulo": "La apuesta del Polígono",
+   "capitulo": 11,
+   "contacto": "La redactora",
+   "lugar": "periodico",
+   "requiere": [
+    "eo5"
+   ],
+   "resumen": "El chófer del coche oficial corre por dinero en el Polígono. Si le ganas, hablará.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "El que conducía ese coche se llama Rubio, y se juega el sueldo corriendo en la Recta del Polígono. Dice que solo habla con quien le gane."
+      ],
+      [
+       "La redactora",
+       "Preséntate allí con un coche. Salís tres. Los motores de los otros dos se oyen: sabrás si los llevas delante o detrás."
+      ]
+     ]
+    },
+    {
+     "tipo": "carrera",
+     "lugar": "recta",
+     "puntos": [
+      "desguace",
+      "gasolinera",
+      "fabrica"
+     ],
+     "rivales": 2,
+     "velocidad": 9,
+     "texto": "Ve con un vehículo a la Recta del Polígono y detente en la salida. Luego, gana la carrera: desguace, gasolinera y fábrica abandonada."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Rubio llega cuando tú ya has apagado el motor. Se quita los guantes despacio."
+      ],
+      [
+       "Rubio",
+       "Vale. Me has ganado. Los sobres van al despacho del concejal de obras. Y yo no te he dicho nada."
+      ],
+      [
+       "La redactora",
+       "El concejal de obras. Con esto abro el periódico del lunes."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1200
+   }
   }
  ]
 }

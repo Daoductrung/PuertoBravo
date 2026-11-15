@@ -1475,6 +1475,348 @@
    ],
    "recompensa": {
     "dinero": 50
+   },
+   "tutorial": true
+  },
+  {
+   "id": "tut02",
+   "titulo": "Aprende a defenderte",
+   "capitulo": 0,
+   "contacto": "Tutorial",
+   "lugar": "club_tiro",
+   "requiere": [],
+   "tutorial": true,
+   "resumen": "Tutorial jugable de combate: fijar un objetivo, golpear, disparar y recargar, contra muñecos que no se defienden. No se puede fallar.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Tutorial de combate. Estás en el club de tiro: aquí nadie te ataca y la policía no viene. Vas a practicar con muñecos."
+      ],
+      [
+       "Narrador",
+       "La tecla Q fija al enemigo más cercano y te dice dónde está. Oirás un tono que sale de él: grave y doble si lo tienes a tiro, agudo si está fuera de alcance."
+      ],
+      [
+       "Narrador",
+       "Espacio ataca al que tienes fijado. Con un arma de cuerpo a cuerpo tienes que acercarte hasta tenerlo al lado."
+      ],
+      [
+       "Narrador",
+       "Te doy un bate. Primer ejercicio: fija el muñeco con la Q, camina hacia donde suena el tono y, cuando cambie a grave, pulsa Espacio hasta tumbarlo."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "bate"
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "club_tiro",
+     "ya": true,
+     "enemigos": [
+      {
+       "tipo": "Muñeco de prácticas",
+       "n": 1,
+       "salud": 40,
+       "arma": "punos",
+       "inofensivo": true
+      }
+     ],
+     "texto": "Primer ejercicio: fija el muñeco con la Q, acércate y golpéalo con Espacio."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Bien. Ahora, armas de fuego. Te doy una pistola con balas de sobra."
+      ],
+      [
+       "Narrador",
+       "Con las armas de fuego no hace falta acercarse tanto, pero cuanto más cerca, más aciertas. La coma cambia al arma siguiente, y la tecla I abre la lista de tus armas."
+      ],
+      [
+       "Narrador",
+       "Cuando el cargador se vacía, la R recarga. La V te dice cuántas balas te quedan."
+      ],
+      [
+       "Narrador",
+       "En un tiroteo de verdad, medio segundo antes de dispararte el enemigo amartilla el arma: es el aviso para agacharte con la X. La Z usa un botiquín."
+      ],
+      [
+       "Narrador",
+       "Segundo ejercicio: hay dos dianas. Fija una con la Q, dispara con Espacio hasta que caiga, y luego la otra. Pulsar otra vez la Q pasa al siguiente objetivo."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "pistola",
+     "balas": 36
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "club_tiro",
+     "ya": true,
+     "enemigos": [
+      {
+       "tipo": "Diana de prácticas",
+       "n": 2,
+       "salud": 50,
+       "arma": "punos",
+       "inofensivo": true
+      }
+     ],
+     "texto": "Segundo ejercicio: tumba las dos dianas con la pistola. Q para fijar, Espacio para disparar, R para recargar."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Hecho. Ya sabes fijar, atacar, disparar y recargar."
+      ],
+      [
+       "Narrador",
+       "Recuerda: si disparas en la calle y alguien lo ve, la policía te buscará. Y si caes, despiertas en el hospital y pagas la cuenta."
+      ],
+      [
+       "Narrador",
+       "Puedes quedarte el bate y la pistola. En las armerías hay más, y una galería de tiro para seguir practicando."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 50
+   }
+  },
+  {
+   "id": "tut03",
+   "titulo": "Aprende a ganarte la vida",
+   "capitulo": 0,
+   "contacto": "Tutorial",
+   "lugar": "empleo_pb",
+   "requiere": [],
+   "tutorial": true,
+   "resumen": "Tutorial jugable de trabajos: cómo se empieza un trabajo con vehículo y un primer servicio de taxi de prueba. No se puede fallar.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Tutorial de trabajos. En Puerto Bravo hay muchas maneras de ganar dinero sin seguir la historia."
+      ],
+      [
+       "Narrador",
+       "Los trabajos con vehículo se empiezan todos igual: te subes al vehículo adecuado y pulsas la J. Un taxi para llevar clientes, una ambulancia, un autobús, un camión, una furgoneta de helados."
+      ],
+      [
+       "Narrador",
+       "Mientras trabajas, la tecla O te dice qué toca hacer, y el GPS te lleva. Para dejar el trabajo, pulsa otra vez la J."
+      ],
+      [
+       "Narrador",
+       "Vamos a hacer un servicio de prueba. Junto a la oficina hay un taxi abierto. Súbete con la F."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "lugar": "empleo_pb",
+     "modelo": "taxi",
+     "nombre": "el taxi de prácticas",
+     "abierto": true,
+     "texto": "Sube al taxi de prácticas que hay junto a la oficina de empleo. Acércate y pulsa F."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Estás en el taxi. En un servicio de verdad pulsarías la J y el juego te mandaría a recoger a un cliente."
+      ],
+      [
+       "Narrador",
+       "Ahora haz el recorrido de un servicio: lleva el taxi a la Parada de taxis del Centro. Conduce tú, o pulsa la Y para que el coche vaya solo."
+      ]
+     ]
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "parada_taxi",
+     "salud_min": 0,
+     "texto": "Lleva el taxi a la Parada de taxis del Centro. Con la Y, el coche va solo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Servicio hecho. En la parada de taxis puedes comprar tu propio taxi y trabajar cuando quieras."
+      ],
+      [
+       "Narrador",
+       "Otros trabajos no necesitan vehículo. En la Pizzería Vesubio se reparten pizzas. En las tabernas hay un tablón de encargos. En los gimnasios, combates de boxeo. En las armerías, galería de tiro."
+      ],
+      [
+       "Narrador",
+       "También puedes pescar, desde un espigón o en el mar con la P, y vender el pescado en la lonja. Y los negocios que compres te pagan cada medianoche."
+      ],
+      [
+       "Narrador",
+       "Y en esta oficina de empleo, y en las academias, está la vida honrada: empleos fijos con horario y cursos para ascender. Todo está también en el móvil, con la M."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 50
+   }
+  },
+  {
+   "id": "tut04",
+   "titulo": "Aprende a navegar",
+   "capitulo": 0,
+   "contacto": "Tutorial",
+   "lugar": "emb_puerto",
+   "requiere": [],
+   "tutorial": true,
+   "resumen": "Tutorial sobre el mar: cómo se zarpa, cómo se gobierna un barco, cómo se atraca y qué se puede hacer mar adentro.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Tutorial del mar. Estás en un embarcadero: de aquí se sale al Mar de Poniente."
+      ],
+      [
+       "Narrador",
+       "En el menú del embarcadero puedes alquilar una lancha, zarpar con un barco tuyo si lo tienes, o llevarte uno sin permiso. Al zarpar apareces en el mar, a bordo."
+      ],
+      [
+       "Narrador",
+       "Un barco no sigue carriles: se gobierna a mano. Flecha arriba acelera, flecha abajo frena y da marcha atrás, y las flechas izquierda y derecha giran el timón. La C te dice el rumbo."
+      ],
+      [
+       "Narrador",
+       "En el mar no hay calles, así que oriéntate con el GPS: pulsa L, elige un muelle o una boya, y sigue la baliza. El Tabulador te dice qué tienes alrededor: muelles, boyas y otros barcos."
+      ],
+      [
+       "Narrador",
+       "Para volver a tierra, acércate a un muelle, frena, y pulsa Intro para atracar. Cada muelle lleva a una localidad distinta."
+      ],
+      [
+       "Narrador",
+       "Mar adentro puedes pescar con la P, hacer mensajería con la J, correr la regata de la boya y bucear en el pecio en busca de tesoros."
+      ],
+      [
+       "Narrador",
+       "Ejercicio: camina hasta la Lonja de pescado, que es donde se vende lo que pesques. Así sabrás dónde está cuando vuelvas con la bodega llena."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "lonja",
+     "radio": 12,
+     "texto": "Ve a la Lonja de pescado. Pulsa L para marcarla en el GPS, o U para caminar solo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Esta es la lonja. Aquí y en las pescaderías te compran el pescado."
+      ],
+      [
+       "Narrador",
+       "Cuando quieras hacerte a la mar, vuelve al embarcadero y elige Alquilar una lancha. Buena travesía."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 50
+   }
+  },
+  {
+   "id": "tut05",
+   "titulo": "Aprende a jugar con amigos",
+   "capitulo": 0,
+   "contacto": "Tutorial",
+   "lugar": "casa_abuela",
+   "requiere": [
+    "tut01"
+   ],
+   "tutorial": true,
+   "resumen": "Tutorial sobre la partida con amigos: cómo abrir tu partida, cómo unirte a la de otro y qué se puede hacer juntos.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Tutorial de la partida con amigos. No hace falta ningún servidor: tu propio juego hace de servidor."
+      ],
+      [
+       "Narrador",
+       "Para invitar: abre el móvil con la M, entra en Jugar con amigos y elige Abrir mi partida a mis amigos. Si quieres, pon antes una contraseña."
+      ],
+      [
+       "Narrador",
+       "El juego te dice una dirección. En Cómo invitar a un amigo tienes dos: la de casa, para quien esté en tu misma red, y la de internet. Con Intro se copian, para pegarlas en un mensaje."
+      ],
+      [
+       "Narrador",
+       "Si tu amigo está en otra casa, hay que abrir un puerto en tu router. El manual lo explica paso a paso en el apartado Jugar con amigos."
+      ],
+      [
+       "Narrador",
+       "Para entrar en la partida de otro: móvil, Jugar con amigos, Unirme a la partida de un amigo. Pega la dirección con Control V y escribe la contraseña si tiene."
+      ],
+      [
+       "Narrador",
+       "Una vez juntos, en ese mismo menú ves quién está y dónde. Con Intro sobre un amigo lo marcas en el GPS o le mandas dinero. También podéis escribiros mensajes."
+      ],
+      [
+       "Narrador",
+       "Podéis hacer carreras con apuesta y repartos en equipo. Y a pie, junto al vehículo parado de un amigo, la F te sube de pasajero."
+      ],
+      [
+       "Narrador",
+       "Tres sonidos avisan: tres notas que suben cuando alguien entra, tres que bajan cuando se va, y dos agudas cuando llega un mensaje."
+      ],
+      [
+       "Narrador",
+       "Ejercicio: abre el móvil con la M y busca Jugar con amigos, para saber dónde está. Después, ve andando al Bar La Gaviota, que es donde quedaría yo con un amigo."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "bar_gaviota",
+     "radio": 12,
+     "texto": "Ve al Bar La Gaviota. Por el camino, abre el móvil con la M y localiza Jugar con amigos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Eso es todo. La conexión no va cifrada: no escribas nada que no dirías en voz alta. Que lo paséis bien."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 50
    }
   }
  ]

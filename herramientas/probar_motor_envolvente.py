@@ -18,7 +18,7 @@ from juego.audio import SR  # noqa: E402
 
 def main():
     m = audio_al.MezcladorAL()
-    print("binaural:", m.binaural, "| frecuencia:", m.frecuencia)
+    print("binaural:", m.binaural, "| frecuencia:", m.frecuencia, "| eco disponible:", bool(m._eco_slot))
     t = np.arange(SR) / SR
     m.registrar("tono", (0.25 * np.sin(2 * np.pi * 440 * t) * np.exp(-3 * t)).astype(np.float32))
     m.registrar("motor", (0.15 * np.sign(np.sin(2 * np.pi * 90 * t))).astype(np.float32))
@@ -39,6 +39,10 @@ def main():
             cortos.append(m.sonar("tono", xy=(-8.0, 3.0)))
         if cuadros == 60:
             m.hablando("Una frase para que baje el ambiente.")
+        if cuadros % 40 == 0:                                        # el eco cambia de sitio y el oyente sube y baja
+            m.entorno = ("calle", "interior", "nave", "montana", "abierto", "no_existe")[(cuadros // 40) % 6]
+            m.altura = 35.0 if (cuadros // 40) % 2 else 0.0
+            motor.alto = 35.0 - m.altura
         if cuadros == 90:
             m.mundo_pausado = True
         if cuadros == 110:
@@ -50,7 +54,7 @@ def main():
         cuadros += 1
         time.sleep(1 / 60)
     print(f"cuadros: {cuadros} | errores de OpenAL: {errores} | última actualización: {coste:.2f} ms | canales vivos: {len(m.canales)} | sonidos cortos lanzados: {len(cortos)}, terminados: {sum(c.fin for c in cortos)}")
-    print("ambiente atenuado al hablar:", round(m.duck, 2))
+    print("ambiente atenuado al hablar:", round(m.duck, 2), "| eco puesto:", m._eco_puesto, "| nivel del eco:", round(m._eco_g, 3))
     fondo.parar()
     motor.parar()
     for _ in range(30):

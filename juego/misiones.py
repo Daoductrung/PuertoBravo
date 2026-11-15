@@ -51,6 +51,16 @@ class Misiones:
             if p["tipo"] == "sigilo" and self.mision.get("guardias"):
                 cerca = min(math.hypot(g["x"] - x, g["y"] - y) for g in self.mision["guardias"])
                 t += f" Hay {len(self.mision['guardias'])} vigilantes; el más cercano, a {int(cerca)} metros. Agachado, con la X, te oyen mucho menos. No corras."
+            vg = self.mision.get("vigia")
+            if p["tipo"] == "vigilar" and vg:
+                t += (f" Estás en tu puesto. Te quedan {max(0, int(float(p.get('segundos', 45)) - vg['t']))} segundos. Si oyes pasos que se acercan, quédate quieto o agáchate con la X."
+                      if vg["dentro"] else " Todavía no has llegado al puesto.")
+            ca = self.mision.get("carrera")
+            if p["tipo"] == "carrera" and ca:
+                if ca["fase"] == "corre":
+                    t += f" Vas por el punto {self.mision.get('ruta_i', 0) + 1} de {len(p.get('puntos', []))}. {self._carrera_puesto_txt(ca)}"
+                else:
+                    t += " Ve a la salida con un vehículo y detente allí."
             if p["tipo"] == "ruta":
                 t += f" Vas por el punto {self.mision.get('ruta_i', 0) + 1} de {len(p.get('puntos', []))}."
             if p["tipo"] == "eliminar" and self.mision.get("generado"):
@@ -94,6 +104,9 @@ class Misiones:
         tipo = p["tipo"]
         if tipo == "perseguir" and ms.get("veh_objetivo") is not None:
             self.fallar_mision("Has dejado escapar al objetivo.")
+            return
+        if tipo == "carrera" and (ms.get("carrera") or {}).get("fase") in ("cuenta", "corre"):
+            self.fallar_mision("Has abandonado la carrera.")
             return
         v = ms.get("veh")
         if v is not None and v is not self.j.veh:
@@ -207,6 +220,17 @@ class Misiones:
             ms["ruta_i"] = 0
             self._ruta_siguiente(p, primero=True)
             return
+        if tipo == "vigilar" and l:
+            ms["vigia"] = {"t": 0.0, "dentro": False, "fuera": 0.0, "t_aviso": 0.0, "ronda": None, "t_ronda": 9.0, "rondas": 0,
+                           "t_suceso": 5.0, "sucesos": 0, "visto": 0.0}
+            self.gps_a_lugar(l, auto=True, callar=True)
+            return
+        if tipo == "carrera" and l:
+            self._parar_rivales(ms)
+            ms["carrera"] = {"fase": "ir", "t": 0.0, "rivales": [], "puesto": 0}
+            ms["ruta_i"] = 0
+            self.gps_a_lugar(l, auto=True, callar=True)
+            return
         if tipo in ("ir", "entregar") and l:
             self.gps_a_lugar(l, auto=True)
         elif tipo == "robar" and l:
@@ -279,6 +303,7 @@ class Misiones:
                 e.arma = grupo.get("arma", "pistola")
                 e.hostil = True
                 e.estado = "ataca"
+                e.inofensivo = bool(grupo.get("inofensivo"))          # un muñeco de prácticas: se le puede fijar, pero no ataca
                 e.tag = "mision"
                 e.t_disparo = random.uniform(1.5, 3.0)
                 self.personas.append(e)
@@ -332,6 +357,10 @@ class Misiones:
             self._paso_escoltar(ms, p, x, y, dt)
         elif tipo == "sigilo":
             self._paso_sigilo(ms, p, l, x, y, dt)
+        elif tipo == "vigilar":
+            self._paso_vigilar(ms, p, l, x, y, dt)
+        elif tipo == "carrera":
+            self._paso_carrera(ms, p, l, x, y, dt)
         elif tipo == "ruta":
             punto = self.lugares.get(p.get("puntos", [""])[min(ms.get("ruta_i", 0), len(p.get("puntos", [""])) - 1)])
             if punto and punto.mapa == self.mundo.id and math.hypot(punto.x - x, punto.y - y) <= (20 if j.veh else 10):
@@ -511,6 +540,189 @@ class Misiones:
                 self.decir(f"Tienes {self.txt(p['objeto'])}.")
             self._paso_hecho()
 
+    def _paso_vigilar(self, ms, p, l, x, y, dt):
+        """Vigilar un sitio sin que te vean: quedarte cerca un rato y no moverte cuando pasa la ronda."""
+        vg = ms.get("vigia")
+        if vg is None or l is None:
+            return
+        j = self.j
+        radio = float(p.get("radio", 25))
+        d = math.hypot(l.x - x, l.y - y)
+        if not vg["dentro"]:
+            if d <= radio and (not j.veh or abs(j.veh.vel) < 2):
+                vg["dentro"] = True
+                if self.gps and self.gps.get("auto"):
+                    self.cancelar_gps()
+                self.app.son("llegada")
+                self.decir(f"Estás en tu puesto. Quédate a menos de {int(radio)} metros durante {int(float(p.get('segundos', 45)))} segundos y escucha. "
+                           "Cuando oigas pasos que se acercan, quédate quieto o agáchate con la X.")
+            return
+        vg["t"] += dt
+        if d > radio:
+            vg["fuera"] += dt
+            vg["t_aviso"] -= dt
+            if vg["t_aviso"] <= 0:
+                vg["t_aviso"] = 3.0
+                self.decir(f"Te alejas del puesto. Vuelve: está a {int(d)} metros, {self.direccion_txt(l.x, l.y)}.")
+            if vg["fuera"] > 7:
+                self.fallar_mision("Has dejado el puesto de vigilancia.")
+                return
+        else:
+            vg["fuera"] = 0.0
+        vg["t_suceso"] -= dt
+        if vg["t_suceso"] <= 0:                                   # lo que pasa en el sitio vigilado se oye desde él
+            vg["t_suceso"] = 6.5
+            vg["sucesos"] += 1
+            self.son(("puerta_entrar", "puerta_coche", "paso_npc")[vg["sucesos"] % 3], xy=(l.x, l.y), ref=6, maxd=80, vol=1.0)
+        r = vg["ronda"]
+        if r is None:
+            vg["t_ronda"] -= dt
+            if vg["t_ronda"] <= 0:
+                vg["rondas"] += 1
+                vg["ronda"] = {"t": 0.0, "x": l.x, "y": l.y, "t_paso": 0.0}
+                self.son("buscando", cat="interfaz", vol=0.5)
+                if vg["rondas"] == 1:
+                    self.decir("Sale alguien a dar una vuelta. Quédate quieto o agáchate hasta que se vaya.")
+        else:
+            r["t"] += dt
+            f = min(1.0, r["t"] / 4.0) if r["t"] < 7.0 else max(0.0, 1.0 - (r["t"] - 7.0) / 3.0)     # se acerca, se para y se va
+            dx, dy = x - l.x, y - l.y
+            k = f * max(0.0, 1.0 - 5.0 / max(5.0, math.hypot(dx, dy)))                              # se queda a cinco metros de ti
+            r["x"], r["y"] = l.x + dx * k, l.y + dy * k
+            r["t_paso"] -= dt
+            if r["t_paso"] <= 0:
+                r["t_paso"] = 0.6
+                self.son("paso_npc", xy=(r["x"], r["y"]), ref=3, maxd=45, vol=1.0)
+            cerca = math.hypot(r["x"] - x, r["y"] - y) < 12
+            t = self.app.teclas
+            moviendote = (abs(j.veh.vel) > 1.0) if j.veh else (not j.agachado and any(k2 in t for k2 in (pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)))
+            vg["visto"] = vg["visto"] + dt if cerca and moviendote else 0.0
+            if vg["visto"] > 0.6:
+                self.son("grito", xy=(r["x"], r["y"]), vol=0.6)
+                self.fallar_mision("Te han visto moverte.")
+                return
+            if r["t"] >= 10.0:
+                vg["ronda"] = None
+                vg["t_ronda"] = 11.0
+        if vg["t"] >= float(p.get("segundos", 45)):
+            if p.get("resultado"):
+                self.decir(self.txt(p["resultado"]))
+            self._paso_hecho()
+
+    NOMBRES_RIVALES = ("el coche rojo", "el coche negro", "la furgoneta blanca", "el deportivo amarillo")
+
+    def _parar_rivales(self, ms):
+        for r in (ms.get("carrera") or {}).get("rivales", []):
+            if r.get("canal") is not None:
+                r["canal"].parar()
+                r["canal"] = None
+
+    def _carrera_puesto_txt(self, ca):
+        orden = ("primero", "segundo", "tercero", "cuarto", "quinto")
+        return f"Vas {orden[max(0, min(ca['puesto'], 4))]} de {len(ca['rivales']) + 1}."
+
+    def _carrera_punto_en(self, ca, s):
+        """El punto del recorrido que está a s metros de la salida."""
+        pts, cum = ca["pts"], ca["cum"]
+        s = max(0.0, min(s, cum[-1]))
+        for n in range(1, len(pts)):
+            if s <= cum[n] or n == len(pts) - 1:
+                tramo = cum[n] - cum[n - 1]
+                f = (s - cum[n - 1]) / tramo if tramo > 0 else 0.0
+                return pts[n - 1][0] + (pts[n][0] - pts[n - 1][0]) * f, pts[n - 1][1] + (pts[n][1] - pts[n - 1][1]) * f
+        return pts[-1]
+
+    def _paso_carrera(self, ms, p, l, x, y, dt):
+        """Carrera con rivales: llegar al último punto antes que ellos. Se les oye el motor desde donde van."""
+        ca = ms.get("carrera")
+        if ca is None or l is None:
+            return
+        j = self.j
+        puntos = [self.lugares.get(q) for q in p.get("puntos", [])]
+        puntos = [q for q in puntos if q is not None]
+        if not puntos:
+            self._paso_hecho()
+            return
+        if ca["fase"] == "ir":
+            if math.hypot(l.x - x, l.y - y) <= 17:
+                if not j.veh:
+                    if "sin_coche" not in ms["avisos"]:
+                        ms["avisos"].add("sin_coche")
+                        self.decir("Estás en la salida, pero para correr necesitas un vehículo. Consigue uno y vuelve.")
+                elif abs(j.veh.vel) < 3:
+                    pts = [(l.x, l.y)]
+                    marcas = []                                    # a cuántos metros de la salida queda cada punto de control
+                    largo = 0.0
+                    for q in puntos:
+                        for pt in self.mundo.ruta(pts[-1][0], pts[-1][1], q.x, q.y):
+                            largo += math.hypot(pt[0] - pts[-1][0], pt[1] - pts[-1][1])
+                            pts.append((float(pt[0]), float(pt[1])))
+                        marcas.append(largo)
+                    rectos, antes = [], (l.x, l.y)                 # la distancia en línea recta de cada tramo, para saber cuánto llevas
+                    for q in puntos:
+                        rectos.append(max(1.0, math.hypot(q.x - antes[0], q.y - antes[1])))
+                        antes = (q.x, q.y)
+                    cum = [0.0]
+                    for n in range(1, len(pts)):
+                        cum.append(cum[-1] + math.hypot(pts[n][0] - pts[n - 1][0], pts[n][1] - pts[n - 1][1]))
+                    n_riv = max(1, min(4, int(p.get("rivales", 2))))
+                    base = float(p.get("velocidad", 10))
+                    ca.update({"fase": "cuenta", "t": 3.0, "pts": pts, "cum": cum, "marcas": marcas, "rectos": rectos, "puesto": -1,
+                               "rivales": [{"s": 5.0 + 5.0 * k, "vel": base * (1.0 - 0.07 * k), "nombre": self.NOMBRES_RIVALES[k], "canal": None, "k": k} for k in range(n_riv)]})
+                    if self.gps and self.gps.get("auto"):
+                        self.cancelar_gps()
+                    self.app.son("reloj", cat="interfaz")
+                    self.decir(f"En la salida, con {n_riv} {'rival' if n_riv == 1 else 'rivales'}. Son {len(puntos)} puntos. Preparado.")
+            return
+        if ca["fase"] == "cuenta":
+            antes = ca["t"]
+            ca["t"] -= dt
+            if int(antes) != int(ca["t"]) and ca["t"] > 0:
+                self.app.son("reloj", cat="interfaz")
+            if ca["t"] <= 0:
+                ca["fase"] = "corre"
+                ca["t"] = 0.0
+                self.son("claxon", vol=0.6)
+                for r in ca["rivales"]:
+                    rx, ry = self._carrera_punto_en(ca, r["s"])
+                    r["canal"] = self.son("motor_coche", bucle=True, xy=(rx, ry), ref=8, maxd=110, vol=0.8, tono=1.0 + 0.08 * r["k"])
+                self.decir("¡Ya!", True)
+                self._ruta_siguiente(p, primero=True)
+            return
+        # en carrera
+        ca["t"] += dt
+        i = min(ms.get("ruta_i", 0), len(puntos) - 1)
+        punto = puntos[i]
+        d = math.hypot(punto.x - x, punto.y - y)
+        if punto.mapa == self.mundo.id and d <= 20:
+            ms["ruta_i"] = i + 1
+            if ms["ruta_i"] >= len(puntos):
+                self._parar_rivales(ms)
+                self.decir("¡Has ganado la carrera!")
+                self._paso_hecho()
+                return
+            self.app.son("llegada")
+            self._ruta_siguiente(p)
+            i, punto = ms["ruta_i"], puntos[ms["ruta_i"]]
+            d = math.hypot(punto.x - x, punto.y - y)
+        previo = ca["marcas"][i - 1] if i else 0.0                               # cuánto llevas recorrido, más o menos
+        mio = previo + (ca["marcas"][i] - previo) * max(0.0, 1.0 - d / ca["rectos"][i])
+        delante = 0
+        for r in ca["rivales"]:
+            r["s"] += r["vel"] * (1.0 + 0.1 * math.sin(ca["t"] * 0.35 + 2.0 * r["k"])) * dt
+            rx, ry = self._carrera_punto_en(ca, r["s"])
+            if r["canal"] is not None:
+                r["canal"].mover(rx, ry)
+            if r["s"] >= ca["cum"][-1]:
+                self._parar_rivales(ms)
+                self.fallar_mision(f"Ha ganado {r['nombre']}.")
+                return
+            if r["s"] > mio:
+                delante += 1
+        if delante != ca["puesto"]:
+            ca["puesto"] = delante
+            self.decir(self._carrera_puesto_txt(ca))
+
     def _paso_hecho(self):
         if self.gps and self.gps.get("auto"):
             self.cancelar_gps()
@@ -530,6 +742,7 @@ class Misiones:
         vo = ms.get("veh_objetivo")
         if vo is not None and not vo.muerto:
             self.quitar_vehiculo(vo)
+        self._parar_rivales(ms)
         for e in ms["enemigos"]:
             if e in self.personas:
                 self.personas.remove(e)

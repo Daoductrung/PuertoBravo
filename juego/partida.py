@@ -1150,6 +1150,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if j.veh:
             self.oy_rumbo += M.norm180(j.veh.rumbo - self.oy_rumbo) * min(1.0, dt * 4)
         self.mez.situar_oyente(x, y, self.frente())
+        # dónde suena todo: el eco del barrio, y la altura si vas volando (solo lo usa el motor envolvente)
+        from .audio_al import entorno_de
+        self.mez.entorno = entorno_de(self.mundo.barrio(x, y).get("ambiente", ""))
+        self.mez.altura = 35.0 if (j.veh is not None and j.veh.modelo.get("vuela")) else 0.0
 
     def _tiempo(self, dt):
         antes = int(self.reloj // 60)

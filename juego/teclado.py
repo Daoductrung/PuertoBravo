@@ -4,18 +4,20 @@ El juego está escrito con unas teclas fijas (C dice dónde estás, F sube al co
 física quiere usar el jugador para cada una. Cambiar una tecla intercambia las dos: si pones «dónde estoy» en la
 P, lo que hacía la P pasa a la C, y así ninguna función se queda sin tecla.
 
-La traducción solo se aplica jugando. En los menús, los cuadros de texto y los diálogos, las teclas son las de siempre.
+La traducción se aplica jugando y, si el jugador lo pide en las opciones, también en los menús y los diálogos.
+Nunca en los cuadros de texto. La Mayúsculas izquierda también se puede mover: la tecla que la sustituya sirve para
+correr y para todas las combinaciones con Mayúsculas.
 """
 import pygame
 
-NOMBRES = {pygame.K_UP: "flecha arriba", pygame.K_DOWN: "flecha abajo", pygame.K_LEFT: "flecha izquierda", pygame.K_RIGHT: "flecha derecha",
+NOMBRES = {pygame.K_LSHIFT: "Mayúsculas izquierda", pygame.K_UP: "flecha arriba", pygame.K_DOWN: "flecha abajo", pygame.K_LEFT: "flecha izquierda", pygame.K_RIGHT: "flecha derecha",
            pygame.K_SPACE: "espacio", pygame.K_TAB: "tabulador", pygame.K_COMMA: "coma", pygame.K_PERIOD: "punto", pygame.K_MINUS: "guion",
            pygame.K_RETURN: "Intro", pygame.K_ESCAPE: "Escape", pygame.K_BACKSPACE: "retroceso", pygame.K_HOME: "inicio", pygame.K_END: "fin",
            pygame.K_PAGEUP: "retroceder página", pygame.K_PAGEDOWN: "avanzar página", pygame.K_INSERT: "insertar", pygame.K_DELETE: "suprimir",
            pygame.K_SEMICOLON: "eñe", pygame.K_QUOTE: "acento", pygame.K_LEFTBRACKET: "acento grave", pygame.K_RIGHTBRACKET: "más",
            pygame.K_BACKSLASH: "ce cedilla", pygame.K_SLASH: "guion", pygame.K_LESS: "menor que"}
 # Estas no se pueden cambiar ni usar como destino: son las de salir, aceptar, la ayuda, la marca del registro y los modificadores.
-FIJAS = {pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_F1, pygame.K_F12, pygame.K_LSHIFT, pygame.K_RSHIFT, pygame.K_LCTRL, pygame.K_RCTRL,
+FIJAS = {pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_F1, pygame.K_F12, pygame.K_RSHIFT, pygame.K_LCTRL, pygame.K_RCTRL,
          pygame.K_LALT, pygame.K_RALT, pygame.K_LGUI, pygame.K_RGUI, pygame.K_CAPSLOCK, pygame.K_NUMLOCK, pygame.K_PRINTSCREEN}
 ETIQUETAS = {"espacio": pygame.K_SPACE, "tabulador": pygame.K_TAB, "flecha arriba": pygame.K_UP, "flecha abajo": pygame.K_DOWN}
 
@@ -64,7 +66,8 @@ def funciones():
                    (pygame.K_RIGHT, "caminar al este o girar a la derecha, e intermitente derecho"), (pygame.K_SPACE, "atacar o disparar, y freno de mano"),
                    (pygame.K_TAB, "radar"), (pygame.K_w, "escáner: delante. Al volante, la velocidad"), (pygame.K_a, "escáner: izquierda. Al volante, cambiar de carril"),
                    (pygame.K_s, "escáner: detrás"), (pygame.K_d, "escáner: derecha. Al volante, arrimarte a la acera"), (pygame.K_COMMA, "arma siguiente"),
-                   (pygame.K_PERIOD, "repetir el último mensaje")):
+                   (pygame.K_PERIOD, "repetir el último mensaje"),
+                   (pygame.K_LSHIFT, "correr a pie, y hacer las combinaciones con Mayúsculas, como Mayúsculas Tabulador. La Mayúsculas derecha no cambia")):
         if k not in vistas:
             vistas[k] = len(lista)
             lista.append((k, "Movimiento y acciones", que))
@@ -92,6 +95,16 @@ def traducir(cfg, k):
         if fisica == k:
             return funcion
     return k
+
+
+def modificadores(cfg, mod, pulsadas):
+    """Los modificadores de una pulsación cuando la Mayúsculas izquierda está en otra tecla: cuenta la tecla que la sustituye."""
+    if pygame.K_LSHIFT not in _mapa(cfg):
+        return mod
+    mod &= ~pygame.KMOD_SHIFT
+    if pygame.K_LSHIFT in pulsadas or pygame.K_RSHIFT in pulsadas:
+        mod |= pygame.KMOD_LSHIFT
+    return mod
 
 
 def tecla_de(cfg, funcion):

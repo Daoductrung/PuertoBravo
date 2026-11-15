@@ -380,10 +380,12 @@ def comprobar(mod, cat):
                 errores.append(f"{donde}, paso {n}: el diálogo no tiene frases.")
             if t == "eliminar" and not p.get("enemigos"):
                 errores.append(f"{donde}, paso {n}: no hay enemigos que eliminar.")
-            if t in ("ir", "robar", "entregar", "eliminar", "perseguir", "seguir", "escoltar", "sigilo") and not p.get("lugar"):
+            if t in ("ir", "robar", "entregar", "eliminar", "perseguir", "seguir", "escoltar", "sigilo", "vigilar", "carrera") and not p.get("lugar"):
                 errores.append(f"{donde}, paso {n}: falta el lugar.")
             if t in ("seguir", "escoltar") and not p.get("destino"):
                 errores.append(f"{donde}, paso {n}: falta el lugar de destino.")
+            if t == "carrera" and not p.get("puntos"):
+                errores.append(f"{donde}, paso {n}: una carrera necesita al menos un lugar de paso, que hace de meta.")
             if t == "ruta" and len(p.get("puntos") or []) < 2:
                 errores.append(f"{donde}, paso {n}: una ruta necesita al menos dos lugares.")
             if t == "recoger" and not p.get("lugar") and not p.get("aqui"):

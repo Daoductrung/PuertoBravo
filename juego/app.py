@@ -88,6 +88,7 @@ class App:
             self.mez.vols[k] = self.cfg["vol_" + k]
         self.mez.mono = bool(self.cfg["sonido_mono"])
         self.mez.atenuar = bool(self.cfg["atenuar_al_hablar"])
+        self.mez.eco_activo = bool(self.cfg["eco_lugares"])
         self.voz.al_hablar = self.mez.hablando
 
     def son(self, nombre, **kw):
@@ -194,13 +195,24 @@ class App:
     def _jugando(self):
         return bool(self.pila) and type(self.pila[-1]).__name__ == "Partida"
 
+    def _teclas_propias(self):
+        """¿Se aplican aquí las teclas cambiadas? Jugando, siempre. En menús y diálogos, si el jugador lo ha pedido.
+        Nunca al escribir texto ni al elegir una tecla nueva."""
+        if self._jugando():
+            return True
+        if not self.cfg["teclas_menus"] or not self.pila:
+            return False
+        return type(self.pila[-1]).__name__ not in ("EntradaTexto", "Captura")
+
     def evento_tecla(self, ev):
-        if self.cfg["teclas"] and self._jugando():
-            # jugando, cada tecla hace la función que el jugador le haya puesto
+        if self.cfg["teclas"] and self._teclas_propias():
+            # cada tecla hace la función que el jugador le haya puesto
             from . import teclado
             k = teclado.traducir(self.cfg, ev.key)
-            if k != ev.key:
-                ev = EventoFalso(k, getattr(ev, "mod", 0) or 0, getattr(ev, "unicode", ""))
+            mod = getattr(ev, "mod", 0) or 0
+            mod2 = teclado.modificadores(self.cfg, mod, self.teclas | {k})
+            if k != ev.key or mod2 != mod:
+                ev = EventoFalso(k, mod2, getattr(ev, "unicode", ""))
         self.teclas.add(ev.key)
         if registro.activo():
             from .menus import EntradaTexto

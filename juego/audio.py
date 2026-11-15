@@ -57,6 +57,8 @@ class Canal:
         self.fin = False
         self.estereo = False
         self.nuevo = True
+        self.alto = 0.0         # altura sobre el suelo, en metros (solo la usa el motor envolvente)
+        self.eco = False        # que le afecte el eco del lugar aunque no sea un efecto del mundo
 
     def mover(self, x, y):
         self.xy = (x, y)
@@ -85,6 +87,8 @@ class Mezclador:
         self.oyente = (0.0, 0.0, 0.0)
         self.vols = {"maestro": 0.8, "efectos": 1.0, "ambiente": 0.6, "musica": 0.5, "interfaz": 0.8}
         self.mundo_pausado = False
+        self.entorno = "calle"      # dónde está el oyente: decide el eco en el motor envolvente
+        self.altura = 0.0           # altura del oyente sobre el suelo: en helicóptero, lo demás suena por debajo
         self.mono = False           # los dos oídos oyen lo mismo: para quien oye por uno solo
         self.atenuar = True         # bajar el ambiente y la música mientras habla la voz
         self.duck = 1.0             # cuánto están bajados ahora mismo (1 = nada)

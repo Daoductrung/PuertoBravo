@@ -24,6 +24,26 @@ AL_PLAYING, AL_PAUSED, AL_ORIENTATION, AL_SOURCE_RELATIVE = 0x1012, 0x1013, 0x10
 AL_ROLLOFF_FACTOR, AL_FORMAT_MONO16, AL_FORMAT_STEREO16, AL_NONE = 0x1021, 0x1101, 0x1103, 0
 ALC_HRTF_SOFT, ALC_HRTF_STATUS_SOFT, ALC_FREQUENCY = 0x1992, 0x1993, 0x1007
 _CATS_MUNDO = ("efectos", "ambiente")
+# Efectos (extensión EFX): un único eco, que cambia según dónde esté el oyente.
+AL_EFFECT_TYPE, AL_EFFECT_REVERB, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_GAIN, AL_AUXILIARY_SEND_FILTER = 0x8001, 0x0001, 0x0001, 0x0002, 0x20006
+AL_REVERB_GAIN, AL_REVERB_GAINHF, AL_REVERB_DECAY_TIME, AL_REVERB_REFLECTIONS_GAIN, AL_REVERB_LATE_REVERB_GAIN = 0x0003, 0x0004, 0x0005, 0x0007, 0x0009
+# entorno: (cuánto eco se oye, segundos de cola, brillo, primeras reflexiones, cola)
+ENTORNOS = {
+    "abierto": (0.06, 0.7, 0.5, 0.02, 0.6),       # campo, playa, mar: casi nada devuelve el sonido
+    "parque": (0.10, 0.9, 0.5, 0.03, 0.8),
+    "calle": (0.20, 1.1, 0.7, 0.08, 1.0),         # fachadas a los lados
+    "industrial": (0.30, 1.9, 0.75, 0.10, 1.2),   # naves, muelles, chapa
+    "montana": (0.28, 3.2, 0.45, 0.02, 1.3),      # el eco largo de un valle
+    "interior": (0.40, 0.55, 0.6, 0.35, 0.9),     # una habitación o un local
+    "nave": (0.50, 2.4, 0.7, 0.20, 1.3),          # garajes, fábricas, túneles
+}
+DE_AMBIENTE = {"amb_ciudad": "calle", "amb_residencial": "calle", "amb_industrial": "industrial", "amb_puerto": "industrial", "amb_parque": "parque",
+               "amb_campo": "abierto", "amb_playa": "abierto", "amb_mar": "abierto", "amb_montana": "montana"}
+
+
+def entorno_de(ambiente):
+    """El eco que corresponde al ambiente de un barrio."""
+    return DE_AMBIENTE.get(ambiente, "calle")
 
 
 def ruta_dll():
@@ -56,6 +76,17 @@ def _cargar(ruta):
     for nombre, (res, args) in firmas.items():
         f = getattr(al, nombre)
         f.restype, f.argtypes = res, args
+    efx = {"alGenEffects": (None, [ci, ctypes.POINTER(cu)]), "alDeleteEffects": (None, [ci, ctypes.POINTER(cu)]), "alEffecti": (None, [cu, ci, ci]),
+           "alEffectf": (None, [cu, ci, cf]), "alGenAuxiliaryEffectSlots": (None, [ci, ctypes.POINTER(cu)]),
+           "alDeleteAuxiliaryEffectSlots": (None, [ci, ctypes.POINTER(cu)]), "alAuxiliaryEffectSloti": (None, [cu, ci, ci]),
+           "alAuxiliaryEffectSlotf": (None, [cu, ci, cf]), "alSource3i": (None, [cu, ci, ci, ci, ci])}
+    al.con_efx = True
+    for nombre, (res, args) in efx.items():
+        try:
+            f = getattr(al, nombre)
+            f.restype, f.argtypes = res, args
+        except AttributeError:                           # una biblioteca sin efectos: el motor funciona igual, sin eco
+            al.con_efx = False
     return al
 
 
@@ -82,7 +113,50 @@ class MezcladorAL(Mezclador):
         self.al.alDistanceModel(AL_NONE)                 # la distancia la calcula el juego, igual que en el motor clásico
         self._buffers = {}                               # nombre -> (id de buffer, id del array con el que se hizo)
         self._pausados = False
-        registro.info("sonido", "Motor de sonido envolvente", binaural="sí" if self.binaural else "no", frecuencia=self.frecuencia)
+        self._eco_slot = self._eco_efecto = 0
+        self._eco_puesto = None                          # el entorno que tiene ahora el eco
+        self._eco_g = 0.0
+        self.eco_activo = True                           # el jugador puede quitar el eco en las opciones
+        self._preparar_eco()
+        registro.info("sonido", "Motor de sonido envolvente", binaural="sí" if self.binaural else "no", frecuencia=self.frecuencia,
+                      eco="sí" if self._eco_slot else "no")
+
+    # ------------------------------------------------------------------ eco según el lugar
+    def _preparar_eco(self):
+        al = self.al
+        if not getattr(al, "con_efx", False):
+            return
+        try:
+            e, s = ctypes.c_uint(0), ctypes.c_uint(0)
+            al.alGetError()
+            al.alGenEffects(1, ctypes.byref(e))
+            al.alEffecti(e.value, AL_EFFECT_TYPE, AL_EFFECT_REVERB)
+            al.alGenAuxiliaryEffectSlots(1, ctypes.byref(s))
+            if al.alGetError() or not e.value or not s.value:
+                return
+            al.alAuxiliaryEffectSlotf(s.value, AL_EFFECTSLOT_GAIN, 0.0)
+            self._eco_efecto, self._eco_slot = e.value, s.value
+        except Exception:
+            self._eco_slot = self._eco_efecto = 0
+
+    def _actualizar_eco(self):
+        if not self._eco_slot:
+            return
+        al = self.al
+        nombre = self.entorno if self.entorno in ENTORNOS else "calle"
+        cuanto, cola, brillo, primeras, tardias = ENTORNOS[nombre]
+        if nombre != self._eco_puesto:
+            self._eco_puesto = nombre
+            al.alEffectf(self._eco_efecto, AL_REVERB_DECAY_TIME, float(cola))
+            al.alEffectf(self._eco_efecto, AL_REVERB_GAINHF, float(brillo))
+            al.alEffectf(self._eco_efecto, AL_REVERB_REFLECTIONS_GAIN, float(primeras))
+            al.alEffectf(self._eco_efecto, AL_REVERB_LATE_REVERB_GAIN, float(tardias))
+            al.alEffectf(self._eco_efecto, AL_REVERB_GAIN, 0.5)
+            al.alAuxiliaryEffectSloti(self._eco_slot, AL_EFFECTSLOT_EFFECT, self._eco_efecto)     # hay que volver a cargarlo para que cambie
+            al.alGetError()
+        objetivo = cuanto if self.eco_activo else 0.0
+        self._eco_g += (objetivo - self._eco_g) * 0.15
+        al.alAuxiliaryEffectSlotf(self._eco_slot, AL_EFFECTSLOT_GAIN, float(max(0.0, min(1.0, self._eco_g))))
 
     # ------------------------------------------------------------------ buffers y fuentes
     def _buffer(self, nombre):
@@ -119,6 +193,9 @@ class MezcladorAL(Mezclador):
         self.al.alSourcei(c._src, AL_BUFFER, b)
         self.al.alSourcei(c._src, AL_LOOPING, 1 if c.bucle else 0)
         self.al.alSourcef(c._src, AL_ROLLOFF_FACTOR, 0.0)
+        if self._eco_slot and (c.cat == "efectos" or c.eco):          # lo que suena en el mundo lleva el eco del lugar
+            self.al.alSource3i(c._src, AL_AUXILIARY_SEND_FILTER, self._eco_slot, 0, 0)
+            self.al.alGetError()
         self._poner(c)
         self.al.alSourcePlay(c._src)
 
@@ -153,8 +230,10 @@ class MezcladorAL(Mezclador):
                     g *= (c.maxd - d) / borde
             self.al.alSourcei(c._src, AL_SOURCE_RELATIVE, 0)
             # el volumen por distancia ya está aplicado: a OpenAL solo le interesa la dirección, así que se le da a un metro
-            k = 1.0 / d if d > 1.0 else 1.0
-            self.al.alSource3f(c._src, AL_POSITION, float(ox + dx * k), 0.0, float(-(oy + dy * k)))
+            dz = c.alto - self.altura                    # por encima o por debajo del oyente
+            d3 = math.hypot(d, dz)
+            k = 1.0 / d3 if d3 > 1.0 else 1.0
+            self.al.alSource3f(c._src, AL_POSITION, float(ox + dx * k), float(dz * k), float(-(oy + dy * k)))
         if c.parando:
             g = 0.0
         if c._g is None:
@@ -184,6 +263,7 @@ class MezcladorAL(Mezclador):
         self.al.alListener3f(AL_POSITION, float(ox), 0.0, float(-oy))
         self.al.alListenerfv(AL_ORIENTATION, (ctypes.c_float * 6)(math.sin(r), 0.0, -math.cos(r), 0.0, 1.0, 0.0))
         self.al.alListenerf(AL_GAIN, float(self.vols["maestro"]))
+        self._actualizar_eco()
         estado = ctypes.c_int(0)
         pausar = bool(self.mundo_pausado)
         for c in lista:
@@ -222,6 +302,11 @@ class MezcladorAL(Mezclador):
                 u = ctypes.c_uint(b)
                 self.al.alDeleteBuffers(1, ctypes.byref(u))
             self._buffers.clear()
+            if self._eco_slot:
+                s, e = ctypes.c_uint(self._eco_slot), ctypes.c_uint(self._eco_efecto)
+                self.al.alDeleteAuxiliaryEffectSlots(1, ctypes.byref(s))
+                self.al.alDeleteEffects(1, ctypes.byref(e))
+                self._eco_slot = 0
             self.al.alcMakeContextCurrent(None)
             self.al.alcDestroyContext(self.ctx)
             self.al.alcCloseDevice(self.dev)

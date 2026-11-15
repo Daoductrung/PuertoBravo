@@ -44,9 +44,11 @@ POR_DEFECTO = {
     "ia_servicio": "auto",         # auto | local | gemini | otro | openai | anthropic
     "ia_url_otro": "",             # dirección de un servicio compatible con OpenAI; vacío = OpenRouter
     "ia_modelo_otro": "",          # modelo de ese servicio; vacío = lo elige el juego
+    "teclas_menus": False,         # las teclas cambiadas valen también en los menús y los diálogos
     "teclas": {},                  # teclas cambiadas: función original -> tecla física
     "viajes_trayecto": True,       # en taxi y autobús se oye el trayecto durante un rato; con no, se llega al momento
-    "motor_sonido": "clasico",     # clasico | envolvente (binaural con OpenAL Soft; se aplica al abrir el juego)
+    "motor_sonido": "clasico",
+    "eco_lugares": True,           # con el motor envolvente, cada sitio tiene su eco: calle, nave, interior, campo     # clasico | envolvente (binaural con OpenAL Soft; se aplica al abrir el juego)
     "sonido_mono": False,          # los dos oídos oyen lo mismo
     "atenuar_al_hablar": True,     # bajar ambiente y música mientras habla la voz
     "describir_zonas": True,       # la primera vez que entras en un barrio, lo describe

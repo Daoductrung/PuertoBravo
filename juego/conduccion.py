@@ -709,6 +709,7 @@ class Conduccion:
                 if d < 220:
                     if v.canal is None:
                         v.canal = self.son(v.modelo["motor"], bucle=True, xy=(v.x, v.y), ref=10, maxd=220, vol=0.8)
+                        v.canal.alto = 35.0 if v.modelo.get("vuela") else 0.0          # un helicóptero suena por encima
                     v.canal.mover(v.x, v.y)
                     v.canal.tono(v.modelo["tono"] * (0.7 + v.vel / 20.0))
                 elif v.canal:

@@ -220,6 +220,7 @@ class Interior:
         self.i = 0
 
     def al_entrar(self):
+        self.app.mez.entorno = "interior"
         nombre, desc, _ = self.habitaciones[self.i]
         self.app.decir(f"{self.l.nombre}, por dentro. Estás en {nombre}. {desc} Flechas izquierda y derecha para moverte por la casa, Intro para usar la habitación, Escape para salir.", True)
 
@@ -238,7 +239,7 @@ class Interior:
                 return
             self.i = nuevo
             for n in range(3):                          # tres pasos sobre el suelo de casa
-                self.app.son(("paso_acera0", "paso_acera1")[n % 2], vol=0.5, pan=0.5 * paso)
+                self.app.son(("paso_acera0", "paso_acera1")[n % 2], vol=0.5, pan=0.5 * paso).eco = True
             self._decir()
         elif k in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
             self._usar()
@@ -283,3 +284,123 @@ class Interior:
 
     def cerrado(self):
         pass
+
+
+# ============================================================ interior del resto de lugares
+# Cada sala: (nombre, descripción, qué hace Intro). Las acciones:
+#   salir: a la calle del menú.  mostrador: vuelve al menú del lugar, que es donde se compra o se pide.
+#   sentarse: pasa media hora y sube el ánimo.  escuchar: oyes una conversación.  aseo: te refrescas.  mirar: solo se describe.
+_PUERTA = ("la puerta", "Por aquí se sale.", "salir")
+_ASEO = ("los aseos", "Un lavabo y un espejo.", "aseo")
+SALAS = {
+    "bar": [_PUERTA, ("la barra", "Tazas, botellas y la cafetera silbando. Aquí se pide.", "mostrador"), ("las mesas", "Cuatro mesas y gente hablando bajo.", "escuchar"),
+            ("la máquina del rincón", "Una tragaperras que canta sola.", "mirar"), _ASEO],
+    "taberna": [_PUERTA, ("la barra", "Madera vieja y barriles. Aquí se pide.", "mostrador"), ("las mesas del fondo", "Bancos corridos y partidas de cartas.", "escuchar"), _ASEO],
+    "comida": [_PUERTA, ("el mostrador", "La carta colgada y la caja. Aquí se pide.", "mostrador"), ("el comedor", "Mesas con mantel de papel. Huele a fritura.", "sentarse"), _ASEO],
+    "pizzeria": [_PUERTA, ("el mostrador", "El horno al fondo y la caja. Aquí se pide.", "mostrador"), ("el comedor", "Mesas pequeñas y una tele encendida.", "sentarse"), _ASEO],
+    "tienda": [_PUERTA, ("el mostrador", "La caja y el tendero. Aquí se compra.", "mostrador"), ("los pasillos", "Estanterías hasta el techo, latas y cajas.", "mirar"), ("la trastienda", "Una cortina y cajas apiladas. No te dejan pasar.", "escuchar")],
+    "farmacia": [_PUERTA, ("el mostrador", "Batas blancas y cajas de medicinas. Aquí se compra.", "mostrador"), ("la zona de espera", "Dos sillas y una báscula.", "sentarse")],
+    "armeria": [_PUERTA, ("el mostrador", "Un cristal grueso y el armero detrás. Aquí se compra.", "mostrador"), ("las vitrinas", "Armas colgadas tras un cristal. Huele a aceite.", "mirar"),
+                ("la galería de tiro", "Un pasillo largo con dianas al fondo.", "mirar")],
+    "hospital": [_PUERTA, ("la recepción", "Un mostrador y gente esperando. Aquí te atienden.", "mostrador"), ("la sala de espera", "Sillas de plástico y una máquina de café.", "sentarse"),
+                 ("el pasillo de consultas", "Puertas numeradas y pasos rápidos.", "escuchar"), _ASEO],
+    "comisaria": [_PUERTA, ("el mostrador de guardia", "Un agente tras una mampara. Aquí te atienden.", "mostrador"), ("los bancos de espera", "Un banco atornillado al suelo.", "escuchar"),
+                  ("el tablón", "Carteles de personas buscadas y avisos.", "mirar")],
+    "taller": [_PUERTA, ("la oficina", "Un mostrador con facturas. Aquí se encarga el trabajo.", "mostrador"), ("el foso", "Un coche levantado y herramientas por el suelo.", "mirar"),
+               ("el almacén de piezas", "Neumáticos apilados y cajas de recambios.", "escuchar")],
+    "desguace": [_PUERTA, ("la caseta", "Una mesa y una báscula. Aquí se trata.", "mostrador"), ("el patio de chatarra", "Coches apilados de tres en tres.", "mirar")],
+    "casino": [_PUERTA, ("las mesas de juego", "Fichas, cartas y la ruleta girando. Aquí se juega.", "mostrador"), ("la sala de máquinas", "Filas de tragaperras con sus musiquillas.", "mirar"),
+               ("el bar del casino", "Sillones y copas. Aquí se habla de dinero.", "escuchar"), _ASEO],
+    "negocio": [_PUERTA, ("el despacho", "Una mesa y los libros de cuentas. Aquí se trata.", "mostrador"), ("el local", "El negocio en marcha, con su gente.", "escuchar")],
+    "periodico": [_PUERTA, ("la redacción", "Teclados, teléfonos y prisas. Aquí te atienden.", "mostrador"), ("la sala de rotativas", "Máquinas enormes y olor a tinta.", "mirar"),
+                  ("el archivo", "Estanterías con periódicos viejos.", "escuchar")],
+    "banco": [_PUERTA, ("la ventanilla", "Un cristal y un empleado. Aquí se opera.", "mostrador"), ("la cola", "Gente esperando con papeles en la mano.", "escuchar"),
+              ("la puerta de la cámara", "Acero, y un guardia delante.", "mirar")],
+    "loteria": [_PUERTA, ("la ventanilla", "Décimos colgados y un bombo pequeño. Aquí se compra.", "mostrador"), ("el tablón de premios", "Los números premiados de la semana.", "mirar")],
+    "empenos": [_PUERTA, ("el mostrador", "Una reja y una lupa. Aquí se trata.", "mostrador"), ("las estanterías", "Relojes, guitarras y televisores de otros.", "mirar")],
+    "pescaderia": [_PUERTA, ("el mostrador", "Hielo picado y pescado fresco. Aquí se vende y se compra.", "mostrador"), ("la cámara", "Frío y cajas de corcho.", "mirar")],
+    "gimnasio": [_PUERTA, ("la recepción", "Un mostrador con toallas. Aquí te apuntas.", "mostrador"), ("la sala de pesas", "Hierros que suenan y gente resoplando.", "escuchar"),
+                 ("el ring", "Lona, cuerdas y un saco colgado.", "mirar"), ("los vestuarios", "Bancos, taquillas y duchas.", "aseo")],
+    "ropa": [_PUERTA, ("la caja", "El mostrador y las bolsas. Aquí se paga.", "mostrador"), ("los percheros", "Filas de ropa colgada.", "mirar"), ("los probadores", "Cortinas y espejos.", "mirar")],
+    "cine": [_PUERTA, ("la taquilla", "La cartelera y las entradas. Aquí se compra.", "mostrador"), ("el vestíbulo", "Huele a palomitas. Hay gente esperando.", "escuchar"), _ASEO],
+    "hotel": [_PUERTA, ("la recepción", "Un mostrador con campanilla. Aquí te atienden.", "mostrador"), ("el salón", "Sillones y un piano que nadie toca.", "sentarse"),
+              ("el pasillo de habitaciones", "Moqueta y puertas numeradas.", "escuchar"), _ASEO],
+    "concesionario": [_PUERTA, ("la mesa del vendedor", "Catálogos y un bolígrafo listo. Aquí se compra.", "mostrador"), ("la exposición", "Coches nuevos, brillantes, con olor a tapicería.", "mirar")],
+    "nautica": [_PUERTA, ("el mostrador", "Cartas de navegación y cabos. Aquí se compra.", "mostrador"), ("la exposición", "Motores fueraborda y un velero pequeño en seco.", "mirar")],
+    "club": [_PUERTA, ("la barra", "Luces bajas y música fuerte. Aquí te atienden.", "mostrador"), ("la pista", "Gente bailando apretada.", "escuchar"), _ASEO],
+    "proveedor": [_PUERTA, ("la mesa", "Una mesa, una silla y pocas palabras. Aquí se trata.", "mostrador"), ("el cuarto de atrás", "Una puerta cerrada. Mejor no preguntar.", "mirar")],
+    "empleo": [_PUERTA, ("la mesa de atención", "Un ordenador y un montón de impresos. Aquí te atienden.", "mostrador"), ("el tablón de ofertas", "Papeles con trabajos, sujetos con chinchetas.", "mirar"),
+               ("la sala de espera", "Sillas en fila y gente con carpetas.", "escuchar")],
+    "academia": [_PUERTA, ("la secretaría", "Matrículas y horarios. Aquí te apuntas.", "mostrador"), ("el aula", "Pupitres y una pizarra.", "sentarse"), ("el pasillo", "Alumnos comentando el examen.", "escuchar")],
+    "ong": [_PUERTA, ("la mesa de acogida", "Una voluntaria con una lista. Aquí te atienden.", "mostrador"), ("el almacén", "Cajas de comida y ropa doblada.", "mirar")],
+    "protectora": [_PUERTA, ("la oficina", "Fichas de animales y una mesa. Aquí te atienden.", "mostrador"), ("las jaulas", "Ladridos y rabos golpeando la reja.", "mirar")],
+}
+OIDO = [
+    "Dos hombres discuten de fútbol sin escucharse.", "Una mujer cuenta que le han subido el alquiler otra vez.", "Alguien dice en voz baja que anoche hubo jaleo en el puerto.",
+    "Hablan de un coche robado que apareció quemado en las afueras.", "Un viejo asegura que antes esto era otra cosa.", "Una pareja decide adónde ir de vacaciones, sin ponerse de acuerdo.",
+    "Dicen que la policía anda preguntando por el barrio.", "Alguien cuenta que al del estanco le tocó un pellizco en la lotería.", "Dos chavales hablan de una carrera de coches de esta noche.",
+    "Una señora se queja de que ya no se puede aparcar en ningún sitio.", "Comentan que va a llover toda la semana.", "Alguien busca trabajo y pregunta si saben de algo.",
+    "Un hombre presume de lo que pescó el domingo. Nadie le cree.", "Hablan de un negocio que cambió de dueño de un día para otro.", "Dos amigas se ríen de algo que no llegas a oír.",
+    "Alguien dice que no se fía de los bancos, que el dinero, en casa.",
+]
+
+
+def salas_de(lugar):
+    return SALAS.get(getattr(lugar, "tipo", ""))
+
+
+class Local(Interior):
+    """Recorrer por dentro una tienda, un bar, un banco o cualquier otro local: de sala en sala con las flechas."""
+
+    def __init__(self, p, lugar):
+        self.p, self.app, self.l, self.acciones = p, p.app, lugar, {}
+        self.habitaciones = list(salas_de(lugar) or [_PUERTA])
+        self.i = 0
+        self.oidas = 0
+
+    def al_entrar(self):
+        self.app.mez.entorno = "nave" if self.l.tipo in ("taller", "desguace", "concesionario", "nautica", "gimnasio") else "interior"
+        nombre, desc, _ = self.habitaciones[self.i]
+        self.app.decir(f"{self.l.nombre}, por dentro. Estás en {nombre}. {desc} Flechas izquierda y derecha para moverte, Intro para usar el sitio donde estás, Escape para volver.", True)
+
+    def _usar(self):
+        p, app = self.p, self.app
+        nombre, desc, que = self.habitaciones[self.i]
+        if que in ("salir", "mostrador"):
+            app.son("menu_atras")
+            app.cerrar(self)
+        elif que == "sentarse":
+            p.pasar_horas(0.5)
+            p.cambiar_animo(2)
+            app.son("pasan_horas")
+            app.decir(f"Te sientas un rato. Son las {p.hora_txt()}.", True)
+        elif que == "escuchar":
+            import random
+            self.oidas += 1
+            app.son("murmullo", vol=0.5)
+            app.decir("Pones el oído. " + random.choice(OIDO), True)
+        elif que == "aseo":
+            p.cambiar_animo(1)
+            app.son("salpicadura", vol=0.5)
+            app.decir("Te lavas la cara. Mejor.", True)
+        else:
+            app.decir(f"{nombre.capitalize()}. {desc}", True)
+
+
+def con_recorrido(p, lugar, menu, Opcion):
+    """Añade al menú de un local la opción de recorrerlo por dentro, antes de la de salir."""
+    if not salas_de(lugar):
+        return
+    fuente = menu._fuente
+    from .menus import SALIDAS
+
+    def ops():
+        lista = list(fuente() if callable(fuente) else fuente)
+        if any(o.texto.startswith("Recorrer") for o in lista):
+            return lista
+        o = Opcion("Recorrer el local por dentro", lambda: p.app.abrir(Local(p, lugar)),
+                   ayuda="Entras y vas de una sala a otra con las flechas izquierda y derecha. En el mostrador vuelves a este menú, que es donde se compra o se pide.")
+        lista.insert(len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista), o)
+        return lista
+    menu._fuente = ops
+    menu.refrescar(False)

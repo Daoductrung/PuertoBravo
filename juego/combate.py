@@ -363,6 +363,8 @@ class Combate:
         j = self.j
         if self.cfg["sin_policia"]:
             return
+        if self.mision and self.mision["def"].get("tutorial"):        # en un tutorial no viene la policía
+            return
         x, y = self.pos()
         if not siempre:
             testigo = any((p.tipo == "civil" and not p.muerto and p.dist(x, y) < 35) or
@@ -544,6 +546,8 @@ class Combate:
                         self.son("paso_npc", xy=(p.x, p.y), ref=3, maxd=28, vol=0.7, tono=random.uniform(0.9, 1.1))
                 continue
             # ------------------------------------------------------ hostiles
+            if getattr(p, "inofensivo", False):
+                continue
             if not p.activo:
                 if d < 42:
                     p.activo = True
