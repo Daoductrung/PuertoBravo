@@ -192,62 +192,10 @@ def test_nadar_y_bucear(robot):
     assert p.mundo.id != mar.id and not p.nadando and "medio ahogado" in robot.dicho()
 
 
-def test_tren_tranvia_y_avioneta(robot):
-    from juego import menus_lugares, pantallas
+def test_avioneta(robot):
     p = robot.nueva_partida()
     app = robot.app
     j = p.j
-    j.dinero = 5000
-    est = next(l for l in p.mundo.lugares.values() if l.tipo == "estacion")
-    vecinos = {l.get("a_mapa") for l in p.mundo.lugares.values() if l.tipo == "salida"}
-    medios = {mid: p.medio_por_rail(p.mundo.id, mid) for mid in p.mapas if mid != p.mundo.id}
-    assert all(medios[v] == "tranvia" for v in vecinos if v in medios and p.mapas[v].tipo != "mar")
-    mar = next(m.id for m in p.mapas.values() if m.tipo == "mar")
-    assert medios[mar] is None and "tren" in medios.values()
-    islas = [mid for mid, medio in medios.items() if medio is None and p.mapas[mid].tipo != "mar"]
-    for mid in islas:                                                         # adonde no se llega por tierra, no hay raíl
-        assert not any(l.tipo == "salida" and l.get("a_mapa") == p.mundo.id for l in p.mapas[mid].lugares.values())
-    p.teletransportar(est.x, est.y)
-    menus_lugares.estacion(p, est)
-    m = app.pila[-1]
-    textos = [o.texto for o in m.opciones]
-    assert any(t.startswith("Autobús a ") for t in textos) and any(t.startswith("Tranvía a ") for t in textos) and any(t.startswith("Tren a ") for t in textos)
-    for t in textos:
-        if t.startswith(("Tren a ", "Tranvía a ")):
-            nombre = t.split(" a ", 1)[1].split(":")[0]
-            mid = next(k for k, mp in p.mapas.items() if mp.nombre == nombre)
-            assert medios[mid] == ("tren" if t.startswith("Tren") else "tranvia")
-    # un viaje en tren con trayecto: silbato, el vagón en bucle, y llegas
-    app.viajes_en_pruebas = True
-    sonidos = []
-    original = app.mez.sonar
-    app.mez.sonar = lambda n, **k: (sonidos.append(n), original(n, **k))[1]
-    m.i = next(k for k, t in enumerate(textos) if t.startswith("Tren a "))
-    destino = textos[m.i].split(" a ", 1)[1].split(":")[0]
-    dinero = j.dinero
-    robot.tecla(pygame.K_RETURN)
-    v = app.pila[-1]
-    assert isinstance(v, pantallas.Viaje) and v.medio == "tren" and "tren_silbato" in sonidos and "tren" in sonidos and j.dinero < dinero
-    assert "El tren sale de la estación" in app.voz.registro[-1]
-    robot.tecla(pygame.K_RETURN)                                              # llegar ya
-    app.mez.sonar = original
-    assert p.mundo.nombre == destino and "El tren te deja en" in robot.dicho()
-    # y en tranvía
-    est = next(l for l in p.mundo.lugares.values() if l.tipo == "estacion")
-    p.teletransportar(est.x, est.y)
-    menus_lugares.estacion(p, est)
-    m = app.pila[-1]
-    k = next((k for k, o in enumerate(m.opciones) if o.texto.startswith("Tranvía a ")), None)
-    if k is not None:
-        m.i = k
-        robot.tecla(pygame.K_RETURN)
-        v = app.pila[-1]
-        assert isinstance(v, pantallas.Viaje) and v.medio == "tranvia" and v.motor.nombre == "tranvia" and "El tranvía arranca" in app.voz.registro[-1]
-        robot.frames(30 * 26)
-        assert app.pila[-1] is p and "El tranvía te deja en" in robot.dicho()
-    app.viajes_en_pruebas = False
-    _cerrar(app, p)
-    # la avioneta: vuela, y suena con su motor
     modelo = p.modelos["avioneta"]
     assert modelo["vuela"] and modelo["motor"] == "motor_avioneta" and modelo["vel_max"] > p.modelos["helicoptero"]["vel_max"]
     a = p.crear_vehiculo("avioneta", j.x, j.y, 0, None)
@@ -258,7 +206,8 @@ def test_tren_tranvia_y_avioneta(robot):
 
 def test_sonidos_nuevos_en_todos_los_packs():
     from juego import ayuda, catalogo_sonidos as cat, rutas, sintesis
-    nuevos = ("tren", "tren_silbato", "tranvia", "tranvia_campana", "motor_avioneta", "bajo_agua", "brazada")
+    nuevos = ("tren", "tren_silbato", "tranvia", "tranvia_campana", "motor_avioneta", "bajo_agua", "brazada", "avion", "avion_despegue",
+              "lugar_tranvia", "lugar_tren", "lugar_aeropuerto")
     base = os.path.dirname(rutas.carpeta_sonidos()) if os.path.basename(rutas.carpeta_sonidos()) == "por_defecto" else os.path.join(rutas.DATA, "sonidos")
     cuentas = {}
     for pack in ("por_defecto", "realista", "alternativo", "retro", "envolvente"):
@@ -266,21 +215,23 @@ def test_sonidos_nuevos_en_todos_los_packs():
         cuentas[pack] = len(archivos)
         for n in nuevos:
             assert n in archivos, (pack, n)
-    assert len(set(cuentas.values())) == 1 and cuentas["por_defecto"] == 230, cuentas       # todos los packs, los mismos archivos
+    assert len(set(cuentas.values())) == 1 and cuentas["por_defecto"] == 235, cuentas       # todos los packs, los mismos archivos
     # en los packs de grabaciones son grabaciones de verdad, no el sonido de serie
-    for n in ("tren", "tranvia", "bajo_agua"):
+    for n in ("lugar_tranvia", "lugar_tren", "lugar_aeropuerto"):                 # las firmas de los lugares son las de serie en todos los packs
+        assert open(os.path.join(base, "por_defecto", n + ".flac"), "rb").read() == open(os.path.join(base, "realista", n + ".flac"), "rb").read()
+    for n in ("tren", "tranvia", "bajo_agua", "avion", "avion_despegue"):
         serie = open(os.path.join(base, "por_defecto", n + ".flac"), "rb").read()
         assert open(os.path.join(base, "realista", n + ".flac"), "rb").read() != serie
     creditos = open(os.path.join(base, "realista", "CREDITOS.txt"), encoding="utf-8-sig").read()
     assert "Freesound" in creditos and "tren.flac" in creditos
     # están en el catálogo, con descripción, y en Aprender los sonidos
-    grupo = next(k for k, g in enumerate(cat.GRUPOS) if g[0] == "Tren, tranvía y agua")
+    grupo = next(k for k, g in enumerate(cat.GRUPOS) if g[0] == "Tren, tranvía, avión y agua")
     for n in nuevos:
         assert cat.describir(n) != "Sonido del juego.", n
-        assert n == "motor_avioneta" or cat.grupo_de(n) == grupo
+        assert n == "motor_avioneta" or n.startswith("lugar_") or cat.grupo_de(n) == grupo
     aprendidos = {s for s, _, _ in ayuda.SONIDOS}
     assert set(nuevos) <= aprendidos
-    assert sintesis.es_bucle("tren") and sintesis.es_bucle("tranvia") and sintesis.es_bucle("bajo_agua") and not sintesis.es_bucle("brazada")
+    assert sintesis.es_bucle("tren") and sintesis.es_bucle("tranvia") and sintesis.es_bucle("bajo_agua") and sintesis.es_bucle("avion") and not sintesis.es_bucle("brazada")
     doc = open(os.path.join(rutas.DATA, "docs", "cambiar_sonidos.html"), encoding="utf-8").read()
     for n in nuevos:
         assert f"<code>{n}</code>" in doc, n

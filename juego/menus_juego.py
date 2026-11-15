@@ -754,7 +754,8 @@ def movil(p):
             lista = [Opcion(p.resumen_historia)]
             for clave, valor in p.decisiones.items():
                 if isinstance(valor, dict) and valor.get("texto"):
-                    lista.append(Opcion(f"Decisión: {valor['texto']}"))
+                    renta = int(valor.get("renta", 0))
+                    lista.append(Opcion(f"Decisión: {valor['texto']}" + (f". Te deja {renta} euros cada medianoche" if renta > 0 else f". Te cuesta {-renta} euros cada medianoche" if renta < 0 else "")))
             for ident in reversed(p.completadas):
                 m = por_id.get(ident)
                 if m is None or (m.get("adultos") and not app.cfg["adultos"]):
@@ -850,7 +851,7 @@ def lugar(p, l):
         app.decir(f"{l.nombre}. Está cerrado: aquí todavía no te conocen.", True)
         return
     en_coche = j.veh is not None
-    if en_coche and l.tipo not in ("taller", "desguace", "casa", "carrera", "salida", "muelle", "estacion", "embarcadero", "pesca", "monumento", "helipuerto", "tesoro"):
+    if en_coche and l.tipo not in ("taller", "desguace", "casa", "carrera", "salida", "muelle", "estacion", "embarcadero", "pesca", "monumento", "helipuerto", "tesoro", "aeropuerto", "tranvia", "tren"):
         app.decir(f"{l.nombre}. Bájate del vehículo con F para entrar.", True)
         return
     if en_coche and abs(j.veh.vel) > 3:
@@ -864,7 +865,7 @@ def lugar(p, l):
          "embarcadero": ml.embarcadero, "muelle": ml.muelle, "pesca": ml.punto_pesca, "nautica": ml.nautica,
          "concesionario": ml.concesionario, "banco": ml.banco, "loteria": ml.loteria, "empenos": ml.empenos,
          "pescaderia": ml.pescaderia, "gimnasio": ml.gimnasio, "ropa": ml.ropa, "cine": ml.cine,
-         "hotel": ml.hotel, "taberna": ml.taberna}.get(l.tipo)
+         "hotel": ml.hotel, "taberna": ml.taberna, "tranvia": ml.tranvia, "tren": ml.tren, "aeropuerto": ml.aeropuerto}.get(l.tipo)
     if l.tipo in ("helipuerto", "protectora", "feria", "tesoro"):
         from . import menus_extra as mx
         f = {"helipuerto": mx.helipuerto, "protectora": mx.protectora, "feria": mx.feria, "tesoro": mx.tesoro}[l.tipo]
@@ -877,7 +878,7 @@ def lugar(p, l):
     if f is None:
         app.decir(f"{l.nombre}. {l.desc}", True)
         return
-    if not en_coche and l.tipo not in ("salida", "muelle", "embarcadero", "estacion", "pesca", "tesoro", "helipuerto", "carrera", "taxi"):
+    if not en_coche and l.tipo not in ("salida", "muelle", "embarcadero", "estacion", "pesca", "tesoro", "helipuerto", "carrera", "taxi", "tranvia", "tren", "aeropuerto"):
         p.entrar_interior(l)
     f(p, l)
     if app.pila and app.pila[-1] is p:

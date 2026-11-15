@@ -1914,11 +1914,12 @@
       },
       {
        "texto": "Guardártelo y hacerle una visita: 2500 euros",
-       "ayuda": "Cobras por callar. El agua seguirá igual de cara.",
+       "ayuda": "Cobras por callar, y trescientos euros más cada medianoche, para siempre. El agua seguirá igual de cara.",
        "dice": "El hombre no discute el precio. Tiene el dinero preparado.",
        "dinero": 2500,
        "fama": -4,
-       "animo": -4
+       "animo": -4,
+       "renta": 300
       }
      ]
     },
@@ -1991,6 +1992,121 @@
     "afinidad": {
      "oc_jimena": 15
     }
+   }
+  },
+  {
+   "id": "ocs7",
+   "titulo": "Portada del Ocaso",
+   "capitulo": 46,
+   "contacto": "Nerea",
+   "lugar": "oc_periodico",
+   "requiere": [
+    "ocs6"
+   ],
+   "resumen": "El periódico va a publicar el nombre, y en la Sede de Aguas del Ocaso están destruyendo papeles.",
+   "si_clave": "oc_nombre",
+   "si_opcion": 1,
+   "final_titulo": "Bahía del Ocaso: el agua vuelve a ser de todos",
+   "final": "La portada sale con el nombre y la firma. A la semana, la Sede de Aguas del Ocaso está precintada y los camiones cisterna reparten sin cobrar. Llueve, por fin, un jueves por la tarde, y media ciudad sale a la calle a mojarse.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "Mañana sale el nombre. Esta noche están quemando papeles en la Sede de Aguas. Necesito saber cuántas cajas sacan y adónde las llevan."
+      ],
+      [
+       "Nerea",
+       "Vigila la sede sin que te vean. Luego, si puedes, quédate con lo que saquen."
+      ]
+     ]
+    },
+    {
+     "tipo": "vigilar",
+     "texto": "Vigila la Sede de Aguas del Ocaso sin que te vean. Cuando oigas pasos, quédate quieto o agáchate con la X.",
+     "lugar": "oc_sede",
+     "radio": 25,
+     "segundos": 40,
+     "resultado": "Han sacado cuatro cajas de archivo y las han cargado en una furgoneta, camino del ayuntamiento."
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve al ayuntamiento y quítales las cajas a los guardias de la compañía.",
+     "lugar": "oc_ayuntamiento",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Guardia de la compañía",
+       "arma": "pistola",
+       "salud": 75
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Nerea",
+       "Cuatro cajas. Contratos, sobres, hasta las fechas. Con esto no hay quien lo tape."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2500
+   }
+  },
+  {
+   "id": "ocs8",
+   "titulo": "Agua turbia",
+   "capitulo": 46,
+   "contacto": "El hombre de los pedidos",
+   "lugar": "oc_sede",
+   "requiere": [
+    "ocs6"
+   ],
+   "resumen": "El que firma los pedidos paga bien por callar, y ahora quiere que le hagas un favor.",
+   "si_clave": "oc_nombre",
+   "si_opcion": 2,
+   "final_titulo": "Bahía del Ocaso: socio del agua",
+   "final": "El agua sigue igual de cara y tú cobras tu parte cada noche. En el Cauce Seco hay quien te saluda con miedo y quien ya no te saluda. El periódico publicó otra cosa en portada.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El hombre de los pedidos",
+       "Ya que nos entendemos: esta noche salen tres cisternas que no deben cruzarse con nadie. Abra usted camino."
+      ],
+      [
+       "El hombre de los pedidos",
+       "Embotelladora, depósito y sede. Cuatro minutos."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "texto": "Pasa por la embotelladora, el depósito de cisternas y la sede, por ese orden, en cuatro minutos.",
+     "limite": 240,
+     "puntos": [
+      "oc_embotelladora",
+      "oc_deposito",
+      "oc_sede"
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El hombre de los pedidos",
+       "Limpio. A partir de hoy, usted y yo somos socios. No lo vaya contando."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 5000
    }
   }
  ],

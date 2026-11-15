@@ -19,7 +19,7 @@ li { margin-bottom: .3em; }
 <h2>1. Dónde está cada cosa</h2>
 <ul>
 <li><code>data\sonidos</code>: todos los efectos de sonido, repartidos en subcarpetas.</li>
-<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 230 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
+<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 235 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
 <li><code>data\radio</code>: la música de las emisoras, un archivo por emisora.</li>
 <li><code>data\radio\mi_musica</code>: tu propia emisora. Copia aquí las canciones que quieras.</li>
 <li><code>data\musica</code>: la música de ambiente, con una carpeta por situación y varias piezas en cada una.</li>
@@ -60,7 +60,7 @@ li { margin-bottom: .3em; }
 <ul>
 <li>Un pack tuyo no tiene que traerlos todos: los sonidos que no traiga siguen sonando con el original.</li>
 <li>El volumen de cada sonido del pack se iguala al del original, como se explica arriba.</li>
-<li>De serie vienen instalados los packs «Alternativo», con 230 sonidos, «Envolvente», con 230 sonidos, «Realista», con 230 sonidos, «Retro», con 230 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
+<li>De serie vienen instalados los packs «Alternativo», con 235 sonidos, «Envolvente», con 235 sonidos, «Realista», con 235 sonidos, «Retro», con 235 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
 </ul>
 <h3>Hacer tu propio pack</h3>
 <ol>
@@ -234,9 +234,11 @@ li { margin-bottom: .3em; }
 <li><code>motor_tractor</code>: Motor de tractor. En bucle. Dura 1,00 segundos.</li>
 <li><code>rodadura</code>: Ruido de neumáticos de tu vehículo. En bucle; el volumen sube con la velocidad. Dura 1,44 segundos.</li>
 </ul>
-<h3>Tren, tranvía y agua</h3>
-<p>Los viajes en tren y en tranvía, y nadar y bucear en el mar. El tren, el tranvía y el fondo de debajo del agua suenan en bucle.</p>
+<h3>Tren, tranvía, avión y agua</h3>
+<p>Los viajes en tren, en tranvía y en avión, y nadar y bucear en el mar. El tren, el tranvía, la cabina del avión y el fondo de debajo del agua suenan en bucle.</p>
 <ul>
+<li><code>avion</code>: La cabina del avión de pasajeros en vuelo. En bucle. Dura 3,00 segundos.</li>
+<li><code>avion_despegue</code>: El avión acelerando por la pista y despegando. Dura 4,00 segundos.</li>
 <li><code>bajo_agua</code>: Lo que se oye buceando: un rumor sordo y burbujas. En bucle. Dura 3,00 segundos.</li>
 <li><code>brazada</code>: Una brazada al nadar. Dura 0,45 segundos.</li>
 <li><code>tranvia</code>: El tranvía en marcha: el zumbido del motor eléctrico y los raíles. En bucle. Dura 2,00 segundos.</li>
@@ -292,6 +294,7 @@ li { margin-bottom: .3em; }
 <p>Cada tipo de lugar emite su sonido en bucle para reconocerlo al pasar. Deben ser distintos entre sí y no cansar: piensa que se oyen muchas veces.</p>
 <ul>
 <li><code>lugar_academia</code>: Firma sonora de: academia o autoescuela, con el timbre de clase. En bucle. Dura 3,50 segundos.</li>
+<li><code>lugar_aeropuerto</code>: Firma sonora de: aeropuerto. El aviso de megafonía, tres notas que bajan. En bucle. Dura 3,00 segundos.</li>
 <li><code>lugar_armeria</code>: Firma sonora de: armería. En bucle. Dura 2,60 segundos.</li>
 <li><code>lugar_banco</code>: Firma sonora de: banco o casa de empeños. En bucle. Dura 2,40 segundos.</li>
 <li><code>lugar_bar</code>: Firma sonora de: bar, taberna o discoteca. En bucle. Dura 2,00 segundos.</li>
@@ -323,6 +326,8 @@ li { margin-bottom: .3em; }
 <li><code>lugar_taller</code>: Firma sonora de: taller o desguace. En bucle. Dura 3,00 segundos.</li>
 <li><code>lugar_taxi</code>: Firma sonora de: parada de taxis o salida de carreras. En bucle. Dura 2,50 segundos.</li>
 <li><code>lugar_tienda</code>: Firma sonora de: tienda. En bucle. Dura 3,20 segundos.</li>
+<li><code>lugar_tranvia</code>: Firma sonora de: parada de tranvía. Dos toques de campana. En bucle. Dura 2,40 segundos.</li>
+<li><code>lugar_tren</code>: Firma sonora de: estación de tren. Resoplidos de locomotora. En bucle. Dura 2,40 segundos.</li>
 </ul>
 <h3>Ambientes de fondo</h3>
 <p>Bucles largos que suenan de fondo en cada barrio, con la lluvia y de noche.</p>

@@ -210,10 +210,65 @@ class Lugar:
             "taberna": "lugar_bar", "pesca": "lugar_boya", "helipuerto": "lugar_helipuerto",
             "protectora": "lugar_protectora", "feria": "lugar_casino", "tesoro": "lugar_boya", "club": "lugar_club", "proveedor": "lugar_proveedor",
             "empleo": "lugar_empleo", "academia": "lugar_academia", "ong": "lugar_ong",
+            "tranvia": "lugar_tranvia", "tren": "lugar_tren", "aeropuerto": "lugar_aeropuerto",
         }.get(self.tipo, "lugar_generico")
 
     def get(self, k, defecto=None):
         return self.d.get(k, defecto)
+
+
+def _hueco(lugares, bloque, lado, pos):
+    """Una posición de fachada libre en esa manzana: si la pedida está ocupada, se prueba con otras."""
+    ocupadas = [int(l.get("pos", 36)) for l in lugares if tuple(l.get("bloque", (-1, -1))) == tuple(bloque) and l.get("lado", "S") == lado and "xy" not in l]
+    for p in (pos, 62, 18, 76, 48, 30, 8):
+        if all(abs(p - o) >= 13 for o in ocupadas):
+            return p
+    return pos
+
+
+def completar_transporte(c):
+    """Añade a una localidad el transporte público que le corresponde, si el mapa no trae el suyo:
+
+    - en las ciudades, paradas de tranvía repartidas por todos los barrios, para moverse dentro de la ciudad;
+    - en las localidades a las que se llega por carretera, una estación de tren, para ir a otras localidades;
+    - en las ciudades, un aeropuerto en las afueras, para los trayectos largos.
+
+    Un mod puede poner sus propias paradas, su estación o su aeropuerto con esos tipos de lugar: entonces no se añade nada
+    de ese tipo. Y puede quitarlo todo con "transporte": false en el mapa.
+    """
+    if c.get("tipo") == "mar" or c.get("transporte") is False or "avenidas" not in c:
+        return
+    lugares = c.setdefault("lugares", [])
+    tipos = {l.get("tipo") for l in lugares}
+    mid = c.get("id", "puerto_bravo")
+    nx, ny = len(c["avenidas"]) - 1, len(c["calles"]) - 1            # manzanas a lo ancho y a lo alto
+    ciudad = c.get("tipo", "ciudad") == "ciudad"
+    por_tierra = "salida" in tipos
+    if ciudad and "tranvia" not in tipos:
+        n = 0
+        for b in c.get("barrios", []):
+            i0, i1, j0, j1 = b["i"][0], min(b["i"][1], nx - 1), b["j"][0], min(b["j"][1], ny - 1)
+            esquinas = [((i0, j0), "S")] + ([((i1, j1), "N")] if (i1, j1) != (i0, j0) else [])
+            for (bi, bj), lado in esquinas:
+                n += 1
+                calle = c["calles"][bj if lado == "S" else bj + 1]
+                lugares.append({"id": f"{mid}_tranvia_{n}", "nombre": f"Parada de tranvía de {calle}, en {b['nombre']}", "tipo": "tranvia", "bloque": [bi, bj], "lado": lado,
+                                "pos": _hueco(lugares, (bi, bj), lado, 62), "linea": n,
+                                "desc": f"Una marquesina con un banco y el cartel de la línea. El tranvía recorre {c['nombre']} parando en todos los barrios."})
+    if por_tierra and "tren" not in tipos:
+        bus = next((l for l in lugares if l.get("tipo") == "estacion" and "bloque" in l), None)
+        bloque = tuple(bus["bloque"]) if bus else (0, 0)
+        lado = {"S": "N", "N": "S", "E": "O", "O": "E"}.get(bus.get("lado", "S"), "N") if bus else "S"
+        lugares.append({"id": f"{mid}_tren", "nombre": f"Estación de tren de {c['nombre']}", "tipo": "tren", "bloque": list(bloque), "lado": lado,
+                        "pos": _hueco(lugares, bloque, lado, 45),
+                        "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."})
+    if ciudad and "aeropuerto" not in tipos:
+        esquinas = [(0, 0), (nx - 1, 0), (0, ny - 1), (nx - 1, ny - 1)]
+        bloque = min(esquinas, key=lambda e: sum(1 for l in lugares if tuple(l.get("bloque", (-1, -1))) == e))      # la esquina más despejada de las afueras
+        lado = "S" if bloque[1] == 0 else "N"
+        lugares.append({"id": f"{mid}_aeropuerto", "nombre": f"Aeropuerto de {c['nombre']}", "tipo": "aeropuerto", "bloque": list(bloque), "lado": lado,
+                        "pos": _hueco(lugares, bloque, lado, 45), "precio": 180,
+                        "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."})
 
 
 def crear_mapas(datos):
@@ -257,6 +312,7 @@ class Mundo:
             for i in range(b["i"][0], b["i"][1] + 1):
                 for j in range(b["j"][0], b["j"][1] + 1):
                     self._barrio_de[(i, j)] = b
+        completar_transporte(c)
         self.lugares = {}
         for d in c["lugares"]:
             try:

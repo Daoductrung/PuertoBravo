@@ -67,6 +67,23 @@ def comprobar(raiz):
         for f in archivos:
             if f.lower().endswith((".log", ".bak", ".tmp")):
                 problemas.append("Sobra " + os.path.relpath(os.path.join(base, f), raiz))
+    # sonidos en FLAC (sin pérdida) y voces en data\voces, por historias: nada de los formatos y carpetas anteriores
+    for base, _, archivos in os.walk(os.path.join(data, "sonidos")):
+        for f in archivos:
+            if f.lower().endswith(".wav"):
+                problemas.append("Sonido en el formato anterior, debería ser FLAC: " + os.path.relpath(os.path.join(base, f), raiz))
+    if os.path.isdir(os.path.join(data, "voces_serie")):
+        problemas.append("Sobra la carpeta de voces de versiones anteriores: " + os.path.join("data", "voces_serie"))
+    if os.path.isdir(os.path.join(data, "voces", "propias")):
+        problemas.append("Voces personales: " + os.path.join("data", "voces", "propias"))
+    if not os.path.isdir(os.path.join(data, "voces", "historia_principal")):
+        problemas.append("Faltan las voces de la historia principal: " + os.path.join("data", "voces", "historia_principal"))
+    for pack in ("por_defecto", "realista", "alternativo", "retro", "envolvente"):
+        ruta = os.path.join(data, "sonidos", pack)
+        if os.path.isdir(ruta):
+            n = len({os.path.splitext(f)[0] for f in os.listdir(ruta) if f.lower().endswith((".flac", ".ogg", ".wav", ".mp3"))})
+            if n != 235:
+                problemas.append(f"El pack {pack} tiene {n} sonidos y deberían ser 235")
     mods = os.path.join(data, "mods")
     if os.path.isdir(mods):
         for f in os.listdir(mods):

@@ -202,7 +202,7 @@ La guía completa, con la descripción y la duración de cada uno de los 223 son
 - Todos los efectos están en `data\sonidos`, en subcarpetas. `por_defecto` tiene los de serie, un archivo por sonido; si borras alguno, el juego lo vuelve a crear. Cada una de las demás subcarpetas es un pack.
 - El pack se elige dentro del juego, en Opciones, Sonido y música, y se oye al momento.
 - Vienen tres packs completos: Realista y Alternativo, con grabaciones reales de dominio público, y Retro, con sonido de consola antigua. Los tres conservan el original en los sonidos de orientación (balizas, tonos, semáforos, radar y firmas de los lugares), porque de ellos depende moverse por el juego.
-- Para hacer el tuyo, crea una carpeta en `data\sonidos` y copia dentro tus grabaciones con el nombre exacto del sonido que sustituyen: `claxon.wav`, `paso_acera0.ogg`. No hace falta traerlos todos: lo que falte suena con el original. Se admiten WAV, OGG, FLAC y MP3.
+- Para hacer el tuyo, crea una carpeta en `data\sonidos` y copia dentro tus grabaciones con el nombre exacto del sonido que sustituyen: `claxon.wav`, `paso_acera0.ogg`. Los sonidos del juego están en FLAC, sin pérdida; los tuyos pueden ser WAV, OGG, FLAC o MP3. No hace falta traerlos todos: lo que falte suena con el original. Se admiten WAV, OGG, FLAC y MP3.
 - Un archivo `pack.json` opcional da al pack su nombre, autor, licencia y retoques de volumen por sonido.
 - El volumen se iguala solo: cada sonido cambiado se lleva al nivel del original, y el jugador puede subir o bajar cualquiera por separado desde Opciones.
 

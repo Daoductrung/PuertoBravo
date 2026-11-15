@@ -635,3 +635,89 @@ def test_muchos_dias_con_barrios_banda_y_sucesos(robot):
     app.empezar_partida(d)
     q = app.partida
     assert q.dia == p.dia and q.j.territorios == j.territorios and q.j.banda == j.banda and q.j.rep_bandas == j.rep_bandas
+
+
+def test_todo_el_transporte_publico(robot):
+    """Todas las paradas de tranvía de todas las ciudades, todos los trenes desde todas las estaciones y todos los vuelos."""
+    from juego import menus_lugares as ml, pantallas
+    p = robot.nueva_partida()
+    t = Total(robot)
+    app = robot.app
+    p.cfg["sucesos"] = False
+    viajes = {"tranvia": 0, "tren": 0, "avion": 0}
+    # tranvía: en cada ciudad, la vuelta entera parada a parada, y un viaje largo con trayecto bajándose a mitad
+    for mapa in [m for m in p.mapas.values() if m.tipo == "ciudad"]:
+        linea = ml.linea_tranvia(p, mapa.id)
+        t.ir(mapa.id, linea[0].x, linea[0].y)
+        for n, parada in enumerate(linea):
+            p = app.partida
+            t.sano()
+            p.teletransportar(parada.x, parada.y)
+            siguiente = linea[(n + 1) % len(linea)]
+            menus_juego.lugar(p, parada)
+            m = app.pila[-1]
+            assert isinstance(m, Menu) and m is not p, parada.id
+            assert len([o for o in m.opciones if o.texto.startswith("Ir a ")]) == len(linea) - 1, parada.id
+            m.i = 0                                                           # la más cercana
+            robot.tecla(pygame.K_RETURN)
+            assert app.pila[-1] is p and any(math.hypot(p.j.x - x.x, p.j.y - x.y) < 3 for x in linea), parada.id
+            viajes["tranvia"] += 1
+            del siguiente
+        app.viajes_en_pruebas = True
+        p.teletransportar(linea[0].x, linea[0].y)
+        menus_juego.lugar(p, linea[0])
+        m = app.pila[-1]
+        m.i = len(linea) - 2                                                  # la más lejana
+        robot.tecla(pygame.K_RETURN)
+        v = app.pila[-1]
+        assert isinstance(v, pantallas.LineaTranvia), mapa.id
+        robot.frames(30 * 20)
+        robot.tecla(pygame.K_RETURN)                                          # me bajo en la próxima
+        robot.frames(30 * 16)
+        app.viajes_en_pruebas = False
+        t.al_juego(f"tranvía de {mapa.nombre}")
+        assert any(math.hypot(p.j.x - x.x, p.j.y - x.y) < 3 for x in linea), mapa.id
+        t.voz(f"tranvía de {mapa.nombre}")
+        _coherente(p, f"tranvía de {mapa.nombre}")
+    # tren: desde cada estación, a todas las demás
+    estaciones = [l for l in p.lugares.values() if l.tipo == "tren"]
+    for origen in estaciones:
+        n_destinos = None
+        for k in range(len(estaciones)):
+            p = app.partida
+            t.sano()
+            t.ir(origen.mapa, origen.x, origen.y)
+            menus_juego.lugar(p, origen)
+            m = app.pila[-1]
+            destinos = [o for o in m.opciones if o.texto.startswith("Tren a ")]
+            n_destinos = len(destinos)
+            if k >= n_destinos:
+                t.al_juego("estación")
+                break
+            m.i = k
+            nombre = destinos[k].texto.split("Tren a ")[1].split(":")[0]
+            robot.tecla(pygame.K_RETURN)
+            assert app.pila[-1] is app.partida and app.partida.mundo.nombre == nombre, (origen.id, nombre)
+            viajes["tren"] += 1
+        assert n_destinos == len(estaciones) - 1, origen.id                   # desde cada estación se llega a todas las demás
+        t.voz(f"trenes desde {origen.nombre}")
+    # avión: todos los vuelos entre todos los aeropuertos, y uno con trayecto
+    aeropuertos = [l for l in p.lugares.values() if l.tipo == "aeropuerto"]
+    for origen in aeropuertos:
+        for k in range(len(aeropuertos) - 1):
+            p = app.partida
+            t.sano()
+            t.ir(origen.mapa, origen.x, origen.y)
+            menus_juego.lugar(p, origen)
+            m = app.pila[-1]
+            vuelos = [o for o in m.opciones if o.texto.startswith("Vuelo a ")]
+            assert len(vuelos) == len(aeropuertos) - 1, origen.id
+            m.i = k
+            robot.tecla(pygame.K_RETURN)
+            assert app.pila[-1] is app.partida and app.partida.mundo.id != origen.mapa, origen.id
+            viajes["avion"] += 1
+        t.voz(f"vuelos desde {origen.nombre}")
+        _coherente(app.partida, f"vuelos desde {origen.nombre}")
+    assert viajes["tranvia"] == 44 and viajes["tren"] == 90 and viajes["avion"] == 12, viajes
+    j = app.partida.j
+    assert j.stats["tranvias"] >= 48 and j.stats["trenes"] == 90 and j.stats["vuelos"] == 12

@@ -788,7 +788,35 @@ DECISIONES = {
                  ("Aceptar 400 euros y decir que lo perdiste", "Cobras, y el portero se queda sin saberlo.", "El hombre del hotel te mete el sobre en el bolsillo de la chaqueta.", {"dinero": 400, "fama": -2})),
     "ocs6": _dec("oc_nombre", "Tienes el nombre de quien firma los pedidos del agua. ¿Qué haces con él?",
                  ("Dárselo al periódico para que lo publique", "Ganas mucha fama en Bahía del Ocaso. No cobras nada.", "Lo escribes en un papel y lo dejas encima de la mesa de la redacción.", {"fama": 6, "animo": 5}),
-                 ("Guardártelo y hacerle una visita: 2500 euros", "Cobras por callar. El agua seguirá igual de cara.", "El hombre no discute el precio. Tiene el dinero preparado.", {"dinero": 2500, "fama": -4, "animo": -4})),
+                 ("Guardártelo y hacerle una visita: 2500 euros", "Cobras por callar, y trescientos euros más cada medianoche, para siempre. El agua seguirá igual de cara.",
+                  "El hombre no discute el precio. Tiene el dinero preparado.", {"dinero": 2500, "fama": -4, "animo": -4, "renta": 300})),
+}
+
+# Las dos ramas que abre esa decisión en Bahía del Ocaso, cada una con su final.
+RAMAS = {
+    "bahia_del_ocaso.json": [
+        {"id": "ocs7", "titulo": "Portada del Ocaso", "capitulo": 46, "contacto": "Nerea", "lugar": "oc_periodico", "requiere": ["ocs6"], "si_clave": "oc_nombre", "si_opcion": 1,
+         "resumen": "El periódico va a publicar el nombre, y en la Sede de Aguas del Ocaso están destruyendo papeles.",
+         "final_titulo": "Bahía del Ocaso: el agua vuelve a ser de todos",
+         "final": "La portada sale con el nombre y la firma. A la semana, la Sede de Aguas del Ocaso está precintada y los camiones cisterna reparten sin cobrar. Llueve, por fin, un jueves por la tarde, y media ciudad sale a la calle a mojarse.",
+         "pasos": [D(("Nerea", "Mañana sale el nombre. Esta noche están quemando papeles en la Sede de Aguas. Necesito saber cuántas cajas sacan y adónde las llevan."),
+                     ("Nerea", "Vigila la sede sin que te vean. Luego, si puedes, quédate con lo que saquen.")),
+                   {"tipo": "vigilar", "lugar": "oc_sede", "segundos": 40, "radio": 25, "resultado": "Han sacado cuatro cajas de archivo y las han cargado en una furgoneta, camino del ayuntamiento.",
+                    "texto": "Vigila la Sede de Aguas del Ocaso sin que te vean. Cuando oigas pasos, quédate quieto o agáchate con la X."},
+                   {"tipo": "eliminar", "lugar": "oc_ayuntamiento", "enemigos": [{"n": 3, "tipo": "Guardia de la compañía", "arma": "pistola", "salud": 75}],
+                    "texto": "Ve al ayuntamiento y quítales las cajas a los guardias de la compañía."},
+                   D(("Nerea", "Cuatro cajas. Contratos, sobres, hasta las fechas. Con esto no hay quien lo tape."))],
+         "recompensa": {"dinero": 2500}},
+        {"id": "ocs8", "titulo": "Agua turbia", "capitulo": 46, "contacto": "El hombre de los pedidos", "lugar": "oc_sede", "requiere": ["ocs6"], "si_clave": "oc_nombre", "si_opcion": 2,
+         "resumen": "El que firma los pedidos paga bien por callar, y ahora quiere que le hagas un favor.",
+         "final_titulo": "Bahía del Ocaso: socio del agua",
+         "final": "El agua sigue igual de cara y tú cobras tu parte cada noche. En el Cauce Seco hay quien te saluda con miedo y quien ya no te saluda. El periódico publicó otra cosa en portada.",
+         "pasos": [D(("El hombre de los pedidos", "Ya que nos entendemos: esta noche salen tres cisternas que no deben cruzarse con nadie. Abra usted camino."),
+                     ("El hombre de los pedidos", "Embotelladora, depósito y sede. Cuatro minutos.")),
+                   {"tipo": "ruta", "puntos": ["oc_embotelladora", "oc_deposito", "oc_sede"], "limite": 240, "texto": "Pasa por la embotelladora, el depósito de cisternas y la sede, por ese orden, en cuatro minutos."},
+                   D(("El hombre de los pedidos", "Limpio. A partir de hoy, usted y yo somos socios. No lo vaya contando."))],
+         "recompensa": {"dinero": 5000}},
+    ],
 }
 
 
@@ -796,6 +824,9 @@ def escribir(nombre, crudo):
     extra = DE_OIDO.get(nombre)
     if extra and not any(m["id"] == extra["id"] for m in crudo.get("misiones", [])):
         crudo.setdefault("misiones", []).append(extra)
+    for rama in RAMAS.get(nombre, []):
+        if not any(m["id"] == rama["id"] for m in crudo.get("misiones", [])):
+            crudo.setdefault("misiones", []).append(rama)
     for mi in crudo.get("misiones", []):
         paso = DECISIONES.get(mi.get("id"))
         if paso and not any(x.get("tipo") == "decision" for x in mi["pasos"]):

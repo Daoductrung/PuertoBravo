@@ -3,7 +3,8 @@
   "9": "Historias de Monteferro",
   "10": "Historias de la sierra y más encargos",
   "11": "Encargos de oído",
-  "12": "La decisión"
+  "12": "La decisión",
+  "13": "Encrucijadas"
  },
  "misiones": [
   {
@@ -1519,6 +1520,435 @@
    ],
    "recompensa": {
     "dinero": 9000
+   }
+  },
+  {
+   "id": "vd1",
+   "titulo": "El comprador",
+   "capitulo": 13,
+   "contacto": "Anselmo",
+   "lugar": "vs_bar",
+   "requiere": [
+    "v04"
+   ],
+   "resumen": "Un fondo de la ciudad quiere comprar la cooperativa de Villaseca entera, y Anselmo te pide consejo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Anselmo",
+       "Ha venido uno con corbata. Quiere la cooperativa entera: las tierras, el molino, la marca. Paga bien, no te voy a engañar."
+      ],
+      [
+       "Anselmo",
+       "Medio pueblo quiere vender y medio no. Tú eres de fuera y has dado la cara por nosotros. Lo que tú digas, pesa."
+      ],
+      [
+       "Narrador",
+       "A la salida, el de la corbata te espera junto a su coche."
+      ],
+      [
+       "El comprador",
+       "Convénzales y hay doce mil euros para usted. Nadie tiene por qué saberlo."
+      ]
+     ]
+    },
+    {
+     "tipo": "decision",
+     "clave": "cooperativa",
+     "pregunta": "El pueblo te escucha. ¿Qué les dices?",
+     "opciones": [
+      {
+       "texto": "Que no vendan: la cooperativa es del pueblo",
+       "ayuda": "Villaseca sigue siendo de sus vecinos. Te hacen socio: ciento cincuenta euros cada medianoche, para siempre, y mucha fama aquí.",
+       "dice": "Lo dices en la plaza, en voz alta. Hay quien aplaude y quien se marcha. Anselmo te pone una mano en el hombro.",
+       "fama": 5,
+       "animo": 6,
+       "renta": 150
+      },
+      {
+       "texto": "Que vendan, y cobrar tu comisión",
+       "ayuda": "Doce mil euros ahora. La cooperativa pasa a manos del fondo y tú dejas de ser bienvenido en media Villaseca.",
+       "dice": "Les hablas de números. El de la corbata asiente desde el fondo del bar.",
+       "dinero": 12000,
+       "fama": -5,
+       "animo": -5
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "En Villaseca nadie olvida quién dijo qué aquella tarde."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 0
+   }
+  },
+  {
+   "id": "vd2",
+   "titulo": "La vendimia de todos",
+   "capitulo": 13,
+   "contacto": "Anselmo",
+   "lugar": "vs_cooperativa",
+   "requiere": [
+    "vd1"
+   ],
+   "si_clave": "cooperativa",
+   "si_opcion": 1,
+   "resumen": "El fondo no se rinde: ha mandado gente a estropear la vendimia.",
+   "final_titulo": "Villaseca sigue siendo del pueblo",
+   "final": "La vendimia entra entera en la cooperativa. Tu nombre está en el libro de socios, entre el de Anselmo y el del Tío Lucas, y en el Bar El Cazador ya no te dejan pagar.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Anselmo",
+       "Los del fondo han mandado a tres con garrafas de gasóleo al campo de girasoles y al molino. Si arde la cosecha, vendemos por nada."
+      ],
+      [
+       "Anselmo",
+       "Corre. Primero los girasoles, luego el molino."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "puntos": [
+      "vs_girasoles",
+      "vs_molino"
+     ],
+     "limite": 200,
+     "texto": "Llega al campo de girasoles y después al molino viejo antes de que prendan fuego: tres minutos y veinte segundos."
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "vs_molino",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Matón del fondo",
+       "arma": "bate",
+       "salud": 70
+      }
+     ],
+     "texto": "Echa a los matones del fondo del molino."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Anselmo",
+       "Ni una cepa quemada. Este año el vino lleva tu nombre en la etiqueta, aunque sea en pequeño."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2500
+   }
+  },
+  {
+   "id": "vd3",
+   "titulo": "La firma",
+   "capitulo": 13,
+   "contacto": "El comprador",
+   "lugar": "vs_estacion",
+   "requiere": [
+    "vd1"
+   ],
+   "si_clave": "cooperativa",
+   "si_opcion": 2,
+   "resumen": "El notario llega en autobús y hay vecinos que no quieren que llegue a firmar.",
+   "final_titulo": "Villaseca, vendida",
+   "final": "La cooperativa tiene ahora un logotipo nuevo y una verja. El vino se vende más caro y se hace en otro sitio. Tú tienes doce mil euros más, y en Villaseca hay puertas que ya no se te abren.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El comprador",
+       "El notario llega en el autobús de las doce. Acompáñele hasta la cooperativa. Hay vecinos con ganas de bronca."
+      ],
+      [
+       "El comprador",
+       "Que no le toquen. Y que firme."
+      ]
+     ]
+    },
+    {
+     "tipo": "escoltar",
+     "lugar": "vs_estacion",
+     "destino": "vs_cooperativa",
+     "persona": "el notario",
+     "texto": "Recoge al notario en la parada del autobús y acompáñale hasta la cooperativa."
+    },
+    {
+     "tipo": "policia",
+     "nivel": 2,
+     "texto": "Alguien ha avisado a la Guardia de que hubo sobres de por medio. Quítatelos de encima."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El comprador",
+       "Firmado. Ha sido un placer hacer negocios con usted. No hace falta que nos volvamos a ver."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 3000
+   }
+  },
+  {
+   "id": "sd1",
+   "titulo": "El trono vacío",
+   "capitulo": 13,
+   "contacto": "Remedios",
+   "lugar": "sl_taberna",
+   "requiere": [
+    "s06"
+   ],
+   "resumen": "Con El Caimán detenido, su negocio en San Lucero se ha quedado sin dueño. Alguien tiene que decidir qué pasa con él.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Remedios",
+       "El Caimán está entre rejas, pero lo suyo sigue ahí: los cobros del bingo, la discoteca, el puerto. Si nadie lo coge, lo cogerá otro peor."
+      ],
+      [
+       "Remedios",
+       "Los del mercado podemos organizarnos, si nos dejas sitio. Tú decides: aquí ya manda tu palabra."
+      ],
+      [
+       "Narrador",
+       "Sobre la mesa hay tres cosas: las llaves del despacho del Caimán, sus libros de cuentas y una tarjeta de la comisaría."
+      ]
+     ]
+    },
+    {
+     "tipo": "decision",
+     "clave": "trono",
+     "pregunta": "El negocio del Caimán se ha quedado sin dueño. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Dejar que el mercado se organice solo",
+       "ayuda": "San Lucero para sus vecinos. Mucha fama; lo que queda de Los Lagartos te la tendrá jurada.",
+       "dice": "Le das las llaves a Remedios. Las mira como si quemaran.",
+       "fama": 6,
+       "animo": 6,
+       "banda": "Los Lagartos",
+       "banda_puntos": -25
+      },
+      {
+       "texto": "Quedarte tú con el negocio",
+       "ayuda": "Cuatrocientos euros cada medianoche, para siempre, y Los Lagartos pasan a trabajar para ti. Pierdes fama y a Remedios.",
+       "dice": "Te guardas las llaves. Remedios se levanta de la mesa sin terminar el café.",
+       "renta": 400,
+       "fama": -4,
+       "banda": "Los Lagartos",
+       "banda_puntos": 60
+      },
+      {
+       "texto": "Llevar los libros a la policía",
+       "ayuda": "Lo legal: dos mil euros de recompensa y algo de fama. Nadie se queda con nada.",
+       "dice": "Coges los libros y la tarjeta. Remedios asiente despacio.",
+       "dinero": 2000,
+       "fama": 3
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "San Lucero amanece distinta según a quién le preguntes."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 0
+   }
+  },
+  {
+   "id": "sd2",
+   "titulo": "Mercado libre",
+   "capitulo": 13,
+   "contacto": "Remedios",
+   "lugar": "sl_mercado",
+   "requiere": [
+    "sd1"
+   ],
+   "si_clave": "trono",
+   "si_opcion": 1,
+   "resumen": "Los últimos Lagartos no aceptan que el puerto ya no sea suyo.",
+   "final_titulo": "San Lucero, de sus vecinos",
+   "final": "En la lonja de San Lucero ya no se paga a nadie por descargar. Doña Remedios preside la junta del mercado y te guarda siempre el primer plato. De Los Lagartos queda una pintada medio borrada.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Remedios",
+       "Quedan cuatro Lagartos en la lonja, cobrando por descargar como si no hubiera pasado nada. Hoy se acaba."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "sl_lonja",
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Pandillero de Los Lagartos",
+       "arma": "pistola",
+       "salud": 75
+      }
+     ],
+     "texto": "Ve a la lonja de San Lucero y echa a los últimos Lagartos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Remedios",
+       "Ya está. Mañana descargan los barcos sin pagar a nadie, por primera vez en diez años."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2500
+   }
+  },
+  {
+   "id": "sd3",
+   "titulo": "El nuevo rey",
+   "capitulo": 13,
+   "contacto": "Un Lagarto",
+   "lugar": "sl_bingo",
+   "requiere": [
+    "sd1"
+   ],
+   "si_clave": "trono",
+   "si_opcion": 2,
+   "resumen": "Tu primera ronda de cobros en San Lucero. Hay que dejar claro quién manda ahora.",
+   "final_titulo": "El rey de San Lucero eres tú",
+   "final": "El despacho del Caimán huele ahora a tu tabaco. Cada medianoche llega un sobre, y cada mañana hay alguien que cruza de acera. Doña Remedios cerró su puesto en el mercado y nadie te ha dicho por qué.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Un Lagarto",
+       "Jefe. El bingo, la discoteca y la marisquería. Si hoy cobras tú en persona, mañana no hace falta ni ir."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "puntos": [
+      "sl_discoteca",
+      "sl_marisqueria",
+      "sl_bingo"
+     ],
+     "limite": 260,
+     "texto": "Cobra en la Discoteca Erasmus, en la Marisquería La Marina y en el Bingo La Suerte, por ese orden."
+    },
+    {
+     "tipo": "policia",
+     "nivel": 2,
+     "texto": "La policía ya sabe que hay dueño nuevo. Despístala."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Un Lagarto",
+       "Todos han pagado. Y sin rechistar. San Lucero es tuyo, jefe."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 4000
+   }
+  },
+  {
+   "id": "sd4",
+   "titulo": "Testigo protegido",
+   "capitulo": 13,
+   "contacto": "La inspectora",
+   "lugar": "sl_comisaria",
+   "requiere": [
+    "sd1"
+   ],
+   "si_clave": "trono",
+   "si_opcion": 3,
+   "resumen": "El contable del Caimán quiere declarar, y hay quien prefiere que no llegue.",
+   "final_titulo": "San Lucero, por lo legal",
+   "final": "El juicio dura tres meses y sale en todos los periódicos. El Caimán no volverá a pisar San Lucero. Nadie te debe nada y tú no le debes nada a nadie: se duerme bien así.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La inspectora",
+       "Con los libros no basta: necesito al contable declarando. Está escondido en el Gran Hotel y no se fía de mis agentes."
+      ],
+      [
+       "La inspectora",
+       "De ti, sí. Tráemelo."
+      ]
+     ]
+    },
+    {
+     "tipo": "escoltar",
+     "lugar": "sl_hotel",
+     "destino": "sl_comisaria",
+     "persona": "el contable del Caimán",
+     "texto": "Recoge al contable en el Gran Hotel y llévale a la comisaría."
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "sl_comisaria",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Pandillero de Los Lagartos",
+       "arma": "pistola",
+       "salud": 70
+      }
+     ],
+     "texto": "Los Lagartos os esperaban en la puerta. Quítatelos de encima."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La inspectora",
+       "Ha declarado cuatro horas seguidas. Gracias. Esto no lo va a agradecer nadie en voz alta, así que te lo digo yo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 2000
    }
   }
  ]

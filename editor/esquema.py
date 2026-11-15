@@ -21,7 +21,8 @@ TIPOS_LUGAR = [
     ("concesionario", "Concesionario de vehículos"), ("nautica", "Náutica, venta de barcos"),
     ("estacion", "Estación de autobuses"), ("salida", "Salida por carretera a otra localidad"),
     ("embarcadero", "Embarcadero, de tierra al mar"), ("muelle", "Muelle, del mar a tierra"),
-    ("helipuerto", "Helipuerto"), ("pesca", "Punto de pesca"), ("protectora", "Protectora de animales"),
+    ("helipuerto", "Helipuerto"), ("tranvia", "Parada de tranvía, para moverse dentro de la ciudad"),
+    ("tren", "Estación de tren, a otras localidades por tierra"), ("aeropuerto", "Aeropuerto: vuelos largos, avionetas y helicópteros"), ("pesca", "Punto de pesca"), ("protectora", "Protectora de animales"),
     ("feria", "Feria o recreativos"), ("tesoro", "Zona de búsqueda de tesoros"),
     ("empleo", "Oficina de empleo"), ("academia", "Academia de cursos"), ("ong", "Comedor social u organización benéfica"),
     ("club", "Club nocturno, contenido para adultos"), ("proveedor", "Proveedor de sustancias, contenido para adultos"),
@@ -153,6 +154,7 @@ ESQUEMAS = {
         c("dinero", "Dinero que da, o que quita si es negativo", "entero"),
         c("fama", "Fama que da o quita", "entero"),
         c("animo", "Ánimo que da o quita", "entero"),
+        c("renta", "Dinero que deja cada medianoche, para siempre", "entero", "Una consecuencia que dura después de la misión y del final de la historia. Negativo, si cuesta dinero."),
         c("banda", "Banda con la que cambia la relación", ayuda="El nombre tal cual: Los Calaveras, Los Lagartos, Los Barrenos, Los Tiburones o Los Cuervos."),
         c("banda_puntos", "Puntos de relación con esa banda", "entero", "De menos cien a cien. Con treinta o más, esa banda te deja en paz; con menos treinta o menos, va a por ti.", minimo=-100, maximo=100)]},
     "linea": {"titulo": "Frase", "resumen": lambda d: f"{d.get('quien', '?')}: {d.get('texto', '')[:60]}", "campos": [

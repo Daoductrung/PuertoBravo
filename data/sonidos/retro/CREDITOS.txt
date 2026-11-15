@@ -2,7 +2,7 @@
 
 Sonidos de consola antigua, de 8 y 16 bits, para pasos, golpes, disparos, explosiones, monedas, avisos y menús; el resto, grabaciones reales.
 
-Trae los 230 sonidos del juego: 182 son grabaciones reales descargadas y 48 son el sonido
+Trae los 235 sonidos del juego: 184 son grabaciones reales descargadas y 51 son el sonido
 original del juego, para los que no hay una grabación libre que encaje o que conviene no tocar
 (balizas, tonos, semáforos, radar y firmas de los lugares: de ellos depende orientarse sin ver).
 Todos proceden de colecciones con licencia CC0 (dominio público): se pueden usar, modificar y
@@ -28,7 +28,7 @@ COLECCIONES USADAS
   Interface Sounds, de Kenney: https://opengameart.org/content/interface-sounds
   Car Sound Effects Pack: https://opengameart.org/content/car-sound-effects-pack-low-quality
   hyper ultra fanfare: https://opengameart.org/content/hyper-ultra-fanfare
-  Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128: https://freesound.org
+  Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2: https://freesound.org
   ghost breath: https://opengameart.org/content/ghost-breath
   Impact Sounds, de Kenney: https://kenney.nl/assets/impact-sounds
   fantasy sound effects tinysized sfx: https://opengameart.org/content/fantasy-sound-effects-tinysized-sfx
@@ -100,12 +100,14 @@ QUÉ SONIDO SALE DE DÓNDE
   animo_sube.flac: Ding.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,34 segundos.
   arranque.flac: Car_Engine_Start_Up.ogg, de Car Sound Effects Pack. Dura 1,82 segundos.
   ascenso.flac: sboe.wav, de hyper ultra fanfare. Dura 1,60 segundos.
-  bajo_agua.flac: bajo_agua.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 8,00 segundos.
+  avion.flac: avion.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 8,00 segundos.
+  avion_despegue.flac: avion_despegue.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 8,00 segundos.
+  bajo_agua.flac: bajo_agua.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 8,00 segundos.
   bajon.flac: ghostbreath.flac, de ghost breath. Dura 1,60 segundos.
   bala_impacto.flac: impactMetal_medium_001.ogg, de Impact Sounds, de Kenney. Dura 0,09 segundos.
   bala_silbido.flac: tin-whistle-whoosh-01.wav, de fantasy sound effects tinysized sfx. Dura 0,11 segundos.
   bolsa.flac: paper_01.ogg, de 100 CC0 SFX. Dura 0,41 segundos.
-  brazada.flac: brazada.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 0,90 segundos.
+  brazada.flac: brazada.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 0,90 segundos.
   buho.flac: buho_1763.wav, de BigSoundBank.com y LaSonotheque.org. Dura 2,20 segundos.
   buscando.flac: click2.wav, de 51 UI sound effects, de Kenney. Dura 0,05 segundos.
   caja.flac: coin2.wav, de 10 8bit coin sounds. Dura 0,42 segundos.
@@ -179,7 +181,7 @@ QUÉ SONIDO SALE DE DÓNDE
   menu_ok.flac: Menu__001.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,14 segundos.
   mision_fallo.flac: Game Over.mp3, de retro shooter sound effects. Dura 1,02 segundos.
   mision_ok.flac: life.wav, de 8bit fanfare jingle the lick. Dura 2,86 segundos.
-  motor_avioneta.flac: motor_avioneta.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 4,00 segundos.
+  motor_avioneta.flac: motor_avioneta.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 4,00 segundos.
   motor_barco.flac: ship1.ogg, de War on Water sound effects. Dura 2,00 segundos.
   motor_bici.flac: bicycle_spokes-1.ogg, de Bicycle sounds. Dura 0,90 segundos.
   motor_camion.flac: motor_camion_1442.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,50 segundos.
@@ -253,14 +255,14 @@ QUÉ SONIDO SALE DE DÓNDE
   tomar_hierba.flac: lighter-light-01.wav, de fantasy sound effects tinysized sfx. Dura 0,22 segundos.
   tomar_pastillas.flac: bottle-pills-shake-02.wav, de fantasy accessory sfx library. Dura 0,27 segundos.
   tomar_polvo.flac: esnifar_0784.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,00 segundos.
-  tranvia.flac: tranvia.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 8,00 segundos.
-  tranvia_campana.flac: tranvia_campana.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 1,47 segundos.
+  tranvia.flac: tranvia.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 8,00 segundos.
+  tranvia_campana.flac: tranvia_campana.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 1,47 segundos.
   trato.flac: handleCoins2.ogg, de 50 RPG sound effects, de Kenney. Dura 0,28 segundos.
-  tren.flac: tren.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 8,00 segundos.
-  tren_silbato.flac: tren_silbato.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9 y swordofkings128. Dura 3,00 segundos.
+  tren.flac: tren.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 8,00 segundos.
+  tren_silbato.flac: tren_silbato.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 3,00 segundos.
   trueno.flac: sfx100v2_thunder_01.ogg, de 100 CC0 SFX #2. Dura 4,04 segundos.
   viento_playa.flac: Wind.ogg, de Wind. Dura 6,00 segundos.
 
 SONIDOS ORIGINALES DEL JUEGO INCLUIDOS PARA QUE EL PACK ESTÉ COMPLETO
   Sustituye cualquiera de ellos por una grabación tuya con el mismo nombre.
-  baliza, baliza_destino, bordillo, cruce, cursor_mapa, loc_casete, loc_lugar, loc_mision, loc_objeto, loc_vehiculo, lugar_academia, lugar_armeria, lugar_banco, lugar_bar, lugar_boya, lugar_casa, lugar_casino, lugar_cine, lugar_club, lugar_comida, lugar_comisaria, lugar_contacto, lugar_embarcadero, lugar_empleo, lugar_estacion, lugar_generico, lugar_gimnasio, lugar_helipuerto, lugar_hospital, lugar_iglesia, lugar_mina, lugar_ong, lugar_periodico, lugar_prision, lugar_protectora, lugar_proveedor, lugar_salida, lugar_taller, lugar_taxi, lugar_tienda, radar, semaforo_pio, semaforo_tic, sonar, tono_apuntado, tono_libre, tono_objetivo, tono_pared
+  baliza, baliza_destino, bordillo, cruce, cursor_mapa, loc_casete, loc_lugar, loc_mision, loc_objeto, loc_vehiculo, lugar_academia, lugar_aeropuerto, lugar_armeria, lugar_banco, lugar_bar, lugar_boya, lugar_casa, lugar_casino, lugar_cine, lugar_club, lugar_comida, lugar_comisaria, lugar_contacto, lugar_embarcadero, lugar_empleo, lugar_estacion, lugar_generico, lugar_gimnasio, lugar_helipuerto, lugar_hospital, lugar_iglesia, lugar_mina, lugar_ong, lugar_periodico, lugar_prision, lugar_protectora, lugar_proveedor, lugar_salida, lugar_taller, lugar_taxi, lugar_tienda, lugar_tranvia, lugar_tren, radar, semaforo_pio, semaforo_tic, sonar, tono_apuntado, tono_libre, tono_objetivo, tono_pared

@@ -27,7 +27,9 @@ def helipuerto(p, l):
         app.son("error")
         app.decir("El piloto no despega con la policía buscándote.", True)
         return
-    destinos = [h for h in p.lugares.values() if h.tipo == "helipuerto" and h.id != l.id]
+    destinos = [h for h in p.lugares.values() if h.tipo in ("helipuerto", "aeropuerto") and h.id != l.id and h.mapa != p.mundo.id]
+    if not volando:
+        destinos = [h for h in destinos if h.tipo == "helipuerto"]            # de pasajero, el helicóptero solo va a helipuertos
 
     def volar(h):
         def f():

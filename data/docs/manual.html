@@ -22,7 +22,7 @@ li { margin-bottom: .3em; }
 <p>Al empezar eliges entre <span data-n="personajes">4</span> personajes, cada uno con sus ventajas. Con el primero te llamas Dani Roca y acabas de salir de la cárcel tras cumplir tres años por un robo que no cometiste. Vuelves a tu ciudad, Puerto Bravo, que ahora controla el empresario Octavio Belmonte. A partir de ahí, haz lo que quieras: sigue la historia, o no.</p>
 <ul>
 <li>Un mundo abierto con <span data-n="mapas">9</span> mapas: las ciudades de Puerto Bravo, San Lucero y Monteferro; los pueblos de Villaseca, Cala Brava y Fuentefría; la Isla Tortuga, la Plataforma Neptuno y el Mar de Poniente, navegable en barco.</li>
-<li><span data-n="lugares">264</span> lugares: casas, comercios, bancos, talleres, casinos, gimnasios, cines, hospitales, embarcaderos, helipuertos y monumentos, cada uno con su sonido y su descripción.</li>
+<li><span data-n="lugares">305</span> lugares: casas, comercios, bancos, talleres, casinos, gimnasios, cines, hospitales, embarcaderos, helipuertos y monumentos, cada uno con su sonido y su descripción.</li>
 <li><span data-n="misiones">68</span> misiones entre la historia principal y las historias secundarias del resto de localidades. Además, encargos que se pueden repetir sin fin.</li>
 <li><span data-n="vehiculos">39</span> vehículos: coches, motos, bicicleta, camiones, vehículos de emergencias, un coche de carreras, 8 embarcaciones y un helicóptero.</li>
 <li><span data-n="armas">22</span> armas, de los puños a la ametralladora rotativa, con armas silenciosas y explosivos.</li>
@@ -295,16 +295,31 @@ li { margin-bottom: .3em; }
 <h3>El trayecto en taxi y en autobús</h3>
 <p>Cuando coges un taxi o un autobús, el viaje se oye: el motor, la calzada y la emisora que lleve puesta el conductor. Un taxi tarda entre doce y cuarenta y cinco segundos según la distancia, y un autobús, unos cincuenta. Si no quieres esperar, pulsa <kbd>Intro</kbd> y llegas en el acto; cualquier otra tecla te dice cuánto falta. Si prefieres llegar siempre al momento, quita la opción Viajes en taxi y en autobús con trayecto, en Opciones, Movimiento y conducción.</p>
 <p>Los vuelos en helicóptero con piloto también tienen trayecto, con el sonido del rotor. Si el helicóptero lo pilotas tú, no.</p>
-<h3>Tren y tranvía</h3>
-<p>En las estaciones, además del autobús, hay tren y tranvía:</p>
+<h3>Tranvía: para moverte dentro de la ciudad</h3>
+<p>Las cuatro ciudades, Puerto Bravo, San Lucero, Monteferro y Bahía del Ocaso, tienen una línea de tranvía que da la vuelta a la ciudad, con paradas en todos los barrios: dieciséis en Puerto Bravo. Cada parada suena con dos toques de campana y aparece en la lista de lugares y en el radar.</p>
 <ul>
-<li>Tranvía: une las localidades vecinas, las que tienen carretera directa entre ellas. Cuesta ocho euros y tarda poco.</li>
-<li>Tren: llega a cualquier localidad a la que se pueda ir por tierra, aunque sea dando un rodeo. Cuesta el doble que el autobús y tarda la mitad.</li>
-<li>A las islas y a la plataforma no llega el raíl: hay mar por medio. Para eso están el barco, el helicóptero y la avioneta.</li>
+<li>Ve a pie a una parada y pulsa <kbd>Intro</kbd>. El menú te ofrece todas las demás paradas, de la más cercana a la más lejana, y dice cuántas paradas hay hasta cada una. El billete cuesta dos euros.</li>
+<li>Durante el viaje, el tranvía va parando y anuncia cada parada y la siguiente. Va por el lado más corto de la línea.</li>
+<li>Te bajas donde quieras: con <kbd>Intro</kbd> te bajas en la próxima parada, aunque no sea la que habías elegido. Cualquier otra tecla te dice cuál es la próxima y cuánto falta.</li>
+<li>Con la opción Viajes con trayecto quitada, llegas al momento a la parada elegida.</li>
 </ul>
-<p>Los dos tienen trayecto: el silbato del tren o la campana del tranvía al salir, y el traqueteo del vagón durante el viaje. Con <kbd>Intro</kbd> llegas ya. Sirve también para las localidades de los mods, siempre que se llegue a ellas por tierra.</p>
-<h3>Avioneta</h3>
-<p>La Avioneta Gaviota se compra donde el helicóptero y se pilota igual: a mano, por encima de edificios y tráfico, y solo aterriza en suelo despejado. Es más rápida y más barata. En un helipuerto, con <kbd>Intro</kbd>, vuelas con ella a otra localidad.</p>
+<p>El tranvía no sale de la ciudad. En los pueblos y en las islas no hay.</p>
+<h3>Tren: para ir a otras localidades</h3>
+<p>Cada localidad a la que se llega por carretera tiene su estación de tren, que es un lugar distinto de la estación de autobuses y suena con resoplidos de locomotora.</p>
+<ul>
+<li>Desde una estación de tren se puede ir a todas las demás. Primero aparecen las localidades vecinas, que son las más baratas: el billete cuesta más cuanto más lejos.</li>
+<li>A las islas y a la plataforma no llega el tren: hay mar por medio.</li>
+<li>El viaje tiene trayecto: el silbato al salir y el traqueteo del vagón. Dura más cuanto más lejos, y con <kbd>Intro</kbd> llegas ya.</li>
+</ul>
+<p>Sirve igual para las localidades de los mods.</p>
+<h3>Aeropuerto: trayectos largos, avionetas y helicópteros</h3>
+<p>Las cuatro ciudades tienen un aeropuerto en las afueras, en una esquina de la ciudad. Suena con el aviso de megafonía: tres notas que bajan.</p>
+<ul>
+<li>Avión de pasajeros a las otras ciudades, por 180 euros. Es para los trayectos largos. Tiene trayecto: el despegue y luego el zumbido de la cabina.</li>
+<li>Alquilar una avioneta, por 600 euros, o un helicóptero, por 900. Te lo dejan en la pista, junto a la terminal, con el GPS marcándolo: súbete con <kbd>F</kbd> y pilótalo tú.</li>
+<li>Si llegas pilotando una avioneta o un helicóptero, con <kbd>Intro</kbd> en el aeropuerto vuelas a cualquier otro aeropuerto o helipuerto, gratis.</li>
+</ul>
+<p>La Avioneta Gaviota también se puede comprar, donde el helicóptero. Se pilota igual: a mano, por encima de edificios y tráfico, y solo aterriza en suelo despejado. Es más rápida y más barata.</p>
 <h3>Nadar y bucear</h3>
 <p>En el mar ya no hace falta estar siempre a bordo:</p>
 <ul>
@@ -443,6 +458,13 @@ li { margin-bottom: .3em; }
 <p>Como cada grabación viene a un volumen distinto, el juego iguala el volumen de cada sonido cambiado al del original. Además, en Ajustar el volumen de cada sonido están todos los sonidos por grupos: <kbd>Intro</kbd> lo hace sonar y las flechas izquierda y derecha suben o bajan ese sonido en concreto.</p>
 <h3>Cambiar los sonidos y la música</h3>
 <p>Todos los efectos de sonido y toda la música son archivos normales, en <strong>data\sonidos\por_defecto</strong>, <strong>data\radio</strong> y <strong>data\musica</strong>. Puedes sustituir cualquiera por una grabación tuya. La guía <strong>data\docs\cambiar_sonidos.html</strong> explica cómo y describe cada archivo.</p>
+<h3>En qué formato está cada cosa, y por qué</h3>
+<ul>
+<li>Los efectos de sonido, en todos los packs, están en FLAC. FLAC comprime sin pérdida: al leerlo salen exactamente las mismas muestras que de un WAV, pero ocupa menos de la mitad. Hasta la versión 1.6.1 eran WAV y ocupaban 141 megas; ahora ocupan 55, y suenan idénticos.</li>
+<li>La música de ambiente y la radio están en MP3, y las voces de las escenas y los ambientes largos del pack Envolvente, en OGG. Son formatos que ya quitan algo de calidad para ocupar poco, y no existe un original mejor: pasarlos a otro formato sería volver a comprimir lo comprimido, y sonarían peor, o hacerlos varias veces más grandes sin ganar nada. Por eso se quedan como están.</li>
+<li>Al actualizar desde una versión anterior, el juego borra solo los WAV antiguos que sean el mismo sonido que los FLAC nuevos, para que no ocupen sitio sin usarse. Si habías cambiado algún sonido por una grabación tuya, esa no se toca y es la que suena.</li>
+<li>Tus grabaciones pueden seguir siendo WAV, OGG, FLAC o MP3. Si pones una con el mismo nombre que un sonido del juego, suena la tuya; para volver al original, bórrala.</li>
+</ul>
 
 <h2>14. Ampliar el juego: los mods</h2>
 <p>Un mod es una ampliación: un archivo que añade al juego lugares, misiones, vehículos, armas o localidades enteras, sin tocar nada de lo original. Los mods están en la carpeta <strong>data\mods</strong> y se cargan solos al arrancar. Si un mod tiene un error, el juego lo dice al arrancar y sigue funcionando.</p>
@@ -672,7 +694,15 @@ li { margin-bottom: .3em; }
 <h3>Decisiones, y finales distintos</h3>
 <p>En algunas misiones la historia te pide una decisión. Se elige en un menú del que no se puede salir sin elegir, y <kbd>F1</kbd> explica lo que supone cada opción. No se puede deshacer. Lo que decidas queda apuntado en el diario del móvil y cambia lo que viene después: qué misiones aparecen, cuánto dinero y cuánta fama tienes, y cómo te llevas con las bandas.</p>
 <p>Hay decisiones repartidas por toda la historia: qué haces con el dinero que te ofrecen, con un enemigo que se rinde, con un tesoro o con una banda que quiere hablar. Son ocho en la historia principal y una en seis de los mods que vienen con el juego. Casi todas cambian tu dinero, tu fama o tu ánimo; algunas, cómo te llevas con una banda.</p>
-<p>La más importante está al final del capítulo Encargos de oído, en la misión El sobre del concejal, y lleva a tres finales distintos según lo que elijas. Si quieres ver los otros, empieza otra partida, o usa Nueva partida conservando lo ganado.</p>
+<p>Cuatro de esas decisiones abren ramas: según lo que elijas aparecen unas misiones u otras, cada una con su final, y algunas dejan consecuencias que duran para siempre, como una renta que cobras cada medianoche.</p>
+<ul>
+<li>El sobre del concejal, en Puerto Bravo: tres caminos y tres finales.</li>
+<li>El comprador, en Villaseca, cuando ya has hecho las historias del pueblo: defender la cooperativa, y hacerte socio, o venderla y cobrar.</li>
+<li>El trono vacío, en San Lucero, cuando ya has hecho sus historias: dejar el negocio del Caimán al mercado, quedártelo tú o llevar los libros a la policía.</li>
+<li>Por el circuito, en Bahía del Ocaso: publicar el nombre o cobrar por callar.</li>
+</ul>
+<p>El diario del móvil apunta cada decisión y lo que te deja o te cuesta cada medianoche.</p>
+<p>La de Puerto Bravo está al final del capítulo Encargos de oído y lleva a tres finales distintos según lo que elijas. Si quieres ver los otros, empieza otra partida, o usa Nueva partida conservando lo ganado.</p>
 
 <h3>Acerca de</h3>
 <p>En el menú principal, justo antes de Salir, está Acerca de. Dice la versión que tienes, quién ha hecho el juego y su licencia, y tiene enlaces a la página del proyecto, a la página para avisar de fallos, al Mastodon del autor y a las novedades. También hay una opción para invitar al autor a un café si te gusta su trabajo: abre la página de donaciones en el navegador. El juego es gratis y lo seguirá siendo.</p>

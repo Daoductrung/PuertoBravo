@@ -82,35 +82,169 @@ def estacion(p, l):
             from .pantallas import viajar as trayecto
             trayecto(app, 50.0, llegar, autobus=True, destino=p.mapas[dest.mapa].nombre)
         return f
-    def por_rail(dest, medio):
+    ops = [Opcion(f"Autobús a {p.mapas[e.mapa].nombre}: {int(e.get('precio', 20))} euros", viajar(e), ayuda=p.mapas[e.mapa].barrios[0].get("descripcion", ""))
+           for e in p.lugares.values() if e.tipo == "estacion" and e.mapa != p.mundo.id]
+    m = _menu(p, l, ops or [Opcion("Hoy no sale ningún autobús")])
+
+
+# ------------------------------------------------------------------ tranvía: para moverse dentro de la ciudad
+PRECIO_TRANVIA = 2
+
+
+def linea_tranvia(p, mapa=None):
+    """Las paradas de tranvía de una ciudad, en el orden en que las recorre la línea: dando la vuelta a la ciudad."""
+    m = p.mapas[mapa] if mapa else p.mundo
+    paradas = [l for l in m.lugares.values() if l.tipo == "tranvia"]
+    if not paradas:
+        return []
+    cx = sum(l.x for l in paradas) / len(paradas)
+    cy = sum(l.y for l in paradas) / len(paradas)
+    return sorted(paradas, key=lambda l: (math.atan2(l.y - cy, l.x - cx), l.id))
+
+
+def recorrido_tranvia(p, origen, destino):
+    """Las paradas por las que pasa el tranvía de una a otra, por el lado más corto de la línea, sin la de origen."""
+    linea = linea_tranvia(p, origen.mapa)
+    a, b = linea.index(origen), linea.index(destino)
+    n = len(linea)
+    adelante = [linea[(a + k) % n] for k in range(1, (b - a) % n + 1)]
+    atras = [linea[(a - k) % n] for k in range(1, (a - b) % n + 1)]
+    return adelante if len(adelante) <= len(atras) else atras
+
+
+def tranvia(p, l):
+    app = p.app
+    if p.j.veh:
+        app.decir(f"{l.nombre}. Bájate del vehículo para coger el tranvía.", True)
+        return
+    if p.j.estrellas:
+        app.son("error")
+        app.decir("El conductor del tranvía te reconoce y no abre las puertas.", True)
+        return
+    linea = linea_tranvia(p)
+    corto = lambda x: x.nombre.replace("Parada de tranvía de ", "")           # noqa: E731
+
+    def ir(dest):
         def f():
-            precio = precio_rail(dest, medio)
+            if not p.pagar(PRECIO_TRANVIA):
+                return
+            app.cerrar(m)
+            paradas = recorrido_tranvia(p, l, dest)
+
+            def bajar(parada, cuantas):
+                p.pasar_horas(0.05 * max(1, cuantas))
+                p.teletransportar(parada.x, parada.y)
+                p.j.stats["tranvias"] = p.j.stats.get("tranvias", 0) + 1
+                p.decir(f"Te bajas del tranvía en {corto(parada)}. {p.mundo.describir(parada.x, parada.y)}. Son las {p.hora_txt()}.")
+            from . import pantallas
+            if pantallas.con_trayecto(app):
+                app.abrir(pantallas.LineaTranvia(app, paradas, bajar, corto))
+            else:
+                bajar(dest, len(paradas))
+        return f
+    otras = [x for x in linea if x is not l]
+    otras.sort(key=lambda x: len(recorrido_tranvia(p, l, x)))
+    ops = [Opcion(f"Ir a {corto(x)}: {len(recorrido_tranvia(p, l, x))} {'parada' if len(recorrido_tranvia(p, l, x)) == 1 else 'paradas'}, {PRECIO_TRANVIA} euros", ir(x),
+                  ayuda="El tranvía va parando en cada parada y la anuncia. Durante el viaje, con Intro te bajas en la próxima, aunque no sea la que habías elegido. "
+                        + p.mundo.describir(x.x, x.y) + ".") for x in otras]
+    m = _menu(p, l, ops or [Opcion("Esta es la única parada de la línea")],
+              intro=f"El tranvía recorre {p.mundo.nombre}. Hay {len(linea)} paradas. Elige en cuál quieres bajarte")
+
+
+# ------------------------------------------------------------------ tren: para ir a otras localidades por tierra
+def tren(p, l):
+    app = p.app
+    if p.j.veh:
+        app.decir(f"{l.nombre}. Bájate del vehículo para coger el tren.", True)
+        return
+    if p.j.estrellas:
+        app.son("error")
+        app.decir("En la taquilla hay un cartel con tu cara. Mejor no.", True)
+        return
+
+    def ir(dest, saltos):
+        def f():
+            if not p.pagar(precio(saltos)):
+                return
+            app.cerrar(m)
+
+            def llegar():
+                p.pasar_horas(0.5 * saltos)
+                p.j.stats["trenes"] = p.j.stats.get("trenes", 0) + 1
+                p.cambiar_mapa(dest.mapa, dest.x, dest.y, None, f"El tren te deja en {dest.nombre}. Son las {p.hora_txt()}.")
+            from .pantallas import viajar as trayecto
+            trayecto(app, min(60.0, 25.0 + 10.0 * saltos), llegar, destino=p.mapas[dest.mapa].nombre, medio="tren")
+        return f
+
+    def precio(saltos):
+        return 10 + 12 * saltos
+    ops = []
+    for e in sorted((x for x in p.lugares.values() if x.tipo == "tren" and x.mapa != p.mundo.id), key=lambda x: (p.saltos_por_tierra(p.mundo.id, x.mapa) or 99, x.mapa)):
+        saltos = p.saltos_por_tierra(p.mundo.id, e.mapa)
+        if saltos:
+            ops.append(Opcion(f"Tren a {p.mapas[e.mapa].nombre}: {precio(saltos)} euros", ir(e, saltos),
+                              ayuda=("Es la localidad vecina. " if saltos == 1 else f"Está a {saltos} localidades de aquí. ") + p.mapas[e.mapa].barrios[0].get("descripcion", "")))
+    m = _menu(p, l, ops or [Opcion("De esta estación no sale ningún tren")], intro="El tren llega a todas las localidades a las que se puede ir por tierra")
+
+
+# ------------------------------------------------------------------ aeropuerto: trayectos largos, avionetas y helicópteros
+ALQUILER = {"avioneta": 600, "helicoptero": 900}
+
+
+def aeropuerto(p, l):
+    app = p.app
+    j = p.j
+    if j.veh is not None and j.veh.modelo.get("vuela"):
+        from . import menus_extra
+        menus_extra.helipuerto(p, l)                        # llegas pilotando: vuelas tú adonde quieras
+        return
+    if j.veh:
+        app.decir(f"{l.nombre}. Bájate del vehículo para entrar en la terminal.", True)
+        return
+    if j.estrellas:
+        app.son("error")
+        app.decir("En el control de seguridad hay dos agentes mirando una foto tuya. Vuelve cuando no te busquen.", True)
+        return
+
+    def volar(dest):
+        def f():
+            precio = int(dest.get("precio", 180))
             if not p.pagar(precio):
                 return
             app.cerrar(m)
 
             def llegar():
-                p.pasar_horas(0.4 if medio == "tranvia" else 0.8)
-                p.cambiar_mapa(dest.mapa, dest.x, dest.y, None,
-                               f"El {'tranvía' if medio == 'tranvia' else 'tren'} te deja en {dest.nombre}, {p.mapas[dest.mapa].nombre}. Son las {p.hora_txt()}.")
+                p.pasar_horas(1.0)
+                j.stats["vuelos"] = j.stats.get("vuelos", 0) + 1
+                p.cambiar_mapa(dest.mapa, dest.x, dest.y, None, f"Aterrizas en el {dest.nombre}. Son las {p.hora_txt()}.")
             from .pantallas import viajar as trayecto
-            trayecto(app, 25.0 if medio == "tranvia" else 40.0, llegar, destino=p.mapas[dest.mapa].nombre, medio=medio)
+            trayecto(app, 45.0, llegar, destino=p.mapas[dest.mapa].nombre, medio="avion")
         return f
 
-    def precio_rail(dest, medio):
-        return 8 if medio == "tranvia" else int(dest.get("precio", 20)) * 2
-    destinos = [e for e in p.lugares.values() if e.tipo == "estacion" and e.mapa != p.mundo.id]
-    ops = [Opcion(f"Autobús a {p.mapas[e.mapa].nombre}: {int(e.get('precio', 20))} euros", viajar(e), ayuda=p.mapas[e.mapa].barrios[0].get("descripcion", ""))
-           for e in destinos]
-    for e in destinos:                                       # por raíl solo se llega adonde se llega por tierra
-        medio = p.medio_por_rail(p.mundo.id, e.mapa)
-        if medio == "tranvia":
-            ops.append(Opcion(f"Tranvía a {p.mapas[e.mapa].nombre}: {precio_rail(e, medio)} euros", por_rail(e, medio),
-                              ayuda="El tranvía une las localidades vecinas. Es barato y tarda poco."))
-        elif medio == "tren":
-            ops.append(Opcion(f"Tren a {p.mapas[e.mapa].nombre}: {precio_rail(e, medio)} euros", por_rail(e, medio),
-                              ayuda="El tren llega a cualquier localidad a la que se pueda ir por tierra. Cuesta el doble que el autobús y tarda la mitad."))
-    m = _menu(p, l, ops or [Opcion("Hoy no sale ningún autobús")])
+    def alquilar(modelo):
+        def f():
+            if any(v.modelo["id"] == modelo and not v.muerto and v.dist(l.x, l.y) < 40 and v is not j.veh for v in p.vehiculos):
+                app.decir("Ya tienes uno esperando en la pista. Sal de la terminal y súbete con F.", True)
+                return
+            if not p.pagar(ALQUILER[modelo]):
+                return
+            x, y, d = p.mundo.plaza_junto_a(l)
+            v = p.crear_vehiculo(modelo, x, y, d, "aparcado")
+            v.cerrado = False
+            v.propio = True
+            p.son("llegada", cat="interfaz")
+            app.cerrar(m)
+            p.fijar_gps(x, y, v.nombre, auto=True, radio=4, callar=True)
+            p.decir(f"Alquilado: {v.nombre}. Te espera en la pista, {p.situar(x, y, 'está')}. Súbete con F. Se pilota a mano y aterriza en cualquier aeropuerto, helipuerto o espacio abierto.")
+        return f
+    ops = [Opcion(f"Vuelo a {p.mapas[a.mapa].nombre}: {int(a.get('precio', 180))} euros", volar(a),
+                  ayuda="Avión de pasajeros, para los trayectos largos entre ciudades. " + p.mapas[a.mapa].barrios[0].get("descripcion", ""))
+           for a in sorted((x for x in p.lugares.values() if x.tipo == "aeropuerto" and x.mapa != p.mundo.id), key=lambda x: x.mapa)]
+    ops += [Opcion(f"Alquilar una avioneta: {ALQUILER['avioneta']} euros", alquilar("avioneta"),
+                   ayuda="Te la dejan en la pista y la pilotas tú. Más rápida que el helicóptero. Con ella puedes ir a cualquier aeropuerto o helipuerto pulsando Intro al llegar."),
+            Opcion(f"Alquilar un helicóptero: {ALQUILER['helicoptero']} euros", alquilar("helicoptero"),
+                   ayuda="Te lo dejan en la pista y lo pilotas tú. Más lento que la avioneta, pero se detiene en el aire y aterriza en menos sitio.")]
+    m = _menu(p, l, ops, intro="Aviones de pasajeros a las otras ciudades, y avionetas y helicópteros de alquiler")
 
 
 def _zarpar(p, l, modelo, salud=None, nombre=None, propio=None):

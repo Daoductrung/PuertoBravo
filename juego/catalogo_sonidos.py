@@ -12,8 +12,8 @@ GRUPOS = [
     ("Armas", "Disparos, recargas, impactos y explosiones.", ("disparo_", "bala_"), {"sin_balas", "recarga", "amartillar", "explosion", "navaja", "lanzar", "cohete"}),
     ("Motores", "Se reproducen en bucle y el juego les sube el tono con la velocidad. Graba el motor al ralentí, a régimen constante.",
      ("motor_",), {"rodadura"}),
-    ("Tren, tranvía y agua", "Los viajes en tren y en tranvía, y nadar y bucear en el mar. El tren, el tranvía y el fondo de debajo del agua suenan en bucle.",
-     ("tren", "tranvia"), {"bajo_agua", "brazada"}),
+    ("Tren, tranvía, avión y agua", "Los viajes en tren, en tranvía y en avión, y nadar y bucear en el mar. El tren, el tranvía, la cabina del avión y el fondo de debajo del agua suenan en bucle.",
+     ("tren", "tranvia", "avion"), {"bajo_agua", "brazada"}),
     ("Vehículos", "Cláxones, frenazos, choques, sirenas y demás ruidos de los vehículos.",
      ("claxon", "sirena", "choque"), {"frenazo", "puerta_coche", "alarma", "arranque", "cristal", "ganzua", "intermitente", "radio_cambio", "reparar", "pintura", "fuego"}),
     ("Policía y búsqueda", "Avisos del nivel de búsqueda.", ("estrella_",), {"policia_perdida", "buscando", "esposas"}),
@@ -52,6 +52,9 @@ MOTORES = {"avioneta": "avioneta", "coche": "coche", "deportivo": "deportivo", "
 ARMAS = {"pistola": "pistola", "revolver": "revólver", "subfusil": "subfusil", "escopeta": "escopeta", "rifle": "rifle", "fusil": "fusil de asalto", "silenciado": "pistola con silenciador"}
 
 DESCRIPCIONES = {
+    "avion": "La cabina del avión de pasajeros en vuelo. En bucle.", "avion_despegue": "El avión acelerando por la pista y despegando.",
+    "lugar_tranvia": "Firma sonora de: parada de tranvía. Dos toques de campana. En bucle.", "lugar_tren": "Firma sonora de: estación de tren. Resoplidos de locomotora. En bucle.",
+    "lugar_aeropuerto": "Firma sonora de: aeropuerto. El aviso de megafonía, tres notas que bajan. En bucle.",
     "tren": "El vagón del tren en marcha, con el traqueteo de los raíles. En bucle.", "tren_silbato": "El silbato del tren al salir de la estación.",
     "tranvia": "El tranvía en marcha: el zumbido del motor eléctrico y los raíles. En bucle.", "tranvia_campana": "La campana del tranvía al arrancar: dos toques.",
     "bajo_agua": "Lo que se oye buceando: un rumor sordo y burbujas. En bucle.", "brazada": "Una brazada al nadar.",

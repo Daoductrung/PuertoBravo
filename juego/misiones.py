@@ -37,6 +37,17 @@ class Misiones:
         hecho = self.decisiones.get(clave)
         return isinstance(hecho, dict) and hecho.get("opcion") == int(cosa.get("si_opcion", 1))
 
+    def rentas_decisiones(self):
+        """Cada medianoche: lo que te dejan, o te cuestan, las decisiones que tomaste en la historia."""
+        total = sum(int(d.get("renta", 0)) for d in self.decisiones.values() if isinstance(d, dict))
+        if total > 0:
+            self.dar_dinero(total, "Lo que decidiste en su día te deja")
+        elif total < 0:
+            pago = min(self.j.dinero, -total)
+            self.j.dinero -= pago
+            self.decir(f"Lo que decidiste en su día te cuesta {pago} euros.")
+        return total
+
     def rep_banda(self, banda):
         return float(self.j.rep_bandas.get(banda, 0))
 
@@ -593,6 +604,10 @@ class Misiones:
                         self.cambiar_animo(o["animo"])
                     if o.get("banda"):
                         self.cambiar_rep_banda(o["banda"], o.get("banda_puntos", 0))
+                    if o.get("renta"):                           # una consecuencia que dura: dinero cada medianoche, para siempre
+                        self.decisiones[clave]["renta"] = int(o["renta"])
+                        self.decir(f"Desde hoy, esto te deja {int(o['renta'])} euros cada medianoche." if o["renta"] > 0 else
+                                   f"Desde hoy, esto te cuesta {-int(o['renta'])} euros cada medianoche.")
                 if o.get("dice"):
                     self.decir(self.txt(o["dice"]))
                 self._siguiente_paso()

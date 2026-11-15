@@ -9,7 +9,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 12
+VERSION_CACHE = 13
 PI2 = 2 * np.pi
 
 
@@ -683,12 +683,32 @@ def generar(semilla=7):
     S["bajo_agua"] = _norm(fondo_agua, 0.5)
     braz = _filtro(ruido(0.45), 250, 5000) * np.sin(np.pi * _t(0.45) / 0.45) ** 2 + 0.5 * _filtro(ruido(0.45), 80, 500) * _decae(0.45, 0.12)
     S["brazada"] = _norm(braz, 0.45)
+    # ----------------------------------------------- paradas, estaciones y aeropuerto (versión 1.6.2)
+    par = np.zeros(int(SR * 2.4))                                # parada de tranvía: dos toques de campana y silencio
+    for t0 in (0.0, 0.28):
+        _poner(par, sum(np.sin(PI2 * f * _t(0.45)) * a for f, a in ((1319.0, 1.0), (1976.0, 0.4))) * _decae(0.45, 0.14), t0)
+    S["lugar_tranvia"] = _norm(par, 0.35)
+    est = np.zeros(int(SR * 2.4))                                # estación de tren: cuatro resoplidos de locomotora
+    for k in range(4):
+        _poner(est, _filtro(ruido(0.22), 150, 1800) * _decae(0.22, 0.07, 0.02), 0.1 + 0.3 * k, 1.0 - 0.12 * k)
+    S["lugar_tren"] = _norm(est, 0.35)
+    aer = np.zeros(int(SR * 3.0))                                # aeropuerto: el aviso de megafonía, tres notas que bajan
+    for k, f in enumerate((880.0, 698.5, 587.3)):
+        _poner(aer, (np.sin(PI2 * f * _t(0.6)) + 0.3 * np.sin(PI2 * 2 * f * _t(0.6))) * _decae(0.6, 0.25), 0.1 + 0.42 * k)
+    S["lugar_aeropuerto"] = _norm(aer, 0.35)
+    tc = _t(3.0)
+    cabina = _filtro(ruido(3.0), 60, 900) * (0.85 + 0.15 * np.sin(PI2 * (1 / 3.0) * tc)) + 0.25 * np.sin(PI2 * 120 * tc) + 0.15 * np.sin(PI2 * 240 * tc)
+    S["avion"] = _norm(cabina, 0.5)
+    td = _t(4.0)
+    subida = td / 4.0
+    desp = _filtro(ruido(4.0), 80, 3500) * (0.25 + 0.75 * subida) + 0.5 * np.sin(PI2 * np.cumsum(90 + 260 * subida) / SR) * subida
+    S["avion_despegue"] = _norm(desp * np.minimum(1.0, td / 0.3) * np.minimum(1.0, (4.0 - td) / 0.5), 0.55)
     return S
 
 
 # Sonidos que el juego reproduce en bucle: si los sustituyes, el final debe empalmar con el principio.
 PREFIJOS_BUCLE = ("amb_", "motor_", "lugar_", "loc_")
-BUCLES = {"tren", "tranvia", "bajo_agua", "rodadura", "alarma", "sirena", "sirena_ambulancia", "fuego", "ganzua", "intermitente", "lluvia", "latido", "multitud"}
+BUCLES = {"avion", "tren", "tranvia", "bajo_agua", "rodadura", "alarma", "sirena", "sirena_ambulancia", "fuego", "ganzua", "intermitente", "lluvia", "latido", "multitud"}
 
 
 def es_bucle(nombre):

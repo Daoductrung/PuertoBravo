@@ -418,11 +418,12 @@ class Viaje:
         app = self.app
         if self.motor is not None:
             return
-        if self.medio in ("tren", "tranvia"):
-            app.son("tren_silbato" if self.medio == "tren" else "tranvia_campana", vol=0.7)
+        if self.medio in ("tren", "tranvia", "avion"):
+            app.son({"tren": "tren_silbato", "tranvia": "tranvia_campana", "avion": "avion_despegue"}[self.medio], vol=0.7)
             self.motor = app.son(self.medio, bucle=True, vol=0.45)
             self.canales = [self.motor]
-            app.decir(("El tren sale de la estación" if self.medio == "tren" else "El tranvía arranca") + f", camino de {self.destino}. Pulsa Intro si quieres llegar ya.", True)
+            app.decir({"tren": "El tren sale de la estación", "tranvia": "El tranvía arranca", "avion": "El avión acelera por la pista y despega"}[self.medio] +
+                      f", camino de {self.destino}. Pulsa Intro si quieres llegar ya.", True)
             return
         app.son("puerta_coche")
         if self.vuelo:
@@ -476,13 +477,98 @@ class Viaje:
             self.app.son(random.choice(["claxon_lejano", "intermitente", "cruce", "claxon_lejano"]), vol=0.35, pan=random.uniform(-0.8, 0.8))
         if not self.avisado and f >= 0.8:
             self.avisado = True
-            self.app.decir("Próxima estación." if self.medio == "tren" else "Próxima parada." if self.medio else "Empezáis a bajar." if self.vuelo else "Ya casi estás." if not self.autobus else "Próxima parada.")
+            self.app.decir("El avión empieza a bajar." if self.medio == "avion" else "Próxima estación." if self.medio == "tren" else "Próxima parada." if self.medio else "Empezáis a bajar." if self.vuelo else "Ya casi estás." if not self.autobus else "Próxima parada.")
         if self.t >= self.total:
             self._fin()
 
     def cerrado(self):
         if not self.hecho:                      # si algo cierra la pantalla por fuera, se llega igual
             self._fin()
+
+
+class LineaTranvia:
+    """Un viaje en el tranvía de la ciudad: va de parada en parada, las anuncia, y te bajas donde quieras.
+
+    Intro o Escape: te bajas en la próxima parada. Cualquier otra tecla dice por dónde vas.
+    """
+    pausa_mundo = True
+
+    def __init__(self, app, paradas, al_bajar, nombre=lambda l: l.nombre):
+        self.app, self.paradas, self.al_bajar, self.nombre = app, list(paradas), al_bajar, nombre
+        self.i = 0                      # la parada a la que se está llegando
+        self.t = 0.0
+        self.bajar = False
+        self.hecho = False
+        self.motor = None
+        self.pasadas = 0
+        self.tramo = self._duracion(0)
+
+    def _duracion(self, k):
+        if k == 0:
+            return 7.0
+        a, b = self.paradas[k - 1], self.paradas[k]
+        return max(5.0, min(14.0, math.hypot(a.x - b.x, a.y - b.y) / 22.0))
+
+    def al_entrar(self):
+        if self.motor is not None:
+            return
+        app = self.app
+        app.son("tranvia_campana", vol=0.7)
+        self.motor = app.son("tranvia", bucle=True, vol=0.45)
+        final = self.paradas[-1]
+        app.decir(f"Subes al tranvía. Vas hasta {self.nombre(final)}, {len(self.paradas)} {'parada' if len(self.paradas) == 1 else 'paradas'}. "
+                  f"La primera: {self.nombre(self.paradas[0])}. Pulsa Intro cuando quieras bajarte en la próxima.", True)
+
+    def tecla(self, ev):
+        if self.hecho:
+            return
+        prox = self.paradas[self.i]
+        if ev.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
+            self.bajar = True
+            self.app.son("menu_ok")
+            self.app.decir(f"Te bajas en la próxima: {self.nombre(prox)}.", True)
+        else:
+            self.app.decir(f"Vas en el tranvía. Próxima parada: {self.nombre(prox)}, en unos {max(1, int(self.tramo - self.t))} segundos. "
+                           f"{'Te bajas en ella.' if self.bajar or self.i == len(self.paradas) - 1 else 'Intro para bajarte en ella.'}", True)
+
+    def actualizar(self, dt):
+        if self.hecho:
+            return
+        self.t += dt
+        f = self.t / self.tramo
+        if self.motor is not None:                       # arranca, rueda y frena en cada tramo
+            self.motor.tono(0.7 + 0.5 * min(1.0, f / 0.25) if f < 0.75 else 0.7 + 0.5 * max(0.0, (1.0 - f) / 0.25))
+        if self.t < self.tramo:
+            return
+        parada = self.paradas[self.i]
+        self.pasadas += 1
+        if self.bajar or self.i == len(self.paradas) - 1:
+            self._fin(parada)
+            return
+        self.i += 1
+        self.t = 0.0
+        self.tramo = self._duracion(self.i)
+        self.app.son("tranvia_campana", vol=0.6)
+        self.app.decir(f"{self.nombre(parada)}. Próxima parada: {self.nombre(self.paradas[self.i])}.")
+
+    def _fin(self, parada):
+        if self.hecho:
+            return
+        self.hecho = True
+        if self.motor is not None:
+            self.motor.parar()
+        self.app.cerrar(self)
+        self.app.son("tranvia_campana", vol=0.6)
+        self.al_bajar(parada, self.pasadas)
+
+    def cerrado(self):
+        if not self.hecho:                               # si algo cierra la pantalla por fuera, te bajas en la próxima
+            self._fin(self.paradas[self.i])
+
+
+def con_trayecto(app):
+    """¿Se hace el trayecto o se llega al momento?"""
+    return bool(app.cfg["viajes_trayecto"]) and (not app.pruebas or getattr(app, "viajes_en_pruebas", False))
 
 
 def viajar(app, segundos, al_llegar, autobus=False, destino="", vuelo=False, medio=None):

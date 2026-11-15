@@ -344,6 +344,29 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.j.arma not in self.j.armas:
             self.j.arma = "punos"
 
+    def saltos_por_tierra(self, origen, destino):
+        """Cuántas localidades hay que cruzar por carretera para ir de una a otra: 1 si son vecinas. None si hay mar por medio."""
+        def vecinos(mid):
+            m = self.mapas.get(mid)
+            if m is None or m.tipo == "mar":
+                return set()
+            return {l.get("a_mapa") for l in m.lugares.values() if l.tipo == "salida" and l.get("a_mapa") in self.mapas and self.mapas[l.get("a_mapa")].tipo != "mar"}
+        if origen == destino:
+            return None
+        nivel, vistos, n = {origen}, {origen}, 0
+        while nivel:
+            n += 1
+            sig = set()
+            for mid in nivel:
+                for v in vecinos(mid):
+                    if v == destino:
+                        return n
+                    if v not in vistos:
+                        vistos.add(v)
+                        sig.add(v)
+            nivel = sig
+        return None
+
     def medio_por_rail(self, origen, destino):
         """Cómo se va por raíl de una localidad a otra: «tranvia» si son vecinas por carretera, «tren» si se llega por tierra
         aunque sea dando un rodeo, y None si hay mar por medio."""
@@ -1515,6 +1538,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         from . import sistemas
         sistemas.paga(self)
         sistemas.sucesos_territorio(self)
+        self.rentas_decisiones()
         self.mover_bolsa()
         self.dia_adultos()
         self.dia_intimidad()
