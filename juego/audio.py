@@ -30,6 +30,10 @@ def apagar(x, corte=900.0):
     return np.fft.irfft(X * g, n, axis=0).astype(np.float32)
 
 
+# Los sonidos que son señales de ayuda para orientarse: llevan su propio volumen, aparte del de su categoría.
+SENALES = ("baliza", "radar", "tono_", "loc_", "sonar", "lugar_", "semaforo", "cruce", "norte")
+
+
 class Canal:
     """Un sonido en reproducción."""
 
@@ -57,6 +61,7 @@ class Canal:
         self.fin = False
         self.estereo = False
         self.nuevo = True
+        self.senal = False      # es una señal de ayuda (baliza, radar, tono de puntería): tiene su propio volumen
         self.alto = 0.0         # altura sobre el suelo, en metros (solo la usa el motor envolvente)
         self.eco = False        # que le afecte el eco del lugar aunque no sea un efecto del mundo
 
@@ -85,7 +90,11 @@ class Mezclador:
         self._lock = threading.Lock()
         self._ar = np.arange(8192 + PAD, dtype=np.float64)
         self.oyente = (0.0, 0.0, 0.0)
-        self.vols = {"maestro": 0.8, "efectos": 1.0, "ambiente": 0.6, "musica": 0.5, "interfaz": 0.8}
+        self.vols = {"maestro": 0.8, "efectos": 1.0, "ambiente": 0.6, "musica": 0.5, "interfaz": 0.8, "senales": 1.0}
+        self.diferidos = {}         # sonidos largos que se cargan cuando hacen falta: nombre -> función que los lee
+        self._provisional = {}      # lo que suena mientras tanto: el sonido de serie
+        self._dif_estado = {}       # nombre -> "cargando" o "listo"
+        self.sincrono = False       # en las pruebas se carga al momento, sin hilo
         self.mundo_pausado = False
         self.entorno = "calle"      # dónde está el oyente: decide el eco en el motor envolvente
         self.altura = 0.0           # altura del oyente sobre el suelo: en helicóptero, lo demás suena por debajo
@@ -132,6 +141,48 @@ class Mezclador:
         for k in [k for k in list(self._var) if k[0] == nombre]:
             self._var.pop(k, None)
 
+    # ---------------------------------------------------------------- sonidos que se cargan cuando hacen falta
+    def diferir(self, nombre, leer):
+        """Deja un sonido largo sin cargar. Hasta que haga falta, con ese nombre suena el que ya hubiera."""
+        if nombre in self.sonidos:
+            self._provisional[nombre] = self.sonidos[nombre]
+            self.diferidos[nombre] = leer
+            self._dif_estado.pop(nombre, None)
+
+    def pedir(self, nombre):
+        """Pide un sonido diferido. Devuelve True cuando ya se puede usar; mientras se carga, False."""
+        if nombre not in self.diferidos or self._dif_estado.get(nombre) == "listo":
+            return True
+        if self._dif_estado.get(nombre) != "cargando":
+            self._dif_estado[nombre] = "cargando"
+            if self.sincrono:
+                self._cargar_diferido(nombre)
+                return True
+            threading.Thread(target=self._cargar_diferido, args=(nombre,), daemon=True).start()
+        return False
+
+    def _cargar_diferido(self, nombre):
+        try:
+            d = self.diferidos[nombre]()
+            if d is not None and len(d) > 8:
+                self.registrar(nombre, d)
+        except Exception:
+            registro.excepcion("sonido", "No se pudo cargar un sonido bajo demanda")
+        self._dif_estado[nombre] = "listo"                # si falla, se queda con el de serie y no se reintenta
+
+    def soltar(self, salvo=()):
+        """Libera la memoria de los sonidos diferidos que ya no suenan, salvo los indicados."""
+        with self._lock:
+            en_uso = {c.nombre for c in self.canales if not c.fin}
+        for nombre in list(self.diferidos):
+            if self._dif_estado.get(nombre) == "listo" and nombre not in salvo and nombre not in en_uso:
+                self.registrar(nombre, self._provisional[nombre])
+                self._dif_estado.pop(nombre, None)
+
+    def memoria_diferidos(self):
+        """Megas que ocupan ahora los sonidos diferidos ya cargados."""
+        return sum(self.sonidos[n].nbytes for n in self.diferidos if self._dif_estado.get(n) == "listo") / 1048576.0
+
     def _variante(self, nombre, bucle, apagado):
         clave = (nombre, bucle, apagado)
         v = self._var.get(clave)
@@ -165,6 +216,7 @@ class Mezclador:
                 c.fin = True
                 return c
         c.nombre = nombre
+        c.senal = nombre.startswith(SENALES)
         c.estereo = d.ndim == 2
         c.largo = len(d)
         c.datos = self._variante(nombre, bucle, False)
@@ -195,6 +247,8 @@ class Mezclador:
 
     def _calcular(self, c):
         g = c.vol * self.vols.get(c.cat, 1.0)
+        if c.senal:
+            g *= self.vols["senales"]
         if c.cat in ("ambiente", "musica"):
             g *= self.duck
         if c.xy is None:

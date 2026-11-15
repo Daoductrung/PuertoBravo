@@ -84,8 +84,9 @@ class App:
 
     # ------------------------------------------------------------------ audio
     def aplicar_volumenes(self):
-        for k in ("maestro", "efectos", "ambiente", "musica", "interfaz"):
+        for k in ("maestro", "efectos", "ambiente", "musica", "interfaz", "senales"):
             self.mez.vols[k] = self.cfg["vol_" + k]
+        self.voz.ajustar_sapi(self.cfg["voz_velocidad"], self.cfg["voz_tono"], self.cfg["voz_volumen"])
         self.mez.mono = bool(self.cfg["sonido_mono"])
         self.mez.atenuar = bool(self.cfg["atenuar_al_hablar"])
         self.mez.eco_activo = bool(self.cfg["eco_lugares"])
@@ -96,6 +97,7 @@ class App:
         return self.mez.sonar(nombre, **kw)
 
     def decir(self, texto, interrumpir=False):
+        self.voz.detalle = self.cfg["detalle_voz"]
         self.voz.decir(texto, interrumpir)
 
     def recargar_sonidos(self):

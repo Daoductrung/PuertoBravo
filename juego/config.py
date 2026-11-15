@@ -37,6 +37,13 @@ POR_DEFECTO = {
     "semaforos": True,
     "localizador": True,
     "voz_sapi": False,
+    "voz_velocidad": 0,            # con la voz de Windows: de -10 a 10
+    "voz_tono": 0,                 # de -10 a 10
+    "voz_volumen": 100,            # de 0 a 100
+    "detalle_voz": "normal",       # cuánto explica el juego al hablar: mucho, normal o poco
+    "vol_senales": 1.0,            # volumen propio de balizas, radar, tonos de puntería y sonidos de los lugares
+    "aviso_acierto": True,         # un toque y una vibración cuando das en el blanco
+    "correr_alternar": False,      # correr con una pulsación de Mayúsculas en vez de mantenerla
     "tutorial_visto": False,
     "radar_filtro": "todo",
     "emisora": 1,

@@ -307,6 +307,16 @@ def opciones(app):
                "facil": "fácil", "normal": "normal", "dificil": "difícil",
                "cardinal": "puntos cardinales", "reloj": "horas del reloj", "relativa": "delante, derecha, detrás, izquierda",
                "todos": "todo el mundo", "mujeres": "las mujeres", "hombres": "los hombres", "x": "prefiero no decirlo", "h": "hombre", "m": "mujer"}
+    OPCIONES.setdefault("detalle_voz", ["poco", "normal", "mucho"])
+    nombres.update({"poco": "poco, sin recordar las teclas", "mucho": "mucho, con la explicación de cada opción"})
+
+    def numero(clave, nombre, minimo, maximo, paso, ayuda_=None):
+        def aj(d):
+            cfg[clave] = max(minimo, min(maximo, cfg[clave] + paso * d))
+            app.aplicar_volumenes()
+            if cfg["voz_sapi"]:
+                app.decir(f"{nombre}: {cfg[clave]}", True)
+        return Opcion(lambda: f"{nombre}: {cfg[clave]}", ajuste=aj, ayuda=ayuda_)
     canal = {"vol_efectos": "efectos", "vol_ambiente": "ambiente", "vol_musica": "musica", "vol_interfaz": "interfaz", "vol_ambiente_musical": "musica"}
 
     def vol(clave, nombre, ayuda_="Cámbialo con las flechas izquierda y derecha."):
@@ -367,7 +377,10 @@ def opciones(app):
     secciones = [
         seccion("Sonido y música", [
             vol("vol_maestro", "Volumen general"), vol("vol_efectos", "Volumen de efectos"), vol("vol_ambiente", "Volumen del ambiente"),
-            vol("vol_interfaz", "Volumen de avisos y balizas"), vol("vol_musica", "Volumen de la radio y la música"),
+            vol("vol_interfaz", "Volumen de avisos y balizas"),
+            vol("vol_senales", "Volumen de las señales de ayuda", "Baliza del GPS, radar, tono de puntería, sensor de proximidad, semáforos y el sonido propio de cada lugar. "
+                "Se aplica además del volumen de su grupo: bájalo si las señales te tapan lo demás, o baja lo demás y deja este al máximo. Cámbialo con las flechas izquierda y derecha."),
+            vol("vol_musica", "Volumen de la radio y la música"),
             si_no("musica_ambiente", "Música de ambiente", "Música de fondo que cambia con la situación. Se calla sola cuando pones la radio en un vehículo y vuelve cuando la apagas o te bajas."),
             vol("vol_ambiente_musical", "Volumen de la música de ambiente", "Respecto a la radio. Cámbialo con las flechas izquierda y derecha."),
             Opcion(lambda: f"Pack de sonidos: {nombre_pack()}", ajuste=cambiar_pack,
@@ -394,30 +407,38 @@ def opciones(app):
         seccion("Movimiento y conducción", [
             lista("movimiento", "Movimiento a pie", "En modo brújula el oído mira siempre al norte. Con giros, el sonido gira contigo."),
             lista("conduccion", "Conducción", "También se cambia durante el juego con F2."),
+            si_no("correr_alternar", "Correr con una pulsación, sin mantener la tecla",
+                  "Con sí, una pulsación de Mayúsculas te pone a correr y otra te devuelve al paso, sin tener que mantenerla. Con no, corres mientras la mantienes pulsada."),
             si_no("frenada_auto", "Frenada automática ante el tráfico", "En conducción asistida, el coche frena solo para no chocar con el vehículo de delante. Mantén A para adelantarlo."),
             si_no("viajes_trayecto", "Viajes en taxi y en autobús con trayecto",
                   "Con sí, al coger un taxi o un autobús se oye el viaje durante un rato: el motor, la calzada y la radio. Dura entre doce segundos y un minuto según la distancia, y con Intro llegas ya. Con no, llegas al momento."),
             si_no("piloto_gps", "Piloto del GPS, el coche va solo hasta el destino",
                   "Con un destino marcado en el GPS y en conducción asistida, el coche conduce solo: acelera, frena, gira, espera en los semáforos y se detiene al llegar. "
                   "Con cualquier flecha o el espacio mandas tú. Se activa también con la tecla Y al volante."),
-            si_no("sonar", "Sensor de proximidad al volante"),
+            si_no("sonar", "Sensor de proximidad al volante", "Al volante, pita cuando tienes un obstáculo cerca: más agudo cuanto más cerca, y por el lado en que está. Al activarlo se oye una muestra.",
+                  al_cambiar=lambda: cfg["sonar"] and app.mez.sonar("sonar", cat="interfaz", vol=0.6)),
         ], "Cómo caminas y cómo conduces."),
         seccion("Orientación y avisos", [
             lista("direcciones", "Formato de las direcciones", "Cómo se dicen las direcciones del radar y del GPS."),
             si_no("gps_voz", "Indicaciones habladas del GPS"),
-            si_no("baliza", "Baliza sonora del GPS"),
+            si_no("baliza", "Baliza sonora del GPS", "Un toque que suena desde la dirección que tienes que seguir. Al activarla se oye una muestra.",
+                  al_cambiar=lambda: cfg["baliza"] and app.mez.sonar("baliza", cat="interfaz", vol=0.8)),
             si_no("anunciar_cruces", "Anunciar los cruces"),
             si_no("anunciar_lugares", "Anunciar los lugares al llegar a su puerta"),
             si_no("anunciar_barrios", "Anunciar los cambios de barrio"),
             si_no("describir_zonas", "Describir cada barrio la primera vez que entras",
                   "La primera vez que pisas un barrio, además de su nombre, el juego dice cómo es. Las demás veces solo dice el nombre. La tecla N lo repite cuando quieras."),
             si_no("anunciar_superficie", "Anunciar los cambios de suelo", "Dice acera, calzada, césped o arena cada vez que cambia el suelo que pisas."),
-            si_no("localizador", "Sonido propio de cada lugar cercano"),
-            si_no("semaforos", "Semáforos acústicos en los cruces"),
+            si_no("localizador", "Sonido propio de cada lugar cercano", "Cada tipo de lugar suena de una manera cuando pasas cerca. Al activarlo se oye una muestra, la de un bar. En el menú principal, Aprender los sonidos los tiene todos.",
+                  al_cambiar=lambda: cfg["localizador"] and app.mez.sonar("lugar_bar", cat="interfaz", vol=0.8)),
+            si_no("semaforos", "Semáforos acústicos en los cruces", "En los cruces con semáforo se oye si puedes cruzar. Al activarlo se oye una muestra.",
+                  al_cambiar=lambda: cfg["semaforos"] and app.mez.sonar("semaforo_pio", cat="interfaz", vol=0.8)),
         ], "GPS, baliza, anuncios y sonidos de orientación."),
         seccion("Combate y dificultad", [
             lista("dificultad", "Dificultad", "Cambia el daño que recibes."),
             lista("punteria", "Ayuda de puntería"),
+            si_no("aviso_acierto", "Aviso al dar en el blanco", "Cada vez que aciertas a un enemigo o a un vehículo suena un toque agudo y el mando da un golpe corto. Al fijar un objetivo con la Q, el mando también avisa.",
+                  al_cambiar=lambda: cfg["aviso_acierto"] and app.mez.sonar("tono_objetivo", cat="interfaz", vol=0.45, tono=2.0)),
             si_no("sucesos", "Sucesos callejeros al azar", "Atracos, pandilleros y maletines perdidos que aparecen de vez en cuando por la calle."),
             si_no("invulnerable", "Asistencia: no recibir daño", "Para explorar sin preocuparte de nada."),
             si_no("sin_policia", "Asistencia: sin policía", "Los delitos no cuentan y nadie te persigue."),
@@ -430,6 +451,11 @@ def opciones(app):
         Opcion("Mando", mando, ayuda="Mandos de Xbox y PlayStation: ver qué hace cada botón, reasignarlos y activar la vibración."),
         seccion("Voz", [
             si_no("voz_sapi", "Usar la voz de Windows en lugar del lector de pantalla", al_cambiar=lambda: app.voz.cambiar(cfg["voz_sapi"])),
+            numero("voz_velocidad", "Velocidad de la voz de Windows", -10, 10, 1, "De menos diez a diez. Solo afecta a la voz de Windows; si usas un lector de pantalla, la velocidad se cambia en el lector."),
+            numero("voz_tono", "Tono de la voz de Windows", -10, 10, 1, "De menos diez, más grave, a diez, más agudo. Solo afecta a la voz de Windows."),
+            numero("voz_volumen", "Volumen de la voz de Windows", 0, 100, 10, "De cero a cien. Solo afecta a la voz de Windows."),
+            lista("detalle_voz", "Cuánto explica el juego al hablar",
+                  "Con poco, se quitan las frases que solo recuerdan qué tecla pulsar. Con mucho, en los menús se lee además la explicación de cada opción, sin tener que pulsar F1. Normal es lo de siempre."),
             si_no("menu_posicion", "Decir la posición en los menús, por ejemplo 3 de 9",
                   "Al moverte por un menú, después de cada opción dice cuál es y cuántas hay."),
             si_no("voces_grabadas", "Voces grabadas en las escenas, solo con el personaje Dani",

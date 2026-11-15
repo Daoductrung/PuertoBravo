@@ -134,6 +134,22 @@ def listar():
     return out
 
 
+def _lector(archivo, ref, vol_pack, vol_jugador):
+    """La función que lee un ambiente largo cuando hace falta, con los mismos ajustes que si se cargara al arrancar."""
+    def leer():
+        d = sintesis.leer_audio(archivo, mono=False, maximo=sintesis.MAX_FONDO)
+        if ref is not None:
+            d = igualar(d, ref)
+        try:
+            d = d * float(vol_pack)
+        except (TypeError, ValueError):
+            pass
+        if isinstance(vol_jugador, (int, float)):
+            d = d * max(AJUSTE_MIN, min(AJUSTE_MAX, float(vol_jugador)))
+        return d
+    return leer
+
+
 def cargar(mez, cfg):
     """Carga los sonidos del juego, el pack elegido encima y los ajustes del jugador.
 
@@ -144,6 +160,7 @@ def cargar(mez, cfg):
     hacer = bool(cfg["igualar_volumen"])
     refs = referencias(carpeta) if hacer else {}
     info = {"pack": "", "del_pack": 0, "igualados": 0}
+    diferidos = {}
     if hacer:
         for nombre, d in list(S.items()):
             ref = refs.get(nombre)
@@ -158,8 +175,14 @@ def cargar(mez, cfg):
         m = _meta(ruta)
         vol = m.get("volumenes") if isinstance(m.get("volumenes"), dict) else {}
         for nombre, archivo in _archivos(ruta).items():
+            fondo = sintesis.es_fondo(nombre)
+            if fondo and nombre in S and os.path.getsize(archivo) > 200000:
+                # Un ambiente largo: no se carga hasta que suene. Once a la vez son unos doscientos megas de memoria.
+                diferidos[nombre] = _lector(archivo, refs.get(nombre) if hacer and m.get("igualar", True) else None,
+                                            vol.get(nombre, 1.0), cfg["vol_sonidos"].get(nombre))
+                info["del_pack"] += 1
+                continue
             try:
-                fondo = sintesis.es_fondo(nombre)
                 d = sintesis.leer_audio(archivo, mono=not fondo, maximo=sintesis.MAX_FONDO if fondo else None)
             except Exception:
                 continue
@@ -180,6 +203,11 @@ def cargar(mez, cfg):
             S[nombre] = S[nombre] * max(AJUSTE_MIN, min(AJUSTE_MAX, float(f)))
     for k, v in S.items():
         mez.registrar(k, v)
+    mez.diferidos.clear()
+    mez._dif_estado.clear()
+    for k, leer in diferidos.items():
+        mez.diferir(k, leer)
+    info["bajo_demanda"] = len(diferidos)
     return info
 
 

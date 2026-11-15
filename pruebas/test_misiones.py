@@ -135,6 +135,32 @@ def _jugar_mision(robot, m):
                 if j.veh:
                     j.veh.vel = 0
                 robot.frames(4)
+        elif tipo == "vigilar":
+            if ms.get("pendiente"):
+                _ir_a(robot, l)
+                robot.frames(2)
+            if j.veh:
+                p.salir_vehiculo(forzado=True)
+            j.x, j.y = p.mundo.punto_libre(l.x + 8, l.y)
+            robot.frames(3)
+            assert ms["vigia"]["dentro"], f"{m['id']}: no entra en el puesto"
+            ms["vigia"]["t"] = float(paso.get("segundos", 45)) - 0.2        # el tiempo de espera, de golpe
+        elif tipo == "carrera":
+            if ms.get("pendiente"):
+                _ir_a(robot, l)
+                robot.frames(2)
+            if not j.veh:
+                v = p.crear_vehiculo("deportivo", j.x, j.y, 0, None)
+                p._subir(v, False, callar=True)
+            j.veh.x, j.veh.y = p.mundo.punto_libre(l.x + 5, l.y)
+            j.veh.vel = 0
+            robot.frames(30 * 4)
+            assert ms["carrera"]["fase"] == "corre", f"{m['id']}: la carrera no arranca"
+            for ident in paso["puntos"]:
+                q = p.lugares[ident]
+                j.veh.x, j.veh.y = p.mundo.punto_libre(q.x + 5, q.y)
+                j.veh.vel = 0
+                robot.frames(3)
         elif tipo == "policia":
             robot.frames(3)
             assert j.estrellas >= 1

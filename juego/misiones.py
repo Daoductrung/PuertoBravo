@@ -511,7 +511,7 @@ class Misiones:
         """Llegar a un punto vigilado sin que te oigan: agachado se te oye menos; corriendo, mucho más."""
         j = self.j
         t = self.app.teclas
-        corriendo = (pygame.K_LSHIFT in t or pygame.K_RSHIFT in t) and not j.agachado
+        corriendo = self.corriendo_ahora()
         oido = 22.0 if j.veh else 2.6 if j.agachado else 11.0 if corriendo else 6.0
         cerca = 999.0
         for g in ms.get("guardias", []):

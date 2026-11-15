@@ -103,6 +103,7 @@ class Combate:
         o = self.objetivo
         self.t_objetivo = 0.0
         if not callar:
+            self.app.vibrar(0.0, 0.5, 60)                   # objetivo fijado
             self.decir("Fijado: " + self.situar(o.x, o.y, o.nombre) + f". {len(lista)} en total.", True)
         return o
 
@@ -171,6 +172,9 @@ class Combate:
             if fuego:
                 self.son("bala_impacto", xy=(o.x + random.uniform(-2, 2), o.y + random.uniform(-2, 2)), ref=8, maxd=120, vol=0.6)
             return
+        if self.cfg["aviso_acierto"]:                        # has dado: un toque agudo y un golpe corto en el mando
+            self.son("tono_objetivo", cat="interfaz", vol=0.45, tono=2.0)
+            self.app.vibrar(0.15, 0.8, 90)
         if isinstance(o, Vehiculo):
             self.son("bala_impacto", xy=(o.x, o.y), ref=10, maxd=150)
             self.danar_vehiculo(o, a["dano"] * 0.55)

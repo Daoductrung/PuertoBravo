@@ -63,7 +63,9 @@ class Menu:
     def leer(self):
         if self.opciones:
             pos = f". {self.i + 1} de {len(self.opciones)}" if self.app.cfg["menu_posicion"] else ""
-            self.app.decir(self.opciones[self.i].texto + pos, True)
+            o = self.opciones[self.i]
+            extra = f". {o.ayuda}" if self.app.cfg["detalle_voz"] == "mucho" and getattr(o, "ayuda", None) else ""      # con mucho detalle, la explicación va detrás
+            self.app.decir(o.texto + pos + extra, True)
 
     def _mover(self, nuevo):
         n = len(self.opciones)

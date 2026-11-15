@@ -163,6 +163,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
 
     # ----------------------------------------------------------------- básicos
     def decir(self, texto, interrumpir=False):
+        self.voz.detalle = self.cfg["detalle_voz"]
         self.voz.decir(texto, interrumpir)
 
     def son(self, nombre, xy=None, **kw):
@@ -538,9 +539,23 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         else:
             self.tecla_pie(ev, mayus)
 
+    def corriendo_ahora(self):
+        """¿Corre? Con la tecla mantenida o, si el jugador lo prefiere, encendido con una pulsación."""
+        t = self.app.teclas
+        if self.j.agachado:
+            return False
+        if self.cfg["correr_alternar"]:
+            return bool(getattr(self, "correr_fijo", False))
+        return pygame.K_LSHIFT in t or pygame.K_RSHIFT in t
+
     def tecla_pie(self, ev, mayus):
         k = ev.key
         j = self.j
+        if k in (pygame.K_LSHIFT, pygame.K_RSHIFT) and self.cfg["correr_alternar"]:
+            self.correr_fijo = not getattr(self, "correr_fijo", False)
+            self.app.son("menu_mover")
+            self.decir("Correr." if self.correr_fijo else "Andar.", True)
+            return
         if k == pygame.K_r:
             self.recargar()
         elif k in (pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d):
@@ -985,7 +1000,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.forzando["canal"].parar()
             self.forzando = None
             self.decir("Dejas de forzar la cerradura.")
-        correr = (pygame.K_LSHIFT in t or pygame.K_RSHIFT in t) and not j.agachado
+        correr = self.corriendo_ahora()
         vel = (1.3 if j.agachado else 6.0 * (1 + 0.015 * self.nivel("resistencia")) if correr else 2.6) * self.mod_velocidad() * self.mod_necesidades()
         n = math.hypot(dx, dy)
         if self.cfg["movimiento"] == "brujula" and not solo:
@@ -1331,20 +1346,21 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         x, y = self.pos()
         b = self.mundo.barrio(x, y)
         nombre = b["ambiente"]
-        if nombre != self.amb_nombre:
+        noche = self.es_noche()
+        if nombre != self.amb_nombre and self.mez.pedir(nombre):      # los ambientes largos se cargan al entrar en el barrio
             if self.amb_canal:
                 self.amb_canal.parar()
             self.amb_nombre = nombre
             self.amb_canal = self.son(nombre, bucle=True, cat="ambiente", vol=0.5)
-        noche = self.es_noche()
+            self.mez.soltar({nombre, "amb_noche", "lluvia"} if (noche or self.lluvia) else {nombre})
         if self.amb_canal:
             self.amb_canal.volumen(0.22 if noche else 0.5)
-        if noche and self.noche_canal is None:
+        if noche and self.noche_canal is None and self.mez.pedir("amb_noche"):
             self.noche_canal = self.son("amb_noche", bucle=True, cat="ambiente", vol=0.4)
         elif not noche and self.noche_canal is not None:
             self.noche_canal.parar()
             self.noche_canal = None
-        if self.lluvia and self.lluvia_canal is None:
+        if self.lluvia and self.lluvia_canal is None and self.mez.pedir("lluvia"):
             self.lluvia_canal = self.son("lluvia", bucle=True, cat="ambiente", vol=0.6)
         elif not self.lluvia and self.lluvia_canal is not None:
             self.lluvia_canal.parar()

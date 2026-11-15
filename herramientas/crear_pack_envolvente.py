@@ -98,7 +98,11 @@ def crear():
             for viejo in EXT:                                   # la grabación nueva sustituye a la del pack de partida
                 if os.path.exists(os.path.join(DESTINO, nombre + viejo)):
                     os.remove(os.path.join(DESTINO, nombre + viejo))
-            nuevos[nombre] = preparar(os.path.join(FUENTES, f), nombre)
+            # si está la grabación original, sin comprimir, en la carpeta «originales», se usa esa en lugar de la vista previa
+            original = next((os.path.join(FUENTES, "originales", nombre + e) for e in (".wav", ".flac", ".aiff", ".aif")
+                             if os.path.exists(os.path.join(FUENTES, "originales", nombre + e))), None)
+            nuevos[nombre] = preparar(original or os.path.join(FUENTES, f), nombre)
+            nuevos[nombre]["original"] = bool(original)
     creditos = ["SONIDOS DEL PACK ENVOLVENTE", "",
                 "Los sonidos de este pack son de dominio público o tienen licencia CC0: se pueden usar, cambiar y repartir sin pedir permiso.",
                 "Parte de ellos vienen del pack realista del juego, montado con sonidos libres de kenney.nl y opengameart.org.",
@@ -121,6 +125,6 @@ if __name__ == "__main__":
     copiados, nuevos = crear()
     print(f"Pack envolvente: {copiados} sonidos del pack realista y {len(nuevos)} grabaciones nuevas.")
     for nombre, v in sorted(nuevos.items()):
-        print(f"  {nombre}: {'estéreo' if v['canales'] == 2 else 'mono'}, {v['segundos']} s")
+        print(f"  {nombre}: {'estéreo' if v['canales'] == 2 else 'mono'}, {v['segundos']} s, {'de la grabación original' if v.get('original') else 'de la vista previa comprimida'}")
     if not nuevos:
         print("  No hay grabaciones nuevas en adjuntos\\packs\\fuentes_envolvente: el pack sería igual que el realista.")

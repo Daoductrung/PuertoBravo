@@ -211,6 +211,8 @@ class MezcladorAL(Mezclador):
     def _poner(self, c):
         """Lleva a la fuente de OpenAL el volumen, el tono y la posición que el juego quiere para este sonido."""
         g = c.vol * self.vols.get(c.cat, 1.0)
+        if c.senal:
+            g *= self.vols["senales"]
         if c.cat in ("ambiente", "musica"):
             g *= self.duck
         ox, oy, _ = self.oyente
@@ -317,7 +319,9 @@ class MezcladorAL(Mezclador):
 def crear(cfg, pruebas=False):
     """El mezclador que toca: el envolvente si el jugador lo ha elegido y este equipo puede; si no, el clásico."""
     if pruebas:
-        return Mezclador(dispositivo=False)
+        m = Mezclador(dispositivo=False)
+        m.sincrono = True
+        return m
     forzado = os.environ.get("PUERTOBRAVO_MOTOR", "")              # para pruebas: «envolvente» o «clasico»
     if (cfg["motor_sonido"] == "envolvente" or forzado == "envolvente") and forzado != "clasico" and not cfg["sonido_mono"]:
         from . import procesador
