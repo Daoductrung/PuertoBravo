@@ -48,6 +48,7 @@ POR_DEFECTO = {
     "mod_dinero": False,           # modificador: las misiones pagan la mitad
     "noche_por_pasos": True,       # contenido para adultos: la noche con alguien se juega paso a paso
     "multas": True,                # con poca búsqueda, al cogerte puedes pagar la multa o intentar un soborno
+    "fuego_amigo": True,           # tus balas y tus explosivos hieren también a tu perro, a tus guardaespaldas y a tu banda
     "aviso_acierto": True,         # un toque y una vibración cuando das en el blanco
     "correr_alternar": False,      # correr con una pulsación de Mayúsculas en vez de mantenerla
     "tutorial_visto": False,

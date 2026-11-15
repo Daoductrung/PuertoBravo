@@ -244,6 +244,7 @@ def protectora(p, l):
         def f():
             if p.pagar(200):
                 j.perro = nombre
+                j.perro_hambre, j.perro_confianza = 0.0, 100.0
                 p.crear_perro()
                 _volver_al_juego(p)
                 p.son("ladrido")
@@ -257,13 +258,51 @@ def protectora(p, l):
             p.personas.remove(d)
         nombre = j.perro
         j.perro = ""
+        j.perro_en_casa = False
+        j.perro_hambre, j.perro_confianza = 0.0, 100.0
         app.cerrar()
         app.decir(f"Dejas a {nombre} en la protectora. Aquí lo cuidarán bien.", True)
+    pienso = __import__("juego.menus_juego", fromlist=["x"])._comprar_objeto(p, "pienso")
     if j.perro:
-        ops = [Opcion(f"Tu perro es {j.perro}. Está contigo"), Opcion(f"Dejar a {j.perro} en la protectora", dejar)]
+        ops = [Opcion(lambda: p.perro_txt()), pienso, Opcion(f"Cómo está y qué necesita {j.perro}", lambda: menu_perro(p)), Opcion(f"Dejar a {j.perro} en la protectora", dejar)]
     else:
         ops = [Opcion(f"Adoptar a {n}: 200 euros de donativo", adoptar(n), ayuda="Un perro te acompaña a todas partes, avisa de los enemigos y encuentra objetos por el olfato.") for n in random.sample(NOMBRES_PERRO, 4)]
     app.abrir(Menu(app, lambda: f"{l.nombre}. Tienes {j.dinero} euros", ops))
+
+
+def menu_perro(p):
+    """Tu perro: cómo está, acariciarlo, darle de comer, mandarlo a casa o llamarlo. Se abre con Mayúsculas Y, o con Intro a su lado."""
+    app = p.app
+    j = p.j
+    if not j.perro:
+        app.decir("No tienes perro. Puedes adoptar uno en una protectora de animales.", True)
+        return
+
+    def volver_y(f):
+        def g():
+            if f():
+                while app.pila and app.pila[-1] is not p:
+                    app.cerrar(app.pila[-1])
+        return g
+
+    def buscar():
+        while app.pila and app.pila[-1] is not p:
+            app.cerrar(app.pila[-1])
+        p.perro_busca()
+
+    def ops():
+        if j.perro_en_casa:
+            return [Opcion(p.perro_txt()), Opcion(f"Llamar a {j.perro} para que vuelva contigo", volver_y(p.llamar_perro), ayuda="Llega corriendo desde casa. En mitad del mar no puede.")]
+        if p.perro() is None:
+            return [Opcion(f"{j.perro} no está aquí ahora mismo: vuelve contigo en cuanto pises tierra")]
+        return [Opcion(p.perro_txt(), ayuda="Con hambre avisa gimiendo, y sin fuerzas no busca. Si te tiene miedo, te sigue de lejos y no avisa de los enemigos ni busca."),
+                Opcion("Acariciar", lambda: (p.acariciar_perro(), m.refrescar(False)), ayuda="Le sube la confianza poco a poco. Si le has hecho daño, así hacéis las paces."),
+                Opcion(lambda: f"Dar de comer: te quedan {j.objetos.get('pienso', 0)} raciones de pienso", lambda: (p.alimentar_perro(), m.refrescar(False)),
+                       ayuda="Una ración le quita el hambre de casi un día y le sube mucho la confianza. El pienso se compra en la protectora de animales y en las tiendas."),
+                Opcion("Buscar por el olfato el objeto más cercano", buscar, ayuda="Lo mismo que la tecla Y."),
+                Opcion("Mandar a casa", volver_y(p.mandar_perro_a_casa), ayuda="Se va a tu vivienda y te espera allí, con comida y agua. Hace falta tener una casa. Para que vuelva, lo llamas desde este mismo menú.")]
+    m = Menu(app, f"Tu perro, {j.perro}", ops)
+    app.abrir(m)
 
 
 # ======================================================================== feria

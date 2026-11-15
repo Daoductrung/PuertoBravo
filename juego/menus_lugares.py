@@ -452,16 +452,9 @@ def banco(p, l):
 
 
 def loteria(p, l):
-    j = p.j
-
-    def comprar():
-        if j.loteria:
-            p.app.decir("Ya tienes un boleto para el sorteo de esta noche.", True)
-        elif p.pagar(10):
-            j.loteria = p.dia
-            p.son("caja", cat="interfaz")
-            p.app.decir("Boleto comprado. El sorteo es a medianoche. ¡Suerte!", True)
-    _menu(p, l, [Opcion("Comprar un boleto de lotería: 10 euros", comprar, ayuda="Cada medianoche hay sorteo. El premio gordo son 5000 euros.")])
+    from . import loteria as lot
+    m = _menu(p, l, lambda: lot.opciones_venta(p, l, lambda: m.refrescar(False)),
+              intro="Administración de lotería. El sorteo es cada día a las nueve de la noche")
 
 
 def empenos(p, l):
@@ -625,4 +618,6 @@ def taberna(p, l):
            Opcion("Contratar un guardaespaldas: 300 euros", contratar, ayuda="Te sigue a pie, sube contigo a los vehículos y dispara a tus enemigos. Máximo dos."),
            Opcion("Despedir a los guardaespaldas", despedir),
            Opcion("Tablón de encargos: aceptar un contrato", contrato, ayuda="Alguien paga por quitar de en medio a un maleante protegido por guardaespaldas. Cada contrato es más difícil y mejor pagado.")]
+    from . import loteria as lot
+    ops.append(lot.opcion_en_local(p, l))
     _menu(p, l, ops)

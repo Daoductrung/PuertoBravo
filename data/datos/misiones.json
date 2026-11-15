@@ -508,7 +508,7 @@
     {
      "tipo": "entregar",
      "lugar": "desguace",
-     "salud_min": 40,
+     "salud_min": 30,
      "texto": "Lleva el Centella al Desguace Hierro Viejo sin destrozarlo."
     },
     {

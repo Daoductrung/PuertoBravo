@@ -142,8 +142,8 @@ class Conduccion:
         if cand != v.dir:
             if abs(v.vel) > 15:
                 self.son("frenazo", vol=0.6)
-                if abs(v.vel) > 24:
-                    self.danar_vehiculo(v, 6)
+                if abs(v.vel) > 30:
+                    self.danar_vehiculo(v, 4)
                     self.decir("¡Derrapas!")
                 v.vel *= 0.6
             via = m.avenidas[i] if cand in (0, 2) else m.calles[j]

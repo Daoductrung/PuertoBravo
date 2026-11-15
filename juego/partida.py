@@ -185,7 +185,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.naufragar(callar=True)
         for _ in range(int(self.j.guardaespaldas)):
             self.crear_aliado()
-        if self.j.perro and self.mundo.tipo != "mar":
+        if self.j.perro and self.mundo.tipo != "mar" and not self.j.perro_en_casa:
             self.crear_perro()
 
     def lug(self, ident):
@@ -318,7 +318,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         j = self.j.a_dict()
         j["x"], j["y"] = px, py
         j["mapa"] = self.mundo.id
-        j["guardaespaldas"] = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto)
+        j["guardaespaldas"] = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto and not getattr(p, "de_banda", False))
         d = {"version": FORMATO, "jugador": j, "reloj": self.reloj, "dia": self.dia, "momento": time.time(),
              "fallos": dict(self.fallos), "decisiones": dict(self.decisiones), "saltadas": list(self.saltadas),
              "completadas": list(self.completadas), "lluvia": self.lluvia, "atracadas": self.atracadas,
@@ -882,7 +882,11 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         elif k == pygame.K_e:
             self.atracar_peaton()
         elif k == pygame.K_y:
-            self.perro_busca()
+            if mayus:
+                from . import menus_extra
+                menus_extra.menu_perro(self)
+            else:
+                self.perro_busca()
         elif k == pygame.K_u:
             self.alternar_paseo()
         elif k == pygame.K_j:
@@ -1405,8 +1409,14 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if not j.veh:
             cerca = [p for p in self.personas if not p.muerto and p.dist(x, y) < 3.5]
             if cerca:
-                p = min(cerca, key=lambda p: p.dist(x, y))
-                if p.hostil:
+                p = min(cerca, key=lambda p: (p.tipo in ("perro", "aliado"), p.tipo == "aliado", p.dist(x, y)))     # primero la gente de la calle; tu perro y los tuyos siempre están al lado
+                if p.tipo == "perro":
+                    from . import menus_extra
+                    menus_extra.menu_perro(self)
+                elif p.tipo == "aliado":
+                    self.son("murmullo", xy=(p.x, p.y))
+                    self.decir(f"{p.nombre}: " + random.choice(("Aquí estoy. Tú mandas.", "Todo tranquilo por ahora.", "Yo te cubro.", "Cuando quieras nos movemos.")), True)
+                elif p.hostil:
                     self.decir(f"{p.nombre} no quiere hablar.", True)
                 else:
                     self.son("murmullo", xy=(p.x, p.y))
@@ -1525,6 +1535,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         antes = int(self.reloj // 60)
         self.reloj += dt / 2.0
         self.pasar_necesidades(dt / 2.0)
+        self.pasar_perro(dt / 2.0)
+        self.sorteo_loteria()
         if self.reloj >= 1440:
             self.reloj -= 1440
             self.dia += 1
@@ -1559,10 +1571,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             l = self.lugares.get(pid)
             if l and l.tipo == "negocio":
                 total += int(l.get("ingresos", 0))
-        if total:
-            self.dar_dinero(total, "Ingresos de tus negocios")
+        self.repartir_ingresos_negocios(total)
         self.cobrar_banco()
-        self.sorteo_loteria()
         self.ingresos_territorios()
         from . import sistemas
         sistemas.paga(self)
@@ -1571,18 +1581,19 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.mover_bolsa()
         self.dia_adultos()
         self.dia_intimidad()
-        n = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto)
+        n = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto and not getattr(p, "de_banda", False))      # la banda cobra aparte
         if n:
             coste = 200 * n
             if self.j.dinero >= coste:
                 self.j.dinero -= coste
                 self.decir(f"Pagas {coste} euros de sueldo a tus guardaespaldas.")
             else:
-                self.personas = [p for p in self.personas if p.tipo != "aliado"]
+                self.personas = [p for p in self.personas if p.tipo != "aliado" or getattr(p, "de_banda", False)]
                 self.decir("No puedes pagar a tus guardaespaldas y se marchan.")
 
     def pasar_horas(self, horas, dormir=False):
         self.pasar_necesidades(horas * 60, durmiendo=dormir)
+        self.pasar_perro(horas * 60)
         self.reloj += horas * 60
         while self.reloj >= 1440:
             self.reloj -= 1440

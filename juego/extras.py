@@ -152,17 +152,9 @@ class Extras:
 
     # ----------------------------------------------------------------- lotería
     def sorteo_loteria(self):
-        j = self.j
-        if j.loteria and j.loteria < self.dia:
-            j.loteria = 0
-            if random.random() < 0.04:
-                self.dar_dinero(5000)
-                self.decir("¡Te ha tocado la lotería! Cinco mil euros.")
-            elif random.random() < 0.2:
-                self.dar_dinero(20)
-                self.decir("Lotería: te ha tocado el reintegro, 20 euros.")
-            else:
-                self.decir("Lotería: tu boleto de ayer no ha tenido premio.")
+        """Celebra los sorteos de la lotería que toquen: uno cada día, a las nueve de la noche. Está en loteria.py."""
+        from . import loteria
+        loteria.al_dia(self)
 
     def cobrar_banco(self):
         j = self.j

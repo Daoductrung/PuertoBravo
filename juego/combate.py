@@ -89,6 +89,8 @@ class Combate:
         lista = []
         for p in self.personas:
             if not p.muerto and (p.hostil or todos) and p.dist(x, y) < 90:
+                if p.tipo in ("aliado", "perro") and not self.cfg["fuego_amigo"]:
+                    continue                                     # sin fuego amigo, a los tuyos ni se les apunta
                 lista.append(p)
         for v in self.vehiculos:
             if v.muerto or v is self.j.veh:
@@ -235,7 +237,7 @@ class Combate:
         self.son("explosion", xy=(x, y), ref=30, maxd=400)
         self.delito(3, "uso de explosivos", siempre=self.mundo.policia and random.random() < 0.5)
         for p in list(self.personas):
-            if not p.muerto and p.tipo not in ("aliado", "perro"):
+            if not p.muerto and (p.tipo not in ("aliado", "perro") or self.cfg["fuego_amigo"]):
                 d = p.dist(x, y)
                 if d < r:
                     self.danar_persona(p, e["dano"] * (1 - 0.6 * d / r))
@@ -308,6 +310,9 @@ class Combate:
     # ------------------------------------------------------------------ daños
     def danar_persona(self, p, dano, atropello=False):
         if p.muerto:
+            return
+        if p.tipo in ("aliado", "perro"):                        # los tuyos: solo con fuego amigo, y sin volverse enemigos a la primera
+            self.herir_amigo(p, dano)
             return
         j = self.j
         p.salud -= dano
@@ -384,19 +389,21 @@ class Combate:
         if v.muerto or v.ardiendo >= 0:
             return
         antes = v.salud / v.salud_max
+        if v is self.j.veh:                                      # el tuyo aguanta más en fácil y en normal: de un par de golpes no arde
+            dano *= {"facil": 0.5, "normal": 0.75}.get(self.cfg["dificultad"], 1.0)
         v.salud -= dano
         ahora = v.salud / v.salud_max
         if v is self.j.veh:
             for u in (0.5, 0.25):
                 if antes > u >= ahora > 0:
-                    self.decir(f"Vehículo al {int(u * 100)} por ciento.")
+                    self.decir(f"Vehículo al {int(u * 100)} por ciento." + (" Sale humo del motor: un golpe fuerte más y arde. En un taller te lo arreglan." if u == 0.25 else ""))
         elif v.tag == "objetivo":
             for u in (0.75, 0.5, 0.25):
                 if antes > u >= ahora > 0:
                     self.decir(f"{v.nombre} al {int(u * 100)} por ciento.")
         if v.salud <= 0:
             v.salud = 0
-            v.ardiendo = 0.4 if v.tag == "objetivo" else 4.5
+            v.ardiendo = 0.4 if v.tag == "objetivo" else 7.0 if v is self.j.veh else 4.5
             v.fuego = self.son("fuego", bucle=True, xy=(v.x, v.y), ref=8, maxd=90)
             if v is self.j.veh:
                 self.decir("¡El vehículo está ardiendo! ¡Pulsa F para salir, va a explotar!", True)

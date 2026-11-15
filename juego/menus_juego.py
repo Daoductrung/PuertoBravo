@@ -129,7 +129,7 @@ def menu_cargar(app):
 
 # Lo que pasa de una partida a la siguiente al empezar de nuevo conservando lo ganado.
 CONSERVA = ("dinero", "banco", "armas", "arma", "objetos", "hab", "logros", "propiedades", "garajes", "barcos", "salud_max", "ropa", "casetes", "stats",
-            "bolsa", "negocios", "personaje", "nombre", "apellido", "genero", "perro", "conocidos")
+            "bolsa", "negocios", "personaje", "nombre", "apellido", "genero", "perro", "conocidos", "cobro_negocios")
 
 
 def partida_mas(app):
@@ -479,6 +479,9 @@ def opciones(app):
         seccion("Combate y dificultad", [
             lista("dificultad", "Dificultad", "Cambia el daño que recibes."),
             lista("punteria", "Ayuda de puntería"),
+            si_no("fuego_amigo", "Fuego amigo: puedes herir a tu perro, a tus guardaespaldas y a tu banda",
+                  "Con sí, que es lo realista, tus balas y tus explosivos les hacen daño: el perro te coge miedo hasta que hagáis las paces, y tu gente aguanta dos avisos antes de volverse contra ti. "
+                  "Con no, no se les puede apuntar ni herir, ni por accidente."),
             si_no("aviso_acierto", "Aviso al dar en el blanco", "Cada vez que aciertas a un enemigo o a un vehículo suena un toque agudo y el mando da un golpe corto. Al fijar un objetivo con la Q, el mando también avisa.",
                   al_cambiar=lambda: cfg["aviso_acierto"] and app.mez.sonar("tono_objetivo", cat="interfaz", vol=0.45, tono=2.0)),
             si_no("mod_enemigos", "Modificador: enemigos más duros", "Los enemigos de las misiones aguantan la mitad más. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
@@ -688,6 +691,9 @@ def movil(p):
             e = p.lug(b.get("en"))
             ops.append(Opcion(f"Barco {b.get('nombre', b['modelo'])}, amarrado en {p.nombre_lugar(e) if e else 'puerto'}"))
         ops.append(Opcion(f"Cuenta del banco: {j.banco} euros"))
+        if p.negocios_tuyos():
+            ops.insert(0, Opcion(lambda: f"Cómo cobras tus negocios: {p.cobro_txt()}", p.cambiar_cobro,
+                                 ayuda="Intro cambia entre las tres formas: que te lo traigan en mano cada medianoche, que te lo ingresen en el banco, o ir tú a recogerlo a cada negocio, con un diez por ciento más."))
         app.abrir(Menu(app, "Tus propiedades", ops))
 
     def estadisticas():
@@ -721,6 +727,8 @@ def movil(p):
                 ops.append(Opcion(t, ayuda=a["desc"]))
         ops.append(Opcion(f"Botiquines: {j.objetos.get('botiquin', 0)}"))
         ops.append(Opcion(f"Ganzúas: {j.objetos.get('ganzua', 0)}"))
+        if j.perro:
+            ops.append(Opcion(f"Raciones de pienso para {j.perro}: {j.objetos.get('pienso', 0)}"))
         ops.append(Opcion(f"Blindaje: {int(j.blindaje)}"))
         app.abrir(Menu(app, "Inventario", ops))
 
@@ -783,6 +791,7 @@ def movil(p):
                   Opcion("Explorar el mapa con el cursor", lambda: app.abrir(ExploradorMapa(app, p)), ayuda="Recorre la localidad cruce a cruce sin mover al personaje. También se abre con F9."),
                   Opcion("Marcadores personales", lambda: mx.marcadores(p)),
                   Opcion("Servicios: vehículo, guardaespaldas, ambulancia y taxi", lambda: mx.servicios(p)),
+                  ] + ([Opcion(lambda: "Tu perro. " + p.perro_txt(), lambda: mx.menu_perro(p), ayuda="Acariciarlo, darle de comer, mandarlo a casa o llamarlo. A pie también se abre con Mayúsculas Y.")] if j.perro else []) + [
                   Opcion(lambda: "Jugar con amigos" + (f": conectado, {len(p.remotos) + 1} jugadores" if p.online_activo() else ""),
                          lambda: __import__("juego.menus_online", fromlist=["x"]).amigos(p),
                          ayuda="Abre tu partida para que entren tus amigos, o únete a la de uno. Tu propio juego hace de servidor: no hace falta nada más."),
@@ -791,6 +800,8 @@ def movil(p):
                   Opcion("Tu carrera: vida honrada y vida delictiva", lambda: __import__("juego.menus_vida", fromlist=["x"]).carrera(p)),
                   Opcion("Habilidades y logros", lambda: mx.progreso(p)),
                   Opcion("Territorios: guerras de barrio", lambda: mx.territorios(p)),
+                  Opcion(lambda: "Lotería. " + __import__("juego.loteria", fromlist=["x"]).estado_txt(p), lambda: __import__("juego.loteria", fromlist=["x"]).menu_movil(p),
+                         ayuda="El próximo sorteo, tus boletos, comprobar si te ha tocado y los últimos números premiados. El sorteo es cada día a las nueve de la noche."),
                   ] + ([Opcion("Vida social: relaciones", lambda: __import__("juego.menus_adultos", fromlist=["x"]).vida_social(p)),
                         Opcion("Sustancias y mercancía", lambda: __import__("juego.menus_adultos", fromlist=["x"]).menu_sustancias(p))] if p.modo_adulto() else []) + [
                   Opcion("Inventario", inventario),
@@ -1015,6 +1026,10 @@ def _casa(p, l):
         for k, d in enumerate(garaje):
             lista.append(Opcion(f"Sacar del garaje: {d.get('nombre', d['modelo'])}", sacar(k)))
         lista.append(Opcion(f"Garaje: {len(garaje)} de {l.get('garaje', 0)} plazas ocupadas"))
+        if j.perro and j.perro_en_casa:
+            lista.append(Opcion(f"{j.perro} te espera en casa: llévatelo contigo", lambda: (p.llamar_perro(), m.refrescar(False))))
+        elif j.perro and p.perro() is not None:
+            lista.append(Opcion(f"Dejar a {j.perro} en casa", lambda: (p.mandar_perro_a_casa(l), m.refrescar(False)), ayuda="Se queda aquí, con comida y agua, hasta que vuelvas a por él o lo llames desde el móvil."))
         from . import laboratorio
         lista += laboratorio.opciones_casa(p, l, Menu, Opcion)
         if not j.veh:
@@ -1117,7 +1132,7 @@ def _tienda(p, l):
         p.poner_busqueda(2)
     factor = p.mercado("comida", l.id)
     ops = [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {int(c['precio'] * factor)} euros", _comprar_comida(p, c, factor)) for c in p.datos["comidas"][:3:2]]
-    ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua"), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará.")]
+    ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua")] + ([_comprar_objeto(p, "pienso")] if p.j.perro else []) + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará.")]
     m = _menu_lugar(p, l, ops)
 
 
@@ -1256,7 +1271,12 @@ def _negocio(p, l):
     precio = int(l.get("precio", 0))
     ingresos = int(l.get("ingresos", 0))
     if l.id in j.propiedades:
-        app.decir(f"{l.nombre} es tuyo. Te da {ingresos} euros cada día, a medianoche.", True)
+        mm = _menu_lugar(p, l, lambda: [
+            Opcion(f"Es tuyo. Da {ingresos} euros cada día, a medianoche"),
+            Opcion(lambda: f"Forma de cobro de todos tus negocios: {p.cobro_txt()}", lambda: (p.cambiar_cobro(), mm.refrescar(False)),
+                   ayuda="Intro cambia entre las tres formas: que te lo traigan en mano cada medianoche, que te lo ingresen en el banco, o venir tú a recogerlo, con un diez por ciento más."),
+        ] + ([Opcion(lambda: f"Recoger la caja: {int(j.cajas.get(l.id, 0))} euros", lambda: (p.recoger_caja(l), mm.refrescar(False)),
+                     ayuda="Te llevas lo que hay en la caja, con un diez por ciento más por venir en persona. En la caja caben siete días.")] if j.cobro_negocios == "recoger" else []))
         return
 
     def comprar():
@@ -1330,7 +1350,8 @@ def _bar(p, l):
 
     def hablar():
         app.decir("Encarna: " + p.objetivo_txt().replace("No tienes ninguna misión en curso. Disponible:", "Deberías pasarte por:"), True)
-    ops = [Opcion("Tomar una caña con tapa: 4 euros", beber), Opcion("Hablar con Encarna", hablar)]
+    from . import loteria
+    ops = [Opcion("Tomar una caña con tapa: 4 euros", beber), Opcion("Hablar con Encarna", hablar), loteria.opcion_en_local(p, l)]
     if p.modo_adulto():
         ops.insert(1, Opcion("Tomar una copa: 6 euros", lambda: p.consumir("alcohol", de_inventario=False) if p.pagar(6) else None, ayuda="Alcohol: sube el ánimo, pero caminas torcido y apuntas peor."))
     _menu_lugar(p, l, ops)
