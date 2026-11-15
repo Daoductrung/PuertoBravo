@@ -433,4 +433,4 @@ def desintoxicar(p):
         p.pasar_horas(48)
         p.cambiar_animo(10)
         p.son("curar", cat="interfaz")
-        p.app.decir(f"Dos días ingresado. Sales limpio y con la cabeza despejada. Es el día {p.dia}, las {p.hora_txt()}.", True)
+        p.app.decir(f"Dos días en la clínica. Sales limpi[o|a] y con la cabeza despejada. Es el día {p.dia}, las {p.hora_txt()}.", True)

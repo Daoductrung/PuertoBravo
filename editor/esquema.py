@@ -288,7 +288,11 @@ ESQUEMAS = {
         c("a", "Metros al este", "decimal", req=True, defecto=0), c("b", "Metros al norte", "decimal", req=True, defecto=0)]},
     "personaje": {"titulo": "Personaje para elegir al empezar", "resumen": lambda d: f"{d.get('nombre', '?')} {d.get('apellido', '')}", "campos": [
         c("id", "Identificador", req=True), c("nombre", "Nombre", req=True, ayuda="En los textos de la historia sustituye a Dani."),
-        c("apellido", "Apellido", req=True), c("desc", "Descripción", "largo", "Se lee en el menú de elegir personaje. Cuenta sus ventajas.", req=True),
+        c("apellido", "Apellido", req=True),
+        c("genero", "Le hablan", "opcion", "Si lo dejas sin valor, quien juega elige al empezar si le hablan en masculino o en femenino. Ponlo solo si el personaje tiene que ser él o ella. "
+          "En los textos, lo que cambia se escribe entre corchetes con las dos formas: Bienvenid[o|a], [el sobrino|la sobrina].",
+          ops=[("h", "En masculino"), ("m", "En femenino")]),
+        c("desc", "Descripción", "largo", "Se lee en el menú de elegir personaje. Cuenta sus ventajas.", req=True),
         c("dinero", "Dinero inicial", "entero"), c("salud_max", "Salud máxima", "entero", minimo=50, maximo=150),
         c("animo", "Ánimo inicial, de 0 a 100", "entero", minimo=0, maximo=100), c("reputacion", "Fama inicial en la calle", "entero"),
         c("ciudadania", "Prestigio inicial entre los vecinos, de 0 a 100", "entero", minimo=0, maximo=100),

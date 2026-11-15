@@ -4,9 +4,9 @@ import random
 
 from . import mundo as M
 
-NOMBRE_TRABAJO = {"taxi": "taxista", "ambulancia": "conductor de ambulancia", "autobus": "conductor de autobús",
-                  "vigilante": "vigilante", "camion": "transportista", "helados": "heladero", "mensajeria": "mensajero del mar",
-                  "bomberos": "bombero", "grua": "conductor de grúa", "paqueteria": "mensajero"}
+NOMBRE_TRABAJO = {"taxi": "taxista", "ambulancia": "conductor[|a] de ambulancia", "autobus": "conductor[|a] de autobús",
+                  "vigilante": "vigilante", "camion": "transportista", "helados": "helader[o|a]", "mensajeria": "mensajer[o|a] del mar",
+                  "bomberos": "bomber[o|a]", "grua": "conductor[|a] de grúa", "paqueteria": "mensajer[o|a]"}
 
 
 def _agotado(t):
@@ -168,7 +168,7 @@ class Trabajos:
         t["ganado"] += paga
         self.j.stats["servicios"] = self.j.stats.get("servicios", 0) + 1
         self.dar_dinero(paga, texto)
-        self.servicio_hecho(t["tipo"], NOMBRE_TRABAJO.get(t["tipo"], "trabajador"))
+        self.servicio_hecho(t["tipo"], NOMBRE_TRABAJO.get(t["tipo"], "trabajador[|a]"))
 
     # ----------------------------------------------------------------- pizzas
     def empezar_pizzas(self):
@@ -178,7 +178,7 @@ class Trabajos:
         if self.trabajo:
             self.terminar_trabajo(None)
         self.trabajo = {"tipo": "pizza", "quedan": 4, "ganado": 0, "limite": None}
-        self.decir("Trabajo de repartidor: entrega cuatro pizzas antes de que se enfríen. Puedes ir a pie o en cualquier vehículo.")
+        self.decir("Reparto de pizzas: entrega cuatro pizzas antes de que se enfríen. Puedes ir a pie o en cualquier vehículo.")
         self._pizza_siguiente()
 
     def _pizza_siguiente(self):

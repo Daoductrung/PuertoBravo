@@ -5,6 +5,7 @@ import time
 
 import pygame
 
+from . import genero, registro
 from . import mundo as M
 from .combate import Combate
 from .conduccion import Conduccion
@@ -329,6 +330,11 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
     def cargar_dict(self, d):
         d = migrar(d)
         self.j.de_dict(d.get("jugador", {}))
+        genero.poner(self.j.genero)
+        if self.j.personaje == "propio":
+            registro.ocultar(self.j.nombre)
+            if self.j.apellido:
+                registro.ocultar(self.j.apellido)
         self.fallos = {str(k): int(v) for k, v in dict(d.get("fallos", {})).items()}
         self.decisiones = dict(d.get("decisiones", {}))
         self.saltadas = list(d.get("saltadas", []))
@@ -540,7 +546,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if not callar:
             j.salud = max(10.0, j.salud - 30)
             self.pasar_horas(2)
-            self.decir(f"Te quedas a la deriva hasta que un pesquero te recoge medio ahogado y te deja en {dest.nombre}. Salud {int(j.salud)}.")
+            self.decir(f"Te quedas a la deriva hasta que un pesquero te recoge medio ahogad[o|a] y te deja en {dest.nombre}. Salud {int(j.salud)}.")
 
     # --------------------------------------------------------------- entrada
     def al_entrar(self):
@@ -857,7 +863,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         j = self.j
         if k in (pygame.K_LSHIFT, pygame.K_RSHIFT) and j.agachado and not self.cubierto and self.t - getattr(self, "t_aviso_agachado", -99) > 15:
             self.t_aviso_agachado = self.t
-            self.decir("Estás agachado y por eso vas despacio. Pulsa X para levantarte.")
+            self.decir("Estás agachad[o|a] y por eso vas despacio. Pulsa X para levantarte.")
         if k in (pygame.K_LSHIFT, pygame.K_RSHIFT) and self.cfg["correr_alternar"]:
             self.correr_fijo = not getattr(self, "correr_fijo", False)
             self.app.son("menu_mover")
@@ -919,7 +925,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if j.estrellas:
             t += f"Nivel de búsqueda {j.estrellas}. "
         if j.agachado and not j.veh:
-            t += "Estás a cubierto. " if self.cubierto else "Estás agachado: caminas despacio. "
+            t += "Estás a cubierto. " if self.cubierto else "Estás agachad[o|a]: caminas despacio. "
         if j.foco < 99:
             t += f"Concentración {int(j.foco)} por ciento. "
         if self.nadando:

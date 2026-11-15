@@ -2,7 +2,7 @@
 import re
 from collections import deque
 
-from . import registro
+from . import genero, registro
 
 
 # Con poco detalle se quitan las frases que solo explican qué tecla pulsar: quien ya conoce el juego no las necesita.
@@ -66,7 +66,7 @@ class Voz:
         """Dice un texto. Los avisos del juego no interrumpen; los menús sí."""
         if not texto:
             return
-        texto = str(texto)
+        texto = genero.resolver(str(texto))          # «Bienvenid[o|a]» queda como le corresponde al protagonista
         if self.detalle == "poco":
             texto = resumir(texto)
         registro.voz(texto)
@@ -93,7 +93,7 @@ class Voz:
 
     def mostrar(self, texto):
         """Para cuando suena una voz grabada: el texto no se lee, pero va al braille, al historial y al registro."""
-        texto = str(texto)
+        texto = genero.resolver(str(texto))
         registro.voz(texto)
         self.historial.append(texto)
         self.cursor = len(self.historial) - 1

@@ -415,7 +415,7 @@
       ],
       [
        "Salva el Largo",
-       "Tú eres el nuevo de Custodia. Yo soy Salva. Los Aljibes cuidamos de este barrio. Pásate luego por el gimnasio."
+       "Tú eres [el nuevo|la nueva] de Custodia. Yo soy Salva. Los Aljibes cuidamos de este barrio. Pásate luego por el gimnasio."
       ]
      ]
     }
@@ -480,7 +480,7 @@
      "lineas": [
       [
        "Tendera",
-       "Iban a romperme la toma de agua. Gracias, hijo. Llévate lo que quieras del mostrador."
+       "Iban a romperme la toma de agua. Gracias, hij[o|a]. Llévate lo que quieras del mostrador."
       ],
       [
        "Salva el Largo",
@@ -510,7 +510,7 @@
      "lineas": [
       [
        "Nerea",
-       "Nerea Ibarrola, de El Faro. Tú eres el de la cisterna, no lo niegues, que te vio media ciudad."
+       "Nerea Ibarrola, de El Faro. Tú eres [el|la] de la cisterna, no lo niegues, que te vio media ciudad."
       ],
       [
        "Nerea",
@@ -870,7 +870,7 @@
      "lineas": [
       [
        "La Fundi",
-       "Ni una chispa en el desguace. Te debo el negocio, forastero."
+       "Ni una chispa en el desguace. Te debo el negocio, foraster[o|a]."
       ]
      ]
     }
@@ -927,7 +927,7 @@
       ],
       [
        "La Fundi",
-       "El cauce pone las cisternas y los muelles ponemos el hierro. Y el chico, que ya ha demostrado para qué sirve, hace de puente."
+       "El cauce pone las cisternas y los muelles ponemos el hierro. Y [el chico|la chica], que ya ha demostrado para qué sirve, hace de puente."
       ],
       [
        "Custodia",
@@ -2033,13 +2033,13 @@
       ],
       [
        "Nerea",
-       "Ve y cuéntalas. No entres: quédate cerca y escucha. Sale un guarda a dar vueltas cada poco. Cuando oigas sus pasos, quieto o agachado."
+       "Ve y cuéntalas. No entres: quédate cerca y escucha. Sale un guarda a dar vueltas cada poco. Cuando oigas sus pasos, quiet[o|a] o agachad[o|a]."
       ]
      ]
     },
     {
      "tipo": "vigilar",
-     "texto": "Ve a la Embotelladora La Gota y vigílala desde cerca, sin que te vean. Cuando oigas pasos que se acercan, quédate quieto o agáchate con la X.",
+     "texto": "Ve a la Embotelladora La Gota y vigílala desde cerca, sin que te vean. Cuando oigas pasos que se acercan, quédate quiet[o|a] o agáchate con la X.",
      "lugar": "oc_embotelladora",
      "radio": 25,
      "segundos": 50,
@@ -2219,7 +2219,7 @@
     },
     {
      "tipo": "vigilar",
-     "texto": "Vigila la Sede de Aguas del Ocaso sin que te vean. Cuando oigas pasos, quédate quieto o agáchate con la X.",
+     "texto": "Vigila la Sede de Aguas del Ocaso sin que te vean. Cuando oigas pasos, quédate quiet[o|a] o agáchate con la X.",
      "lugar": "oc_sede",
      "radio": 25,
      "segundos": 40,
@@ -3601,6 +3601,7 @@
    "id": "oc_tino",
    "nombre": "Tino",
    "apellido": "Barral",
+   "genero": "h",
    "desc": "Sobrino de Custodia, criado entre cisternas. Empieza con conducción al nivel cuatro, buena resistencia, una llave de cisterna, doscientos cincuenta euros y buen nombre entre los vecinos.",
    "dinero": 250,
    "ciudadania": 40,
@@ -3613,6 +3614,7 @@
    "id": "oc_alondra",
    "nombre": "Alondra",
    "apellido": "Cifuentes",
+   "genero": "m",
    "desc": "Fue de Los Vigías hasta que se cansó de mirar. Empieza con conducción y puntería al nivel tres, fama en la calle y tres juegos de ganzúas.",
    "reputacion": 25,
    "conduccion": 3,

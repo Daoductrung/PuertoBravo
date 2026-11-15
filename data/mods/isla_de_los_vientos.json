@@ -314,7 +314,7 @@
      "opciones": [
       {
        "texto": "Nada: una copa y conversación",
-       "ayuda": "Te sube el ánimo y en la isla te tendrán por uno de los suyos.",
+       "ayuda": "Te sube el ánimo y en la isla te tendrán por [uno|una] de los suyos.",
        "dice": "Chelo saca la botella buena, la que no enseña a los de fuera.",
        "fama": 2,
        "animo": 7
@@ -701,6 +701,7 @@
    "id": "iv_telmo",
    "nombre": "Telmo",
    "apellido": "Barlovento",
+   "genero": "h",
    "desc": "Nacido en la isla y criado en una barca. Empieza con la pesca al nivel cuatro, resistencia al tres, un garfio y dos botiquines.",
    "dinero": 180,
    "resistencia": 3,

@@ -181,7 +181,7 @@ def servicios(p):
             app.son("error")
             app.decir("La ambulancia no entra mientras haya tiros. Aléjate de los enemigos.", True)
         elif j.salud >= j.salud_max:
-            app.decir("No estás herido.", True)
+            app.decir("No tienes heridas.", True)
         elif p.pagar(200):
             j.salud = j.salud_max
             p.son("sirena_ambulancia", cat="interfaz", vol=0.4)

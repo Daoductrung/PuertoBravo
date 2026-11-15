@@ -331,6 +331,7 @@
    "id": "ma_leo",
    "nombre": "Leo",
    "apellido": "Carrasco",
+   "genero": "h",
    "desc": "Probador de la Escudería Viento Sur hasta que estrelló el coche del jefe. Empieza con la conducción al nivel seis: nadie conduce mejor. A cambio, casi no tiene dinero.",
    "dinero": 100,
    "conduccion": 6,

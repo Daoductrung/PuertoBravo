@@ -30,6 +30,7 @@ import urllib.error
 import urllib.request
 
 from . import cifrado, registro, rutas
+from . import genero
 
 SERVICIOS = ("local", "gemini", "otro", "openai", "anthropic")          # orden del modo automático: primero lo gratuito
 NOMBRES = {"auto": "Automático, el más barato que funcione", "local": "Modelo local, en tu ordenador", "gemini": "Google AI Studio, Gemini",
@@ -591,7 +592,7 @@ def _situacion(p, q, f):
     barrio = p.mundo.barrio(x, y)
     j = p.j
     return {"lugar": f"{barrio['nombre']}, {p.mundo.nombre}", "hora": p.hora_txt(), "llueve": bool(p.lluvia), "humor_de_ahora": random.choice(HUMORES),
-            "jugador": {"nombre": j.nombre, "fama_en_la_calle": p.reputacion_txt(), "entre_los_vecinos": p.ciudadania_txt(), "le_busca_la_policia": bool(j.estrellas),
+            "jugador": {"nombre": j.nombre, "es": "una mujer" if j.genero == "m" else "un hombre", "fama_en_la_calle": genero.resolver(p.reputacion_txt()), "entre_los_vecinos": genero.resolver(p.ciudadania_txt()), "le_busca_la_policia": bool(j.estrellas),
                         "lleva_un_arma_en_la_mano": p.arma()["id"] != "punos"},
             "personaje": {k: f[k] for k in ("nombre", "genero", "edad", "oficio", "caracter", "confianza")}}
 

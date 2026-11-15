@@ -129,7 +129,7 @@ def menu_cargar(app):
 
 # Lo que pasa de una partida a la siguiente al empezar de nuevo conservando lo ganado.
 CONSERVA = ("dinero", "banco", "armas", "arma", "objetos", "hab", "logros", "propiedades", "garajes", "barcos", "salud_max", "ropa", "casetes", "stats",
-            "bolsa", "negocios", "personaje", "nombre", "apellido", "perro", "conocidos")
+            "bolsa", "negocios", "personaje", "nombre", "apellido", "genero", "perro", "conocidos")
 
 
 def partida_mas(app):
@@ -151,6 +151,11 @@ def partida_mas(app):
                 if k in viejo and hasattr(p.j, k):
                     setattr(p.j, k, viejo[k])
             p.j.ciclo = int(viejo.get("ciclo", 0)) + 1
+            __import__("juego.genero", fromlist=["x"]).poner(p.j.genero)
+            if p.j.personaje == "propio":
+                from . import registro
+                registro.ocultar(p.j.nombre)
+                registro.ocultar(p.j.apellido)
             p.j.salud = p.j.salud_max
             if p.j.arma not in p.j.armas:
                 p.j.arma = "punos"
@@ -500,9 +505,9 @@ def opciones(app):
                   "Con poco, se quitan las frases que solo recuerdan qué tecla pulsar. Con mucho, en los menús se lee además la explicación de cada opción, sin tener que pulsar F1. Normal es lo de siempre."),
             si_no("menu_posicion", "Decir la posición en los menús, por ejemplo 3 de 9",
                   "Al moverte por un menú, después de cada opción dice cuál es y cuántas hay."),
-            si_no("voces_grabadas", "Voces grabadas en las escenas, solo con el personaje Dani",
+            si_no("voces_grabadas", "Voces grabadas en las escenas, solo con el personaje Dani en masculino",
                   ayuda_="Con sí, las escenas de las misiones que tengan grabaciones suenan con voces de actores, en lugar de leerlas tu lector de pantalla, y el texto sigue saliendo en braille. "
-                         "Solo cuando juegas con Dani, porque las grabaciones le llaman por su nombre. Con no, o con otro personaje, todo lo dice tu lector de pantalla o, si no usas lector, la voz de Windows."),
+                         "Solo cuando juegas con Dani y has elegido que te hablen en masculino, porque las grabaciones le llaman por su nombre, le hablan así y su voz es la de un hombre. Con no, con otro personaje o en femenino, todo lo dice tu lector de pantalla o, si no usas lector, la voz de Windows."),
         ], "Con qué voz habla el juego."),
         Opcion("Registro para informar de fallos", lambda: __import__("juego.menus_registro", fromlist=["x"]).opciones(app),
                ayuda="El juego anota lo que pasa en cada sesión para poder encontrar los fallos. Aquí ves dónde está, qué contiene y cómo enviarlo."),
@@ -645,7 +650,7 @@ def movil(p):
                         while app.pila and app.pila[-1] is not p:
                             app.cerrar(app.pila[-1])
                         p.iniciar_mision(m)
-                    lista.append(Opcion(f"Tutorial: {m['titulo']}. {p.txt(m['resumen'])}", empezar, ayuda="Pulsa Intro para empezarlo ahora, estés donde estés. El tutorial te dice adónde ir."))
+                    lista.append(Opcion(f"Tutorial: {m['titulo']}. {p.txt(m['resumen'])}", empezar, ayuda="Pulsa Intro para empezarlo ahora, estés donde estés. Si estás lejos de donde se hace, el tutorial te lleva allí él mismo."))
                     continue
                 lista.append(Opcion(f"{m['titulo']}. {p.txt(m['resumen'])} {donde}", ir, ayuda="Pulsa Intro para marcar el lugar en el GPS."))
             return lista or [Opcion("No hay misiones disponibles ahora mismo")]
@@ -1136,7 +1141,7 @@ def _comida(p, l):
         def trabajar():
             p.app.cerrar(m)
             p.empezar_pizzas()
-        ops.append(Opcion("Trabajar de repartidor de pizzas", trabajar, ayuda="Cuatro entregas contrarreloj. Cuanto antes llegues, más propina."))
+        ops.append(Opcion("Trabajar repartiendo pizzas", trabajar, ayuda="Cuatro entregas contrarreloj. Cuanto antes llegues, más propina."))
     m = _menu_lugar(p, l, ops)
 
 
@@ -1154,7 +1159,7 @@ def _hospital(p, l):
     ops = [Opcion(lambda: f"Que te curen: {max(0, int(j.salud_max - j.salud)) * 2} euros. Salud actual {int(j.salud)}", curar), _comprar_objeto(p, "botiquin")]
     if p.modo_adulto():
         from . import menus_adultos as ma
-        ops.append(Opcion("Desintoxicación: 800 euros y dos días ingresado", lambda: ma.desintoxicar(p), ayuda="Elimina todas tus dependencias."))
+        ops.append(Opcion("Desintoxicación: 800 euros y dos días en la clínica", lambda: ma.desintoxicar(p), ayuda="Elimina todas tus dependencias."))
         ops += _salud_intima(p)
     _menu_lugar(p, l, ops)
 

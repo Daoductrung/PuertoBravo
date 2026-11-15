@@ -59,5 +59,5 @@ class Necesidades:
             return ""
         j = self.j
         h = "sin hambre" if j.hambre < 40 else "con algo de hambre" if j.hambre < 60 else "con hambre" if j.hambre < 82 else "con mucha hambre"
-        s = "descansado" if j.sueno < 40 else "algo cansado" if j.sueno < 65 else "con sueño" if j.sueno < 85 else "muerto de sueño"
+        s = "sin sueño" if j.sueno < 40 else "con algo de cansancio" if j.sueno < 65 else "con sueño" if j.sueno < 85 else "con muchísimo sueño"
         return f" Estás {h} y {s}."

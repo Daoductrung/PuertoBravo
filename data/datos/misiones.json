@@ -84,7 +84,7 @@
       ],
       [
        "Encarna",
-       "Jamón del bueno, malpensado. Y no te entretengas, que te conozco."
+       "Jamón del bueno, malpensad[o|a]. Y no te entretengas, que te conozco."
       ]
      ]
     },
@@ -134,7 +134,7 @@
      "lineas": [
       [
        "Chispas",
-       "Así que tú eres el sobrino de Encarna. O la sobrina. Con este ruido no me entero de nada."
+       "[Así que tú eres el sobrino de Encarna. O la sobrina.|Así que tú eres la sobrina de Encarna. O el sobrino.] Con este ruido no me entero de nada."
       ],
       [
        "Dani",
@@ -516,7 +516,7 @@
      "lineas": [
       [
        "Chispas",
-       "¡Qué maravilla! Escucha ese motor. Eres un artista, Dani."
+       "¡Qué maravilla! Escucha ese motor. Eres [un|una] artista, Dani."
       ]
      ]
     }
@@ -545,7 +545,7 @@
       ],
       [
        "Dani",
-       "¿Y quieres que entre yo solo ahí?"
+       "¿Y quieres que entre yo sol[o|a] ahí?"
       ],
       [
        "La Rusa",
@@ -748,7 +748,7 @@
      "lineas": [
       [
        "Belmonte",
-       "Correcto. Puntual y discreto. Vuelve al casino mañana, tendré algo más interesante."
+       "Correcto. Puntual y discret[o|a]. Vuelve al casino mañana, tendré algo más interesante."
       ]
      ]
     }
@@ -898,7 +898,7 @@
       ],
       [
        "Contable",
-       "¡Cuidado! ¡No has venido solo! ¡Belmonte no se fiaba de ti!"
+       "¡Cuidado! ¡No has venido sol[o|a]! ¡Belmonte no se fiaba de ti!"
       ]
      ]
     },
@@ -1032,7 +1032,7 @@
       ],
       [
        "Encarna",
-       "Hijo, ¿tú con qué te crees que se pagó este bar?"
+       "Hij[o|a], ¿tú con qué te crees que se pagó este bar?"
       ]
      ]
     },
@@ -1445,7 +1445,7 @@
      "tipo": "ir",
      "lugar": "farmacia",
      "radio": 12,
-     "texto": "Primer ejercicio: llega a la Farmacia Luna. Pulsa L para marcarla en el GPS y sigue la baliza, o pulsa U para caminar solo."
+     "texto": "Primer ejercicio: llega a la Farmacia Luna. Pulsa L para marcarla en el GPS y sigue la baliza, o pulsa U para caminar sol[o|a]."
     },
     {
      "tipo": "dialogo",
@@ -1792,7 +1792,7 @@
      "tipo": "ir",
      "lugar": "lonja",
      "radio": 12,
-     "texto": "Ve a la Lonja de pescado. Pulsa L para marcarla en el GPS, o U para caminar solo."
+     "texto": "Ve a la Lonja de pescado. Pulsa L para marcarla en el GPS, o U para caminar sol[o|a]."
     },
     {
      "tipo": "dialogo",

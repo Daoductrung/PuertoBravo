@@ -87,10 +87,10 @@ class Misiones:
                 t += f" {e['nombre'].capitalize()} " + (f"está a {int(math.hypot(e['x'] - x, e['y'] - y))} metros de ti." if e["contigo"] else "te espera en el punto de recogida.")
             if p["tipo"] == "sigilo" and self.mision.get("guardias"):
                 cerca = min(math.hypot(g["x"] - x, g["y"] - y) for g in self.mision["guardias"])
-                t += f" Hay {len(self.mision['guardias'])} vigilantes; el más cercano, a {int(cerca)} metros. Agachado, con la X, te oyen mucho menos. No corras."
+                t += f" Hay {len(self.mision['guardias'])} vigilantes; el más cercano, a {int(cerca)} metros. Si te agachas con la X, te oyen mucho menos. No corras."
             vg = self.mision.get("vigia")
             if p["tipo"] == "vigilar" and vg:
-                t += (f" Estás en tu puesto. Te quedan {max(0, int(float(p.get('segundos', 45)) - vg['t']))} segundos. Si oyes pasos que se acercan, quédate quieto o agáchate con la X."
+                t += (f" Estás en tu puesto. Te quedan {max(0, int(float(p.get('segundos', 45)) - vg['t']))} segundos. Si oyes pasos que se acercan, quédate quiet[o|a] o agáchate con la X."
                       if vg["dentro"] else " Todavía no has llegado al puesto.")
             ca = self.mision.get("carrera")
             if p["tipo"] == "carrera" and ca:
@@ -122,7 +122,34 @@ class Misiones:
                        "generado": False, "recogido": False, "restos": None, "avisos": set(), "quedan": None, "repeticion": bool(repeticion)}
         self.app.son("notificacion")
         self.decir(f"Misión: {m['titulo']}." + (" La repites: no cuenta ni da recompensa." if repeticion else ""), True)
+        self._llevar_al_tutorial(m)
         self._siguiente_paso()
+
+    def _llevar_al_tutorial(self, m):
+        """Los tutoriales se empiezan desde el móvil, estés donde estés, pero sus frases dan por hecho que estás en su
+        punto de partida («estás en el club de tiro», «estás en un embarcadero», «junto a la oficina hay un taxi»).
+        Si estás lejos o en otra localidad, te lleva. El de combate, además, pone los muñecos nada más empezar: sin esto,
+        la Q decía que no había enemigos cerca, porque estaban a cientos de metros."""
+        if not m.get("tutorial"):
+            return
+        l = self.lugares.get(m.get("lugar", ""))
+        paso = next((q for q in m["pasos"] if q["tipo"] not in ("dialogo", "dar", "decision")), None)
+        justo = bool(paso and paso["tipo"] == "eliminar" and paso.get("ya"))          # hay que estar en la misma puerta
+        if justo:
+            l = self._lugar_paso(paso) or l
+        if l is None:
+            return
+        x, y = self.pos()
+        cerca = 20 if justo else 150
+        if l.mapa == self.mundo.id and math.hypot(l.x - x, l.y - y) < cerca and (not justo or (not self.j.veh and getattr(self, "interior", None) is None)):
+            return
+        if self.j.veh:
+            self.salir_vehiculo(forzado=True)
+        self.salir_interior(silencio=True)
+        if l.mapa != self.mundo.id:
+            self.cambiar_mapa(l.mapa, l.x, l.y)
+        self.teletransportar(l.x, l.y)
+        self.decir(f"Para este tutorial te llevo a {l.nombre}, en {self.mundo.describir(self.j.x, self.j.y)}.")
 
     def _lugar_paso(self, p):
         return self.lugares.get(p.get("lugar", ""))
@@ -161,8 +188,9 @@ class Misiones:
         self._materializar()
 
     def voces_activas(self):
-        """Las voces grabadas solo suenan si el jugador las quiere y juega con Dani: las grabaciones le llaman por ese nombre."""
-        return bool(self.cfg["voces_grabadas"]) and self.j.personaje == "dani"
+        """Las voces grabadas solo suenan si el jugador las quiere y juega con Dani en masculino: las grabaciones le llaman por
+        ese nombre, le hablan en masculino y su voz es la de un hombre."""
+        return bool(self.cfg["voces_grabadas"]) and self.j.personaje == "dani" and self.j.genero == "h"
 
     def _siguiente_paso(self):
         ms = self.mision
@@ -351,8 +379,14 @@ class Misiones:
                 e.t_disparo = random.uniform(1.5, 3.0)
                 self.personas.append(e)
                 ms["enemigos"].append(e)
-        ms["quedan"] = len(ms["enemigos"])
-        self.decir(f"Hay {ms['quedan']} enemigos. Pulsa Q para fijar al más cercano.")
+        n = ms["quedan"] = len(ms["enemigos"])
+        if all(getattr(e, "inofensivo", False) for e in ms["enemigos"]):         # muñecos y dianas: no son enemigos
+            x, y = self.pos()
+            cerca = min(ms["enemigos"], key=lambda e: e.dist(x, y))
+            self.decir((f"Hay un objetivo de prácticas, {M.metros(cerca.dist(x, y))}." if n == 1 else f"Hay {n} objetivos de prácticas; el más cercano, {M.metros(cerca.dist(x, y))}.")
+                       + " Pulsa Q para fijarlo.")
+        else:
+            self.decir(("Hay un enemigo. Pulsa Q para fijarlo." if n == 1 else f"Hay {n} enemigos. Pulsa Q para fijar al más cercano."))
         if self.cfg["punteria"] == "completa":
             self.fijar(callar=True)
 
@@ -450,7 +484,7 @@ class Misiones:
                 if vivos != ms["quedan"]:
                     ms["quedan"] = vivos
                     if vivos > 0:
-                        self.decir(f"Quedan {vivos}.")
+                        self.decir("Queda uno. Pulsa Q para fijarlo." if vivos == 1 else f"Quedan {vivos}.")
                 if vivos == 0:
                     ms["enemigos"] = []
                     self._paso_hecho()
@@ -633,7 +667,7 @@ class Misiones:
                     self.cancelar_gps()
                 self.app.son("llegada")
                 self.decir(f"Estás en tu puesto. Quédate a menos de {int(radio)} metros durante {int(float(p.get('segundos', 45)))} segundos y escucha. "
-                           "Cuando oigas pasos que se acercan, quédate quieto o agáchate con la X.")
+                           "Cuando oigas pasos que se acercan, quédate quiet[o|a] o agáchate con la X.")
             return
         vg["t"] += dt
         if d > radio:
@@ -660,7 +694,7 @@ class Misiones:
                 vg["ronda"] = {"t": 0.0, "x": l.x, "y": l.y, "t_paso": 0.0}
                 self.son("buscando", cat="interfaz", vol=0.5)
                 if vg["rondas"] == 1:
-                    self.decir("Sale alguien a dar una vuelta. Quédate quieto o agáchate hasta que se vaya.")
+                    self.decir("Sale alguien a dar una vuelta. Quédate quiet[o|a] o agáchate hasta que se vaya.")
         else:
             r["t"] += dt
             f = min(1.0, r["t"] / 4.0) if r["t"] < 7.0 else max(0.0, 1.0 - (r["t"] - 7.0) / 3.0)     # se acerca, se para y se va
@@ -696,7 +730,7 @@ class Misiones:
                 r["canal"] = None
 
     def _carrera_puesto_txt(self, ca):
-        orden = ("primero", "segundo", "tercero", "cuarto", "quinto")
+        orden = ("primer[o|a]", "segund[o|a]", "tercer[o|a]", "cuart[o|a]", "quint[o|a]")
         return f"Vas {orden[max(0, min(ca['puesto'], 4))]} de {len(ca['rivales']) + 1}."
 
     def _carrera_punto_en(self, ca, s):
@@ -750,7 +784,7 @@ class Misiones:
                     if self.gps and self.gps.get("auto"):
                         self.cancelar_gps()
                     self.app.son("reloj", cat="interfaz")
-                    self.decir(f"En la salida, con {n_riv} {'rival' if n_riv == 1 else 'rivales'}. Son {len(puntos)} puntos. Preparado.")
+                    self.decir(f"En la salida, con {n_riv} {'rival' if n_riv == 1 else 'rivales'}. Son {len(puntos)} puntos. Preparad[o|a].")
             return
         if ca["fase"] == "cuenta":
             antes = ca["t"]

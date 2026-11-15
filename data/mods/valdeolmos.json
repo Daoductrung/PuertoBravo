@@ -811,6 +811,7 @@
    "id": "vo_ines",
    "nombre": "Inés",
    "apellido": "Olmedo",
+   "genero": "m",
    "desc": "Hija de viñadores, acostumbrada a trabajar de sol a sol. Empieza con resistencia al nivel cuatro, algo más de salud, una hoz y buen nombre entre los vecinos.",
    "salud_max": 110,
    "ciudadania": 35,

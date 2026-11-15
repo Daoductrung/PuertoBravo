@@ -17,7 +17,7 @@ Este documento tiene cuatro partes:
 
 ### La historia
 
-Eliges personaje. Con el primero te llamas Dani Roca y acabas de salir de la cárcel tras cumplir tres años por un robo que no cometiste. Vuelves a tu ciudad, Puerto Bravo, que ahora controla el empresario Octavio Belmonte. A partir de ahí, haz lo que quieras: sigue la historia, gánate la vida honradamente, hazte un nombre en la calle o dedícate a pescar. El juego no te obliga a nada.
+Eliges personaje, o te creas el tuyo con su nombre, sus habilidades y su ventaja de salida, y decides si te hablan en masculino o en femenino. Con el primero te llamas Dani Roca y acabas de salir de la cárcel tras cumplir tres años por un robo que no cometiste. Vuelves a tu ciudad, Puerto Bravo, que ahora controla el empresario Octavio Belmonte. A partir de ahí, haz lo que quieras: sigue la historia, gánate la vida honradamente, hazte un nombre en la calle o dedícate a pescar. El juego no te obliga a nada.
 
 ### Cómo se juega sin ver
 
@@ -165,7 +165,7 @@ La accesibilidad es el requisito principal del proyecto. Todo lo que ocurre en e
 
 ## 3. Crear mods
 
-Un mod añade o cambia contenido sin tocar los datos originales: lugares, misiones con todos sus pasos, armas, vehículos, carreras, comidas, objetos, peces, personajes para elegir, capítulos, mapas enteros y, para el modo adulto, personas, planes, regalos y sustancias. Los mods están en `data\mods` y se cargan al arrancar.
+Un mod añade o cambia contenido sin tocar los datos originales: lugares, misiones con todos sus pasos, armas, vehículos, carreras, comidas, objetos, peces, personajes para elegir, capítulos, mapas enteros y, para el modo adulto, personas, planes, regalos y sustancias. Los mods están en `data\mods` y se cargan al arrancar. En cualquier texto, lo que cambia según el protagonista sea hombre o mujer se escribe entre corchetes, con la forma masculina, una barra y la femenina: `Bienvenid[o|a]`, `[el sobrino|la sobrina]`. Lo resuelve `juego/genero.py` justo antes de decir el texto.
 
 ### Con el editor
 
@@ -211,7 +211,7 @@ La guía completa, con la descripción y la duración de cada uno de los 237 son
 
 ### Música
 
-- Radio: cada emisora tiene su archivo en `data\radio`. Una emisora puede tener varias canciones (`bravo.mp3`, `bravo_1.mp3`, `bravo_2.mp3`...), que van rotando. Cualquier otro archivo de audio que dejes ahí es una emisora nueva, y `data\radio\mi_musica` es la emisora con tu propia música.
+- Radio: cada emisora tiene su archivo en `data\radio`. Una emisora puede tener varias canciones (`bravo.mp3`, `bravo_1.mp3`, `bravo_2.mp3`...), que van rotando. Cualquier otro archivo de audio que dejes ahí es una emisora nueva, y `data\radio\mi_musica` es la emisora con tu propia música. Las canciones de más de cinco minutos se leen y suenan por tramos de un minuto (`juego/musica.py`), así que una grabación de varias horas no ocupa más memoria que una canción corta.
 - Ambiente: `data\musica` tiene una carpeta por situación (`menu`, `exploracion`, `noche`, `mar` y `tension`). Se usan todas las piezas que haya en cada una, al azar, se llamen como se llamen.
 - Toda la música se nivela sola al cargarla, así que ninguna pista suena más fuerte que otra.
 

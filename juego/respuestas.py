@@ -34,7 +34,7 @@ ENTRADAS = {
                  "Fíjate lo que te voy a decir: ", "Pues eso mismo decía yo ayer. ", "Ahora que lo dices, "),
     "seco": ("", "", "", "", "", "Mira, ", "A ver, ", "Pues ", "Bah. ", "En fin. "),
     "timido": ("", "", "Eh... ", "Pues... ", "Bueno... ", "No sé... ", "Yo... ", "A ver... ", "Esto... ", "Perdona, es que... "),
-    "chulo": ("", "", "Mira, chaval, ", "Te lo digo yo: ", "A mí me lo vas a contar. ", "Escucha, ", "Venga ya. ", "Eso lo sé yo de sobra. ", "Tú apunta: ", "Mira lo que te digo, "),
+    "chulo": ("", "", "Mira, chaval[|a], ", "Te lo digo yo: ", "A mí me lo vas a contar. ", "Escucha, ", "Venga ya. ", "Eso lo sé yo de sobra. ", "Tú apunta: ", "Mira lo que te digo, "),
 }
 COLETILLAS = {
     "amable": ("", "", "", " ¿Y tú qué tal?", " Así es la vida.", " Pero bien, ¿eh?", " Gracias por preguntar.", " No nos podemos quejar.", " Ya ves tú.", " Qué le vamos a hacer.",

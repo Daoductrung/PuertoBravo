@@ -25,6 +25,7 @@ class Jugador:
         self.personaje = "dani"
         self.nombre = "Dani"
         self.apellido = "Roca"
+        self.genero = "h"            # cómo le hablan: "h" en masculino, "m" en femenino
         self.ciudadania = 20.0
         self.jornada_dia = 0
         self.curso_dia = 0

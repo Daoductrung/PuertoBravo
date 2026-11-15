@@ -321,6 +321,9 @@ class Combate:
             elif p.tipo == "policia":
                 self.delito(6, "agresión a un agente", siempre=True)
                 self.decir("Policía abatido.")
+            elif getattr(p, "inofensivo", False):                # un muñeco o una diana de prácticas: ni delito, ni botín, ni cuenta
+                self.decir(f"{p.nombre}: al suelo.")
+                return
             else:
                 j.stats["enemigos"] += 1
                 banda = "Los Calaveras" if p.tipo == "banda" else next((b for b in BANDAS_MUNDO if b in (p.nombre or "")), None)

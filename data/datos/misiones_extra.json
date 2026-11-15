@@ -244,7 +244,7 @@
       ],
       [
        "Dani",
-       "Yo no soy primo de nadie."
+       "Yo no soy [primo|prima] de nadie."
       ],
       [
        "Anselmo",
@@ -738,7 +738,7 @@
       ],
       [
        "Remedios",
-       "La policía de aquí es honrada, hijo. Por eso no da abasto."
+       "La policía de aquí es honrada, hij[o|a]. Por eso no da abasto."
       ]
      ]
     },

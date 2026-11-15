@@ -1,5 +1,5 @@
 PUERTO BRAVO: LEY DEL ASFALTO
-Audiojuego de mundo abierto, en español y totalmente accesible. Versión 1.6.2.
+Audiojuego de mundo abierto, en español y totalmente accesible. Versión 1.6.3.
 Se juega con el oído, con teclado o con mando de Xbox o de PlayStation.
 
 PARA JUGAR

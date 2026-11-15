@@ -182,6 +182,7 @@
    "id": "of_noa",
    "nombre": "Noa",
    "apellido": "Santos",
+   "genero": "m",
    "desc": "Trabajó diez años de mensajera en bicicleta. Empieza con muy buen nombre entre los vecinos, buen ánimo, resistencia al nivel tres y dos botiquines: ideal para una vida honrada.",
    "dinero": 150,
    "animo": 80,

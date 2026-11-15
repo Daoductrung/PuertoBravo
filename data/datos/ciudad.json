@@ -64,7 +64,7 @@
     {"id": "mansion", "nombre": "Mansión Belmonte", "tipo": "monumento", "bloque": [8, 6], "lado": "S", "pos": 36, "desc": "La casa de Octavio Belmonte: verja de hierro, cámaras y guardias armados."},
     {"id": "atico", "nombre": "Ático de La Colina", "tipo": "casa", "bloque": [7, 5], "lado": "N", "pos": 36, "precio": 30000, "garaje": 4, "desc": "Un ático de lujo con vistas a toda la bahía y garaje para cuatro vehículos."},
     {"id": "golf", "nombre": "Club de golf La Colina", "tipo": "monumento", "bloque": [9, 7], "xy": [36, 36], "desc": "Dieciocho hoyos de césped perfecto donde los poderosos cierran tratos."},
-    {"id": "restaurante", "nombre": "Restaurante Sibarita", "tipo": "comida", "bloque": [6, 5], "lado": "E", "pos": 36, "caro": true, "desc": "Cocina de autor a precios de atraco. Eso sí, sales como nuevo."},
+    {"id": "restaurante", "nombre": "Restaurante Sibarita", "tipo": "comida", "bloque": [6, 5], "lado": "E", "pos": 36, "caro": true, "desc": "Cocina de autor a precios de atraco. Eso sí, sales como nuev[o|a]."},
     {"id": "mirador", "nombre": "Mirador de la Bahía", "tipo": "monumento", "bloque": [9, 6], "lado": "E", "pos": 36, "desc": "Desde este mirador se domina toda la ciudad: el puerto a un lado, la playa al otro y el mar al fondo."},
     {"id": "armeria_colina", "nombre": "Deportes de Caza Montero", "tipo": "armeria", "bloque": [6, 7], "lado": "S", "pos": 30, "desc": "Tienda de caza para gente bien. Tienen rifles de precisión."},
     {"id": "estacion_pb", "nombre": "Estación de autobuses de Puerto Bravo", "tipo": "estacion", "bloque": [3, 3], "lado": "N", "pos": 36, "precio": 20, "vehiculo": "autobus", "desc": "De aquí salen los autobuses a San Lucero, Villaseca y Cala Brava."},

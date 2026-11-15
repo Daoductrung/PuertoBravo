@@ -19,7 +19,7 @@ li { margin-bottom: .3em; }
 <p>Este manual está organizado por encabezados. Con NVDA o JAWS puedes saltar de sección en sección con la tecla <kbd>H</kbd>.</p>
 
 <h2>1. Qué es este juego</h2>
-<p>Al empezar eliges entre <span data-n="personajes">4</span> personajes, cada uno con sus ventajas. Con el primero te llamas Dani Roca y acabas de salir de la cárcel tras cumplir tres años por un robo que no cometiste. Vuelves a tu ciudad, Puerto Bravo, que ahora controla el empresario Octavio Belmonte. A partir de ahí, haz lo que quieras: sigue la historia, o no.</p>
+<p>Al empezar eliges entre <span data-n="personajes">4</span> personajes, cada uno con sus ventajas, o te creas el tuyo, y decides si te hablan en masculino o en femenino. Con el primero te llamas Dani Roca y acabas de salir de la cárcel tras cumplir tres años por un robo que no cometiste. Vuelves a tu ciudad, Puerto Bravo, que ahora controla el empresario Octavio Belmonte. A partir de ahí, haz lo que quieras: sigue la historia, o no.</p>
 <ul>
 <li>Un mundo abierto con <span data-n="mapas">9</span> mapas: las ciudades de Puerto Bravo, San Lucero y Monteferro; los pueblos de Villaseca, Cala Brava y Fuentefría; la Isla Tortuga, la Plataforma Neptuno y el Mar de Poniente, navegable en barco.</li>
 <li><span data-n="lugares">305</span> lugares: casas, comercios, bancos, talleres, casinos, gimnasios, cines, hospitales, embarcaderos, helipuertos y monumentos, cada uno con su sonido y su descripción.</li>
@@ -59,7 +59,7 @@ li { margin-bottom: .3em; }
 <li>Subir a un coche y llevarlo a un gimnasio, conduciendo tú o con el piloto.</li>
 </ol>
 <p>Es opcional y se puede hacer en cualquier momento: está en el móvil, en Misiones, dentro de Aprender a jugar. Dura unos cinco minutos.</p>
-<p>Hay cuatro tutoriales más, también opcionales. Se empiezan desde el móvil, en Misiones: aparecen con la palabra Tutorial delante, y con <kbd>Intro</kbd> empiezan en el acto, estés donde estés; el propio tutorial te dice adónde ir. En ninguno se puede fallar, y mientras duran la policía no acude:</p>
+<p>Hay cuatro tutoriales más, también opcionales. Se empiezan desde el móvil, en Misiones: aparecen con la palabra Tutorial delante, y con <kbd>Intro</kbd> empiezan en el acto, estés donde estés: si estás lejos de donde se hace, o en otra localidad, el propio tutorial te lleva a su punto de partida y te lo dice. En ninguno se puede fallar, y mientras duran la policía no acude:</p>
 <ul>
 <li>Aprende a defenderte, en el Club de tiro olímpico: fijar un objetivo, golpear con un bate, disparar y recargar, contra muñecos que no se defienden.</li>
 <li>Aprende a ganarte la vida, en la Oficina de empleo: cómo se empieza un trabajo con vehículo, con un recorrido de taxi de prueba, y qué otros trabajos hay.</li>
@@ -150,7 +150,7 @@ li { margin-bottom: .3em; }
 <li><kbd>W, A, S y D</kbd>: escáner direccional: dice qué hay delante, a la izquierda, detrás y a la derecha, y a qué distancia está la pared.</li>
 <li><kbd>Espacio</kbd>: atacar o disparar. Con armas automáticas, mantenla pulsada.</li>
 <li><kbd>R</kbd>: recargar.</li>
-<li><kbd>X</kbd>: agacharte o levantarte. Agachado te aciertan menos, pero vas más lento.</li>
+<li><kbd>X</kbd>: agacharte o levantarte. Al agacharte te aciertan menos, pero vas más lento.</li>
 <li><kbd>Mayúsculas X</kbd>: ponerte a cubierto tras una pared o un vehículo parado, o salir. A cubierto te alcanzan mucho menos; si te mueves, sales.</li>
 <li><kbd>Retroceso</kbd>: tiempo lento: todo va más despacio mientras te quede concentración. Otra pulsación lo quita.</li>
 <li><kbd>H</kbd>: gritar para espantar a los peatones.</li>
@@ -450,6 +450,7 @@ li { margin-bottom: .3em; }
 
 <h2>13. La radio y tu música</h2>
 <p>Al subir a un vehículo suena la radio. Con <kbd>R</kbd> cambias de emisora. Para oír tu música, copia tus canciones en la carpeta <strong>data\radio\mi_musica</strong> y elige la emisora <em>Mi música</em>; dentro de ella, <kbd>R</kbd> pasa a la canción siguiente. Cualquier archivo de audio que dejes directamente en <strong>data\radio</strong> es una emisora nueva.</p>
+<p>Las canciones pueden durar lo que quieras: un disco entero, un programa de radio o una grabación de varias horas en un solo archivo. Las de más de cinco minutos se leen y suenan por tramos de un minuto, sin cortes, para que no ocupen la memoria del ordenador.</p>
 <h3>Música de ambiente</h3>
 <p>Fuera de los vehículos, o con la radio apagada, suena una música de fondo suave que cambia con la situación: el menú principal, explorar de día, la noche, el mar y los momentos de tensión, con la policía detrás o enemigos cerca. Cada situación tiene varias piezas: se empieza por una al azar y, cuando termina, suena otra distinta. Al encender la radio de un vehículo la música de ambiente se calla, y vuelve cuando apagas la radio con <kbd>Mayúsculas R</kbd> o te bajas. Se desactiva y se ajusta en Opciones, Sonido y música. Puedes añadir tu propia música a cada situación copiando archivos en <strong>data\musica</strong>, en la carpeta de esa situación: se usan todos los que haya, al azar, sean cuantos sean y se llamen como se llamen. Toda la música, la de ambiente y la de la radio, se nivela sola al cargarla, así que ninguna pista suena más fuerte que otra.</p>
 <h3>Motor de sonido: clásico o envolvente</h3>
@@ -497,12 +498,25 @@ li { margin-bottom: .3em; }
 <h2>15. Elegir personaje</h2>
 <p>Al empezar una partida nueva eliges personaje. La historia es la misma para todos, y los demás te llaman por el nombre del que elijas; cambian las ventajas con las que empiezas.</p>
 <ul>
-<li>Dani Roca: equilibrado. Empieza con un botiquín y sin puntos débiles.</li>
+<li>Dani Roca: de todo un poco. Empieza con un botiquín y sin puntos débiles.</li>
 <li>Álex Montes: fue piloto de rallies. Empieza con la conducción al nivel cinco y tres juegos de ganzúas.</li>
 <li>Sam Ferrer: ocho años en el ejército. Empieza con la puntería al nivel cuatro, más salud, una navaja y dos botiquines.</li>
 <li>Cris Navarro: vendía seguros. Empieza con ochocientos euros, buen ánimo, algo de fama y el aprecio de los vecinos.</li>
 </ul>
-<p>Se pueden añadir personajes con el editor de mods.</p>
+<h3>En masculino o en femenino</h3>
+<p>Después de elegir a uno de estos cuatro, el juego pregunta cómo quieres que te hablen: en masculino o en femenino. Cambia cómo te tratan los demás y cómo te habla el propio juego: bienvenido o bienvenida, el sobrino o la sobrina de Encarna, hijo o hija. La historia, las misiones y las ventajas son exactamente las mismas. Se guarda con la partida y no se cambia después.</p>
+<p>Los personajes que añaden algunos mods ya son él o ella, y con ellos no se pregunta.</p>
+<h3>Crear tu propio personaje</h3>
+<p>La última opción de la lista es Crear tu propio personaje. Es un menú con estos datos; se recorre con flecha arriba y flecha abajo:</p>
+<ul>
+<li>Nombre y apellido: <kbd>Intro</kbd> abre un cuadro para escribirlo. Valen letras, espacios y guiones, hasta veinte. El apellido puede quedarse vacío. En la historia te llamarán así.</li>
+<li>Te hablan: en masculino o en femenino. Se cambia con flecha izquierda, flecha derecha o <kbd>Intro</kbd>.</li>
+<li>Conducción, puntería, resistencia y pesca: flecha derecha sube un nivel y flecha izquierda lo baja. Tienes ocho niveles para repartir, con cinco como mucho en cada habilidad. Cada opción dice cuántos te quedan. Después se sigue subiendo con la práctica y en las academias, hasta el diez.</li>
+<li>Ventaja de salida, a elegir una con flecha izquierda y derecha: ninguna; ahorros, ochocientos euros; fortaleza, más salud y dos botiquines; manos rápidas, tres juegos de ganzúas; una navaja y dos botiquines; o don de gentes, con buen ánimo, algo de fama y el aprecio de los vecinos.</li>
+<li>Empezar la partida. Hace falta haber puesto el nombre. Si te quedan niveles sin repartir, el juego avisa una vez y con un segundo <kbd>Intro</kbd> empieza igualmente.</li>
+</ul>
+<p><kbd>F1</kbd> explica cada dato. El nombre que escribas no se anota en el registro de la sesión.</p>
+<p>Se pueden añadir personajes ya hechos con el editor de mods.</p>
 
 <h2>16. La vida honrada</h2>
 <p>Se puede terminar el juego rico sin cometer un solo delito. Todo lo honrado sube tu prestigio entre los vecinos; los delitos lo bajan. Con buen prestigio cobras más en los trabajos y la policía te pasa por alto las faltas pequeñas.</p>
@@ -662,7 +676,7 @@ li { margin-bottom: .3em; }
 <li>Tus grabaciones, o las que te pase otra persona, van en <strong>data\voces\propias</strong>. Tienen preferencia sobre las que trae el juego, y las actualizaciones no tocan esa carpeta.</li>
 <li>Las voces que trae el juego están en <strong>data\voces</strong>, en una subcarpeta por historia. Hasta la versión 1.6.1 estaban en otra carpeta, voces_serie, que ya no se usa: el juego la borra sola.</li>
 <li>En Opciones, Voz, eliges si quieres voces grabadas o no. Con no, todo lo dice tu lector de pantalla o, si no usas lector, la voz de Windows, como siempre.</li>
-<li>Las voces solo suenan cuando juegas con Dani, porque las grabaciones le llaman por su nombre. Con cualquier otro personaje, las escenas las lee el lector.</li>
+<li>Las voces solo suenan cuando juegas con Dani y has elegido que te hablen en masculino, porque las grabaciones le llaman por su nombre, le hablan así y su voz es la de un hombre. Con cualquier otro personaje, con uno creado por ti o en femenino, las escenas las lee el lector.</li>
 </ul>
 <p>Las voces que trae el juego para sus historias no son de actores: están generadas por ordenador con un programa de inteligencia artificial, VibeVoice, de Microsoft. Si prefieres el lector de pantalla, se quitan en Opciones, Voz.</p>
 <p>Graba con tu propia voz o con voces sintéticas que tengas permiso para usar. No uses voces clonadas de personas reales ni sacadas de otros juegos o películas.</p>

@@ -172,7 +172,7 @@ def amigos(p):
         anfitrion = p.es_anfitrion()
         p.desconectar_online()
         app.son("amigo_sale")
-        app.decir("Has cerrado tu partida a los amigos. Sigues jugando tú solo." if anfitrion else "Te has desconectado. Sigues jugando tú solo.", True)
+        app.decir("Has cerrado tu partida a los amigos. Sigues jugando por tu cuenta." if anfitrion else "Te has desconectado. Sigues jugando por tu cuenta.", True)
         menu.i = 0
         menu.refrescar(False)
 

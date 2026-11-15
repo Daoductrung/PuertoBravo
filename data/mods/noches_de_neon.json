@@ -648,6 +648,7 @@
    "id": "nn_vera",
    "nombre": "Vera",
    "apellido": "Montoya",
+   "genero": "m",
    "desc": "Diez años de taxista de noche. Empieza con conducción al nivel cuatro, cuatrocientos euros, una porra y algo de nombre tanto entre los vecinos como en la calle.",
    "dinero": 400,
    "reputacion": 15,

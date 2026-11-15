@@ -39,7 +39,7 @@ TECLAS = {
         ("W, A, S y D", "escáner direccional: dice qué hay delante, a la izquierda, detrás y a la derecha, y a qué distancia está la pared"),
         ("Espacio", "atacar o disparar. Con armas automáticas, mantenla pulsada"),
         ("R", "recargar"),
-        ("X", "agacharte o levantarte. Agachado te aciertan menos, pero vas más lento"),
+        ("X", "agacharte o levantarte. Al agacharte te aciertan menos, pero vas más lento"),
         ("Mayúsculas X", "ponerte a cubierto tras una pared o un vehículo parado, o salir. A cubierto te alcanzan mucho menos; si te mueves, sales"),
         ("Retroceso", "tiempo lento: todo va más despacio mientras te quede concentración. Otra pulsación lo quita"),
         ("H", "gritar para espantar a los peatones"),
@@ -82,9 +82,9 @@ TUTORIAL = [
     ("Narrador", "Si te metes en líos, pulsa Q para fijar al enemigo: oirás un tono que sale de donde está. Espacio ataca, R recarga y Z usa un botiquín."),
     ("Narrador", "Más allá de Puerto Bravo hay otra ciudad, San Lucero, dos pueblos, Villaseca y Cala Brava, y un mar con una isla. Se llega por carretera con un vehículo, en autobús desde la estación o en barco desde un embarcadero. El GPS sabe guiarte entre localidades."),
     ("Narrador", "Para aprenderte una ciudad sin moverte, pulsa F9: el explorador de mapa mueve un cursor de cruce en cruce y te dice qué hay en cada uno."),
-    ("Narrador", "Puedes trabajar de taxista, de repartidor, conducir ambulancias, autobuses y camiones, pescar, correr carreras, comprar casas, negocios, coches y barcos, o jugarte el dinero en el casino. El móvil, con la tecla M, lo reúne todo."),
+    ("Narrador", "Puedes trabajar con un taxi, repartir pizzas, conducir ambulancias, autobuses y camiones, pescar, correr carreras, comprar casas, negocios, coches y barcos, o jugarte el dinero en el casino. El móvil, con la tecla M, lo reúne todo."),
     ("Narrador", "Si tienes un mando de Xbox o de PlayStation, conéctalo: el juego lo reconoce solo, vibra con lo que pasa y la ayuda te dice qué hace cada botón."),
-    ("Narrador", "Eso es todo. Explora a tu ritmo: nadie te obliga a seguir la historia. Bienvenido a Puerto Bravo."),
+    ("Narrador", "Eso es todo. Explora a tu ritmo: nadie te obliga a seguir la historia. Bienvenid[o|a] a Puerto Bravo."),
 ]
 
 INTRO = [

@@ -23,11 +23,11 @@
      "lineas": [
       [
        "Carmela",
-       "Yo a ti te conozco. Tú eres Dani Roca. Mi hermano compartió celda contigo ahí arriba, en el penal. Dice que eres de ley."
+       "Yo a ti te conozco. Tú eres Dani Roca. Mi hermano [compartió celda contigo|coincidió contigo] ahí arriba, en el penal. Dice que eres de ley."
       ],
       [
        "Dani",
-       "Tu hermano roncaba como una locomotora. ¿Qué pasa en Monteferro?"
+       "Tu hermano [roncaba como una locomotora|no callaba ni debajo del agua]. ¿Qué pasa en Monteferro?"
       ],
       [
        "Carmela",
@@ -465,7 +465,7 @@
      "lineas": [
       [
        "Ángela",
-       "Bienvenido al balneario. Lo siento, hoy no hay baños: el agua baja negra. Alguien está vertiendo porquería en la Poza del Río Frío."
+       "Bienvenid[o|a] al balneario. Lo siento, hoy no hay baños: el agua baja negra. Alguien está vertiendo porquería en la Poza del Río Frío."
       ],
       [
        "Dani",
@@ -535,7 +535,7 @@
       ],
       [
        "Ángela",
-       "Los turistas vienen por los ciervos, hijo. Sin ciervos no hay balneario."
+       "Los turistas vienen por los ciervos, hij[o|a]. Sin ciervos no hay balneario."
       ]
      ]
     },
@@ -964,7 +964,7 @@
      "lineas": [
       [
        "La redactora",
-       "Tú eres Dani, el sobrino de Encarna. Me hace falta alguien que no llame la atención."
+       "Tú eres Dani, [el sobrino|la sobrina] de Encarna. Me hace falta alguien que no llame la atención."
       ],
       [
        "La redactora",
@@ -1033,7 +1033,7 @@
      "lineas": [
       [
        "Don Anselmo",
-       "Sesenta años en este barrio y nunca me había acompañado nadie al médico. Dios te lo pague, hijo."
+       "Sesenta años en este barrio y nunca me había acompañado nadie al médico. Dios te lo pague, hij[o|a]."
       ]
      ]
     }
@@ -1164,7 +1164,7 @@
       ],
       [
        "La redactora",
-       "No entres. Quédate cerca, sin moverte mucho, y escucha quién entra y quién sale. De vez en cuando sale uno a mirar: cuando oigas pasos que se acercan, quieto o agachado."
+       "No entres. Quédate cerca, sin moverte mucho, y escucha quién entra y quién sale. De vez en cuando sale uno a mirar: cuando oigas pasos que se acercan, quiet[o|a] o agachad[o|a]."
       ]
      ]
     },
@@ -1174,7 +1174,7 @@
      "segundos": 50,
      "radio": 25,
      "resultado": "Has contado tres entregas. Los tres sobres se los ha llevado el mismo hombre, y ha subido a un coche del ayuntamiento.",
-     "texto": "Ve a la terminal del ferry y vigílala desde cerca, sin que te vean. Cuando oigas pasos que se acercan, quédate quieto o agáchate con la X."
+     "texto": "Ve a la terminal del ferry y vigílala desde cerca, sin que te vean. Cuando oigas pasos que se acercan, quédate quiet[o|a] o agáchate con la X."
     },
     {
      "tipo": "dialogo",
@@ -1257,7 +1257,7 @@
    "requiere": [
     "eo6"
    ],
-   "resumen": "Tienes las pruebas contra el concejal de obras, y no eres el único que lo sabe.",
+   "resumen": "Tienes las pruebas contra el concejal de obras, y no eres [el único|la única] que lo sabe.",
    "pasos": [
     {
      "tipo": "dialogo",
@@ -1341,7 +1341,7 @@
    "si_opcion": 1,
    "resumen": "La redactora va a entregar las pruebas en el juzgado y hay quien no quiere que llegue.",
    "final_titulo": "Final honrado: el concejal ante el juez",
-   "final": "El lunes, El Faro abre con la foto del concejal entrando en el juzgado. No te has hecho rico, pero en el Barrio Viejo ya no pagas un café. Y la tía Encarna recorta la portada y la pega en la pared del bar.",
+   "final": "El lunes, El Faro abre con la foto del concejal entrando en el juzgado. No te has hecho ric[o|a], pero en el Barrio Viejo ya no pagas un café. Y la tía Encarna recorta la portada y la pega en la pared del bar.",
    "pasos": [
     {
      "tipo": "dialogo",
@@ -1561,7 +1561,7 @@
      "opciones": [
       {
        "texto": "Que no vendan: la cooperativa es del pueblo",
-       "ayuda": "Villaseca sigue siendo de sus vecinos. Te hacen socio: ciento cincuenta euros cada medianoche, para siempre, y mucha fama aquí.",
+       "ayuda": "Villaseca sigue siendo de sus vecinos. Te hacen soci[o|a]: ciento cincuenta euros cada medianoche, para siempre, y mucha fama aquí.",
        "dice": "Lo dices en la plaza, en voz alta. Hay quien aplaude y quien se marcha. Anselmo te pone una mano en el hombro.",
        "fama": 5,
        "animo": 6,
@@ -1569,7 +1569,7 @@
       },
       {
        "texto": "Que vendan, y cobrar tu comisión",
-       "ayuda": "Doce mil euros ahora. La cooperativa pasa a manos del fondo y tú dejas de ser bienvenido en media Villaseca.",
+       "ayuda": "Doce mil euros ahora. La cooperativa pasa a manos del fondo y tú dejas de ser bienvenid[o|a] en media Villaseca.",
        "dice": "Les hablas de números. El de la corbata asiente desde el fondo del bar.",
        "dinero": 12000,
        "fama": -5,
@@ -1855,7 +1855,7 @@
      "lineas": [
       [
        "Un Lagarto",
-       "Jefe. El bingo, la discoteca y la marisquería. Si hoy cobras tú en persona, mañana no hace falta ni ir."
+       "[Jefe|Jefa]. El bingo, la discoteca y la marisquería. Si hoy cobras tú en persona, mañana no hace falta ni ir."
       ]
      ]
     },
@@ -1879,7 +1879,7 @@
      "lineas": [
       [
        "Un Lagarto",
-       "Todos han pagado. Y sin rechistar. San Lucero es tuyo, jefe."
+       "Todos han pagado. Y sin rechistar. San Lucero es tuyo, [jefe|jefa]."
       ]
      ]
     }

@@ -62,7 +62,7 @@ class Robot:
             else:
                 return
 
-    def nueva_partida(self, personaje="Dani"):
+    def nueva_partida(self, personaje="Dani", genero="h"):
         from juego.menus import Menu
         m = self.app.pila[-1]
         assert isinstance(m, Menu)
@@ -72,6 +72,10 @@ class Robot:
         if isinstance(cima, Menu) and "personaje" in cima.titulo:
             cima.i = next((k for k, o in enumerate(cima.opciones) if o.texto.startswith(personaje)), 0)
             self.tecla(pygame.K_RETURN)
+            cima = self.app.pila[-1]
+            if isinstance(cima, Menu) and "te hablen" in cima.titulo:          # los personajes sin género fijo lo preguntan
+                cima.i = 1 if genero == "m" else 0
+                self.tecla(pygame.K_RETURN)
         self.saltar_dialogos()
         assert self.app.pila[-1] is self.p
         return self.p

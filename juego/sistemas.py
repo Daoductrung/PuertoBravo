@@ -273,7 +273,7 @@ class Interior:
         elif que == "bano":
             p.cambiar_animo(2)
             app.son("salpicadura", vol=0.5)
-            app.decir("Una ducha caliente. Sales como nuevo.", True)
+            app.decir("Una ducha caliente. Sales como nuev[o|a].", True)
         elif que == "dormitorio":
             self.acciones["descansar"]()
         elif que == "garaje":

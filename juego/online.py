@@ -61,7 +61,7 @@ class Online:
     def abrir_a_amigos(self, puerto=None, clave=""):
         """Arranca el servidor en este ordenador y entra en él como un jugador más."""
         if self.online_activo():
-            return False, "Ya estás conectado."
+            return False, "Ya tienes una conexión abierta."
         puerto = puerto or self.cfg["red_puerto"]
         srv = red.Servidor(puerto, clave)
         try:
@@ -97,7 +97,7 @@ class Online:
 
     def unirse_a_amigo(self, texto, clave=""):
         if self.online_activo():
-            return False, "Ya estás conectado."
+            return False, "Ya tienes una conexión abierta."
         d = red.analizar_direccion(texto)
         if d is None:
             return False, "No entiendo esa dirección. Tiene que ser como puertobravo, dos puntos, barra, barra, el número de tu amigo, dos puntos y el puerto."
@@ -150,7 +150,7 @@ class Online:
             return
         if not self.online_activo():
             self.app.son("error")
-            self.decir("No estás conectado con nadie.", True)
+            self.decir("No tienes conexión con nadie.", True)
             return
         self.red.enviar({"t": "chat", "texto": texto[:300]})
         self.chat.append(f"Tú: {texto}")

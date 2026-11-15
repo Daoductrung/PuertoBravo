@@ -6,7 +6,46 @@ vecinos sube con el trabajo honrado y baja con los delitos; la fama en la calle 
 import math
 import re
 
-RANGOS = ["aprendiz", "oficial", "veterano", "maestro", "leyenda"]
+from . import genero, registro
+
+PROPIO = "propio"            # el id del personaje que se hace el jugador
+MAX_NOMBRE = 20
+PUNTOS = 8                   # niveles de habilidad que reparte quien se hace su personaje
+MAX_NIVEL = 5                # y lo más que puede poner en una sola
+# Con qué empieza un personaje propio, a elegir una: igual de fuertes que las de los personajes de la lista.
+VENTAJAS = [
+    ("ninguna", "Ninguna", "Empiezas con lo puesto y un botiquín. Para quien quiere la partida más cuesta arriba.", {}),
+    ("ahorros", "Ahorros", "Empiezas con ochocientos euros.", {"dinero": 800}),
+    ("fortaleza", "Fortaleza", "Empiezas con más salud, veinte puntos más, y dos botiquines.", {"salud_max": 120, "botiquines": 2}),
+    ("manitas", "Manos rápidas", "Empiezas con tres juegos de ganzúas, para abrir vehículos sin romper el cristal.", {"ganzuas": 3}),
+    ("navaja", "Una navaja en el bolsillo", "Empiezas con una navaja y dos botiquines.", {"arma": "navaja", "botiquines": 2}),
+    ("vecinos", "Don de gentes", "Empiezas con buen ánimo, algo de fama y el aprecio de los vecinos: cobras más en los trabajos honrados "
+                                 "y la policía te pasa por alto las faltas pequeñas.", {"animo": 75, "reputacion": 10, "ciudadania": 45}),
+]
+
+
+def limpiar_nombre(texto):
+    """Un nombre escrito por el jugador, sin nada raro: letras, espacios, guiones y apóstrofos, con la primera en mayúscula."""
+    t = "".join(c for c in str(texto or "") if c.isalpha() or c in " -'")
+    t = " ".join(t.split())[:MAX_NOMBRE].strip(" -'")
+    return t[:1].upper() + t[1:] if t else ""
+
+
+def personaje_propio(nombre, apellido="", gen="h", niveles=None, ventaja="ninguna"):
+    """El diccionario de un personaje hecho por el jugador, ya saneado: es lo que recibe aplicar_personaje."""
+    pj = {"id": PROPIO, "nombre": limpiar_nombre(nombre) or "Dani", "apellido": limpiar_nombre(apellido), "genero": gen if gen in genero.GENEROS else "h",
+          "botiquines": 1, "ventaja": ventaja}
+    quedan = PUNTOS
+    for h in HAB_NOMBRE:
+        n = max(0, min(MAX_NIVEL, quedan, int((niveles or {}).get(h, 0))))
+        quedan -= n
+        if n:
+            pj[h] = n
+    pj.update(next((v[3] for v in VENTAJAS if v[0] == ventaja), {}))
+    return pj
+
+
+RANGOS = ["aprendiz", "oficial", "veteran[o|a]", "maestr[o|a]", "leyenda"]
 HAB_NOMBRE = {"conduccion": "conducción", "punteria": "puntería", "resistencia": "resistencia", "pesca": "pesca"}
 JORNADAS = [("camarero", "Jornada de camarero", 70, 0), ("reponedor", "Jornada de reponedor en un supermercado", 85, 0),
             ("peon", "Jornada de peón de descarga", 115, -6)]
@@ -18,11 +57,30 @@ class Vida:
         return self.datos.get("personajes", [])
 
     def aplicar_personaje(self, ident):
+        """Pone al protagonista como el personaje elegido. `ident` es el id de uno de la lista o un diccionario: el de un
+        personaje hecho por el jugador (id "propio"), o {"id": ..., "genero": ...} para uno de la lista con el género elegido."""
         j = self.j
-        pj = next((x for x in self.personajes() if x["id"] == ident), None) or (self.personajes() or [{"id": "dani", "nombre": "Dani", "apellido": "Roca"}])[0]
+        propio = dict(ident) if isinstance(ident, dict) else {}
+        if propio:
+            ident = propio.get("id")
+        pj = next((x for x in self.personajes() if x["id"] == ident), None)
+        if pj is None and propio.get("id") == PROPIO:
+            pj = {"id": PROPIO}
+        if pj is None:
+            pj = (self.personajes() or [{"id": "dani", "nombre": "Dani", "apellido": "Roca"}])[0]
+        pj = dict(pj)
+        fijo = pj.get("genero")                          # un personaje con el género escrito en sus datos no cambia
+        pj.update(propio)
+        if fijo in genero.GENEROS:
+            pj["genero"] = fijo
         j.personaje = pj["id"]
-        j.nombre = pj.get("nombre", "Dani")
-        j.apellido = pj.get("apellido", "Roca")
+        j.nombre = str(pj.get("nombre") or "Dani")[:MAX_NOMBRE]
+        j.apellido = str(pj.get("apellido") or ("" if pj["id"] == PROPIO else "Roca"))[:MAX_NOMBRE]
+        j.genero = genero.poner(pj.get("genero"))
+        if pj["id"] == PROPIO:
+            registro.ocultar(j.nombre)                   # un nombre escrito por el jugador no se anota en el registro
+            if j.apellido:
+                registro.ocultar(j.apellido)
         j.dinero = int(pj.get("dinero", j.dinero))
         j.salud_max = float(pj.get("salud_max", 100))
         j.salud = j.salud_max
@@ -42,13 +100,13 @@ class Vida:
         j = self.j
         if not isinstance(texto, str) or (j.nombre == "Dani" and j.apellido == "Roca") or "Dani" not in texto:
             return texto
-        texto = texto.replace("Dani Roca", f"{j.nombre} {j.apellido}")
+        texto = texto.replace("Dani Roca", f"{j.nombre} {j.apellido}".strip())
         return re.sub(r"\bDani\b", j.nombre, texto)
 
     # ------------------------------------------------------ prestigio ciudadano
     def ciudadania_txt(self):
         c = self.j.ciudadania
-        return "los vecinos te evitan" if c < 10 else "eres un vecino más" if c < 40 else "los vecinos te aprecian" if c < 75 else "eres un ciudadano ejemplar"
+        return "los vecinos te evitan" if c < 10 else "eres [un vecino|una vecina] más" if c < 40 else "los vecinos te aprecian" if c < 75 else "eres [un ciudadano|una ciudadana] ejemplar"
 
     def cambiar_ciudadania(self, n):
         antes = self.ciudadania_txt()
@@ -136,7 +194,7 @@ class Vida:
         j.stats["voluntariado"] = j.stats.get("voluntariado", 0) + 1
         self.cambiar_ciudadania(3.0)
         self.cambiar_animo(6)
-        self.decir(f"Pasas cuatro horas sirviendo comidas. Sales cansado y contento. Son las {self.hora_txt()}.", True)
+        self.decir(f"Pasas cuatro horas sirviendo comidas. Sales cansad[o|a] y content[o|a]. Son las {self.hora_txt()}.", True)
 
     def vehiculo_de_trabajo_cercano(self, tipo):
         """Lugar de este mapa que tiene siempre aparcado un vehículo de ese oficio."""

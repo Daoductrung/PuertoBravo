@@ -194,9 +194,9 @@ def costa_dorada():
         "objetos": [{"id": "cd_amuleto", "nombre": "Amuleto de pescador", "precio": 25, "desc": "Una caracola con un cordel. No sirve para nada, pero da conversación."}],
         "peces": [{"nombre": "una dorada de roca", "valor": 38, "peso": 12}, {"nombre": "un pulpo de Costa Dorada", "valor": 55, "peso": 6}],
         "personajes": [
-            {"id": "cd_vicenta", "nombre": "Vicenta", "apellido": "Ribera", "pesca": 5, "resistencia": 2, "dinero": 300, "ciudadania": 30, "arma": "cd_remo", "botiquines": 1,
+            {"id": "cd_vicenta", "nombre": "Vicenta", "genero": "m", "apellido": "Ribera", "pesca": 5, "resistencia": 2, "dinero": 300, "ciudadania": 30, "arma": "cd_remo", "botiquines": 1,
              "desc": "Patrona de pesca de Costa Dorada. Empieza con la pesca al nivel cinco, buena resistencia, un remo, trescientos euros y el respeto de los vecinos."},
-            {"id": "cd_quico", "nombre": "Quico", "apellido": "Marí", "conduccion": 3, "punteria": 2, "reputacion": 20, "ganzuas": 2, "botiquines": 1,
+            {"id": "cd_quico", "nombre": "Quico", "genero": "h", "apellido": "Marí", "conduccion": 3, "punteria": 2, "reputacion": 20, "ganzuas": 2, "botiquines": 1,
              "desc": "Hizo de todo en las lanchas del contrabando. Empieza con conducción al nivel tres, algo de puntería, fama en la calle y dos juegos de ganzúas."}],
         "personas": [{"id": "cd_marina", "nombre": "Marina", "edad": 33, "lugar": "cd_club", "gustos": ["cd_velada", "paseo"], "regalo": "cd_perla",
                       "desc": "Lleva la Sala Marejada desde que murió su tío. Seria de día, otra persona de noche. Conoce todos los secretos del pueblo y no cuenta ninguno."}],
@@ -221,7 +221,7 @@ def oficios():
         ],
         "vehiculos": [clon(VEHICULOS, "moto" if "moto" in VEHICULOS else "utilitario", id="of_moto", nombre="Moto de mensajería", vel_max=27, salud=75, valor=350, precio=1900, trabajo="paqueteria",
                            desc="Una moto de reparto con un cajón detrás. Con la tecla J haces de mensajero.")],
-        "personajes": [{"id": "of_noa", "nombre": "Noa", "apellido": "Santos", "ciudadania": 60, "animo": 80, "resistencia": 3, "dinero": 150, "botiquines": 2,
+        "personajes": [{"id": "of_noa", "nombre": "Noa", "genero": "m", "apellido": "Santos", "ciudadania": 60, "animo": 80, "resistencia": 3, "dinero": 150, "botiquines": 2,
                         "desc": "Trabajó diez años de mensajera en bicicleta. Empieza con muy buen nombre entre los vecinos, buen ánimo, resistencia al nivel tres y dos botiquines: ideal para una vida honrada."}],
         "misiones": [
             {"id": "of01", "titulo": "Cajas para el banco de alimentos", "capitulo": 23, "contacto": "Reme", "lugar": "of_alimentos", "requiere": ["m01"],
@@ -337,7 +337,7 @@ def valdeolmos():
         "carreras": [{"id": "vo_c1", "nombre": "Carrera de las viñas", "mapa": "valdeolmos", "premio": 300, "tiempo": 85, "puntos": [[0, 1], [3, 1], [3, 3], [0, 3], [0, 1]]}],
         "comidas": [{"nombre": "Cordero asado", "precio": 16, "salud": 50}, {"nombre": "Vaso de mosto", "precio": 2, "salud": 6}],
         "peces": [{"nombre": "una trucha del Olmedilla", "valor": 30, "peso": 14}, {"nombre": "un barbo", "valor": 18, "peso": 20}],
-        "personajes": [{"id": "vo_ines", "nombre": "Inés", "apellido": "Olmedo", "conduccion": 2, "resistencia": 4, "salud_max": 110, "ciudadania": 35, "arma": "vo_hoz", "botiquines": 1,
+        "personajes": [{"id": "vo_ines", "nombre": "Inés", "genero": "m", "apellido": "Olmedo", "conduccion": 2, "resistencia": 4, "salud_max": 110, "ciudadania": 35, "arma": "vo_hoz", "botiquines": 1,
                         "desc": "Hija de viñadores, acostumbrada a trabajar de sol a sol. Empieza con resistencia al nivel cuatro, algo más de salud, una hoz y buen nombre entre los vecinos."}],
     }
 
@@ -367,7 +367,7 @@ def motor():
             {"id": "ma_c2", "nombre": "Contrarreloj del Paseo Marítimo", "mapa": "puerto_bravo", "premio": 600, "tiempo": 70, "puntos": [[8, 6], [8, 1], [1, 1], [1, 3]]},
             {"id": "ma_c3", "nombre": "Vuelta larga a Puerto Bravo", "mapa": "puerto_bravo", "premio": 1500, "tiempo": 170, "puntos": [[8, 6], [10, 6], [10, 1], [0, 1], [0, 8], [8, 8], [8, 6]]},
         ],
-        "personajes": [{"id": "ma_leo", "nombre": "Leo", "apellido": "Carrasco", "conduccion": 6, "dinero": 100, "ganzuas": 1, "botiquines": 1,
+        "personajes": [{"id": "ma_leo", "nombre": "Leo", "genero": "h", "apellido": "Carrasco", "conduccion": 6, "dinero": 100, "ganzuas": 1, "botiquines": 1,
                         "desc": "Probador de la Escudería Viento Sur hasta que estrelló el coche del jefe. Empieza con la conducción al nivel seis: nadie conduce mejor. A cambio, casi no tiene dinero."}],
         "misiones": [
             {"id": "ma01", "titulo": "Coche de pruebas", "capitulo": 26, "contacto": "Paula", "lugar": "ma_escuderia", "requiere": ["m01"],
@@ -514,9 +514,9 @@ def penas_altas():
         "objetos": [{"id": "pa_lampara", "nombre": "Lámpara de minero", "precio": 35, "desc": "Una lámpara de carburo restaurada. De recuerdo."}],
         "peces": [{"nombre": "una trucha del Lago Negro", "valor": 34, "peso": 14}, {"nombre": "un lucio", "valor": 70, "peso": 4}],
         "personajes": [
-            {"id": "pa_berta", "nombre": "Berta", "apellido": "Lombao", "resistencia": 5, "salud_max": 115, "ciudadania": 25, "arma": "pa_pico", "botiquines": 1, "dinero": 120,
+            {"id": "pa_berta", "nombre": "Berta", "genero": "m", "apellido": "Lombao", "resistencia": 5, "salud_max": 115, "ciudadania": 25, "arma": "pa_pico", "botiquines": 1, "dinero": 120,
              "desc": "Barrenera, como su madre. Empieza con resistencia al nivel cinco, más salud de lo normal, un pico de minero y poco dinero."},
-            {"id": "pa_goyo", "nombre": "Goyo", "apellido": "Peñalba", "punteria": 4, "conduccion": 2, "arma": "pa_carabina", "balas": 12, "dinero": 200,
+            {"id": "pa_goyo", "nombre": "Goyo", "genero": "h", "apellido": "Peñalba", "punteria": 4, "conduccion": 2, "arma": "pa_carabina", "balas": 12, "dinero": 200,
              "desc": "Guarda de la sierra hasta que cerraron el coto. Empieza con puntería al nivel cuatro, una carabina de monte con doce balas y doscientos euros."}],
         "personas": [{"id": "pa_olalla", "nombre": "Olalla", "edad": 37, "lugar": "pa_lumbre", "gustos": ["pa_lago_noche", "copas"], "regalo": "pa_manta",
                       "desc": "Volvió de la ciudad para llevar el bar de su padre. Destila su propio licor, lee en la barra cuando no hay nadie y dice las cosas una sola vez."}],
@@ -613,7 +613,7 @@ def isla_vientos():
         "comidas": [{"nombre": "Lubina a la sal", "precio": 15, "salud": 48}, {"nombre": "Ron de caña con limón", "precio": 4, "salud": 8}],
         "objetos": [{"id": "iv_sal", "nombre": "Saquito de flor de sal", "precio": 12, "desc": "Sal de la isla. De regalo queda muy bien."}],
         "peces": [{"nombre": "una lubina de rompiente", "valor": 44, "peso": 10}, {"nombre": "una morena", "valor": 62, "peso": 4}, {"nombre": "un sargo", "valor": 20, "peso": 18}],
-        "personajes": [{"id": "iv_telmo", "nombre": "Telmo", "apellido": "Barlovento", "pesca": 4, "resistencia": 3, "arma": "iv_garfio", "dinero": 180, "botiquines": 2,
+        "personajes": [{"id": "iv_telmo", "nombre": "Telmo", "genero": "h", "apellido": "Barlovento", "pesca": 4, "resistencia": 3, "arma": "iv_garfio", "dinero": 180, "botiquines": 2,
                         "desc": "Nacido en la isla y criado en una barca. Empieza con la pesca al nivel cuatro, resistencia al tres, un garfio y dos botiquines."}],
     }
 
@@ -649,7 +649,7 @@ def noches_neon():
         "comidas": [{"nombre": "Churros con chocolate", "precio": 5, "salud": 20}, {"nombre": "Caldo de madrugada", "precio": 3, "salud": 12}],
         "objetos": [{"id": "nn_pulsera", "nombre": "Pulsera de la sala El Sótano", "precio": 15, "desc": "La entrada del concierto de esta noche. De recuerdo."}],
         "carreras": [{"id": "nn_c1", "nombre": "Nocturna de los Neones", "mapa": "puerto_bravo", "premio": 750, "tiempo": 95, "puntos": [[7, 6], [7, 8], [4, 8], [4, 5], [7, 5], [7, 6]]}],
-        "personajes": [{"id": "nn_vera", "nombre": "Vera", "apellido": "Montoya", "conduccion": 4, "reputacion": 15, "ciudadania": 15, "dinero": 400, "arma": "nn_porra", "botiquines": 1,
+        "personajes": [{"id": "nn_vera", "nombre": "Vera", "genero": "m", "apellido": "Montoya", "conduccion": 4, "reputacion": 15, "ciudadania": 15, "dinero": 400, "arma": "nn_porra", "botiquines": 1,
                         "desc": "Diez años de taxista de noche. Empieza con conducción al nivel cuatro, cuatrocientos euros, una porra y algo de nombre tanto entre los vecinos como en la calle."}],
         "misiones": [
             {"id": "nn01", "titulo": "Turno de noche", "capitulo": 32, "contacto": "Mari Cruz", "lugar": "nn_radiotaxi", "requiere": ["m01"],
@@ -781,7 +781,7 @@ DECISIONES = {
                  ("Llevárselo al cantinero, como quedasteis", "El pueblo sabrá qué se guarda en el polvorín. Ganas fama.", "Le dices al capataz que no está en venta.", {"fama": 4}),
                  ("Vendérselo al capataz por 700 euros", "Cobras bien, y en Peñas Altas nadie sabrá nunca lo que había.", "El capataz quema el papel delante de ti, sin prisa.", {"dinero": 700, "fama": -3})),
     "ivo1": _dec("iv_luces", "Las cuatro luces están encendidas. Chelo quiere agradecértelo. ¿Qué le pides?",
-                 ("Nada: una copa y conversación", "Te sube el ánimo y en la isla te tendrán por uno de los suyos.", "Chelo saca la botella buena, la que no enseña a los de fuera.", {"animo": 7, "fama": 2}),
+                 ("Nada: una copa y conversación", "Te sube el ánimo y en la isla te tendrán por [uno|una] de los suyos.", "Chelo saca la botella buena, la que no enseña a los de fuera.", {"animo": 7, "fama": 2}),
                  ("Que te pague el trabajo: 150 euros", "Dinero en mano.", "Chelo abre la caja, cuenta los billetes y no dice nada más.", {"dinero": 150})),
     "nno1": _dec("nn_cobrador", "Sabes dónde entrega el cobrador. Un hombre del hotel te ha visto y te ofrece dinero por olvidarlo. ¿Qué haces?",
                  ("Decírselo al portero", "Lo que te encargaron. Ganas fama entre los locales.", "Le dices que tienes mala memoria para las caras, pero buena para los hoteles.", {"fama": 3}),
@@ -802,7 +802,7 @@ RAMAS = {
          "pasos": [D(("Nerea", "Mañana sale el nombre. Esta noche están quemando papeles en la Sede de Aguas. Necesito saber cuántas cajas sacan y adónde las llevan."),
                      ("Nerea", "Vigila la sede sin que te vean. Luego, si puedes, quédate con lo que saquen.")),
                    {"tipo": "vigilar", "lugar": "oc_sede", "segundos": 40, "radio": 25, "resultado": "Han sacado cuatro cajas de archivo y las han cargado en una furgoneta, camino del ayuntamiento.",
-                    "texto": "Vigila la Sede de Aguas del Ocaso sin que te vean. Cuando oigas pasos, quédate quieto o agáchate con la X."},
+                    "texto": "Vigila la Sede de Aguas del Ocaso sin que te vean. Cuando oigas pasos, quédate quiet[o|a] o agáchate con la X."},
                    {"tipo": "eliminar", "lugar": "oc_ayuntamiento", "enemigos": [{"n": 3, "tipo": "Guardia de la compañía", "arma": "pistola", "salud": 75}],
                     "texto": "Ve al ayuntamiento y quítales las cajas a los guardias de la compañía."},
                    D(("Nerea", "Cuatro cajas. Contratos, sobres, hasta las fechas. Con esto no hay quien lo tape."))],
