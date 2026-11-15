@@ -458,6 +458,8 @@ def sucesos_territorio(p, azar=None):
         return
     banda = azar.choice(BANDAS)
     tipo = azar.choice(["ataque", "ataque", "policia"] + (["pacto", "pacto"] if n >= 3 else []))
+    if tipo == "ataque" and p.rep_banda(banda) >= 30:
+        return                                                    # esa banda te respeta: no toca lo tuyo
     if tipo == "ataque" and p.dia <= j.pacto_hasta:
         return                                                    # hay un pacto en vigor: nadie ataca
     if tipo == "ataque":
@@ -536,12 +538,14 @@ def opciones_sucesos(p, Menu, Opcion):
         def aceptar():
             j.oferta_pacto = None
             j.pacto_hasta = p.dia + 7
+            p.cambiar_rep_banda(o["banda"], 15)
             p.dar_dinero(o["precio"], "Cobras")
             app.decir(f"Pacto cerrado con {o['banda']}. Una semana sin ataques.", True)
             app.cerrar()
 
         def rechazar():
             j.oferta_pacto = None
+            p.cambiar_rep_banda(o["banda"], -8)
             p.cambiar_reputacion(1)
             app.decir(f"Le dices a {o['banda']} que no pactas con nadie. En la calle gusta, pero pueden volver.", True)
             app.cerrar()
@@ -559,6 +563,11 @@ def opciones_sucesos(p, Menu, Opcion):
                           ayuda="Si pagas, no hay redada. Si llega la medianoche sin pagar, una redada te cuesta el tributo de un día de todos tus barrios."))
     if p.dia <= j.pacto_hasta:
         ops.append(Opcion(f"Pacto en vigor: nadie ataca tus barrios hasta el día {j.pacto_hasta}"))
+    conocidas = [(b, x) for b, x in sorted(j.rep_bandas.items()) if abs(x) >= 1]
+    if conocidas:
+        ops.append(Opcion("Cómo te llevas con las bandas: " + ". ".join(f"{b}, {p.rep_banda_txt(x)}" for b, x in conocidas),
+                          ayuda="Con una banda que te respeta, sus pandilleros no te atacan por la calle y no intentan quitarte barrios. Con una que va a por ti, pasa lo contrario. "
+                                "Cambia con las decisiones de la historia, con los pactos y cada vez que matas a uno de los suyos."))
     return ops
 
 

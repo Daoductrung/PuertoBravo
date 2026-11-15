@@ -2,7 +2,8 @@
  "capitulos": {
   "9": "Historias de Monteferro",
   "10": "Historias de la sierra y más encargos",
-  "11": "Encargos de oído"
+  "11": "Encargos de oído",
+  "12": "La decisión"
  },
  "misiones": [
   {
@@ -1244,6 +1245,280 @@
    ],
    "recompensa": {
     "dinero": 1200
+   }
+  },
+  {
+   "id": "fd1",
+   "titulo": "El sobre del concejal",
+   "capitulo": 12,
+   "contacto": "La redactora",
+   "lugar": "periodico",
+   "requiere": [
+    "eo6"
+   ],
+   "resumen": "Tienes las pruebas contra el concejal de obras, y no eres el único que lo sabe.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Lo tenemos, Dani. Los sobres, el coche oficial, el chófer que habla. Con esto cae el concejal de obras."
+      ],
+      [
+       "Narrador",
+       "Al salir del periódico te espera un hombre con traje. No se presenta."
+      ],
+      [
+       "El hombre del traje",
+       "El concejal sabe lo que llevas. Veinte mil euros si esos papeles no llegan a la imprenta. Piénsalo."
+      ],
+      [
+       "Narrador",
+       "Y en la esquina, apoyado en una moto, uno de Los Calaveras te hace un gesto con la cabeza."
+      ],
+      [
+       "El Calavera",
+       "El concejal nos cobra por dejarnos el puerto. Si nos dices dónde guarda la caja, lo arreglamos nosotros. Y contigo, en paz para siempre."
+      ]
+     ]
+    },
+    {
+     "tipo": "decision",
+     "clave": "concejal",
+     "pregunta": "Tienes las pruebas contra el concejal. ¿Qué haces con ellas?",
+     "opciones": [
+      {
+       "texto": "Dárselas a la redactora para que las publique",
+       "ayuda": "Lo honrado. Ganas fama y la gente del barrio te lo agradece, pero no cobras nada y te ganas un enemigo con poder.",
+       "dice": "Vuelves a subir las escaleras del periódico. La redactora no dice nada: solo coge el sobre con las dos manos.",
+       "fama": 6,
+       "animo": 8
+      },
+      {
+       "texto": "Aceptar el dinero del concejal y callar",
+       "ayuda": "Cobras veinte mil euros ahora. Pierdes fama, y la redactora no volverá a fiarse de ti.",
+       "dice": "El hombre del traje te pone un maletín en la mano. Pesa menos de lo que esperabas.",
+       "dinero": 20000,
+       "fama": -5,
+       "animo": -6
+      },
+      {
+       "texto": "Decirles a Los Calaveras dónde guarda la caja",
+       "ayuda": "Los Calaveras pasan a respetarte: no te atacarán por la calle ni tocarán tus barrios. El periódico se queda sin su historia.",
+       "dice": "El Calavera sonríe por primera vez. Te da la mano como se la da a los suyos.",
+       "banda": "Los Calaveras",
+       "banda_puntos": 60,
+       "fama": 2
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Hecho está. Ahora toca ver adónde lleva."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 0
+   }
+  },
+  {
+   "id": "fd2",
+   "titulo": "Portada",
+   "capitulo": 12,
+   "contacto": "La redactora",
+   "lugar": "periodico",
+   "requiere": [
+    "fd1"
+   ],
+   "si_clave": "concejal",
+   "si_opcion": 1,
+   "resumen": "La redactora va a entregar las pruebas en el juzgado y hay quien no quiere que llegue.",
+   "final_titulo": "Final honrado: el concejal ante el juez",
+   "final": "El lunes, El Faro abre con la foto del concejal entrando en el juzgado. No te has hecho rico, pero en el Barrio Viejo ya no pagas un café. Y la tía Encarna recorta la portada y la pega en la pared del bar.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Voy a llevar los papeles al juzgado yo misma, al ayuntamiento, que es donde está la oficina. Y sé que me esperan por el camino."
+      ],
+      [
+       "La redactora",
+       "Ven conmigo. Si puede ser en coche, mejor."
+      ]
+     ]
+    },
+    {
+     "tipo": "escoltar",
+     "lugar": "periodico",
+     "destino": "ayuntamiento",
+     "persona": "la redactora",
+     "texto": "Acompaña a la redactora desde el periódico hasta el ayuntamiento."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "En la puerta del ayuntamiento hay tres hombres que no son funcionarios."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "ayuntamiento",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Matón del concejal",
+       "arma": "pistola",
+       "salud": 80
+      }
+     ],
+     "texto": "Quítate de encima a los matones del concejal."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La redactora",
+       "Ya está dentro. Ya no hay quien lo pare."
+      ],
+      [
+       "La redactora",
+       "Gracias, Dani. Esto lo has hecho tú."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 3000
+   }
+  },
+  {
+   "id": "fd3",
+   "titulo": "El precio del silencio",
+   "capitulo": 12,
+   "contacto": "El hombre del traje",
+   "lugar": "ayuntamiento",
+   "requiere": [
+    "fd1"
+   ],
+   "si_clave": "concejal",
+   "si_opcion": 2,
+   "resumen": "El concejal paga bien, pero quiere algo más: que seas tú quien reparta los sobres.",
+   "final_titulo": "Final del dinero: a sueldo del concejal",
+   "final": "Ahora los sobres los llevas tú, y cada uno deja algo en tu bolsillo. Tienes dinero como no habías tenido nunca. La redactora cruza de acera cuando te ve, y la tía Encarna ya no pregunta de dónde sale lo que traes.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El hombre del traje",
+       "El concejal está contento contigo. Tanto, que te ofrece el puesto del chófer que hablaba demasiado."
+      ],
+      [
+       "El hombre del traje",
+       "Tres sobres, tres sitios, cuatro minutos. Sin preguntas."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "puntos": [
+      "ferry",
+      "casino",
+      "mansion"
+     ],
+     "limite": 240,
+     "texto": "Lleva los sobres a la terminal del ferry, al casino y a la Mansión Belmonte, por ese orden, en cuatro minutos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El hombre del traje",
+       "Puntual. Así da gusto. El primer día de cada mes, pásate por aquí."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 15000
+   }
+  },
+  {
+   "id": "fd4",
+   "titulo": "Ajuste de cuentas",
+   "capitulo": 12,
+   "contacto": "El Calavera",
+   "lugar": "guarida",
+   "requiere": [
+    "fd1"
+   ],
+   "si_clave": "concejal",
+   "si_opcion": 3,
+   "resumen": "Los Calaveras van a por la caja del concejal, y quieren que entres tú primero.",
+   "final_titulo": "Final de la calle: en paz con Los Calaveras",
+   "final": "La caja del concejal aparece vacía y nadie denuncia nada. En el puerto te saludan por tu nombre y nadie te levanta la mano. El periódico nunca publicó su historia, y a ti, en la calle, ya nadie te tose.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Calavera",
+       "La caja está en la fábrica abandonada, con cuatro hombres del concejal. Nosotros entramos por detrás."
+      ],
+      [
+       "El Calavera",
+       "Tú, por delante. Si sales de esta, eres de la casa."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "fabrica",
+     "enemigos": [
+      {
+       "n": 4,
+       "tipo": "Guardia del concejal",
+       "arma": "subfusil",
+       "salud": 85
+      }
+     ],
+     "texto": "Ve a la fábrica abandonada y acaba con los guardias del concejal."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "fabrica",
+     "objeto": "la caja del concejal",
+     "texto": "Coge la caja del concejal."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "guarida",
+     "texto": "Lleva la caja a la guarida de Los Calaveras."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Calavera",
+       "Mitad para nosotros, mitad para ti. Y la palabra: a ti no se te toca."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 9000
    }
   }
  ]

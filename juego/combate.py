@@ -14,6 +14,9 @@ PATRULLAS = {1: 1, 2: 1, 3: 2, 4: 3, 5: 4}
 RITMO_PATRULLAS = {1: 9.0, 2: 7.0, 3: 6.0, 4: 5.0, 5: 4.0}
 
 
+BANDAS_MUNDO = ("Los Calaveras", "Los Lagartos", "Los Barrenos", "Los Tiburones", "Los Cuervos")
+
+
 class Combate:
     # ------------------------------------------------------------------ armas
     def arma(self):
@@ -320,6 +323,9 @@ class Combate:
                 self.decir("Policía abatido.")
             else:
                 j.stats["enemigos"] += 1
+                banda = "Los Calaveras" if p.tipo == "banda" else next((b for b in BANDAS_MUNDO if b in (p.nombre or "")), None)
+                if banda:
+                    self.cambiar_rep_banda(banda, -4)            # matar a los suyos no se olvida
                 if p.tag != "evento":
                     self.delito(0.6, None)
                 self.decir(f"{p.nombre} abatido.")
@@ -333,6 +339,7 @@ class Combate:
                     self.fijar(callar=True)
         else:
             self.son("dolor_npc", xy=(p.x, p.y), ref=6)
+            p.provocado = True
             if p.tipo == "civil":
                 p.estado = "huye"
                 p.t_estado = 12
@@ -617,6 +624,8 @@ class Combate:
                     p.activo = True
                 else:
                     continue
+            if p.tipo == "banda" and self.rep_banda("Los Calaveras") >= 30 and not getattr(p, "provocado", False):
+                continue                                         # te respetan: no te hacen nada mientras no les toques
             if p.tipo == "banda" and not p.avisado:
                 if d > 26:
                     p.u += p.sentido * p.vel * dt

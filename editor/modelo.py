@@ -384,6 +384,10 @@ def comprobar(mod, cat):
                 errores.append(f"{donde}, paso {n}: falta el lugar.")
             if t in ("seguir", "escoltar") and not p.get("destino"):
                 errores.append(f"{donde}, paso {n}: falta el lugar de destino.")
+            if t == "decision" and len(p.get("opciones") or []) < 2:
+                errores.append(f"{donde}, paso {n}: una decisión necesita al menos dos opciones.")
+            if t == "decision" and not p.get("clave"):
+                avisos.append(f"{donde}, paso {n}: la decisión no tiene nombre; ninguna misión podrá depender de ella.")
             if t == "carrera" and not p.get("puntos"):
                 errores.append(f"{donde}, paso {n}: una carrera necesita al menos un lugar de paso, que hace de meta.")
             if t == "ruta" and len(p.get("puntos") or []) < 2:
@@ -394,7 +398,7 @@ def comprobar(mod, cat):
                 errores.append(f"{donde}, paso {n}: falta el nombre del objeto.")
             if t in ("robar", "perseguir") and not p.get("modelo"):
                 errores.append(f"{donde}, paso {n}: falta el modelo de vehículo.")
-            if t not in ("dialogo", "dar") and not p.get("texto"):
+            if t not in ("dialogo", "dar", "decision") and not p.get("texto"):
                 avisos.append(f"{donde}, paso {n}: no tiene texto; el jugador no sabrá qué hacer.")
         if mi.get("id") in (mi.get("requiere") or []):
             errores.append(f"{donde}: no puede exigirse a sí misma.")

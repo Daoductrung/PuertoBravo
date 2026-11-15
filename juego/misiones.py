@@ -27,7 +27,33 @@ class Misiones:
         hechas = set(self.completadas)
         return [m for m in self.datos["misiones"]
                 if m["id"] not in hechas and (self.cfg["adultos"] or not m.get("adultos")) and all(r in hechas for r in m.get("requiere", []))
-                and m.get("lugar") in self.lugares]
+                and m.get("lugar") in self.lugares and self.cumple_decision(m)]
+
+    def cumple_decision(self, cosa):
+        """¿Vale esta misión o este paso con lo que has decidido? Sin condición, siempre."""
+        clave = cosa.get("si_clave")
+        if not clave:
+            return True
+        hecho = self.decisiones.get(clave)
+        return isinstance(hecho, dict) and hecho.get("opcion") == int(cosa.get("si_opcion", 1))
+
+    def rep_banda(self, banda):
+        return float(self.j.rep_bandas.get(banda, 0))
+
+    def cambiar_rep_banda(self, banda, n, hablar=True):
+        """Cómo te llevas con una banda, de -100 a 100. Con 30 o más te dejan en paz; con -30 o menos van a por ti."""
+        if not banda or not n:
+            return
+        antes = self.rep_banda(banda)
+        ahora = max(-100.0, min(100.0, antes + n))
+        self.j.rep_bandas[banda] = ahora
+        if hablar and self.rep_banda_txt(antes) != self.rep_banda_txt(ahora):
+            self.son("fama", cat="interfaz")
+            self.decir(f"{banda}: {self.rep_banda_txt(ahora)}.")
+
+    @staticmethod
+    def rep_banda_txt(x):
+        return "sois aliados" if x >= 60 else "te respetan y te dejan en paz" if x >= 30 else "te la tienen jurada" if x <= -60 else "van a por ti" if x <= -30 else "ni amigos ni enemigos"
 
     def mision_en_lugar(self, lugar_id):
         for m in self.misiones_disponibles():
@@ -137,14 +163,17 @@ class Misiones:
             self._completar_mision()
             return
         p = pasos[ms["paso"]]
+        if not self.cumple_decision(p):                          # este paso es de otra rama de la historia
+            self._siguiente_paso()
+            return
         ms["limite"] = p.get("limite")
         ms["avisos"] = set()
         ms["generado"] = False
         ms["recogido"] = False
         tipo = p["tipo"]
         l = self._lugar_paso(p)
-        if (tipo not in ("dialogo", "dar") and not ms.get("reanudando") and paso_seguro(pasos, ms["paso"])
-                and any(q["tipo"] not in ("dialogo", "dar") for q in pasos[:ms["paso"]])):          # con algo ya hecho: si no, es el principio
+        if (tipo not in ("dialogo", "dar", "decision") and not ms.get("reanudando") and paso_seguro(pasos, ms["paso"])
+                and any(q["tipo"] not in ("dialogo", "dar", "decision") for q in pasos[:ms["paso"]])):          # con algo ya hecho: si no, es el principio
             # Punto de control: si fallas más adelante, puedes volver aquí en lugar de al principio.
             x, y = self.pos()
             ms["control"] = {"paso": ms["paso"], "copia": copy.deepcopy(self.j.a_dict()), "reloj": self.reloj, "dia": self.dia,
@@ -154,6 +183,9 @@ class Misiones:
             from . import voces
             self.app.abrir(Dialogo(self.app, [(self.txt(q), self.txt(tx)) for q, tx in p["lineas"]], self._siguiente_paso,
                                    voces=voces.de_paso(ms["def"]["id"], ms["paso"], len(p["lineas"])) if self.voces_activas() else None))
+            return
+        if tipo == "decision":
+            self._paso_decision(ms, p)
             return
         if tipo == "dar":
             if "arma" in p:
@@ -321,7 +353,7 @@ class Misiones:
         j = self.j
         p = ms["def"]["pasos"][ms["paso"]]
         tipo = p["tipo"]
-        if tipo in ("dialogo", "dar"):
+        if tipo in ("dialogo", "dar", "decision"):
             return
         x, y = self.pos()
         if ms["limite"] is not None:
@@ -539,6 +571,37 @@ class Misiones:
                 self.son("recoger", cat="interfaz")
                 self.decir(f"Tienes {self.txt(p['objeto'])}.")
             self._paso_hecho()
+
+    def _paso_decision(self, ms, p):
+        """Una decisión de la historia: se elige en un menú, queda apuntada y tiene consecuencias."""
+        opciones = p.get("opciones") or []
+        clave = p.get("clave") or f"{ms['def']['id']}_{ms['paso']}"
+        if not opciones:
+            self._siguiente_paso()
+            return
+
+        def elegir(n, o):
+            def f():
+                self.app.cerrar(menu)
+                if not ms.get("repeticion"):                     # al repetir una misión, lo decidido no cambia
+                    self.decisiones[clave] = {"opcion": n + 1, "texto": self.txt(o.get("texto", "")), "mision": ms["def"]["id"]}
+                    if o.get("dinero"):
+                        self.dar_dinero(int(o["dinero"]), "Recibes") if o["dinero"] > 0 else self.pagar(min(self.j.dinero, -int(o["dinero"])))
+                    if o.get("fama"):
+                        self.cambiar_reputacion(o["fama"])
+                    if o.get("animo"):
+                        self.cambiar_animo(o["animo"])
+                    if o.get("banda"):
+                        self.cambiar_rep_banda(o["banda"], o.get("banda_puntos", 0))
+                if o.get("dice"):
+                    self.decir(self.txt(o["dice"]))
+                self._siguiente_paso()
+            return f
+        self.app.son("notificacion")
+        menu = Menu(self.app, self.txt(p.get("pregunta") or "¿Qué haces?"),
+                    [Opcion(self.txt(o.get("texto", "")), elegir(n, o), ayuda=self.txt(o.get("ayuda", "")) or None) for n, o in enumerate(opciones)],
+                    escapable=False, intro="Es una decisión de la historia y no se puede deshacer. F1 explica cada opción")
+        self.app.abrir(menu)
 
     def _paso_vigilar(self, ms, p, l, x, y, dt):
         """Vigilar un sitio sin que te vean: quedarte cerca un rato y no moverte cuando pasa la ronda."""
@@ -808,6 +871,10 @@ class Misiones:
             if mo and e:
                 self.j.barcos.append({"modelo": mo["id"], "nombre": mo["nombre"], "salud": mo["salud"], "en": e.id})
                 self.decir(f"Ahora es tuyo: {mo['nombre']}. Está amarrado en {self.nombre_lugar(e)}.")
+        if m.get("final") and not m.get("repetible"):          # esta misión cierra la historia de una manera
+            self.decisiones["_final"] = {"opcion": 0, "texto": self.txt(m.get("final_titulo") or m["titulo"]), "mision": m["id"]}
+            self.app.son("logro" if "logro" in self.mez.sonidos else "mision_ok")
+            self.decir("Final de la historia. " + self.txt(m["final"]))
         nuevas = [x for x in self.misiones_disponibles() if x["id"] not in antes]
         if len(nuevas) > 3:
             self.decir(f"Hay {len(nuevas)} misiones nuevas disponibles, algunas en otras localidades. Míralas en el móvil con M.")
