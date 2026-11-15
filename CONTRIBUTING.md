@@ -10,7 +10,7 @@ Los sonidos del juego son muy mejorables, y es lo que más se nota en un juego q
 - Un pack completo o parcial: una carpeta dentro de `data\sonidos` con los sonidos que quieras cambiar. Los que no pongas suenan con los de serie.
 - Decirnos qué sonidos molestan, confunden o no se distinguen.
 
-La guía `data\docs\cambiar_sonidos.html` describe los 223 sonidos uno por uno y explica cómo se prepara cada tipo. Dos cosas importantes:
+La guía `data\docs\cambiar_sonidos.html` describe los 237 sonidos uno por uno y explica cómo se prepara cada tipo. Dos cosas importantes:
 
 - Los efectos se pasan a mono, porque es el juego quien los coloca alrededor del jugador. Los ambientes (`amb_...`) y la lluvia se quedan en estéreo.
 - Solo podemos incluir sonidos que se puedan repartir libremente: grabados por ti, de dominio público o con licencia CC0. Dinos de dónde sale cada uno.

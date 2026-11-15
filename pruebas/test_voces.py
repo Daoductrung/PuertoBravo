@@ -184,3 +184,32 @@ def test_bahia_del_ocaso_se_usa_todo(robot):
             break
     assert not p.gps and math.hypot(destino.x - v.x, destino.y - v.y) < 40, robot.dicho()[-300:]
     p.cfg["piloto_gps"] = False
+
+
+def test_puente_de_voces_para_quien_actualiza_desde_la_1_6_0(monkeypatch, tmp_path):
+    """El actualizador de la 1.6.0 no copia la carpeta voces. Las voces nuevas le llegan dentro de data/datos, y el juego,
+    al arrancar, las pone en su sitio sin pisar nada y borra el puente."""
+    from juego import actualizador
+    datos = str(tmp_path / "data")
+    monkeypatch.setattr(voces, "carpeta", lambda: os.path.join(datos, "voces"))
+    monkeypatch.setattr(voces, "carpeta_puente", lambda: os.path.join(datos, "datos", "voces_puente"))
+    assert voces.recoger_puente() == 0                                        # sin puente no pasa nada
+    puente = voces.carpeta_puente()
+    for sub, nombre in (("historia_principal", "m01_1_1"), ("historia_principal", "m01_1_2"), ("bahia_del_ocaso", "oc01_1_1")):
+        os.makedirs(os.path.join(puente, sub), exist_ok=True)
+        open(os.path.join(puente, sub, nombre + ".ogg"), "wb").write(b"nueva")
+    os.makedirs(os.path.join(datos, "voces", "bahia_del_ocaso"))
+    open(os.path.join(datos, "voces", "bahia_del_ocaso", "oc01_1_1.ogg"), "wb").write(b"la que ya estaba")
+    os.makedirs(os.path.join(datos, "voces", "propias"))
+    open(os.path.join(datos, "voces", "propias", "m01_1_1.ogg"), "wb").write(b"del jugador")
+    assert voces.recoger_puente() == 2                                        # las dos que faltaban
+    assert not os.path.isdir(puente)                                          # el puente no deja rastro
+    assert open(os.path.join(datos, "voces", "historia_principal", "m01_1_1.ogg"), "rb").read() == b"nueva"
+    assert open(os.path.join(datos, "voces", "bahia_del_ocaso", "oc01_1_1.ogg"), "rb").read() == b"la que ya estaba"
+    assert open(os.path.join(datos, "voces", "propias", "m01_1_1.ogg"), "rb").read() == b"del jugador"
+    voces.refrescar()
+    assert voces.buscar("m01", 0, 0).endswith(os.path.join("propias", "m01_1_1.ogg"))        # y la del jugador sigue mandando
+    assert voces.recoger_puente() == 0
+    # el nombre del puente no choca con nada de lo que el actualizador antiguo dejaba sin tocar
+    antiguas = ("partidas", "config", "mi_musica", "actualizacion", "logs", "ia_local", "voces")
+    assert "voces_puente" not in antiguas and "datos" not in antiguas and "voces_puente" not in actualizador.INTOCABLES

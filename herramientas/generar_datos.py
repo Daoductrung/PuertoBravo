@@ -174,9 +174,9 @@ def generar_doc(sonidos):
     from juego import packs
     instalados = [p for p in packs.listar() if not p["id"].startswith("_")]
     cab = cab.replace("__PACKS__", ", ".join(f"«{html.escape(p['nombre'])}», con {p['n']} sonidos" for p in instalados) or "que copies tú")
-    cab = cab.replace("__EMISORAS__", "\n".join(f"<li><code>{e['id']}.wav</code>: {html.escape(e['nombre'])}.</li>" for e in EMISORAS if "estilo" in e))
+    cab = cab.replace("__EMISORAS__", "\n".join(f"<li><code>{e['id']}.mp3</code>: {html.escape(e['nombre'])}.</li>" for e in EMISORAS if "estilo" in e))
     cab = cab.replace("__AMBIENTES__", "\n".join(
-        f"<li><code>data\\musica\\{k}</code>: {html.escape(desc[0].lower() + desc[1:])}. De serie trae {len(piezas)} piezas, de <code>{k}_1.wav</code> a <code>{k}_{len(piezas)}.wav</code>.</li>"
+        f"<li><code>data\\musica\\{k}</code>: {html.escape(desc[0].lower() + desc[1:])}. De serie trae {len(piezas)} piezas, de <code>{k}_1.mp3</code> a <code>{k}_{len(piezas)}.mp3</code>.</li>"
         for k, (desc, piezas) in AMBIENTES.items()))
     partes = [cab]
     for k in sorted(grupos):

@@ -51,6 +51,9 @@ xcopy /e /i /y /q "data\datos" "%D%\data\datos" >nul
 xcopy /e /i /y /q "data\docs" "%D%\data\docs" >nul
 if exist "data\voces" xcopy /e /i /y /q "data\voces" "%D%\data\voces" >nul
 if exist "%D%\data\voces\propias" rmdir /s /q "%D%\data\voces\propias"
+rem Puente para quien actualiza desde la 1.6.0: su actualizador no copia la carpeta voces, pero si data\datos entera.
+rem El juego, al arrancar, lleva estas voces a data\voces y borra el puente. Se puede quitar en la version siguiente.
+if exist "%D%\data\voces" xcopy /e /i /y /q "%D%\data\voces" "%D%\data\datos\voces_puente" >nul
 xcopy /e /i /y /q "data\sonidos" "%D%\data\sonidos" >nul
 xcopy /e /i /y /q "data\musica" "%D%\data\musica" >nul
 xcopy /i /y /q "data\radio\*.*" "%D%\data\radio" >nul

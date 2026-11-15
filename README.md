@@ -36,19 +36,22 @@ Todo lo que ocurre tiene su sonido, colocado a tu alrededor: lo que suena a la d
 ### Qué hay en el mundo
 
 - Nueve mapas de serie: las ciudades de Puerto Bravo, San Lucero y Monteferro; los pueblos de Villaseca, Cala Brava y Fuentefría; Isla Tortuga, la Plataforma Neptuno y el Mar de Poniente, navegable. Con los mods incluidos se suman tres pueblos y una isla más.
-- Más de 260 lugares de serie: casas, comercios, bancos, talleres, casinos, gimnasios, cines, hospitales, embarcaderos, helipuertos y monumentos, cada uno con su sonido y su descripción.
-- 53 misiones de serie entre la historia principal y las secundarias, y encargos que se repiten sin fin. Los mods añaden más de veinticinco.
-- 38 vehículos: coches, motos, bicicleta, camiones, vehículos de emergencias, barcos y un helicóptero. 22 armas.
+- Más de 300 lugares de serie: casas, comercios, bancos, talleres, casinos, gimnasios, cines, hospitales, embarcaderos, helipuertos, paradas de tranvía, estaciones de tren, aeropuertos y monumentos, cada uno con su sonido y su descripción. Casi todos los locales y las casas se recorren por dentro, sala por sala.
+- 75 misiones de serie entre la historia principal, las secundarias y cinco tutoriales jugables, y encargos que se repiten sin fin. Los mods añaden casi setenta. Hay misiones que se juegan de oído (seguir a alguien por sus pasos, vigilar, entrar sin hacer ruido, carreras con rivales) y decisiones que cambian lo que viene después: cuatro abren ramas distintas, con diez finales.
+- 39 vehículos: coches, motos, bicicleta, camiones, vehículos de emergencias, barcos, un helicóptero y una avioneta. 22 armas, con silenciador y cargador ampliado.
+- Transporte público: tranvía con paradas en todos los barrios de las ciudades y vías que se cruzan a pie, tren entre localidades, autobús, taxi y aviones de pasajeros, todos con trayecto.
+- El mar se navega, y también se nada y se bucea.
 - Policía con cinco niveles de búsqueda, día y noche, lluvia, tráfico con semáforos y peatones.
 
 ### Qué puedes hacer
 
 - Vida honrada: oficina de empleo, oficios con ascensos (taxista, conductor de ambulancia y de autobús, bombero, gruista, mensajero, transportista, heladero, pescador), cursos, voluntariado y negocios propios.
 - Vida delictiva: la historia, contratos, encargos de coches, atracos y guerras de territorio.
-- Ocio: carreras y regatas, casino, bingo, lotería, boxeo, galería de tiro, pesca, búsqueda de tesoros, cine, recreativos y bolsa.
-- Casas con garaje, un perro que te acompaña y busca objetos, guardaespaldas, logros y habilidades que suben con la práctica.
+- Ocio: carreras y regatas, casino, bingo, lotería, siete y media, dominó, los chinos, boxeo, galería de tiro, pesca, búsqueda de tesoros, cine, recreativos y bolsa.
+- Casas con garaje, un perro que te acompaña y busca objetos, guardaespaldas, banda propia, barrios que hay que defender, mejoras de vehículos en el taller, logros y habilidades que suben con la práctica.
 - Hablar con cualquier persona de la calle: cada una tiene su nombre, su oficio y su carácter. Puedes preguntar, invitar a un café, hacer amigos o escribir lo que quieras decirle. Un modo opcional hace que contesten interpretadas por una inteligencia artificial: un modelo local gratuito y sin internet, Google AI Studio, OpenAI, Anthropic u otro servicio compatible. El juego elige solo el modelo más barato.
-- Voces grabadas: cualquier frase de una misión puede sonar con una voz grabada en lugar del lector de pantalla.
+- Voces en las escenas: las de la historia principal y las de los mods incluidos traen voz, generada por ordenador, y cualquiera puede poner las suyas. Se quitan en las opciones.
+- Dos motores de sonido: el clásico y uno envolvente, binaural, con eco distinto en cada sitio.
 - Sin inteligencia artificial, una base de más de mil cien frases en casi setenta temas (`juego/respuestas.py`) contesta a lo que escribas, según el carácter de cada persona.
 - Una ciudad que no se repite: cada día viene distinto (rebajas, mercado, fiesta, huelga, operación salida) y cambian los precios, la gente y el tráfico. Ninguna partida es igual a otra.
 - Vida realista, opcional: hambre y sueño.
@@ -195,7 +198,7 @@ Las misiones pueden llevar voces grabadas (`juego/voces.py`): archivos de sonido
 
 ## 4. Packs de sonidos y de música
 
-La guía completa, con la descripción y la duración de cada uno de los 223 sonidos, es `data\docs\cambiar_sonidos.html`. Resumen:
+La guía completa, con la descripción y la duración de cada uno de los 237 sonidos, es `data\docs\cambiar_sonidos.html`. Resumen:
 
 ### Sonidos
 

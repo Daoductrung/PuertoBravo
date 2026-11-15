@@ -33,6 +33,46 @@ def carpeta_propias():
     return os.path.join(carpeta(), PROPIAS)
 
 
+def carpeta_puente():
+    """Copia de las voces del juego que viaja dentro de data/datos solo para quien actualiza desde la 1.6.0 o la 1.6.1.
+
+    El actualizador de aquellas versiones tenía escrito que la carpeta «voces» no se toca nunca, porque entonces era solo
+    del jugador. Así que no copia data/voces, y las voces nuevas no llegarían. data/datos, en cambio, sí la copia entera.
+    """
+    return os.path.join(rutas.DATA, "datos", "voces_puente")
+
+
+def recoger_puente():
+    """Al arrancar: lleva a data/voces las voces que hayan llegado por el puente y lo borra. Devuelve cuántas ha copiado.
+
+    En una instalación nueva las voces ya están en su sitio y el puente solo se borra. Tras actualizar desde una versión
+    anterior, es por aquí por donde llegan. No pisa nada: una grabación que ya exista se deja como está.
+    """
+    import shutil
+    puente = carpeta_puente()
+    if not os.path.isdir(puente):
+        return 0
+    copiadas = 0
+    try:
+        for base, _, nombres in os.walk(puente):
+            destino = os.path.join(carpeta(), os.path.relpath(base, puente))
+            for n in nombres:
+                if os.path.splitext(n)[1].lower() not in EXT:
+                    continue
+                if not os.path.exists(os.path.join(destino, n)):
+                    os.makedirs(destino, exist_ok=True)
+                    shutil.copy2(os.path.join(base, n), os.path.join(destino, n))
+                    copiadas += 1
+        shutil.rmtree(puente, ignore_errors=True)
+    except OSError:
+        registro.excepcion("voces", "No se pudieron recoger las voces de la actualización")
+        return copiadas
+    if copiadas:
+        registro.info("voces", "Voces recogidas tras la actualización", cuantas=copiadas)
+    refrescar()
+    return copiadas
+
+
 def limpiar_antigua():
     """Hasta la 1.6.1 las voces del juego iban en data/voces_serie. Ya no se usa: si queda de una versión anterior, se borra."""
     vieja = os.path.join(rutas.DATA, "voces_serie")
