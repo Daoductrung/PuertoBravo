@@ -29,6 +29,7 @@ POR_DEFECTO = {
     "frenada_auto": True,
     "sucesos": True,
     "mando_vibracion": True,
+    "mando_textos": True,          # con un mando conectado, decir los botones en lugar de las teclas
     "invulnerable": False,
     "sin_policia": False,
     "baliza": True,

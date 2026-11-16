@@ -175,7 +175,13 @@ class Dialogo:
             extra = " Pulsa Intro para continuar."
             self.primera = False
         frase = (texto if quien == "Narrador" else f"{quien}: {texto}") + extra
+        md = getattr(self.app, "mando", None)
+        original = frase
+        if md is not None:
+            frase = md.textos(frase)                 # con mando: «pulsa Q» se dice con el botón que hace lo mismo
         grabada = self.voces[self.i] if self.voces and self.i < len(self.voces) else None
+        if frase != original:
+            grabada = None                           # la grabación nombra la tecla: esta frase la lee el lector, con el botón
         if grabada and self.app.cfg["voces_grabadas"]:
             from . import voces
             self.canal = voces.sonar(self.app, grabada)

@@ -23,7 +23,7 @@ li { margin-bottom: .3em; }
 <ul>
 <li>Un mundo abierto con <span data-n="mapas">9</span> mapas: las ciudades de Puerto Bravo, San Lucero y Monteferro; los pueblos de Villaseca, Cala Brava y Fuentefría; la Isla Tortuga, la Plataforma Neptuno y el Mar de Poniente, navegable en barco.</li>
 <li><span data-n="lugares">308</span> lugares: casas, comercios, bancos, talleres, casinos, gimnasios, cines, hospitales, embarcaderos, helipuertos y monumentos, cada uno con su sonido y su descripción.</li>
-<li><span data-n="misiones">79</span> misiones entre la historia principal y las historias secundarias del resto de localidades. Además, encargos que se pueden repetir sin fin.</li>
+<li><span data-n="misiones">91</span> misiones entre la historia principal y las historias secundarias del resto de localidades. Además, encargos que se pueden repetir sin fin.</li>
 <li><span data-n="vehiculos">39</span> vehículos: coches, motos, bicicleta, camiones, vehículos de emergencias, un coche de carreras, 8 embarcaciones y un helicóptero.</li>
 <li><span data-n="armas">22</span> armas, de los puños a la ametralladora rotativa, con armas silenciosas y explosivos.</li>
 <li>Trabajos: taxista, repartidor de pizzas, conductor de ambulancia y de autobús, vigilante, transportista, heladero, mensajero del mar y pescador.</li>
@@ -95,7 +95,7 @@ li { margin-bottom: .3em; }
 <li><kbd>L</kbd>, lista de lugares: por categorías y en orden alfabético. Incluye una lista de lugares sin visitar y las demás localidades. <kbd>Intro</kbd> marca el destino.</li>
 <li><kbd>F9</kbd>, explorador de mapa: mueve un cursor de cruce en cruce con las flechas, sin mover al personaje, para aprenderte la localidad. <kbd>Tabulador</kbd> recorre los lugares junto al cursor, <kbd>N</kbd> los describe, <kbd>D</kbd> dice a qué distancia queda de ti, <kbd>Inicio</kbd> vuelve a tu posición e <kbd>Intro</kbd> marca el destino. También funciona en el mar.</li>
 <li>Marcadores personales: en el móvil puedes guardar el punto exacto en el que estás y volver a él con el GPS.</li>
-<li><kbd>G</kbd>, GPS: repite la indicación. Dice la distancia y el giro siguiente. <kbd>Mayúsculas G</kbd> lo cancela.</li>
+<li><kbd>G</kbd>, GPS: repite la indicación. Dice la distancia y el giro siguiente. <kbd>Mayúsculas G</kbd> lo cancela. Durante una misión, si te desvías a otra cosa y el GPS se queda sin destino, a los dos segundos vuelve solo a lo que pide la misión y lo dice. Si lo cancelas tú con Mayúsculas G, no vuelve solo: con <kbd>G</kbd> lo recuperas.</li>
 <li>Baliza sonora: una campanita que suena en la dirección que debes seguir, más rápida cuanto más cerca. A pie suena en la esquina de la acera, no en mitad del cruce. Se activa y desactiva con <kbd>F4</kbd>.</li>
 <li>Sonido de los lugares: cada tipo de lugar tiene su firma sonora, que oyes al acercarte. Una armería suena a arma que se amartilla, un bar a música a través de la pared, una tienda a timbre de puerta. Están todos en el menú <em>Aprender los sonidos</em>.</li>
 <li>Pasos: suenan distinto en acera, asfalto, césped, arena y muelle.</li>
@@ -124,7 +124,7 @@ li { margin-bottom: .3em; }
 <li><kbd>B</kbd>: pone el GPS y la baliza hacia lo último que dijo el radar.</li>
 <li><kbd>F6</kbd>: cambia el filtro del radar: todo, lugares, vehículos, personas u objetos.</li>
 <li><kbd>L</kbd>: lista de lugares de la ciudad para marcar un destino.</li>
-<li><kbd>G</kbd>: repite la indicación del GPS. Mayúsculas G lo cancela.</li>
+<li><kbd>G</kbd>: repite la indicación del GPS. Mayúsculas G lo cancela. En una misión, sin destino marcado, vuelve a marcar lo que pide la misión.</li>
 <li><kbd>M</kbd>: abre el móvil: misiones, lugares, explorador de mapa, marcadores, servicios, habilidades, logros, propiedades y estadísticas.</li>
 <li><kbd>Intro</kbd>: interactuar: entrar en un lugar, empezar una misión, recoger un objeto o hablar.</li>
 <li><kbd>F</kbd>: subir a un vehículo o bajarte.</li>
@@ -169,7 +169,7 @@ li { margin-bottom: .3em; }
 <li><kbd>A y D</kbd>: en conducción asistida, mantenlas para cambiar de carril: A invade el carril contrario para adelantar y D te arrima a la acera.</li>
 <li><kbd>Frenada automática</kbd>: en conducción asistida el coche frena solo si hay un vehículo delante en tu carril. Se desactiva en Opciones.</li>
 <li><kbd>U</kbd>: media vuelta, con el coche casi parado.</li>
-<li><kbd>Y</kbd>: piloto del GPS: el coche va solo hasta el destino marcado; acelera, frena, gira y espera en los semáforos.</li>
+<li><kbd>Y</kbd>: piloto del GPS: el coche va solo hasta el destino marcado; acelera, frena, gira, espera en los semáforos y se detiene al llegar.</li>
 <li><kbd>E</kbd>: en conducción libre, endereza el coche hacia el punto cardinal más cercano.</li>
 <li><kbd>W</kbd>: velocidad actual.</li>
 <li><kbd>H</kbd>: claxon.</li>
@@ -209,6 +209,8 @@ li { margin-bottom: .3em; }
 </ul>
 <h3>Vibración</h3>
 <p>El mando vibra cuando te hieren, en los choques y las explosiones, al subir el nivel de búsqueda, al llegar a un destino y, sobre todo, cuando pica un pez. En conducción libre, el bordillo vibra por el lado correspondiente. La vibración refuerza el sonido, nunca lo sustituye, y se puede desactivar.</p>
+<h3>Los botones, dichos por el juego</h3>
+<p>Con un mando conectado, lo que el juego cuenta mientras juegas, y lo que explican los tutoriales y las escenas, nombra el botón que hace cada cosa en lugar de la tecla: «pulsa el gatillo izquierdo para fijarlo», en vez de «pulsa Q». Sigue tu asignación: si cambias un botón, el juego dice el nuevo. Lo que no tiene botón se sigue diciendo con su tecla, porque el teclado funciona igual con el mando puesto. Las frases que cambian las lee tu lector de pantalla, no la voz grabada. Se quita en Opciones, Mando, con Decir los botones del mando en lugar de las teclas. Los menús y esta ayuda siguen nombrando las teclas; F1, o el botón Y en un menú, dice qué hace cada botón.</p>
 <h3>Cambiar los botones</h3>
 <p>En Opciones, Mando, puedes ver qué hace cada botón, reasignar cualquiera a pie y al volante, probar la vibración y volver a la asignación original. La asignación se guarda con tus opciones.</p>
 
@@ -218,7 +220,7 @@ li { margin-bottom: .3em; }
 <ul>
 <li>Sensor de proximidad: un pitido que se acelera cuando tienes un vehículo delante.</li>
 <li>Frenada automática: el coche frena solo para no embestir al de delante. Mantén <kbd>A</kbd> para adelantar por el carril contrario. Se puede desactivar.</li>
-<li>Piloto del GPS, con <kbd>Y</kbd>: el coche se conduce solo. Marca un destino en el GPS, sube al coche y pulsa <kbd>Y</kbd>: acelera a velocidad de ciudad, frena si hay un vehículo delante, espera en los semáforos en rojo, gira en los cruces siguiendo la ruta y se detiene al llegar. No tienes que tocar nada. Con cualquier flecha o con el espacio mandas tú mientras la pulsas, y con <kbd>Y</kbd> otra vez lo apagas. Funciona en conducción asistida y en tierra; para las persecuciones y las carreras sigue haciendo falta conducir tú.</li>
+<li>Piloto del GPS, con <kbd>Y</kbd>: el coche se conduce solo. Marca un destino en el GPS, sube al coche y pulsa <kbd>Y</kbd>: acelera a velocidad de ciudad, frena si hay un vehículo delante, espera en los semáforos en rojo, gira en los cruces siguiendo la ruta y se detiene al llegar, y lo dice: así puedes entrar, entregar o seguir la misión sin frenar tú. Si vas con prisa, con la sirena puesta o en una misión o un trabajo contra el reloj, el piloto corre más y no espera en los semáforos. No tienes que tocar nada. Con cualquier flecha o con el espacio mandas tú mientras la pulsas, y con <kbd>Y</kbd> otra vez lo apagas. Funciona en conducción asistida y en tierra; para las persecuciones y las carreras sigue haciendo falta conducir tú.</li>
 </ul>
 <h3>Conducción libre</h3>
 <p>Tú llevas el volante. Un ruido grave te avisa, por el lado correspondiente, cuando te sales de la calzada. <kbd>E</kbd> endereza el coche hacia el punto cardinal más cercano. Puedes ir campo a través por parques y playas.</p>
@@ -273,7 +275,7 @@ li { margin-bottom: .3em; }
 
 <h2>9. El móvil</h2>
 <p>Con <kbd>M</kbd> abres el móvil: objetivo actual, misiones disponibles, lugares y GPS, explorador de mapa, marcadores personales, servicios, habilidades y logros, inventario, propiedades, barrios y estadísticas.</p>
-<p>En Servicios puedes pedir que te traigan un vehículo de tus garajes, llamar a un guardaespaldas, pedir una ambulancia que te cure donde estés o un taxi para viajar rápido.</p>
+<p>En Servicios puedes pedir que te traigan un vehículo de tus garajes, mandar a uno de tus garajes el vehículo que llevas o el que acabas de dejar aparcado cerca, por 100 euros, llamar a un guardaespaldas, pedir una ambulancia que te cure donde estés o un taxi para viajar rápido.</p>
 <p>En Servicios también puedes despedir a tus guardaespaldas cuando ya no los quieras: dejan de cobrarte.</p>
 <h3>El diario: lo que ha pasado, repetir y saltar misiones</h3>
 <ul>
@@ -422,7 +424,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 </ul>
 
 <h2>12. Casas, guardado y opciones</h2>
-<p>En tus casas puedes guardar, descansar, esconderte y usar el garaje. Además puedes guardar en cualquier sitio desde el menú de pausa o con <kbd>F5</kbd>, salvo durante una misión. El juego guarda solo al terminar cada misión. Si fallas una misión, puedes reintentarla al momento sin repetir el camino.</p>
+<p>En tus casas puedes guardar, descansar, esconderte y usar el garaje. Para guardar un vehículo hay dos formas: llegar con él hasta la puerta y pulsar <kbd>Intro</kbd> sin bajarte, o dejarlo aparcado cerca y entrar a pie, porque el menú de la casa ofrece meter en el garaje el vehículo que has dejado. El vehículo del que te bajas te espera donde lo dejaste, aunque te alejes, hasta que subas a otro o salgas de la localidad, y se guarda con la partida. Además puedes guardar en cualquier sitio desde el menú de pausa o con <kbd>F5</kbd>, salvo durante una misión. El juego guarda solo al terminar cada misión. Si fallas una misión, puedes reintentarla al momento sin repetir el camino.</p>
 <h3>Nueva partida conservando lo ganado</h3>
 <p>En el menú principal, Nueva partida conservando lo ganado empieza la historia desde el principio con lo que tenías en una partida guardada: dinero, armas, habilidades, casas, vehículos de los garajes, barcos y logros. Las misiones, los territorios y las decisiones empiezan de cero. En cada vuelta, los enemigos de las misiones aguantan un quince por ciento más. La partida guardada de la que sales no se toca.</p>
 <p>Las partidas guardadas con versiones anteriores del juego se convierten solas al cargarlas. Una partida guardada con una versión más nueva que la que tienes no se carga: el juego te avisa de que actualices.</p>
@@ -758,6 +760,10 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <h3>Si fallas una misión: los puntos de control</h3>
 <p>Las misiones largas guardan un punto de control cada vez que terminas un tramo. Si fallas después, el juego ofrece tres cosas: reintentar desde el último punto de control, que te devuelve al comienzo del tramo en el que estabas con lo que tenías entonces; reintentar desde el principio de la misión; o dejarlo por ahora. No hay punto de control mientras llevas un vehículo de la misión que aún hay que entregar: ahí se vuelve al tramo anterior.</p>
 <p>Si fallas la misma misión tres veces, aparece además la opción de saltártela: cuenta como hecha, sin recompensa.</p>
+<p>Si te detienen o pierdes el conocimiento cuando ya has hecho lo que pedía la misión y solo queda su escena final, la misión no se falla: después de la comisaría o del hospital, la escena sigue y la misión se completa.</p>
+<p>En las persecuciones, el vehículo que huye va más despacio en fácil y en normal y, si te saca mucha ventaja, afloja, y el juego te dice a cuánto va y hacia dónde.</p>
+<h3>Encargos de la comarca</h3>
+<p>Son doce encargos sueltos, repartidos por las localidades, que no pertenecen a la historia principal y se pueden hacer en cualquier orden a partir de las primeras misiones. Usan todos los tipos de paso: seguir a alguien, acompañar, entrar sin ruido, vigilar, rutas contra el reloj, una carrera, un robo de encargo y una salida al mar. Empiezan en la farmacia, el quiosco del parque, la biblioteca, el museo, el parque de bomberos y el desguace de Puerto Bravo; en la Curva del Minero y las oficinas de Monteferro; en la panadería de Villaseca; en los recreativos de San Lucero; en la náutica de Cala Brava y en el mesón de Fuentefría. El móvil, en Misiones, dice cuáles tienes disponibles.</p>
 <h3>Decisiones, y finales distintos</h3>
 <p>En algunas misiones la historia te pide una decisión. Se elige en un menú del que no se puede salir sin elegir, y <kbd>F1</kbd> explica lo que supone cada opción. No se puede deshacer. Lo que decidas queda apuntado en el diario del móvil y cambia lo que viene después: qué misiones aparecen, cuánto dinero y cuánta fama tienes, y cómo te llevas con las bandas.</p>
 <p>Hay decisiones repartidas por toda la historia: qué haces con el dinero que te ofrecen, con un enemigo que se rinde, con un tesoro o con una banda que quiere hablar. Son ocho en la historia principal y una en seis de los mods que vienen con el juego. Casi todas cambian tu dinero, tu fama o tu ánimo; algunas, cómo te llevas con una banda.</p>
@@ -785,7 +791,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <h2>23. Actualizaciones</h2>
 <p>El juego se actualiza solo, cuando tú quieras. Al arrancar mira si hay una versión nueva y, si la hay, te avisa; no descarga ni instala nada sin que lo pidas.</p>
 <ul>
-<li>Para actualizar, entra en Opciones, Actualizaciones, y elige Buscar actualizaciones ahora. Si hay versión nueva puedes leer sus novedades y elegir Descargar e instalar ahora. El juego va diciendo el progreso; <kbd>Escape</kbd> cancela.</li>
+<li>Para actualizar, entra en Opciones, Actualizaciones, y elige Buscar actualizaciones ahora. Si hay versión nueva puedes leer sus novedades y elegir Descargar e instalar ahora. El juego va diciendo el progreso; <kbd>Escape</kbd> cancela. Si la conexión se corta a medias, la descarga se retoma sola por donde iba, varias veces, antes de darse por vencida.</li>
 <li>Al terminar la descarga, el juego se cierra, se actualiza y vuelve a abrirse solo en unos segundos. Si algo fallara, se queda la versión que tenías.</li>
 <li>Tus partidas, tus opciones, tu música y tus mods no se tocan.</li>
 <li>Actualizar desde: con las flechas izquierda y derecha eliges de dónde se buscan y se descargan las versiones. Hay cuatro posibilidades: el servidor del juego; GitHub; las dos, que usa la versión más nueva y, si una falla, la otra; o una dirección personalizada, que escribes en la opción siguiente y tiene que empezar por https.</li>

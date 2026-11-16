@@ -206,12 +206,12 @@ class Conduccion:
             if abs(v.vel) > 6:
                 self.decir("Va demasiado rápido para abrir la puerta.", True)
                 return
-            self.son("puerta_coche", xy=(v.x, v.y))
+            self.son_puerta(v, xy=(v.x, v.y))
             p = Persona("civil", *self.mundo.punto_libre(v.x + 2, v.y + 2), nombre="Conductor")
             p.estado = "huye"
             p.t_estado = 12
             self.personas.append(p)
-            self.son("grito", xy=(p.x, p.y))
+            self.son("grito", xy=(p.x, p.y), tono=p.tono)
             self.delito(2, "robo de vehículo con violencia")
             v.ocupado = False
             self._subir(v, True)
@@ -223,6 +223,19 @@ class Conduccion:
             self.decir(f"Fuerzas la cerradura de {v.nombre}" + (" con la ganzúa." if con_ganzua else ". No te muevas."), True)
             return
         self._subir(v, v.ia == "policia" or not getattr(v, "propio", False))
+
+    def son_puerta(self, v, xy=None):
+        """Subir o bajar no suena igual en todo: una moto y una bici no tienen puerta, un barco es una cubierta,
+        la puerta de un camión pesa y la de un deportivo es ligera."""
+        motor = v.modelo.get("motor", "")
+        kw = {"xy": xy} if xy else {}
+        if motor in ("motor_moto", "motor_bici"):
+            return self.son("levantarse", vol=0.7, tono=0.9 if motor == "motor_moto" else 1.25, **kw)
+        if v.modelo.get("barco"):
+            return self.son("paso_muelle0", vol=0.9, tono=0.8, **kw)
+        tono = {"motor_camion": 0.7, "motor_furgoneta": 0.82, "motor_tractor": 0.75, "motor_deportivo": 1.15,
+                "motor_helicoptero": 1.3, "motor_avioneta": 1.3}.get(motor, 1.0)
+        return self.son("puerta_coche", tono=tono, **kw)
 
     def _forzar(self, dt):
         f = self.forzando
@@ -273,8 +286,10 @@ class Conduccion:
         j.veh = v
         j.agachado = False
         self.oy_rumbo = v.rumbo
-        self.son("puerta_coche")
-        self.son("arranque", vol=0.6)
+        self.ultimo_veh = None
+        self.son_puerta(v)
+        if v.modelo.get("motor") != "motor_bici":
+            self.son("arranque", vol=0.6)
         self._motor(v, True)
         self.rodadura = self.son("rodadura", bucle=True, vol=0.0)
         self.preparar_conduccion()
@@ -323,8 +338,10 @@ class Conduccion:
         self.libre_temp = False
         if self.trabajo and self.trabajo.get("veh") is v:
             self.terminar_trabajo("Dejas el vehículo de trabajo.")
+        if not v.tag and not v.muerto:
+            self.ultimo_veh = v
         if not forzado:
-            self.son("puerta_coche")
+            self.son_puerta(v)
             self.decir(f"Te bajas. {self.mundo.describir(j.x, j.y)}.", True)
 
     # ------------------------------------------------------ teclas al volante
@@ -400,10 +417,27 @@ class Conduccion:
         mo = v.modelo
         dx, dy = self.gps["dest"]
         dist = math.hypot(dx - v.x, dy - v.y)
-        objetivo = min(mo["vel_max"] * 0.6, 14.0)
-        if dist < 45:
-            objetivo = min(objetivo, max(3.0, dist * 0.3))
-        if self._semaforo_rojo(v):
+        # Con prisa (la sirena puesta, o una misión o un trabajo contra el reloj) el piloto corre más y no espera en rojo.
+        prisa = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None) \
+            or bool(self.trabajo and self.trabajo.get("limite") is not None)
+        objetivo = min(mo["vel_max"] * 0.85, 21.0) if prisa else min(mo["vel_max"] * 0.6, 14.0)
+        if prisa and not getattr(self, "_piloto_prisa", False):
+            self.decir("Vas con prisa: el piloto corre más y no espera en los semáforos.")
+        self._piloto_prisa = prisa
+        if self.gps.get("sigue") is None:                        # a un sitio se llega y se para; a quien persigues, no
+            radio = self.gps.get("radio") or 16
+            if dist < 45:
+                objetivo = min(objetivo, max(2.0, dist * 0.3))
+            if dist <= radio * 0.8:
+                objetivo = 0.0                                   # ha llegado: se detiene, para que puedas entrar o entregar
+                if v.vel > 0.5:
+                    self._piloto_parado = False
+                elif not getattr(self, "_piloto_parado", False):
+                    self._piloto_parado = True
+                    self.decir(f"El piloto se detiene: has llegado a {self.gps['nombre']}.")
+            else:
+                self._piloto_parado = False
+        if not prisa and self._semaforo_rojo(v):
             objetivo = 0.0
             if self.t - getattr(self, "t_aviso_rojo", -99) > 20:
                 self.t_aviso_rojo = self.t
@@ -431,9 +465,14 @@ class Conduccion:
             else:
                 v.vel = max(-6.0, v.vel - 4 * dt)
         elif self.piloto_completo() and pygame.K_SPACE not in t:
+            self._pilotando = True
             self._pilotar(v, dt, freno)
+        elif getattr(self, "_pilotando", False) and self.cfg["piloto_gps"] and not self.gps and v.vel > 0:
+            v.vel = max(0.0, v.vel - freno * dt)                 # el piloto ha llegado: no suelta el coche rodando, lo para
         else:
             v.vel -= math.copysign(min(abs(v.vel), 1.8 * dt), v.vel)
+        if getattr(self, "_pilotando", False) and (v.vel <= 0 or pygame.K_UP in t or pygame.K_DOWN in t) and not self.piloto_completo():
+            self._pilotando = False
         if pygame.K_SPACE in t and abs(v.vel) > 0:
             if abs(v.vel) > 9 and self.t - getattr(self, "t_frenazo", -9) > 1.2:
                 self.t_frenazo = self.t

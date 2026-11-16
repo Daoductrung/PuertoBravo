@@ -1,5 +1,6 @@
 """Entidades del mundo: jugador, vehículos, personas y objetos."""
 import math
+import random
 
 
 class Jugador:
@@ -151,6 +152,9 @@ class Vehiculo:
         self.canal = self.sirena = self.alarma = self.fuego = None
 
 
+_voces = random.Random()            # aparte del azar del juego: la voz de cada cual no cambia lo que pasa
+
+
 class Persona:
     n = 0
 
@@ -179,6 +183,8 @@ class Persona:
         self.t_voz = 0.0
         self.t_arresto = 0.0
         self.activo = True
+        # cada persona tiene su voz: unas más graves y otras más agudas. Con ella suenan sus quejas y sus gritos
+        self.tono = _voces.uniform(0.80, 0.98) if _voces.random() < 0.5 else _voces.uniform(1.22, 1.42)
 
     def dist(self, x, y):
         return math.hypot(self.x - x, self.y - y)

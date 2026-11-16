@@ -215,7 +215,7 @@ class Misiones:
             return
         v = ms.get("veh")
         if v is not None and v is not self.j.veh:
-            if tipo == "entregar":
+            if tipo != "robar" and not paso_seguro(ms["def"]["pasos"], ms["paso"]):      # ya lo tenías y aún hay que entregarlo
                 self.fallar_mision("Has dejado atrás el vehículo de la misión.")
                 return
             ms["veh"] = None
@@ -247,6 +247,8 @@ class Misiones:
             self._siguiente_paso()
             return
         ms["limite"] = p.get("limite")
+        ms["gps_callado"] = False
+        ms["t_sin_gps"] = 0.0
         ms["avisos"] = set()
         ms["generado"] = False
         ms["recogido"] = False
@@ -261,8 +263,9 @@ class Misiones:
         ms["reanudando"] = False
         if tipo == "dialogo":
             from . import voces
-            self.app.abrir(Dialogo(self.app, [(self.txt(q), self.txt(tx)) for q, tx in p["lineas"]], self._siguiente_paso,
-                                   voces=voces.de_paso(ms["def"]["id"], ms["paso"], len(p["lineas"])) if self.voces_activas() else None))
+            ms["pantalla"] = Dialogo(self.app, [(self.txt(q), self.txt(tx)) for q, tx in p["lineas"]], self._seguir_si(ms),
+                                     voces=voces.de_paso(ms["def"]["id"], ms["paso"], len(p["lineas"])) if self.voces_activas() else None)
+            self.app.abrir(ms["pantalla"])
             return
         if tipo == "decision":
             self._paso_decision(ms, p)
@@ -284,6 +287,80 @@ class Misiones:
             self.decir(self.txt(p["texto"]))
         ms["pendiente"] = True
         self._materializar()
+
+    def _seguir_si(self, ms):
+        """Lo que hace una escena de la misión al terminar: pasar al paso siguiente, pero solo si la misión sigue siendo
+        esa y sigue en ese paso. Una escena que se quedó abierta debajo de otra pantalla (te detienen en el mismo instante
+        en que cae el último enemigo) no puede hacer avanzar una misión que ya se falló o se volvió a empezar."""
+        k = ms["paso"]
+
+        def f():
+            if self.mision is ms and ms["paso"] == k:
+                self._siguiente_paso()
+        return f
+
+    def mision_en_escena(self):
+        """¿La misión está en una escena o en una decisión, esperando a que la leas? Entonces lo que había que hacer ya
+        está hecho: que te detengan o te tumben en ese momento no la falla."""
+        ms = self.mision
+        if not ms or not (0 <= ms["paso"] < len(ms["def"]["pasos"])):
+            return False
+        return ms["def"]["pasos"][ms["paso"]]["tipo"] in ("dialogo", "decision") and ms.get("pantalla") in self.app.pila
+
+    def _cerrar_escena(self, ms):
+        pan = ms.get("pantalla")
+        ms["pantalla"] = None
+        if pan is not None and pan in self.app.pila:
+            if hasattr(pan, "al_terminar"):
+                pan.al_terminar = None
+            if hasattr(pan, "_callar_voz"):
+                pan._callar_voz()
+            self.app.pila.remove(pan)
+
+    def gps_mision(self, hablar=True):
+        """Vuelve a marcar en el GPS lo que pide el paso actual de la misión. Sirve cuando te has desviado a otra cosa
+        (has marcado otro sitio, has seguido algo con el radar) y el GPS se ha quedado sin destino. No crea nada."""
+        ms = self.mision
+        if not ms or not (0 <= ms["paso"] < len(ms["def"]["pasos"])) or ms.get("pendiente"):
+            return False
+        p = ms["def"]["pasos"][ms["paso"]]
+        tipo = p["tipo"]
+        l = self._lugar_paso(p)
+        antes = self.gps
+        v = ms.get("veh")
+        if tipo == "robar" and v is not None and not v.muerto and self.j.veh is not v:
+            self.fijar_gps(v.x, v.y, v.nombre, auto=True, radio=4, callar=True)
+        elif tipo == "entregar" and v is not None and not v.muerto and self.j.veh is not v:
+            self.fijar_gps(v.x, v.y, v.nombre, auto=True, radio=4, callar=True)
+        elif tipo in ("ir", "entregar", "eliminar", "sigilo") and l:
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo == "recoger" and ms.get("objeto") is not None and not ms["recogido"]:
+            o = ms["objeto"]
+            self.fijar_gps(o.x, o.y, p["objeto"], auto=True, radio=2, callar=True)
+        elif tipo == "perseguir" and ms.get("veh_objetivo") is not None:
+            vo = ms["veh_objetivo"]
+            self.fijar_gps(vo.x, vo.y, vo.nombre, sigue=vo, auto=True, callar=True)
+        elif tipo == "escoltar" and ms.get("escolta"):
+            d = self.lugares.get(p.get("destino", "")) if ms["escolta"]["contigo"] else l
+            if d:
+                self.gps_a_lugar(d, auto=True, callar=True)
+        elif tipo == "vigilar" and l and ms.get("vigia") and not ms["vigia"]["dentro"]:
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo == "carrera" and l and (ms.get("carrera") or {}).get("fase") == "ir":
+            self.gps_a_lugar(l, auto=True, callar=True)
+        elif tipo == "ruta" or (tipo == "carrera" and (ms.get("carrera") or {}).get("fase") == "corre"):
+            puntos = p.get("puntos", [])
+            q = self.lugares.get(puntos[ms.get("ruta_i", 0)]) if ms.get("ruta_i", 0) < len(puntos) else None
+            if q:
+                self.gps_a_lugar(q, auto=True, callar=True)
+        if self.gps is None or self.gps is antes:
+            return False
+        ms["gps_callado"] = False
+        if hablar:
+            self.app.son("notificacion")
+            self.decir(f"El GPS vuelve a la misión: {self.gps['nombre']}.")
+            self.repetir_gps_suave()
+        return True
 
     def _materializar(self):
         """Crea lo que necesita el paso actual (vehículos, enemigos, objetos) y orienta el GPS."""
@@ -379,7 +456,8 @@ class Misiones:
             v.salud = v.salud_max = float(p.get("salud", 120))
             v.ocupado = True
             v.hostil = True
-            v.vel_obj = min(v.modelo["vel_max"] * 0.62, 21.0)
+            # Quien huye no va a fondo: se le tiene que poder alcanzar con un coche corriente. Más despacio en fácil y en normal.
+            ms["vel_huida"] = v.vel_obj = min(v.modelo["vel_max"] * {"facil": 0.45, "normal": 0.54}.get(self.cfg["dificultad"], 0.62), 21.0)
             ms["veh_objetivo"] = v
             self.objetivo = v
             self.fijar_gps(x, y, v.nombre, sigue=v, auto=True)
@@ -462,6 +540,14 @@ class Misiones:
                 self.fallar_mision("El vehículo ha sufrido demasiados daños.")
                 return
         l = self._lugar_paso(p)
+        # Te has desviado y el GPS se ha quedado sin destino: a los dos segundos vuelve solo a lo que pide la misión.
+        if self.gps is None and not ms.get("gps_callado") and not ms.get("pendiente"):
+            ms["t_sin_gps"] = ms.get("t_sin_gps", 0.0) + dt
+            if ms["t_sin_gps"] > 2.0:
+                ms["t_sin_gps"] = -20.0                           # si no hay nada que marcar, no insiste a cada momento
+                self.gps_mision()
+        elif self.gps is not None:
+            ms["t_sin_gps"] = 0.0
         if ms.get("pendiente"):
             if tipo != "policia" and (l is None or l.mapa == self.mundo.id):
                 self._materializar()
@@ -498,7 +584,9 @@ class Misiones:
                     self.poner_busqueda(p["busqueda"])
                 self._paso_hecho()
         elif tipo == "entregar":
-            if j.veh is v:
+            if v is None:
+                self.fallar_mision("Has perdido el vehículo de la misión.")
+            elif j.veh is v:
                 cerca = 32 if v.modelo.get("vuela") else 18
                 if l and l.mapa == self.mundo.id and math.hypot(l.x - x, l.y - y) <= cerca and abs(v.vel) < 2.5:
                     self.salir_vehiculo(forzado=True)
@@ -543,8 +631,17 @@ class Misiones:
                 self.decir(f"¡{p.get('nombre', 'El objetivo')} destruido!")
                 ms["veh_objetivo"] = None
                 self._paso_hecho()
-            elif j.veh and self.gps is None:
-                self.fijar_gps(vo.x, vo.y, vo.nombre, sigue=vo, auto=True, callar=True)
+            else:
+                lejos = vo.dist(x, y)
+                # si se te escapa mucho, afloja: se oye que aminora y vuelves a tener ocasión
+                vo.vel_obj = ms.get("vel_huida", vo.vel_obj) * (0.55 if lejos > 150 else 0.8 if lejos > 90 else 1.0)
+                if lejos > 150 and "lejos" not in ms["avisos"]:
+                    ms["avisos"].add("lejos")
+                    self.decir(f"{vo.nombre} te saca ventaja, pero se confía y afloja. Va a {int(lejos)} metros, {self.direccion_txt(vo.x, vo.y)}.")
+                elif lejos < 60:
+                    ms["avisos"].discard("lejos")
+                if j.veh and self.gps is None:
+                    self.fijar_gps(vo.x, vo.y, vo.nombre, sigue=vo, auto=True, callar=True)
 
     # ------------------------------------------------- pasos de oído: seguir, escoltar, sigilo y ruta
     def _ruta_siguiente(self, p, primero=False):
@@ -669,6 +766,8 @@ class Misiones:
         def elegir(n, o):
             def f():
                 self.app.cerrar(menu)
+                if self.mision is not ms:
+                    return
                 if not ms.get("repeticion"):                     # al repetir una misión, lo decidido no cambia
                     self.decisiones[clave] = {"opcion": n + 1, "texto": self.txt(o.get("texto", "")), "mision": ms["def"]["id"]}
                     if o.get("dinero"):
@@ -685,10 +784,11 @@ class Misiones:
                                    f"Desde hoy, esto te cuesta {-int(o['renta'])} euros cada medianoche.")
                 if o.get("dice"):
                     self.decir(self.txt(o["dice"]))
-                self._siguiente_paso()
+                seguir()
             return f
         self.app.son("notificacion")
-        menu = Menu(self.app, self.txt(p.get("pregunta") or "¿Qué haces?"),
+        seguir = self._seguir_si(ms)
+        menu = ms["pantalla"] = Menu(self.app, self.txt(p.get("pregunta") or "¿Qué haces?"),
                     [Opcion(self.txt(o.get("texto", "")), elegir(n, o), ayuda=self.txt(o.get("ayuda", "")) or None) for n, o in enumerate(opciones)],
                     escapable=False, intro="Es una decisión de la historia y no se puede deshacer. F1 explica cada opción")
         self.app.abrir(menu)
@@ -896,6 +996,7 @@ class Misiones:
         if vo is not None and not vo.muerto:
             self.quitar_vehiculo(vo)
         self._parar_rivales(ms)
+        self._cerrar_escena(ms)
         for e in ms["enemigos"]:
             if e in self.personas:
                 self.personas.remove(e)

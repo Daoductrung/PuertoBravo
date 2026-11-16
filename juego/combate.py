@@ -305,7 +305,7 @@ class Combate:
                 p.estado = "huye"
                 p.t_estado = 10
                 if random.random() < 0.4:
-                    self.son("grito", xy=(p.x, p.y), vol=0.6)
+                    self.son("grito", xy=(p.x, p.y), vol=0.6, tono=p.tono)
 
     # ------------------------------------------------------------------ daños
     def danar_persona(self, p, dano, atropello=False):
@@ -319,7 +319,7 @@ class Combate:
         if p.salud <= 0:
             p.muerto = True
             p.t_estado = self.t
-            self.son("muerte_npc", xy=(p.x, p.y), ref=6)
+            self.son("muerte_npc", xy=(p.x, p.y), ref=6, tono=p.tono)
             if p.tipo == "civil":
                 self.delito(3 if atropello else 4, "atropello" if atropello else "homicidio")
                 self.decir("Has atropellado a un peatón." if atropello else f"{p.nombre} cae al suelo.")
@@ -346,7 +346,7 @@ class Combate:
                 if self.cfg["punteria"] == "completa":
                     self.fijar(callar=True)
         else:
-            self.son("dolor_npc", xy=(p.x, p.y), ref=6)
+            self.son("dolor_npc", xy=(p.x, p.y), ref=6, tono=p.tono)
             p.provocado = True
             if p.tipo == "civil":
                 p.estado = "huye"
@@ -764,7 +764,7 @@ class Combate:
 
         def fin():
             self.transicion = False
-            if self.mision:
+            if self.mision and not self.mision_en_escena():
                 self.fallar_mision("Has perdido el conocimiento.")
         self.son("hospital_despertar", cat="interfaz")
         self.app.abrir(Dialogo(self.app, [("Narrador", f"Todo se vuelve negro. Horas después despiertas en {h.nombre}, {self.mundo.nombre}, con un vendaje nuevo y {coste} euros menos. Son las {self.hora_txt()}.")], fin))
@@ -827,7 +827,7 @@ class Combate:
 
         def fin():
             self.transicion = False
-            if self.mision:
+            if self.mision and not self.mision_en_escena():
                 self.fallar_mision("Te han detenido.")
         self.son("celda", cat="interfaz")
         j.ciudadania = max(0.0, j.ciudadania - 5)

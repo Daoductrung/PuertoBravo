@@ -166,6 +166,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.hora_clima = -1
         self.intro_pendiente = guardado is None
         self.veh_guardado = None
+        self.veh_fuera = None
+        self.ultimo_veh = None           # el vehículo del que te acabas de bajar: no desaparece aunque te alejes
         if guardado:
             self.cargar_dict(guardado)
         else:
@@ -180,9 +182,20 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
             v.rumbo = float(d.get("rumbo", 0))
             v.propio = True
+            from . import sistemas
+            sistemas.poner(v, d.get("mejoras"))
             self._subir(v, False, callar=True)
         elif self.mundo.tipo == "mar":
             self.naufragar(callar=True)
+        d = self.veh_fuera
+        if d and not self.j.veh and d.get("mapa") == self.mundo.id and d.get("modelo") in self.modelos:      # el que dejaste aparcado
+            v = self.crear_vehiculo(d["modelo"], float(d.get("x", self.j.x)), float(d.get("y", self.j.y)), M.dir_de_rumbo(d.get("rumbo", 0)), None, d.get("nombre"))
+            v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
+            v.rumbo = float(d.get("rumbo", 0))
+            v.propio = True
+            from . import sistemas
+            sistemas.poner(v, d.get("mejoras"))
+            self.ultimo_veh = v
         for _ in range(int(self.j.guardaespaldas)):
             self.crear_aliado()
         if self.j.perro and self.mundo.tipo != "mar" and not self.j.perro_en_casa:
@@ -224,7 +237,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
     # ----------------------------------------------------------------- básicos
     def decir(self, texto, interrumpir=False):
         self.voz.detalle = self.cfg["detalle_voz"]
-        self.voz.decir(texto, interrumpir)
+        self.voz.decir(self.app.mando.textos(texto), interrumpir)
 
     def son(self, nombre, xy=None, **kw):
         if nombre == "comer":
@@ -325,8 +338,21 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
              "lugar": f"{self.mundo.describir(px, py)}, {self.mundo.nombre}"}
         v = self.j.veh
         if v and not v.tag:
-            d["veh"] = {"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "rumbo": v.rumbo}
+            d["veh"] = {"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "rumbo": v.rumbo, "mejoras": dict(getattr(v, "mejoras", {}))}
+        u = self.tu_vehiculo()
+        if not v and u is not None:
+            d["veh_fuera"] = {"modelo": u.modelo["id"], "salud": u.salud, "nombre": u.nombre, "rumbo": u.rumbo, "x": u.x, "y": u.y,
+                              "mapa": self.mundo.id, "mejoras": dict(getattr(u, "mejoras", {}))}
         return d
+
+    def tu_vehiculo(self, radio=None):
+        """El vehículo del que te has bajado, si sigue entero y en esta localidad. Con `radio`, solo si está así de cerca."""
+        u = getattr(self, "ultimo_veh", None)
+        if u is None or u.muerto or u.tag or u.ardiendo >= 0 or u not in self.vehiculos or u is self.j.veh:
+            return None
+        if radio is not None and u.dist(*self.pos()) > radio:
+            return None
+        return u
 
     def cargar_dict(self, d):
         d = migrar(d)
@@ -345,6 +371,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.mundo = self.mapas.get(self.j.mapa) or self.app.mundo
         self.j.mapa = self.mundo.id
         self.veh_guardado = d.get("veh")
+        self.veh_fuera = d.get("veh_fuera")
         self.atracadas = dict(d.get("atracadas", {}))
         self.reloj = float(d.get("reloj", 540))
         self.dia = int(d.get("dia", 1))
@@ -596,7 +623,15 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             mj.lista_lugares(self)
         elif k == pygame.K_g:
             if mayus:
+                habia = self.gps is not None
                 self.cancelar_gps(True)
+                if self.mision:
+                    self.mision["gps_callado"] = True            # lo has quitado tú: la misión no lo vuelve a poner sola
+                    if habia:
+                        self.decir("Con la G vuelves a marcar la misión.")
+            elif not self.gps and self.mision and self.gps_mision(hablar=False):
+                self.app.son("notificacion")
+                self.repetir_gps()
             else:
                 self.repetir_gps()
         elif k == pygame.K_TAB:
@@ -1755,7 +1790,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         m = self.mundo
         noche = self.es_noche()
         for v in list(self.vehiculos):
-            if v is j.veh or v.tag:
+            if v is j.veh or v.tag or v is self.ultimo_veh:      # el tuyo te espera donde lo dejaste
                 continue
             d = v.dist(x, y)
             if (v.ia == "trafico" and d > 240) or (v.ia in ("aparcado", None) and d > 170) or \

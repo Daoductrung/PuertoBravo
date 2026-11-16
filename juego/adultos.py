@@ -138,7 +138,7 @@ class Adultos:
 
         def fin():
             self.transicion = False
-            if self.mision:
+            if self.mision and not self.mision_en_escena():
                 self.fallar_mision("Has perdido el conocimiento.")
         self.app.abrir(Dialogo(self.app, [("Narrador", f"El mundo se apaga de golpe. Demasiado {s['nombre'].lower()}. Despiertas doce horas después en {h.nombre} con un gotero en el brazo, {coste} euros menos y la peor resaca de tu vida.")], fin))
 

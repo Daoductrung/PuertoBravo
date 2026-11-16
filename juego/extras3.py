@@ -104,7 +104,7 @@ class Extras3:
         if p.salud <= 0:
             p.muerto = True
             p.t_estado = self.t
-            self.son("muerte_npc", xy=(p.x, p.y), ref=6)
+            self.son("muerte_npc", xy=(p.x, p.y), ref=6, tono=p.tono)
             if de_banda:
                 j.banda = max(0, j.banda - 1)
                 self.decir(f"Has matado a uno de {j.banda_nombre}, de los tuyos. Quedan {j.banda}.", True)
@@ -112,7 +112,7 @@ class Extras3:
                 self.decir("Has matado a tu guardaespaldas.", True)
             self.delito(4, "homicidio")
             return
-        self.son("dolor_npc", xy=(p.x, p.y), ref=6)
+        self.son("dolor_npc", xy=(p.x, p.y), ref=6, tono=p.tono)
         if p.agravios >= 3:                                      # tres veces ya no es un accidente
             p.tipo = "enemigo"
             p.hostil = True

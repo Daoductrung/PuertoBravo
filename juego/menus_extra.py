@@ -169,8 +169,42 @@ def servicios(p):
                 ops.append(Opcion(f"{d.get('nombre', d['modelo'])}, guardado en {p.nombre_lugar(l) if l else 'un garaje'}: 150 euros", traer(pid, k)))
         app.abrir(Menu(app, "Que te traigan un vehículo", ops or [Opcion("No tienes vehículos guardados en ningún garaje")]))
 
+    def al_garaje():
+        """Que se lleven a un garaje tuyo el vehículo que llevas o el que acabas de dejar."""
+        v = j.veh or p.tu_vehiculo(120)
+        if v is None:
+            app.son("error")
+            app.decir("No tienes ningún vehículo aquí. Tiene que ser el que llevas o el que acabas de dejar aparcado cerca.", True)
+            return
+        if v.tag or v.modelo.get("barco") or p.mundo.tipo == "mar":
+            app.son("error")
+            app.decir("Ese vehículo no se puede guardar en un garaje.", True)
+            return
+
+        def llevar(l):
+            def f():
+                g = j.garajes.setdefault(l.id, [])
+                if len(g) >= int(l.get("garaje", 0)):
+                    app.son("error")
+                    app.decir("Ese garaje está lleno.", True)
+                    return
+                if v.muerto or not p.pagar(100):
+                    return
+                g.append({"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "mejoras": dict(getattr(v, "mejoras", {}))})
+                if j.veh is v:
+                    p.salir_vehiculo(forzado=True)
+                p.quitar_vehiculo(v)
+                p.ultimo_veh = None
+                _volver_al_juego(p)
+                p.son("arranque", vol=0.6)
+                p.decir(f"Tu mecánico se lleva {v.nombre} al garaje de {p.nombre_lugar(l)}." + (" Te quedas a pie." if not j.veh else ""), True)
+            return f
+        casas = [l for l in (p.lug(pid) for pid in j.propiedades) if l is not None and int(l.get("garaje", 0)) > 0]
+        ops = [Opcion(f"{p.nombre_lugar(l)}: {len(j.garajes.get(l.id, []))} de {l.get('garaje', 0)} plazas ocupadas", llevar(l)) for l in casas]
+        app.abrir(Menu(app, f"Mandar {v.nombre} a un garaje: 100 euros", ops or [Opcion("No tienes ninguna casa con garaje")]))
+
     def guardaespaldas():
-        n = sum(1 for e in p.personas if e.tipo == "aliado" and not e.muerto)
+        n = sum(1 for e in p.personas if e.tipo == "aliado" and not e.muerto and not getattr(e, "de_banda", False))      # los de tu banda no cuentan
         if n >= 2:
             app.decir("Ya llevas dos guardaespaldas.", True)
         elif p.pagar(350):
@@ -207,6 +241,8 @@ def servicios(p):
 
     app.abrir(Menu(app, lambda: f"Servicios por teléfono. Tienes {j.dinero} euros", [
         Opcion("Que te traigan un vehículo de tus garajes: 150 euros", vehiculos),
+        Opcion("Mandar tu vehículo a uno de tus garajes: 100 euros", al_garaje,
+               ayuda="Tu mecánico se lleva el vehículo que llevas, o el que acabas de dejar aparcado cerca, al garaje de la casa que elijas. Vale para casas de cualquier localidad."),
         Opcion("Llamar a un guardaespaldas: 350 euros", guardaespaldas),
         Opcion(lambda: f"Despedir a tus guardaespaldas: llevas {sum(1 for e in p.personas if e.tipo == 'aliado' and not e.muerto and not getattr(e, 'de_banda', False))}", despedir,
                ayuda="Se marchan y dejan de cobrarte los 200 euros de cada medianoche."),
@@ -493,6 +529,11 @@ def opciones_mando(app):
         Opcion("Qué hace cada botón", ayuda_mando),
         Opcion(lambda: f"Fuerza de la vibración: {int(cfg['vibracion_fuerza'] * 100)} por ciento", ajuste=fuerza,
                ayuda="Izquierda y derecha la bajan y la suben, del veinte al cien por cien. Cada cambio hace vibrar el mando para que la notes."),
+        Opcion(lambda: f"Decir los botones del mando en lugar de las teclas: {'sí' if cfg['mando_textos'] else 'no'}",
+               ajuste=lambda d: cfg.__setitem__("mando_textos", not cfg["mando_textos"]),
+               ayuda="Con un mando conectado, lo que el juego cuenta mientras juegas y lo que explican los tutoriales y las escenas nombra el botón que hace cada cosa: "
+                     "pulsa el gatillo izquierdo, en vez de pulsa Q. Lo que no tiene botón se sigue diciendo con su tecla. Sin mando conectado no cambia nada. "
+                     "Las frases que cambian las lee tu lector de pantalla, no la voz grabada."),
         Opcion(lambda: f"Vibración: {'sí' if cfg['mando_vibracion'] else 'no'}", ajuste=vib, ayuda="El mando vibra con los golpes, los disparos que recibes, las explosiones y cuando pica un pez."),
         Opcion("Probar la vibración", probar),
         Opcion(lambda: f"Nombres de los botones: {'PlayStation' if md.tipo == 'ps' else 'Xbox'}", ajuste=tipo, ayuda="Se detecta solo al conectar el mando, pero puedes cambiarlo a mano."),

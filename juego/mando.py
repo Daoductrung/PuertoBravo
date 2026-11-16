@@ -165,6 +165,16 @@ class Mando:
         self.mapa = {c: dict(m) for c, m in POR_DEFECTO.items()}
         self.guardar_mapa()
 
+    def textos(self, texto):
+        """Con un mando conectado, y si la opción está puesta, las teclas que nombra una frase se dicen como botones."""
+        if not self.conectado or not self.app.cfg["mando_textos"]:
+            return texto
+        p = getattr(self.app, "partida", None)
+        try:
+            return textos_mando(texto, self.mapa, self.tipo, "coche" if p is not None and p.j.veh else "pie")
+        except Exception:
+            return texto
+
     def nombre_boton(self, b):
         return NOMBRES[self.tipo].get(b, b)
 
@@ -409,3 +419,112 @@ class _Ev:
         self.key = key
         self.mod = mod
         self.unicode = ""
+
+
+# ------------------------------------------------------------- las teclas, dichas como botones
+# Con un mando conectado, lo que el juego cuenta («pulsa Q para fijarlo») se dice con el botón que hace eso mismo.
+_TECLAS_TXT = {"intro": K.K_RETURN, "espacio": K.K_SPACE, "tabulador": K.K_TAB, "escape": K.K_ESCAPE, "f1": K.K_F1, "f9": K.K_F9,
+               "coma": K.K_COMMA, "control": K.K_LCTRL}
+# Cuando una tecla hace dos cosas, según vayas a pie o en un vehículo, la frase dice cuál de las dos es.
+_PISTAS = {"freno_mano": "freno de mano", "atacar": "dispar|atac|golpe|pega", "recargar": "recarg", "radio": "emisora|radio", "claxon": "claxon|pita",
+           "gritar": "grit", "media_vuelta": "media vuelta", "paseo": "camina|pasea|paseo", "trabajo": "trabajo|turno|servicio",
+           "hablar": "habl|charl|convers", "interactuar": ""}
+_BOTON_SOLO = ("a", "b", "x", "y", "lb", "rb")
+
+
+def _frase_boton(tipo, b):
+    """«el botón A», «el gatillo derecho», «la cruceta arriba»: el botón, con su artículo."""
+    n = NOMBRES[tipo].get(b, b)
+    if b in ("lt", "rt"):
+        return ("el " + n) if tipo == "xbox" else ("el botón " + n)
+    if b in ("arriba", "abajo", "izquierda", "derecha"):
+        return "la " + n
+    if b in ("l3", "r3"):
+        return "la palanca " + ("izquierda" if b == "l3" else "derecha") + " pulsada"
+    if b in ("back", "start", "misc", "guide"):
+        return "el " + n
+    if b == "touchpad":
+        return "el panel táctil"
+    return "el botón " + n
+
+
+def _boton_de(mapa, key, mod, contexto, frase, tipo):
+    """El botón que hace lo mismo que esa tecla. None si ninguno, o si no se sabe cuál de sus dos usos es."""
+    acciones = [a for a, d in ACCIONES.items() if d[1] == key and (d[2] & S) == (mod & S) and a != "nada"]
+    if not acciones:
+        return None
+    if len(acciones) > 1:
+        f = frase.lower()
+        con_pista = [a for a in acciones if _PISTAS.get(a) and __import__("re").search(_PISTAS[a], f)]
+        if len(con_pista) == 1:
+            acciones = con_pista
+    orden = [contexto, "coche" if contexto == "pie" else "pie"] if len(acciones) == 1 else [contexto]
+    for c in orden:
+        for b in ORDEN_BOTONES:
+            if mapa.get(c, {}).get(b) in acciones:
+                return b
+    return None
+
+
+def textos_mando(texto, mapa, tipo="xbox", contexto="pie"):
+    """Cambia en una frase las teclas por los botones del mando que hacen lo mismo. Lo que no tiene botón se deja como está,
+    porque el teclado sigue funcionando con el mando conectado."""
+    import re
+    if not texto or not isinstance(texto, str):
+        return texto
+
+    def una_frase(frase):
+        def tecla_de(nombre):
+            n = nombre.lower()
+            if n in _TECLAS_TXT:
+                return _TECLAS_TXT[n]
+            if len(n) == 1 and n.isalpha():
+                return getattr(K, "K_" + n, None)
+            return None
+
+        def cambia(m):
+            verbo, mayus, nombre = m.group("verbo"), m.group("mayus"), m.group("tecla")
+            key = tecla_de(nombre)
+            if key is None:
+                return m.group(0)
+            b = _boton_de(mapa, key, S if mayus else 0, contexto, frase, tipo)
+            if b is None:
+                return m.group(0)
+            return f"{verbo} {_frase_boton(tipo, b)}"
+
+        # «pulsa Q», «con la X», «con la tecla J», «Pulsa Mayúsculas Y», «tecla M»
+        frase = re.sub(r"(?P<verbo>\b(?:[Pp]uls(?:a|ar|as|ando|es|ada)|[Cc]on|[Uu]sa|[Mm]antén(?: pulsad[ao])?|[Tt]oca))"
+                       r" (?:(?:la|el) )?(?:tecla )?(?P<mayus>Mayúsculas (?:más |\+ )?(?:la )?)?"
+                       r"(?P<tecla>Intro|Espacio|Tabulador|Escape|Control|F1|F9|coma|[A-ZÑ])(?![\wáéíóúñ])", cambia, frase)
+
+        def suelta(m):                                           # «pulsa Espacio para disparar y R para recargar»
+            key = tecla_de(m.group("tecla"))
+            b = _boton_de(mapa, key, 0, contexto, frase, tipo) if key is not None else None
+            return m.group(0) if b is None else f"{m.group(1)} {_frase_boton(tipo, b)} para"
+        frase = re.sub(r"(?<![\wáéíóúñ])(y|o|ni) (?:la )?(?P<tecla>Intro|Espacio|Tabulador|Escape|[A-ZÑ]) para(?![\wáéíóúñ])", suelta, frase)
+
+        def solo_tecla(m):                                       # «la tecla M abre el móvil»
+            key = tecla_de(m.group("tecla"))
+            b = _boton_de(mapa, key, 0, contexto, frase, tipo) if key is not None else None
+            if b is None:
+                return m.group(0)
+            f = _frase_boton(tipo, b)
+            return f[0].upper() + f[1:] if m.group(0)[0].isupper() else f
+        frase = re.sub(r"\b(?:[Ll]a|[Ee]l) tecla (?P<tecla>Intro|Espacio|Tabulador|Escape|Control|F1|F9|[A-ZÑ])(?![\wáéíóúñ])", solo_tecla, frase)
+        # las flechas son la palanca izquierda; en un vehículo, arriba y abajo son los gatillos
+        f = frase.lower()
+        acel = next((b for b in ORDEN_BOTONES if mapa.get("coche", {}).get(b) == "acelerar"), None)
+        fren = next((b for b in ORDEN_BOTONES if mapa.get("coche", {}).get(b) == "frenar"), None)
+        if acel and re.search(r"aceler", f):
+            frase = re.sub(r"\b(?:la )?flecha (?:de )?arriba\b", _frase_boton(tipo, acel), frase)
+        if fren and re.search(r"fren|marcha atrás", f):
+            frase = re.sub(r"\b(?:la )?flecha (?:de )?abajo\b", _frase_boton(tipo, fren), frase)
+        frase = re.sub(r"\blas flechas izquierda y derecha\b", "la palanca izquierda a los lados", frase)
+        frase = re.sub(r"\b(?:la )?flecha (?:de )?arriba\b", "la palanca izquierda hacia delante", frase)
+        frase = re.sub(r"\b(?:la )?flecha (?:de )?abajo\b", "la palanca izquierda hacia atrás", frase)
+        frase = re.sub(r"\b[Ll]as flechas\b", lambda m: ("L" if m.group(0)[0] == "L" else "l") + "a palanca izquierda", frase)
+        frase = re.sub(r"\b([Cc])on flechas\b", r"\1on la palanca izquierda", frase)
+        frase = re.sub(r"\b([Mm])antén Mayúsculas\b", lambda m: ("E" if m.group(1) == "M" else "e") + "mpuja a fondo la palanca izquierda", frase)
+        return frase
+
+    return "".join(una_frase(t) for t in re.split(r"(?<=[.!?:;])(\s+)", texto))

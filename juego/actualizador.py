@@ -23,6 +23,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -137,12 +138,31 @@ class _SoloHttps(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-def abrir_red(url, tiempo=TIEMPO):
-    """Abre una dirección https y devuelve el objeto de lectura. Es lo único que toca la red."""
+def abrir_red(url, tiempo=TIEMPO, desde=0):
+    """Abre una dirección https y devuelve el objeto de lectura. Es lo único que toca la red.
+    Con `desde`, pide el archivo a partir de ese byte, para seguir una descarga que se cortó."""
     comprobar_url(url)
     abridor = urllib.request.build_opener(_SoloHttps)
-    pet = urllib.request.Request(url, headers={"User-Agent": "PuertoBravo-Actualizador", "Accept": "*/*"})
+    cabeceras = {"User-Agent": "PuertoBravo-Actualizador", "Accept": "*/*"}
+    if desde:
+        cabeceras["Range"] = f"bytes={int(desde)}-"
+    pet = urllib.request.Request(url, headers=cabeceras)
     return abridor.open(pet, timeout=tiempo)
+
+
+REINTENTOS = 5          # veces que se retoma una descarga cortada, por cada dirección
+
+
+def _abrir_desde(abrir, url, desde):
+    """Abre la descarga para seguirla desde un byte. Devuelve la lectura y el byte por el que empieza de verdad:
+    si el servidor no sabe continuar, manda el archivo entero y se empieza de cero."""
+    if not desde:
+        return abrir(url), 0
+    try:
+        r = abrir(url, desde=desde)
+    except TypeError:
+        return abrir(url), 0
+    return r, (desde if getattr(r, "status", None) == 206 else 0)
 
 
 def _leer_manifiesto(url, nombre, abrir):
@@ -264,21 +284,33 @@ def descargar(info, carpeta=None, progreso=None, cancelado=None, abrir=None):
     for url in info.urls:
         try:
             hecho = 0
-            with abrir(url) as r, open(destino + ".parcial", "wb") as f:
-                while True:
-                    if cancelado and cancelado():
-                        raise Cancelado("Descarga cancelada.")
-                    bloque = r.read(256 * 1024)
-                    if not bloque:
-                        break
-                    hecho += len(bloque)
-                    if hecho > info.tamano:
-                        raise ErrorFirma("El archivo descargado es más grande de lo que debería.")
-                    f.write(bloque)
-                    if progreso:
-                        progreso(hecho, info.tamano)
+            # Si la conexión se corta a medias, no se empieza otra vez: se retoma por donde iba, varias veces.
+            for intento in range(REINTENTOS + 1):
+                antes = hecho
+                try:
+                    r, hecho = _abrir_desde(abrir, url, hecho)
+                    with r, open(destino + ".parcial", "ab" if hecho else "wb") as f:
+                        while True:
+                            if cancelado and cancelado():
+                                raise Cancelado("Descarga cancelada.")
+                            bloque = r.read(256 * 1024)
+                            if not bloque:
+                                break
+                            hecho += len(bloque)
+                            if hecho > info.tamano:
+                                raise ErrorFirma("El archivo descargado es más grande de lo que debería.")
+                            f.write(bloque)
+                            if progreso:
+                                progreso(hecho, info.tamano)
+                except (OSError, ValueError):
+                    if intento == REINTENTOS or (hecho <= antes and intento >= 2):       # ni avanza: no insistir más con esta dirección
+                        raise
+                    time.sleep(min(4.0, 0.5 * (intento + 1)) if abrir is abrir_red else 0)
+                    continue
+                if hecho >= info.tamano or (hecho <= antes and intento >= 2):
+                    break
             if hecho != info.tamano:
-                raise ErrorRed("La descarga se ha cortado antes de terminar.")
+                raise ErrorRed("La descarga se ha cortado antes de terminar, y no se ha podido retomar. Prueba otra vez dentro de un rato.")
             if not hmac.compare_digest(sha256_de(destino + ".parcial"), info.sha256):
                 raise ErrorFirma("El archivo descargado no coincide con el que se publicó. No se instala.")
             os.replace(destino + ".parcial", destino)

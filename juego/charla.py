@@ -218,7 +218,7 @@ class Charla:
             if random.random() < c["valor"]:
                 self.delito(1, "amenazas")
                 q.estado, q.t_estado = "huye", 12
-                self.son("grito", xy=(q.x, q.y), vol=0.6)
+                self.son("grito", xy=(q.x, q.y), vol=0.6, tono=getattr(q, "tono", 1.0))
                 return f"{nombre}: ¡Socorro! ¡Policía! Sale corriendo dando voces."
             botin = random.randint(8, 45)
             j.dinero += botin

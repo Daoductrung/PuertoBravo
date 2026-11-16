@@ -219,23 +219,44 @@ EXT = (".wav", ".ogg", ".flac", ".mp3")
 NIVEL_RADIO = 0.15        # nivel medio (RMS) al que queda cada canción de la radio
 # Una canción larga no se carga entera: una hora de música son más de siete gigas de memoria mientras se prepara,
 # y eso deja colgado el ordenador. A partir de cinco minutos se lee y suena por tramos de un minuto, uno tras otro.
-LARGA = 300.0             # segundos a partir de los cuales una canción se toca por tramos
+LARGA = 100.0             # segundos a partir de los cuales una canción se toca por tramos: casi todas
 TROZO = 60.0              # lo que dura cada tramo
 SOLAPE = 0.25             # los tramos se pisan un cuarto de segundo, fundidos, para que no se note la costura
-MAX_PIEZA = 600.0         # la música de ambiente se corta a los diez minutos
+MAX_PIEZA = 300.0         # la música de ambiente se corta a los cinco minutos
 NIVEL_AMBIENTE = 0.11     # y cada pieza de música de ambiente
 
 
+def baja_prioridad():
+    """El hilo que lee música del disco cede el paso al juego: en un ordenador justo, cargar una canción no debe
+    dar tirones al movimiento ni a la voz. Solo en Windows; en otro sistema no hace nada."""
+    try:
+        import ctypes
+        k = ctypes.windll.kernel32
+        k.GetCurrentThread.restype = ctypes.c_void_p
+        k.SetThreadPriority.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        k.SetThreadPriority(k.GetCurrentThread(), -2)            # THREAD_PRIORITY_LOWEST
+    except Exception:
+        pass
+
+
 def nivel_musica(d):
-    """Nivel medio de una pista, sin contar los silencios ni los pasajes muy flojos."""
-    x = np.asarray(d, dtype=np.float64)
-    if x.ndim > 1:
-        x = x.mean(axis=1)
+    """Nivel medio de una pista, sin contar los silencios ni los pasajes muy flojos.
+    Se calcula por tramos de diez segundos, sin copiar la pista entera: una pieza de minutos no dobla la memoria."""
+    x = np.asarray(d)
+    if not len(x):
+        return 0.0
     bloque = int(0.4 * SR)
     n = len(x) // bloque
     if n < 2:
-        return float(np.sqrt(np.mean(x * x))) if len(x) else 0.0
-    e = np.mean(x[:n * bloque].reshape(n, bloque) ** 2, axis=1)
+        m = x.mean(axis=1) if x.ndim > 1 else x
+        return float(np.sqrt(np.mean(np.square(m, dtype=np.float64))))
+    e = np.empty(n, dtype=np.float64)
+    paso = 25                                                    # 25 bloques de 0,4 s: diez segundos cada vez
+    for i in range(0, n, paso):
+        k = min(paso, n - i)
+        t = x[i * bloque:(i + k) * bloque]
+        t = (t.mean(axis=1) if t.ndim > 1 else t).astype(np.float64).reshape(k, bloque)
+        e[i:i + k] = np.einsum("ij,ij->i", t, t) / bloque
     fuertes = e[e > e.max() * 0.01]                 # se descartan los bloques 20 dB por debajo del más fuerte
     return float(np.sqrt(fuertes.mean())) if len(fuertes) else 0.0
 
@@ -245,9 +266,12 @@ def normalizar_musica(d, objetivo):
     if nv < 1e-5:
         return d
     g = objetivo / nv
-    pico = float(np.max(np.abs(d))) * g
+    pico = max(float(d.max()), -float(d.min())) * g
     if pico > 0.98:
         g *= 0.98 / pico
+    if isinstance(d, np.ndarray) and d.dtype == np.float32 and d.flags.writeable and d.flags.owndata:
+        d *= np.float32(g)                           # en el sitio: sin otra copia de la pista
+        return d
     return (d * g).astype(np.float32)
 
 
@@ -387,13 +411,18 @@ class Radio:
 
         def cargar():
             larga = None
+            baja_prioridad()
             try:
+                if n != self._pedido:                # ya se ha pedido otra: cambiar deprisa de emisora no amontona lecturas
+                    return
                 if ruta.startswith("memoria:"):
                     datos = self.memoria.get(ruta[8:])
                     datos = normalizar_musica(datos, NIVEL_RADIO) if datos is not None and len(datos) > 100 else None
                 else:
                     from .sintesis import duracion_audio
                     dur = duracion_audio(ruta)
+                    if n != self._pedido:
+                        return
                     if dur > LARGA:                  # larga: solo el primer tramo, y la ganancia para toda la canción
                         larga = {"ruta": ruta, "trozo": 0, "total": max(1, int(math.ceil(dur / TROZO))), "g": self._ganancia_larga(ruta, dur)}
                         datos = self._leer_trozo(larga, 0)
@@ -451,6 +480,7 @@ class Radio:
         self._leyendo = True
 
         def leer():
+            baja_prioridad()
             try:
                 d = self._leer_trozo(larga, k)
             except Exception:
@@ -758,6 +788,7 @@ class MusicaAmbiente:
             return
 
         def cargar():
+            baja_prioridad()
             try:
                 self.cargar_ahora(clave)
             finally:

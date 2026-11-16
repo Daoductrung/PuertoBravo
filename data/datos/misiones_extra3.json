@@ -1,0 +1,717 @@
+{
+ "capitulos": {
+  "15": "Encargos de la comarca"
+ },
+ "misiones": [
+  {
+   "id": "n01",
+   "titulo": "El chico de los recados",
+   "capitulo": 15,
+   "contacto": "La farmacéutica",
+   "lugar": "farmacia",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En la farmacia del barrio faltan cajas cada semana, y la farmacéutica sospecha de alguien de casa.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La farmacéutica",
+       "Cada viernes me faltan cajas del almacén. No son caras, pero son de las que se venden con receta."
+      ],
+      [
+       "La farmacéutica",
+       "Solo entra el chico de los recados. No quiero acusarle sin saber. Sale del banco a las doce, de hacer el ingreso."
+      ],
+      [
+       "La farmacéutica",
+       "Síguele de lejos y dime adónde va. Si te ve, se acabó: no volveré a saber la verdad."
+      ]
+     ]
+    },
+    {
+     "tipo": "seguir",
+     "lugar": "banco",
+     "destino": "comedor_social",
+     "persona": "el chico de los recados",
+     "velocidad": 2.2,
+     "texto": "Ve al banco y sigue al chico de los recados sin que te descubra. Guíate por el sonido de sus pasos; la tecla O te dice a cuánto va."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El chico entra en el comedor social por la puerta de atrás y deja una bolsa sobre la mesa de la enfermera voluntaria."
+      ],
+      [
+       "La farmacéutica",
+       "¿Al comedor social? Así que era eso. Las cajas no se vendían: se regalaban."
+      ],
+      [
+       "La farmacéutica",
+       "No voy a despedirle. Voy a mandar yo las cajas, con albarán y todo. Gracias por no hacer ruido."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 350
+   }
+  },
+  {
+   "id": "n02",
+   "titulo": "Reparto de madrugada",
+   "capitulo": 15,
+   "contacto": "El del quiosco",
+   "lugar": "quiosco",
+   "requiere": [
+    "m02"
+   ],
+   "resumen": "El quiosco del parque reparte caldo caliente a quien hace guardia de noche, y hoy no tiene a nadie.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El del quiosco",
+       "Todas las noches llevo caldo a los que están de guardia: urgencias, los bomberos y la comisaría del puerto."
+      ],
+      [
+       "El del quiosco",
+       "Hoy me he torcido el tobillo. Los termos aguantan calientes cinco minutos, ni uno más."
+      ],
+      [
+       "El del quiosco",
+       "Coge un vehículo si tienes. A pie no llegas."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "puntos": [
+      "hospital",
+      "bomberos",
+      "comisaria_puerto"
+     ],
+     "limite": 300,
+     "texto": "Lleva los termos al hospital, al parque de bomberos y a la comisaría del puerto antes de que se enfríen. Tienes cinco minutos."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El agente de la puerta coge el último termo con las dos manos, como quien coge un tesoro."
+      ],
+      [
+       "El del quiosco",
+       "¿Los tres, y calientes? Yo tardo el doble. Mañana, si quieres, el tobillo me sigue doliendo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 500
+   }
+  },
+  {
+   "id": "n03",
+   "titulo": "El tren de las seis",
+   "capitulo": 15,
+   "contacto": "La bibliotecaria",
+   "lugar": "biblioteca",
+   "requiere": [
+    "n01"
+   ],
+   "resumen": "Una lectora de toda la vida se va a vivir con su hija y no se atreve a cruzar sola media ciudad.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La bibliotecaria",
+       "Doña Remedios lleva cuarenta años viniendo a por novelas. Hoy devuelve la última: se va a vivir con su hija."
+      ],
+      [
+       "La bibliotecaria",
+       "Su tren sale a las seis y ve muy poco. Acompáñala hasta la estación. Va despacio y habla mucho."
+      ]
+     ]
+    },
+    {
+     "tipo": "escoltar",
+     "lugar": "biblioteca",
+     "destino": "puerto_bravo_tren",
+     "persona": "doña Remedios",
+     "texto": "Recoge a doña Remedios en la puerta de la biblioteca y acompáñala hasta la estación de tren."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Doña Remedios",
+       "¿Ya estamos? Qué corto se me ha hecho. Toma, quédate tú la novela, que yo ya sé cómo acaba."
+      ],
+      [
+       "Narrador",
+       "El tren pita dos veces. Doña Remedios sube al vagón sin soltar la barandilla y sin mirar atrás."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 400
+   }
+  },
+  {
+   "id": "n04",
+   "titulo": "Lo que falta en el museo",
+   "capitulo": 15,
+   "contacto": "El conservador",
+   "lugar": "museo",
+   "requiere": [
+    "m03"
+   ],
+   "resumen": "Del museo ha desaparecido un cuadro pequeño. El conservador sabe dónde está y no quiere denuncia.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El conservador",
+       "Falta un cuadro. Pequeño, una marina sin firma. Para el seguro no vale nada; para esta ciudad, mucho."
+      ],
+      [
+       "El conservador",
+       "Sé quién lo tiene: lo guardan en el depósito municipal, entre trastos, hasta que alguien pague."
+      ],
+      [
+       "El conservador",
+       "Si llamo a la policía, lo queman. Hay tres hombres de guardia. Entra sin que te oigan y tráemelo."
+      ]
+     ]
+    },
+    {
+     "tipo": "sigilo",
+     "lugar": "deposito",
+     "guardias": 3,
+     "objeto": "la marina sin firma",
+     "texto": "Ve al depósito municipal y llega hasta él sin que te oigan los vigilantes. Agáchate con la X y no corras."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "museo",
+     "texto": "Lleva el cuadro al museo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El conservador",
+       "Aquí está. Es un puerto al amanecer, con una sola barca. Este puerto."
+      ],
+      [
+       "El conservador",
+       "Mañana vuelve a su pared, y nadie sabrá que ha faltado. Tú y yo, sí."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 900
+   }
+  },
+  {
+   "id": "n05",
+   "titulo": "Humo sin fuego",
+   "capitulo": 15,
+   "contacto": "La sargento de bomberos",
+   "lugar": "bomberos",
+   "requiere": [
+    "n02"
+   ],
+   "resumen": "Tres avisos falsos en una semana, todos desde la misma gasolinera. Los bomberos quieren saber quién llama.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La sargento",
+       "Tres salidas esta semana a la gasolinera del este, y las tres veces no ardía nada."
+      ],
+      [
+       "La sargento",
+       "Mientras nosotros vamos allí, en la otra punta de la ciudad roban un almacén. No es casualidad."
+      ],
+      [
+       "La sargento",
+       "Quédate cerca de la gasolinera y escucha. Cuando oigas pasos que se acercan, ni te muevas."
+      ]
+     ]
+    },
+    {
+     "tipo": "vigilar",
+     "lugar": "gasolinera_este",
+     "segundos": 45,
+     "radio": 25,
+     "resultado": "Dos hombres usan la cabina de la gasolinera y se quedan a esperar la sirena. Llevan un bidón.",
+     "texto": "Ve a la gasolinera del este y vigílala desde cerca, sin que te vean. Cuando oigas pasos que se acercan, quédate quiet[o|a] o agáchate con la X."
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "gasolinera_este",
+     "ya": true,
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Hombre del bidón",
+       "arma": "bate",
+       "salud": 65
+      }
+     ],
+     "texto": "Te han visto. Los dos del bidón vienen a por ti: quítatelos de encima."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El bidón rueda por el suelo, vacío. Nunca pensaron prender nada: solo querían la sirena lejos."
+      ],
+      [
+       "La sargento",
+       "Avisos falsos para despejar el camino. Pues se acabó el truco. En este parque tienes un plato siempre que quieras."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1000
+   }
+  },
+  {
+   "id": "n06",
+   "titulo": "Matrícula de capricho",
+   "capitulo": 15,
+   "contacto": "El del desguace",
+   "lugar": "desguace",
+   "requiere": [
+    "m06"
+   ],
+   "resumen": "Un cliente del desguace paga muy bien por un descapotable concreto, que duerme en el campo de golf.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El del desguace",
+       "Tengo un cliente que no quiere un descapotable cualquiera: quiere el del presidente del club de golf."
+      ],
+      [
+       "El del desguace",
+       "Dice que se lo ganó a las cartas y que no se lo dieron. A mí me da igual: paga."
+      ],
+      [
+       "El del desguace",
+       "Tiene alarma, y a ese club la policía llega pronto. Tráemelo entero, que rayado no lo quiere."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "modelo": "descapotable",
+     "lugar": "golf",
+     "nombre": "Descapotable del presidente",
+     "busqueda": 2,
+     "texto": "Ve al campo de golf y llévate el descapotable del presidente. Está cerrado y tiene alarma."
+    },
+    {
+     "tipo": "entregar",
+     "lugar": "desguace",
+     "salud_min": 50,
+     "texto": "Lleva el descapotable al desguace sin destrozarlo: tiene que llegar por lo menos a la mitad."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El del desguace",
+       "Ni un arañazo que no tuviera. El cliente dice que ahora sí que están en paz."
+      ],
+      [
+       "El del desguace",
+       "Yo no pregunto. Tú tampoco. Así dura el negocio."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1400
+   }
+  },
+  {
+   "id": "n07",
+   "titulo": "La curva del minero",
+   "capitulo": 15,
+   "contacto": "El Largo",
+   "lugar": "mf_curva",
+   "requiere": [
+    "t01"
+   ],
+   "resumen": "En Monteferro se corre de noche por la carretera de la mina. Al que gana le deben un favor.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Largo",
+       "Aquí no se corre por dinero. Se corre por favores, que valen más."
+      ],
+      [
+       "El Largo",
+       "Salimos cuatro. Mina, mirador y la vieja prisión. A los otros los vas a oír: procura oírlos detrás."
+      ]
+     ]
+    },
+    {
+     "tipo": "carrera",
+     "lugar": "mf_curva",
+     "puntos": [
+      "mf_mina",
+      "mf_mirador",
+      "mf_prision"
+     ],
+     "rivales": 3,
+     "velocidad": 9.5,
+     "texto": "Ve con un vehículo a la Curva del Minero y detente en la salida. Luego, gana la carrera: mina, mirador y prisión."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Largo",
+       "Pues me debes... no, espera. Te debo yo. Así son las reglas."
+      ],
+      [
+       "El Largo",
+       "Un contable de la fundición anda sacando dinero que no es suyo. Pásate por las oficinas: allí te lo cuentan."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1500
+   }
+  },
+  {
+   "id": "n08",
+   "titulo": "Las cuentas de la fundición",
+   "capitulo": 15,
+   "contacto": "La delegada",
+   "lugar": "mf_oficinas",
+   "requiere": [
+    "n07"
+   ],
+   "resumen": "El contable de la fundición saca cada semana un maletín del banco, y las nóminas no cuadran.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La delegada",
+       "Hace tres meses que las nóminas llegan cortas. El contable dice que son los bancos."
+      ],
+      [
+       "La delegada",
+       "Cada jueves sale del banco con un maletín y no vuelve a la oficina. Síguele. Quiero saber dónde lo deja."
+      ],
+      [
+       "La delegada",
+       "Y si puedes traer el maletín, mejor. Dentro va el pan de doscientas familias."
+      ]
+     ]
+    },
+    {
+     "tipo": "seguir",
+     "lugar": "mf_banco",
+     "destino": "mf_salon",
+     "persona": "el contable",
+     "velocidad": 2.4,
+     "texto": "Ve al banco de Monteferro y sigue al contable sin que te descubra. Guíate por el sonido de sus pasos."
+    },
+    {
+     "tipo": "recoger",
+     "aqui": true,
+     "objeto": "Maletín de las nóminas",
+     "texto": "El contable ha entrado al salón de juego y ha dejado el maletín en el guardarropa. Cógelo: pulsa Intro."
+    },
+    {
+     "tipo": "policia",
+     "nivel": 2,
+     "texto": "El contable ha dado la voz. Despista a la policía antes de volver."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mf_oficinas",
+     "texto": "Lleva el maletín a las oficinas de la fundición."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La delegada",
+       "Está casi todo. Lo que falta se lo ha jugado, y eso ya lo arreglará con el juez."
+      ],
+      [
+       "La delegada",
+       "Mañana se paga la nómina entera, por primera vez desde el verano. Aquí no se te va a olvidar."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1300
+   }
+  },
+  {
+   "id": "n09",
+   "titulo": "Pan para la vendimia",
+   "capitulo": 15,
+   "contacto": "La panadera",
+   "lugar": "vs_panaderia",
+   "requiere": [
+    "v01"
+   ],
+   "resumen": "En plena vendimia nadie baja al pueblo a por el pan. La panadera necesita a alguien con ruedas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La panadera",
+       "En vendimia no baja nadie: comen entre las cepas. Y el pan, si no llega tierno, no lo quieren."
+      ],
+      [
+       "La panadera",
+       "Molino, girasoles, la era y la fuente. Poco más de tres minutos, que el pan no espera."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "puntos": [
+      "vs_molino",
+      "vs_girasoles",
+      "vs_era",
+      "vs_fuente"
+     ],
+     "limite": 210,
+     "texto": "Reparte el pan en el molino, en los girasoles, en la era y en la fuente. Tienes tres minutos y medio."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "En la fuente te esperan seis vendimiadores sentados en el pilón. El último pan se parte con las manos."
+      ],
+      [
+       "La panadera",
+       "¿Todo repartido? Pues ya eres del pueblo, aunque no quieras. Aquí se entra por el pan."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 600
+   }
+  },
+  {
+   "id": "n10",
+   "titulo": "La niña del globo",
+   "capitulo": 15,
+   "contacto": "El feriante",
+   "lugar": "sl_recreativos",
+   "requiere": [
+    "s01"
+   ],
+   "resumen": "En los recreativos de San Lucero hay una niña que se ha perdido y no suelta su globo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El feriante",
+       "Lleva una hora ahí sentada, con el globo. Dice que su madre trabaja en la catedral, de guía."
+      ],
+      [
+       "El feriante",
+       "Yo no puedo dejar el puesto. Llévala tú. No corras, que si se le escapa el globo no hay quien la mueva."
+      ]
+     ]
+    },
+    {
+     "tipo": "escoltar",
+     "lugar": "sl_recreativos",
+     "destino": "sl_catedral",
+     "persona": "la niña del globo",
+     "texto": "Recoge a la niña en los recreativos y acompáñala hasta la catedral."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "La madre baja las escaleras de la catedral de dos en dos. La niña le enseña el globo antes de dejarse abrazar."
+      ],
+      [
+       "La guía",
+       "No sé cómo darte las gracias. Bueno, sí: sube cuando quieras a la torre, que desde arriba se ve todo San Lucero."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 500
+   }
+  },
+  {
+   "id": "n11",
+   "titulo": "El ancla del Tuerto",
+   "capitulo": 15,
+   "contacto": "La de la náutica",
+   "lugar": "cb_nautica",
+   "requiere": [
+    "x01"
+   ],
+   "resumen": "En el arrecife asoma con la marea baja un ancla antigua. En la náutica de Cala Brava la quieren para la puerta.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La de la náutica",
+       "Con la marea de esta semana asoma un ancla en el arrecife. De las de antes, de hierro forjado."
+      ],
+      [
+       "La de la náutica",
+       "La quiero para la puerta de la tienda. Alquila una lancha, ve despacio al llegar y súbela a bordo."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mar_arrecife",
+     "texto": "Ve al muelle de Cala Brava, alquila una lancha y navega hasta el arrecife."
+    },
+    {
+     "tipo": "recoger",
+     "aqui": true,
+     "objeto": "Ancla antigua",
+     "texto": "Sube el ancla a bordo: pulsa Intro."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "cb_nautica",
+     "texto": "Vuelve al muelle de Cala Brava, atraca con Intro y lleva el ancla a la náutica."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "La de la náutica",
+       "Pesa como un muerto y huele a siglos. Es perfecta."
+      ],
+      [
+       "La de la náutica",
+       "Dicen que era del barco del Tuerto. Yo diré que sí, que vende más."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 900
+   }
+  },
+  {
+   "id": "n12",
+   "titulo": "Fuentefría a oscuras",
+   "capitulo": 15,
+   "contacto": "El del mesón",
+   "lugar": "ff_meson",
+   "requiere": [
+    "f01"
+   ],
+   "resumen": "Alguien se está llevando el cable de la luz de Fuentefría, tramo a tramo, y el pueblo cena con velas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El del mesón",
+       "Tres noches sin luz. Se llevan el cable de cobre a trozos, y la compañía dice que hasta el lunes nada."
+      ],
+      [
+       "El del mesón",
+       "Los han visto subir hacia la ermita con una furgoneta. Sube y mira. Si están, que dejen lo que no es suyo."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "ff_ermita",
+     "texto": "Sube a la ermita de Fuentefría."
+    },
+    {
+     "tipo": "eliminar",
+     "lugar": "ff_fuente",
+     "enemigos": [
+      {
+       "n": 2,
+       "tipo": "Ladrón de cobre",
+       "arma": "bate",
+       "salud": 60
+      },
+      {
+       "n": 1,
+       "tipo": "Ladrón de cobre",
+       "arma": "navaja",
+       "salud": 70
+      }
+     ],
+     "texto": "En la ermita no hay nadie, pero se oye una radial abajo, en la fuente. Baja y échalos."
+    },
+    {
+     "tipo": "recoger",
+     "aqui": true,
+     "objeto": "Bobinas de cobre",
+     "texto": "Recoge las bobinas de cable: pulsa Intro."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "ff_meson",
+     "texto": "Lleva el cable al mesón."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El del mesón",
+       "Con esto el electricista del pueblo nos apaña la línea esta misma noche."
+      ],
+      [
+       "El del mesón",
+       "Hoy cenas aquí, con luz, y no pagas. Y mañana tampoco."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1100
+   }
+  }
+ ]
+}

@@ -86,7 +86,7 @@ class Extras:
         p.atracado = True
         p.estado = "huye"
         p.t_estado = 14
-        self.son("grito", xy=(p.x, p.y), vol=0.6)
+        self.son("grito", xy=(p.x, p.y), vol=0.6, tono=p.tono)
         if random.random() < 0.12:
             p.hostil = True
             p.estado = "ataca"

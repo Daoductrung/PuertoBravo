@@ -982,8 +982,10 @@ def _casa(p, l):
         app.decir(f"Te quedas tres horas con las persianas bajadas. La policía deja de buscarte. Son las {p.hora_txt()}.", True)
         m.refrescar(False)
 
-    def guardar_veh():
-        v = j.veh
+    def guardar_veh(v=None):
+        v = v or j.veh
+        if v is None or v.muerto:
+            return
         if v.tag:
             app.son("error")
             app.decir("Ese vehículo es de una misión.", True)
@@ -993,10 +995,12 @@ def _casa(p, l):
             app.decir("El garaje está lleno.", True)
             return
         garaje.append({"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "mejoras": dict(getattr(v, "mejoras", {}))})
-        p.salir_vehiculo(forzado=True)
+        if j.veh is v:
+            p.salir_vehiculo(forzado=True)
+            j.x, j.y = l.x, l.y
         p.quitar_vehiculo(v)
-        j.x, j.y = l.x, l.y
-        p.son("puerta_coche")
+        p.ultimo_veh = None
+        p.son_puerta(v)
         app.decir(f"{v.nombre} guardado en el garaje.", True)
         m.refrescar(False)
 
@@ -1020,12 +1024,18 @@ def _casa(p, l):
         if j.veh:
             lista.append(Opcion(f"Meter {j.veh.nombre} en el garaje", guardar_veh))
         else:
+            cerca = p.tu_vehiculo(90)
+            if cerca is not None:
+                lista.append(Opcion(f"Meter en el garaje {cerca.nombre}, que has dejado a {int(cerca.dist(*p.pos()))} metros", lambda: guardar_veh(cerca),
+                                    ayuda="Guarda el vehículo del que te has bajado, sin tener que volver a por él."))
             lista.append(Opcion("Descansar ocho horas y recuperar la salud", descansar))
             if 0 < j.estrellas <= 2:
                 lista.append(Opcion("Esconderte hasta que la policía deje de buscarte", esconderse))
         for k, d in enumerate(garaje):
             lista.append(Opcion(f"Sacar del garaje: {d.get('nombre', d['modelo'])}", sacar(k)))
-        lista.append(Opcion(f"Garaje: {len(garaje)} de {l.get('garaje', 0)} plazas ocupadas"))
+        lista.append(Opcion(f"Garaje: {len(garaje)} de {l.get('garaje', 0)} plazas ocupadas",
+                            ayuda="Para guardar un vehículo, ven con él hasta la puerta y pulsa Intro sin bajarte, o déjalo aparcado cerca y entra: la opción de meterlo sale en este menú. "
+                                  "También puedes mandarlo desde el móvil, en Servicios. Para sacar uno, elige Sacar del garaje."))
         if j.perro and j.perro_en_casa:
             lista.append(Opcion(f"{j.perro} te espera en casa: llévatelo contigo", lambda: (p.llamar_perro(), m.refrescar(False))))
         elif j.perro and p.perro() is not None:
