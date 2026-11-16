@@ -118,6 +118,7 @@ def mundo_servidor():
             # para el tráfico común: cuántas calles hay a lo largo y a lo ancho, cuánto tráfico y qué coches
             "nx": int(getattr(m, "NX", 0)) if m.tipo != "mar" else 0, "ny": int(getattr(m, "NY", 0)) if m.tipo != "mar" else 0,
             "trafico": int(getattr(m, "trafico", 0)) if m.tipo != "mar" else 0,
+            "peatones": int(getattr(m, "peatones", 0)) if m.tipo != "mar" else 0, "policia": int(bool(getattr(m, "policia", True))),
             "coches": sorted({v for b in c.get("barrios", []) for v in b.get("vehiculos", [])}),
             "barrios": [{"id": b["id"], "nombre": b.get("nombre", b["id"])} for b in c.get("barrios", [])]}
     for a in datos["armas"]:
@@ -317,7 +318,7 @@ class EnLinea:
                    "recompensa": int(ok.get("recompensa") or 0), "agresor": None, "t_agresor": -999.0, "t_guardar": 20.0, "inv_banda": None,
                    "inv_grupo": None, "segura": False, "protegido": time.time() + float((ok.get("servidor") or {}).get("proteccion", 0)),
                    "ecos": {}, "mision_grupo": None, "quien": [], "bandas": [], "nombre_servidor": enlace.servidor.get("nombre", "Servidor"),
-                   "t_atropello": 0.0, "t_dicho": {}, "cifrado": enlace.cli.cifrado, "props": ok.get("props") or {}, "robo": None, "trafico": {}}
+                   "t_atropello": 0.0, "t_dicho": {}, "cifrado": enlace.cli.cifrado, "props": ok.get("props") or {}, "robo": None, "trafico": {}, "peatones": {}}
         if self.sv["banda"]:
             yo = next((m for m in self.sv["banda"]["miembros"] if m["cuenta"] == ok.get("cuenta")), None)
             self.sv["rango"] = yo["rango"] if yo else None
@@ -416,6 +417,10 @@ class EnLinea:
             if v is not self.j.veh and not v.muerto:
                 self.quitar_vehiculo(v)
         self.sv["trafico"] = {}
+        for p in list(self.sv.get("peatones", {}).values()):
+            if p in self.personas:
+                self.personas.remove(p)
+        self.sv["peatones"] = {}
         self.desconectar_online(motivo)
         if al_menu:
             texto = motivo or "Has salido del servidor."
@@ -571,6 +576,8 @@ class EnLinea:
             self._sv_trafico(m.get("tr") or [])
         if "lu" in m:
             self.mundo.desfase_luces = float(m["lu"]) - self.t
+        if "pe" in m:
+            self._sv_peatones(m.get("pe") or [])
         for clave, e in (m.get("e") or {}).items():
             try:
                 ident = int(clave)
@@ -677,6 +684,82 @@ class EnLinea:
             finally:
                 self._sv_aplicando = False
 
+    def _svm_patrulla_llega(self, m):
+        """Una patrulla del servidor que rondaba cerca viene a por ti: desde ahora es de las que te persiguen."""
+        if not self.j.estrellas or "patrulla" not in self.modelos:
+            return
+        v = self.crear_vehiculo("patrulla", float(m.get("x", 0)), float(m.get("y", 0)), int(m.get("d", 0)) % 4, "policia")
+        v.ocupado, v.hostil, v.vel = True, True, 12.0
+        self.sv_dicho("patrulla", "Una patrulla que rondaba por aquí viene a por ti.", 8.0)
+
+    def _svm_visto(self, m):
+        self.decir("Te ha visto una patrulla.")
+        self.delito(2, "disparos delante de una patrulla", siempre=True)
+
+    # ------------------------------------------------------- gente de la calle
+    def sv_peatones_comunes(self):
+        """¿La gente de la calle la pone el servidor? Entonces tu juego no pone la suya."""
+        return self.en_servidor and bool(self.sv["info"].get("peatones"))
+
+    def _sv_peatones(self, lista):
+        gente = self.sv["peatones"]
+        vuelta = 4 * (M.B - 15)
+        vistos = set()
+        for f in lista:
+            try:
+                ident, bi, bj, u, s, huye, vel = f[0], int(f[1]), int(f[2]), float(f[3]), int(f[4]), bool(f[5]), float(f[6])
+                atracado = bool(f[7]) if len(f) > 7 else False
+            except (TypeError, ValueError, IndexError):
+                continue
+            vistos.add(ident)
+            p = gente.get(ident)
+            if p is None:
+                p = Persona("civil", 0, 0)
+                p.bloque, p.u, p.pe_id, p.tag = (bi, bj), u, ident, "comun"
+                self._pos_perimetro(p)
+                self.personas.append(p)
+                gente[ident] = p
+            p.t_visto = self.t
+            if p.muerto:
+                continue
+            if abs(((p.u - u + vuelta / 2) % vuelta) - vuelta / 2) > 3:       # se ha desviado de donde dice el servidor
+                p.u = u
+            p.sentido, p.vel = s, vel
+            if huye:
+                p.estado, p.t_estado, p.t_voz = "huye", 3.0, 5.0
+            elif p.estado == "huye" and getattr(p, "t_susto", -99) < self.t - 1.5:
+                p.estado = "pasea"
+            if atracado:
+                p.atracado = True
+        for ident, p in list(gente.items()):
+            if ident not in vistos and self.t - getattr(p, "t_visto", 0.0) > 1.5:
+                del gente[ident]
+                if p.muerto:
+                    p.tag = None                         # el caído se queda un rato y luego lo retira tu juego
+                elif p in self.personas:
+                    self.personas.remove(p)
+                    if self.objetivo is p:
+                        self.objetivo = None
+
+    def sv_golpe_peaton(self, p, dano):
+        """Le has dado a alguien de la calle que es de todos: lo que le pase, le pasa para todos."""
+        if self.en_servidor and getattr(p, "pe_id", None) is not None and not p.muerto:
+            p.t_susto = self.t
+            self.red.enviar({"t": "pe_dano", "id": p.pe_id, "n": round(float(dano), 1), "cae": p.salud - dano <= 0})
+
+    def sv_peaton_atracado(self, p):
+        if self.en_servidor and getattr(p, "pe_id", None) is not None:
+            p.t_susto = self.t
+            self.red.enviar({"t": "pe_atraco", "id": p.pe_id})
+
+    def _svm_pe_cae(self, m):
+        p = self.sv["peatones"].get(m.get("id"))
+        if p is not None and not p.muerto:
+            p.muerto, p.t_estado = True, self.t
+            self.son("muerte_npc", xy=(p.x, p.y), ref=6, tono=p.tono)
+            if self.objetivo is p:
+                self.objetivo = None
+
     # ------------------------------------------------------------ tráfico común
     def sv_trafico_comun(self):
         """¿Los coches que circulan los pone el servidor? Entonces tu juego no pone los suyos."""
@@ -687,6 +770,7 @@ class EnLinea:
         for fila in lista:
             try:
                 ident, modelo, x, y, rumbo, vel = fila[0], fila[1], float(fila[2]), float(fila[3]), float(fila[4]), float(fila[5])
+                poli = bool(fila[6]) if len(fila) > 6 else False
             except (TypeError, ValueError, IndexError):
                 continue
             v = self.sv["trafico"].get(ident)
@@ -694,7 +778,9 @@ class EnLinea:
                 if modelo not in self.modelos:
                     continue
                 v = self.crear_vehiculo(modelo, x, y, M.dir_de_rumbo(rumbo), "servidor")
-                v.tr_id, v.ocupado, v.cerrado = ident, True, False
+                v.tr_id, v.ocupado, v.cerrado, v.tr_poli = ident, True, False, poli
+                if poli:
+                    v.nombre = "Coche patrulla"
                 self.sv["trafico"][ident] = v
             v.tx, v.ty, v.rumbo, v.vel, v.t_visto = x, y, rumbo, vel, self.t
             v.dir = M.dir_de_rumbo(rumbo)
@@ -1099,6 +1185,7 @@ class EnLinea:
         self.sv["trafico"] = {k: v for k, v in self.sv["trafico"].items() if not v.muerto and v in self.vehiculos}
         for r in self.remotos.values():              # al cambiar de localidad, lo que había de otros ya no está
             r.poli = {}
+        self.sv["peatones"] = {}
         presentes = {getattr(v, "id_red", None) for v in self.vehiculos if not v.muerto}
         for d in self.sv["vehs"].values():
             if d.get("por") is None and d.get("m") == self.mundo.id and d["id"] not in presentes:
@@ -1144,7 +1231,7 @@ class EnLinea:
 
     def sv_pedir_vehiculo(self, v):
         """F junto a un vehículo aparcado de otro jugador: se lo pides al servidor. True si hay que esperar la respuesta."""
-        if self.en_servidor and getattr(v, "eco_poli", False):
+        if self.en_servidor and (getattr(v, "eco_poli", False) or getattr(v, "tr_poli", False)):
             self.decir("Ese coche patrulla está lleno de policías.", True)
             return True
         if self.en_servidor and getattr(v, "tr_id", None) is not None and v.ia == "servidor":      # un coche del tráfico común

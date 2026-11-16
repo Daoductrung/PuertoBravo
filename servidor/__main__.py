@@ -57,6 +57,13 @@ robo_segundos = 20
 # Con no, cada jugador ve su propio tráfico, como cuando juega solo.
 trafico = si
 trafico_max = 8
+# Coches patrulla del servidor que rondan por cada localidad con jugadores. Acuden a por quien va buscado y les pasa
+# cerca, y ven a quien dispara a su lado. Con 0, ninguno.
+patrullas = 1
+
+# La gente de la calle: con si, los peatones los lleva el servidor y son los mismos para todos.
+peatones = si
+peatones_max = 10
 
 # Economía: el servidor lleva la cuenta del dinero de cada jugador. Gastar se puede siempre. Ganar: lo que da el
 # propio servidor (botines, ventas, pagas, misiones comprobadas) y, por cuenta de cada uno, hasta ganancia_hora

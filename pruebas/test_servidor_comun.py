@@ -111,7 +111,7 @@ def test_el_trafico_lo_lleva_el_servidor(tmp_path):
         coches = list(b.srv.trafico.values())
         assert len(coches) == 6 and all(c["m"] == "puerto_bravo" for c in coches)
         tr = a.leer("estados", filtro=lambda m: m.get("tr"))["tr"]
-        assert all(len(f) == 6 and f[1] in mundo()["modelos"] for f in tr)
+        assert all(len(f) == 7 and f[1] in mundo()["modelos"] and not f[6] for f in tr)
         # circulan: por su carril, y cambian de calle en los cruces
         antes = {c["id"]: b.srv.tr_pos(c)[:2] for c in coches}
         cruces = {c["id"]: (c["i"], c["j"]) for c in coches}
@@ -224,3 +224,148 @@ def test_la_policia_que_persigue_a_uno_esta_tambien_en_el_juego_del_otro(dos, ba
     # cuando a Ana dejan de buscarla, la policía desaparece también del juego de Blas
     pa._fin_persecucion()
     assert hasta(lambda: not ra.poli and eco_v.muerto and eco_p not in pb.personas, a, b)
+
+
+# ------------------------------------------------- gente de la calle y patrullas
+def test_la_gente_de_la_calle_la_lleva_el_servidor(tmp_path):
+    from servidor import peatones as P
+    b = Banco(tmp_path, peatones="si", peatones_max=8)
+    try:
+        b.hacer(lambda: (setattr(b.srv, "rng", __import__("random").Random(5)), setattr(b.srv, "reloj", 12 * 60.0), setattr(b.srv, "lluvia", False)))
+        a = Cli(b, "Ana")
+        assert a.ok["servidor"]["peatones"]
+        x, y = lejos_de_todo()
+        a.estado(x=x, y=y)
+        time.sleep(0.2)
+        b.hacer(lambda: [b.srv.peatones_pensar() for _ in range(80)])
+        gente = list(b.srv.peatones.values())
+        assert 5 <= len(gente) <= 8
+        pe = a.leer("estados", filtro=lambda m: m.get("pe"))["pe"]
+        assert all(len(f) == 8 for f in pe)
+        # andan por la acera de su manzana: siempre a siete metros y medio del eje de una calle
+        antes = {p["id"]: p["u"] for p in gente}
+        b.hacer(lambda: [b.srv.peatones_mover(0.1) for _ in range(100)])
+        for p in gente:
+            px, py = P.posicion(p["bi"], p["bj"], p["u"])
+            assert p["u"] != antes[p["id"]] and (abs(px % 90 - 7.5) < 0.01 or abs(px % 90 - 82.5) < 0.01 or abs(py % 90 - 7.5) < 0.01 or abs(py % 90 - 82.5) < 0.01)
+        # un disparo: los que están cerca salen corriendo, alejándose
+        p = min(gente, key=lambda q: (P.posicion(q["bi"], q["bj"], q["u"])[0] - x) ** 2 + (P.posicion(q["bi"], q["bj"], q["u"])[1] - y) ** 2)
+        px, py = P.posicion(p["bi"], p["bj"], p["u"])
+        a.estado(x=px + 6, y=py + 6)
+        time.sleep(0.2)
+        d0 = (36 + 36) ** 0.5
+        a.enviar({"t": "evento", "que": "d:pistola"})
+        time.sleep(0.3)
+        assert p["huye"] > 0
+        b.hacer(lambda: [b.srv.peatones_mover(0.1) for _ in range(20)])
+        qx, qy = P.posicion(p["bi"], p["bj"], p["u"])
+        assert ((qx - (px + 6)) ** 2 + (qy - (py + 6)) ** 2) ** 0.5 > d0 + 3
+        # atracado: para el siguiente ya no lleva nada. Tumbado: cae para todos
+        c = Cli(b, "Ciro")
+        c.estado(x=qx, y=qy)
+        time.sleep(0.2)
+        a.enviar({"t": "pe_atraco", "id": p["id"]})
+        assert c.leer("estados", filtro=lambda m: any(f[0] == p["id"] and f[7] == 1 for f in m.get("pe", [])))
+        a.enviar({"t": "pe_dano", "id": p["id"], "n": 20, "cae": False})
+        time.sleep(0.2)
+        assert p["id"] in b.srv.peatones and p["salud"] == 30
+        a.enviar({"t": "pe_dano", "id": p["id"], "n": 40, "cae": True})
+        assert c.leer("pe_cae")["id"] == p["id"] and p["id"] not in b.srv.peatones
+        # de noche hay menos, y si no queda nadie en la localidad, ninguno
+        b.hacer(lambda: (setattr(b.srv, "reloj", 2 * 60.0), b.srv.peatones.clear()))
+        b.hacer(lambda: [b.srv.peatones_pensar() for _ in range(80)])
+        assert 1 <= len(b.srv.peatones) <= 3
+        a.cerrar()
+        c.cerrar()
+        time.sleep(0.5)
+        b.hacer(lambda: [b.srv.peatones_pensar() for _ in range(3)])
+        assert not b.srv.peatones
+    finally:
+        b.parar()
+
+
+def test_las_patrullas_del_servidor_rondan_ven_y_acuden(tmp_path):
+    b = Banco(tmp_path, trafico="si", trafico_max=0, patrullas=1)
+    try:
+        b.hacer(lambda: setattr(b.srv, "rng", __import__("random").Random(6)))
+        a = Cli(b, "Ana")
+        x, y = lejos_de_todo()
+        a.estado(x=x, y=y)
+        time.sleep(0.2)
+        b.hacer(lambda: [b.srv.trafico_pensar() for _ in range(20)])
+        patrullas = [c for c in b.srv.trafico.values() if c.get("poli")]
+        assert len(patrullas) == 1 and patrullas[0]["modelo"] == "patrulla" and len(b.srv.trafico) == 1
+        tr = a.leer("estados", filtro=lambda m: m.get("tr"))["tr"]
+        assert tr[0][6] == 1                                         # el juego sabe que ese coche es una patrulla
+        p = patrullas[0]
+        a.enviar({"t": "tr_robar", "id": p["id"]})
+        assert "lleno de policías" in a.leer("veh_no")["motivo"]
+        # Ana dispara con la patrulla a la vuelta de la esquina: la han visto
+        px, py, _ = b.srv.tr_pos(p)
+        a.estado(x=px + 40, y=py)
+        time.sleep(0.2)
+        a.enviar({"t": "evento", "que": "d:pistola"})
+        assert a.leer("visto")
+        a.enviar({"t": "evento", "que": "d:pistola"})                # no la machacan a avisos
+        assert a.nada("visto", 0.4)
+        # ahora va buscada y la patrulla le pasa cerca: va a por ella y deja de ser un coche más
+        px, py, _ = b.srv.tr_pos(p)
+        a.estado(x=px + 40, y=py, es=2)
+        time.sleep(0.2)
+        b.hacer(b.srv.trafico_pensar)
+        llega = a.leer("patrulla_llega")
+        assert abs(llega["x"] - px) < 30 and abs(llega["y"] - py) < 30 and p["id"] not in b.srv.trafico
+    finally:
+        b.parar()
+
+
+def test_los_dos_jugadores_ven_a_la_misma_gente_y_a_la_patrulla(dos, tmp_path):
+    a, b = dos
+    bn = Banco(tmp_path, peatones="si", peatones_max=6, trafico="si", trafico_max=0, patrullas=1)
+    try:
+        bn.hacer(lambda: (setattr(bn.srv, "rng", __import__("random").Random(9)), setattr(bn.srv, "reloj", 12 * 60.0), setattr(bn.srv, "lluvia", False)))
+        pa, pb = entrar(a, bn, "Ana"), entrar(b, bn, "Blas")
+        rb, ra = juntos(pa, pb, a, b, d=6.0)
+        assert pa.sv_peatones_comunes()
+        for p in (pa, pb):                                       # la gente que cada juego tenía por su cuenta se retira
+            p.personas[:] = [q for q in p.personas if q.tipo != "civil"]
+        bn.hacer(lambda: [bn.srv.peatones_pensar() for _ in range(80)])
+        bn.hacer(lambda: [bn.srv.trafico_pensar() for _ in range(20)])
+        assert hasta(lambda: len(set(pa.sv["peatones"]) & set(pb.sv["peatones"])) >= 3, a, b)
+        for _ in range(40):                                      # ninguno pone gente propia
+            pa._poblar()
+            pb._poblar()
+        assert all(getattr(q, "pe_id", None) is not None for p in (pa, pb) for q in p.personas if q.tipo == "civil")
+        # la misma persona, en el mismo sitio de la acera, en los dos juegos
+        ident = min(set(pa.sv["peatones"]) & set(pb.sv["peatones"]), key=lambda k: pa.sv["peatones"][k].dist(*pa.pos()))
+        ea, eb = pa.sv["peatones"][ident], pb.sv["peatones"][ident]
+        assert hasta(lambda: abs(ea.x - eb.x) < 4 and abs(ea.y - eb.y) < 4, a, b)
+        # Ana le atraca: en el juego de Blas, a ese ya no le queda nada
+        pa.dar_arma("navaja", 0)
+        pa.j.arma = "navaja"
+        pa.j.x, pa.j.y = ea.x + 1.5, ea.y
+        a.tecla(pygame.K_e)
+        assert getattr(ea, "atracado", False)
+        assert hasta(lambda: getattr(eb, "atracado", False) and eb.estado == "huye", a, b)
+        # Ana le tumba: cae también en el juego de Blas
+        pa.danar_persona(ea, 500)
+        assert ea.muerto and hasta(lambda: eb.muerto, a, b)
+        # la patrulla del servidor está en los dos juegos
+        assert hasta(lambda: any(getattr(v, "tr_poli", False) for v in pa.sv["trafico"].values())
+                     and any(getattr(v, "tr_poli", False) for v in pb.sv["trafico"].values()), a, b)
+        # Ana va buscada: la patrulla acude, y pasa a perseguirla en su juego
+        pat = next(c for c in bn.srv.trafico.values() if c.get("poli"))
+        px, py, _ = bn.srv.tr_pos(pat)
+        pa.teletransportar(px + 30, py)
+        pa.poner_busqueda(2)
+        assert hasta(lambda: pa.j.estrellas >= 1, a, b)
+        ambos(a, b, 6)
+        time.sleep(0.2)
+        ambos(a, b, 4)
+        bn.hacer(bn.srv.trafico_pensar)
+        assert hasta(lambda: "viene a por ti" in a.dicho() and any(v.ia == "policia" and not v.muerto for v in pa.vehiculos), a, b)
+    finally:
+        for r in (a, b):
+            if r.app.partida is not None:
+                r.app.partida.sv_salir()
+        bn.parar()

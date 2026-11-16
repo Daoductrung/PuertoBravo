@@ -43,10 +43,14 @@ class Trafico:
         pesos = [3 if d == c["d"] else 1 for d in sin_vuelta]
         c["d"] = self.rng.choices(sin_vuelta, pesos)[0]
 
-    def _tr_nuevo(self, mapa, cerca_de=None):
+    def _tr_nuevo(self, mapa, cerca_de=None, poli=False):
         m = self.mundo["mapas"][mapa]
         nx, ny = int(m.get("nx", 0)), int(m.get("ny", 0))
         coches = [x for x in m.get("coches", []) if x in self.mundo["modelos"]] or ["utilitario"]
+        if poli:
+            if "patrulla" not in self.mundo["modelos"]:
+                return None
+            coches = ["patrulla"]
         if nx < 2 or ny < 2:
             return None
         for _ in range(12):
@@ -65,6 +69,7 @@ class Trafico:
             if all(math.hypot(o.x - x, o.y - y) > 60 for o in self.jugadores.values() if o.dentro and o.mapa == mapa):
                 self._nt += 1
                 c["id"] = self._nt
+                c["poli"] = bool(poli)
                 c["salud"] = float(self.mundo["modelos"][c["modelo"]]["salud"])
                 self.trafico[c["id"]] = c
                 return c
@@ -88,9 +93,19 @@ class Trafico:
         for mapa, lista in gente.items():
             m = self.mundo["mapas"][mapa]
             quiere = min(tope, int(m.get("trafico", 0)))
-            hay = sum(1 for c in self.trafico.values() if c["m"] == mapa)
+            hay = sum(1 for c in self.trafico.values() if c["m"] == mapa and not c.get("poli"))
             if hay < quiere:
                 self._tr_nuevo(mapa, self.rng.choice(lista))
+            # las patrullas del servidor: rondan como un coche más, y acuden a por quien va buscado y les pasa cerca
+            if int(m.get("policia", 1)) and sum(1 for c in self.trafico.values() if c["m"] == mapa and c.get("poli")) < int(self.cfg["patrullas"]):
+                self._tr_nuevo(mapa, self.rng.choice(lista), poli=True)
+            for c in [c for c in self.trafico.values() if c["m"] == mapa and c.get("poli")]:
+                x, y, rumbo = self.tr_pos(c)
+                buscados = [o for o in lista if o.estrellas > 0 and math.hypot(o.x - x, o.y - y) < 150]
+                if buscados:
+                    o = min(buscados, key=lambda o: math.hypot(o.x - x, o.y - y))
+                    del self.trafico[c["id"]]
+                    self._enviar(o, {"t": "patrulla_llega", "x": round(x, 1), "y": round(y, 1), "d": c["d"]})
 
     def trafico_mover(self, dt):
         self.t_luces += dt
@@ -138,14 +153,30 @@ class Trafico:
                 continue
             x, y, rumbo = self.tr_pos(c)
             if abs(x - j.x) < 320 and abs(y - j.y) < 320:
-                out.append([c["id"], c["modelo"], round(x, 1), round(y, 1), int(rumbo), round(c["vel"], 1)])
+                out.append([c["id"], c["modelo"], round(x, 1), round(y, 1), int(rumbo), round(c["vel"], 1), 1 if c.get("poli") else 0])
         return out
+
+    def patrulla_ve(self, j):
+        """Un jugador dispara o revienta algo con una patrulla del servidor cerca: le han visto."""
+        import time
+        ahora = time.monotonic()
+        if j.bot or ahora - getattr(j, "t_visto_poli", -99) < 20:
+            return
+        for c in self.trafico.values():
+            if c["m"] == j.mapa and c.get("poli"):
+                x, y, _ = self.tr_pos(c)
+                if math.hypot(x - j.x, y - j.y) < 80:
+                    j.t_visto_poli = ahora
+                    self._enviar(j, {"t": "visto"})
+                    return
 
     def _m_tr_robar(self, j, m):
         """Sacar al conductor de un coche del tráfico y llevárselo: tiene que estar casi parado y al lado."""
         c = self.trafico.get(m.get("id"))
         if c is None or c["m"] != j.mapa or j.veh:
             return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": "Ese vehículo ya no está."})
+        if c.get("poli"):
+            return self._enviar(j, {"t": "veh_no", "id": c["id"], "motivo": "Ese coche patrulla está lleno de policías."})
         x, y, rumbo = self.tr_pos(c)
         if math.hypot(x - j.x, y - j.y) > 9:
             return self._enviar(j, {"t": "veh_no", "id": c["id"], "motivo": "Estás demasiado lejos."})

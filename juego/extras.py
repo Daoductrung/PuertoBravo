@@ -86,6 +86,7 @@ class Extras:
             self.decir("A ese ya le has quitado todo.", True)
             return
         p.atracado = True
+        self.sv_peaton_atracado(p)
         p.estado = "huye"
         p.t_estado = 14
         self.son("grito", xy=(p.x, p.y), vol=0.6, tono=p.tono)

@@ -47,7 +47,7 @@ class Banco:
         self.reloj = Reloj()
         self.de_disco = de_disco                 # el servidor arranca con el mundo que tenga guardado, como uno de verdad
         base = {"datos": str(carpeta), "puerto": 0, "interfaz": "127.0.0.1", "cifrado": "no", "proteccion": 0, "guerra_espera": 1, "guerra_dura": 1,
-                "personajes": 0, "economia": "no", "trafico": "no"}                 # los personajes del servidor van al azar: solo en las pruebas que tratan de ellos
+                "personajes": 0, "economia": "no", "trafico": "no", "peatones": "no", "patrullas": 0}                 # los personajes del servidor van al azar: solo en las pruebas que tratan de ellos
         base.update(cfg)
         self.cfg = base
         self.loop = asyncio.new_event_loop()

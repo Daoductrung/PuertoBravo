@@ -1887,7 +1887,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         tope = max(1, round((max(1, m.peatones // 3) if noche else m.peatones) * self.azar_factor("peatones")))
         if self.lluvia:
             tope = max(1, tope // 2)
-        if n < tope:
+        if n < tope and not self.sv_peatones_comunes():
             bi, bj = m.bloque(x, y)
             bi = max(0, min(m.NX - 2, bi + random.choice([-1, 0, 0, 1])))
             bj = max(0, min(m.NY - 2, bj + random.choice([-1, 0, 0, 1])))
