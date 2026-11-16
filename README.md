@@ -50,7 +50,7 @@ Todo lo que ocurre tiene su sonido, colocado a tu alrededor: lo que suena a la d
 - Ocio: carreras y regatas, casino, bingo, lotería, siete y media, dominó, los chinos, boxeo, galería de tiro, pesca, búsqueda de tesoros, cine, recreativos y bolsa.
 - Casas con garaje, un perro que te acompaña y busca objetos, guardaespaldas, banda propia, barrios que hay que defender, mejoras de vehículos en el taller, logros y habilidades que suben con la práctica.
 - Hablar con cualquier persona de la calle: cada una tiene su nombre, su oficio y su carácter. Puedes preguntar, invitar a un café, hacer amigos o escribir lo que quieras decirle. Un modo opcional hace que contesten interpretadas por una inteligencia artificial: un modelo local gratuito y sin internet, Google AI Studio, OpenAI, Anthropic u otro servicio compatible. El juego elige solo el modelo más barato.
-- Voces en las escenas: las de la historia principal y las de los mods incluidos traen voz, generada por ordenador, y cualquiera puede poner las suyas. Se quitan en las opciones.
+- Voces en las escenas: cada personaje de la historia y de los mods incluidos tiene su propia voz, generada por ordenador. Te llaman por el nombre del personaje con el que juegas y te hablan en masculino o en femenino; con un personaje creado por ti, las frases que dicen tu nombre se generan en tu equipo. Cualquiera puede poner sus propias grabaciones. Se quitan en las opciones.
 - Dos motores de sonido: el clásico y uno envolvente, binaural, con eco distinto en cada sitio.
 - Sin inteligencia artificial, una base de más de mil cien frases en casi setenta temas (`juego/respuestas.py`) contesta a lo que escribas, según el carácter de cada persona.
 - Una ciudad que no se repite: cada día viene distinto (rebajas, mercado, fiesta, huelga, operación salida) y cambian los precios, la gente y el tráfico. Ninguna partida es igual a otra.
@@ -192,7 +192,9 @@ Vienen ocho, ya activados, que además sirven de modelo. Se generan con `herrami
 
 Para compartir un mod, pasa su archivo `.pbm`. Quien lo recibe lo copia en su `data\mods`.
 
-Las misiones pueden llevar voces grabadas (`juego/voces.py`): archivos de sonido en `data\voces`, uno por frase. El editor escribe el guion con el nombre de cada archivo. No se aceptan mods con material de otros juegos ni voces clonadas de personas reales.
+Las misiones pueden llevar voces grabadas (`juego/voces.py`): archivos de sonido en `data\voces`, uno por frase. Las frases que dependen del protagonista tienen varias formas, con una arroba detrás del nombre: `m01_1_1@alex`, `m01_1_1@m`, `m01_1_2@alex_m`. El editor escribe el guion con el nombre de cada archivo y sus formas. No se aceptan mods con material de otros juegos ni voces clonadas de personas reales.
+
+Las voces que trae el juego están generadas con Phonon 40m, un modelo de voz de [Gradium](https://gradium.ai/phonon) con licencia Creative Commons de reconocimiento y uso no comercial (CC BY-NC 4.0). El mismo modelo va con el juego, en `data\phonon`, para generar en el equipo de quien juega las frases que nombran a un personaje creado por él (`juego/vozgen.py`), con el paquete `ptts`, que es libre. El texto de la licencia está en `data\phonon\LICENCIA.txt`. El archivo del modelo, `model.q8.gguf`, pesa 95 megas y no está en este repositorio: `herramientas\preparar_phonon.py` lo copia de una carpeta con el modelo descargado de Hugging Face (`gradium/phonon-40m-multilingual`), y `compilar.bat` lo llama. Sin el modelo el juego funciona igual; esas frases las dice el lector de pantalla.
 
 ---
 
