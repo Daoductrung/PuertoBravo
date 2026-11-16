@@ -746,6 +746,9 @@ class Conduccion:
                 if v.sirena:
                     v.sirena.mover(v.x, v.y)
                 continue
+            if v.ia == "servidor":                               # tráfico común: lo mueve el servidor
+                self.sv_trafico_paso(v, d, dt)
+                continue
             if v.ia == "barco":
                 tx, ty = v.destino
                 if math.hypot(tx - v.x, ty - v.y) < 30:

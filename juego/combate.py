@@ -324,6 +324,7 @@ class Combate:
             return
         j = self.j
         self.sv_golpe_eco(p, dano)                               # en una misión en grupo, el golpe cuenta para todos
+        self.sv_golpe_policia(p, dano)                           # y si es un agente que persigue a otro jugador, le llega a su juego
         p.salud -= dano
         if p.salud <= 0:
             p.muerto = True

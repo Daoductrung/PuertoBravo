@@ -53,6 +53,18 @@ atraco_max = 1000
 # Atracar el negocio de otro jugador: los segundos que hay que aguantar en la puerta. Al dueño le salta el aviso.
 robo_segundos = 20
 
+# Tráfico: los coches que circulan por las calles los lleva el servidor y son los mismos para todos los jugadores.
+# Con no, cada jugador ve su propio tráfico, como cuando juega solo.
+trafico = si
+trafico_max = 8
+
+# Economía: el servidor lleva la cuenta del dinero de cada jugador. Gastar se puede siempre. Ganar: lo que da el
+# propio servidor (botines, ventas, pagas, misiones comprobadas) y, por cuenta de cada uno, hasta ganancia_hora
+# euros por hora de reloj con trabajos, ventas, juego y lo que se coge por la calle. Lo que pase de ahí no se reconoce.
+economia = si
+ganancia_hora = 30000
+saldo_inicial = 5000
+
 # Personajes que lleva el servidor y que son los mismos para todos: paseantes, rateros, pistoleros, ladrones de coches
 # y atracadores de negocios. Salen al azar, solo donde hay jugadores. Con 0, ninguno.
 personajes = 6

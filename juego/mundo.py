@@ -667,7 +667,7 @@ class Mundo:
 
     def verde_vertical(self, i, j, t):
         """True si el semáforo del cruce deja pasar el tráfico norte-sur."""
-        return (int(t // 14) + i + j) % 2 == 0
+        return (int((t + getattr(self, "desfase_luces", 0.0)) // 14) + i + j) % 2 == 0
 
     # --------------------------------------------------------------- aparcados
     def _generar_aparcados(self):

@@ -9,3 +9,6 @@
 *.ogg binary
 *.mp3 binary
 *.flac binary
+*.sh text eol=lf
+servidor/despliegue/Dockerfile text eol=lf
+servidor/despliegue/docker-compose.yml text eol=lf

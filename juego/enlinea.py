@@ -115,6 +115,10 @@ def mundo_servidor():
             "lugares": [{"id": l.id, "tipo": l.tipo, "nombre": l.nombre, "x": round(float(l.x), 1), "y": round(float(l.y), 1), "adultos": bool(l.get("adultos")),
                          "precio": int(l.get("precio", 0) or 0), "ingresos": int(l.get("ingresos", 0) or 0)}
                         for l in m.lugares.values()],
+            # para el tráfico común: cuántas calles hay a lo largo y a lo ancho, cuánto tráfico y qué coches
+            "nx": int(getattr(m, "NX", 0)) if m.tipo != "mar" else 0, "ny": int(getattr(m, "NY", 0)) if m.tipo != "mar" else 0,
+            "trafico": int(getattr(m, "trafico", 0)) if m.tipo != "mar" else 0,
+            "coches": sorted({v for b in c.get("barrios", []) for v in b.get("vehiculos", [])}),
             "barrios": [{"id": b["id"], "nombre": b.get("nombre", b["id"])} for b in c.get("barrios", [])]}
     for a in datos["armas"]:
         out["armas"][a["id"]] = {"nombre": a["nombre"], "tipo": a.get("tipo", "cuerpo"), "dano": a.get("dano", 0), "alcance": a.get("alcance", 2),
@@ -313,7 +317,7 @@ class EnLinea:
                    "recompensa": int(ok.get("recompensa") or 0), "agresor": None, "t_agresor": -999.0, "t_guardar": 20.0, "inv_banda": None,
                    "inv_grupo": None, "segura": False, "protegido": time.time() + float((ok.get("servidor") or {}).get("proteccion", 0)),
                    "ecos": {}, "mision_grupo": None, "quien": [], "bandas": [], "nombre_servidor": enlace.servidor.get("nombre", "Servidor"),
-                   "t_atropello": 0.0, "t_dicho": {}, "cifrado": enlace.cli.cifrado, "props": ok.get("props") or {}, "robo": None}
+                   "t_atropello": 0.0, "t_dicho": {}, "cifrado": enlace.cli.cifrado, "props": ok.get("props") or {}, "robo": None, "trafico": {}}
         if self.sv["banda"]:
             yo = next((m for m in self.sv["banda"]["miembros"] if m["cuenta"] == ok.get("cuenta")), None)
             self.sv["rango"] = yo["rango"] if yo else None
@@ -326,6 +330,8 @@ class EnLinea:
             self.remotos[q["id"]] = r
         h = ok.get("hora") or {}
         self.reloj, self.dia, self.lluvia = float(h.get("reloj", self.reloj)), int(h.get("dia", self.dia)), bool(h.get("lluvia"))
+        for mapa in self.mapas.values():                         # los semáforos, iguales para todos
+            mapa.desfase_luces = float(h.get("luces", 0.0)) - self.t
         self.j.semilla = int(ok.get("semilla") or self.j.semilla or 1)       # la misma suerte para todos: precios, sucesos y lotería
         try:
             self.sortear_dia(anunciar=False)
@@ -350,6 +356,8 @@ class EnLinea:
                 nombre = l.nombre if l is not None else "una propiedad"
                 self.decir(f"{cosa.get('por', 'Alguien')} te ha comprado {nombre} por {n} euros." if cosa["que"] == "venta" else
                            f"Llevabas tanto sin entrar que {nombre} ha vuelto al mercado. Te quedan {n} euros de su valor.")
+        if ok.get("saldo") is not None:                          # el dinero lo lleva el servidor: manda lo que él tiene apuntado
+            self._sv_ajustar_saldo(self.j.dinero + self.j.banco - int(ok["saldo"]), callar=True)
         self._sv_cuadrar_propiedades()
         self._sv_descontar_robos(int(ok.get("robos") or 0))
         for cosa in ok.get("pendientes", []):
@@ -400,6 +408,14 @@ class EnLinea:
         for r in self.remotos.values():
             if getattr(r, "sirena", None) is not None:
                 r.sirena.parar()
+        for mapa in self.mapas.values():
+            mapa.desfase_luces = 0.0
+        for r in self.remotos.values():
+            self._sv_quitar_policia(r)
+        for v in list(self.sv.get("trafico", {}).values()):
+            if v is not self.j.veh and not v.muerto:
+                self.quitar_vehiculo(v)
+        self.sv["trafico"] = {}
         self.desconectar_online(motivo)
         if al_menu:
             texto = motivo or "Has salido del servidor."
@@ -424,8 +440,8 @@ class EnLinea:
             barrio = self.mundo.barrio(x, y)["id"]
         except Exception:
             barrio = None
-        return {"sa": round(max(0.0, j.salud), 1), "di": int(j.dinero), "ar": j.arma, "b": barrio, "ag": int(bool(j.agachado)),
-                "in": int(getattr(self, "interior", None) is not None), "es": int(j.estrellas), "vi": getattr(v, "id_red", None) if v is not None and getattr(v, "red_mio", False) else None}
+        return {"sa": round(max(0.0, j.salud), 1), "di": int(j.dinero), "ba": int(j.banco), "ar": j.arma, "b": barrio, "ag": int(bool(j.agachado)),
+                "in": int(getattr(self, "interior", None) is not None), "es": int(j.estrellas), "po": self._sv_mi_policia(), "vi": getattr(v, "id_red", None) if v is not None and getattr(v, "red_mio", False) else None}
 
     def sv_dicho(self, clave, texto, cada=4.0, interrumpir=False):
         """Dice algo, pero no la misma cosa a cada momento."""
@@ -522,6 +538,9 @@ class EnLinea:
             self._cobrar_negocios()
             self.sortear_dia()
         self.reloj = reloj
+        if "luces" in h:                                         # los semáforos, iguales para todos
+            for mapa in self.mapas.values():
+                mapa.desfase_luces = float(h["luces"]) - self.t
 
     def _svm_entra(self, m):
         registro.ocultar(m.get("nombre"))
@@ -537,6 +556,7 @@ class EnLinea:
         r = self.remotos.pop(m.get("id"), None)
         if r:
             r.callar()
+            self._sv_quitar_policia(r)
             if getattr(r, "sirena", None) is not None:
                 r.sirena.parar()
             if self.objetivo is r:
@@ -547,6 +567,10 @@ class EnLinea:
             self.decir(f"{r.nombre} sale del servidor.")
 
     def _svm_estados(self, m):
+        if "tr" in m:
+            self._sv_trafico(m.get("tr") or [])
+        if "lu" in m:
+            self.mundo.desfase_luces = float(m["lu"]) - self.t
         for clave, e in (m.get("e") or {}).items():
             try:
                 ident = int(clave)
@@ -568,6 +592,147 @@ class EnLinea:
             if "vi" in e:
                 r.vid, r.agachado, r.pasivo, r.segura, r.dentro = e.get("vi"), bool(e.get("ag")), bool(e.get("pa")), bool(e.get("sg")), bool(e.get("in"))
                 r.estrellas = int(e.get("es") or 0)
+                self._sv_policia_de(r, e.get("po") or [])
+
+    # ------------------------------------------------------------ policía común
+    def _sv_mi_policia(self):
+        """La policía que te persigue en tu juego: se la cuentas al servidor para que la tengan también los que están cerca."""
+        if not self.j.estrellas:
+            return []
+        out = []
+        for v in self.vehiculos:
+            if v.ia == "policia" and not v.muerto and len(out) < 4:
+                out.append(["v", v.id, v.modelo["id"], round(v.x, 1), round(v.y, 1), int(v.rumbo)])
+        for p in self.personas:
+            if p.tipo == "policia" and not p.muerto and len(out) < 9:
+                out.append(["p", p.id, round(p.x, 1), round(p.y, 1)])
+        return out
+
+    def _sv_policia_de(self, r, lista):
+        """Patrullas y agentes que persiguen a otro jugador, puestos en tu juego donde están en el suyo."""
+        ecos = getattr(r, "poli", None)
+        if ecos is None:
+            ecos = r.poli = {}
+        if not lista and not ecos:
+            return
+        vistos = set()
+        for f in lista:
+            try:
+                clave = (f[0], int(f[1]))
+                if f[0] == "v":
+                    modelo, x, y, rumbo = f[2], float(f[3]), float(f[4]), float(f[5])
+                else:
+                    x, y = float(f[2]), float(f[3])
+            except (TypeError, ValueError, IndexError):
+                continue
+            o = ecos.get(clave)
+            if o is None or o.muerto:
+                if f[0] == "v":
+                    if modelo not in self.modelos:
+                        continue
+                    o = self.crear_vehiculo(modelo, x, y, M.dir_de_rumbo(rumbo), "servidor", "Coche patrulla")
+                    o.eco_poli, o.ocupado = True, True
+                    o.sirena = self.son("sirena", bucle=True, xy=(x, y), ref=14, maxd=260, vol=0.5)
+                else:
+                    o = Persona("civil", x, y, "Policía")
+                    o.estado, o.tag, o.eco_poli, o.eco_de = "quieto", "eco", clave[1], r.id
+                    self.personas.append(o)
+                ecos[clave] = o
+            if f[0] == "v":
+                o.tx, o.ty, o.rumbo, o.vel = x, y, rumbo, 8.0
+            else:
+                o.x, o.y = x, y
+            o.t_visto = self.t
+            vistos.add(clave)
+        for clave, o in list(ecos.items()):
+            if clave not in vistos and self.t - getattr(o, "t_visto", 0.0) > 1.2:
+                self._sv_quitar_eco_poli(o)
+                del ecos[clave]
+
+    def _sv_quitar_eco_poli(self, o):
+        if isinstance(o, Persona):
+            if o in self.personas:
+                self.personas.remove(o)
+            if self.objetivo is o:
+                self.objetivo = None
+        elif not o.muerto:
+            self.quitar_vehiculo(o)
+
+    def _sv_quitar_policia(self, r):
+        for o in list(getattr(r, "poli", {}).values()):
+            self._sv_quitar_eco_poli(o)
+        r.poli = {}
+
+    def sv_golpe_policia(self, p, dano):
+        """Le has dado a un agente de los que persiguen a otro jugador: el golpe va también a su juego."""
+        if self.en_servidor and getattr(p, "eco_de", None) is not None and not getattr(self, "_sv_aplicando", False):
+            self.red.enviar({"t": "po_golpe", "a": p.eco_de, "k": p.eco_poli, "dano": round(float(dano), 1)})
+
+    def _svm_po_golpe(self, m):
+        p = next((q for q in self.personas if q.tipo == "policia" and q.id == m.get("k") and not q.muerto), None)
+        if p is not None:
+            self._sv_aplicando = True
+            try:
+                self.danar_persona(p, float(m.get("dano", 0)))
+            finally:
+                self._sv_aplicando = False
+
+    # ------------------------------------------------------------ tráfico común
+    def sv_trafico_comun(self):
+        """¿Los coches que circulan los pone el servidor? Entonces tu juego no pone los suyos."""
+        return self.en_servidor and bool(self.sv["info"].get("trafico"))
+
+    def _sv_trafico(self, lista):
+        vistos = set()
+        for fila in lista:
+            try:
+                ident, modelo, x, y, rumbo, vel = fila[0], fila[1], float(fila[2]), float(fila[3]), float(fila[4]), float(fila[5])
+            except (TypeError, ValueError, IndexError):
+                continue
+            v = self.sv["trafico"].get(ident)
+            if v is None or v.muerto:
+                if modelo not in self.modelos:
+                    continue
+                v = self.crear_vehiculo(modelo, x, y, M.dir_de_rumbo(rumbo), "servidor")
+                v.tr_id, v.ocupado, v.cerrado = ident, True, False
+                self.sv["trafico"][ident] = v
+            v.tx, v.ty, v.rumbo, v.vel, v.t_visto = x, y, rumbo, vel, self.t
+            v.dir = M.dir_de_rumbo(rumbo)
+            vistos.add(ident)
+        for ident, v in list(self.sv["trafico"].items()):
+            if ident not in vistos and self.t - getattr(v, "t_visto", 0.0) > 1.2:
+                del self.sv["trafico"][ident]
+                if v is not self.j.veh and not v.muerto:
+                    self.quitar_vehiculo(v)
+
+    def sv_trafico_paso(self, v, d, dt):
+        """Un coche del tráfico común en tu juego: se mueve hacia donde dice el servidor y suena donde está."""
+        f = min(1.0, dt * 10.0)
+        v.x += (getattr(v, "tx", v.x) - v.x) * f
+        v.y += (getattr(v, "ty", v.y) - v.y) * f
+        if d < 100:
+            self._motor(v, False)
+            v.canal.mover(v.x, v.y)
+            v.canal.tono(v.modelo["tono"] * (0.6 + 1.3 * abs(v.vel) / v.modelo["vel_max"]))
+        elif v.canal:
+            v.canal.parar()
+            v.canal = None
+        j = self.j
+        if v.sirena:
+            v.sirena.mover(v.x, v.y)
+        if not j.veh and v.vel > 3 and d < 2.4 and self.t > v.t_choque and not getattr(v, "eco_poli", False):      # te atropella, como cualquier coche
+            v.t_choque = self.t + 1.5
+            self.son("golpe")
+            self.danar_jugador(v.vel * 2.2, (v.x, v.y))
+            self.decir("¡Te ha atropellado un vehículo!")
+
+    def _svm_tr_revienta(self, m):
+        v = self.sv["trafico"].pop(m.get("id"), None)
+        if v is not None and not v.muerto and v is not self.j.veh:
+            v.tr_id, v.ia = None, None
+            self.explotar(v)
+        elif m.get("m") == self.mundo.id:
+            self.son("explosion", xy=(float(m.get("x", 0)), float(m.get("y", 0))), ref=30, maxd=400)
 
     def _svm_chat(self, m):
         canal = {"cerca": " aquí cerca", "banda": " a la banda", "priv": " solo a ti", "grupo": " al grupo"}.get(m.get("canal"), "")
@@ -620,6 +785,28 @@ class EnLinea:
     def _svm_desconectado(self, m):
         registro.aviso("red", "Se ha cortado la conexión con el servidor")
         self.sv_salir("Se ha perdido la conexión con el servidor. Tu personaje se guardó hace menos de un minuto: vuelve a entrar para seguir.", al_menu=True)
+
+    # ----------------------------------------------------------------- economía
+    def _sv_ajustar_saldo(self, sobra, callar=False):
+        """Quita lo que el servidor no reconoce: primero del bolsillo y luego del banco."""
+        if sobra <= 0:
+            return
+        j = self.j
+        de_mano = min(j.dinero, sobra)
+        j.dinero -= de_mano
+        j.banco -= min(j.banco, sobra - de_mano)
+        if not callar:
+            self.app.son("error")
+            self.decir(f"El servidor no reconoce {sobra} euros de lo que llevas, y se retiran. En un servidor no se puede ganar más de un tanto por hora "
+                       "fuera de las misiones y de lo que te dan otros jugadores.")
+
+    def _svm_saldo(self, m):
+        self._sv_ajustar_saldo(max(0, int(m.get("quita", 0))))
+
+    def sv_mision_ok(self, m):
+        """Has completado una misión tuya: se lo dices al servidor para que dé por buena la recompensa."""
+        if self.en_servidor and not m.get("generada"):
+            self.red.enviar({"t": "mision_ok", "id": m["id"]})
 
     # -------------------------------------------------------------- propiedades
     def sv_dueno(self, l):
@@ -909,6 +1096,9 @@ class EnLinea:
         """Pone en tu calle los vehículos que otros jugadores han dejado aparcados en esta localidad."""
         if not self.en_servidor:
             return
+        self.sv["trafico"] = {k: v for k, v in self.sv["trafico"].items() if not v.muerto and v in self.vehiculos}
+        for r in self.remotos.values():              # al cambiar de localidad, lo que había de otros ya no está
+            r.poli = {}
         presentes = {getattr(v, "id_red", None) for v in self.vehiculos if not v.muerto}
         for d in self.sv["vehs"].values():
             if d.get("por") is None and d.get("m") == self.mundo.id and d["id"] not in presentes:
@@ -954,6 +1144,15 @@ class EnLinea:
 
     def sv_pedir_vehiculo(self, v):
         """F junto a un vehículo aparcado de otro jugador: se lo pides al servidor. True si hay que esperar la respuesta."""
+        if self.en_servidor and getattr(v, "eco_poli", False):
+            self.decir("Ese coche patrulla está lleno de policías.", True)
+            return True
+        if self.en_servidor and getattr(v, "tr_id", None) is not None and v.ia == "servidor":      # un coche del tráfico común
+            if abs(v.vel) > 6:
+                self.decir("Va demasiado rápido para abrir la puerta. Ponte delante: frenará.", True)
+            else:
+                self.red.enviar({"t": "tr_robar", "id": v.tr_id})
+            return True
         if not self.en_servidor or getattr(v, "id_red", None) is None or getattr(v, "red_mio", False):
             return False
         self.red.enviar({"t": "veh_subir", "id": v.id_red})
@@ -973,6 +1172,11 @@ class EnLinea:
 
     def sv_dano_copia(self, v, dano):
         """Le das a un vehículo aparcado de otro jugador: el daño lo lleva el servidor. True si era uno de esos."""
+        if self.en_servidor and getattr(v, "eco_poli", False):
+            return True                              # la patrulla de otro jugador: en tu juego es solo su presencia
+        if self.en_servidor and getattr(v, "tr_id", None) is not None and v.ia == "servidor":
+            self.red.enviar({"t": "tr_dano", "id": v.tr_id, "n": round(dano, 1)})
+            return True
         if self.en_servidor and getattr(v, "id_red", None) is not None and not getattr(v, "red_mio", False):
             self.red.enviar({"t": "veh_dano", "id": v.id_red, "n": round(dano, 1)})
             return True
@@ -990,6 +1194,10 @@ class EnLinea:
         d = m.get("v") or {}
         if d.get("id") is not None:
             self.sv["vehs"][d["id"]] = d
+        if m.get("tr") is not None:                              # otro jugador se ha quedado un coche del tráfico
+            t = self.sv["trafico"].pop(m["tr"], None)
+            if t is not None and not t.muerto and t is not self.j.veh:
+                self.quitar_vehiculo(t)
         v = self._sv_copia(m.get("id"))
         if v is not None and v is not self.j.veh:
             v.red_dueno = False                      # ya no es tuyo: se lo ha llevado otro
@@ -1005,6 +1213,15 @@ class EnLinea:
 
     def _svm_veh_ok(self, m):
         d = m.get("v") or {}
+        if m.get("tr") is not None:                              # era un coche del tráfico: el conductor sale corriendo
+            t = self.sv["trafico"].pop(m["tr"], None)
+            if t is not None and not t.muerto:
+                t.ia, t.ocupado, t.tr_id, t.id_red, t.red_mio = None, False, None, m["id"], False
+                c = Persona("civil", *self.mundo.punto_libre(t.x + 2, t.y + 2), nombre="Conductor")
+                c.estado, c.t_estado = "huye", 12
+                self.personas.append(c)
+                self.son("grito", xy=(c.x, c.y), tono=c.tono)
+                self.delito(2, "robo de vehículo con violencia")
         v = self._sv_copia(m.get("id"))
         x, y = self.pos()
         if v is None:

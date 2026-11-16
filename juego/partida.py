@@ -1836,7 +1836,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             return
         # tráfico
         n = sum(1 for v in self.vehiculos if v.ia == "trafico")
-        if n < max(1, round((max(1, m.trafico // 2) if noche else m.trafico) * self.azar_factor("trafico"))):
+        if not self.sv_trafico_comun() and n < max(1, round((max(1, m.trafico // 2) if noche else m.trafico) * self.azar_factor("trafico"))):
             horizontal = random.random() < 0.5
             dist = random.uniform(100, 180) * random.choice([-1, 1])
             if horizontal:

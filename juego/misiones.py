@@ -1024,6 +1024,7 @@ class Misiones:
             self.decir(f"Has repetido {m['titulo']}.")
             return
         self.fallos.pop(m["id"], None)
+        self.sv_mision_ok(m)
         self.sv_mision_fin(True, m)
         if m.get("territorio") and m["territorio"] not in self.j.territorios:
             self.j.territorios.append(m["territorio"])

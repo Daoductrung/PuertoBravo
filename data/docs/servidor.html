@@ -63,6 +63,8 @@ code, kbd { background: #2a2a2a; padding: 0 .3em; }
 <li><code>recompensa</code>: lo que sube el precio por la cabeza de quien tumba a alguien que no se defendía.</li>
 <li><code>adultos</code>: con <code>no</code>, quien entra juega sin el contenido para adultos aunque lo tenga activado.</li>
 <li><code>precio_banda</code>, <code>precio_barrio</code>, <code>renta_barrio</code>, <code>precio_guerra</code>, <code>guerra_espera</code>, <code>guerra_dura</code>: lo que cuestan y lo que duran las cosas de las bandas. Los minutos son de reloj.</li>
+<li><code>trafico</code> y <code>trafico_max</code>: con <code>si</code>, los coches que circulan los lleva el servidor y son los mismos para todos; <code>trafico_max</code> es cuántos como mucho por localidad. Con <code>no</code>, cada jugador ve su propio tráfico.</li>
+<li><code>economia</code>, <code>ganancia_hora</code> y <code>saldo_inicial</code>: con <code>si</code>, el servidor lleva la cuenta del dinero de cada jugador. Gastar se puede siempre. Ganar: lo que da el propio servidor, las recompensas de las misiones de la historia, una vez cada una, y además hasta <code>ganancia_hora</code> euros por hora de reloj con todo lo demás. Lo que pase no se reconoce, se retira del juego de ese jugador y queda anotado en la pantalla del servidor. <code>saldo_inicial</code> es lo más con que puede empezar un personaje nuevo.</li>
 <li><code>robo_segundos</code>: lo que hay que aguantar en la puerta para vaciar la caja del negocio de otro jugador.</li>
 <li><code>personajes</code>: cuántos personajes lleva el servidor, comunes para todos: paseantes, rateros, pistoleros, ladrones de coches y atracadores. Solo hay donde hay jugadores. Con 0, ninguno.</li>
 <li><code>venta_mercado</code> y <code>propiedad_dias</code>: el tanto por ciento que recupera quien vende su casa o su negocio al mercado, y los días de reloj sin entrar tras los que las propiedades de un jugador vuelven a estar en venta.</li>
@@ -110,8 +112,9 @@ code, kbd { background: #2a2a2a; padding: 0 .3em; }
 
 <h2>8. Lo que conviene saber</h2>
 <ul>
-<li>La gente de relleno de la calle, el tráfico y la policía los lleva el juego de cada uno, no el servidor. Por eso el servidor es ligero. Lo que sí lleva el servidor son sus propios personajes, pocos y con nombre.</li>
-<li>El dinero que cada jugador gana en sus misiones y trabajos lo cuenta su propio juego. El servidor decide lo que pasa entre jugadores: los disparos, los vehículos, las bandas, los barrios y el botín. Un jugador con el juego modificado podría darse dinero a sí mismo; no puede hacerse invencible ante los demás, ni quedarse un coche que no ha cogido, ni tocar la caja de una banda.</li>
+<li>La gente de relleno de la calle la lleva el juego de cada uno, no el servidor. Lo que sí lleva el servidor son sus propios personajes, pocos y con nombre, y los coches que circulan.</li>
+<li>El dinero lo lleva el servidor. Un jugador con el juego modificado no puede darse dinero: lo que no esté justificado no se le reconoce, no vale para nada de lo que es de todos y no se guarda. Tampoco puede hacerse invencible ante los demás, ni quedarse un coche o un negocio que no es suyo, ni tocar la caja de una banda. Lo que el servidor no comprueba paso a paso es de dónde sale cada euro de un trabajo o de una venta: para eso está el tope por hora.</li>
+<li>El tráfico que circula lo lleva el servidor. La gente de relleno y la policía las lleva el juego de cada uno, pero la policía que persigue a un jugador se reparte a los que tiene cerca.</li>
 <li>Si el servidor se cae, al arrancar sigue por donde iba: como mucho se pierde el último minuto.</li>
 </ul>
 </body>

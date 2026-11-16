@@ -36,6 +36,11 @@ class Almacen:
         self.db = sqlite3.connect(ruta)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(ESQUEMA)
+        for columna in ("saldo INTEGER", "misiones TEXT DEFAULT '[]'"):      # añadidos después: se ponen si faltan
+            try:
+                self.db.execute("ALTER TABLE cuentas ADD COLUMN " + columna)
+            except sqlite3.OperationalError:
+                pass
         self.db.commit()
 
     def cerrar(self):

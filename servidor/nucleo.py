@@ -26,6 +26,7 @@ import time
 from . import firma
 from .almacen import Almacen
 from .bots import Bots
+from .trafico import Trafico
 
 VERSION_RED = 2
 # Claves públicas de quien publica el juego: con ellas se comprueba que el mundo que trae un jugador es el de una
@@ -68,6 +69,11 @@ CONFIG = {
     "atraco": 15,                  # tanto por ciento del dinero de bolsillo que se lleva quien atraca a otro jugador
     "atraco_max": 1000,
     "robo_segundos": 20,
+    "trafico": "si",               # los coches que circulan los lleva el servidor y son los mismos para todos
+    "trafico_max": 8,              # como mucho, cuántos por localidad
+    "economia": "si",              # el servidor lleva la cuenta del dinero de cada jugador y no da por bueno lo que no puede justificar
+    "ganancia_hora": 30000,        # lo más que se puede ganar en una hora de reloj con trabajos, ventas, juego y botín de la calle
+    "saldo_inicial": 5000,         # lo más con que puede empezar un personaje nuevo
     "personajes": 6,               # cuántos personajes lleva el servidor: paseantes, rateros, pistoleros, ladrones. Con 0, ninguno
     "venta_mercado": 70,           # tanto por ciento del precio que recupera quien vende su casa o su negocio al mercado
     "propiedad_dias": 30,          # días reales sin entrar tras los que las propiedades de un jugador vuelven al mercado           # lo que hay que aguantar dentro para vaciar la caja del negocio de otro jugador
@@ -142,6 +148,7 @@ class Jugador:
         self.agachado = False
         self.interior = False
         self.estrellas = 0
+        self.po = []
         self.estado = {}
         self.t_ataque = 0.0
         self.golpeado = {}         # quién me ha dado: {id de sesión: momento}
@@ -159,6 +166,13 @@ class Jugador:
         self.t_vid = 0.0           # cuándo cogió el vehículo que conduce
         self.atracos = {}          # a quién ha atracado y cuándo
         self.bot = False           # lo lleva el servidor, no una persona
+        self.saldo = None          # lo que el servidor le reconoce: bolsillo más banco
+        self.credito = 0           # dinero que le ha dado el propio servidor y aún no ha aparecido en su juego
+        self.margen = 0.0          # lo que aún puede ganar por su cuenta sin que se le discuta
+        self.t_margen = time.monotonic()
+        self.t_saldo = 0.0
+        self.banco = 0
+        self.misiones_pagadas = set()
 
     def dist(self, otro):
         return math.hypot(self.x - otro.x, self.y - otro.y)
@@ -167,7 +181,7 @@ class Jugador:
         return {"id": self.id, "nombre": self.nombre, "banda": self.banda, "ia": self.bot}
 
 
-class Servidor(Bots):
+class Servidor(Bots, Trafico):
     def __init__(self, config=None, mundo=None, reloj_real=time.time):
         self.cfg = dict(CONFIG)
         self.cfg.update(config or {})
@@ -211,6 +225,7 @@ class Servidor(Bots):
         self.log = print
         self.rng = random.Random()
         self.bots_iniciar()
+        self.trafico_iniciar()
         self.alm.guardar()
 
     def _poner_mundo(self, mundo, guardar=True):
@@ -383,6 +398,11 @@ class Servidor(Bots):
 
     # ================================================================== envío
     def _enviar(self, j, obj):
+        t = obj.get("t")
+        if t in ("dinero", "paga_mision") and not j.bot:      # lo que da el servidor queda apuntado: es dinero justificado
+            j.credito += max(0, int(obj.get("n", 0)))
+        elif t in ("baja", "atraco_ok", "robo_fin") and not j.bot:
+            j.credito += max(0, int(obj.get("botin", 0)))
         if j.conectado:
             j.cola.put_nowait(obj)
             if j.cola.qsize() > 600:                         # no lee: fuera, sin frenar a nadie
@@ -568,6 +588,12 @@ class Servidor(Bots):
         if mi is not None:
             j.banda, j.rango = mi["banda"], mi["rango"]
         j.protegido = time.monotonic() + float(self.cfg["proteccion"])
+        j.saldo = fila["saldo"] if "saldo" in fila.keys() else None
+        try:
+            j.misiones_pagadas = set(json.loads(fila["misiones"] or "[]"))
+        except (ValueError, TypeError, IndexError):
+            j.misiones_pagadas = set()
+        j.margen = float(self.cfg["ganancia_hora"]) / 4.0       # entra con un cuarto de hora de margen
         j.dentro = True
         self.jugadores[j.id] = j
         partida = None
@@ -584,8 +610,9 @@ class Servidor(Bots):
             "funciones": ["vehiculos", "combate", "bandas", "barrios", "grupos", "propiedades", "robos", "personajes", "mundo"],
             "jugadores": [o.publico() for o in self.jugadores.values() if o.dentro and o is not j],
             "servidor": {"nombre": self.cfg["nombre"], "bienvenida": self.cfg["bienvenida"], "pvp": si(self.cfg["pvp"]), "pasivo": si(self.cfg["modo_pasivo"]),
-                         "seguras": si(self.cfg["zonas_seguras"]), "adultos": si(self.cfg["adultos"]), "proteccion": int(self.cfg["proteccion"]),
+                         "seguras": si(self.cfg["zonas_seguras"]), "adultos": si(self.cfg["adultos"]), "trafico": self._tr_activo(), "proteccion": int(self.cfg["proteccion"]),
                          "precios": {k: int(self.cfg[k]) for k in ("precio_banda", "precio_barrio", "renta_barrio", "precio_guerra", "guerra_espera", "guerra_dura")}},
+            "saldo": j.saldo if si(self.cfg["economia"]) else None,
             "partida": partida, "dias_fuera": dias_fuera, "hora": self._hora(), "semilla": self.semilla,
             "banda": self._banda_datos(j.banda), "territorios": self._territorios(), "recompensa": int(fila["recompensa"] or 0),
             "pendientes": self.alm.pendientes(j.cuenta),
@@ -607,6 +634,7 @@ class Servidor(Bots):
             self._a_todos({"t": "veh_libre", "v": self._veh_publico(v)}, menos=j)
             j.vid = None
         self._grupo_salir(j, callar=True)
+        self._guardar_saldo(j)
         if j.cuenta is not None:
             self.alm.poner(j.cuenta, visto=self.ahora(), dia_salida=self.dia)
             self.alm.guardar()
@@ -644,10 +672,14 @@ class Servidor(Bots):
             j.veh = e.get("v") if e.get("v") in self.mundo["modelos"] else ("utilitario" if e.get("v") else None)
             j.salud = max(0.0, min(999.0, float(e.get("sa", j.salud))))
             j.dinero = max(0, int(e.get("di", j.dinero)))
+            j.banco = max(0, int(e.get("ba", j.banco)))
+            self._cuadrar_saldo(j)
             j.arma = e.get("ar") if e.get("ar") in self.mundo["armas"] else "punos"
             j.barrio = e.get("b") if isinstance(e.get("b"), str) else None
             j.agachado, j.interior = bool(e.get("ag")), bool(e.get("in"))
             j.estrellas = max(0, min(5, int(e.get("es") or 0)))
+            po = e.get("po")                                  # la policía que le persigue: la ven también los que están cerca
+            j.po = [f for f in po[:10] if isinstance(f, list) and 4 <= len(f) <= 6] if isinstance(po, list) and j.estrellas else []
         except (TypeError, ValueError):
             return
         if j.vid is not None and j.vid in self.vehiculos:
@@ -658,7 +690,54 @@ class Servidor(Bots):
         if cambio:
             self._enviar(j, {"t": "territorios", "e": self._territorios()})
 
+    # ================================================================= economía
+    def _cuadrar_saldo(self, j):
+        """El dinero de cada jugador lo lleva el servidor. Gastar, siempre. Ganar, lo que el servidor ha dado (botines,
+        ventas, pagas, misiones comprobadas) y, por su cuenta, hasta un tanto por hora. Lo que pase de ahí no se reconoce."""
+        if not si(self.cfg["economia"]):
+            return
+        total = j.dinero + j.banco
+        if j.saldo is None:                                   # personaje nuevo: con lo que empieza, sin pasarse
+            j.saldo = min(total, int(self.cfg["saldo_inicial"]))
+        ahora = time.monotonic()
+        tope = float(self.cfg["ganancia_hora"])
+        j.margen = min(tope, j.margen + (ahora - j.t_margen) * tope / 3600.0)
+        j.t_margen = ahora
+        delta = total - j.saldo
+        if delta <= 0:
+            j.saldo = total                                   # ha gastado
+            return
+        de_credito = min(delta, j.credito)
+        j.credito -= de_credito
+        de_margen = min(delta - de_credito, int(j.margen))
+        j.margen -= de_margen
+        j.saldo += de_credito + de_margen
+        sobra = total - j.saldo
+        if sobra > 0:
+            j.dinero = max(0, j.dinero - sobra)               # para el servidor, ese dinero no existe
+            if ahora - j.t_saldo > 4:
+                j.t_saldo = ahora
+                self.log("A %s no se le reconocen %d euros." % (j.nombre, sobra))
+                self._enviar(j, {"t": "saldo", "quita": sobra, "saldo": j.saldo})
+
+    def _m_mision_ok(self, j, m):
+        """Ha completado una misión de su historia: su recompensa queda justificada, una vez."""
+        mi = self.mundo["misiones"].get(m.get("id"))
+        if mi is None or mi["dinero"] <= 0:
+            return
+        if not mi["repetible"]:
+            if m["id"] in j.misiones_pagadas:
+                return
+            j.misiones_pagadas.add(m["id"])
+            self.alm.poner(j.cuenta, misiones=json.dumps(sorted(j.misiones_pagadas)))
+            j.credito += int(mi["dinero"])
+
+    def _guardar_saldo(self, j):
+        if j.cuenta is not None and j.saldo is not None and not j.bot:
+            self.alm.poner(j.cuenta, saldo=int(j.saldo))
+
     def _m_guardar(self, j, m):
+        self._guardar_saldo(j)
         p = m.get("p")
         if isinstance(p, dict):
             texto = json.dumps(p, ensure_ascii=False, separators=(",", ":"))
@@ -739,7 +818,7 @@ class Servidor(Bots):
 
     # ============================================================ hora y mundo
     def _hora(self):
-        return {"reloj": round(self.reloj, 1), "dia": self.dia, "lluvia": self.lluvia}
+        return {"reloj": round(self.reloj, 1), "dia": self.dia, "lluvia": self.lluvia, "luces": round(self.t_luces, 2)}
 
     def segura(self, j):
         if not si(self.cfg["zonas_seguras"]):
@@ -755,8 +834,9 @@ class Servidor(Bots):
             n += 1
             try:
                 self.bots_mover(0.1)
+                self.trafico_mover(0.1)
             except Exception as e:
-                self.log("Error moviendo a los personajes del servidor: %s: %s" % (type(e).__name__, e))
+                self.log("Error moviendo a los personajes y el tráfico del servidor: %s: %s" % (type(e).__name__, e))
             dentro = [j for j in self.jugadores.values() if (j.dentro or j.fantasma) and j.mapa is not None]
             por_mapa = {}
             for j in dentro:
@@ -772,10 +852,16 @@ class Servidor(Bots):
                     if o.mapa == j.mapa:
                         e[str(o.id)] = {"m": o.mapa, "x": round(o.x, 1), "y": round(o.y, 1), "r": round(o.rumbo), "v": o.veh, "s": round(o.vel, 1),
                                         "vi": o.vid, "ag": int(o.agachado), "pa": int(o.pasivo), "sg": int(self.segura(o)), "in": int(o.interior), "es": o.estrellas}
+                        if o.po:
+                            e[str(o.id)]["po"] = o.po
                     else:
                         e[str(o.id)] = {"m": o.mapa, "x": round(o.x), "y": round(o.y), "r": 0, "v": o.veh, "s": 0}
-                if e:
-                    self._enviar(j, {"t": "estados", "e": e})
+                msg = {"t": "estados", "e": e}
+                if n % 2 == 0 and self._tr_activo():           # el tráfico de su localidad, cinco veces por segundo
+                    msg["tr"] = self.trafico_para(j)
+                    msg["lu"] = round(self.t_luces, 2)             # y la hora de los semáforos, para que no se desajusten
+                if e or "tr" in msg:
+                    self._enviar(j, msg)
 
     async def _bucle_lento(self):
         """Cada segundo: el reloj, las guerras, los que se fueron en combate, los vehículos viejos y el guardado."""
@@ -806,6 +892,7 @@ class Servidor(Bots):
             elif j.dentro and not j.bot and ahora - j.t_ultimo > 75:
                 self._cortar(j)
         self.bots_pensar(dt)
+        self.trafico_pensar()
         self._guerras_paso(dt)
         self._robos_paso()
         if k % 60 == 0:
@@ -1242,6 +1329,17 @@ class Servidor(Bots):
         if o.bot:
             self.bot_golpeado(o, j)
 
+    def _m_po_golpe(self, j, m):
+        """Le ha dado a un policía de los que persiguen a otro jugador: el golpe llega al juego de ese jugador."""
+        o = self.jugadores.get(m.get("a"))
+        if o is None or not o.dentro or o.mapa != j.mapa or o.bot:
+            return
+        try:
+            dano = max(0.0, min(500.0, float(m.get("dano", 0))))
+        except (TypeError, ValueError):
+            return
+        self._enviar(o, {"t": "po_golpe", "k": m.get("k"), "dano": dano, "de": j.id, "nombre": j.nombre})
+
     def _m_explosion(self, j, m):
         """Una granada, un cóctel o un cohete de un jugador: alcanza a los demás jugadores que estén dentro del radio."""
         arma = self.mundo["armas"].get(m.get("arma"))
@@ -1364,6 +1462,8 @@ class Servidor(Bots):
             self._aviso(j, "No te llega: hacen falta %d euros y llevas %d." % (n, j.dinero), "error")
             return False
         j.dinero -= n
+        if j.saldo is not None:
+            j.saldo = max(0, j.saldo - n)
         self._enviar(j, {"t": "cobro", "n": n, "motivo": motivo})
         return True
 
