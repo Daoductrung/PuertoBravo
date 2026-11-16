@@ -117,12 +117,11 @@ def test_dani_en_femenino(robot):
     assert genero.resolver(p._carrera_puesto_txt({"puesto": 0, "rivales": [1, 2]})) == "Vas primera de 3."
     from juego.trabajos import NOMBRE_TRABAJO
     assert genero.resolver(NOMBRE_TRABAJO["ambulancia"]) == "conductora de ambulancia" and genero.resolver(vida.RANGOS[2]) == "veterana"
-    # las voces grabadas son las de Dani en masculino: en femenino lo lee el lector
+    # las voces grabadas valen también en femenino: cada frase tiene la suya
     p.cfg["voces_grabadas"] = True
-    assert not p.voces_activas()
-    j.genero = "h"
     assert p.voces_activas()
-    j.genero = "m"
+    from juego import voces
+    assert voces.forma("Encarna", "Bienvenid[o|a].", "dani", "m") == "@m" and voces.forma("Encarna", "Bienvenid[o|a].", "dani", "h") == ""
     # se guarda y se recupera con la partida
     d = json.loads(json.dumps(p.a_dict()))
     assert d["jugador"]["genero"] == "m"
@@ -246,7 +245,8 @@ def test_crear_tu_propio_personaje(robot):
     eo1 = next(m for m in p.datos["misiones"] if m["id"] == "eo1")
     p.decir(p.txt(next(f for q, f in eo1["pasos"][0]["lineas"] if "Encarna" in f)))
     assert app.voz.registro[-1].startswith("Tú eres Lía, la sobrina de Encarna.")
-    assert not p.voces_activas() or not p.cfg["voces_grabadas"]
+    from juego import voces
+    assert voces.forma("Encarna", "Tú eres Dani.", j.personaje, j.genero, j.voz) is None       # su nombre no puede venir grabado: se le genera
     # un nombre escrito por quien juega no va al registro de la sesión
     assert "Lía" in registro._ocultos and "Del Mar" in registro._ocultos
     # y todo se conserva al guardar y cargar

@@ -55,7 +55,24 @@ AYUDA_HAB = {"conduccion": "Con más nivel el vehículo corre algo más y se da�
 
 def crear_personaje(app):
     """El jugador se hace su protagonista: nombre, apellido, cómo le hablan, las habilidades y con qué empieza."""
-    e = {"nombre": "", "apellido": "", "genero": "h", "niveles": {h: 0 for h in HAB_NOMBRE}, "ventaja": 0}
+    from . import vozgen
+    e = {"nombre": "", "apellido": "", "genero": "h", "niveles": {h: 0 for h in HAB_NOMBRE}, "ventaja": 0, "voz": 0, "dicho": ""}
+
+    def voz(d):
+        e["voz"] = (e["voz"] + d) % len(vozgen.VOCES_PROTA)
+
+    def oir_nombre():
+        if not e["nombre"]:
+            app.son("error")
+            return app.decir("Primero pon el nombre.", True)
+        quien = vozgen.reparto()["personajes"].get("Encarna")
+        pj = vozgen.Personaje(e["nombre"], e["apellido"], e["genero"], vozgen.VOCES_PROTA[e["voz"]], e["dicho"])
+        vozgen.probar(app, quien, pj.texto("¡Dani! ¡Pero mírate! Te lo dije: Dani Roca siempre vuelve."))
+
+    def oir_voz():
+        pj = vozgen.Personaje(e["nombre"] or "Dani", e["apellido"], e["genero"], vozgen.VOCES_PROTA[e["voz"]], e["dicho"])
+        archivo = vozgen.reparto()["protagonista"].get(f"{pj.voz}_{pj.genero}")
+        vozgen.probar(app, archivo, pj.texto("Me llamo Dani Roca. He salido esta mañana y no tengo ni para un café."))
 
     def quedan():
         return PUNTOS - sum(e["niveles"].values())
@@ -94,11 +111,15 @@ def crear_personaje(app):
             app.decir("Falta el nombre. Es la primera opción.", True)
             return
         aviso = quedan()
-        pj = personaje_propio(e["nombre"], e["apellido"], e["genero"], e["niveles"], VENTAJAS[e["ventaja"]][0])
+        pj = personaje_propio(e["nombre"], e["apellido"], e["genero"], e["niveles"], VENTAJAS[e["ventaja"]][0], vozgen.VOCES_PROTA[e["voz"]], e["dicho"])
         if aviso > 0 and not e.get("avisado"):
             e["avisado"] = True
             app.son("menu_borde")
             app.decir(f"Te quedan {aviso} niveles de habilidad sin repartir. Pulsa Intro otra vez para empezar así, o repártelos antes.", True)
+            return
+        if app.cfg["voces_grabadas"] and app.cfg["voces_propias"] and not app.pruebas and vozgen.disponible():
+            quien = vozgen.Personaje(pj["nombre"], pj["apellido"], pj["genero"], pj["voz"], pj["dicho"])
+            app.abrir(vozgen.Preparando(app, quien, app.datos.get("misiones", []), lambda: app.empezar_partida(None, personaje=pj)))
             return
         app.empezar_partida(None, personaje=pj)
 
@@ -106,7 +127,14 @@ def crear_personaje(app):
         # los textos son funciones: cambian al tocar las flechas, sin rehacer el menú
         lista = [Opcion(lambda: f"Nombre: {e['nombre'] or 'sin poner'}", pedir("nombre", "Nombre"), ayuda="Intro para escribirlo. Así te llamarán en la historia."),
                  Opcion(lambda: f"Apellido: {e['apellido'] or 'sin poner'}", pedir("apellido", "Apellido"), ayuda="Intro para escribirlo. Puedes dejarlo vacío."),
-                 Opcion(lambda: f"Te hablan {TRATO[e['genero']]}", ajuste=trato, ayuda=AYUDA_TRATO + " Izquierda, derecha o Intro para cambiar.")]
+                 Opcion(lambda: f"Te hablan {TRATO[e['genero']]}", ajuste=trato, ayuda=AYUDA_TRATO + " Izquierda, derecha o Intro para cambiar."),
+                 Opcion(lambda: f"Tu voz en las escenas: {vozgen.NOMBRE_VOZ[vozgen.VOCES_PROTA[e['voz']]]}, {TRATO[e['genero']]}", ajuste=voz,
+                        ayuda="La voz con la que hablas tú en las escenas de la historia. Hay cuatro de hombre y cuatro de mujer; suena la que corresponde a cómo te hablan. Izquierda y derecha para cambiar.")]
+        if vozgen.disponible():
+            lista += [Opcion(lambda: f"Cómo se pronuncia tu nombre: {e['dicho'] or 'igual que se escribe'}", pedir("dicho", "Cómo se pronuncia tu nombre"),
+                             ayuda="Si al escuchar tu nombre no suena bien, escríbelo aquí como se pronuncia, por ejemplo Yónatan en vez de Jonathan. En pantalla y en braille sigue saliendo como lo escribiste arriba. Puedes dejarlo vacío."),
+                      Opcion("Escuchar cómo te llamarán", oir_nombre, ayuda="Genera una frase con tu nombre, dicha por un personaje de la historia. Tarda un momento."),
+                      Opcion("Escuchar tu voz", oir_voz, ayuda="Genera una frase dicha por ti, con la voz elegida. Tarda un momento.")]
         for h, nombre in HAB_NOMBRE.items():
             lista.append(Opcion((lambda h=h, nombre=nombre: f"{nombre.capitalize()}: nivel {e['niveles'][h]}. Quedan {quedan()} por repartir"), ajuste=nivel(h),
                                 ayuda=f"{AYUDA_HAB.get(h, '')} Derecha sube e izquierda baja. Tienes {PUNTOS} niveles para repartir y como mucho {MAX_NIVEL} en cada habilidad. "

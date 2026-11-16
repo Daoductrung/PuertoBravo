@@ -31,10 +31,10 @@ def limpiar_nombre(texto):
     return t[:1].upper() + t[1:] if t else ""
 
 
-def personaje_propio(nombre, apellido="", gen="h", niveles=None, ventaja="ninguna"):
+def personaje_propio(nombre, apellido="", gen="h", niveles=None, ventaja="ninguna", voz="dani", dicho=""):
     """El diccionario de un personaje hecho por el jugador, ya saneado: es lo que recibe aplicar_personaje."""
     pj = {"id": PROPIO, "nombre": limpiar_nombre(nombre) or "Dani", "apellido": limpiar_nombre(apellido), "genero": gen if gen in genero.GENEROS else "h",
-          "botiquines": 1, "ventaja": ventaja}
+          "botiquines": 1, "ventaja": ventaja, "voz": voz if voz in ("dani", "alex", "sam", "cris") else "dani", "dicho": limpiar_nombre(dicho)}
     quedan = PUNTOS
     for h in HAB_NOMBRE:
         n = max(0, min(MAX_NIVEL, quedan, int((niveles or {}).get(h, 0))))
@@ -77,6 +77,8 @@ class Vida:
         j.nombre = str(pj.get("nombre") or "Dani")[:MAX_NOMBRE]
         j.apellido = str(pj.get("apellido") or ("" if pj["id"] == PROPIO else "Roca"))[:MAX_NOMBRE]
         j.genero = genero.poner(pj.get("genero"))
+        j.voz = pj.get("voz") if pj.get("voz") in ("dani", "alex", "sam", "cris") else "dani"
+        j.nombre_dicho = limpiar_nombre(pj.get("dicho", "")) if pj["id"] == PROPIO else ""
         if pj["id"] == PROPIO:
             registro.ocultar(j.nombre)                   # un nombre escrito por el jugador no se anota en el registro
             if j.apellido:

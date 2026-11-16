@@ -17,6 +17,10 @@ data/config/
 data/config_pruebas.json
 data/error.log
 data/radio/mi_musica/
+data/voces_generadas/
+
+# El modelo del generador de voces pesa 95 megas: lo pone herramientas/preparar_phonon.py
+data/phonon/model.q8.gguf
 
 # Publicación: la clave privada de firma y la carpeta de tu servidor no salen de tu equipo
 herramientas/claves/

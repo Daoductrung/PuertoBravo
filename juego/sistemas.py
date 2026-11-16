@@ -208,6 +208,82 @@ HABITACIONES = [
 ]
 
 
+# Amueblar la casa: cada mueble va a una habitación, cambia cómo es y mejora lo que se hace en ella.
+# (id, habitación, nombre, precio, cómo queda la habitación, qué mejora)
+MUEBLES = [
+    ("recibidor", "salir", "Plantas, cuadros y una alfombra", 300, "Hay plantas, cuadros en las paredes y una alfombra que da gusto pisar.",
+     "La casa es más acogedora: al dormir aquí te levantas con algo más de ánimo."),
+    ("sofa", "salon", "Un sofá grande y una tele nueva", 600, "Un sofá en el que caben cuatro y una tele enorme.",
+     "Ver la tele te sube el ánimo el doble."),
+    ("cocina", "cocina", "Cocina equipada y nevera grande", 700, "Cocina nueva, con horno, y una nevera grande y llena.",
+     "Lo que te preparas en casa te da el doble de salud."),
+    ("banera", "bano", "Baño reformado, con bañera", 500, "Azulejos nuevos y una bañera en la que te puedes estirar.",
+     "Un baño largo te sube más el ánimo y te quita algún golpe."),
+    ("cama", "dormitorio", "Una cama de las buenas", 800, "Una cama ancha, con un colchón de los caros.",
+     "Dormir aquí te sube bastante el ánimo."),
+    ("taller", "garaje", "Un banco de herramientas", 900, "En la pared, un banco de herramientas bien surtido.",
+     "Mientras duermes, los vehículos guardados en este garaje se quedan reparados."),
+]
+
+
+def muebles_de(j, lugar):
+    return j.muebles.get(lugar.id, [])
+
+
+def menu_muebles(p, lugar, Menu, Opcion):
+    """Comprar muebles para una casa tuya."""
+    app, j = p.app, p.j
+    tengo = j.muebles.setdefault(lugar.id, [])
+
+    def comprar(mueble):
+        def f():
+            if mueble[0] in tengo:
+                return app.decir("Eso ya lo tienes puesto.", True)
+            if not p.pagar(mueble[3]):
+                return
+            tengo.append(mueble[0])
+            p.cambiar_animo(3)
+            app.decir(f"Te lo traen y lo dejan puesto. {mueble[4]} {mueble[5]}", True)
+            m.refrescar(False)
+        return f
+
+    def ops():
+        lista = []
+        for mu in MUEBLES:
+            if mu[1] == "garaje" and not int(lugar.get("garaje", 0)):
+                continue
+            if mu[0] in tengo:
+                lista.append(Opcion(f"{mu[2]}: ya lo tienes. {mu[5]}"))
+            else:
+                lista.append(Opcion(f"{mu[2]}: {mu[3]} euros", comprar(mu), ayuda=mu[5]))
+        lista.append(Opcion("Volver", lambda: app.cerrar(m)))
+        return lista
+    m = Menu(app, lambda: f"Amueblar {lugar.nombre}. Tienes {j.dinero} euros", ops,
+             intro="Cada mueble va a una habitación y mejora lo que haces en ella. Se quedan en esta casa")
+    app.abrir(m)
+
+
+def al_dormir_en_casa(p, lugar):
+    """Lo que añaden los muebles a una noche en casa. Devuelve el texto que se suma al de haber dormido."""
+    j = p.j
+    tengo = muebles_de(j, lugar)
+    texto = ""
+    extra = (8 if "cama" in tengo else 0) + (3 if "recibidor" in tengo else 0)
+    if extra:
+        p.cambiar_animo(extra)
+        texto += " Has dormido de maravilla."
+    if "taller" in tengo:
+        arreglados = 0
+        for d in j.garajes.get(lugar.id, []):
+            modelo = p.modelos.get(d.get("modelo"))
+            if modelo and float(d.get("salud", 0)) < float(modelo["salud"]):
+                d["salud"] = float(modelo["salud"])
+                arreglados += 1
+        if arreglados:
+            texto += f" En el garaje, {arreglados} {'vehículo ha quedado reparado' if arreglados == 1 else 'vehículos han quedado reparados'}."
+    return texto
+
+
 class Interior:
     """Recorrer una casa tuya: flechas izquierda y derecha para ir de una habitación a otra, Intro para usarla."""
     pausa_mundo = True
@@ -217,6 +293,10 @@ class Interior:
         self.habitaciones = list(HABITACIONES)
         if int(lugar.get("garaje", 0)):
             self.habitaciones.append(("el garaje", f"Sitio para {int(lugar.get('garaje', 0))} vehículos. Huele a gasolina.", "garaje"))
+        self.muebles = muebles_de(p.j, lugar)
+        for mu in MUEBLES:                                # lo que has comprado se nota al entrar en cada habitación
+            if mu[0] in self.muebles:
+                self.habitaciones = [(n, d + " " + mu[4], q) if q == mu[1] else (n, d, q) for n, d, q in self.habitaciones]
         self.i = 0
 
     def al_entrar(self):
@@ -259,21 +339,26 @@ class Interior:
             app.cerrar(self)
         elif que == "salon":
             p.pasar_horas(1)
-            p.cambiar_animo(4)
+            p.cambiar_animo(8 if "sofa" in self.muebles else 4)
             app.son("pasan_horas")
-            app.decir(f"Te sientas un rato a ver la tele. Te sube el ánimo. Son las {p.hora_txt()}.", True)
+            app.decir(f"Te {'hundes en el sofá' if 'sofa' in self.muebles else 'sientas un rato'} a ver la tele. Te sube el ánimo. Son las {p.hora_txt()}.", True)
         elif que == "cocina":
             if getattr(j, "dia_nevera", -1) == p.dia:
                 app.decir("Hoy ya te has comido lo que había en la nevera. Mañana habrá más.", True)
             else:
                 j.dia_nevera = p.dia
-                j.salud = min(j.salud_max, j.salud + 25)
+                j.salud = min(j.salud_max, j.salud + (50 if "cocina" in self.muebles else 25))
                 p.son("comer", cat="interfaz")
-                app.decir(f"Te preparas algo con lo que hay en la nevera. Salud {int(j.salud)}.{p.necesidades_txt()}", True)
+                app.decir(f"Te preparas {'una buena comida en tu cocina nueva' if 'cocina' in self.muebles else 'algo con lo que hay en la nevera'}. Salud {int(j.salud)}.{p.necesidades_txt()}", True)
         elif que == "bano":
-            p.cambiar_animo(2)
             app.son("salpicadura", vol=0.5)
-            app.decir("Una ducha caliente. Sales como nuev[o|a].", True)
+            if "banera" in self.muebles:
+                p.cambiar_animo(5)
+                j.salud = min(j.salud_max, j.salud + 10)
+                app.decir("Un baño largo, con el agua bien caliente. Sales como nuev[o|a].", True)
+            else:
+                p.cambiar_animo(2)
+                app.decir("Una ducha caliente. Sales como nuev[o|a].", True)
         elif que == "dormitorio":
             self.acciones["descansar"]()
         elif que == "garaje":
@@ -522,6 +607,15 @@ def opciones_sucesos(p, Menu, Opcion):
     j = p.j
     app = p.app
     ops = []
+
+    def cerrar_menus():
+        """Resuelto un asunto, se cierran su menú y el de Territorios, que se quedaba con la oferta escrita. Nada más que eso."""
+        for _ in range(2):
+            cima = app.pila[-1] if app.pila else None
+            titulo = getattr(cima, "titulo", "")
+            titulo = titulo() if callable(titulo) else str(titulo)
+            if isinstance(cima, Menu) and (titulo.startswith("Territorios") or "propone un pacto" in titulo):
+                app.cerrar(cima)
     if j.amenaza:
         a = j.amenaza
 
@@ -538,30 +632,46 @@ def opciones_sucesos(p, Menu, Opcion):
     if j.oferta_pacto:
         o = j.oferta_pacto
 
+        def resuelto():
+            """El menú de Territorios sigue abierto con la oferta escrita: que no se pueda cobrar dos veces."""
+            if j.oferta_pacto is o:
+                return False
+            app.son("error")
+            app.decir("Eso ya está resuelto.", True)
+            return True
+
         def aceptar():
+            if resuelto():
+                return app.cerrar()
             j.oferta_pacto = None
             j.pacto_hasta = p.dia + 7
             p.cambiar_rep_banda(o["banda"], 15)
             p.dar_dinero(o["precio"], "Cobras")
             app.decir(f"Pacto cerrado con {o['banda']}. Una semana sin ataques.", True)
-            app.cerrar()
+            cerrar_menus()
 
         def rechazar():
+            if resuelto():
+                return app.cerrar()
             j.oferta_pacto = None
             p.cambiar_rep_banda(o["banda"], -8)
             p.cambiar_reputacion(1)
             app.decir(f"Le dices a {o['banda']} que no pactas con nadie. En la calle gusta, pero pueden volver.", True)
-            app.cerrar()
+            cerrar_menus()
         ops.append(Opcion(f"Pacto con {o['banda']}: te pagan {o['precio']} euros por una semana de paz",
-                          lambda: app.abrir(Menu(app, f"{o['banda']} propone un pacto", [Opcion("Aceptar el pacto", aceptar), Opcion("Rechazarlo", rechazar)])),
+                          lambda: None if resuelto() else app.abrir(Menu(app, f"{o['banda']} propone un pacto", [Opcion("Aceptar el pacto", aceptar), Opcion("Rechazarlo", rechazar)])),
                           ayuda="Si aceptas, cobras y durante siete días nadie ataca tus barrios. Si lo rechazas, ganas algo de fama."))
     if j.redada:
         r = j.redada
 
         def pagar():
+            if j.redada is not r:                        # ya se pagó: el menú seguía con la opción escrita
+                app.son("error")
+                return app.decir("Eso ya está resuelto.", True)
             if p.pagar(r["precio"]):
                 j.redada = None
                 app.decir("El inspector se guarda el sobre. Por ahora, no ha visto nada.", True)
+                cerrar_menus()
         ops.append(Opcion(f"Arreglar lo de la policía: {r['precio']} euros", pagar,
                           ayuda="Si pagas, no hay redada. Si llega la medianoche sin pagar, una redada te cuesta el tributo de un día de todos tus barrios."))
     if p.dia <= j.pacto_hasta:

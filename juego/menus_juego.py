@@ -227,8 +227,9 @@ def acerca(app):
         Opcion("Novedades de esta versión", abrir(rutas.data("docs", "novedades.html"), "las novedades")),
         Opcion("Agradecimientos: a quienes prueban el juego y avisan de los fallos. Los sonidos son mejorables y toda ayuda con ellos es bienvenida",
                ayuda="La guía cambiar sonidos, en la carpeta data, docs, explica cómo sustituir cualquier sonido o montar un pack completo."),
-        Opcion("Componentes: las voces de las escenas de Bahía del Ocaso están generadas por ordenador con VibeVoice, de Microsoft. "
-               "El modelo local de inteligencia artificial, si lo instalas, funciona con llama punto c p p"),
+        Opcion("Componentes: las voces de las escenas están generadas por ordenador con Phonon 40m, un modelo de voz de Gradium con licencia "
+               "Creative Commons de reconocimiento y uso no comercial. El modelo local de inteligencia artificial, si lo instalas, funciona con llama punto c p p",
+               ayuda="El texto de la licencia de Phonon va con el juego, en el archivo LICENCIA Phonon Gradium, y en la carpeta data, phonon."),
         Opcion("Volver", lambda: app.cerrar(m)),
     ])
     app.abrir(m)
@@ -513,9 +514,13 @@ def opciones(app):
                   "Con poco, se quitan las frases que solo recuerdan qué tecla pulsar. Con mucho, en los menús se lee además la explicación de cada opción, sin tener que pulsar F1. Normal es lo de siempre."),
             si_no("menu_posicion", "Decir la posición en los menús, por ejemplo 3 de 9",
                   "Al moverte por un menú, después de cada opción dice cuál es y cuántas hay."),
-            si_no("voces_grabadas", "Voces grabadas en las escenas, solo con el personaje Dani en masculino",
-                  ayuda_="Con sí, las escenas de las misiones que tengan grabaciones suenan con voces de actores, en lugar de leerlas tu lector de pantalla, y el texto sigue saliendo en braille. "
-                         "Solo cuando juegas con Dani y has elegido que te hablen en masculino, porque las grabaciones le llaman por su nombre, le hablan así y su voz es la de un hombre. Con no, con otro personaje o en femenino, todo lo dice tu lector de pantalla o, si no usas lector, la voz de Windows."),
+            si_no("voces_grabadas", "Voces en las escenas",
+                  ayuda_="Con sí, las escenas de las misiones suenan con una voz distinta para cada personaje, en lugar de leerlas tu lector de pantalla, y el texto sigue saliendo en braille. "
+                         "Te llaman por el nombre del personaje con el que juegas y te hablan en masculino o en femenino, según hayas elegido. La frase que no tenga voz la dice tu lector. "
+                         "Con no, todo lo dice tu lector de pantalla o, si no usas lector, la voz de Windows."),
+            si_no("voces_propias", "Generar las voces de tu propio personaje",
+                  ayuda_="Solo cuenta si juegas con un personaje hecho por ti. Con sí, las frases de la historia que dicen tu nombre se generan en tu ordenador, con las voces de los personajes, la primera vez que juegas con ese nombre: "
+                         "unos segundos de espera al empezar y el resto mientras juegas. Con no, o si tu equipo no puede con el generador, esas frases las dice tu lector de pantalla. " + __import__("juego.vozgen", fromlist=["x"]).motivo()),
         ], "Con qué voz habla el juego."),
         Opcion("Registro para informar de fallos", lambda: __import__("juego.menus_registro", fromlist=["x"]).opciones(app),
                ayuda="El juego anota lo que pasa en cada sesión para poder encontrar los fallos. Aquí ves dónde está, qué contiene y cómo enviarlo."),
@@ -987,7 +992,8 @@ def _casa(p, l):
         p.pasar_horas(8, dormir=True)
         j.salud = j.salud_max
         p.son("pasan_horas", cat="interfaz")
-        app.decir(f"Duermes ocho horas. Salud al máximo. Son las {p.hora_txt()} del día {p.dia}.", True)
+        from . import sistemas
+        app.decir(f"Duermes ocho horas. Salud al máximo.{sistemas.al_dormir_en_casa(p, l)} Son las {p.hora_txt()} del día {p.dia}.", True)
 
     def esconderse():
         p.pasar_horas(3)
@@ -1054,7 +1060,12 @@ def _casa(p, l):
             lista.append(Opcion(f"{j.perro} te espera en casa: llévatelo contigo", lambda: (p.llamar_perro(), m.refrescar(False))))
         elif j.perro and p.perro() is not None:
             lista.append(Opcion(f"Dejar a {j.perro} en casa", lambda: (p.mandar_perro_a_casa(l), m.refrescar(False)), ayuda="Se queda aquí, con comida y agua, hasta que vuelvas a por él o lo llames desde el móvil."))
-        from . import laboratorio
+        from . import laboratorio, sistemas
+        puestos = len(sistemas.muebles_de(j, l))
+        cuantos = sum(1 for mu in sistemas.MUEBLES if mu[1] != "garaje" or int(l.get("garaje", 0)))
+        lista.append(Opcion(f"Amueblar la casa: {puestos} de {cuantos} cosas puestas", lambda: sistemas.menu_muebles(p, l, Menu, Opcion),
+                            ayuda="Un sofá, una cocina nueva, una cama de las buenas, una bañera, plantas y cuadros, y un banco de herramientas si la casa tiene garaje. "
+                                  "Cada cosa mejora lo que haces en su habitación al recorrer la casa por dentro, o lo que descansas al dormir."))
         lista += laboratorio.opciones_casa(p, l, Menu, Opcion)
         lista += __import__("juego.menus_enlinea", fromlist=["x"]).opciones_propiedad(p, l)
         if not j.veh:

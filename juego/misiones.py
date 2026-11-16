@@ -158,6 +158,8 @@ class Misiones:
         if self.trabajo:
             self.terminar_trabajo("Dejas el trabajo para empezar la misión.")
         self.cancelar_gps()
+        from . import vozgen
+        vozgen.al_jugar(self, m.get("id"))                       # con un personaje propio: las voces de esta misión, lo primero
         self.mision = {"def": m, "paso": -1, "veh": None, "enemigos": [], "objeto": None, "limite": None,
                        "copia": copy.deepcopy(self.j.a_dict()), "reloj": self.reloj, "dia": self.dia,
                        "generado": False, "recogido": False, "restos": None, "avisos": set(), "quedan": None, "repeticion": bool(repeticion)}
@@ -229,9 +231,9 @@ class Misiones:
         self._materializar()
 
     def voces_activas(self):
-        """Las voces grabadas solo suenan si el jugador las quiere y juega con Dani en masculino: las grabaciones le llaman por
-        ese nombre, le hablan en masculino y su voz es la de un hombre."""
-        return bool(self.cfg["voces_grabadas"]) and self.j.personaje == "dani" and self.j.genero == "h"
+        """Las voces grabadas suenan si el jugador las quiere. Cada frase tiene la grabación que corresponde a su personaje y
+        a cómo le hablan; la que no la tenga, la dice el lector."""
+        return bool(self.cfg["voces_grabadas"])
 
     def _siguiente_paso(self):
         ms = self.mision
@@ -264,7 +266,7 @@ class Misiones:
         if tipo == "dialogo":
             from . import voces
             ms["pantalla"] = Dialogo(self.app, [(self.txt(q), self.txt(tx)) for q, tx in p["lineas"]], self._seguir_si(ms),
-                                     voces=voces.de_paso(ms["def"]["id"], ms["paso"], len(p["lineas"])) if self.voces_activas() else None)
+                                     voces=voces.de_dialogo(ms["def"]["id"], ms["paso"], p["lineas"], self.j) if self.voces_activas() else None)
             self.app.abrir(ms["pantalla"])
             return
         if tipo == "decision":

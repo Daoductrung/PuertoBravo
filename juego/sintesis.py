@@ -4,6 +4,7 @@ No hay ni un archivo de audio: cada sonido se genera al arrancar (y se guarda
 en caché). Para sustituir uno por una grabación propia basta con dejar un WAV
 con el mismo nombre en la carpeta mods/sonidos.
 """
+import math
 import os
 
 import numpy as np
@@ -730,7 +731,45 @@ def es_fondo(nombre):
 
 
 def _remuestrear(d, sr):
-    """Cambia la frecuencia de muestreo sin estropear los agudos: por trozos, en el dominio de la frecuencia."""
+    """Cambia la frecuencia de muestreo sin estropear los agudos, en el dominio de la frecuencia.
+
+    Un sonido corto se convierte de una vez. Uno largo, una canción, por tramos que se solapan y se funden: convertir
+    de golpe tres minutos de música costaba varios segundos, y era lo que hacía esperar a la música del menú."""
+    g = math.gcd(int(sr), SR)
+    a, b = int(sr) // g, SR // g                          # cada a muestras de entrada son b de salida, exactas
+    if len(d) > 4 * 51200 and a <= 2048:
+        return _remuestrear_tramos(d, a, b)
+    return _remuestrear_entero(d, sr)
+
+
+def _remuestrear_tramos(d, a, b):
+    m = max(1, round(40960 / a))
+    paso_e, paso_s = a * m, b * m                         # lo que avanza cada tramo, en la entrada y en la salida
+    sol_e, sol_s = a * max(1, m // 4), b * max(1, m // 4)  # lo que se solapa con el siguiente
+    n_e, n_s = paso_e + sol_e, paso_s + sol_s
+    canales = d[:, None] if d.ndim == 1 else d
+    total = int(math.ceil(len(canales) / paso_e))
+    salida = np.zeros((total * paso_s + sol_s, canales.shape[1]), np.float32)
+    sube = np.linspace(0.0, 1.0, sol_s, dtype=np.float32)[:, None]
+    k = min(n_s // 2 + 1, n_e // 2 + 1)
+    for i in range(total):
+        trozo = canales[i * paso_e:i * paso_e + n_e]
+        if len(trozo) < n_e:
+            trozo = np.concatenate([trozo, np.zeros((n_e - len(trozo), canales.shape[1]), trozo.dtype)])
+        espectro = np.fft.rfft(trozo, axis=0)
+        nuevo = np.zeros((n_s // 2 + 1, canales.shape[1]), espectro.dtype)
+        nuevo[:k] = espectro[:k]
+        y = (np.fft.irfft(nuevo, n_s, axis=0) * (n_s / n_e)).astype(np.float32)
+        if i:
+            y[:sol_s] *= sube                             # entra fundiéndose con la cola del anterior
+        if i < total - 1:
+            y[paso_s:] *= 1.0 - sube
+        salida[i * paso_s:i * paso_s + n_s] += y
+    salida = salida[:max(2, int(round(len(canales) * b / a)))]
+    return salida[:, 0] if d.ndim == 1 else salida
+
+
+def _remuestrear_entero(d, sr):
     n = max(2, int(round(len(d) * SR / sr)))
     canales = d[:, None] if d.ndim == 1 else d
     salida = np.empty((n, canales.shape[1]), np.float32)

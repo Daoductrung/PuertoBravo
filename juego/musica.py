@@ -714,7 +714,7 @@ class MusicaAmbiente:
 
     def _preparar(self):
         import soundfile as sf
-        for nombre in AMBIENTES:
+        for nombre in sorted(AMBIENTES, key=lambda n: n != "menu"):      # la del menú, la primera: es la que suena nada más arrancar
             if self.cancelado:
                 return
             sub = os.path.join(self.carpeta, nombre)

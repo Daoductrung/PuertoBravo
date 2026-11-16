@@ -24,6 +24,7 @@ import os
 import random
 import re
 import subprocess
+import sys
 import threading
 import time
 import urllib.error
@@ -289,9 +290,14 @@ def arrancar_local(calentar=True):
     hilos = max(2, min(8, (os.cpu_count() or 4) // 2))
     orden = [exe, "-m", modelo, "--host", "127.0.0.1", "--port", str(PUERTO_PROPIO), "-c", "2048", "-np", "1", "-t", str(hilos), "-ngl", "0",
              "--no-webui", "--reasoning", "off"]
+    # El programa del modelo necesita las bibliotecas de Visual C++ (VCRUNTIME140.dll y compañía). En un equipo que no
+    # las tenga instaladas, Windows sacaba un error y la IA no arrancaba. El juego las trae en su carpeta: se le dice dónde.
+    entorno = dict(os.environ)
+    propias = [os.path.dirname(os.path.abspath(sys.executable)), os.path.join(os.path.dirname(os.path.abspath(sys.executable)), "lib")]
+    entorno["PATH"] = os.pathsep.join(propias + [entorno.get("PATH", "")])
     try:
         _proceso[0] = subprocess.Popen(orden, cwd=os.path.dirname(exe), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                                       creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+                                       creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0), env=entorno)
     except OSError as e:
         registro.aviso("ia", "No se pudo arrancar el modelo local", error=type(e).__name__)
         return False

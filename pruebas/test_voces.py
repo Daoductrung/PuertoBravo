@@ -75,10 +75,10 @@ def test_la_mision_usa_las_voces(robot, monkeypatch, tmp_path):
     assert isinstance(d, Dialogo) and d.voces and d.voces[0] and d.canal is not None
     assert robot.app.voz.registro[-1].startswith("Custodia: ¿Vienes por el anuncio?")
     robot.tecla(pygame.K_ESCAPE)
-    # con otro personaje, o con la opción apagada, la escena la lee el lector, como siempre
+    # con la opción apagada, la escena la lee el lector, como siempre. El personaje ya no las apaga: cada uno tiene las suyas
     assert p.voces_activas()
     p.j.personaje = "sam"
-    assert not p.voces_activas()
+    assert p.voces_activas()
     p.j.personaje = "dani"
     p.cfg["voces_grabadas"] = False
     assert not p.voces_activas()
@@ -186,9 +186,9 @@ def test_bahia_del_ocaso_se_usa_todo(robot):
     p.cfg["piloto_gps"] = False
 
 
-def test_puente_de_voces_para_quien_actualiza_desde_la_1_6_0(monkeypatch, tmp_path):
-    """El actualizador de la 1.6.0 no copia la carpeta voces. Las voces nuevas le llegan dentro de data/datos, y el juego,
-    al arrancar, las pone en su sitio sin pisar nada y borra el puente."""
+def test_las_voces_de_la_version_llegan_por_el_puente_y_sustituyen_a_las_anteriores(monkeypatch, tmp_path):
+    """Las voces viajan dentro de data/datos y el juego, al arrancar, las pone en su sitio: pisan a las de la versión
+    anterior, se quitan las que ya no vienen, no se tocan las del jugador y el puente se borra."""
     from juego import actualizador
     datos = str(tmp_path / "data")
     monkeypatch.setattr(voces, "carpeta", lambda: os.path.join(datos, "voces"))
@@ -198,15 +198,23 @@ def test_puente_de_voces_para_quien_actualiza_desde_la_1_6_0(monkeypatch, tmp_pa
     for sub, nombre in (("historia_principal", "m01_1_1"), ("historia_principal", "m01_1_2"), ("bahia_del_ocaso", "oc01_1_1")):
         os.makedirs(os.path.join(puente, sub), exist_ok=True)
         open(os.path.join(puente, sub, nombre + ".ogg"), "wb").write(b"nueva")
+    open(os.path.join(puente, "historia_principal", "m01_1_1@alex.ogg"), "wb").write(b"nueva para alex")
     os.makedirs(os.path.join(datos, "voces", "bahia_del_ocaso"))
-    open(os.path.join(datos, "voces", "bahia_del_ocaso", "oc01_1_1.ogg"), "wb").write(b"la que ya estaba")
+    open(os.path.join(datos, "voces", "bahia_del_ocaso", "oc01_1_1.ogg"), "wb").write(b"la de la version anterior")
+    open(os.path.join(datos, "voces", "bahia_del_ocaso", "oc99_1_1.ogg"), "wb").write(b"de una frase que ya no existe")
     os.makedirs(os.path.join(datos, "voces", "propias"))
     open(os.path.join(datos, "voces", "propias", "m01_1_1.ogg"), "wb").write(b"del jugador")
-    assert voces.recoger_puente() == 2                                        # las dos que faltaban
+    open(os.path.join(datos, "voces", "suelta_1_1.ogg"), "wb").write(b"suelta del jugador")
+    os.makedirs(os.path.join(datos, "voces", "mi_mod"))
+    open(os.path.join(datos, "voces", "mi_mod", "mm_1_1.ogg"), "wb").write(b"de un mod del jugador")
+    assert voces.recoger_puente() == 4
     assert not os.path.isdir(puente)                                          # el puente no deja rastro
     assert open(os.path.join(datos, "voces", "historia_principal", "m01_1_1.ogg"), "rb").read() == b"nueva"
-    assert open(os.path.join(datos, "voces", "bahia_del_ocaso", "oc01_1_1.ogg"), "rb").read() == b"la que ya estaba"
+    assert open(os.path.join(datos, "voces", "historia_principal", "m01_1_1@alex.ogg"), "rb").read() == b"nueva para alex"
+    assert open(os.path.join(datos, "voces", "bahia_del_ocaso", "oc01_1_1.ogg"), "rb").read() == b"nueva"        # la nueva pisa a la vieja
+    assert not os.path.exists(os.path.join(datos, "voces", "bahia_del_ocaso", "oc99_1_1.ogg"))                    # y la que ya no viene, fuera
     assert open(os.path.join(datos, "voces", "propias", "m01_1_1.ogg"), "rb").read() == b"del jugador"
+    assert os.path.exists(os.path.join(datos, "voces", "suelta_1_1.ogg")) and os.path.exists(os.path.join(datos, "voces", "mi_mod", "mm_1_1.ogg"))
     voces.refrescar()
     assert voces.buscar("m01", 0, 0).endswith(os.path.join("propias", "m01_1_1.ogg"))        # y la del jugador sigue mandando
     assert voces.recoger_puente() == 0
