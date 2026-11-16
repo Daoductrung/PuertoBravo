@@ -25,7 +25,7 @@ def _menu(p, l, ops, intro=None):
 def _policia_cerca(p, radio=60):
     x, y = p.pos()
     return any(e.tipo == "policia" and not e.muerto and e.dist(x, y) < radio for e in p.personas) or \
-        any(o.ia == "policia" and o.dist(x, y) < radio for o in p.vehiculos)
+        any(p.es_patrulla(o) and o.dist(x, y) < radio for o in p.vehiculos)
 
 
 # ======================================================================== viajes

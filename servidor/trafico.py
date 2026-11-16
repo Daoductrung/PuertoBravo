@@ -77,10 +77,16 @@ class Trafico:
 
     def trafico_pensar(self):
         """Una vez por segundo: cuántos coches hay en cada localidad con gente, y fuera los que ya no ve nadie."""
-        if not self._tr_activo():
+        tr, po = self._tr_activo(), self._po_activo()
+        if not tr and not po:
             if self.trafico:
                 self.trafico.clear()
             return
+        if not tr:                                             # sin tráfico común solo quedan las patrullas que persiguen
+            for ident in [i for i, c in self.trafico.items() if not c.get("poli")]:
+                del self.trafico[ident]
+        import time
+        ahora = time.monotonic()
         gente = {}
         for j in self.jugadores.values():
             if j.dentro and not j.bot and j.mapa is not None:
@@ -89,23 +95,30 @@ class Trafico:
             x, y, _ = self.tr_pos(c)
             if c["m"] not in gente or all(math.hypot(o.x - x, o.y - y) > 520 for o in gente[c["m"]]):
                 del self.trafico[ident]
+            elif c.get("sobra") and c.get("obj") is None and (ahora - c["sobra"] > 40 or all(math.hypot(o.x - x, o.y - y) > 110 for o in gente[c["m"]])):
+                del self.trafico[ident]                        # la patrulla que perseguía a alguien y ya no: se retira
         tope = int(self.cfg["trafico_max"])
         for mapa, lista in gente.items():
             m = self.mundo["mapas"][mapa]
             quiere = min(tope, int(m.get("trafico", 0)))
             hay = sum(1 for c in self.trafico.values() if c["m"] == mapa and not c.get("poli"))
-            if hay < quiere:
+            if tr and hay < quiere:
                 self._tr_nuevo(mapa, self.rng.choice(lista))
             # las patrullas del servidor: rondan como un coche más, y acuden a por quien va buscado y les pasa cerca
-            if int(m.get("policia", 1)) and sum(1 for c in self.trafico.values() if c["m"] == mapa and c.get("poli")) < int(self.cfg["patrullas"]):
+            if tr and int(m.get("policia", 1)) and sum(1 for c in self.trafico.values() if c["m"] == mapa and c.get("poli") and c.get("obj") is None) < int(self.cfg["patrullas"]):
                 self._tr_nuevo(mapa, self.rng.choice(lista), poli=True)
-            for c in [c for c in self.trafico.values() if c["m"] == mapa and c.get("poli")]:
+            for c in [c for c in self.trafico.values() if c["m"] == mapa and c.get("poli") and c.get("obj") is None and not c.get("desp")]:
                 x, y, rumbo = self.tr_pos(c)
                 buscados = [o for o in lista if o.estrellas > 0 and math.hypot(o.x - x, o.y - y) < 150]
                 if buscados:
                     o = min(buscados, key=lambda o: math.hypot(o.x - x, o.y - y))
-                    del self.trafico[c["id"]]
-                    self._enviar(o, {"t": "patrulla_llega", "x": round(x, 1), "y": round(y, 1), "d": c["d"]})
+                    if po:                                     # desde ahora le persigue, y la lleva el servidor
+                        c["obj"] = o.id
+                        c.pop("sobra", None)
+                        self._enviar(o, {"t": "patrulla_llega", "ya": 1})
+                    else:
+                        del self.trafico[c["id"]]
+                        self._enviar(o, {"t": "patrulla_llega", "x": round(x, 1), "y": round(y, 1), "d": c["d"]})
 
     def trafico_mover(self, dt):
         self.t_luces += dt
@@ -119,7 +132,9 @@ class Trafico:
             x, y, _ = self.tr_pos(c)
             estorbos.setdefault(c["m"], []).append((x, y))
         fase = int(self.t_luces // 14)
-        for c in self.trafico.values():
+        for c in list(self.trafico.values()):
+            if c.get("poli") and self.po_coche(c, dt):         # persigue a alguien, o ya ha soltado a sus agentes
+                continue
             m = self.mundo["mapas"][c["m"]]
             nx, ny = int(m.get("nx", 0)), int(m.get("ny", 0))
             dx, dy = DIRS[c["d"]]
@@ -153,7 +168,8 @@ class Trafico:
                 continue
             x, y, rumbo = self.tr_pos(c)
             if abs(x - j.x) < 320 and abs(y - j.y) < 320:
-                out.append([c["id"], c["modelo"], round(x, 1), round(y, 1), int(rumbo), round(c["vel"], 1), 1 if c.get("poli") else 0])
+                out.append([c["id"], c["modelo"], round(x, 1), round(y, 1), int(rumbo), round(c["vel"], 1),
+                            0 if not c.get("poli") else 3 if c.get("desp") else 2 if c.get("obj") is not None else 1])
         return out
 
     def patrulla_ve(self, j):
@@ -175,7 +191,7 @@ class Trafico:
         c = self.trafico.get(m.get("id"))
         if c is None or c["m"] != j.mapa or j.veh:
             return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": "Ese vehículo ya no está."})
-        if c.get("poli"):
+        if c.get("poli") and not c.get("desp"):                # con los agentes fuera, sí se la pueden llevar
             return self._enviar(j, {"t": "veh_no", "id": c["id"], "motivo": "Ese coche patrulla está lleno de policías."})
         x, y, rumbo = self.tr_pos(c)
         if math.hypot(x - j.x, y - j.y) > 9:

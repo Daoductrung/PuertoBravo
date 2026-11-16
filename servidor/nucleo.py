@@ -28,6 +28,7 @@ from .almacen import Almacen
 from .bots import Bots
 from .trafico import Trafico
 from .peatones import Peatones
+from .policia import Policia
 
 VERSION_RED = 2
 # Claves públicas de quien publica el juego: con ellas se comprueba que el mundo que trae un jugador es el de una
@@ -74,6 +75,7 @@ CONFIG = {
     "trafico_max": 8,              # como mucho, cuántos por localidad
     "patrullas": 1,                # coches patrulla del servidor que rondan por cada localidad con jugadores
     "peatones": "si",              # la gente de la calle la lleva el servidor y es la misma para todos
+    "policia": "si",               # la búsqueda, la persecución y la detención las lleva el servidor
     "peatones_max": 10,            # como mucho, cuántos por localidad
     "economia": "si",              # el servidor lleva la cuenta del dinero de cada jugador y no da por bueno lo que no puede justificar
     "ganancia_hora": 30000,        # lo más que se puede ganar en una hora de reloj con trabajos, ventas, juego y botín de la calle
@@ -153,6 +155,11 @@ class Jugador:
         self.interior = False
         self.estrellas = 0
         self.po = []
+        self.puntos = 0.0          # puntos de delito: de ellos sale el nivel de búsqueda
+        self.t_evasion = 0.0       # segundos sin ningún policía cerca
+        self.t_poli = 0.0          # lo que falta para que salga otra patrulla
+        self.poli_enviada = False
+        self.detenido = 0.0        # le han echado el guante: hasta este momento le tienen cogido
         self.estado = {}
         self.t_ataque = 0.0
         self.golpeado = {}         # quién me ha dado: {id de sesión: momento}
@@ -185,7 +192,7 @@ class Jugador:
         return {"id": self.id, "nombre": self.nombre, "banda": self.banda, "ia": self.bot}
 
 
-class Servidor(Bots, Trafico, Peatones):
+class Servidor(Bots, Trafico, Peatones, Policia):
     def __init__(self, config=None, mundo=None, reloj_real=time.time):
         self.cfg = dict(CONFIG)
         self.cfg.update(config or {})
@@ -231,6 +238,7 @@ class Servidor(Bots, Trafico, Peatones):
         self.bots_iniciar()
         self.trafico_iniciar()
         self.peatones_iniciar()
+        self.policia_iniciar()
         self.alm.guardar()
 
     def _poner_mundo(self, mundo, guardar=True):
@@ -615,7 +623,7 @@ class Servidor(Bots, Trafico, Peatones):
             "funciones": ["vehiculos", "combate", "bandas", "barrios", "grupos", "propiedades", "robos", "personajes", "mundo"],
             "jugadores": [o.publico() for o in self.jugadores.values() if o.dentro and o is not j],
             "servidor": {"nombre": self.cfg["nombre"], "bienvenida": self.cfg["bienvenida"], "pvp": si(self.cfg["pvp"]), "pasivo": si(self.cfg["modo_pasivo"]),
-                         "seguras": si(self.cfg["zonas_seguras"]), "adultos": si(self.cfg["adultos"]), "trafico": self._tr_activo(), "peatones": self._pe_activo(), "proteccion": int(self.cfg["proteccion"]),
+                         "seguras": si(self.cfg["zonas_seguras"]), "adultos": si(self.cfg["adultos"]), "trafico": self._tr_activo(), "peatones": self._pe_activo(), "policia": self._po_activo(), "proteccion": int(self.cfg["proteccion"]),
                          "precios": {k: int(self.cfg[k]) for k in ("precio_banda", "precio_barrio", "renta_barrio", "precio_guerra", "guerra_espera", "guerra_dura")}},
             "saldo": j.saldo if si(self.cfg["economia"]) else None,
             "partida": partida, "dias_fuera": dias_fuera, "hora": self._hora(), "semilla": self.semilla,
@@ -624,6 +632,7 @@ class Servidor(Bots, Trafico, Peatones):
             "props": self._props(), "robos": self.alm.cobrar_robos(j.cuenta),
             "vehiculos": [self._veh_publico(v) for v in self.vehiculos.values()]})
         self._a_todos({"t": "entra", "id": j.id, "nombre": j.nombre, "banda": j.banda}, menos=j)
+        self.po_entra(j)
         self.log("Entra %s. Hay %d." % (j.nombre, sum(1 for o in self.jugadores.values() if o.dentro and not o.bot)))
         return True
 
@@ -639,6 +648,7 @@ class Servidor(Bots, Trafico, Peatones):
             self._a_todos({"t": "veh_libre", "v": self._veh_publico(v)}, menos=j)
             j.vid = None
         self._grupo_salir(j, callar=True)
+        self.po_sale(j)
         self._guardar_saldo(j)
         if j.cuenta is not None:
             self.alm.poner(j.cuenta, visto=self.ahora(), dia_salida=self.dia)
@@ -682,9 +692,12 @@ class Servidor(Bots, Trafico, Peatones):
             j.arma = e.get("ar") if e.get("ar") in self.mundo["armas"] else "punos"
             j.barrio = e.get("b") if isinstance(e.get("b"), str) else None
             j.agachado, j.interior = bool(e.get("ag")), bool(e.get("in"))
-            j.estrellas = max(0, min(5, int(e.get("es") or 0)))
-            po = e.get("po")                                  # la policía que le persigue: la ven también los que están cerca
-            j.po = [f for f in po[:10] if isinstance(f, list) and 4 <= len(f) <= 6] if isinstance(po, list) and j.estrellas else []
+            if not self._po_activo():                         # sin policía del servidor, la búsqueda la lleva su juego
+                j.estrellas = max(0, min(5, int(e.get("es") or 0)))
+                po = e.get("po")                              # y la policía que le persigue la ven también los que están cerca
+                j.po = [f for f in po[:10] if isinstance(f, list) and 4 <= len(f) <= 6] if isinstance(po, list) and j.estrellas else []
+            else:
+                j.po = []
         except (TypeError, ValueError):
             return
         if j.vid is not None and j.vid in self.vehiculos:
@@ -848,6 +861,7 @@ class Servidor(Bots, Trafico, Peatones):
                 self.bots_mover(0.1)
                 self.trafico_mover(0.1)
                 self.peatones_mover(0.1)
+                self.policia_mover(0.1)
             except Exception as e:
                 self.log("Error moviendo a los personajes y el tráfico del servidor: %s: %s" % (type(e).__name__, e))
             dentro = [j for j in self.jugadores.values() if (j.dentro or j.fantasma) and j.mapa is not None]
@@ -870,14 +884,20 @@ class Servidor(Bots, Trafico, Peatones):
                     else:
                         e[str(o.id)] = {"m": o.mapa, "x": round(o.x), "y": round(o.y), "r": 0, "v": o.veh, "s": 0}
                 msg = {"t": "estados", "e": e}
-                if n % 2 == 0 and self._tr_activo():           # el tráfico de su localidad, cinco veces por segundo
+                if n % 2 == 0 and self._po_activo():
+                    msg["es"] = j.estrellas                        # su nivel de búsqueda: el que vale es este
+                    ag = self.agentes_para(j)                      # los agentes a pie que tiene cerca
+                    if ag or getattr(j, "ve_agentes", False):
+                        msg["po"] = ag
+                    j.ve_agentes = bool(ag)
+                if n % 2 == 0 and (self._tr_activo() or self._po_activo()):      # el tráfico de su localidad, cinco veces por segundo
                     msg["tr"] = self.trafico_para(j)
                     msg["lu"] = round(self.t_luces, 2)             # y la hora de los semáforos, para que no se desajusten
                 if n % 2 == 0 and self._pe_activo():
                     msg["pe"] = self.peatones_para(j)              # y la gente de la calle que tiene cerca
                 if "pe" in msg and "tr" not in msg:
                     msg["lu"] = round(self.t_luces, 2)
-                if e or "tr" in msg or "pe" in msg:
+                if e or "tr" in msg or "pe" in msg or "po" in msg:
                     self._enviar(j, msg)
 
     async def _bucle_lento(self):
@@ -911,6 +931,7 @@ class Servidor(Bots, Trafico, Peatones):
         self.bots_pensar(dt)
         self.trafico_pensar()
         self.peatones_pensar()
+        self.policia_pensar()
         self._guerras_paso(dt)
         self._robos_paso()
         if k % 60 == 0:

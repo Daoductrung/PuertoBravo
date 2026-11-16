@@ -1239,7 +1239,7 @@ def _taller(p, l):
 
     def pintar():
         x, y = p.pos()
-        if any(e.tipo == "policia" and not e.muerto and e.dist(x, y) < 45 for e in p.personas) or any(o.ia == "policia" and o.dist(x, y) < 45 for o in p.vehiculos):
+        if any(e.tipo == "policia" and not e.muerto and e.dist(x, y) < 45 for e in p.personas) or any(p.es_patrulla(o) and o.dist(x, y) < 45 for o in p.vehiculos):
             app.son("error")
             app.decir("¡Tienes a la policía encima! Despístalos un poco antes de pintar.", True)
             return

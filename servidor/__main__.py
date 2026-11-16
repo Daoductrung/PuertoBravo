@@ -61,6 +61,10 @@ trafico_max = 8
 # cerca, y ven a quien dispara a su lado. Con 0, ninguno.
 patrullas = 1
 
+# La policía: con si, la búsqueda, las patrullas que persiguen, los agentes y la detención los lleva el servidor, y
+# los ve y los oye todo el que esté cerca. Con no, la lleva el juego de cada jugador y se reparte a los demás.
+policia = si
+
 # La gente de la calle: con si, los peatones los lleva el servidor y son los mismos para todos.
 peatones = si
 peatones_max = 10

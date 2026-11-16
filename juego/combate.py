@@ -326,6 +326,7 @@ class Combate:
         self.sv_golpe_eco(p, dano)                               # en una misión en grupo, el golpe cuenta para todos
         self.sv_golpe_policia(p, dano)                           # y si es un agente que persigue a otro jugador, le llega a su juego
         self.sv_golpe_peaton(p, dano)                            # y si es alguien de la calle, que es de todos, también
+        self.sv_golpe_agente(p, dano)                            # o un agente de los que lleva el servidor
         p.salud -= dano
         if p.salud <= 0:
             p.muerto = True
@@ -463,7 +464,7 @@ class Combate:
         if not siempre:
             testigo = any((p.tipo == "civil" and not p.muerto and p.dist(x, y) < 35) or
                           (p.tipo == "policia" and not p.muerto and p.dist(x, y) < 80) for p in self.personas)
-            testigo = testigo or any(v.ia == "policia" and v.dist(x, y) < 80 for v in self.vehiculos)
+            testigo = testigo or any(self.es_patrulla(v) and v.dist(x, y) < 80 for v in self.vehiculos)
             if not testigo:
                 return
         self.cambiar_ciudadania(-0.6 * puntos)
@@ -472,11 +473,13 @@ class Combate:
         if j.estrellas == 0 and j.puntos_busqueda + puntos >= UMBRAL[0] and texto:
             self.decir(f"Te han visto. Delito: {texto}.")
         j.puntos_busqueda += puntos
+        self.sv_delito(puntos)                                   # en un servidor, la cuenta la lleva él
 
     def poner_busqueda(self, nivel):
         if self.cfg["sin_policia"]:
             return
         self.j.puntos_busqueda = max(self.j.puntos_busqueda, UMBRAL[max(0, min(4, nivel - 1))])
+        self.sv_busqueda(nivel)
 
     def limpiar_busqueda(self, hablar=True):
         j = self.j
@@ -486,6 +489,7 @@ class Combate:
         j.puntos_busqueda = 0.0
         j.estrellas = 0
         self.t_evasion = 0.0
+        self.sv_busqueda(0)
         for p in self.personas:
             if p.tipo == "policia":
                 p.hostil = False
@@ -509,6 +513,9 @@ class Combate:
             self.decir(f"Nivel de búsqueda {n} de 5.{pista}")
         j.estrellas = n
         if n == 0:
+            return
+        if self.sv_policia_comun():                              # en un servidor, perseguirte y perderte lo decide él
+            self.sv_buscando(dt)
             return
         x, y = self.pos()
         # A pie se te ve menos que en un coche: basta con alejarse media manzana para que te pierdan.
@@ -599,6 +606,9 @@ class Combate:
                 self.actualizar_perro(p, dt)
                 continue
             d = p.dist(px, py)
+            if getattr(p, "po_id", None) is not None:            # un agente del servidor: lo mueve él
+                self.sv_agente_paso(p, d, dt)
+                continue
             if p.tipo == "policia" and j.estrellas == 0:
                 p.hostil = False
                 if d > 45:
@@ -744,6 +754,7 @@ class Combate:
 
     # ------------------------------------------------------- muerte y arresto
     def _fin_persecucion(self):
+        self.sv_busqueda(0, fin=True)                            # en un servidor, los que iban a por ti se retiran ya
         self.limpiar_busqueda(False)
         for p in [p for p in self.personas if p.tipo == "policia"]:
             self.personas.remove(p)

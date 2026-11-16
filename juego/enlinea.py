@@ -1,8 +1,8 @@
 """Jugar en un servidor: el mismo juego de siempre, con jugadores de verdad alrededor.
 
-Tu juego sigue llevando tu mundo (la gente de la calle, el tráfico, la policía, tus misiones y tus trabajos), y el
-servidor lleva lo que es de todos: quién eres, tu personaje guardado, los demás jugadores, los vehículos que dejáis en
-la calle, los disparos entre vosotros, las bandas, los barrios, la hora y el tiempo.
+Tu juego sigue llevando lo tuyo (tus misiones y tus trabajos), y el servidor lleva lo que es de todos: quién eres, tu
+personaje guardado, los demás jugadores, los vehículos que dejáis en la calle, los disparos entre vosotros, las bandas,
+los barrios, la hora y el tiempo, el tráfico, la gente de la calle y la policía.
 
 Lo que decide el servidor no lo decide tu juego: si un disparo tuyo llega a otro jugador, de quién es un coche
 aparcado, cuánto hay en la caja de la banda.
@@ -13,6 +13,7 @@ import json
 import math
 import os
 import queue
+import random
 import socket
 import sys
 import threading
@@ -88,7 +89,7 @@ def importar_identidad(texto):
 def huella_datos(datos):
     """Una huella de lo que tiene que ser igual en todos: localidades, lugares, barrios, armas, vehículos y misiones.
     Solo entra lo que no cambia mientras se juega: identificadores y las cifras de las armas."""
-    partes = []
+    partes = [["formato", 2]]                    # cambia cuando el juego le cuenta al servidor más cosas del mismo mundo
     for m in sorted(datos.get("mapas", []), key=lambda m: str(m.get("id"))):
         partes.append(["mapa", m.get("id"), sorted(str(l.get("id")) for l in m.get("lugares", [])), sorted(str(b.get("id")) for b in m.get("barrios", []))])
     for a in sorted(datos.get("armas", []), key=lambda a: str(a.get("id"))):
@@ -120,12 +121,15 @@ def mundo_servidor():
             "trafico": int(getattr(m, "trafico", 0)) if m.tipo != "mar" else 0,
             "peatones": int(getattr(m, "peatones", 0)) if m.tipo != "mar" else 0, "policia": int(bool(getattr(m, "policia", True))),
             "coches": sorted({v for b in c.get("barrios", []) for v in b.get("vehiculos", [])}),
+            # para los agentes a pie: las manzanas por las que se puede andar (parques, plazas, descampados)
+            "abiertos": sorted([int(k[0]), int(k[1])] for k, v in getattr(m, "bloques", {}).items() if v != "pared") if m.tipo != "mar" else [],
             "barrios": [{"id": b["id"], "nombre": b.get("nombre", b["id"])} for b in c.get("barrios", [])]}
     for a in datos["armas"]:
         out["armas"][a["id"]] = {"nombre": a["nombre"], "tipo": a.get("tipo", "cuerpo"), "dano": a.get("dano", 0), "alcance": a.get("alcance", 2),
-                                 "cadencia": a.get("cadencia", 0.5), "precision": a.get("precision", 0.8), "radio": a.get("radio", 0)}
+                                 "cadencia": a.get("cadencia", 0.5), "precision": a.get("precision", 0.8), "radio": a.get("radio", 0), "automatica": bool(a.get("automatica"))}
     for v in datos["vehiculos"]:
-        out["modelos"][v["id"]] = {"nombre": v["nombre"], "salud": v.get("salud", 100), "vel_max": v.get("vel_max", 25)}
+        out["modelos"][v["id"]] = {"nombre": v["nombre"], "salud": v.get("salud", 100), "vel_max": v.get("vel_max", 25), "acel": v.get("acel", 6.0),
+                                   "freno": v.get("freno", 12), "vuela": bool(v.get("vuela"))}
     for mi in datos["misiones"]:
         r = mi.get("recompensa") or {}
         out["misiones"][mi["id"]] = {"titulo": mi["titulo"], "dinero": int(r.get("dinero", 0) or 0), "repetible": bool(mi.get("repetible"))}
@@ -318,7 +322,12 @@ class EnLinea:
                    "recompensa": int(ok.get("recompensa") or 0), "agresor": None, "t_agresor": -999.0, "t_guardar": 20.0, "inv_banda": None,
                    "inv_grupo": None, "segura": False, "protegido": time.time() + float((ok.get("servidor") or {}).get("proteccion", 0)),
                    "ecos": {}, "mision_grupo": None, "quien": [], "bandas": [], "nombre_servidor": enlace.servidor.get("nombre", "Servidor"),
-                   "t_atropello": 0.0, "t_dicho": {}, "cifrado": enlace.cli.cifrado, "props": ok.get("props") or {}, "robo": None, "trafico": {}, "peatones": {}}
+                   "t_atropello": 0.0, "t_dicho": {}, "cifrado": enlace.cli.cifrado, "props": ok.get("props") or {}, "robo": None, "trafico": {}, "peatones": {},
+                   "agentes": {}, "id": ok.get("id"), "t_desfase": None}
+        if self.sv["info"].get("policia") and self.cfg["sin_policia"]:      # aquí la policía es de todos: la asistencia no vale
+            self._sv_sin_policia = True
+            self.cfg.v["sin_policia"] = False
+        self.j.puntos_busqueda, self.j.estrellas = 0.0, 0                    # si te buscaban al salir, el servidor te lo dirá
         if self.sv["banda"]:
             yo = next((m for m in self.sv["banda"]["miembros"] if m["cuenta"] == ok.get("cuenta")), None)
             self.sv["rango"] = yo["rango"] if yo else None
@@ -338,9 +347,10 @@ class EnLinea:
             self.sortear_dia(anunciar=False)
         except Exception:
             pass
+        self.cfg.temporales = {"sin_policia": True} if getattr(self, "_sv_sin_policia", False) else {}
         if not self.sv["info"].get("adultos", True) and self.cfg["adultos"]:
             self._sv_adultos = True
-            self.cfg.temporales = {"adultos": True}
+            self.cfg.temporales["adultos"] = True
             self.cfg.v["adultos"] = False            # solo mientras dura la sesión: no se guarda
             self.app.aplicar_adultos()
         for v in ok.get("vehiculos", []):
@@ -398,11 +408,18 @@ class EnLinea:
             self.sv_guardar(ya=True)
             time.sleep(0.15)
         self.en_servidor = False
+        if getattr(self, "_sv_sin_policia", False):
+            self._sv_sin_policia = False
+            self.cfg.v["sin_policia"] = True
         if getattr(self, "_sv_adultos", False):
             self._sv_adultos = False
-            self.cfg.temporales = {}
             self.cfg.v["adultos"] = True
             self.app.aplicar_adultos()
+        self.cfg.temporales = {}
+        for p in list(self.sv.get("agentes", {}).values()):
+            if p in self.personas:
+                self.personas.remove(p)
+        self.sv["agentes"] = {}
         for e in list(self.sv.get("ecos", {}).values()):
             if e in self.personas:
                 self.personas.remove(e)
@@ -484,7 +501,7 @@ class EnLinea:
             if r.hostil and self.t - getattr(r, "t_hostil", 0.0) > 90:
                 r.hostil = False
             # a quien persigue la policía se le oye venir: las sirenas van con él
-            perseguido = getattr(r, "estrellas", 0) > 0 and r.mapa == self.mundo.id and r.visto and r.dist(x0, y0) < 220
+            perseguido = getattr(r, "estrellas", 0) > 0 and r.mapa == self.mundo.id and r.visto and r.dist(x0, y0) < 220 and not self.sv_policia_comun()
             sirena = getattr(r, "sirena", None)
             if perseguido and sirena is None:
                 r.sirena = self.son("sirena_lejana", bucle=True, xy=(r.x, r.y), ref=12, maxd=220, vol=0.5)
@@ -578,6 +595,10 @@ class EnLinea:
             self.mundo.desfase_luces = float(m["lu"]) - self.t
         if "pe" in m:
             self._sv_peatones(m.get("pe") or [])
+        if "po" in m:
+            self._sv_agentes(m.get("po") or [])
+        if "es" in m:
+            self._sv_cuadrar_busqueda(m.get("es"))
         for clave, e in (m.get("e") or {}).items():
             try:
                 ident = int(clave)
@@ -604,7 +625,7 @@ class EnLinea:
     # ------------------------------------------------------------ policía común
     def _sv_mi_policia(self):
         """La policía que te persigue en tu juego: se la cuentas al servidor para que la tengan también los que están cerca."""
-        if not self.j.estrellas:
+        if not self.j.estrellas or self.sv_policia_comun():
             return []
         out = []
         for v in self.vehiculos:
@@ -686,6 +707,9 @@ class EnLinea:
 
     def _svm_patrulla_llega(self, m):
         """Una patrulla del servidor que rondaba cerca viene a por ti: desde ahora es de las que te persiguen."""
+        if m.get("ya"):                                          # la sigue llevando el servidor: solo te enteras
+            self.sv_dicho("patrulla", "Una patrulla que rondaba por aquí viene a por ti.", 8.0)
+            return
         if not self.j.estrellas or "patrulla" not in self.modelos:
             return
         v = self.crear_vehiculo("patrulla", float(m.get("x", 0)), float(m.get("y", 0)), int(m.get("d", 0)) % 4, "policia")
@@ -695,6 +719,173 @@ class EnLinea:
     def _svm_visto(self, m):
         self.decir("Te ha visto una patrulla.")
         self.delito(2, "disparos delante de una patrulla", siempre=True)
+
+    # --------------------------------------------- la policía que lleva el servidor
+    def sv_policia_comun(self):
+        """¿La búsqueda, la persecución y la detención las lleva el servidor? Entonces tu juego no pone su policía."""
+        return self.en_servidor and bool(self.sv["info"].get("policia"))
+
+    def sv_delito(self, puntos):
+        if self.sv_policia_comun() and puntos > 0:
+            self.red.enviar({"t": "delito", "n": round(float(puntos), 2)})
+
+    def sv_busqueda(self, nivel, fin=False):
+        """Tu juego pone un nivel de búsqueda, o la da por terminada: pintar el coche, pagar la multa, acabar en comisaría."""
+        if self.sv_policia_comun() and not getattr(self, "_sv_busqueda_suya", False):
+            self.red.enviar({"t": "busqueda", "nivel": int(nivel), "fin": bool(fin)})
+
+    def _sv_limpiar_busqueda(self, hablar):
+        self._sv_busqueda_suya = True                            # lo dice el servidor: no hace falta contárselo de vuelta
+        try:
+            self.limpiar_busqueda(hablar)
+        finally:
+            self._sv_busqueda_suya = False
+
+    def _svm_nivel_busqueda(self, m):
+        from .combate import UMBRAL
+        try:
+            es, pu = max(0, min(5, int(m.get("es") or 0))), float(m.get("pu") or 0)
+        except (TypeError, ValueError):
+            return
+        self.sv["t_desfase"] = None
+        if es == 0:
+            if self.j.estrellas or self.j.puntos_busqueda:
+                self._sv_limpiar_busqueda(m.get("motivo") == "perdida")
+            return
+        if m.get("motivo") == "vuelve":
+            self.decir("La policía no se ha olvidado de ti: te siguen buscando.")
+        self.j.puntos_busqueda = max(pu, float(UMBRAL[es - 1]))
+
+    def _sv_cuadrar_busqueda(self, es):
+        """El nivel de búsqueda que vale es el del servidor. Si el tuyo lleva unos segundos sin coincidir, se corrige."""
+        from .combate import UMBRAL
+        try:
+            es = max(0, min(5, int(es or 0)))
+        except (TypeError, ValueError):
+            return
+        mio = sum(1 for u in UMBRAL if self.j.puntos_busqueda >= u)
+        if es == mio:
+            self.sv["t_desfase"] = None
+        elif self.sv["t_desfase"] is None:
+            self.sv["t_desfase"] = self.t
+        elif self.t - self.sv["t_desfase"] > 3.0:
+            self.sv["t_desfase"] = None
+            if es == 0:
+                self._sv_limpiar_busqueda(False)
+            else:
+                self.j.puntos_busqueda = float(UMBRAL[es - 1])
+                if es < self.j.estrellas:
+                    self.j.estrellas = es
+
+    def sv_buscando(self, dt):
+        """Mientras te buscan: el tic de que no tienes a nadie cerca. Despistarlos lo decide el servidor."""
+        j = self.j
+        x, y = self.pos()
+        r_p, r_v = (70, 80) if j.veh else (38, 45)
+        cerca = any(p.tipo == "policia" and not p.muerto and p.dist(x, y) < r_p for p in self.personas) or \
+            any(self.es_patrulla(v) and not v.muerto and v.dist(x, y) < r_v for v in self.vehiculos)
+        if not cerca:
+            self.t_buscando -= dt
+            if self.t_buscando <= 0:
+                self.t_buscando = 1.0
+                self.son("buscando", vol=0.6, cat="interfaz")
+
+    def es_patrulla(self, v):
+        """Un coche de policía: de los de tu juego, o de los que lleva el servidor."""
+        return v.ia == "policia" or bool(getattr(v, "tr_poli", False))
+
+    def _sv_agentes(self, lista):
+        """Los agentes a pie que lleva el servidor: están donde él dice, y van a por quien él dice."""
+        gente = self.sv["agentes"]
+        vistos = set()
+        for f in lista:
+            try:
+                ident, x, y, obj, arma = f[0], float(f[1]), float(f[2]), f[3], str(f[4])
+            except (TypeError, ValueError, IndexError):
+                continue
+            vistos.add(ident)
+            p = gente.get(ident)
+            if p is None:
+                p = Persona("policia", x, y)
+                p.po_id, p.tag, p.salud, p.estado, p.activo = ident, "comun", 80, "ataca", True
+                self.personas.append(p)
+                gente[ident] = p
+            p.tx, p.ty, p.t_visto = x, y, self.t
+            p.arma = arma if arma in self.armas_d else "pistola"
+            p.hostil = obj == self.sv.get("id") and not p.muerto
+        for ident, p in list(gente.items()):
+            if ident not in vistos and self.t - getattr(p, "t_visto", 0.0) > 1.2:
+                del gente[ident]
+                if p.muerto:
+                    p.tag = None                         # el caído se queda un rato y luego lo retira tu juego
+                elif p in self.personas:
+                    self.personas.remove(p)
+                    if self.objetivo is p:
+                        self.objetivo = None
+
+    def sv_agente_paso(self, p, d, dt):
+        """Un agente del servidor en tu juego: va hacia donde dice el servidor, y se le oye andar."""
+        tx, ty = getattr(p, "tx", p.x), getattr(p, "ty", p.y)
+        falta = math.hypot(tx - p.x, ty - p.y)
+        f = min(1.0, dt * 10.0)
+        p.x += (tx - p.x) * f
+        p.y += (ty - p.y) * f
+        if falta > 0.15 and d < 30:
+            p.t_paso -= dt
+            if p.t_paso <= 0:
+                p.t_paso = 0.33
+                self.son("paso_npc", xy=(p.x, p.y), ref=3, maxd=30, vol=0.9, tono=0.85)
+
+    def sv_golpe_agente(self, p, dano):
+        """Le has dado a un agente del servidor: lo que le pase, le pasa para todos."""
+        if self.en_servidor and getattr(p, "po_id", None) is not None and not p.muerto:
+            self.red.enviar({"t": "po_dano", "id": p.po_id, "n": round(float(dano), 1), "cae": p.salud - dano <= 0})
+
+    def _svm_po_cae(self, m):
+        p = self.sv["agentes"].get(m.get("id"))
+        if p is not None and not p.muerto:
+            p.muerto, p.hostil, p.t_estado = True, False, self.t
+            self.son("muerte_npc", xy=(p.x, p.y), ref=6, tono=p.tono)
+            if self.objetivo is p:
+                self.objetivo = None
+
+    def _svm_po_apunta(self, m):
+        self.son("amartillar", xy=(float(m.get("x", 0)), float(m.get("y", 0))), ref=5, maxd=50)
+
+    def _svm_po_disparo(self, m):
+        """Un agente dispara. Lo oyen todos los que están cerca; le da, si le da, a quien persigue."""
+        try:
+            x, y, da = float(m.get("x", 0)), float(m.get("y", 0)), float(m.get("da") or 0)
+        except (TypeError, ValueError):
+            return
+        a = self.armas_d.get(m.get("arma")) or self.armas_d.get("pistola") or self.armas_d["punos"]
+        self.son(a["sonido"], xy=(x, y), ref=14, maxd=220, vol=0.9)
+        if m.get("a") != self.sv.get("id") or self.transicion:
+            return
+        j = self.j
+        if da <= 0:
+            self.son("bala_silbido", pan=random.uniform(-0.9, 0.9), vol=0.5)
+        elif j.veh:
+            self.son("bala_impacto", vol=0.6)
+            self.danar_vehiculo(j.veh, da)
+            if random.random() < 0.3:
+                self.danar_jugador(da * 0.5, (x, y))
+        else:
+            self.danar_jugador(da, (x, y))
+
+    def _svm_po_embiste(self, m):
+        v = self.j.veh
+        if v is None:
+            return
+        self.son("choque_leve")
+        self.danar_vehiculo(v, float(m.get("n") or 7))
+        v.vel *= 0.75
+
+    def _svm_detenido(self, m):
+        """Un agente te ha echado el guante. Lo que venga después (la multa, el soborno, el calabozo) es lo de siempre."""
+        if self.j.estrellas == 0:
+            self.j.estrellas = 1
+        self.detener()
 
     # ------------------------------------------------------- gente de la calle
     def sv_peatones_comunes(self):
@@ -770,7 +961,7 @@ class EnLinea:
         for fila in lista:
             try:
                 ident, modelo, x, y, rumbo, vel = fila[0], fila[1], float(fila[2]), float(fila[3]), float(fila[4]), float(fila[5])
-                poli = bool(fila[6]) if len(fila) > 6 else False
+                poli = int(fila[6]) if len(fila) > 6 else 0
             except (TypeError, ValueError, IndexError):
                 continue
             v = self.sv["trafico"].get(ident)
@@ -778,10 +969,22 @@ class EnLinea:
                 if modelo not in self.modelos:
                     continue
                 v = self.crear_vehiculo(modelo, x, y, M.dir_de_rumbo(rumbo), "servidor")
-                v.tr_id, v.ocupado, v.cerrado, v.tr_poli = ident, True, False, poli
+                v.tr_id, v.ocupado, v.cerrado, v.tr_poli = ident, True, False, bool(poli)
                 if poli:
                     v.nombre = "Coche patrulla"
                 self.sv["trafico"][ident] = v
+            if poli >= 2 and v.sirena is None:                   # persigue a alguien: con la sirena puesta
+                otras = sum(1 for o in self.vehiculos if o is not v and o.sirena is not None)
+                v.sirena = self.son("sirena", bucle=True, xy=(x, y), ref=14, maxd=260, vol=0.8 / (1 + 0.6 * otras))
+            elif poli < 2 and v.sirena is not None and v.tr_poli:
+                v.sirena.parar()
+                v.sirena = None
+            if poli == 3 and not v.desplegado:                   # para y se bajan los agentes
+                v.desplegado, v.ocupado = True, False
+                self.son("puerta_coche", xy=(x, y))
+            elif poli == 2 and v.desplegado:                     # se les escapa: se suben otra vez y siguen
+                v.desplegado, v.ocupado = False, True
+                self.son("puerta_coche", xy=(x, y))
             v.tx, v.ty, v.rumbo, v.vel, v.t_visto = x, y, rumbo, vel, self.t
             v.dir = M.dir_de_rumbo(rumbo)
             vistos.add(ident)
@@ -1231,7 +1434,7 @@ class EnLinea:
 
     def sv_pedir_vehiculo(self, v):
         """F junto a un vehículo aparcado de otro jugador: se lo pides al servidor. True si hay que esperar la respuesta."""
-        if self.en_servidor and (getattr(v, "eco_poli", False) or getattr(v, "tr_poli", False)):
+        if self.en_servidor and (getattr(v, "eco_poli", False) or (getattr(v, "tr_poli", False) and not v.desplegado)):
             self.decir("Ese coche patrulla está lleno de policías.", True)
             return True
         if self.en_servidor and getattr(v, "tr_id", None) is not None and v.ia == "servidor":      # un coche del tráfico común
@@ -1304,11 +1507,18 @@ class EnLinea:
             t = self.sv["trafico"].pop(m["tr"], None)
             if t is not None and not t.muerto:
                 t.ia, t.ocupado, t.tr_id, t.id_red, t.red_mio = None, False, None, m["id"], False
-                c = Persona("civil", *self.mundo.punto_libre(t.x + 2, t.y + 2), nombre="Conductor")
-                c.estado, c.t_estado = "huye", 12
-                self.personas.append(c)
-                self.son("grito", xy=(c.x, c.y), tono=c.tono)
-                self.delito(2, "robo de vehículo con violencia")
+                if getattr(t, "tr_poli", False):                 # una patrulla con los agentes fuera: nadie al volante
+                    t.tr_poli, t.desplegado = False, False
+                    if t.sirena is not None:
+                        t.sirena.parar()
+                        t.sirena = None
+                    self.delito(3, "robo de un coche patrulla", siempre=True)
+                else:
+                    c = Persona("civil", *self.mundo.punto_libre(t.x + 2, t.y + 2), nombre="Conductor")
+                    c.estado, c.t_estado = "huye", 12
+                    self.personas.append(c)
+                    self.son("grito", xy=(c.x, c.y), tono=c.tono)
+                    self.delito(2, "robo de vehículo con violencia")
         v = self._sv_copia(m.get("id"))
         x, y = self.pos()
         if v is None:
