@@ -36,6 +36,9 @@ class Jugador:
         self.nombre = "Dani"
         self.apellido = "Roca"
         self.genero = "h"            # cómo le hablan: "h" en masculino, "m" en femenino
+        self.muebles = {}            # lo que has puesto en cada casa tuya: {id de la casa: [muebles]}
+        self.voz = "dani"            # un personaje propio: con cuál de las voces de protagonista habla en las escenas
+        self.nombre_dicho = ""       # y cómo se pronuncia su nombre, si no es como se escribe
         self.ciudadania = 20.0
         self.jornada_dia = 0
         self.curso_dia = 0

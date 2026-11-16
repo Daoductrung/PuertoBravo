@@ -13,6 +13,9 @@
 
     .venv\\Scripts\\python.exe herramientas\\publicar.py verificar ruta\\version.json
 
+    Con la orden prueba en lugar de publicar, lo mismo pero en la subcarpeta pruebas del destino y con la dirección de esa
+    subcarpeta: para probar que una versión se actualiza bien antes de publicarla. La versión publicada no se toca.
+
 La clave privada no debe estar nunca en el repositorio ni en el servidor. Guarda una copia fuera del equipo:
 sin ella no se pueden publicar versiones que acepten los juegos ya repartidos.
 """
@@ -35,6 +38,7 @@ CLAVES = os.path.join(RAIZ, "herramientas", "claves")
 PRIVADA = os.path.join(CLAVES, "firma_ed25519.key")
 DIST = os.path.join(RAIZ, "dist", "PuertoBravo")
 SALIDA = os.path.join(RAIZ, "dist", "publicar")
+SUB_PRUEBAS = "pruebas"            # subcarpeta del servidor para probar una actualización antes de publicarla
 
 
 def crear_clave():
@@ -89,7 +93,9 @@ def comprimir(carpeta, destino):
                 z.write(ruta, rel, zipfile.ZIP_STORED if sin_comprimir else zipfile.ZIP_DEFLATED)
 
 
-def publicar(destino=None, dist=DIST):
+def publicar(destino=None, dist=DIST, prueba=False):
+    """Con prueba=True, la versión va a la subcarpeta pruebas del servidor: la versión publicada no se toca, y solo la ve
+    el juego al que se le haya dicho que se actualice desde ahí (herramientas/apuntar_a_pruebas.py)."""
     from herramientas import comprobar_limpio
     if destino is None:
         try:
@@ -111,13 +117,16 @@ def publicar(destino=None, dist=DIST):
     ruta_zip = os.path.join(SALIDA, nombre)
     print(f"Comprimiendo {dist} ...")
     comprimir(dist, ruta_zip)
-    base_servidor = A.URL_SERVIDOR.rsplit("/", 1)[0] + "/"
+    base_servidor = A.URL_SERVIDOR.rsplit("/", 1)[0] + "/" + (SUB_PRUEBAS + "/" if prueba else "")
     manifiesto = firmar({
         "version": VERSION, "file": nombre, "sha256": A.sha256_de(ruta_zip), "size": os.path.getsize(ruta_zip),
         "url": base_servidor + nombre,
-        "espejos": {"github": f"https://github.com/{A.REPOSITORIO_GITHUB}/releases/download/v{VERSION}/{nombre}"},
+        "espejos": {} if prueba else {"github": f"https://github.com/{A.REPOSITORIO_GITHUB}/releases/download/v{VERSION}/{nombre}"},
         "fecha": datetime.date.today().isoformat(), "novedades": novedades(),
     }, semilla)
+    if prueba and destino:
+        destino = os.path.join(destino, SUB_PRUEBAS)
+        os.makedirs(destino, exist_ok=True)
     ruta_json = os.path.join(SALIDA, "version.json")
     with open(ruta_json, "w", encoding="utf-8") as f:
         json.dump(manifiesto, f, indent=4, ensure_ascii=False)
@@ -134,7 +143,10 @@ def publicar(destino=None, dist=DIST):
         print(f"Publicado en {destino}")
     else:
         print("No hay carpeta de destino: copia tú los dos archivos al servidor.")
-    print(f"Para GitHub: crea la release v{VERSION} y sube esos mismos dos archivos.")
+    if prueba:
+        print("Es una versión de prueba: la publicada no se ha tocado. Dirección para probarla:", base_servidor + "version.json")
+    else:
+        print(f"Para GitHub: crea la release v{VERSION} y sube esos mismos dos archivos.")
     return ruta_zip, ruta_json
 
 
@@ -165,6 +177,8 @@ if __name__ == "__main__":
         print("  " + crear_clave())
     elif orden == "publicar":
         publicar(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif orden == "prueba":
+        publicar(sys.argv[2] if len(sys.argv) > 2 else None, prueba=True)
     elif orden == "verificar" and len(sys.argv) > 2:
         fallos_ = verificar(sys.argv[2])
         print("\n".join(fallos_) if fallos_ else "Firma y archivo correctos.")

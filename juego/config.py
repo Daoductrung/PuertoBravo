@@ -70,6 +70,7 @@ POR_DEFECTO = {
     "menu_posicion": False,        # decir «3 de 9» al moverse por los menús
     "vibracion_fuerza": 1.0,       # intensidad de la vibración del mando, de 0.2 a 1
     "voces_grabadas": True,        # en las escenas, usar las voces grabadas que haya en data/voces
+    "voces_propias": True,         # con un personaje propio, generar en este equipo las frases que dicen su nombre
     "atraccion": "todos",          # contenido para adultos: quién te atrae
     "mi_genero": "x",              # contenido para adultos: cómo te ven los demás (x = no dicho)
     "vida_realista": False,        # hambre y sueño

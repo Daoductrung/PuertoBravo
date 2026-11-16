@@ -47,13 +47,26 @@ PALABRAS = [
 ]
 
 
+def oficio_para(edad, rng=random):
+    """Un oficio que cuadre con la edad: nadie estudia a los sesenta ni se jubila a los veinte."""
+    if edad >= 67:
+        return "jubilado"
+    ops = [o for o in OFICIOS if o != "jubilado" and (o != "estudiante" or edad <= 27)]
+    if edad >= 62:
+        ops += ["jubilado"] * 6                       # a esa edad, muchos ya lo están
+    if edad <= 23:
+        ops += ["estudiante"] * 6
+    return rng.choice(ops)
+
+
 def ficha(persona, rng=random):
     """Da a una persona de la calle su identidad, la primera vez que hace falta."""
     if getattr(persona, "ficha", None):
         return persona.ficha
     g = rng.choice("hm")
-    oficio = rng.choice(OFICIOS)
-    f = {"nombre": rng.choice(NOMBRES[g]), "genero": g, "edad": rng.randint(19, 74), "oficio": FEMENINO.get(oficio, oficio) if g == "m" else oficio,
+    edad = rng.randint(19, 74)
+    oficio = oficio_para(edad, rng)
+    f = {"nombre": rng.choice(NOMBRES[g]), "genero": g, "edad": edad, "oficio": FEMENINO.get(oficio, oficio) if g == "m" else oficio,
          "caracter": rng.choice(list(CARACTERES)), "confianza": 0, "frases": 0, "disponible": rng.random() < 0.55,
          "le_atraen": rng.choice(["h", "m", "hm"]), "invitado": False, "limosna": False, "presentado": False, "ofendido": False}
     persona.ficha = f

@@ -7,11 +7,16 @@ como la misión, el número de paso y el número de frase, empezando en uno y se
 
     oc01_1_2.ogg      misión oc01, paso 1, frase 2
 
+Las frases que dependen de quién sea el protagonista tienen varias grabaciones: detrás del nombre llevan una arroba
+y a quién van (oc01_1_2@alex.ogg, oc01_1_2@m.ogg, oc01_1_2@alex_m.ogg). Las de un personaje hecho por el jugador
+que dicen su nombre se generan en su equipo (juego/vozgen.py) y van aparte, en data/voces_generadas.
+
 Sirve igual para las misiones del juego que para las de los mods. No hace falta grabarlas todas: las
 frases sin archivo las sigue diciendo el lector de pantalla. El editor de mods escribe el guion completo
 de un mod, con el nombre de archivo de cada frase, para repartirlo entre quienes vayan a grabar.
 """
 import os
+import re
 
 from . import genero, registro, rutas
 
@@ -43,34 +48,45 @@ def carpeta_puente():
 
 
 def recoger_puente():
-    """Al arrancar: lleva a data/voces las voces que hayan llegado por el puente y lo borra. Devuelve cuántas ha copiado.
+    """Al arrancar: lleva a data/voces las voces que trae esta versión y borra el puente. Devuelve cuántas ha puesto.
 
-    En una instalación nueva las voces ya están en su sitio y el puente solo se borra. Tras actualizar desde una versión
-    anterior, es por aquí por donde llegan. No pisa nada: una grabación que ya exista se deja como está.
+    Las voces del juego viajan dentro de data/datos, en la carpeta voces_puente, y es aquí donde se colocan: así llegan
+    igual a una instalación nueva que a quien actualiza desde cualquier versión. Sustituyen a las de la versión anterior:
+    cada grabación nueva pisa a la vieja del mismo nombre, y de las carpetas de las historias se quitan las que esta
+    versión ya no trae. Las grabaciones del jugador, en la carpeta propias o sueltas, no se tocan.
     """
     import shutil
     puente = carpeta_puente()
     if not os.path.isdir(puente):
         return 0
-    copiadas = 0
+    puestas = quitadas = 0
     try:
         for base, _, nombres in os.walk(puente):
-            destino = os.path.join(carpeta(), os.path.relpath(base, puente))
+            rel = os.path.relpath(base, puente)
+            if rel.split(os.sep)[0].lower() == PROPIAS:
+                continue
+            destino = os.path.join(carpeta(), rel) if rel != "." else carpeta()
+            nuevas = {n.lower() for n in nombres if os.path.splitext(n)[1].lower() in EXT}
+            if not nuevas:
+                continue
+            os.makedirs(destino, exist_ok=True)
+            if rel != ".":                                   # la carpeta de una historia: fuera lo que ya no viene
+                for n in os.listdir(destino):
+                    if os.path.splitext(n)[1].lower() in EXT and n.lower() not in nuevas and os.path.isfile(os.path.join(destino, n)):
+                        os.remove(os.path.join(destino, n))
+                        quitadas += 1
             for n in nombres:
-                if os.path.splitext(n)[1].lower() not in EXT:
-                    continue
-                if not os.path.exists(os.path.join(destino, n)):
-                    os.makedirs(destino, exist_ok=True)
-                    shutil.copy2(os.path.join(base, n), os.path.join(destino, n))
-                    copiadas += 1
+                if os.path.splitext(n)[1].lower() in EXT:
+                    os.replace(os.path.join(base, n), os.path.join(destino, n))
+                    puestas += 1
         shutil.rmtree(puente, ignore_errors=True)
     except OSError:
         registro.excepcion("voces", "No se pudieron recoger las voces de la actualización")
-        return copiadas
-    if copiadas:
-        registro.info("voces", "Voces recogidas tras la actualización", cuantas=copiadas)
+        return puestas
+    if puestas:
+        registro.info("voces", "Voces de esta versión colocadas", cuantas=puestas, quitadas=quitadas)
     refrescar()
-    return copiadas
+    return puestas
 
 
 def limpiar_antigua():
@@ -114,8 +130,69 @@ def refrescar():
     _indice["t"] = None
 
 
-def buscar(mision, paso, frase):
-    return _archivos().get(nombre(mision, paso, frase).lower())
+def buscar(mision, paso, frase, forma=""):
+    return _archivos().get((nombre(mision, paso, frase) + forma).lower())
+
+
+# Las frases que dependen de quién sea el protagonista se graban en varias formas. El nombre del archivo lleva detrás:
+#   nada          la de siempre: Dani, en masculino
+#   @alex         le llaman por otro nombre
+#   @m            le hablan en femenino
+#   @alex_m       depende de las dos cosas, o la dice el propio protagonista con su voz
+PROTA = "Dani"                                       # con este nombre figuran en los datos las frases del protagonista
+PERSONAJES = ("dani", "alex", "sam", "cris")         # los que tienen sus frases grabadas
+_DANI = re.compile(r"\bDani\b")
+
+
+def depende(quien, texto):
+    """De qué depende cómo hay que decir una frase: (dice su nombre, cambia con el género, la dice el protagonista)."""
+    return bool(_DANI.search(texto)), bool(genero._MARCA.search(texto)), quien == PROTA
+
+
+def forma(quien, texto, personaje="dani", gen="h", voz="dani"):
+    """Lo que lleva detrás el archivo de esta frase para este protagonista. None si no puede venir grabada: a un personaje
+    hecho por el jugador, las frases que dicen su nombre hay que generárselas."""
+    nombra, cambia, prota = depende(quien, texto)
+    propio = personaje not in PERSONAJES
+    if propio and nombra:
+        return None
+    if prota or (nombra and cambia):
+        p = (voz if voz in PERSONAJES else "dani") if propio else personaje     # el personaje propio habla con la voz que eligió
+        return "" if (p, gen) == ("dani", "h") else f"@{p}_{gen}"
+    if nombra:
+        return "" if personaje == "dani" else f"@{personaje}"
+    if cambia:
+        return "" if gen == "h" else "@m"
+    return ""
+
+
+def formas(quien, texto):
+    """Todas las formas en que se graba una frase para los personajes de la lista: [(lo que lleva detrás, personaje, género)]."""
+    vistas, out = set(), []
+    for p in PERSONAJES:
+        for g in genero.GENEROS:
+            f = forma(quien, texto, p, g)
+            if f not in vistas:
+                vistas.add(f)
+                out.append((f, p, g))
+    return out
+
+
+def de_dialogo(mision, paso, lineas, j):
+    """La grabación de cada frase de un paso de diálogo para este protagonista (None donde no hay). None si no hay ninguna."""
+    lista, generadas = [], None
+    for n, linea in enumerate(lineas):
+        quien, texto = (linea.get("quien"), linea.get("texto")) if isinstance(linea, dict) else (linea[0], linea[1])
+        f = forma(quien, texto, j.personaje, j.genero, getattr(j, "voz", "dani"))
+        if f is not None:
+            lista.append(buscar(mision, paso, n, f))
+            continue
+        if generadas is None:                                # las de su nombre: las que se le hayan generado ya
+            from . import vozgen
+            generadas = vozgen.Personaje.de_jugador(j).carpeta()
+        ruta = os.path.join(generadas, nombre(mision, paso, n) + ".ogg")
+        lista.append(ruta if os.path.exists(ruta) and os.path.exists(ruta + ".txt") else None)
+    return lista if any(lista) else None
 
 
 def de_paso(mision, paso, cuantas):
@@ -144,7 +221,9 @@ def guion(misiones, titulo="", existentes=None):
     lineas = [f"Guion de voces{': ' + titulo if titulo else ''}", "",
               "Graba cada frase en un archivo aparte, en WAV, OGG, FLAC o MP3, con el nombre que se indica,",
               "y deja los archivos en la carpeta data, voces del juego. Las frases sin archivo las dice el lector de pantalla.",
-              "Las frases marcadas con la palabra GRABADA ya tienen archivo.", ""]
+              "Las frases marcadas con la palabra GRABADA ya tienen archivo.",
+              "El archivo sin nada detrás es para el protagonista Dani en masculino. Las frases que le nombran, que cambian",
+              "si es hombre o mujer, o que dice él mismo, tienen más formas: se indican debajo de cada una.", ""]
     total = hechas = 0
     personajes = {}
     for m in misiones:
@@ -163,7 +242,14 @@ def guion(misiones, titulo="", existentes=None):
                 total += 1
                 hechas += hecha
                 personajes[quien] = personajes.get(quien, 0) + 1
-                lineas += [f"{arch}{'  GRABADA' if hecha else ''}", f"{quien}: {texto}", ""]
+                lineas += [f"{arch}{'  GRABADA' if hecha else ''}", f"{quien}: {texto}"]
+                otras = [x for x in formas(quien, linea.get("texto") if isinstance(linea, dict) else linea[1]) if x[0]]
+                if otras:                                        # cambia según quién sea el protagonista: sus otras formas
+                    lineas.append("  Esta frase cambia con el protagonista. Para que suene con todos, grábala también así:")
+                    for suf, pj, g in otras:
+                        hecha2 = (arch + suf).lower() in existentes
+                        lineas.append(f"  {arch}{suf}{'  GRABADA' if hecha2 else ''}: con {pj.capitalize()}, {genero.NOMBRES[g]}")
+                lineas.append("")
     lineas += [f"Total: {total} frases, {hechas} grabadas.", "",
                "Frases por personaje: " + ", ".join(f"{q} {c}" for q, c in sorted(personajes.items(), key=lambda x: -x[1])) + "."]
     return "\n".join(lineas) + "\n"

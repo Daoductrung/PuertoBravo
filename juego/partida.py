@@ -1089,7 +1089,27 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             return
         nom, ex, ey, obj = self.radar_lista[self.radar_idx]
         sigue = obj if isinstance(obj, (Vehiculo, Persona)) else None
+        # Si ya ibas a algún sitio, esto es un desvío: el destino de antes se guarda y vuelve solo al llegar a esto.
+        antes = self.gps.get("anterior") or self.gps if self.gps else None
+        if antes is not None and math.hypot(antes["dest"][0] - ex, antes["dest"][1] - ey) < 3:
+            antes = None                                         # es el mismo sitio: no hay desvío que valga
         self.fijar_gps(ex, ey, nom, sigue=sigue)
+        if antes is not None and self.gps:
+            self.gps["anterior"] = antes
+            self.decir(f"Desvío a {nom}. Al llegar, el GPS vuelve a {antes['nombre']}." + (" Con Mayúsculas G lo dejas y vuelves." if sigue is not None else ""))
+
+    def _volver_del_desvio(self, texto=""):
+        """Se acabó el desvío marcado con el radar: el GPS vuelve al destino que había. False si no había ninguno."""
+        antes = (self.gps or {}).get("anterior")
+        if antes is None:
+            return False
+        self.gps = antes
+        antes["clave"] = None
+        self.t_gps = 0.0
+        self._recalcular_gps()
+        self.app.son("notificacion")
+        self.decir(f"{texto} El GPS vuelve a {antes['nombre']}.".strip())
+        return True
 
     # -------------------------------------------------------------------- GPS
     def fijar_gps(self, x, y, nombre, sigue=None, auto=False, radio=None, callar=False):
@@ -1120,6 +1140,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.fijar_gps(lugar.x, lugar.y, lugar.nombre, auto=auto, callar=callar)
 
     def cancelar_gps(self, hablar=False):
+        if hablar and self._volver_del_desvio("Dejas el desvío."):       # lo quita el jugador: primero se deshace el desvío
+            return
         if hablar:
             self.app.son("menu_atras" if self.gps else "error")
             self.decir("GPS cancelado." if self.gps else "No hay ningún destino marcado.", True)
@@ -1139,7 +1161,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if g["sigue"] is not None:
             s = g["sigue"]
             if getattr(s, "muerto", False):
-                self.gps = None
+                if not self._volver_del_desvio():
+                    self.gps = None
                 return
             g["dest"] = (s.x, s.y)
         x, y = self.pos()
@@ -1263,8 +1286,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             elif llegado and not g["auto"] and g["sigue"] is None:
                 self.app.son("llegada")
                 self.app.vibrar(0.2, 0.6, 150)
-                self.decir(f"Has llegado a {g['nombre']}.")
-                self.gps = None
+                if not self._volver_del_desvio(f"Has llegado a {g['nombre']}."):
+                    self.decir(f"Has llegado a {g['nombre']}.")
+                    self.gps = None
                 return
             if self.cfg["gps_voz"]:
                 clave, texto = self._instruccion()

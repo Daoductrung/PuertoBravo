@@ -91,7 +91,7 @@ li { margin-bottom: .3em; }
 <li><kbd>C</kbd>, dónde estoy: calle, entre qué avenidas, barrio y hacia dónde miras. Con <kbd>Mayúsculas</kbd> añade las coordenadas.</li>
 <li><kbd>W</kbd>, <kbd>A</kbd>, <kbd>S</kbd> y <kbd>D</kbd>, escáner direccional: tu bastón. Dice qué hay delante, a la izquierda, detrás y a la derecha: personas, vehículos, puertas, dónde empieza la calzada y a cuántos metros está la pared. Además suena un tono desde la pared.</li>
 <li><kbd>Tabulador</kbd>, radar: recorre todo lo que hay cerca, de lo más cercano a lo más lejano, con distancia y dirección, y hace sonar cada cosa desde su posición. <kbd>Mayúsculas Tabulador</kbd> va hacia atrás. <kbd>F6</kbd> filtra por lugares, vehículos, personas u objetos.</li>
-<li><kbd>B</kbd>: pone el GPS hacia lo último que dijo el radar.</li>
+<li><kbd>B</kbd>: pone el GPS hacia lo último que dijo el radar. Si ya ibas a algún sitio, es un desvío: el juego lo dice, y al llegar a eso el GPS vuelve solo al destino que tenías. Sirve para ir a por dinero o un objeto que hay cerca sin perder la ruta. Con <kbd>Mayúsculas G</kbd> dejas el desvío y vuelves a tu destino; con otra pulsación quitas el GPS.</li>
 <li><kbd>L</kbd>, lista de lugares: por categorías y en orden alfabético. Incluye una lista de lugares sin visitar y las demás localidades. <kbd>Intro</kbd> marca el destino.</li>
 <li><kbd>F9</kbd>, explorador de mapa: mueve un cursor de cruce en cruce con las flechas, sin mover al personaje, para aprenderte la localidad. <kbd>Tabulador</kbd> recorre los lugares junto al cursor, <kbd>N</kbd> los describe, <kbd>D</kbd> dice a qué distancia queda de ti, <kbd>Inicio</kbd> vuelve a tu posición e <kbd>Intro</kbd> marca el destino. También funciona en el mar.</li>
 <li>Marcadores personales: en el móvil puedes guardar el punto exacto en el que estás y volver a él con el GPS.</li>
@@ -437,7 +437,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <li>Combate y dificultad: dificultad, ayuda de puntería, sucesos callejeros y las dos asistencias.</li>
 <li>Teclado: cambiar con qué tecla se hace cada cosa mientras juegas. Eliges la función, pulsas Intro y luego la tecla que quieres. Las dos teclas se intercambian. No se pueden cambiar Escape, Intro, F1, F12, la Mayúsculas derecha ni las teclas de control y alt. La Mayúsculas izquierda sí: la tecla que pongas en su lugar sirve para correr y para todas las combinaciones con Mayúsculas. Con la opción Usar también las teclas cambiadas en los menús y los diálogos, los menús se recorren con tus teclas; sin ella, en los menús las teclas son las de serie. Al escribir un texto, las teclas son siempre las normales. La ayuda de F1 dice las teclas que hayas puesto.</li>
 <li>Mando: qué hace cada botón, reasignarlos, la vibración y su fuerza.</li>
-<li>Voz: lector de pantalla o voz de Windows, si en las escenas suenan las voces grabadas que haya, y si los menús dicen la posición de cada opción, por ejemplo tres de nueve.</li>
+<li>Voz: lector de pantalla o voz de Windows, si las escenas suenan con las voces de los personajes, si a un personaje creado por ti se le generan las frases que dicen su nombre, y si los menús dicen la posición de cada opción, por ejemplo tres de nueve.</li>
 <li>Personas e inteligencia artificial: cómo contestan las personas de la calle, con qué servicio y con qué claves.</li>
 <li>Registro para informar de fallos: dónde está el registro de la sesión, qué contiene y cómo enviarlo.</li>
 <li>Actualizaciones: buscar una versión nueva y elegir de dónde se actualiza.</li>
@@ -456,6 +456,16 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 
 <h3>Recorrer tu casa</h3>
 <p>En una casa tuya, la opción Recorrer la casa por dentro te mete dentro. Vas de una habitación a otra con las flechas izquierda y derecha, y con <kbd>Intro</kbd> usas la habitación en la que estás: en el salón descansas un rato y te sube el ánimo, en la cocina comes algo de la nevera una vez al día, en el baño te duchas, en el dormitorio duermes ocho horas y en el garaje ves qué vehículos tienes guardados. <kbd>Escape</kbd> te devuelve al menú de la casa.</p>
+<p>En el menú de la casa, Amueblar la casa te deja comprar seis cosas, cada una para una habitación, que se quedan en esa casa:</p>
+<ul>
+<li>Plantas, cuadros y una alfombra, 300 euros: al dormir te levantas con algo más de ánimo.</li>
+<li>Un sofá grande y una tele nueva, 600 euros: ver la tele te sube el ánimo el doble.</li>
+<li>Cocina equipada y nevera grande, 700 euros: lo que te preparas en casa te da el doble de salud.</li>
+<li>Baño reformado, con bañera, 500 euros: un baño largo te sube más el ánimo y te quita algún golpe.</li>
+<li>Una cama de las buenas, 800 euros: dormir aquí te sube bastante el ánimo.</li>
+<li>Un banco de herramientas, 900 euros, solo si la casa tiene garaje: mientras duermes, los vehículos guardados en ese garaje quedan reparados.</li>
+</ul>
+<p>Lo que compras se nota al recorrer la casa: cada habitación dice cómo está.</p>
 <h3>Recorrer los locales</h3>
 <p>También se pueden recorrer por dentro los bares, tabernas, restaurantes, tiendas, farmacias, armerías, hospitales, comisarías, talleres, bancos, casinos, gimnasios, cines, hoteles y casi cualquier otro local. Al entrar a pie, el menú del local tiene la opción Recorrer el local por dentro.</p>
 <ul>
@@ -556,11 +566,16 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <ul>
 <li>Nombre y apellido: <kbd>Intro</kbd> abre un cuadro para escribirlo. Valen letras, espacios y guiones, hasta veinte. El apellido puede quedarse vacío. En la historia te llamarán así.</li>
 <li>Te hablan: en masculino o en femenino. Se cambia con flecha izquierda, flecha derecha o <kbd>Intro</kbd>.</li>
+<li>Tu voz en las escenas: la de Dani, la de Álex, la de Sam o la de Cris. Es la voz con la que hablas tú en la historia; cada una tiene su versión de hombre y de mujer, y suena la que corresponde a cómo te hablan. Se cambia con flecha izquierda y derecha.</li>
+<li>Cómo se pronuncia tu nombre: de serie, igual que se escribe. Si al escucharlo no suena bien, <kbd>Intro</kbd> abre un cuadro para escribirlo como se dice, por ejemplo Yónatan en vez de Jonathan. En pantalla y en braille sigue saliendo como lo escribiste.</li>
+<li>Escuchar cómo te llamarán: genera una frase con tu nombre, dicha por un personaje de la historia. Tarda un momento.</li>
+<li>Escuchar tu voz: genera una frase dicha por ti, con la voz elegida.</li>
 <li>Conducción, puntería, resistencia y pesca: flecha derecha sube un nivel y flecha izquierda lo baja. Tienes ocho niveles para repartir, con cinco como mucho en cada habilidad. Cada opción dice cuántos te quedan. Después se sigue subiendo con la práctica y en las academias, hasta el diez.</li>
 <li>Ventaja de salida, a elegir una con flecha izquierda y derecha: ninguna; ahorros, ochocientos euros; fortaleza, más salud y dos botiquines; manos rápidas, tres juegos de ganzúas; una navaja y dos botiquines; o don de gentes, con buen ánimo, algo de fama y el aprecio de los vecinos.</li>
 <li>Empezar la partida. Hace falta haber puesto el nombre. Si te quedan niveles sin repartir, el juego avisa una vez y con un segundo <kbd>Intro</kbd> empieza igualmente.</li>
 </ul>
-<p><kbd>F1</kbd> explica cada dato. El nombre que escribas no se anota en el registro de la sesión.</p>
+<p><kbd>F1</kbd> explica cada dato. El nombre que escribas no se anota en el registro de la sesión. Las tres últimas opciones de voz, la de la pronunciación y las dos de escuchar, solo salen si tu equipo puede con el generador de voces.</p>
+<p>Al empezar, el juego prepara las voces que te nombran: se explica más adelante, en el apartado Las voces de tu propio personaje.</p>
 <p>Se pueden añadir personajes ya hechos con el editor de mods.</p>
 
 <h2>16. La vida honrada</h2>
@@ -713,18 +728,39 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <p>El juego se ocupa del modelo: lo arranca al abrirse si el modo IA lo va a usar, lo para si desactivas el modo IA o eliges otro servicio, y lo cierra siempre al salir. Aunque el juego se cierre por un error, o lo cierres desde el administrador de tareas, el modelo se cierra con él: nunca queda nada abierto ni gastando memoria.</p>
 <p>En ese mismo menú puedes cambiar de modelo, que sustituye al anterior, o quitarlo, que borra la carpeta. Los archivos se descargan de las páginas oficiales del programa llama.cpp y de los modelos, y el juego comprueba que son exactamente los esperados antes de usarlos. Si ya usas Ollama o LM Studio y tienes un modelo cargado, no hace falta instalar nada: el juego lo detecta.</p>
 <h3>Voces grabadas en las escenas</h3>
-<p>Las escenas de las misiones las lee tu lector de pantalla. Pero si alguien graba las frases, el juego usa las grabaciones: en la carpeta <strong>data\voces\propias</strong> se dejan los archivos de sonido, uno por frase, y cada frase que tenga grabación suena con esa voz en lugar de la del lector. El texto sigue saliendo en braille y en el historial. Las frases sin grabar las sigue leyendo el lector, así que se puede grabar poco a poco.</p>
+<p>Las escenas de las misiones suenan con voces: cada personaje de la historia tiene la suya, distinta de las demás, y el texto sigue saliendo en braille y en el historial. Son más de mil cien grabaciones, entre el juego y sus historias añadidas.</p>
+<ul>
+<li>Te llaman por tu nombre. Si juegas con Dani, Álex, Sam o Cris, los demás personajes dicen ese nombre, y te hablan en masculino o en femenino según hayas elegido.</li>
+<li>Tú también tienes voz. Cada uno de los cuatro personajes tiene una voz de hombre y otra de mujer; suena la que corresponde a cómo te hablan.</li>
+<li>Con un personaje creado por ti, las frases que dicen tu nombre no pueden venir grabadas: el juego las genera en tu ordenador, con las mismas voces de los personajes. Se explica más abajo, en Las voces de tu propio personaje.</li>
+<li>Una frase que no tenga voz la dice tu lector de pantalla, como siempre. Pasa con muy pocas, y con las de los mods que no traigan grabaciones.</li>
+<li>Con un mando conectado, las frases que nombran una tecla las dice el lector, para poder decir el botón.</li>
+<li>En Opciones, Voz, la opción Voces en las escenas las quita o las pone. Con no, todo lo dice tu lector de pantalla o, si no usas lector, la voz de Windows.</li>
+</ul>
+<p>Las voces no son de actores: están generadas por ordenador con Phonon, un motor de voz de la empresa Gradium, con su modelo Phonon 40m. Ese modelo tiene licencia Creative Commons de reconocimiento y uso no comercial, CC BY-NC 4.0; el texto completo va con el juego, en el archivo LICENCIA_Phonon_Gradium.txt. Hasta la versión 1.6.2 las voces eran otras, hechas con VibeVoice, de Microsoft, y solo sonaban con Dani en masculino: al actualizar, el juego las sustituye por las nuevas.</p>
+<h3>Las voces de tu propio personaje</h3>
+<p>Si creas tu personaje, en la historia te llaman por el nombre que hayas escrito. Para que eso suene con voz y no con el lector, el juego trae un generador de voces y lo usa en tu propio ordenador, sin conexión.</p>
+<ul>
+<li>Al empezar la partida sale una pantalla que dice Preparando las voces de tu personaje. Prepara las primeras frases que te nombran y va diciendo cómo va. Dura unos segundos; en un ordenador lento, algo más. Con <kbd>Escape</kbd> o <kbd>Intro</kbd> empiezas sin esperar.</li>
+<li>El resto, unas treinta y cinco frases, se va preparando mientras juegas, sin que tengas que hacer nada. En un ordenador rápido es cosa de un par de minutos; en uno lento, de bastantes más.</li>
+<li>Si llegas a una frase antes de que esté lista, esa la dice tu lector de pantalla. No se queda nada sin decir.</li>
+<li>Solo se hace una vez por personaje: lo preparado se guarda en <strong>data\voces_generadas</strong>. Si otro día creas un personaje con el mismo nombre, la misma voz y el mismo trato, ya está hecho. Esa carpeta se puede borrar cuando quieras; lo que falte se vuelve a preparar.</li>
+<li>Lo que tú dices en las escenas no hace falta generarlo: suena con la voz que elijas al crear el personaje, entre las de Dani, Álex, Sam y Cris, en hombre o en mujer según cómo te hablen.</li>
+<li>En Opciones, Voz, la opción Generar las voces de tu propio personaje lo quita. Con no, las frases que dicen tu nombre las lee tu lector de pantalla o la voz de Windows. Si notas que el juego va a tirones mientras se preparan las voces, quítala: deja de generar en el acto, también con la partida en marcha. Si la vuelves a poner, sigue por donde iba.</li>
+<li>El generador necesita un procesador con las instrucciones AVX2, que tienen casi todos los fabricados desde 2013 o 2015. En uno más antiguo el juego funciona igual y suenan todas las demás voces, pero las frases con tu nombre las dice el lector. La propia opción dice si tu equipo puede.</li>
+<li>Los nombres poco corrientes pueden no sonar bien a la primera. Por eso, al crear el personaje, puedes escuchar cómo te llamarán y, si hace falta, escribir cómo se pronuncia.</li>
+</ul>
+<h3>Grabar tus propias voces</h3>
+<p>Si alguien graba las frases de una misión, del juego o de un mod, el juego usa esas grabaciones: en la carpeta <strong>data\voces\propias</strong> se dejan los archivos de sonido, uno por frase, y cada frase que tenga grabación suena con esa voz.</p>
 <ul>
 <li>Los archivos pueden ser WAV, OGG, FLAC o MP3, y pueden ir en subcarpetas.</li>
 <li>Cada archivo se llama como la misión, el número de paso y el número de frase, separados por guion bajo. Por ejemplo, <strong>oc01_1_2</strong> es la segunda frase del primer paso de la misión oc01.</li>
-<li>No hace falta averiguar los nombres: el editor de mods, con <kbd>Control G</kbd>, escribe el guion completo de un mod, con cada frase, quién la dice y el nombre que debe tener su archivo.</li>
+<li>Ese archivo, sin nada detrás, es el que suena con Dani en masculino, y con cualquier protagonista si la frase no depende de quién sea. Las frases que le nombran, que cambian según sea hombre o mujer o que dice él mismo tienen más formas, y el nombre lleva detrás una arroba y a quién va: <strong>oc01_1_2@alex</strong> si le llaman Álex, <strong>oc01_1_2@m</strong> si le hablan en femenino, <strong>oc01_1_2@alex_m</strong> si son las dos cosas o la frase la dice el protagonista.</li>
+<li>No hace falta averiguar los nombres: el editor de mods, con <kbd>Control G</kbd>, escribe el guion completo de un mod, con cada frase, quién la dice, el nombre que debe tener su archivo y sus otras formas.</li>
+<li>No hay que grabarlas todas. A quien juegue con un protagonista para el que no hay grabación de una frase, esa frase se la dice el lector; nunca suena la de otro.</li>
 <li>Tus grabaciones, o las que te pase otra persona, van en <strong>data\voces\propias</strong>. Tienen preferencia sobre las que trae el juego, y las actualizaciones no tocan esa carpeta.</li>
-<li>Las voces que trae el juego están en <strong>data\voces</strong>, en una subcarpeta por historia. Hasta la versión 1.6.1 estaban en otra carpeta, voces_serie, que ya no se usa: el juego la borra sola.</li>
-<li>En Opciones, Voz, eliges si quieres voces grabadas o no. Con no, todo lo dice tu lector de pantalla o, si no usas lector, la voz de Windows, como siempre.</li>
-<li>Las voces solo suenan cuando juegas con Dani y has elegido que te hablen en masculino, porque las grabaciones le llaman por su nombre, le hablan así y su voz es la de un hombre. Con cualquier otro personaje, con uno creado por ti o en femenino, las escenas las lee el lector.</li>
+<li>Las voces que trae el juego están en <strong>data\voces</strong>, en una subcarpeta por historia. Cada versión trae las suyas y, al arrancar por primera vez, el juego las coloca ahí y quita las de la versión anterior.</li>
 </ul>
-<p>Las voces que trae el juego para sus historias no son de actores: están generadas por ordenador con un programa de inteligencia artificial, VibeVoice, de Microsoft. Si prefieres el lector de pantalla, se quitan en Opciones, Voz.</p>
-<p>Graba con tu propia voz o con voces sintéticas que tengas permiso para usar. No uses voces clonadas de personas reales ni sacadas de otros juegos o películas.</p>
 
 <h2>21. Cada día es distinto</h2>
 <p>Puerto Bravo no se repite. Cada partida nace con su propia suerte, y cada medianoche se decide cómo viene el día siguiente.</p>

@@ -74,10 +74,27 @@ def comprobar(raiz):
                 problemas.append("Sonido en el formato anterior, debería ser FLAC: " + os.path.relpath(os.path.join(base, f), raiz))
     if os.path.isdir(os.path.join(data, "voces_serie")):
         problemas.append("Sobra la carpeta de voces de versiones anteriores: " + os.path.join("data", "voces_serie"))
-    if os.path.isdir(os.path.join(data, "voces", "propias")):
-        problemas.append("Voces personales: " + os.path.join("data", "voces", "propias"))
-    if not os.path.isdir(os.path.join(data, "voces", "historia_principal")):
-        problemas.append("Faltan las voces de la historia principal: " + os.path.join("data", "voces", "historia_principal"))
+    # las voces viajan en data\datos\voces_puente y el juego las coloca al arrancar: en data\voces no va nada
+    puente = os.path.join(data, "datos", "voces_puente")
+    if os.path.isdir(os.path.join(puente, "propias")) or os.path.isdir(os.path.join(data, "voces", "propias")):
+        problemas.append("Voces personales: una carpeta propias entre las voces")
+    if os.path.isdir(os.path.join(data, "voces")) and any(archivos for _, _, archivos in os.walk(os.path.join(data, "voces"))):
+        problemas.append("Hay voces en data\\voces: deben ir solo en data\\datos\\voces_puente")
+    if os.path.isdir(os.path.join(data, "voces_generadas")):
+        problemas.append("Voces generadas para un personaje propio: " + os.path.join("data", "voces_generadas"))
+    principal = os.path.join(puente, "historia_principal")
+    if not os.path.isdir(principal):
+        problemas.append("Faltan las voces de la historia principal: " + principal)
+    else:
+        nombres = {os.path.splitext(f)[0].lower() for f in os.listdir(principal)}
+        for hace_falta in ("m01_1_1", "m01_1_1@alex", "m01_1_2@cris_m"):
+            if hace_falta not in nombres:
+                problemas.append("Falta la voz " + hace_falta + " de la historia principal: las de esta versión llevan una por personaje y género")
+    for n in ("config.json", "tokenizer.json", "model.q8.gguf", "reparto.json", "LICENCIA.txt"):
+        if not os.path.exists(os.path.join(data, "phonon", n)):
+            problemas.append("Falta el generador de voces: " + os.path.join("data", "phonon", n))
+    if not hay("LICENCIA_Phonon_Gradium.txt"):
+        problemas.append("Falta LICENCIA_Phonon_Gradium.txt")
     for pack in ("por_defecto", "realista", "alternativo", "retro", "envolvente"):
         ruta = os.path.join(data, "sonidos", pack)
         if os.path.isdir(ruta):

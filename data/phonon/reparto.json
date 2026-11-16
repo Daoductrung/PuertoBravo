@@ -1,0 +1,29 @@
+{
+ "personajes": {
+  "Amparo": "voz_01",
+  "Anselmo": "voz_02",
+  "Carmela": "voz_03",
+  "Chispas": "voz_04",
+  "Contable": "voz_05",
+  "Custodia": "voz_06",
+  "El Gordo": "voz_07",
+  "Encarna": "voz_08",
+  "La Rusa": "voz_09",
+  "La redactora": "voz_10",
+  "Marta": "voz_11",
+  "Nerea": "voz_12",
+  "Paco": "voz_13",
+  "Paula": "voz_14",
+  "Remedios": "voz_15"
+ },
+ "protagonista": {
+  "alex_h": "prota_alex_h",
+  "alex_m": "prota_alex_m",
+  "cris_h": "prota_cris_h",
+  "cris_m": "prota_cris_m",
+  "dani_h": "prota_dani_h",
+  "dani_m": "prota_dani_m",
+  "sam_h": "prota_sam_h",
+  "sam_m": "prota_sam_m"
+ }
+}

@@ -49,11 +49,21 @@ if errorlevel 1 (
 echo Copiando la carpeta data junto a los ejecutables...
 xcopy /e /i /y /q "data\datos" "%D%\data\datos" >nul
 xcopy /e /i /y /q "data\docs" "%D%\data\docs" >nul
-if exist "data\voces" xcopy /e /i /y /q "data\voces" "%D%\data\voces" >nul
-if exist "%D%\data\voces\propias" rmdir /s /q "%D%\data\voces\propias"
-rem Puente para quien actualiza desde la 1.6.0: su actualizador no copia la carpeta voces, pero si data\datos entera.
-rem El juego, al arrancar, lleva estas voces a data\voces y borra el puente. Se puede quitar en la version siguiente.
-if exist "%D%\data\voces" xcopy /e /i /y /q "%D%\data\voces" "%D%\data\datos\voces_puente" >nul
+rem Las voces viajan dentro de data\datos, en voces_puente: el juego, al arrancar, las coloca en data\voces, quita las de
+rem la version anterior y borra el puente. Asi llegan igual a una instalacion nueva que a quien actualiza desde cualquier
+rem version (el actualizador de la 1.6.0 y la 1.6.1 no copia la carpeta voces), y no viajan dos veces.
+if exist "data\voces" xcopy /e /i /y /q "data\voces" "%D%\data\datos\voces_puente" >nul
+if exist "%D%\data\datos\voces_puente\propias" rmdir /s /q "%D%\data\datos\voces_puente\propias"
+if not exist "%D%\data\voces" mkdir "%D%\data\voces"
+rem El generador de voces para los personajes hechos por el jugador: el modelo Phonon de Gradium, sus voces y su licencia
+".venv\Scripts\python.exe" herramientas\preparar_phonon.py
+if errorlevel 1 (
+    echo ERROR: falta el modelo del generador de voces. Mira herramientas\preparar_phonon.py
+    pause
+    exit /b 1
+)
+xcopy /e /i /y /q "data\phonon" "%D%\data\phonon" >nul
+copy /y "data\phonon\LICENCIA.txt" "%D%\LICENCIA_Phonon_Gradium.txt" >nul
 xcopy /e /i /y /q "data\sonidos" "%D%\data\sonidos" >nul
 xcopy /e /i /y /q "data\musica" "%D%\data\musica" >nul
 xcopy /i /y /q "data\radio\*.*" "%D%\data\radio" >nul

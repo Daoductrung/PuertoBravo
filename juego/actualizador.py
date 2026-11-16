@@ -49,7 +49,7 @@ MAX_EXPANDIDO = 6 * 1024 ** 3
 MAX_MIEMBROS = 60000
 TIEMPO = 20
 # Carpetas del jugador: la actualización no las pisa ni las borra jamás.
-INTOCABLES = ("partidas", "config", "mi_musica", "actualizacion", "logs", "ia_local", "propias")
+INTOCABLES = ("partidas", "config", "mi_musica", "actualizacion", "logs", "ia_local", "propias", "voces_generadas")
 
 
 class ErrorActualizacion(Exception):

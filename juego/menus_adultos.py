@@ -181,6 +181,45 @@ def vida_social(p, directo=None):
             app.cerrar()
             app.decir(f"Lo dejas con {pers['nombre']}. No ha sido agradable.", True)
 
+        def hablar():
+            """Hablarle con tus palabras, como a cualquiera de la calle, pero a alguien que ya conoces. Si no estáis juntos, por teléfono."""
+            from .charla import interpretar
+            from .entidades import Persona
+            from .menus import EntradaTexto
+            r = p.relacion(pid)
+            fichas = p.__dict__.setdefault("_fichas_conocidos", {})          # lo que os habéis dicho hoy: se recuerda mientras dure la sesión
+            f = fichas.get(pid)
+            if f is None:
+                mujer = pers.get("genero", "m" if pers["nombre"].lower().endswith(("a", "e")) and pers["id"] not in ("andres", "ibai") else "h") == "m"
+                oficio = pers["desc"].split(".")[0].split(" de ")[0].split(" del ")[0].strip().lower()
+                f = fichas[pid] = {"nombre": pers["nombre"], "genero": "m" if mujer else "h", "edad": pers["edad"], "oficio": oficio or "vecino",
+                                   "caracter": "hablador", "confianza": 0, "frases": 0, "disponible": True, "le_atraen": "hm", "invitado": True,
+                                   "limosna": False, "presentado": True, "ofendido": False}
+            f["confianza"] = int(min(60, r["afinidad"] * 0.6)) + (15 if j.pareja == pid else 0)
+            f["caracter"] = "amable" if r["afinidad"] >= 40 or j.pareja == pid else "hablador"
+            x, y = p.pos()
+            q = Persona("civil", x, y, pers["nombre"])
+            q.ficha = f
+
+            def hecho(texto):
+                if not texto.strip():
+                    return
+                antes = f["confianza"]
+                if not p.ia_disponible() and interpretar(texto)[0] == "ligar":
+                    return app.decir(f"{pers['nombre']}: " + random.choice(["Eso me lo dices en persona, y con una cena delante.", "Qué cosas tienes. Anda, proponme un plan.", "Mira que eres. Luego hablamos."]), True)
+                if p.ia_disponible():
+                    app.decir("Espera un momento.", True)
+                app.decir(p.responder_libre(q, texto), True)
+                if f["confianza"] > antes and not p._hecho_hoy(r, "hablar"):
+                    p.sumar_afinidad(pid, 2)                             # hablar acerca, pero una vez al día
+                    p.cambiar_animo(1)
+                elif f["confianza"] < antes - 5:
+                    p.sumar_afinidad(pid, -3)
+            donde = "" if (aqui is not None and aqui.id == pers["lugar"]) else " por teléfono"
+            app.abrir(EntradaTexto(app, f"Qué le dices a {pers['nombre']}{donde}", hecho, maximo=200,
+                                   ayuda="Escribe con tus palabras: cómo te ha ido, una pregunta, un cumplido, lo que quieras. " +
+                                         ("Con el modo IA, contesta con libertad." if p.ia_disponible() else "El juego entiende de qué va lo que escribes y contesta a eso.")))
+
         def ops():
             r = j.relaciones.get(pid)
             l = p.lug(pers["lugar"])
@@ -190,7 +229,10 @@ def vida_social(p, directo=None):
             estado = {"pareja": "Sois pareja", "ex": "Lo dejasteis"}.get(r["estado"], "Os estáis conociendo")
             lista.append(Opcion(lambda: f"{estado}. {p.afinidad_txt(p.relacion(pid)).capitalize()}. Habéis tenido {p.relacion(pid).get('citas', 0)} citas"))
             from .intimidad import GESTOS
-            lista += [Opcion("Charlar un rato", charlar), Opcion("Proponer una cita", menu_cita), Opcion("Hacerle un regalo", menu_regalo)]
+            lista += [Opcion("Charlar un rato", charlar),
+                      Opcion("Hablarle con tus palabras", hablar, ayuda="Le escribes lo que quieras y te contesta, igual que al hablar con la gente de la calle. Si no estáis en el mismo sitio, por teléfono. "
+                                                                         "Hablar a menudo os acerca un poco, una vez al día."),
+                      Opcion("Proponer una cita", menu_cita), Opcion("Hacerle un regalo", menu_regalo)]
             from . import sistemas
             if p.acompanante and p.acompanante["pid"] == pid:
                 lista.append(Opcion("Despedirte: el paseo termina aquí", lambda: (app.cerrar(), sistemas.terminar_paseo(p))))

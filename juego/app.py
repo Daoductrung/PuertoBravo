@@ -184,6 +184,8 @@ class App:
         self.pila.clear()
         registro.info("partida", "Empieza una partida", cargada=bool(guardado), personaje=(personaje or {}).get("id", "") if isinstance(personaje, dict) else str(personaje or ""))
         self.partida = Partida(self, guardado, personaje)
+        from . import vozgen
+        vozgen.al_jugar(self.partida)                    # con un personaje propio, se le van generando las voces que le nombran
         self.mez.mundo_pausado = False
         self.pila.append(self.partida)
         if guardado:
@@ -194,6 +196,8 @@ class App:
 
     def volver_al_menu(self):
         registro.info("partida", "Vuelta al menú principal")
+        from . import vozgen
+        vozgen.generador.detener()
         if self.partida:
             self.partida.silenciar()
         self.partida = None
@@ -255,6 +259,13 @@ class App:
             if self.t_estado >= registro.CADA_ESTADO:
                 self.t_estado = 0.0
                 registro.estado()
+        prueba = getattr(self, "voz_prueba", None)
+        if prueba is not None:                           # una prueba de voz pedida desde un menú, ya generada
+            self.voz_prueba = None
+            from . import voces
+            if not prueba or voces.sonar(self, prueba) is None:
+                self.son("error")
+                self.decir("No se ha podido generar la prueba.", True)
         if self.pila:
             cima = self.pila[-1]
             self.mez.mundo_pausado = getattr(cima, "pausa_mundo", True)
