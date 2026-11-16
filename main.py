@@ -7,7 +7,32 @@ if getattr(sys, "frozen", False):
 os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
 
 
+_UNICA = None
+
+
+def ya_abierto():
+    """¿Hay otro Puerto Bravo abierto? En Windows, con un cerrojo con nombre. Las copias de pruebas pueden abrir varios."""
+    global _UNICA
+    if sys.platform != "win32":
+        return False
+    from juego import enlinea
+    if enlinea.varias_instancias():
+        return False
+    try:
+        import ctypes
+        k = ctypes.windll.kernel32
+        _UNICA = k.CreateMutexW(None, False, "PuertoBravoLeyDelAsfalto")
+        if k.GetLastError() == 183:                      # ya existía
+            ctypes.windll.user32.MessageBoxW(None, "Puerto Bravo ya está abierto. Solo se puede abrir una vez.", "Puerto Bravo", 0x40)
+            return True
+    except Exception:
+        pass
+    return False
+
+
 def main():
+    if ya_abierto():
+        return 4
     from juego import procesador, registro
     registro.iniciar("juego")
     # Antes de cargar nada más: elegir la biblioteca de cálculo que este procesador puede usar.

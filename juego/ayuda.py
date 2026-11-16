@@ -18,6 +18,7 @@ TECLAS = {
         ("M", "abre el móvil: misiones, lugares, explorador de mapa, marcadores, servicios, habilidades, logros, propiedades y estadísticas"),
         ("Intro", "interactuar: entrar en un lugar, empezar una misión, recoger un objeto o hablar"),
         ("F", "subir a un vehículo o bajarte"),
+        ("Mayúsculas F", "en un servidor, sacar a otro jugador de su vehículo y quedártelo: tiene que ir despacio y estar a tu lado"),
         ("Q", "fija al enemigo más cercano; púlsala otra vez para pasar al siguiente. Mayúsculas Q fija a cualquiera"),
         ("Números del 1 al 9", "eligen arma. La coma pasa a la siguiente y Mayúsculas coma a la anterior"),
         ("I", "abre la lista de tus armas para elegir una"),

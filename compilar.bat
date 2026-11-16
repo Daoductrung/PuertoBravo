@@ -33,6 +33,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo Exportando el mundo para el servidor en linea...
+".venv\Scripts\python.exe" herramientas\exportar_mundo_servidor.py
 echo Limpiando la compilacion anterior...
 if exist "build" rmdir /s /q "build"
 if exist "%D%" rmdir /s /q "%D%"
@@ -72,6 +74,8 @@ if exist "data\mods\noches_de_neon.json" copy /y "data\mods\noches_de_neon.json"
 if exist "data\mods\bahia_del_ocaso.json" copy /y "data\mods\bahia_del_ocaso.json" "%D%\data\mods" >nul
 if exist "LEEME.txt" copy /y "LEEME.txt" "%D%\LEEME.txt" >nul
 
+echo Firmando el mundo para los servidores en linea, si esta la clave de publicar...
+".venv\Scripts\python.exe" herramientas\exportar_mundo_servidor.py --firmar "%D%\data\datos"
 echo Protegiendo los datos del juego y los mods...
 ".venv\Scripts\python.exe" herramientas\cifrar_datos.py "%D%\data"
 if errorlevel 1 (

@@ -97,6 +97,7 @@ class Combate:
                 continue
             if (v.hostil or v.tag == "objetivo" or (todos and v.ia != "aparcado")) and v.dist(x, y) < 250:
                 lista.append(v)
+        lista += self.sv_objetivos(todos)                        # en un servidor, también los otros jugadores
         lista.sort(key=lambda e: e.dist(x, y))
         return lista
 
@@ -147,6 +148,7 @@ class Combate:
                 self.son(a["sonido"], vol=0.3, tono=random.uniform(1.5, 1.6))
             else:
                 self.son(a["sonido"], vol=0.75, tono=random.uniform(0.96, 1.04))
+                self.sv_ruido("d:" + a["id"])                    # en un servidor, los demás jugadores oyen el disparo
                 if a.get("ruido", 2) > 0:
                     self._ruido_disparo(x, y)
         else:
@@ -175,6 +177,11 @@ class Combate:
             if fuego and self.t - self.t_fuera_alcance > 2.5:
                 self.t_fuera_alcance = self.t
                 self.decir(f"Fuera de alcance: {M.metros(d)}.")
+            return
+        if getattr(o, "tipo", "") == "jugador":                  # otro jugador: si le das o no lo decide el servidor
+            if not fuego:
+                self.son(a["sonido"], xy=(o.x, o.y), ref=6)
+            self.sv_atacar(o, a)
             return
         prob = a["precision"] * (1.0 - 0.5 * d / a["alcance"]) if fuego else a["precision"]
         if j.veh:
@@ -228,13 +235,14 @@ class Combate:
             tx, ty = x + math.sin(rad) * a["alcance"] * 0.6, y + math.cos(rad) * a["alcance"] * 0.6
         self.son(a["sonido"], vol=0.7)
         d = math.hypot(tx - x, ty - y)
-        self.explosiones.append({"t": 0.35 + d / 45.0, "x": tx, "y": ty, "radio": a.get("radio", 8), "dano": a["dano"]})
+        self.explosiones.append({"t": 0.35 + d / 45.0, "x": tx, "y": ty, "radio": a.get("radio", 8), "dano": a["dano"], "arma": a["id"]})
         self.decir(f"Quedan {m['cargador'] + m['reserva']}.")
 
     def _estallar(self, e):
         j = self.j
         x, y, r = e["x"], e["y"], e["radio"]
         self.son("explosion", xy=(x, y), ref=30, maxd=400)
+        self.sv_explosion(x, y, e.get("arma"))
         self.delito(3, "uso de explosivos", siempre=self.mundo.policia and random.random() < 0.5)
         for p in list(self.personas):
             if not p.muerto and (p.tipo not in ("aliado", "perro") or self.cfg["fuego_amigo"]):
@@ -315,6 +323,7 @@ class Combate:
             self.herir_amigo(p, dano)
             return
         j = self.j
+        self.sv_golpe_eco(p, dano)                               # en una misión en grupo, el golpe cuenta para todos
         p.salud -= dano
         if p.salud <= 0:
             p.muerto = True
@@ -386,6 +395,8 @@ class Combate:
                 break
 
     def danar_vehiculo(self, v, dano):
+        if self.sv_dano_copia(v, dano):                          # un vehículo aparcado de otro jugador: lo lleva el servidor
+            return
         if v.muerto or v.ardiendo >= 0:
             return
         antes = v.salud / v.salud_max
@@ -743,6 +754,7 @@ class Combate:
             return
         self.transicion = True
         j = self.j
+        self.sv_al_morir()
         j.stats["muertes"] += 1
         self.son("mision_fallo", cat="interfaz")
         if j.veh:

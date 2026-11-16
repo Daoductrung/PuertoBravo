@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Montar un servidor de Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 56em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+li { margin-bottom: .4em; }
+code, kbd { background: #2a2a2a; padding: 0 .3em; }
+</style>
+</head>
+<body>
+<h1>Montar un servidor de Puerto Bravo</h1>
+<p>Un servidor es un programa pequeño, sin ventana ni sonido, que se deja encendido. Guarda los personajes, las bandas y los barrios, y decide lo que pasa entre jugadores. No necesita una máquina potente. Se administra entero por texto, así que funciona con cualquier lector de pantalla.</p>
+
+<h2>1. Qué hace falta</h2>
+<ul>
+<li>Un ordenador que se quede encendido: un PC, un NAS, un servidor alquilado o una Raspberry.</li>
+<li>Python 3.8 o posterior. No hay que instalar nada más: solo usa lo que trae Python. En Windows también vale el programa <code>PuertoBravoServidor.exe</code>, que no necesita Python.</li>
+<li>La carpeta <code>servidor</code> del juego, de la misma versión que el juego de quienes vayan a entrar.</li>
+<li>Para que entren desde fuera de tu casa: abrir en el router el puerto del servidor, el 47820 si no lo cambias, hacia ese ordenador.</li>
+</ul>
+
+<h2>2. Arrancarlo</h2>
+<h3>Con Python, en cualquier sistema</h3>
+<ul>
+<li>Copia la carpeta <code>servidor</code> a donde quieras, por ejemplo dentro de una carpeta <code>puertobravo</code>.</li>
+<li>Desde esa carpeta <code>puertobravo</code>, escribe <code>python3 -m servidor --ejemplo</code>. Crea el archivo <code>servidor.conf</code> con todas las opciones explicadas.</li>
+<li>Ábrelo con un editor de texto y cámbialo a tu gusto.</li>
+<li>Arranca con <code>python3 -m servidor</code>. Dice en qué puerto escucha y si cifra la conexión.</li>
+<li>Para dejarlo en segundo plano en Linux o en un NAS, en la carpeta <code>servidor/despliegue</code> hay tres guiones: <code>arrancar.sh</code>, <code>parar.sh</code> y <code>estado.sh</code>. Cópialos junto a la carpeta <code>servidor</code>.</li>
+</ul>
+<h3>En Windows, sin Python</h3>
+<ul>
+<li>En la carpeta del juego, abre <code>PuertoBravoServidor.exe</code>. La primera vez, ábrelo desde una ventana de órdenes con <code>PuertoBravoServidor.exe --ejemplo</code> para que escriba <code>servidor.conf</code>.</li>
+<li>Se para con Control C, o escribiendo <code>apagar</code>.</li>
+</ul>
+<h3>Con Docker</h3>
+<ul>
+<li>En <code>servidor/despliegue</code> hay un <code>Dockerfile</code> y un <code>docker-compose.yml</code>. Desde esa carpeta, <code>docker compose up -d --build</code>.</li>
+<li>La configuración y todo lo que se guarda quedan en la carpeta <code>datos</code> que se crea al lado, y sobreviven a las actualizaciones.</li>
+</ul>
+
+<h2>3. La dirección que das a tu gente</h2>
+<ul>
+<li>Es <code>puertobravo://</code>, la dirección de tu ordenador, dos puntos y el puerto. Por ejemplo, en tu casa, <code>puertobravo://192.168.1.50:47820</code>.</li>
+<li>Para quien entra desde fuera es tu dirección de internet o un nombre de dominio, con el puerto abierto en el router.</li>
+<li>Ellos la añaden en el juego, en Jugar en un servidor, Añadir un servidor.</li>
+</ul>
+
+<h2>4. Las opciones de servidor.conf</h2>
+<ul>
+<li><code>nombre</code> y <code>bienvenida</code>: cómo se llama el servidor y qué se le dice a quien entra.</li>
+<li><code>puerto</code> y <code>max_jugadores</code>.</li>
+<li><code>entrada</code>: <code>abierta</code>, para cualquiera con la dirección; <code>clave</code>, con la contraseña que pongas en <code>clave</code>; o <code>invitacion</code>, con códigos de un solo uso que creas con la orden <code>invitar</code>. Solo se piden la primera vez: quien ya tiene personaje entra sin más.</li>
+<li><code>datos</code>: la carpeta donde se guarda todo.</li>
+<li><code>cifrado</code>: con <code>auto</code>, que es lo de serie, el servidor crea su propio certificado la primera vez que arranca y cifra la conexión. No hay que instalar nada, tampoco en Windows: si el ordenador tiene el programa <code>openssl</code> lo usa, y si no, el certificado lo hace el propio servidor. Tarda unos segundos y solo ocurre una vez; el certificado queda en la carpeta de datos. Con <code>no</code>, no cifra. Si tienes un certificado de verdad, pon sus rutas en <code>certificado</code> y <code>llave</code>.</li>
+<li><code>pvp</code>, <code>zonas_seguras</code>, <code>modo_pasivo</code>: las reglas del combate entre jugadores.</li>
+<li><code>proteccion</code>: segundos sin poder herir ni ser herido al llegar y al reaparecer.</li>
+<li><code>botin</code> y <code>botin_max</code>: el tanto por ciento del dinero de bolsillo que pierde quien cae ante otro jugador, y su tope.</li>
+<li><code>atraco</code> y <code>atraco_max</code>: lo mismo para quien es atracado por otro jugador.</li>
+<li><code>recompensa</code>: lo que sube el precio por la cabeza de quien tumba a alguien que no se defendía.</li>
+<li><code>adultos</code>: con <code>no</code>, quien entra juega sin el contenido para adultos aunque lo tenga activado.</li>
+<li><code>precio_banda</code>, <code>precio_barrio</code>, <code>renta_barrio</code>, <code>precio_guerra</code>, <code>guerra_espera</code>, <code>guerra_dura</code>: lo que cuestan y lo que duran las cosas de las bandas. Los minutos son de reloj.</li>
+<li><code>robo_segundos</code>: lo que hay que aguantar en la puerta para vaciar la caja del negocio de otro jugador.</li>
+<li><code>personajes</code>: cuántos personajes lleva el servidor, comunes para todos: paseantes, rateros, pistoleros, ladrones de coches y atracadores. Solo hay donde hay jugadores. Con 0, ninguno.</li>
+<li><code>venta_mercado</code> y <code>propiedad_dias</code>: el tanto por ciento que recupera quien vende su casa o su negocio al mercado, y los días de reloj sin entrar tras los que las propiedades de un jugador vuelven a estar en venta.</li>
+<li><code>vehiculos_horas</code> y <code>vehiculos_por_jugador</code>: cuánto dura en la calle un vehículo que nadie usa y cuántos puede tener aparcados cada jugador.</li>
+<li><code>admins</code>: nombres de jugador con permisos de administrador, separados por comas. Con <code>primer_admin = si</code>, lo es la primera cuenta que entra.</li>
+<li><code>comprobar_datos</code>: con <code>si</code>, solo entra quien tenga los mismos datos de juego que el servidor.</li>
+<li><code>registro_ip</code>: de serie, el servidor no anota de dónde se conecta nadie.</li>
+</ul>
+
+<h2>5. Órdenes</h2>
+<p>Se escriben en la ventana del servidor. Un administrador puede escribirlas también desde el juego, en el chat general, con una barra delante: por ejemplo, barra jugadores.</p>
+<ul>
+<li><code>ayuda</code>: las dice todas.</li>
+<li><code>jugadores</code>: quién hay y en qué localidad.</li>
+<li><code>aviso</code> y un texto: lo oyen todos.</li>
+<li><code>expulsar</code> y un nombre: le saca. Puede volver a entrar.</li>
+<li><code>vetar</code> y un nombre: no puede volver. <code>perdonar</code> lo deshace.</li>
+<li><code>admin</code> y un nombre: le hace administrador.</li>
+<li><code>invitar</code>: crea un código de invitación de un solo uso.</li>
+<li><code>hora</code> y un número de 0 a 23: cambia la hora del servidor.</li>
+<li><code>bandas</code>: las bandas, con su gente y su caja.</li>
+<li><code>guardar</code>: guarda ya. El servidor guarda solo cada minuto y al cerrarse.</li>
+<li><code>copia</code>: hace una copia de seguridad de todo en la carpeta de datos.</li>
+<li><code>apagar</code>: avisa a los jugadores, guarda y se cierra.</li>
+</ul>
+
+<h2>6. Qué guarda y qué no</h2>
+<ul>
+<li>Guarda, de cada jugador: su clave pública, el nombre que eligió y su personaje. Y las bandas, los barrios, de quién es cada casa y cada negocio, los vehículos aparcados, la hora y el mundo de la última versión del juego que le han traído.</li>
+<li>No guarda contraseñas, correos, direcciones IP ni los mensajes del chat.</li>
+<li>Todo está en un único archivo, <code>puertobravo.db</code>, dentro de la carpeta de datos. Con copiar esa carpeta tienes la copia de seguridad, y con llevarla a otro ordenador te llevas el servidor entero.</li>
+<li>Quien monta un servidor responde de él: de quién entra, de sus reglas y de lo que guarda.</li>
+</ul>
+
+<h2>7. Versiones del juego: no hay que actualizar el servidor</h2>
+<ul>
+<li>El servidor no lleva dentro el mundo del juego. Los lugares, las armas, los barrios y las misiones se los da el juego de quien entra.</li>
+<li>Cuando sale una versión nueva del juego, no tienes que hacer nada. El primer jugador que entre con ella le trae al servidor el mundo de esa versión, y el servidor lo adopta sin reiniciarse y lo guarda. Los que estaban dentro reciben el aviso; para volver a entrar tendrán que actualizar su juego.</li>
+<li>Es seguro: ese mundo va firmado por quien publica el juego, con la misma firma de las actualizaciones, y el servidor comprueba la firma. Un jugador no puede colarle un mundo inventado, ni hacerle volver a una versión anterior.</li>
+<li>Por eso puedes montar el servidor en una máquina alquilada o en un NAS con Python y olvidarte: sirve para las versiones que vayan saliendo. Un servidor recién puesto, sin nada del juego, se queda esperando a que el primer jugador le traiga el mundo.</li>
+<li>Con mods: los mods que cambian el mundo no van firmados. Si quieres un servidor con mods, pon <code>actualizar_mundo = admin</code>: entonces un administrador, entrando con su juego, le pone al servidor el mundo con sus mods, y quien quiera entrar tendrá que llevar los mismos.</li>
+<li>Con <code>actualizar_mundo = no</code>, el servidor se queda para siempre con el mundo que tiene.</li>
+<li>El servidor solo hay que actualizarlo cuando el propio servidor tenga funciones nuevas que quieras. Para eso se sustituye la carpeta <code>servidor</code> y se reinicia; la carpeta de datos no se toca. Un juego más nuevo que el servidor entra igual: lo que el servidor no conozca, simplemente no lo hace.</li>
+</ul>
+
+<h2>8. Lo que conviene saber</h2>
+<ul>
+<li>La gente de relleno de la calle, el tráfico y la policía los lleva el juego de cada uno, no el servidor. Por eso el servidor es ligero. Lo que sí lleva el servidor son sus propios personajes, pocos y con nombre.</li>
+<li>El dinero que cada jugador gana en sus misiones y trabajos lo cuenta su propio juego. El servidor decide lo que pasa entre jugadores: los disparos, los vehículos, las bandas, los barrios y el botín. Un jugador con el juego modificado podría darse dinero a sí mismo; no puede hacerse invencible ante los demás, ni quedarse un coche que no ha cogido, ni tocar la caja de una banda.</li>
+<li>Si el servidor se cae, al arrancar sigue por donde iba: como mucho se pierde el último minuto.</li>
+</ul>
+</body>
+</html>

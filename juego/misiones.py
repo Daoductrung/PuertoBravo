@@ -287,6 +287,7 @@ class Misiones:
             self.decir(self.txt(p["texto"]))
         ms["pendiente"] = True
         self._materializar()
+        self.sv_mision_paso()
 
     def _seguir_si(self, ms):
         """Lo que hace una escena de la misión al terminar: pasar al paso siguiente, pero solo si la misión sigue siendo
@@ -508,6 +509,7 @@ class Misiones:
             self.decir(("Hay un enemigo. Pulsa Q para fijarlo." if n == 1 else f"Hay {n} enemigos. Pulsa Q para fijar al más cercano."))
         if self.cfg["punteria"] == "completa":
             self.fijar(callar=True)
+        self.sv_mision_enemigos()                                # en grupo, los enemigos son de todos
 
     # ------------------------------------------------------------ actualización
     def actualizar_mision(self, dt):
@@ -1022,6 +1024,7 @@ class Misiones:
             self.decir(f"Has repetido {m['titulo']}.")
             return
         self.fallos.pop(m["id"], None)
+        self.sv_mision_fin(True, m)
         if m.get("territorio") and m["territorio"] not in self.j.territorios:
             self.j.territorios.append(m["territorio"])
             self.son("territorio", cat="interfaz")
@@ -1085,6 +1088,7 @@ class Misiones:
         control = ms.get("control")
         repeticion = bool(ms.get("repeticion"))
         self._limpiar_mision()
+        self.sv_mision_fin(False)
         self.app.son("mision_fallo")
         if not repeticion:
             self.fallos[m["id"]] = self.fallos.get(m["id"], 0) + 1
@@ -1161,4 +1165,5 @@ class Misiones:
         if not self.mision:
             return
         self._limpiar_mision()
+        self.sv_mision_fin(False)
         self.decir("Misión abandonada.", True)

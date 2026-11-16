@@ -28,6 +28,7 @@ POR_DEFECTO = {
     "piloto_gps": False,
     "frenada_auto": True,
     "sucesos": True,
+    "servidores": [],              # servidores en línea guardados: nombre, dirección y huella de su certificado
     "mando_vibracion": True,
     "mando_textos": True,          # con un mando conectado, decir los botones en lugar de las teclas
     "invulnerable": False,
@@ -124,7 +125,9 @@ class Config:
     def guardar(self):
         try:
             from . import cifrado
-            cifrado.escribir_json(self.archivo, self.v, sangria=2)          # protegido en el juego compilado
+            v = dict(self.v)
+            v.update(getattr(self, "temporales", {}))            # lo que se ha cambiado solo para esta sesión no se guarda
+            cifrado.escribir_json(self.archivo, v, sangria=2)          # protegido en el juego compilado
         except OSError:
             pass
 

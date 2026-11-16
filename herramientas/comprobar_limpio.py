@@ -46,7 +46,7 @@ def comprobar(raiz):
 
     for necesario in (("PuertoBravo.exe",), ("EditorMods.exe",), ("data", "datos", "ciudad.pbd"), ("data", "docs", "manual.html"),
                       ("data", "docs", "teclas.html"), ("data", "docs", "cambiar_sonidos.html"), ("data", "docs", "editor_mods.html"),
-                      ("data", "docs", "novedades.html"), ("data", "sonidos", "por_defecto"), ("data", "sonidos", "realista"), ("data", "sonidos", "alternativo"), ("data", "sonidos", "retro"),
+                      ("data", "docs", "novedades.html"), ("data", "docs", "servidor.html"), ("PuertoBravoServidor.exe",), ("lib", "servidor", "mundo.json"), ("data", "sonidos", "por_defecto"), ("data", "sonidos", "realista"), ("data", "sonidos", "alternativo"), ("data", "sonidos", "retro"),
                       ("data", "radio"), ("data", "musica"), ("lib", "numpy"), ("lib_antiguo", "numpy"), ("lib", "soft_oal.dll"), ("LICENCIA_OpenAL_Soft.txt",)) + tuple(("data", "mods", m) for m in MODS_DE_SERIE):
         if not hay(*necesario):
             problemas.append("Falta " + os.path.join(*necesario))

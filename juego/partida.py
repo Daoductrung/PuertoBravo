@@ -20,6 +20,7 @@ from .intimidad import Intimidad
 from .misiones import Misiones
 from .necesidades import Necesidades
 from .online import Online
+from .enlinea import EnLinea
 from .trabajos import Trabajos
 from .vida import Vida
 
@@ -70,7 +71,7 @@ FRASES = [
 ]
 
 
-class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, Charla, Intimidad, Necesidades, Azar):
+class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -128,6 +129,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.objetivo = None
         self.radar_lista = []
         self.online_iniciar()
+        self.en_servidor = False        # la partida es de un servidor en línea
+        self.sv = {}
         self.radar_idx = -1
         self.barrio_act = None
         self.cruce_act = None
@@ -549,6 +552,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if texto:
             self.decir(texto)
         self.mision_cambio_mapa()
+        self.sv_poner_vehiculos()
         if not self.gps and gps_final and self.lug(gps_final):
             self.gps_a_lugar(self.lug(gps_final), auto=gps_auto, callar=True)
             self.repetir_gps_suave()
@@ -710,7 +714,11 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         elif k == pygame.K_COMMA:
             self.elegir_arma(None, -1 if mayus else 1)
         elif k == pygame.K_f:
-            self.entrar_salir()
+            if mayus and self.en_servidor and not self.j.veh:    # en un servidor: sacar a otro jugador de su vehículo
+                if not self.sv_asaltar_cerca():
+                    self.decir("No hay ningún jugador al volante a tu lado.", True)
+            else:
+                self.entrar_salir()
         elif k in (pygame.K_RETURN, pygame.K_KP_ENTER):
             self.interactuar()
         elif j.veh:
@@ -928,6 +936,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.hablar()
         elif k == pygame.K_h:
             self.son("grito", vol=0.5)
+            self.sv_ruido("grito")
             for p in self.personas:
                 if p.tipo == "civil" and not p.muerto and p.dist(j.x, j.y) < 15:
                     p.estado = "huye"
@@ -1572,7 +1581,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.pasar_necesidades(dt / 2.0)
         self.pasar_perro(dt / 2.0)
         self.sorteo_loteria()
-        if self.reloj >= 1440:
+        if self.en_servidor:
+            self.reloj = min(self.reloj, 1439.9)                 # en un servidor, el día lo cambia el servidor para todos a la vez
+        elif self.reloj >= 1440:
             self.reloj -= 1440
             self.dia += 1
             self.plazas_usadas.clear()
@@ -1580,7 +1591,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.sortear_dia()
         hora = int(self.reloj // 60)
         if hora != antes:
-            r = random.random()
+            r = 1.0 if self.en_servidor else random.random()     # y también si llueve
             if self.lluvia and r < 0.4:
                 self.lluvia = False
                 self.son("pajaro", cat="ambiente")
@@ -1629,6 +1640,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
     def pasar_horas(self, horas, dormir=False):
         self.pasar_necesidades(horas * 60, durmiendo=dormir)
         self.pasar_perro(horas * 60)
+        if self.en_servidor:
+            return                                               # en un servidor el reloj es de todos: dormir no lo adelanta
         self.reloj += horas * 60
         while self.reloj >= 1440:
             self.reloj -= 1440
@@ -1790,7 +1803,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         m = self.mundo
         noche = self.es_noche()
         for v in list(self.vehiculos):
-            if v is j.veh or v.tag or v is self.ultimo_veh:      # el tuyo te espera donde lo dejaste
+            if v is j.veh or v.tag or v is self.ultimo_veh or getattr(v, "id_red", None) is not None:      # el tuyo te espera donde lo dejaste; los de otros jugadores, también
                 continue
             d = v.dist(x, y)
             if (v.ia == "trafico" and d > 240) or (v.ia in ("aparcado", None) and d > 170) or \
@@ -1910,6 +1923,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             p.x, p.y = x0, y0 + lado - r
 
     def quitar_vehiculo(self, v):
+        self.sv_quitado(v)
         v.callar()
         v.muerto = True
         if v.plaza is not None:

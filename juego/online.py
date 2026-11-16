@@ -207,8 +207,11 @@ class Online:
             self.t_red = 0.0
             x, y = self.pos()
             v = self.j.veh
-            cli.enviar({"t": "estado", "e": {"m": self.mundo.id, "x": round(x, 1), "y": round(y, 1), "r": round(v.rumbo if v else self.j.rumbo, 0),
-                                               "v": v.modelo["id"] if v else None, "s": round(abs(v.vel), 1) if v else 0.0}})
+            e = {"m": self.mundo.id, "x": round(x, 1), "y": round(y, 1), "r": round(v.rumbo if v else self.j.rumbo, 0),
+                 "v": v.modelo["id"] if v else None, "s": round(abs(v.vel), 1) if v else 0.0}
+            if getattr(self, "en_servidor", False):
+                e.update(self.sv_estado())
+            cli.enviar({"t": "estado", "e": e})
         for _ in range(60):
             if getattr(self, "red", None) is not cli:
                 break                              # un mensaje anterior nos ha desconectado
@@ -218,11 +221,14 @@ class Online:
                 break
             self._red_mensaje(m)
         if getattr(self, "red", None) is not None:
+            self.sv_paso(dt)
             self._red_sonidos(dt)
             self._coop_paso()
             self._pasajero_paso()
 
     def _red_mensaje(self, m):
+        if self.sv_mensaje(m):                 # en un servidor, casi todo lo atiende el modo en línea
+            return
         t = m.get("t")
         if t == "estados":
             for clave, e in (m.get("e") or {}).items():

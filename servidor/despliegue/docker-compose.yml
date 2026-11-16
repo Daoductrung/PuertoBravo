@@ -1,0 +1,15 @@
+# docker compose up -d --build     (desde la carpeta que contiene la carpeta servidor)
+services:
+  puertobravo:
+    build:
+      context: ../..
+      dockerfile: servidor/despliegue/Dockerfile
+    container_name: puertobravo
+    restart: unless-stopped
+    ports:
+      - "47820:47820"
+    volumes:
+      - ./datos:/datos
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app

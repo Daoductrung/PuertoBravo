@@ -14,7 +14,7 @@ from juego import NOMBRE, VERSION  # noqa: E402
 
 opciones = {
     "build_exe": os.path.join("dist", "PuertoBravo"),
-    "packages": ["juego", "editor", "wx", "pygame", "numpy", "sounddevice", "_sounddevice_data", "soundfile", "_soundfile_data",
+    "packages": ["juego", "editor", "servidor", "wx", "pygame", "numpy", "sounddevice", "_sounddevice_data", "soundfile", "_soundfile_data",
                  "accessible_output2", "libloader", "platform_utils", "win32com", "pythoncom", "pywintypes"],
     "includes": ["juego.app"],
     "excludes": ["tkinter", "pytest", "_pytest", "unittest", "pydoc_data", "PyInstaller", "setuptools", "pip", "numpy.f2py", "numpy.testing", "win32comext"],
@@ -25,6 +25,8 @@ opciones = {
     # Sin esto, cada módulo compilado lleva dentro la ruta completa del equipo donde se compiló, y sale en las trazas de error.
     "replace_paths": [("*", "")],
     "silent_level": 1,
+    "include_files": [(os.path.join("servidor", "mundo.json"), os.path.join("lib", "servidor", "mundo.json")),
+                      (os.path.join("servidor", "despliegue"), os.path.join("servidor_despliegue"))],
 }
 
 # Opcionales: si están instalados, van en la compilación; si no, el juego funciona igual sin ellos.
@@ -39,5 +41,6 @@ setup(
     description=NOMBRE,
     options={"build_exe": opciones},
     executables=[Executable("main.py", base="gui", target_name="PuertoBravo.exe"),
-                 Executable("editor_mods.py", base="gui", target_name="EditorMods.exe")],
+                 Executable("editor_mods.py", base="gui", target_name="EditorMods.exe"),
+                 Executable("servidor_main.py", base="console", target_name="PuertoBravoServidor.exe")],
 )

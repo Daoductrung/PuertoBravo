@@ -199,6 +199,8 @@ class Conduccion:
         if v.ardiendo >= 0:
             self.decir("¡Ese vehículo está ardiendo!", True)
             return
+        if self.sv_pedir_vehiculo(v):                            # lo dejó ahí otro jugador: el servidor dice quién se lo lleva
+            return
         if v.ia == "policia" and not v.desplegado and v.ocupado:
             self.decir("Ese coche patrulla está lleno de policías.", True)
             return
@@ -293,6 +295,7 @@ class Conduccion:
         self._motor(v, True)
         self.rodadura = self.son("rodadura", bucle=True, vol=0.0)
         self.preparar_conduccion()
+        self.sv_subido(v)
         r = self.app.radio.sintonizar(self.cfg["emisora"])
         if callar:
             return
@@ -340,6 +343,7 @@ class Conduccion:
             self.terminar_trabajo("Dejas el vehículo de trabajo.")
         if not v.tag and not v.muerto:
             self.ultimo_veh = v
+        self.sv_bajado(v)
         if not forzado:
             self.son_puerta(v)
             self.decir(f"Te bajas. {self.mundo.describir(j.x, j.y)}.", True)

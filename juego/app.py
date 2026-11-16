@@ -23,7 +23,9 @@ class EventoFalso:
 class App:
     def __init__(self, pruebas=False):
         self.pruebas = pruebas
-        self.cfg = Config(os.path.join(rutas.DATA, "config_pruebas.json") if pruebas else None)
+        from . import enlinea
+        _perfil = enlinea.perfil()                          # solo en las copias de pruebas: cada instancia, sus opciones
+        self.cfg = Config(os.path.join(rutas.DATA, "config_pruebas.json") if pruebas else (rutas.archivo_config("config_" + _perfil) if _perfil else None))
         if pruebas:
             from .config import POR_DEFECTO
             self.cfg.v = dict(POR_DEFECTO)
@@ -183,9 +185,14 @@ class App:
             self.partida.silenciar()
         self.pila.clear()
         registro.info("partida", "Empieza una partida", cargada=bool(guardado), personaje=(personaje or {}).get("id", "") if isinstance(personaje, dict) else str(personaje or ""))
+        if self.partida:
+            self.partida.sv_salir()
         self.partida = Partida(self, guardado, personaje)
         self.mez.mundo_pausado = False
         self.pila.append(self.partida)
+        enlace, self.enlace = getattr(self, "enlace", None), None
+        if enlace is not None:                               # la partida es de un servidor en línea
+            self.partida.sv_entrar(enlace)
         if guardado:
             self.son("guardado")
             p = self.partida
@@ -195,6 +202,7 @@ class App:
     def volver_al_menu(self):
         registro.info("partida", "Vuelta al menú principal")
         if self.partida:
+            self.partida.sv_salir()
             self.partida.silenciar()
         self.partida = None
         self.pila.clear()
@@ -342,6 +350,11 @@ class App:
             pygame.time.wait(9000)
 
     def cerrar_todo(self):
+        try:
+            if self.partida:
+                self.partida.sv_salir()                  # en un servidor: guardar y despedirse
+        except Exception:
+            pass
         registro.estado()
         registro.vigilar_estado(None)
         self.cfg.guardar()

@@ -46,6 +46,8 @@ def leer_ranura(ranura):
 
 
 def escribir_ranura(p, ranura):
+    if getattr(p, "en_servidor", False):                 # en un servidor, el personaje se guarda en el servidor
+        return p.sv_guardar(ya=True)
     d = p.a_dict()
     d["fecha"] = time.strftime("%d/%m/%Y %H:%M")
     d["resumen"] = f"{len(p.completadas)} misiones, {p.j.dinero} euros, día {p.dia}"
@@ -179,6 +181,9 @@ def principal(app):
             Opcion("Nueva partida conservando lo ganado", lambda: partida_mas(app),
                    ayuda="Empiezas la historia desde el principio, pero con el dinero, las armas, las habilidades, las casas, los vehículos y los barcos de una partida guardada. "
                          "Los enemigos de las misiones aguantan algo más cada vez. La partida guardada no se toca."),
+            Opcion("Jugar en un servidor", lambda: __import__("juego.menus_enlinea", fromlist=["x"]).servidores(app),
+                   ayuda="Un servidor es un mundo que no se apaga, con jugadores de verdad: puedes hacer todo lo que haces jugando por tu cuenta, y además encontrarte con los demás, "
+                         "comerciar, formar bandas, pelear por los barrios o hacer misiones en grupo. Tu personaje se guarda en el servidor."),
             Opcion("Jugar con amigos", lambda: app.decir("Para jugar con amigos, empieza o carga tu partida, abre el móvil con la tecla M y entra en Jugar con amigos. "
                                                         "Desde ahí puedes abrir tu partida, con o sin contraseña, y darles tu dirección, o unirte a la de un amigo.", True),
                    ayuda="El propio juego monta el servidor en tu ordenador. No hace falta ningún programa más."),
@@ -955,9 +960,18 @@ def _casa(p, l):
     if l.id not in j.propiedades:
         precio = int(l.get("precio", 0))
 
+        dueno = p.sv_dueno(l)
+        if dueno:                                            # en un servidor: ya es de otro jugador
+            oferta = p.sv_oferta(l)
+            _menu_lugar(p, l, [Opcion(f"Esta vivienda es de {dueno}, otro jugador. " + (f"La vende por {oferta} euros" if oferta else "No está en venta"))]
+                        + ([Opcion(f"Comprársela por {oferta} euros", lambda: p.red.enviar({"t": "prop_adquirir", "lugar": l.id}))] if oferta else [])
+                        + [Opcion("Descripción", lambda: app.decir(l.desc, True))])
+            return
+
         def comprar():
             if p.pagar(precio):
                 j.propiedades.append(l.id)
+                p.sv_comprado(l)
                 app.cerrar(m)
                 app.son("mision_ok")
                 app.decir(f"¡{l.nombre} es tuya! Aquí puedes guardar la partida, descansar y dejar {l.get('garaje', 0)} vehículos.", True)
@@ -1042,6 +1056,7 @@ def _casa(p, l):
             lista.append(Opcion(f"Dejar a {j.perro} en casa", lambda: (p.mandar_perro_a_casa(l), m.refrescar(False)), ayuda="Se queda aquí, con comida y agua, hasta que vuelvas a por él o lo llames desde el móvil."))
         from . import laboratorio
         lista += laboratorio.opciones_casa(p, l, Menu, Opcion)
+        lista += __import__("juego.menus_enlinea", fromlist=["x"]).opciones_propiedad(p, l)
         if not j.veh:
             lista.append(Opcion("Recorrer la casa por dentro", recorrer,
                                 ayuda="Entras y vas de una habitación a otra con las flechas: salón, cocina, baño, dormitorio y garaje. En cada una, Intro hace lo suyo."))
@@ -1286,12 +1301,26 @@ def _negocio(p, l):
             Opcion(lambda: f"Forma de cobro de todos tus negocios: {p.cobro_txt()}", lambda: (p.cambiar_cobro(), mm.refrescar(False)),
                    ayuda="Intro cambia entre las tres formas: que te lo traigan en mano cada medianoche, que te lo ingresen en el banco, o venir tú a recogerlo, con un diez por ciento más."),
         ] + ([Opcion(lambda: f"Recoger la caja: {int(j.cajas.get(l.id, 0))} euros", lambda: (p.recoger_caja(l), mm.refrescar(False)),
-                     ayuda="Te llevas lo que hay en la caja, con un diez por ciento más por venir en persona. En la caja caben siete días.")] if j.cobro_negocios == "recoger" else []))
+                     ayuda="Te llevas lo que hay en la caja, con un diez por ciento más por venir en persona. En la caja caben siete días.")] if j.cobro_negocios == "recoger" else [])
+            + __import__("juego.menus_enlinea", fromlist=["x"]).opciones_propiedad(p, l))
+        return
+
+    dueno = p.sv_dueno(l)
+    if dueno:                                                # en un servidor: el negocio es de otro jugador, y se le puede atracar
+        oferta = p.sv_oferta(l)
+        _menu_lugar(p, l, [
+            Opcion(f"Este negocio es de {dueno}, otro jugador. " + (f"Lo vende por {oferta} euros" if oferta else "No está en venta")),
+        ] + ([Opcion(f"Comprárselo por {oferta} euros", lambda: p.red.enviar({"t": "prop_adquirir", "lugar": l.id}))] if oferta else []) + [
+            Opcion("Atracar el negocio", lambda: (__import__("juego.menus_extra", fromlist=["x"])._volver_al_juego(p), p.sv_robar_negocio(l)),
+                   ayuda=f"Con un arma en la mano. Salta la alarma, a {dueno} y a su banda les llega el aviso, y tienes que aguantar en la puerta veinte segundos, a pie y sin alejarte. "
+                         f"Si lo consigues te llevas la caja del día, {ingresos} euros, que a él se le descuentan a medianoche. A cada negocio solo se le puede vaciar la caja una vez al día."),
+            Opcion("Descripción", lambda: app.decir(l.desc, True))])
         return
 
     def comprar():
         if p.pagar(precio):
             j.propiedades.append(l.id)
+            p.sv_comprado(l)
             app.cerrar(m)
             app.son("mision_ok")
             app.decir(f"¡{l.nombre} es tuyo! Ganarás {ingresos} euros cada día.", True)

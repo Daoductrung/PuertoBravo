@@ -92,6 +92,8 @@ class Charla:
         if j.veh:
             return
         q = self.persona_para_hablar()
+        if q is None and self.sv_hablar_cerca():                 # en un servidor: hablarle al jugador que tienes al lado
+            return
         if q is None:
             self.decir("No tienes a nadie al lado para hablar. Acércate a alguien: el radar, con Tabulador, te dice quién hay cerca.", True)
             return

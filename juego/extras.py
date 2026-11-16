@@ -69,6 +69,8 @@ class Extras:
         j = self.j
         if j.veh:
             return
+        if self.sv_atracar_cerca():                              # en un servidor: el que tienes al lado es otro jugador
+            return
         cerca = [p for p in self.personas if p.tipo == "civil" and not p.muerto and p.dist(j.x, j.y) < 4.5]
         if self.modo_adulto() and self.arma()["id"] == "punos" and self.carga() > 0:
             self.ofrecer_mercancia()

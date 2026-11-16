@@ -39,6 +39,9 @@ def escribir_mensaje(p):
 
 
 def amigos(p):
+    if getattr(p, "en_servidor", False):
+        from . import menus_enlinea
+        return menus_enlinea.menu(p)
     app = p.app
     cfg = p.cfg
     estado = {"clave": ""}
