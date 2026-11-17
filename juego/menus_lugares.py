@@ -13,9 +13,6 @@ PELICULAS = [
     "«Rápidos y jubilados»: persecuciones en utilitario a cuarenta por hora. Una joya.",
     "«La venganza del boquerón»: cine de terror marinero. Sales con hambre.",
 ]
-PRENDAS = [("Chándal", 80), ("Ropa de playa", 60), ("Cazadora de cuero", 250), ("Traje elegante", 400), ("Mono de trabajo", 90)]
-
-
 def _menu(p, l, ops, intro=None):
     m = Menu(p.app, lambda: f"{l.nombre}. Tienes {p.j.dinero} euros", ops, intro=intro)
     p.app.abrir(m)
@@ -69,7 +66,7 @@ def estacion(p, l):
 
     def viajar(dest):
         def f():
-            precio = int(dest.get("precio", 20))
+            precio = int(dest.get("precio", p.precio("autobus", 20)))
             if not p.pagar(precio):
                 return
             app.cerrar(m)
@@ -82,7 +79,7 @@ def estacion(p, l):
             from .pantallas import viajar as trayecto
             trayecto(app, 50.0, llegar, autobus=True, destino=p.mapas[dest.mapa].nombre)
         return f
-    ops = [Opcion(f"Autobús a {p.mapas[e.mapa].nombre}: {int(e.get('precio', 20))} euros", viajar(e), ayuda=p.mapas[e.mapa].barrios[0].get("descripcion", ""))
+    ops = [Opcion(f"Autobús a {p.mapas[e.mapa].nombre}: {int(e.get('precio', p.precio('autobus', 20)))} euros", viajar(e), ayuda=p.mapas[e.mapa].barrios[0].get("descripcion", ""))
            for e in p.lugares.values() if e.tipo == "estacion" and e.mapa != p.mundo.id]
     m = _menu(p, l, ops or [Opcion("Hoy no sale ningún autobús")])
 
@@ -121,7 +118,7 @@ def tranvia(p, l):
 
     def ir(dest):
         def f():
-            if not p.pagar(PRECIO_TRANVIA):
+            if not p.pagar(p.precio("tranvia", PRECIO_TRANVIA)):
                 return
             app.cerrar(m)
             paradas = recorrido_tranvia(p, l, dest)
@@ -142,7 +139,7 @@ def tranvia(p, l):
         return f
     otras = [x for x in linea if x is not l]
     otras.sort(key=lambda x: len(recorrido_tranvia(p, l, x)))
-    ops = [Opcion(f"Ir a {corto(x)}: {len(recorrido_tranvia(p, l, x))} {'parada' if len(recorrido_tranvia(p, l, x)) == 1 else 'paradas'}, {PRECIO_TRANVIA} euros", ir(x),
+    ops = [Opcion(f"Ir a {corto(x)}: {len(recorrido_tranvia(p, l, x))} {'parada' if len(recorrido_tranvia(p, l, x)) == 1 else 'paradas'}, {p.precio('tranvia', PRECIO_TRANVIA)} euros", ir(x),
                   ayuda="El tranvía va parando en cada parada y la anuncia. Durante el viaje, con Intro te bajas en la próxima, aunque no sea la que habías elegido. "
                         + p.mundo.describir(x.x, x.y) + ".") for x in otras]
     m = _menu(p, l, ops or [Opcion("Esta es la única parada de la línea")],
@@ -175,7 +172,7 @@ def tren(p, l):
         return f
 
     def precio(saltos):
-        return 10 + 12 * saltos
+        return p.precio("tren_base", 10) + p.precio("tren_salto", 12) * saltos
     ops = []
     for e in sorted((x for x in p.lugares.values() if x.tipo == "tren" and x.mapa != p.mundo.id), key=lambda x: (p.saltos_por_tierra(p.mundo.id, x.mapa) or 99, x.mapa)):
         saltos = p.saltos_por_tierra(p.mundo.id, e.mapa)
@@ -226,14 +223,14 @@ def aeropuerto(p, l):
         return f
 
     def precio_de(dest, medio):
-        return int(dest.get("precio", 180 if medio == "avion" else 120 if medio == "avioneta" else 150))
+        return int(dest.get("precio", p.precio("vuelo_avion", 180) if medio == "avion" else p.precio("vuelo_avioneta", 120) if medio == "avioneta" else p.precio("vuelo_helicoptero", 150)))
 
     def alquilar(modelo):
         def f():
             if any(v.modelo["id"] == modelo and not v.muerto and v.dist(l.x, l.y) < 40 and v is not j.veh for v in p.vehiculos):
                 app.decir("Ya tienes uno esperando en la pista. Sal de la terminal y súbete con F.", True)
                 return
-            if not p.pagar(ALQUILER[modelo]):
+            if not p.pagar(p.precio("alquiler_" + modelo, ALQUILER[modelo])):
                 return
             x, y, d = p.mundo.plaza_junto_a(l)
             v = p.crear_vehiculo(modelo, x, y, d, "aparcado")
@@ -258,10 +255,10 @@ def aeropuerto(p, l):
     for h in sorted((x for x in p.lugares.values() if x.tipo == "helipuerto" and x.mapa != p.mundo.id and x.mapa not in con_pista), key=lambda x: x.mapa):
         ops.append(Opcion(f"Helicóptero de línea a {h.nombre}, en {p.mapas[h.mapa].nombre}: {precio_de(h, 'helicoptero')} euros", volar(h, "helicoptero"),
                           ayuda="Allí no hay pista: se llega en helicóptero con piloto. " + p.mapas[h.mapa].barrios[0].get("descripcion", "")))
-    ops.append(Opcion(f"Alquilar una avioneta: {ALQUILER['avioneta']} euros", alquilar("avioneta"),
+    ops.append(Opcion(f"Alquilar una avioneta: {p.precio('alquiler_avioneta', ALQUILER['avioneta'])} euros", alquilar("avioneta"),
                       ayuda="Te la dejan en la pista y la pilotas tú. Más rápida que el helicóptero. Con ella puedes ir a cualquier aeropuerto, aeródromo o helipuerto pulsando Intro al llegar."))
     if not pequeno:
-        ops.append(Opcion(f"Alquilar un helicóptero: {ALQUILER['helicoptero']} euros", alquilar("helicoptero"),
+        ops.append(Opcion(f"Alquilar un helicóptero: {p.precio('alquiler_helicoptero', ALQUILER['helicoptero'])} euros", alquilar("helicoptero"),
                           ayuda="Te lo dejan en la pista y lo pilotas tú. Más lento que la avioneta, pero se detiene en el aire y aterriza en menos sitio."))
     m = _menu(p, l, ops, intro="Avionetas de línea a las ciudades, a los otros pueblos y helicópteros a las islas, y avionetas de alquiler" if pequeno
               else "Aviones de pasajeros a las otras ciudades, avionetas de línea a los pueblos, helicópteros a las islas, y avionetas y helicópteros de alquiler")
@@ -303,7 +300,7 @@ def embarcadero(p, l):
         return f
 
     def alquilar():
-        if p.pagar(60):
+        if p.pagar(p.precio("alquiler_lancha", 60)):
             app.cerrar(m)
             _zarpar(p, l, "lancha", nombre="Lancha de alquiler")
 
@@ -326,7 +323,7 @@ def embarcadero(p, l):
         for k, b in enumerate(j.barcos):
             if b.get("en") == l.id:
                 lista.append(Opcion(f"Zarpar con tu barco: {b.get('nombre', b['modelo'])}", con_propio(k)))
-        lista.append(Opcion("Alquilar una lancha: 60 euros", alquilar, ayuda="La lancha de alquiler se devuelve sola al atracar en cualquier muelle."))
+        lista.append(Opcion(f"Alquilar una lancha: {p.precio('alquiler_lancha', 60)} euros", alquilar, ayuda="La lancha de alquiler se devuelve sola al atracar en cualquier muelle."))
         lista.append(Opcion("Robar una embarcación amarrada", robar, ayuda="Gratis, pero puede que te vean."))
         lista.append(Opcion("Pescar desde el muelle", pescar, ayuda="Desde tierra solo pican peces pequeños. Los grandes están mar adentro."))
         otros = [b for b in j.barcos if b.get("en") != l.id]
@@ -404,9 +401,36 @@ def concesionario(p, l):
                 app.son("mision_ok")
                 app.decir(f"¡{mo['nombre']} es tuyo, con papeles y todo! {p.situar(x, y, 'Te espera')}. Guárdalo en el garaje de una de tus casas.", True)
         return f
+    def vender():
+        app.cerrar(m)
+        p.jornada_vendedor(l)
+
+    def llevarse():
+        caros = sorted((mo for mo in p.datos["vehiculos"] if mo.get("precio") and not mo.get("barco") and (not marcas or mo["id"] in marcas)), key=lambda mo: mo["precio"])
+        if not caros:
+            return
+        if p.mision:
+            app.son("error")
+            app.decir("Durante una misión no te la juegas con esto.", True)
+            return
+        mo = caros[len(caros) // 2]
+        x, y, d = p.mundo.plaza_junto_a(l)
+        v = p.crear_vehiculo(mo["id"], x, y, d, None)
+        app.cerrar(m)
+        p.salir_interior()
+        p.j.x, p.j.y = p.mundo.punto_libre(x + 3, y)
+        p.son("cristal", xy=(x, y))
+        p.delito(3, f"Pides las llaves de un {mo['nombre']} para probarlo y sales con él sin pagar. Salta la alarma del concesionario.", siempre=True)
+        p.j.stats["vehiculos_robados"] = p.j.stats.get("vehiculos_robados", 0) + 1
+        p.cambiar_ciudadania(-2.0)
+        app.decir(f"{p.situar(v.x, v.y, 'El coche está')}. Sube con F y sal de aquí.")
     marcas = l.get("modelos")
     ops = [Opcion(f"{mo['nombre']}: {mo['precio']} euros", comprar(mo), ayuda=mo.get("desc", ""))
            for mo in p.datos["vehiculos"] if mo.get("precio") and not mo.get("barco") and (not marcas or mo["id"] in marcas)]
+    ops.append(Opcion(lambda: f"Trabajar aquí de vendedor[|a]: ocho horas, sueldo y comisión. Llevas {p.j.stats.get('coches_vendidos', 0)} coches vendidos", vender,
+                      ayuda="Una jornada atendiendo clientes. Cobras un sueldo fijo y una comisión por cada coche que vendas: vendes más cuanto mejor sea tu labia y tu prestigio entre los vecinos. Una jornada al día."))
+    ops.append(Opcion("Pedir las llaves para una prueba y no volver", llevarse,
+                      ayuda="Te llevas un coche de exposición sin pagarlo. Es un robo a la vista de todos: salta la alarma y la policía sale a por ti con fuerza."))
     m = _menu(p, l, ops, "F1 describe cada vehículo")
 
 
@@ -504,25 +528,30 @@ def gimnasio(p, l):
             p.app.decir("Ya has entrenado hoy. Tienes agujetas hasta en las pestañas.", True)
         elif j.salud_max >= 150:
             p.app.decir("Estás en tu mejor forma. Ya no puedes mejorar más.", True)
-        elif p.pagar(60):
+        elif p.pagar(p.precio("gimnasio", 60)):
             j.gimnasio_dia = p.dia
             j.salud_max = min(150.0, j.salud_max + 5)
             j.salud = j.salud_max
             p.pasar_horas(2)
             p.son("lugar_gimnasio", cat="interfaz")
             p.app.decir(f"Dos horas de pesas y saco. Tu salud máxima sube a {int(j.salud_max)}.", True)
-    def boxeo():
-        if p.mision or p.trabajo:
-            p.app.son("error")
-            p.app.decir("Termina antes lo que tienes entre manos.", True)
-        elif p.pagar(50):
-            p.empezar_boxeo(l)
-    _menu(p, l, [Opcion(lambda: f"Entrenar dos horas: 60 euros. Salud máxima actual {int(j.salud_max)}", entrenar, ayuda="Cada entrenamiento sube cinco puntos tu salud máxima, hasta 150. Uno al día."),
-                 Opcion(lambda: f"Combate de boxeo: inscripción de 50 euros. Llevas {j.stats.get('boxeo', 0)} victorias", boxeo, ayuda="Un combate a puñetazos. Cada victoria sube el premio y la dureza del siguiente rival.")])
+    def combate(c):
+        def f():
+            if p.mision or p.trabajo:
+                p.app.son("error")
+                p.app.decir("Termina antes lo que tienes entre manos.", True)
+            elif p.pagar(int(c.get("inscripcion", 0))):
+                p.empezar_combate(l, c)
+        return f
+    _menu(p, l, [Opcion(lambda: f"Entrenar dos horas: {p.precio('gimnasio', 60)} euros. Salud máxima actual {int(j.salud_max)}", entrenar, ayuda="Cada entrenamiento sube cinco puntos tu salud máxima, hasta 150. Uno al día.")] +
+          [Opcion((lambda c=c: f"{c['nombre']}: inscripción de {c.get('inscripcion', 0)} euros. Llevas {j.stats.get(c['id'], 0)} victorias"), combate(c), ayuda=c.get("ayuda", ""))
+           for c in p.datos.get("combates", [])])
 
 
 def ropa(p, l):
     j = p.j
+    prendas = [(x["nombre"], int(x.get("precio", 0))) for x in p.datos.get("prendas", [])]
+    blindajes = {x["nombre"]: int(x["blindaje"]) for x in p.datos.get("prendas", []) if x.get("blindaje")}
 
     def comprar(nombre, precio):
         def f():
@@ -531,24 +560,59 @@ def ropa(p, l):
             j.ropa = nombre.lower()
             p.son("caja", cat="interfaz")
             txt = f"Sales con {nombre.lower()}."
+            tope = blindajes.get(nombre)
+            if tope and j.blindaje < tope:
+                j.blindaje = float(tope)
+                txt += f" Lleva refuerzos: blindaje {tope}."
             if 0 < j.estrellas <= 2 and not _policia_cerca(p, 70):
                 p._fin_persecucion()
                 txt += " Con este aspecto nuevo, la policía ya no te reconoce."
             p.app.decir(txt, True)
         return f
-    ops = [Opcion(f"{n}: {pr} euros", comprar(n, pr), ayuda="Cambiarte de ropa despista a la policía si tienes uno o dos niveles de búsqueda y no hay agentes cerca.") for n, pr in PRENDAS]
-    ops.append(Opcion(lambda: f"Llevas puesto: {j.ropa}"))
+    def complemento(clase, nombre, precio, animo):
+        def f():
+            if j.accesorios.get(clase) == nombre:
+                p.app.decir(f"Ya llevas {nombre.lower()}.", True)
+                return
+            if not p.pagar(precio):
+                return
+            j.accesorios[clase] = nombre
+            p.son("caja", cat="interfaz")
+            p.cambiar_animo(animo)
+            p.app.decir(f"Te pones {nombre.lower()}. Te sienta bien. {p.aspecto_txt()}", True)
+        return f
+
+    def quitar():
+        if not j.accesorios:
+            p.app.decir("No llevas ningún complemento.", True)
+            return
+        j.accesorios.clear()
+        p.app.decir("Te quitas todos los complementos y los guardas en casa.", True)
+
+    def complementos():
+        ops2 = [Opcion((lambda c=c, n=n, pr=pr: f"{n}: {pr} euros" + (". Lo llevas puesto" if j.accesorios.get(c) == n else "")), complemento(c, n, pr, an),
+                       ayuda="Se lleva encima además de la ropa. De cada clase llevas uno: si compras otro, sustituye al que tenías. "
+                             "Estrenar algo sube el ánimo, más cuanto más caro, y la gente con la que hablas lo nota.")
+                for c, n, pr, an in ((x.get("clase", "otros"), x["nombre"], int(x.get("precio", 0)), int(x.get("animo", 0))) for x in p.datos.get("complementos", []))]
+        ops2.append(Opcion("Quitarte todos los complementos", quitar))
+        ops2.append(Opcion(lambda: p.aspecto_txt()))
+        _menu(p, l, ops2)
+
+    ops = [Opcion(f"{n}: {pr} euros", comprar(n, pr), ayuda="Cambiarte de ropa despista a la policía si tienes uno o dos niveles de búsqueda y no hay agentes cerca."
+                  + (f" Además lleva refuerzos: te deja el blindaje en {blindajes[n]} si llevabas menos." if n in blindajes else "")) for n, pr in prendas]
+    ops.append(Opcion("Complementos: gafas, cadenas, anillos, relojes y gorras", complementos, ayuda="Para ir a la moda. Se llevan además de la ropa."))
+    ops.append(Opcion(lambda: p.aspecto_txt()))
     _menu(p, l, ops)
 
 
 def cine(p, l):
     def ver():
-        if p.pagar(12):
+        if p.pagar(p.precio("cine", 12)):
             p.pasar_horas(2)
             p.j.salud = min(p.j.salud_max, p.j.salud + 10)
             p.son("lugar_cine", cat="interfaz")
             p.app.decir(f"Hoy ponen {random.choice(PELICULAS)} Sales dos horas después, a las {p.hora_txt()}.", True)
-    _menu(p, l, [Opcion("Ver la película de hoy: 12 euros", ver)])
+    _menu(p, l, [Opcion(f"Ver la película de hoy: {p.precio('cine', 12)} euros", ver)])
 
 
 def hotel(p, l):
@@ -558,12 +622,14 @@ def hotel(p, l):
         if j.estrellas:
             p.app.son("error")
             p.app.decir("El recepcionista no admite huéspedes con la policía detrás.", True)
-        elif p.pagar(int(l.get("precio_noche", 70))):
+        elif p.pagar(int(l.get("precio_noche", p.precio("hotel_noche", 70)))):
             p.pasar_horas(8, dormir=True)
             j.salud = j.salud_max
+            p.ha_duchado()                                       # la habitación tiene ducha
+            p.ha_bebido(100)
             p.son("pasan_horas", cat="interfaz")
             p.app.decir(f"Duermes ocho horas en una cama estupenda. Salud al máximo. Son las {p.hora_txt()} del día {p.dia}.", True)
-    _menu(p, l, [Opcion(f"Pasar la noche: {int(l.get('precio_noche', 70))} euros", dormir)])
+    _menu(p, l, [Opcion(f"Pasar la noche: {int(l.get('precio_noche', p.precio('hotel_noche', 70)))} euros", dormir)])
 
 
 def taberna(p, l):
@@ -571,7 +637,8 @@ def taberna(p, l):
     j = p.j
 
     def beber():
-        if p.pagar(4):
+        if p.pagar(p.precio("cana_tapa", 4)):
+            p.ha_bebido(50)
             j.salud = min(j.salud_max, j.salud + 10)
             p.son("comer", cat="interfaz")
             app.decir(f"Una caña y una tapa. Salud {int(j.salud)}.", True)
@@ -598,9 +665,9 @@ def taberna(p, l):
         n = sum(1 for e in p.personas if e.tipo == "aliado" and not e.muerto)
         if n >= 2:
             app.decir("Ya llevas dos guardaespaldas. Más sería un desfile.", True)
-        elif p.pagar(300):
+        elif p.pagar(p.precio("guardaespaldas_taberna", 300)):
             p.crear_aliado()
-            app.decir("Un tipo enorme deja la cerveza y se levanta. Desde ahora te sigue y dispara a quien te ataque. Cobra 200 euros cada medianoche.", True)
+            app.decir(f"Un tipo enorme deja la cerveza y se levanta. Desde ahora te sigue y dispara a quien te ataque. Cobra {p.precio('guardaespaldas_sueldo', 200)} euros cada medianoche.", True)
 
     def contrato():
         if p.mision or p.trabajo:
@@ -613,9 +680,9 @@ def taberna(p, l):
         n = sum(1 for e in p.personas if e.tipo == "aliado")
         p.personas = [e for e in p.personas if e.tipo != "aliado"]
         app.decir("Despides a tus guardaespaldas." if n else "No tienes guardaespaldas.", True)
-    ops = ([Opcion("Tomar una copa: 6 euros", lambda: p.consumir("alcohol", de_inventario=False) if p.pagar(6) else None, ayuda="Alcohol: sube el ánimo, pero caminas torcido y apuntas peor.")] if p.modo_adulto() else []) + \
-          [Opcion("Tomar una caña con tapa: 4 euros", beber), Opcion("Jugar a los dados: 20 euros", dados(20)), Opcion("Jugar a los dados: 200 euros", dados(200)),
-           Opcion("Contratar un guardaespaldas: 300 euros", contratar, ayuda="Te sigue a pie, sube contigo a los vehículos y dispara a tus enemigos. Máximo dos."),
+    ops = ([Opcion(f"Tomar una copa: {p.precio('copa_bar', 6)} euros", lambda: p.consumir("alcohol", de_inventario=False) if p.pagar(p.precio("copa_bar", 6)) else None, ayuda="Alcohol: sube el ánimo, pero caminas torcido y apuntas peor.")] if p.modo_adulto() else []) + \
+          [Opcion(f"Tomar una caña con tapa: {p.precio('cana_tapa', 4)} euros", beber), Opcion("Jugar a los dados: 20 euros", dados(20)), Opcion("Jugar a los dados: 200 euros", dados(200)),
+           Opcion(f"Contratar un guardaespaldas: {p.precio('guardaespaldas_taberna', 300)} euros", contratar, ayuda="Te sigue a pie, sube contigo a los vehículos y dispara a tus enemigos. Máximo dos."),
            Opcion("Despedir a los guardaespaldas", despedir),
            Opcion("Tablón de encargos: aceptar un contrato", contrato, ayuda="Alguien paga por quitar de en medio a un maleante protegido por guardaespaldas. Cada contrato es más difícil y mejor pagado.")]
     from . import loteria as lot

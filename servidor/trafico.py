@@ -12,6 +12,17 @@ CARRIL = 3.0
 DIRS = [(0, 1), (1, 0), (0, -1), (-1, 0)]       # norte, este, sur, oeste
 
 
+ZONA = 640.0                      # lado de cada zona, en metros: lo que alcanza a oír un jugador a cada lado
+
+
+def zonas_con_gente(lista, lado):
+    """Los jugadores de una localidad, agrupados por zonas de ese lado: {zona: [jugadores]}."""
+    zonas = {}
+    for o in lista:
+        zonas.setdefault((int(o.x // lado), int(o.y // lado)), []).append(o)
+    return zonas
+
+
 class Trafico:
     """Mixin del servidor."""
 
@@ -100,10 +111,27 @@ class Trafico:
         tope = int(self.cfg["trafico_max"])
         for mapa, lista in gente.items():
             m = self.mundo["mapas"][mapa]
-            quiere = min(tope, int(m.get("trafico", 0)))
+            # Tantos coches como diga la localidad por cada zona en la que hay jugadores: unos amigos que van juntos ven
+            # los de siempre, y cien jugadores repartidos por toda la ciudad tienen tráfico cada uno donde está.
+            zonas = zonas_con_gente(lista, ZONA)
+            base = min(tope, int(m.get("trafico", 0)))
+            quiere = base * len(zonas)
+            total = int(self.cfg.get("trafico_total", 0) or 0)
+            if total > 0:
+                quiere = min(quiere, max(base, total))
             hay = sum(1 for c in self.trafico.values() if c["m"] == mapa and not c.get("poli"))
             if tr and hay < quiere:
-                self._tr_nuevo(mapa, self.rng.choice(lista))
+                if len(zonas) == 1:
+                    self._tr_nuevo(mapa, self.rng.choice(lista))
+                else:                                          # donde menos coches hay, y varios a la vez si faltan muchos
+                    cuenta = {}
+                    for c in self.trafico.values():
+                        if c["m"] == mapa and not c.get("poli"):
+                            x, y, _ = self.tr_pos(c)
+                            z = (int(x // ZONA), int(y // ZONA))
+                            cuenta[z] = cuenta.get(z, 0) + 1
+                    for z in sorted(zonas, key=lambda z: cuenta.get(z, 0))[:max(1, min(quiere - hay, len(zonas)))]:
+                        self._tr_nuevo(mapa, self.rng.choice(zonas[z]))
             # las patrullas del servidor: rondan como un coche más, y acuden a por quien va buscado y les pasa cerca
             if tr and int(m.get("policia", 1)) and sum(1 for c in self.trafico.values() if c["m"] == mapa and c.get("poli") and c.get("obj") is None) < int(self.cfg["patrullas"]):
                 self._tr_nuevo(mapa, self.rng.choice(lista), poli=True)

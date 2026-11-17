@@ -4,6 +4,7 @@ El juego se puede jugar como una persona de bien o como un delincuente. El prest
 vecinos sube con el trabajo honrado y baja con los delitos; la fama en la calle va por otro lado.
 """
 import math
+import random
 import re
 
 from . import genero, registro
@@ -47,11 +48,24 @@ def personaje_propio(nombre, apellido="", gen="h", niveles=None, ventaja="ningun
 
 RANGOS = ["aprendiz", "oficial", "veteran[o|a]", "maestr[o|a]", "leyenda"]
 HAB_NOMBRE = {"conduccion": "conducción", "punteria": "puntería", "resistencia": "resistencia", "pesca": "pesca"}
-JORNADAS = [("camarero", "Jornada de camarero", 70, 0), ("reponedor", "Jornada de reponedor en un supermercado", 85, 0),
-            ("peon", "Jornada de peón de descarga", 115, -6)]
+# Las jornadas de trabajo sin vehículo están en los datos (vida.json, jornadas).
 
 
 class Vida:
+    # ----------------------------------------------------------------- tarifas
+    def precio(self, clave, defecto):
+        """El precio de una tarifa del juego (vida.json, tarifas), que un mod puede cambiar. Si no está, o no es un número, `defecto`.
+
+        Se busca en un índice por identificador, que se rehace solo cuando cambia la lista de tarifas. El índice guarda cada
+        tarifa, no su precio: si alguien le cambia el precio a una, se nota al momento."""
+        lista = self.datos.get("tarifas")
+        cache = self.__dict__.get("_tarifas")
+        if cache is None or cache[0] is not lista or cache[1] != len(lista or ()):
+            cache = (lista, len(lista or ()), {t["id"]: t for t in (lista or ()) if isinstance(t, dict) and t.get("id")})
+            self._tarifas = cache
+        valor = cache[2].get(clave, {}).get("precio")
+        return valor if isinstance(valor, (int, float)) and not isinstance(valor, bool) else defecto
+
     # -------------------------------------------------------------- personajes
     def personajes(self):
         return self.datos.get("personajes", [])
@@ -95,7 +109,7 @@ class Vida:
             j.hab[h] = 60.0 * int(pj.get(h, 0)) ** 2
         if pj.get("arma") in self.armas_d:
             a = self.armas_d[pj["arma"]]
-            j.armas[a["id"]] = {"cargador": a.get("cargador", 0), "reserva": a.get("balas", 0)}
+            j.armas[a["id"]] = {"cargador": a.get("cargador", 0), "reserva": int(pj.get("balas", a.get("balas", 0)) or 0)}
 
     def txt(self, texto):
         """Pone el nombre del personaje elegido en los textos de la historia, escritos para Dani Roca."""
@@ -158,6 +172,47 @@ class Vida:
         self.cambiar_animo(-2)
         self.decir(f"{nombre}: ocho horas de trabajo y {cobro} euros. Son las {self.hora_txt()}.", True)
 
+    def jornada_vendedor(self, l):
+        """Una jornada vendiendo coches en un concesionario: sueldo fijo y comisión por cada venta."""
+        j = self.j
+        if j.jornada_dia == self.dia:
+            self.app.son("error")
+            self.decir("Hoy ya has trabajado una jornada. Vuelve mañana.", True)
+            return
+        if j.estrellas:
+            self.app.son("error")
+            self.decir("Con la policía buscándote no te contratan.", True)
+            return
+        j.jornada_dia = self.dia
+        # se vende más con buena fama entre los vecinos, con experiencia y yendo bien arreglado
+        prob = min(0.85, 0.22 * self.mult_trabajo("jornada") + 0.02 * min(10, j.stats.get("coches_vendidos", 0)) + (0.1 if j.accesorios else 0.0))
+        marcas = l.get("modelos")
+        modelos = [mo for mo in self.datos["vehiculos"] if mo.get("precio") and not mo.get("barco") and (not marcas or mo["id"] in marcas)]
+        vendidos = [random.choice(modelos) for _ in range(4) if modelos and random.random() < prob]
+        comision = sum(int(mo["precio"] * 0.02) for mo in vendidos)
+        sueldo = int(self.precio("sueldo_vendedor", 90) * self.mult_trabajo("jornada"))
+        self.pasar_horas(8)
+        self.son("jornada", cat="interfaz")
+        self.dar_dinero(sueldo + comision)
+        j.stats["coches_vendidos"] = j.stats.get("coches_vendidos", 0) + len(vendidos)
+        self.servicio_hecho("jornada", "trabajador")
+        self.cambiar_ciudadania(1.0)
+        self.cambiar_animo(2 if vendidos else -2)
+        if vendidos:
+            nombres = ", ".join(mo["nombre"] for mo in vendidos)
+            self.decir(f"Ocho horas en la exposición. Has vendido {len(vendidos)}: {nombres}. Sueldo de {sueldo} euros y {comision} de comisión. Son las {self.hora_txt()}.", True)
+        else:
+            self.decir(f"Ocho horas en la exposición y nadie se ha decidido. Cobras el sueldo, {sueldo} euros. Son las {self.hora_txt()}.", True)
+
+    def aspecto_txt(self):
+        """Lo que llevas puesto: la ropa y los complementos."""
+        j = self.j
+        t = f"Llevas puesto: {j.ropa}"
+        if j.accesorios:
+            cosas = [n.lower() for n in j.accesorios.values()]
+            t += ", con " + (", ".join(cosas[:-1]) + " y " + cosas[-1] if len(cosas) > 1 else cosas[0])
+        return t + "."
+
     def curso(self, hab):
         j = self.j
         if j.curso_dia == self.dia:
@@ -167,7 +222,7 @@ class Vida:
         if self.nivel(hab) >= 10:
             self.decir("Ya no pueden enseñarte nada más: tienes el nivel máximo.", True)
             return
-        if not self.pagar(250):
+        if not self.pagar(self.precio("curso", 250)):
             return
         j.curso_dia = self.dia
         self.pasar_horas(4)
@@ -211,11 +266,13 @@ class Vida:
         self.salir_interior(silencio=True)
         self.son("puerta_entrar", cat="interfaz", vol=0.7)
         self.interior = self.mez.sonar(l.sonido, bucle=True, cat="interfaz", vol=0.22)
+        self.hilo_musical(l)
 
     def salir_interior(self, silencio=False):
         c = getattr(self, "interior", None)
         if c is not None:
             c.parar()
             self.interior = None
+            self.fin_hilo_musical()
             if not silencio:
                 self.son("puerta_salir", cat="interfaz", vol=0.6)

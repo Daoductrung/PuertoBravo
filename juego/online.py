@@ -24,6 +24,7 @@ class Remoto:
         self.canal = None
         self.t_paso = 0.0
         self.visto = False
+        self.aspecto = ""          # lo que lleva puesto, como lo cuenta su juego
 
     def dist(self, x, y):
         return math.hypot(self.x - x, self.y - y)
@@ -197,6 +198,52 @@ class Online:
                 self.gps_a_lugar(cerca)
 
     # ---------------------------------------------------------- cada fotograma
+    # ------------------------------------------------------- cómo va vestido cada uno
+    def aspecto_corto(self):
+        """Lo que llevas puesto, para contárselo a los demás: «cazadora de cuero, con gafas de sol y cadena de oro»."""
+        t = self.aspecto_txt()
+        return t.split(": ", 1)[-1].rstrip(".")[:200]
+
+    def _contar_aspecto(self, dt):
+        """Tu juego cuenta lo que llevas solo al entrar, cuando te cambias y cuando llega alguien nuevo: no en cada envío."""
+        self._t_aspecto = getattr(self, "_t_aspecto", 0.0) - 0.1
+        if self._t_aspecto > 0:
+            return
+        self._t_aspecto = 3.0
+        texto = self.aspecto_corto()
+        if texto == getattr(self, "_aspecto_enviado", None):
+            return
+        self._aspecto_enviado = texto
+        if getattr(self, "en_servidor", False):
+            self.red.enviar({"t": "aspecto", "texto": texto})
+        else:
+            self.red.enviar({"t": "act", "d": {"que": "aspecto", "texto": texto}})
+
+    def _aspecto_recibido(self, ident, texto):
+        r = self.remotos.get(ident)
+        if r is not None:
+            r.aspecto = "".join(c for c in str(texto or "") if c.isprintable())[:200]
+
+    def mirar_jugador(self):
+        """Mayúsculas J: cómo va vestido el jugador que tienes más cerca. Solo cuando lo pides."""
+        if not self.online_activo():
+            self.decir("Esto dice cómo va vestido otro jugador, cuando juegas con amigos o en un servidor.", True)
+            return None
+        x, y = self.pos()
+        cerca = [r for r in self.remotos.values() if r.mapa == self.mundo.id and r.visto and not getattr(r, "ia", False) and r.dist(x, y) <= 25]
+        if not cerca:
+            self.decir("No tienes a ningún jugador cerca.", True)
+            return None
+        r = min(cerca, key=lambda o: o.dist(x, y))
+        donde = f", a {M.metros(r.dist(x, y))}"
+        if r.veh:
+            self.decir(f"{r.nombre}{donde}, va en un vehículo." + (f" Lleva {r.aspecto}." if r.aspecto else ""), True)
+        elif r.aspecto:
+            self.decir(f"{r.nombre}{donde}, lleva {r.aspecto}.", True)
+        else:
+            self.decir(f"{r.nombre}{donde}. Su juego no ha dicho cómo va vestido.", True)
+        return r
+
     def red_paso(self, dt):
         """Se llama siempre, también con un menú abierto: los amigos no se quedan esperando."""
         if getattr(self, "red", None) is None:
@@ -211,6 +258,7 @@ class Online:
                  "v": v.modelo["id"] if v else None, "s": round(abs(v.vel), 1) if v else 0.0}
             if getattr(self, "en_servidor", False):
                 e.update(self.sv_estado())
+            self._contar_aspecto(dt)
             cli.enviar({"t": "estado", "e": e})
         for _ in range(60):
             if getattr(self, "red", None) is not cli:
@@ -255,6 +303,7 @@ class Online:
             registro.ocultar(m.get("nombre"))
             self.remotos[m["id"]] = Remoto(m["id"], str(m.get("nombre", "Invitado")))
             registro.info("red", "Entra un jugador", ahora=len(self.remotos) + 1)
+            self._aspecto_enviado = None                        # que el que llega sepa también cómo vas
             self.son("amigo_entra", cat="interfaz")
             self.decir(f"{m.get('nombre', 'Alguien')} se ha unido a la partida.")
         elif t == "sale":
@@ -271,6 +320,8 @@ class Online:
             with registro.privado():           # los mensajes del chat no se registran
                 self.decir(f"{m.get('nombre', 'Alguien')} dice: {m.get('texto', '')}")
             registro.info("red", "Llega un mensaje de chat", letras=len(str(m.get("texto", ""))))
+        elif t == "act" and (m.get("d") or {}).get("que") == "aspecto":
+            self._aspecto_recibido(m.get("de"), (m.get("d") or {}).get("texto"))
         elif t == "act":
             self._coop_mensaje(m.get("de"), str(m.get("nombre", "Alguien")), m.get("d") or {})
         elif t == "evento":
@@ -502,7 +553,7 @@ class Online:
             if self.red.id in c["participantes"]:
                 self._coop_gps_reparto()
             return
-        premio = 250 + 50 * len(c["participantes"])
+        premio = self.precio("reparto_equipo", 250) + self.precio("reparto_equipo_jugador", 50) * len(c["participantes"])
         self.coop = None
         self.cancelar_gps()
         self.son("mision_ok", cat="interfaz")

@@ -775,7 +775,7 @@ class Combate:
         self._fin_persecucion()
         if self.trabajo:
             self.terminar_trabajo(None)
-        coste = min(j.dinero, 150)
+        coste = min(j.dinero, self.precio("hospital_urgencias", 150))
         j.dinero -= coste
         j.animo = max(0.0, j.animo - 12)
         j.efectos = []
@@ -815,7 +815,7 @@ class Combate:
 
     def coste_multa(self):
         j = self.j
-        return 150 * max(1, j.estrellas) + j.dinero // 20
+        return self.precio("multa_estrella", 150) * max(1, j.estrellas) + j.dinero // 20
 
     def detener(self, sin_trato=False):
         if self.transicion:
@@ -832,7 +832,7 @@ class Combate:
         self._fin_persecucion()
         if self.trabajo:
             self.terminar_trabajo(None)
-        multa = min(j.dinero, max(100, j.dinero // 10))
+        multa = min(j.dinero, max(self.precio("multa_minima", 100), j.dinero // 10))
         j.dinero -= multa
         for ident in [a for a in j.armas if a in self.armas_d and self.armas_d[a]["tipo"] in ("fuego", "explosivo")]:
             del j.armas[ident]
@@ -842,7 +842,7 @@ class Combate:
         j.efectos = []
         requisado = self.perder_mercancia()
         if requisado:
-            multa_extra = min(j.dinero, requisado * 20)
+            multa_extra = min(j.dinero, requisado * self.precio("multa_mercancia", 20))
             j.dinero -= multa_extra
             multa += multa_extra
         c = self._reaparecer("comisaria")

@@ -70,7 +70,8 @@
     {"id": "san_lucero_tranvia_7", "nombre": "Parada de tranvía de Calle Ancha, en La Marina", "tipo": "tranvia", "bloque": [0, 2], "lado": "S", "pos": 62, "desc": "Una marquesina con un banco y el cartel de la línea. El tranvía recorre San Lucero parando en todos los barrios.", "orden": 1},
     {"id": "san_lucero_tranvia_8", "nombre": "Parada de tranvía de Paseo del Muelle, en La Marina", "tipo": "tranvia", "bloque": [2, 4], "lado": "N", "pos": 62, "desc": "Una marquesina con un banco y el cartel de la línea. El tranvía recorre San Lucero parando en todos los barrios.", "orden": 8},
     {"id": "san_lucero_tren", "nombre": "Estación de tren de San Lucero", "tipo": "tren", "bloque": [3, 1], "lado": "N", "pos": 62, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
-    {"id": "san_lucero_aeropuerto", "nombre": "Aeropuerto de San Lucero", "tipo": "aeropuerto", "bloque": [5, 0], "lado": "S", "pos": 45, "precio": 180, "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."}
+    {"id": "san_lucero_aeropuerto", "nombre": "Aeropuerto de San Lucero", "tipo": "aeropuerto", "bloque": [5, 0], "lado": "S", "pos": 45, "precio": 180, "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."},
+    {"id": "sl_surtidor", "nombre": "Gasolinera de San Lucero", "tipo": "tienda", "surtidor": true, "bloque": [0, 3], "lado": "O", "pos": 36, "desc": "Surtidores bajo una marquesina y una tienda pequeña. Aquí se llena el depósito."}
   ],
   "tren_eje": "H",
   "tren_n": 2,

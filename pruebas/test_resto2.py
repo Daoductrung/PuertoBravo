@@ -57,11 +57,13 @@ def test_aviso_al_acertar_y_correr_sin_mantener(robot):
     assert not p.corriendo_ahora()
     app.cfg["correr_alternar"] = True
     robot.tecla(pygame.K_LSHIFT)
+    robot.frames(1)                                               # cambia al soltarla, no al pulsarla
     assert p.corriendo_ahora() and "Correr" in app.voz.registro[-1]
     y0 = p.j.y
     robot.frames(30, mantener=(pygame.K_UP,))
     rapido = p.j.y - y0
     robot.tecla(pygame.K_LSHIFT)
+    robot.frames(1)
     assert not p.corriendo_ahora()
     y0 = p.j.y
     robot.frames(30, mantener=(pygame.K_UP,))

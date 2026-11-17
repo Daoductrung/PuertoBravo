@@ -140,11 +140,11 @@ def opciones_casa(p, lugar, Menu, Opcion):
     app = p.app
     if lugar.id not in j.laboratorios:
         def montar():
-            if p.pagar(PRECIO_LAB):
+            if p.pagar(p.precio("laboratorio", PRECIO_LAB)):
                 j.laboratorios.append(lugar.id)
                 p.son("reparar", cat="interfaz")
                 app.decir("Montas un laboratorio en el cuarto del fondo. Para trabajar en él hace falta material: lo vende cualquier proveedor.", True)
-        return [Opcion(f"Montar un laboratorio clandestino aquí: {PRECIO_LAB} euros", montar,
+        return [Opcion(f"Montar un laboratorio clandestino aquí: {p.precio('laboratorio', PRECIO_LAB)} euros", montar,
                        ayuda="Un cuarto preparado para fabricar mercancía. Da mucho dinero y muchos problemas: los vecinos huelen cosas, la policía pregunta, y si te equivocas puede arder.")]
 
     def trabajar(s):
@@ -176,11 +176,11 @@ def opcion_proveedor(p, Opcion):
     j = p.j
 
     def comprar():
-        if p.pagar(PRECIO_MATERIAL):
+        if p.pagar(p.precio("material_laboratorio", PRECIO_MATERIAL)):
             j.material += 1
             p.son("trato", cat="interfaz")
             p.app.decir(f"Material para una tanda. Tienes para {j.material}.", True)
-    return Opcion(lambda: f"Material de laboratorio, una tanda: {PRECIO_MATERIAL} euros. Tienes {j.material}", comprar,
+    return Opcion(lambda: f"Material de laboratorio, una tanda: {p.precio('material_laboratorio', PRECIO_MATERIAL)} euros. Tienes {j.material}", comprar,
                   ayuda="Hace falta para trabajar en un laboratorio. El laboratorio se monta en una casa tuya, desde su menú.")
 
 

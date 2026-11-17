@@ -8,6 +8,14 @@ from . import mundo as M
 from .entidades import Persona, Vehiculo
 
 
+# De serie, por si faltan en los datos (vida.json, sección ambiente): el volumen de la radio por los auriculares y como
+# música de fondo de un local, y los tipos de local donde suena.
+NIVEL_WALKMAN = 0.7
+NIVEL_HILO = 0.3
+LOCALES_CON_MUSICA = ("tienda", "comida", "pizzeria", "bar", "taberna", "ropa", "gimnasio", "club", "casino", "taller", "concesionario",
+                      "feria", "empenos", "nautica", "armeria")
+
+
 class Conduccion:
     # ------------------------------------------------------------- utilidades
     def modo_asistido(self):
@@ -139,6 +147,7 @@ class Conduccion:
         v.giro = 0
         self._parar_intermitente()
         self.cruce_act = (i, j)
+        self.infraccion_semaforo(v, i, j)
         if cand != v.dir:
             if abs(v.vel) > 15:
                 self.son("frenazo", vol=0.6)
@@ -296,7 +305,14 @@ class Conduccion:
         self.rodadura = self.son("rodadura", bucle=True, vol=0.0)
         self.preparar_conduccion()
         self.sv_subido(v)
-        r = self.app.radio.sintonizar(self.cfg["emisora"])
+        radio = self.app.radio
+        self._hilo = False
+        if self.j.walkman and radio.sonando_ahora() and radio.actual == self.cfg["emisora"] % len(radio.emisoras):
+            radio.poner_nivel(1.0)                               # ya la venías oyendo por los auriculares: sigue sin cortarse
+            r = radio.nombre()
+        else:
+            radio.poner_nivel(1.0)
+            r = radio.sintonizar(self.cfg["emisora"])
         if callar:
             return
         txt = f"Subes a {v.nombre}. Estado {int(100 * v.salud / v.salud_max)} por ciento. Miras al {M.cardinal(v.rumbo)}."
@@ -309,6 +325,73 @@ class Conduccion:
         self.decir(txt, True)
         if self.app.radio.id_actual() != "apagada":
             self.decir(r)
+
+    # ------------------------------------------------------------ la radio a pie y en los locales
+    def ambiente_cfg(self):
+        """Los ajustes de la radio a pie y en los locales, de los datos del juego."""
+        d = next((x for x in self.datos.get("ambiente", []) if isinstance(x, dict)), {})
+        try:
+            return {"locales": tuple(d.get("locales_con_musica") or LOCALES_CON_MUSICA),
+                    "walkman": max(0.05, min(1.0, float(d.get("volumen_auriculares", NIVEL_WALKMAN * 100)) / 100.0)),
+                    "hilo": max(0.02, min(1.0, float(d.get("volumen_local", NIVEL_HILO * 100)) / 100.0))}
+        except (TypeError, ValueError):
+            return {"locales": LOCALES_CON_MUSICA, "walkman": NIVEL_WALKMAN, "hilo": NIVEL_HILO}
+
+    def walkman_puesto(self):
+        return bool(self.j.walkman) and self.j.objetos.get("walkman", 0) > 0
+
+    def walkman(self):
+        """Mayúsculas R, a pie: el reproductor con auriculares. Cada pulsación pasa a la emisora siguiente; una de ellas es apagado."""
+        j = self.j
+        radio = self.app.radio
+        if not j.objetos.get("walkman"):
+            self.app.son("error")
+            self.decir("No tienes reproductor con auriculares. Se compra en las tiendas.", True)
+            return
+        self._hilo = False
+        if not j.walkman:
+            j.walkman = True                                     # al encenderlo, la emisora en la que lo dejaste
+            if radio.emisoras[self.cfg["emisora"] % len(radio.emisoras)]["id"] == "apagada":
+                self.cfg["emisora"] = (self.cfg["emisora"] + 1) % len(radio.emisoras)
+        else:
+            self.cfg["emisora"] = (self.cfg["emisora"] + 1) % len(radio.emisoras)
+        self.app.son("radio_cambio")
+        radio.poner_nivel(self.ambiente_cfg()["walkman"])
+        texto = radio.sintonizar(self.cfg["emisora"])
+        if radio.id_actual() == "apagada":
+            j.walkman = False
+            self.decir("Reproductor apagado. Te quitas los auriculares.", True)
+        else:
+            self.decir("Auriculares puestos. " + texto, True)
+
+    def walkman_al_empezar(self):
+        """Al cargar una partida en la que ibas con los auriculares puestos, sigue sonando."""
+        if self.walkman_puesto() and not self.j.veh:
+            self.app.radio.poner_nivel(self.ambiente_cfg()["walkman"])
+            self.app.radio.sintonizar(self.cfg["emisora"])
+
+    def hilo_musical(self, l):
+        """Al entrar en un local con música: suena una emisora del juego, bajita, como en las tiendas de verdad. Cada local
+        tiene la suya. Si ya llevas los auriculares puestos, sigues oyendo lo tuyo."""
+        radio = self.app.radio
+        if self.j.veh or self.walkman_puesto() and radio.sonando_ahora():
+            return False
+        amb = self.ambiente_cfg()
+        if l.get("sin_musica") or not (l.get("musica") or l.tipo in amb["locales"]):
+            return False
+        musicales = radio.musicales()
+        if not musicales:
+            return False
+        import zlib
+        radio.poner_nivel(amb["hilo"])
+        radio.sintonizar(musicales[zlib.crc32(l.id.encode("utf-8")) % len(musicales)])
+        self._hilo = True
+        return True
+
+    def fin_hilo_musical(self):
+        if getattr(self, "_hilo", False):
+            self._hilo = False
+            self.app.radio.apagar()
 
     def salir_vehiculo(self, forzado=False):
         j = self.j
@@ -323,7 +406,10 @@ class Conduccion:
         if getattr(self, "rodadura", None):
             self.rodadura.parar()
             self.rodadura = None
-        self.app.radio.apagar()
+        if self.walkman_puesto() and self.app.radio.id_actual() != "apagada":
+            self.app.radio.poner_nivel(self.ambiente_cfg()["walkman"])            # te bajas con los auriculares puestos: sigue sonando
+        else:
+            self.app.radio.apagar()
         if self.sirena_propia:
             self.sirena_propia.parar()
             self.sirena_propia = None
@@ -343,6 +429,7 @@ class Conduccion:
             self.terminar_trabajo("Dejas el vehículo de trabajo.")
         if not v.tag and not v.muerto:
             self.ultimo_veh = v
+            self.veh_fuera = None                                # el que cuenta es el último del que te bajas
         self.sv_bajado(v)
         if not forzado:
             self.son_puerta(v)
@@ -419,6 +506,8 @@ class Conduccion:
     def _pilotar(self, v, dt, freno):
         """El piloto lleva los pedales: velocidad de ciudad, despacio al llegar y parado en rojo o con algo delante."""
         mo = v.modelo
+        if getattr(v, "seco", False):                            # sin combustible no hay piloto que valga
+            return
         dx, dy = self.gps["dest"]
         dist = math.hypot(dx - v.x, dy - v.y)
         # Con prisa (la sirena puesta, o una misión o un trabajo contra el reloj) el piloto corre más y no espera en rojo.
@@ -428,6 +517,21 @@ class Conduccion:
         if prisa and not getattr(self, "_piloto_prisa", False):
             self.decir("Vas con prisa: el piloto corre más y no espera en los semáforos.")
         self._piloto_prisa = prisa
+        ruta = self.gps.get("ruta") or []
+        if ruta and self.modo_asistido():                        # el destino ha quedado atrás (te has pasado, o el que persigues ha girado): media vuelta
+            px, py = ruta[0]
+            lejos = math.hypot(px - v.x, py - v.y)
+            if lejos > 8 and abs(M.norm180(M.rumbo_a(px - v.x, py - v.y) - v.rumbo)) > 120:
+                if v.vel > 6:
+                    v.vel = max(0.0, v.vel - freno * dt)
+                    return
+                v.dir = (v.dir + 2) % 4
+                v.rumbo = v.dir * 90.0
+                v.aviso_cruce = None
+                if self.t - getattr(self, "t_piloto_vuelta", -99) > 5:
+                    self.t_piloto_vuelta = self.t
+                    self.decir(f"El piloto da media vuelta. Ahora vas hacia el {M.NOMBRE_DIR[v.dir]}.")
+                return
         if self.gps.get("sigue") is None:                        # a un sitio se llega y se para; a quien persigues, no
             radio = self.gps.get("radio") or 16
             if dist < 45:
@@ -458,9 +562,16 @@ class Conduccion:
         t = self.app.teclas
         mo = v.modelo
         from . import sistemas                          # las mejoras del taller cambian cómo va el vehículo
-        freno = mo["freno"] * (0.6 if self.lluvia else 1.0) * sistemas.factor_frenada(v)
-        if v.ardiendo >= 0:
-            v.vel -= math.copysign(min(abs(v.vel), 6 * dt), v.vel)
+        freno = mo["freno"] * (0.6 if self.lluvia else 1.0) * sistemas.factor_frenada(v) * self.factor_averia_frenos(v)
+        con_motor = self.gastar_combustible(v, dt)
+        self.rodar(v, dt)
+        self.vigilar_velocidad(v, dt)
+        if v.ardiendo >= 0 or not con_motor:
+            v.vel -= math.copysign(min(abs(v.vel), (6 if v.ardiendo >= 0 else 3.5) * dt), v.vel)
+            if not con_motor and pygame.K_UP in t and self.t - getattr(self, "t_aviso_seco", -99) > 6:
+                self.t_aviso_seco = self.t
+                self.son("motor_seco", cat="interfaz")
+                self.decir("El motor no arranca: no queda combustible.")
         elif pygame.K_UP in t:
             v.vel += mo["acel"] * sistemas.factor_aceleracion(v) * dt * (2.5 if v.vel < 0 else 1.0)
         elif pygame.K_DOWN in t:
@@ -482,7 +593,7 @@ class Conduccion:
                 self.t_frenazo = self.t
                 self.son("frenazo", vol=0.5)
             v.vel -= math.copysign(min(abs(v.vel), freno * 1.7 * dt), v.vel)
-        vmax = mo["vel_max"] * sistemas.factor_velocidad(v) * (0.55 + 0.45 * min(1.0, v.salud / (0.5 * v.salud_max))) * (1 + 0.01 * self.nivel("conduccion"))
+        vmax = mo["vel_max"] * self.factor_averia_velocidad(v) * sistemas.factor_velocidad(v) * (0.55 + 0.45 * min(1.0, v.salud / (0.5 * v.salud_max))) * (1 + 0.01 * self.nivel("conduccion"))
         v.vel = min(v.vel, vmax)
         x0, y0 = v.x, v.y
         if self.modo_asistido():

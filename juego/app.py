@@ -126,7 +126,7 @@ class App:
             p = self.partida
             if p is None or p not in self.pila:
                 deseada = "menu"
-            elif not (p.j.veh and self.radio.id_actual() != "apagada"):
+            elif not self.radio.sonando_ahora():                # con la radio puesta, en el vehículo, por los auriculares o en un local, calla
                 deseada = p.estado_musica()
         self.ambiente.actualizar(dt, deseada, self.cfg["vol_ambiente_musical"] * 0.7)
         self.radio.actualizar(dt)
@@ -267,6 +267,9 @@ class App:
             if self.t_estado >= registro.CADA_ESTADO:
                 self.t_estado = 0.0
                 registro.estado()
+        for tarea in list(getattr(self, "tareas_fondo", ())):    # descargas que siguen mientras juegas
+            if tarea.paso_fondo():
+                self.tareas_fondo.remove(tarea)
         prueba = getattr(self, "voz_prueba", None)
         if prueba is not None:                           # una prueba de voz pedida desde un menú, ya generada
             self.voz_prueba = None

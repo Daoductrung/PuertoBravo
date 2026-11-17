@@ -82,8 +82,12 @@ class Canal:
         return not self.fin and not self.parando
 
 
+HOLGADO = False          # lo pone el juego al arrancar, según la opción Sonido holgado
+
+
 class Mezclador:
-    def __init__(self, dispositivo=True, bloque=1024):
+    def __init__(self, dispositivo=True, bloque=1024, holgado=False):
+        self.holgado = bool(holgado or HOLGADO)     # búfer grande y sin prisas: algo más de retardo a cambio de no dar chasquidos
         self.sonidos = {}
         self._var = {}
         self.canales = []
@@ -120,14 +124,14 @@ class Mezclador:
         try:
             for h in sd.query_hostapis():
                 if "WASAPI" in h["name"] and h["default_output_device"] >= 0:
-                    intentos.append((h["default_output_device"], sd.WasapiSettings(auto_convert=True), 512))
+                    intentos.append((h["default_output_device"], sd.WasapiSettings(auto_convert=True), 2048 if self.holgado else 512))
         except Exception:
             pass
-        intentos.append((None, None, bloque))
+        intentos.append((None, None, 4096 if self.holgado else bloque))
         for dispositivo, extra, tam in intentos:
             try:
                 self.stream = sd.OutputStream(samplerate=SR, channels=2, dtype="float32", blocksize=tam,
-                                              callback=self._cb, latency="low", device=dispositivo, extra_settings=extra)
+                                              callback=self._cb, latency="high" if self.holgado else "low", device=dispositivo, extra_settings=extra)
                 self.stream.start()
                 self.error = None
                 return

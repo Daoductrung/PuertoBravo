@@ -3117,7 +3117,8 @@
      ],
      "lado": "S",
      "pos": 36,
-     "desc": "De todo, y garrafas de veinte litros apiladas hasta el techo."
+     "desc": "De todo, y garrafas de veinte litros apiladas hasta el techo.",
+     "surtidor": true
     },
     {
      "id": "oc_farmacia",

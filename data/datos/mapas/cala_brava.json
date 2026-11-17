@@ -28,7 +28,8 @@
     {"id": "cb_playa_tesoros", "nombre": "Playa de los Naufragios", "tipo": "tesoro", "bloque": [0, 0], "xy": [50, 40], "desc": "Cada temporal deja en esta playa restos de barcos antiguos."},
     {"id": "cb_contrabando", "nombre": "Almacén de redes", "tipo": "proveedor", "bloque": [1, 0], "xy": [10, 36], "adultos": true, "factor": {"hierba": 1.2, "polvo": 0.6, "pastillas": 1.2, "cristal": 1.1}, "desc": "Entre redes y boyas llegan por mar fardos que no vienen de pescar."},
     {"id": "cala_brava_tren", "nombre": "Estación de tren de Cala Brava", "tipo": "tren", "bloque": [1, 1], "lado": "S", "pos": 62, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
-    {"id": "cala_brava_aerodromo", "nombre": "Aeródromo de Cala Brava", "tipo": "aeropuerto", "aerodromo": true, "bloque": [0, 0], "lado": "S", "pos": 45, "precio": 120, "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas."}
+    {"id": "cala_brava_aerodromo", "nombre": "Aeródromo de Cala Brava", "tipo": "aeropuerto", "aerodromo": true, "bloque": [0, 0], "lado": "S", "pos": 45, "precio": 120, "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas."},
+    {"id": "cb_surtidor", "nombre": "Gasolinera de Cala Brava", "tipo": "tienda", "surtidor": true, "bloque": [0, 1], "lado": "E", "pos": 36, "desc": "Surtidores bajo una marquesina y una tienda pequeña. Aquí se llena el depósito."}
   ],
   "tren_eje": "H",
   "tren_n": 1,

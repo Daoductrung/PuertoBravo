@@ -21,6 +21,20 @@ MEJORAS = {
 NIVEL_MAX = 3
 
 
+def configurar(datos):
+    """Los nombres, los precios y los textos de las mejoras del taller y de los muebles de la casa salen de los datos del
+    juego (vida.json), que un mod puede cambiar. Lo que hace cada uno lo decide su identificador, aquí en el código: un
+    mueble o una mejora con un identificador nuevo se puede comprar y se describe, pero no tiene efecto propio."""
+    mej = [m for m in datos.get("mejoras", []) if isinstance(m, dict) and m.get("id") in MEJORAS]
+    for m in mej:
+        viejo = MEJORAS[m["id"]]
+        MEJORAS[m["id"]] = (str(m.get("nombre") or viejo[0]), int(m.get("precio", viejo[1]) or viejo[1]), str(m.get("desc") or viejo[2]))
+    mue = [m for m in datos.get("muebles", []) if isinstance(m, dict) and m.get("id") and m.get("habitacion")]
+    if mue:
+        MUEBLES[:] = [(m["id"], m["habitacion"], str(m.get("nombre", m["id"])), int(m.get("precio", 0) or 0), str(m.get("desc", "")), str(m.get("efecto", "")))
+                      for m in mue]
+
+
 def nivel(v, cual):
     return int(getattr(v, "mejoras", {}).get(cual, 0))
 
@@ -112,13 +126,13 @@ def reclutar(p):
         return False, "Para tener banda necesitas un territorio. Conquista un barrio primero."
     if j.banda >= cupo(j):
         return False, f"Con {len(j.territorios)} territorios no puedes mantener a más de {cupo(j)}. Conquista otro barrio."
-    if not p.pagar(PRECIO_RECLUTA):
+    if not p.pagar(p.precio("recluta", PRECIO_RECLUTA)):
         return False, ""
     j.banda += 1
     if not j.banda_nombre:
         j.banda_nombre = random.choice(NOMBRES_BANDA)
     p.son("pareja", cat="interfaz", vol=0.5)
-    return True, f"Uno más en {j.banda_nombre}. Ya sois {j.banda} además de ti. Cada uno cobra {SUELDO} euros cada medianoche."
+    return True, f"Uno más en {j.banda_nombre}. Ya sois {j.banda} además de ti. Cada uno cobra {p.precio('sueldo_banda', SUELDO)} euros cada medianoche."
 
 
 def llamar(p):
@@ -158,7 +172,7 @@ def paga(p):
         p.decir("Te has quedado sin territorios y tu banda se ha disuelto.")
         return
     j.banda = min(j.banda, cupo(j))
-    total = SUELDO * j.banda
+    total = p.precio("sueldo_banda", SUELDO) * j.banda
     if j.dinero >= total:
         j.dinero -= total
         p.decir(f"Pagas {total} euros a {j.banda_nombre}.")
@@ -189,8 +203,8 @@ def menu_banda(p, Menu, Opcion, EntradaTexto):
                 app.decir(texto, True)
         return g
     m = Menu(app, lambda: f"Tu banda: {j.banda_nombre or 'sin nombre'}. {j.banda} de {cupo(j)}", [
-        Opcion(lambda: f"Reclutar a alguien: {PRECIO_RECLUTA} euros. Tienes {j.dinero}", hacer(reclutar),
-               ayuda=f"Cada territorio te deja mantener a uno más, hasta {TOPE_BANDA}. Cada miembro cobra {SUELDO} euros cada medianoche; si no puedes pagar, se va uno."),
+        Opcion(lambda: f"Reclutar a alguien: {p.precio('recluta', PRECIO_RECLUTA)} euros. Tienes {j.dinero}", hacer(reclutar),
+               ayuda=f"Cada territorio te deja mantener a uno más, hasta {TOPE_BANDA}. Cada miembro cobra {p.precio('sueldo_banda', SUELDO)} euros cada medianoche; si no puedes pagar, se va uno."),
         Opcion("Llamar a tu banda", hacer(llamar), ayuda="Acuden a donde estés, te siguen a pie, suben contigo al vehículo y pelean a tu lado."),
         Opcion("Mandarlos a casa", hacer(despedir)),
         Opcion("Cambiar el nombre de la banda", nombrar),
@@ -349,9 +363,12 @@ class Interior:
                 j.dia_nevera = p.dia
                 j.salud = min(j.salud_max, j.salud + (50 if "cocina" in self.muebles else 25))
                 p.son("comer", cat="interfaz")
+                p.ha_bebido(100)                                 # en casa, el agua del grifo no falta
                 app.decir(f"Te preparas {'una buena comida en tu cocina nueva' if 'cocina' in self.muebles else 'algo con lo que hay en la nevera'}. Salud {int(j.salud)}.{p.necesidades_txt()}", True)
         elif que == "bano":
             app.son("salpicadura", vol=0.5)
+            p.ha_duchado()
+            p.ha_bebido(100)
             if "banera" in self.muebles:
                 p.cambiar_animo(5)
                 j.salud = min(j.salud_max, j.salud + 10)
@@ -533,7 +550,7 @@ def sucesos_territorio(p, azar=None):
     r = j.redada
     if r and p.dia > r["dia"]:
         j.redada = None
-        perdido = min(j.dinero, 300 * len(j.territorios))
+        perdido = min(j.dinero, p.precio("redada_territorio", 300) * len(j.territorios))
         j.dinero -= perdido
         p.decir(f"No arreglaste lo de la policía: una redada en tus barrios te cuesta {perdido} euros.")
     o = j.oferta_pacto
@@ -562,13 +579,13 @@ def sucesos_territorio(p, azar=None):
         p.son("notificacion", cat="interfaz")
         p.decir(f"{banda} está atacando {nombre}. Tienes hasta la próxima medianoche para defenderlo: en el móvil, Territorios. Si no vas, lo pierdes.")
     elif tipo == "pacto":
-        j.oferta_pacto = {"banda": banda, "precio": 500 * n, "dia": p.dia}
+        j.oferta_pacto = {"banda": banda, "precio": p.precio("pacto_territorio", 500) * n, "dia": p.dia}
         p.son("notificacion", cat="interfaz")
-        p.decir(f"{banda} te propone un pacto: te pagan {500 * n} euros y durante una semana nadie toca los barrios de nadie. Contesta en el móvil, en Territorios, antes de medianoche.")
+        p.decir(f"{banda} te propone un pacto: te pagan {j.oferta_pacto['precio']} euros y durante una semana nadie toca los barrios de nadie. Contesta en el móvil, en Territorios, antes de medianoche.")
     else:
-        j.redada = {"precio": 250 * n, "dia": p.dia}
+        j.redada = {"precio": p.precio("soborno_inspector", 250) * n, "dia": p.dia}
         p.son("notificacion", cat="interfaz")
-        p.decir(f"Un inspector te hace saber que estás en su lista. Por {250 * n} euros mirará hacia otro lado. Si no, habrá redada. Arréglalo en el móvil, en Territorios, antes de medianoche.")
+        p.decir(f"Un inspector te hace saber que estás en su lista. Por {j.redada['precio']} euros mirará hacia otro lado. Si no, habrá redada. Arréglalo en el móvil, en Territorios, antes de medianoche.")
 
 
 def defender(p):

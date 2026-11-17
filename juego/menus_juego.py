@@ -429,6 +429,11 @@ def opciones(app):
             vol("vol_senales", "Volumen de las señales de ayuda", "Baliza del GPS, radar, tono de puntería, sensor de proximidad, semáforos y el sonido propio de cada lugar. "
                 "Se aplica además del volumen de su grupo: bájalo si las señales te tapan lo demás, o baja lo demás y deja este al máximo. Cámbialo con las flechas izquierda y derecha."),
             vol("vol_musica", "Volumen de la radio y la música"),
+            Opcion(lambda: f"La radio, al bajarte del vehículo: {'se queda en pausa y sigue luego por donde iba' if cfg['radio_pausa'] else 'sigue sonando sin ti, como una emisora de verdad'}",
+                   ajuste=lambda d: (cfg.__setitem__("radio_pausa", not cfg["radio_pausa"]), setattr(app.radio, "pausa", bool(cfg["radio_pausa"]))),
+                   ayuda="Vale para todas las emisoras y para Mi música. En pausa: al bajarte, la canción se detiene, y al subir a cualquier vehículo sigue justo donde se quedó; "
+                         "cada emisora recuerda la suya, así que al volver a una que dejaste, sigue con su canción. Sin pausa: la emisora sigue su curso aunque no la oigas, "
+                         "y al volver te la encuentras más adelante. Las canciones de menos de un minuto y medio empiezan siempre desde el principio."),
             si_no("musica_ambiente", "Música de ambiente", "Música de fondo que cambia con la situación. Se calla sola cuando pones la radio en un vehículo y vuelve cuando la apagas o te bajas."),
             vol("vol_ambiente_musical", "Volumen de la música de ambiente", "Respecto a la radio. Cámbialo con las flechas izquierda y derecha."),
             Opcion(lambda: f"Pack de sonidos: {nombre_pack()}", ajuste=cambiar_pack,
@@ -439,6 +444,12 @@ def opciones(app):
                    ayuda="El motor envolvente usa sonido binaural: con auriculares se distingue si algo suena delante o detrás, y no solo a izquierda o derecha. "
                          "Además mezcla el sonido fuera del programa, así que no da tirones cuando hay muchos sonidos a la vez. El clásico es el de siempre. "
                          "El cambio se aplica al cerrar y volver a abrir el juego. En ordenadores con procesador antiguo, y con el sonido mono activado, se usa siempre el clásico."),
+            Opcion(lambda: f"Sonido holgado, para equipos donde el audio da chasquidos o cortes: {'sí' if cfg['sonido_holgado'] else 'no'}" +
+                   (". Se aplicará al volver a abrir el juego" if bool(cfg["sonido_holgado"]) != bool(getattr(app.mez, "holgado", False)) and not getattr(app.mez, "envolvente", False) else ""),
+                   ajuste=lambda d: cfg.__setitem__("sonido_holgado", not cfg["sonido_holgado"]),
+                   ayuda="Con el motor clásico, el juego prepara el sonido en trozos más grandes. Los sonidos llegan unas centésimas de segundo más tarde, "
+                         "pero dejan de oírse chasquidos, cortes o tartamudeos en ordenadores justos de potencia o con tarjetas de sonido delicadas. "
+                         "Pruébalo si el audio te da tirones; otra solución es el motor envolvente. El cambio se aplica al cerrar y volver a abrir el juego."),
             si_no("eco_lugares", "Eco según el lugar, solo con el motor envolvente",
                   "Con el motor envolvente, los sonidos del mundo llevan el eco del sitio donde estás: poco en el campo y en la playa, algo en la calle, más entre naves, largo en la montaña y corto y cercano dentro de un local. "
                   "Además, lo que vuela suena por encima, y si vuelas tú, la ciudad suena por debajo. Con el motor clásico esta opción no hace nada.",
@@ -498,7 +509,20 @@ def opciones(app):
             si_no("sucesos", "Sucesos callejeros al azar", "Atracos, pandilleros y maletines perdidos que aparecen de vez en cuando por la calle."),
             si_no("invulnerable", "Asistencia: no recibir daño", "Para explorar sin preocuparte de nada."),
             si_no("sin_policia", "Asistencia: sin policía", "Los delitos no cuentan y nadie te persigue."),
-            si_no("vida_realista", "Vida realista: hambre y sueño", "Hay que comer y dormir. Con hambre o con sueño vas más despacio y apuntas peor, y si los ignoras pierdes salud. La tecla V te dice cómo estás."),
+            si_no("vida_realista", "Vida realista: hambre, sed, sueño e higiene", "Hay que comer, beber, dormir y lavarse. Con hambre, con sed o con sueño vas más despacio y apuntas peor, y si los ignoras pierdes salud. "
+                  "Se bebe en bares, tiendas y en tu cocina; la ducha, en tu casa o en un hotel. Ir sucio baja el ánimo. La tecla V te dice cómo estás, y Mayúsculas V, solo eso."),
+            si_no("averias", "Averías: pinchazos y revisiones",
+                  "Cada vehículo cuenta los kilómetros que rueda. De tarde en tarde pincha una rueda: se oye, y el coche no pasa de media velocidad hasta que la cambias, "
+                  "con una de repuesto desde el móvil, en un taller o llamando a la asistencia. Cada cierto número de kilómetros toca revisión en un taller; si no la pasas, los frenos van a peor. "
+                  "La tecla V, al volante, dice los kilómetros y lo que le pasa."),
+            si_no("normas_trafico", "Normas de tráfico: multas y carné por puntos",
+                  "Saltarte un semáforo en rojo o ir muy por encima del límite cuesta una multa y puntos del carné, pero solo si te ve la policía. "
+                  "Sin puntos te retiran el carné, y conducir delante de un agente pasa a ser un delito. Los puntos se recuperan con un curso en una academia. "
+                  "Con la sirena puesta, o cuando ya te buscan, no hay multas. Los semáforos cuentan en conducción asistida. La tecla V dice los puntos que te quedan."),
+            si_no("combustible", "Combustible: los vehículos gastan y hay que repostar",
+                  "Cada coche, moto o camión tiene su depósito y gasta al rodar, más cuanto más deprisa. Avisa al entrar en reserva; con el depósito vacío, el motor se para. "
+                  "Se reposta en las gasolineras sin bajarte del vehículo, con un bidón comprado en ellas o llamando a la asistencia en carretera desde el móvil, en Servicios. "
+                  "La tecla V te dice cuánto queda. No cuenta en los barcos, en lo que vuela, en las bicicletas ni en los vehículos de las misiones."),
         ], "Dificultad, puntería y asistencias."),
         Opcion("Personas e inteligencia artificial", lambda: __import__("juego.menus_charla", fromlist=["x"]).opciones_ia(app),
                ayuda="Cómo contestan las personas de la calle cuando les escribes lo que quieres: con el motor del juego o con una inteligencia artificial."),
@@ -800,6 +824,9 @@ def movil(p):
         lista += [Opcion("Lugares y GPS", lambda: lista_lugares(p)),
                   Opcion("Explorar el mapa con el cursor", lambda: app.abrir(ExploradorMapa(app, p)), ayuda="Recorre la localidad cruce a cruce sin mover al personaje. También se abre con F9."),
                   Opcion("Marcadores personales", lambda: mx.marcadores(p)),
+                  Opcion("Dónde está mi vehículo", lambda: (app.cerrar(menu), p.localizar_vehiculo()),
+                         ayuda="Dice dónde dejaste el vehículo del que te bajaste y lo marca en el GPS. Si ibas a otro sitio, al llegar al vehículo el GPS vuelve solo a ese destino. "
+                               "Sin abrir el móvil, se hace con Mayúsculas L."),
                   Opcion("Servicios: vehículo, guardaespaldas, ambulancia y taxi", lambda: mx.servicios(p)),
                   ] + ([Opcion(lambda: "Tu perro. " + p.perro_txt(), lambda: mx.menu_perro(p), ayuda="Acariciarlo, darle de comer, mandarlo a casa o llamarlo. A pie también se abre con Mayúsculas Y.")] if j.perro else []) + [
                   Opcion(lambda: "Jugar con amigos" + (f": conectado, {len(p.remotos) + 1} jugadores" if p.online_activo() else ""),
@@ -829,7 +856,7 @@ def menu_viaje(p):
     def viajar(l):
         x, y = p.pos()
         d = math.hypot(l.x - x, l.y - y)
-        coste = int(10 + d * 0.05)
+        coste = int(p.precio("taxi_base", 10) + d * 0.05)
         if not p.pagar(coste):
             return
 
@@ -877,7 +904,10 @@ def lugar(p, l):
         app.decir(f"{l.nombre}. Está cerrado: aquí todavía no te conocen.", True)
         return
     en_coche = j.veh is not None
-    if en_coche and l.tipo not in ("taller", "desguace", "casa", "carrera", "salida", "muelle", "estacion", "embarcadero", "pesca", "monumento", "helipuerto", "tesoro", "aeropuerto", "tranvia", "tren"):
+    from .combustible import tiene_surtidor
+    if en_coche and tiene_surtidor(l) and p.gasta(j.veh):
+        pass                                                     # en una gasolinera se reposta sin bajarse
+    elif en_coche and l.tipo not in ("taller", "desguace", "casa", "carrera", "salida", "muelle", "estacion", "embarcadero", "pesca", "monumento", "helipuerto", "tesoro", "aeropuerto", "tranvia", "tren"):
         app.decir(f"{l.nombre}. Bájate del vehículo con F para entrar.", True)
         return
     if en_coche and abs(j.veh.vel) > 3:
@@ -941,13 +971,36 @@ def _comprar_comida(p, c, factor=1.0):
     return f
 
 
+# Las protecciones que se venden en la armería además del chaleco están en los datos (vida.json, protecciones).
+def _proteccion(p, nombre, precio, tope):
+    if p.j.blindaje >= tope:
+        p.app.decir("Ya llevas una protección igual o mejor, en perfecto estado.", True)
+    elif p.pagar(precio):
+        p.j.blindaje = float(tope)
+        p.son("dinero", cat="interfaz")
+        p.app.decir(f"{nombre} puest[o|a]. Blindaje {tope}.".replace("[o|a]", "a" if nombre.endswith("a") else "o"), True)
+
+
+def _comprar_walkman(p):
+    o = next((x for x in p.datos["objetos"] if x["id"] == "walkman"), {"nombre": "Reproductor con auriculares", "precio": 75, "desc": ""})
+
+    def f():
+        if p.j.objetos.get("walkman"):
+            p.app.decir("Ya tienes uno. Se enciende con Mayúsculas R, a pie.", True)
+        elif p.pagar(o["precio"]):
+            p.j.objetos["walkman"] = 1
+            p.son("dinero", cat="interfaz")
+            p.app.decir(f"{o['nombre']} comprado. A pie, Mayúsculas R lo enciende y cambia de emisora.", True)
+    return Opcion(lambda: f"{o['nombre']}: {o['precio']} euros" + (". Ya lo tienes" if p.j.objetos.get("walkman") else ""), f, ayuda=o.get("desc", ""))
+
+
 def _comprar_objeto(p, ident):
     o = next(x for x in p.datos["objetos"] if x["id"] == ident)
 
     def f():
         if ident == "chaleco":
             if p.j.blindaje >= 100:
-                p.app.decir("Ya llevas un chaleco en perfecto estado.", True)
+                p.app.decir("Ya llevas una protección igual o mejor, en perfecto estado.", True)
             elif p.pagar(o["precio"]):
                 p.j.blindaje = 100.0
                 p.son("dinero", cat="interfaz")
@@ -1014,7 +1067,8 @@ def _casa(p, l):
             app.son("error")
             app.decir("El garaje está lleno.", True)
             return
-        garaje.append({"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "mejoras": dict(getattr(v, "mejoras", {}))})
+        garaje.append({"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "mejoras": dict(getattr(v, "mejoras", {})),
+                       **({"litros": round(v.litros, 1)} if getattr(v, "litros", None) is not None else {})})
         if j.veh is v:
             p.salir_vehiculo(forzado=True)
             j.x, j.y = l.x, l.y
@@ -1033,6 +1087,8 @@ def _casa(p, l):
             sistemas.poner(v, d.get("mejoras"))
             v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
             v.propio = True
+            if "litros" in d:
+                v.litros = float(d["litros"])
             app.cerrar(m)
             app.decir(f"{v.nombre} te espera en la calle. {p.situar(x, y, 'Está')}.", True)
         return f
@@ -1126,23 +1182,72 @@ def _armeria(p, l):
             if a["id"] in j.armas and a["tipo"] == "fuego":
                 mio = j.armas[a["id"]]
                 if not mio.get("silenciador") and a.get("ruido", 2) > 0 and a["id"] not in SIN_SILENCIADOR:
-                    lista.append(Opcion(f"Silenciador para {a['nombre']}: {int(900 * factor)} euros", mejorar(a, "silenciador", 900),
+                    lista.append(Opcion(f"Silenciador para {a['nombre']}: {int(p.precio('silenciador', 900) * factor)} euros", mejorar(a, "silenciador", p.precio("silenciador", 900)),
                                         ayuda="Los disparos dejan de oírse desde lejos: la gente no huye y nadie llama a la policía por el ruido. Lo que hagas a la vista de alguien se sigue viendo. Se pierde con el arma si te detienen."))
                 if not mio.get("ampliado") and a.get("cargador", 0) > 1:
-                    lista.append(Opcion(f"Cargador ampliado para {a['nombre']}, de {a['cargador']} a {int(a['cargador'] * 1.5)} balas: {int(600 * factor)} euros", mejorar(a, "ampliado", 600),
+                    lista.append(Opcion(f"Cargador ampliado para {a['nombre']}, de {a['cargador']} a {int(a['cargador'] * 1.5)} balas: {int(p.precio('cargador_ampliado', 600) * factor)} euros", mejorar(a, "ampliado", p.precio("cargador_ampliado", 600)),
                                         ayuda="Caben la mitad más de balas, así que recargas menos veces. Se pierde con el arma si te detienen."))
         lista.append(_comprar_objeto(p, "chaleco"))
+        for pr in p.datos.get("protecciones", []):
+            lista.append(Opcion(f"{pr['nombre']}: {int(pr['precio'] * factor)} euros",
+                                (lambda pr=pr: _proteccion(p, pr["nombre"], int(pr["precio"] * factor), int(pr.get("blindaje", 100)))), ayuda=pr.get("desc", "")))
         lista.append(_comprar_objeto(p, "ganzua"))
-        lista.append(Opcion("Galería de tiro: 20 euros la tanda", tiro, ayuda="Diez dianas que suenan a la izquierda, al centro o a la derecha. Mejora tu puntería y da premio con siete aciertos."))
+        lista.append(Opcion(f"Galería de tiro: {p.precio('galeria_tiro', 20)} euros la tanda", tiro, ayuda="Diez dianas que suenan a la izquierda, al centro o a la derecha. Mejora tu puntería y da premio con siete aciertos."))
         return lista
 
     def tiro():
-        if p.pagar(20):
+        if p.pagar(p.precio("galeria_tiro", 20)):
             from .pantallas import TiroAlBlanco
             while len(app.pila) > 1 and app.pila[-1] is not p:
                 app.pila.pop()
             app.abrir(TiroAlBlanco(app, p))
     m = _menu_lugar(p, l, ops, "F1 describe cada arma")
+
+
+def tiene_surtidor_rueda(p, l):
+    """Las gasolineras venden ruedas de repuesto cuando las averías están activadas."""
+    from . import combustible as C
+    return C.tiene_surtidor(l) and p.averias_activas()
+
+
+def _surtidor(p, l):
+    """Las opciones del surtidor de una gasolinera, con el combustible activado."""
+    from . import combustible as C
+    if not (C.tiene_surtidor(l) and p.combustible_activo()):
+        return []
+    app = p.app
+    pl = C.precio_litro(l)
+
+    def echar(litros):
+        def f():
+            v = p.vehiculo_para_repostar()
+            if v is None or C.deposito(v.modelo) <= 0:
+                app.son("error")
+                app.decir("No tienes aquí ningún vehículo que reposte. Ven con él, o déjalo aparcado al lado.", True)
+                return
+            n = p.repostar(v, litros, precio=pl)
+            if n:
+                app.decir(f"{int(round(n))} litros a {v.nombre}: {max(1, int(round(n * pl)))} euros.{p.combustible_txt(v)}", True)
+            elif C.deposito(v.modelo) - p.litros(v) < 0.5:
+                app.decir("El depósito ya está lleno.", True)
+        return f
+
+    def bidon():
+        if p.pagar(C.PRECIO_BIDON):
+            p.j.objetos["bidon"] = p.j.objetos.get("bidon", 0) + 1
+            p.son("dinero", cat="interfaz")
+            app.decir(f"Bidón de gasolina comprado. Llevas {p.j.objetos['bidon']}.", True)
+
+    def cuanto():
+        v = p.vehiculo_para_repostar()
+        if v is None or C.deposito(v.modelo) <= 0:
+            return "Llenar el depósito: ven con tu vehículo o déjalo aparcado al lado"
+        hueco = C.deposito(v.modelo) - p.litros(v)
+        return f"Llenar el depósito de {v.nombre}: {int(round(hueco))} litros, {int(round(hueco * pl))} euros"
+    return [Opcion(cuanto, echar(None), ayuda="Llena el depósito del vehículo que llevas o del que has dejado aparcado al lado. Se paga al momento."),
+            Opcion(f"Echar diez litros: {int(round(10 * pl))} euros", echar(10)),
+            Opcion(lambda: f"Bidón de gasolina de {C.LITROS_BIDON} litros: {C.PRECIO_BIDON} euros. Llevas {p.j.objetos.get('bidon', 0)}", bidon,
+                   ayuda="Para llevarlo encima. Si te quedas tirado, se lo echas al depósito desde el móvil, en Servicios.")]
 
 
 def _tienda(p, l):
@@ -1167,8 +1272,19 @@ def _tienda(p, l):
         p.decir(f"¡Manos arriba! El dependiente vacía la caja: {botin} euros. ¡Ha pulsado la alarma, lárgate!")
         p.poner_busqueda(2)
     factor = p.mercado("comida", l.id)
-    ops = [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {int(c['precio'] * factor)} euros", _comprar_comida(p, c, factor)) for c in p.datos["comidas"][:3:2]]
-    ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua")] + ([_comprar_objeto(p, "pienso")] if p.j.perro else []) + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará.")]
+    ops = _surtidor(p, l) + _agua(p)
+    if tiene_surtidor_rueda(p, l):
+        from . import realismo as R
+
+        def repuesto():
+            if p.pagar(int(R.aj("precio_rueda"))):
+                j.objetos["rueda"] = j.objetos.get("rueda", 0) + 1
+                p.son("dinero", cat="interfaz")
+                app.decir(f"Rueda de repuesto comprada. Llevas {j.objetos['rueda']}.", True)
+        ops.append(Opcion(lambda: f"Rueda de repuesto: {int(R.aj('precio_rueda'))} euros. Llevas {j.objetos.get('rueda', 0)}", repuesto,
+                          ayuda="Si pinchas, la cambias tú desde el móvil, en Servicios, con el vehículo parado."))
+    ops += [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {int(c['precio'] * factor)} euros", _comprar_comida(p, c, factor)) for c in p.datos["comidas"][:3:2]]
+    ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua"), _comprar_walkman(p)] + ([_comprar_objeto(p, "pienso")] if p.j.perro else []) + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará.")]
     m = _menu_lugar(p, l, ops)
 
 
@@ -1178,16 +1294,31 @@ def _salud_intima(p):
         return []
     art = p.articulos_intimos()[0]
     return [Opcion(lambda: f"{art['nombre']}: {art['precio']} euros. Llevas {p.j.intimos.get('preservativos', 0)}", lambda: p.comprar_articulo(art), ayuda=art["desc"]),
-            Opcion("Prueba de salud sexual, gratis. El tratamiento, si hace falta, 120 euros", p.prueba_y_tratamiento)]
+            Opcion(f"Prueba de salud sexual, gratis. El tratamiento, si hace falta, {p.precio('tratamiento_its', 120)} euros", p.prueba_y_tratamiento)]
 
 
 def _farmacia(p, l):
     _menu_lugar(p, l, [_comprar_objeto(p, "botiquin")] + _salud_intima(p))
 
 
+def _agua(p):
+    """Con la vida realista, en cualquier sitio donde se come o se compra se puede beber agua."""
+    if not p.vida_realista():
+        return []
+
+    def f():
+        if p.j.sed < 15:
+            p.app.decir("Ahora no tienes sed.", True)
+        elif p.pagar(p.precio("agua", 1)):
+            p.son("beber", cat="interfaz")
+            p.app.decir("Una botella de agua fresca." + p.necesidades_txt(), True)
+    return [Opcion(f"Botella de agua: {p.precio('agua', 1)} euros", f, ayuda="Quita la sed. La comida también quita algo, pero menos.")]
+
+
 def _comida(p, l):
     factor = (3.0 if l.get("caro") else 1.0) * p.mercado("comida", l.id)
     ops = [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {int(c['precio'] * factor)} euros", _comprar_comida(p, c, factor)) for c in p.datos["comidas"]]
+    ops += _agua(p)
     if l.tipo == "pizzeria":
         def trabajar():
             p.app.cerrar(m)
@@ -1203,14 +1334,14 @@ def _hospital(p, l):
         falta = int(j.salud_max - j.salud)
         if falta <= 0:
             p.app.decir("Estás como una rosa. No necesitas nada.", True)
-        elif p.pagar(falta * 2):
+        elif p.pagar(falta * p.precio("cura_punto", 2)):
             j.salud = j.salud_max
             p.son("curar", cat="interfaz")
             p.app.decir("Te curan. Salud al máximo.", True)
-    ops = [Opcion(lambda: f"Que te curen: {max(0, int(j.salud_max - j.salud)) * 2} euros. Salud actual {int(j.salud)}", curar), _comprar_objeto(p, "botiquin")]
+    ops = [Opcion(lambda: f"Que te curen: {max(0, int(j.salud_max - j.salud)) * p.precio('cura_punto', 2)} euros. Salud actual {int(j.salud)}", curar), _comprar_objeto(p, "botiquin")]
     if p.modo_adulto():
         from . import menus_adultos as ma
-        ops.append(Opcion("Desintoxicación: 800 euros y dos días en la clínica", lambda: ma.desintoxicar(p), ayuda="Elimina todas tus dependencias."))
+        ops.append(Opcion(f"Desintoxicación: {p.precio('desintoxicacion', 800)} euros y dos días en la clínica", lambda: ma.desintoxicar(p), ayuda="Elimina todas tus dependencias."))
         ops += _salud_intima(p)
     _menu_lugar(p, l, ops)
 
@@ -1222,10 +1353,10 @@ def _comisaria(p, l):
         if not j.estrellas:
             p.app.decir("No te busca nadie.", True)
             return
-        if p.pagar(400 * j.estrellas):
+        if p.pagar(p.precio("soborno_estrella", 400) * j.estrellas):
             p._fin_persecucion()
             p.app.decir("Un sobre cambia de manos y tu expediente desaparece. Ya no te buscan.", True)
-    _menu_lugar(p, l, [Opcion(lambda: f"Pagar un soborno para que dejen de buscarte: {400 * j.estrellas} euros", sobornar),
+    _menu_lugar(p, l, [Opcion(lambda: f"Pagar un soborno para que dejen de buscarte: {p.precio('soborno_estrella', 400) * j.estrellas} euros", sobornar),
                        Opcion(lambda: f"Tu historial: {j.stats['detenciones']} detenciones")])
 
 
@@ -1238,7 +1369,7 @@ def _taller(p, l):
     v = j.veh
 
     def coste():
-        return int(40 + (1 - v.salud / v.salud_max) * max(300, v.modelo["valor"]) * 0.3)
+        return int(p.precio("reparacion_base", 40) + (1 - v.salud / v.salud_max) * max(300, v.modelo["valor"]) * 0.3)
 
     def reparar():
         if v.salud >= v.salud_max:
@@ -1254,14 +1385,40 @@ def _taller(p, l):
             app.son("error")
             app.decir("¡Tienes a la policía encima! Despístalos un poco antes de pintar.", True)
             return
-        if p.pagar(300):
+        if p.pagar(p.precio("pintura", 300)):
             p.son("pintura", cat="interfaz")
             p._fin_persecucion()
             app.decir("Pintura nueva y matrículas nuevas. La policía ya no busca este vehículo.", True)
+    from . import realismo as R
     from . import sistemas
+
+    def rueda():
+        if not getattr(v, "pinchada", False):
+            app.decir("No tiene ninguna rueda pinchada.", True)
+        elif p.pagar(int(R.aj("precio_cambio_rueda"))):
+            v.pinchada = False
+            p.son("reparar", cat="interfaz")
+            app.decir("Rueda cambiada. Vuelve a rodar bien.", True)
+
+    def revision():
+        if p.pagar(int(R.aj("precio_revision"))):
+            p.pasar_revision(v)
+            p.son("reparar", cat="interfaz")
+            app.decir(f"Revisión pasada: aceite, frenos y ruedas. {v.nombre} queda como debe.", True)
+
+    def repuesto():
+        if p.pagar(int(R.aj("precio_rueda"))):
+            j.objetos["rueda"] = j.objetos.get("rueda", 0) + 1
+            p.son("dinero", cat="interfaz")
+            app.decir(f"Rueda de repuesto comprada. Llevas {j.objetos['rueda']}.", True)
+    averias = [Opcion(lambda: f"Cambiar la rueda pinchada: {int(R.aj('precio_cambio_rueda'))} euros" if getattr(v, "pinchada", False) else "Ruedas: ninguna pinchada", rueda),
+               Opcion(lambda: f"Pasar la revisión: {int(R.aj('precio_revision'))} euros. Lleva {int(getattr(v, 'km', 0))} kilómetros" + (". Le toca" if getattr(v, "revision_debida", False) else ""), revision,
+                      ayuda="Aceite, frenos y ruedas. Si le toca y no la pasas, los frenos van perdiendo. Arregla también un pinchazo."),
+               Opcion(lambda: f"Rueda de repuesto: {int(R.aj('precio_rueda'))} euros. Llevas {j.objetos.get('rueda', 0)}", repuesto,
+                      ayuda="Para llevarla encima. Si pinchas, la cambias tú desde el móvil, en Servicios, con el vehículo parado.")] if p.averias_activas() else []
     _menu_lugar(p, l, [Opcion(lambda: f"Reparar {v.nombre}: {coste()} euros. Estado {int(100 * v.salud / v.salud_max)} por ciento", reparar),
-                       Opcion("Pintar y cambiar matrículas: 300 euros. Elimina la búsqueda policial", pintar)] + sistemas.opciones_taller(p, v, Opcion) +
-                [Opcion(lambda: sistemas.resumen(v))])
+                       Opcion(f"Pintar y cambiar matrículas: {p.precio('pintura', 300)} euros. Elimina la búsqueda policial", pintar)] + averias + sistemas.opciones_taller(p, v, Opcion) +
+                [Opcion(lambda: sistemas.resumen(v) + p.averias_txt(v))])
 
 
 def _desguace(p, l):
@@ -1342,7 +1499,7 @@ def _taxi(p, l):
     app = p.app
 
     def alquilar():
-        if p.pagar(40):
+        if p.pagar(p.precio("alquiler_taxi", 40)):
             x, y, d = p.mundo.plaza_junto_a(l)
             v = p.crear_vehiculo("taxi", x, y, d, None)
             v.propio = True
@@ -1356,7 +1513,7 @@ def _taxi(p, l):
             return
         app.cerrar(m)
         menu_viaje(p)
-    m = _menu_lugar(p, l, [Opcion("Que te lleven a otro lugar", viajar), Opcion("Alquilar un taxi para trabajar de taxista: 40 euros", alquilar)])
+    m = _menu_lugar(p, l, [Opcion("Que te lleven a otro lugar", viajar), Opcion(f"Alquilar un taxi para trabajar de taxista: {p.precio('alquiler_taxi', 40)} euros", alquilar)])
 
 
 def _carrera(p, l):
@@ -1393,7 +1550,8 @@ def _bar(p, l):
     j = p.j
 
     def beber():
-        if p.pagar(4):
+        if p.pagar(p.precio("cana_tapa", 4)):
+            p.ha_bebido(50)
             j.salud = min(j.salud_max, j.salud + 10)
             p.son("comer", cat="interfaz")
             app.decir(f"Una caña y una tapa. Salud {int(j.salud)}.", True)
@@ -1401,9 +1559,9 @@ def _bar(p, l):
     def hablar():
         app.decir("Encarna: " + p.objetivo_txt().replace("No tienes ninguna misión en curso. Disponible:", "Deberías pasarte por:"), True)
     from . import loteria
-    ops = [Opcion("Tomar una caña con tapa: 4 euros", beber), Opcion("Hablar con Encarna", hablar), loteria.opcion_en_local(p, l)]
+    ops = [Opcion(f"Tomar una caña con tapa: {p.precio('cana_tapa', 4)} euros", beber), Opcion("Hablar con Encarna", hablar), loteria.opcion_en_local(p, l)]
     if p.modo_adulto():
-        ops.insert(1, Opcion("Tomar una copa: 6 euros", lambda: p.consumir("alcohol", de_inventario=False) if p.pagar(6) else None, ayuda="Alcohol: sube el ánimo, pero caminas torcido y apuntas peor."))
+        ops.insert(1, Opcion(f"Tomar una copa: {p.precio('copa_bar', 6)} euros", lambda: p.consumir("alcohol", de_inventario=False) if p.pagar(p.precio("copa_bar", 6)) else None, ayuda="Alcohol: sube el ánimo, pero caminas torcido y apuntas peor."))
     _menu_lugar(p, l, ops)
 
 

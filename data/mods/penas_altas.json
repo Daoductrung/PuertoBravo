@@ -745,7 +745,8 @@
      ],
      "lado": "S",
      "pos": 36,
-     "desc": "El economato de la antigua compañía. Sigue vendiendo de todo."
+     "desc": "El economato de la antigua compañía. Sigue vendiendo de todo.",
+     "surtidor": true
     },
     {
      "id": "pa_polvorin",

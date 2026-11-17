@@ -55,3 +55,7 @@ Thumbs.db
 data/ia_local/
 data/voces/propias/
 !data/mods/bahia_del_ocaso.json
+
+# El servidor en linea, cuando se arranca desde el proyecto: su configuracion y sus datos son de cada cual
+/servidor.conf
+/datos_servidor/

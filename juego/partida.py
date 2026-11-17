@@ -19,6 +19,8 @@ from .charla import Charla
 from .intimidad import Intimidad
 from .misiones import Misiones
 from .necesidades import Necesidades
+from .combustible import Combustible
+from .realismo import Realismo
 from .online import Online
 from .enlinea import EnLinea
 from .trabajos import Trabajos
@@ -71,7 +73,7 @@ FRASES = [
 ]
 
 
-class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar):
+class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -179,6 +181,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.aplicar_personaje(personaje)
         self.azar_iniciar()
         self._crear_casetes()
+        self._hilo = False
+        self.app.radio.pausa = bool(self.cfg["radio_pausa"])
+        self.walkman_al_empezar()
         if self.veh_guardado:
             d = self.veh_guardado
             v = self.crear_vehiculo(d.get("modelo"), self.j.x, self.j.y, M.dir_de_rumbo(d.get("rumbo", 0)), None, d.get("nombre"))
@@ -187,22 +192,100 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             v.propio = True
             from . import sistemas
             sistemas.poner(v, d.get("mejoras"))
+            if "litros" in d:
+                v.litros = float(d["litros"])
+            self.averias_de_dict(v, d)
             self._subir(v, False, callar=True)
         elif self.mundo.tipo == "mar":
             self.naufragar(callar=True)
-        d = self.veh_fuera
-        if d and not self.j.veh and d.get("mapa") == self.mundo.id and d.get("modelo") in self.modelos:      # el que dejaste aparcado
-            v = self.crear_vehiculo(d["modelo"], float(d.get("x", self.j.x)), float(d.get("y", self.j.y)), M.dir_de_rumbo(d.get("rumbo", 0)), None, d.get("nombre"))
-            v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
-            v.rumbo = float(d.get("rumbo", 0))
-            v.propio = True
-            from . import sistemas
-            sistemas.poner(v, d.get("mejoras"))
-            self.ultimo_veh = v
+        self._reponer_veh_fuera()
         for _ in range(int(self.j.guardaespaldas)):
             self.crear_aliado()
         if self.j.perro and self.mundo.tipo != "mar" and not self.j.perro_en_casa:
             self.crear_perro()
+
+    def _reponer_veh_fuera(self):
+        """Vuelve a poner en la calle el vehículo que dejaste aparcado en esta localidad, al cargar la partida o al volver a ella."""
+        d = self.veh_fuera
+        if not d or self.j.veh or d.get("mapa") != self.mundo.id or d.get("modelo") not in self.modelos:
+            return None
+        v = self.crear_vehiculo(d["modelo"], float(d.get("x", self.j.x)), float(d.get("y", self.j.y)), M.dir_de_rumbo(d.get("rumbo", 0)), None, d.get("nombre"))
+        v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
+        v.rumbo = float(d.get("rumbo", 0))
+        v.propio = True
+        from . import sistemas
+        sistemas.poner(v, d.get("mejoras"))
+        if "litros" in d:
+            v.litros = float(d["litros"])
+        self.averias_de_dict(v, d)
+        self.ultimo_veh = v
+        self.veh_fuera = None
+        return v
+
+    def _veh_fuera_dict(self, u):
+        d = {"modelo": u.modelo["id"], "salud": u.salud, "nombre": u.nombre, "rumbo": u.rumbo, "x": u.x, "y": u.y,
+             "mapa": self.mundo.id, "mejoras": dict(getattr(u, "mejoras", {})), "donde": self.mundo.describir(u.x, u.y)}
+        if getattr(u, "litros", None) is not None:
+            d["litros"] = round(u.litros, 1)
+        return self.averias_a_dict(u, d)
+
+    def localizar_vehiculo(self):
+        """Mayúsculas L, o desde el móvil: dónde está el vehículo del que te bajaste, y el GPS te lleva a él."""
+        j = self.j
+        if j.veh:
+            self.decir(f"Vas en {j.veh.nombre}. Cuando te bajes, con Mayúsculas L sabrás dónde lo has dejado.", True)
+            return False
+        u = self.tu_vehiculo()
+        if u is None:
+            d = self.veh_fuera
+            if d and d.get("mapa") in self.mapas and d.get("mapa") != self.mundo.id:
+                self.decir(f"Dejaste {d.get('nombre') or 'tu vehículo'} en {self.mapas[d['mapa']].nombre}, {d.get('donde') or 'en la calle'}. Te espera allí.", True)
+            else:
+                self.app.son("error")
+                self.decir("No has dejado ningún vehículo aparcado, o ya no está donde lo dejaste.", True)
+            return False
+        antes = self.gps.get("anterior") or self.gps if self.gps else None
+        if antes is not None and math.hypot(antes["dest"][0] - u.x, antes["dest"][1] - u.y) < 3:
+            antes = None
+        self.fijar_gps(u.x, u.y, u.nombre)
+        t = f"{self.situar(u.x, u.y, u.nombre)}. {self.mundo.describir(u.x, u.y)}. Marcado en el GPS."
+        if antes is not None and self.gps:
+            self.gps["anterior"] = antes
+            t += f" Al llegar, el GPS vuelve a {antes['nombre']}."
+        self.decir(t, True)
+        return True
+
+    def proximo_cruce(self):
+        """Mayúsculas N: qué calle es la siguiente que te vas a cruzar y a cuántos metros está."""
+        m = self.mundo
+        if m.tipo == "mar" or self.interior:
+            self.decir("Aquí no hay cruces.", True)
+            return None
+        x, y = self.pos()
+        v = self.j.veh
+        rumbo = (v.rumbo if v else self.j.rumbo) % 360
+        d = int(((rumbo + 45) % 360) // 90)                     # 0 norte, 1 este, 2 sur, 3 oeste
+        hacia = ("norte", "este", "sur", "oeste")[d]
+        if d in (1, 3):                                          # vas de este a oeste o al revés: te cruzas con avenidas
+            paso = 1 if d == 1 else -1
+            i = int(math.floor(x / M.B)) + (1 if paso > 0 else 0)
+            if abs(i * M.B - x) <= M.ACERA:
+                i += paso
+            if not 0 <= i < m.NX:
+                self.decir(f"Hacia el {hacia} ya no hay más cruces: se acaba {m.nombre}.", True)
+                return None
+            dist, nombre, por = abs(i * M.B - x), m.avenidas[i], m.calles[m._idx(y, m.NY)]
+        else:
+            paso = 1 if d == 0 else -1
+            jj = int(math.floor(y / M.B)) + (1 if paso > 0 else 0)
+            if abs(jj * M.B - y) <= M.ACERA:
+                jj += paso
+            if not 0 <= jj < m.NY:
+                self.decir(f"Hacia el {hacia} ya no hay más cruces: se acaba {m.nombre}.", True)
+                return None
+            dist, nombre, por = abs(jj * M.B - y), m.calles[jj], m.avenidas[m._idx(x, m.NX)]
+        self.decir(f"Siguiente cruce, hacia el {hacia}: {nombre}, a {M.metros(dist)}. Vas por {por}.", True)
+        return (nombre, dist)
 
     def lug(self, ident):
         return self.lugares.get(ident)
@@ -245,6 +328,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
     def son(self, nombre, xy=None, **kw):
         if nombre == "comer":
             self.ha_comido()             # comer en cualquier sitio quita el hambre (vida realista)
+        elif nombre in ("beber", "trago"):
+            self.ha_bebido()
         return self.mez.sonar(nombre, xy=xy, **kw)
 
     def pos(self):
@@ -342,10 +427,14 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         v = self.j.veh
         if v and not v.tag:
             d["veh"] = {"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "rumbo": v.rumbo, "mejoras": dict(getattr(v, "mejoras", {}))}
+            if getattr(v, "litros", None) is not None:
+                d["veh"]["litros"] = round(v.litros, 1)
+            self.averias_a_dict(v, d["veh"])
         u = self.tu_vehiculo()
         if not v and u is not None:
-            d["veh_fuera"] = {"modelo": u.modelo["id"], "salud": u.salud, "nombre": u.nombre, "rumbo": u.rumbo, "x": u.x, "y": u.y,
-                              "mapa": self.mundo.id, "mejoras": dict(getattr(u, "mejoras", {}))}
+            d["veh_fuera"] = self._veh_fuera_dict(u)
+        elif self.veh_fuera and self.veh_fuera.get("mapa") != self.mundo.id:
+            d["veh_fuera"] = dict(self.veh_fuera)             # lo dejaste en otra localidad y allí sigue
         return d
 
     def tu_vehiculo(self, radio=None):
@@ -497,6 +586,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.trabajo and self.trabajo["tipo"] != "camion":
             self.terminar_trabajo("Al salir de la localidad se acaba el trabajo.")
         v = j.veh
+        u = self.tu_vehiculo() if not v and not getattr(self, "en_servidor", False) else None
+        if u is not None:
+            self.veh_fuera = self._veh_fuera_dict(u)           # te vas a pie: el vehículo se queda aquí, y aquí estará cuando vuelvas
+            self.ultimo_veh = None
         gps_final = self.gps.get("final") if self.gps else None
         gps_auto = self.gps.get("auto") if self.gps else False
         for o in self.vehiculos:
@@ -543,6 +636,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         for p in self.personas:
             p.x, p.y = self.mundo.punto_libre(x + random.uniform(-3, 3), y + random.uniform(-3, 3))
         self._crear_casetes()
+        if not getattr(self, "en_servidor", False):
+            self._reponer_veh_fuera()
         self.barrio_act = self.mundo.barrio(x, y)["id"]
         if self.barrio_act not in j.barrios_vistos:
             j.barrios_vistos.append(self.barrio_act)
@@ -593,6 +688,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         k = ev.key
         mayus = bool(ev.mod & pygame.KMOD_SHIFT)
         ctrl = bool(ev.mod & pygame.KMOD_CTRL)
+        if k != pygame.K_LSHIFT:
+            self._mayus_sola = False                             # ha habido otra tecla: la Mayúsculas era para una combinación
         j = self.j
         if self.transicion:
             return
@@ -603,13 +700,19 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         elif k == pygame.K_c:
             self.donde(mayus)
         elif k == pygame.K_v:
-            self.estado()
+            if mayus:                                            # solo el cuerpo: hambre y sueño
+                self.decir(self.necesidades_txt().strip() or "La vida realista está desactivada: no pasas hambre, sed ni sueño. Se activa en Opciones, Combate y dificultad.", True)
+            else:
+                self.estado()
         elif k == pygame.K_t:
             self.decir(f"Son las {self.hora_txt()}, día {self.dia}. {'Llueve.' if self.lluvia else 'Cielo despejado.'} {self.dia_txt()}".strip(), True)
         elif k == pygame.K_o:
             self.decir(self.objetivo_txt(), True)
         elif k == pygame.K_n:
-            self.describir_aqui()
+            if mayus:
+                self.proximo_cruce()
+            else:
+                self.describir_aqui()
         elif k == pygame.K_k:
             x, y = self.pos()
             self.son("baliza_destino", xy=(x, y + 15), ref=8, maxd=60, cat="interfaz")     # un toque que suena desde el norte
@@ -624,7 +727,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.app.son("movil")
             mj.movil(self)
         elif k == pygame.K_l:
-            mj.lista_lugares(self)
+            if mayus:
+                self.localizar_vehiculo()
+            else:
+                mj.lista_lugares(self)
         elif k == pygame.K_g:
             if mayus:
                 habia = self.gps is not None
@@ -900,21 +1006,24 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             return False
         if self.cfg["correr_alternar"]:
             return bool(getattr(self, "correr_fijo", False))
-        return pygame.K_LSHIFT in t or pygame.K_RSHIFT in t
+        return pygame.K_LSHIFT in t                              # solo la izquierda: la derecha queda para las combinaciones
 
     def tecla_pie(self, ev, mayus):
         k = ev.key
         j = self.j
-        if k in (pygame.K_LSHIFT, pygame.K_RSHIFT) and j.agachado and not self.cubierto and self.t - getattr(self, "t_aviso_agachado", -99) > 15:
+        if k == pygame.K_LSHIFT and j.agachado and not self.cubierto and self.t - getattr(self, "t_aviso_agachado", -99) > 15:
             self.t_aviso_agachado = self.t
             self.decir("Estás agachad[o|a] y por eso vas despacio. Pulsa X para levantarte.")
-        if k in (pygame.K_LSHIFT, pygame.K_RSHIFT) and self.cfg["correr_alternar"]:
-            self.correr_fijo = not getattr(self, "correr_fijo", False)
-            self.app.son("menu_mover")
-            self.decir("Correr." if self.correr_fijo else "Andar.", True)
+        if k == pygame.K_LSHIFT and self.cfg["correr_alternar"]:
+            # No se cambia al pulsarla sino al soltarla, y solo si entre medias no se ha pulsado nada más: así Mayúsculas
+            # con una letra es una combinación y no te pone a correr ni te para.
+            self._mayus_sola = True
             return
         if k == pygame.K_r:
-            self.recargar()
+            if mayus:
+                self.walkman()
+            else:
+                self.recargar()
         elif k in (pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d):
             base = {pygame.K_w: 0, pygame.K_d: 90, pygame.K_s: 180, pygame.K_a: 270}[k]
             self.mirar((base + self.frente()) % 360)
@@ -933,7 +1042,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         elif k == pygame.K_u:
             self.alternar_paseo()
         elif k == pygame.K_j:
-            self.hablar()
+            if mayus:
+                self.mirar_jugador()
+            else:
+                self.hablar()
         elif k == pygame.K_h:
             self.son("grito", vol=0.5)
             self.sv_ruido("grito")
@@ -994,6 +1106,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if j.veh:
             v = j.veh
             t += f" Conduces {v.nombre}, a {int(abs(v.vel) * 3.6)} kilómetros por hora, estado {int(100 * v.salud / v.salud_max)} por ciento."
+            t += self.combustible_txt(v) + self.averias_txt(v)
+        t += self.carne_txt()
         self.decir(t, True)
 
     def describir_aqui(self):
@@ -1236,7 +1350,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         total = d1 + sum(math.hypot(ruta[k + 1][0] - ruta[k][0], ruta[k + 1][1] - ruta[k][1]) for k in range(len(ruta) - 1))
         pre = ""
         if v and abs(M.norm180(r1 - v.rumbo)) > 120 and d1 > 8:
-            pre = "Da media vuelta. "
+            pre = "Da media vuelta: frena y pulsa U. "
         elif not relativo:
             pre = f"Ve hacia el {M.cardinal(r1)}. "
         if ultimo:
@@ -1314,7 +1428,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                     p1 = (clave[0], clave[1])
                     if math.hypot(p1[0] - x, p1[1] - y) < (40 if self.j.veh else 10):
                         g["recordado"] = clave
-                        self.decir(texto.split(". Faltan")[0].replace("Da media vuelta. ", "").rstrip(".") + ".")
+                        self.decir(texto.split(". Faltan")[0].replace("Da media vuelta: frena y pulsa U. ", "").rstrip(".") + ".")
         # baliza sonora hacia el siguiente punto
         if not self.cfg["baliza"] or not g["ruta"]:
             return
@@ -1505,16 +1619,17 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             j.casetes.append(o.tag)
             n = len(j.casetes)
             total = self.total_casetes()
-            self.dar_dinero(250)
-            self.decir(f"Has encontrado un objeto de colección, {o.nombre}: llevas {n} de {total}. Premio de 250 euros.")
+            premio = self.precio("casete_premio", 250)
+            self.dar_dinero(premio)
+            self.decir(f"Has encontrado un objeto de colección, {o.nombre}: llevas {n} de {total}. Premio de {premio} euros.")
             if n % 5 == 0 and n != total:                      # cada cinco, un premio y algo de fama
-                self.dar_dinero(1000)
+                self.dar_dinero(self.precio("casete_cinco", 1000))
                 self.cambiar_reputacion(2)
-                self.decir(f"Ya son {n}. Un coleccionista te adelanta 1000 euros y tu nombre empieza a sonar.")
+                self.decir(f"Ya son {n}. Un coleccionista te adelanta {self.precio('casete_cinco', 1000)} euros y tu nombre empieza a sonar.")
             if n == total:
                 self.cambiar_reputacion(5)
-                self.dar_dinero(20000)
-                self.decir("¡Has encontrado todos los objetos de colección! Un coleccionista te paga 20000 euros por el lote completo.")
+                self.dar_dinero(self.precio("casete_todos", 20000))
+                self.decir(f"¡Has encontrado todos los objetos de colección! Un coleccionista te paga {self.precio('casete_todos', 20000)} euros por el lote completo.")
         elif o.tipo == "mision":
             self.decir(f"Tienes: {o.nombre}.")
             if self.mision and self.mision.get("objeto") is o:
@@ -1543,10 +1658,20 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.lugar_act = self.lugar_cercano(7)
 
     # ------------------------------------------------------------ actualización
+    def mayus_soltada(self):
+        """Con «correr con una pulsación»: al soltar la Mayúsculas izquierda sin haber pulsado nada más, cambia entre andar y correr."""
+        if getattr(self, "_mayus_sola", False) and pygame.K_LSHIFT not in self.app.teclas:
+            self._mayus_sola = False
+            if self.cfg["correr_alternar"] and not self.j.veh:
+                self.correr_fijo = not getattr(self, "correr_fijo", False)
+                self.app.son("menu_mover")
+                self.decir("Correr." if self.correr_fijo else "Andar.", True)
+
     def actualizar(self, dt):
         dt = min(dt, 0.05)
         j = self.j
         self.t += dt
+        self.mayus_soltada()
         if self.resumen_pendiente and self.t > 2.0 and not self.mision:
             self.resumen_pendiente = False
             self.decir("Hace días que no jugabas. " + self.resumen_historia() + " Lo tienes también en el móvil, en Diario.")
@@ -1653,7 +1778,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.dia_intimidad()
         n = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto and not getattr(p, "de_banda", False))      # la banda cobra aparte
         if n:
-            coste = 200 * n
+            coste = self.precio("guardaespaldas_sueldo", 200) * n
             if self.j.dinero >= coste:
                 self.j.dinero -= coste
                 self.decir(f"Pagas {coste} euros de sueldo a tus guardaespaldas.")

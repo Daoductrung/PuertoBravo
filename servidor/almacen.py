@@ -36,11 +36,15 @@ class Almacen:
         self.db = sqlite3.connect(ruta)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(ESQUEMA)
-        for columna in ("saldo INTEGER", "misiones TEXT DEFAULT '[]'"):      # añadidos después: se ponen si faltan
+        for columna in ("saldo INTEGER", "misiones TEXT DEFAULT '[]'", "juego TEXT DEFAULT ''"):      # añadidos después: se ponen si faltan
             try:
                 self.db.execute("ALTER TABLE cuentas ADD COLUMN " + columna)
             except sqlite3.OperationalError:
                 pass
+        try:        # pagada: 1 si el servidor vio salir el dinero al comprarla. Las de antes de existir la marca cuentan como pagadas.
+            self.db.execute("ALTER TABLE propiedades ADD COLUMN pagada INTEGER DEFAULT 1")
+        except sqlite3.OperationalError:
+            pass
         self.db.commit()
 
     def cerrar(self):
@@ -79,6 +83,33 @@ class Almacen:
 
     def cuentas(self):
         return self.db.execute("SELECT * FROM cuentas ORDER BY nombre").fetchall()
+
+    def hay_cuentas(self):
+        """¿Hay ya alguna cuenta? Sin traerse los personajes, que pesan."""
+        return self.db.execute("SELECT 1 FROM cuentas LIMIT 1").fetchone() is not None
+
+    def lista_cuentas(self):
+        """Lo que hace falta para administrar las cuentas, sin los personajes: sirve igual con diez que con diez mil."""
+        return self.db.execute("SELECT id, nombre, creada, visto, vetado, admin, recompensa, bajas, caidas, juego FROM cuentas ORDER BY nombre COLLATE NOCASE").fetchall()
+
+    def invitaciones(self):
+        """Todas las invitaciones, las más nuevas primero, con el nombre de quien usó cada una."""
+        return self.db.execute("SELECT i.codigo, i.creada, i.usada_por, c.nombre FROM invitaciones i LEFT JOIN cuentas c ON c.id=i.usada_por "
+                               "ORDER BY i.creada DESC").fetchall()
+
+    def borrar_invitacion(self, codigo):
+        """Anula una invitación que aún no ha usado nadie. Devuelve si la había."""
+        c = self.db.execute("DELETE FROM invitaciones WHERE codigo=? AND usada_por IS NULL", (codigo,))
+        self.db.commit()
+        return c.rowcount > 0
+
+    def borrar_cuenta(self, ident):
+        """Borra una cuenta con todo lo suyo: su personaje, sus propiedades y su sitio en la banda. No se puede deshacer."""
+        self.db.execute("DELETE FROM propiedades WHERE cuenta=?", (ident,))
+        self.db.execute("DELETE FROM miembros WHERE cuenta=?", (ident,))
+        self.db.execute("UPDATE invitaciones SET usada_por=0 WHERE usada_por=?", (ident,))
+        self.db.execute("DELETE FROM cuentas WHERE id=?", (ident,))
+        self.db.commit()
 
     def crear_cuenta(self, pub, nombre, admin=False):
         ahora = time.time()
@@ -206,8 +237,12 @@ class Almacen:
     def propiedad(self, lugar):
         return self.db.execute("SELECT p.*, c.nombre FROM propiedades p JOIN cuentas c ON c.id=p.cuenta WHERE p.lugar=?", (lugar,)).fetchone()
 
-    def poner_propiedad(self, lugar, cuenta):
-        self.db.execute("INSERT OR REPLACE INTO propiedades (lugar, cuenta, desde) VALUES (?,?,?)", (lugar, cuenta, time.time()))
+    def poner_propiedad(self, lugar, cuenta, pagada=False):
+        self.db.execute("INSERT OR REPLACE INTO propiedades (lugar, cuenta, desde, pagada) VALUES (?,?,?,?)", (lugar, cuenta, time.time(), 1 if pagada else 0))
+        self.db.commit()
+
+    def marcar_pagada(self, lugar, cuenta):
+        self.db.execute("UPDATE propiedades SET pagada=1 WHERE lugar=? AND cuenta=?", (lugar, cuenta))
         self.db.commit()
 
     def quitar_propiedad(self, lugar):
@@ -219,7 +254,7 @@ class Almacen:
         self.db.commit()
 
     def propiedades_abandonadas(self, antes_de):
-        return self.db.execute("SELECT p.lugar, p.cuenta FROM propiedades p JOIN cuentas c ON c.id=p.cuenta WHERE c.visto < ?", (antes_de,)).fetchall()
+        return self.db.execute("SELECT p.lugar, p.cuenta, p.pagada FROM propiedades p JOIN cuentas c ON c.id=p.cuenta WHERE c.visto < ?", (antes_de,)).fetchall()
 
     def robo_en(self, lugar, dia, cantidad):
         self.db.execute("UPDATE propiedades SET robado_dia=?, pendiente=pendiente+? WHERE lugar=?", (dia, cantidad, lugar))

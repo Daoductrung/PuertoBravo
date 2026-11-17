@@ -2,7 +2,7 @@
 
 Grabaciones reales para pasos, puertas, armas, golpes, cristales, coche, lluvia, agua y monedas.
 
-Trae los 237 sonidos del juego: 186 son grabaciones reales descargadas y 51 son el sonido
+Trae los 243 sonidos del juego: 192 son grabaciones reales descargadas y 51 son el sonido
 original del juego, para los que no hay una grabación libre que encaje o que conviene no tocar
 (balizas, tonos, semáforos, radar y firmas de los lugares: de ellos depende orientarse sin ver).
 Todos proceden de colecciones con licencia CC0 (dominio público): se pueden usar, modificar y
@@ -31,6 +31,7 @@ COLECCIONES USADAS
   ghost breath: https://opengameart.org/content/ghost-breath
   Impact Sounds, de Kenney: https://kenney.nl/assets/impact-sounds
   fantasy sound effects tinysized sfx: https://opengameart.org/content/fantasy-sound-effects-tinysized-sfx
+  40 CC0 water, splash, slime SFX: https://opengameart.org/content/40-cc0-water-splash-slime-sfx
   100 CC0 SFX: https://opengameart.org/content/100-cc0-sfx
   51 UI sound effects, de Kenney: https://opengameart.org/content/51-ui-sound-effects-buttons-switches-and-clicks
   cugzilia ii prototype sound effects: https://opengameart.org/content/cugzilia-ii-prototype-sound-effects
@@ -67,10 +68,10 @@ COLECCIONES USADAS
   racing car engine sound loops: https://opengameart.org/content/racing-car-engine-sound-loops
   helicopter sfx: https://opengameart.org/content/helicopter-sfx
   motor sound effect: https://opengameart.org/content/motor-sound-effect
+  steam whistle: https://opengameart.org/content/steam-whistle
   alertnotification sound: https://opengameart.org/content/alertnotification-sound
   Bird, cricket, frog and mosquito sounds: https://opengameart.org/content/birdcricketfrog-and-mosquito-sounds
   Fantozzi's Footsteps: https://opengameart.org/content/fantozzis-footsteps-grasssand-stone
-  40 CC0 water, splash, slime SFX: https://opengameart.org/content/40-cc0-water-splash-slime-sfx
   Door Open, Door Close Set: https://opengameart.org/content/door-open-door-close-set
   2 gun reloads: https://opengameart.org/content/2-gun-reloads
   Ticking clock: https://opengameart.org/content/ticking-clock
@@ -111,6 +112,7 @@ QUÉ SONIDO SALE DE DÓNDE
   bajon.flac: ghostbreath.flac, de ghost breath. Dura 1,60 segundos.
   bala_impacto.flac: impactMetal_medium_001.ogg, de Impact Sounds, de Kenney. Dura 0,09 segundos.
   bala_silbido.flac: tin-whistle-whoosh-01.wav, de fantasy sound effects tinysized sfx. Dura 0,11 segundos.
+  beber.flac: bubble_01.ogg, de 40 CC0 water, splash, slime SFX. Dura 0,53 segundos.
   bolsa.flac: paper_01.ogg, de 100 CC0 SFX. Dura 0,41 segundos.
   brazada.flac: brazada.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 0,90 segundos.
   buho.flac: buho_1763.wav, de BigSoundBank.com y LaSonotheque.org. Dura 2,20 segundos.
@@ -196,9 +198,11 @@ QUÉ SONIDO SALE DE DÓNDE
   motor_helicoptero.flac: heli_0.ogg, de helicopter sfx. Dura 4,00 segundos.
   motor_lancha.flac: motorboat1.ogg, de War on Water sound effects. Dura 0,80 segundos.
   motor_moto.flac: motor_looping_0.mp3, de motor sound effect. Dura 0,75 segundos.
+  motor_seco.flac: Car_Engine_Turning_Off.ogg, de Car Sound Effects Pack. Dura 1,80 segundos.
   motor_tractor.flac: tractor_0132.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,50 segundos.
   movil.flac: open_001.ogg, de Interface Sounds, de Kenney. Dura 0,15 segundos.
   muerte_npc.flac: slightscream-10.flac, de 15 vocal male strain, hurt, pain, jump sounds. Dura 0,65 segundos.
+  multa.flac: steamwhistle_0.wav, de steam whistle. Dura 0,35 segundos.
   multitud.flac: charla_2968.wav, de BigSoundBank.com y LaSonotheque.org. Dura 6,00 segundos.
   murmullo.flac: charla_2968.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,40 segundos.
   navaja.flac: knifeSlice.ogg, de 50 RPG sound effects, de Kenney. Dura 0,30 segundos.
@@ -227,6 +231,7 @@ QUÉ SONIDO SALE DE DÓNDE
   perro_olfatea.flac: perro_respira_1547.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,45 segundos.
   pesca_lanzar.flac: plop_01.ogg, de 100 CC0 SFX. Dura 0,07 segundos.
   pez_pica.flac: splash_09.ogg, de 40 CC0 water, splash, slime SFX. Dura 0,20 segundos.
+  pinchazo.flac: bang_03.ogg, de 25 CC0 bang, firework SFX. Dura 0,56 segundos.
   pintura.flac: compressed-air-spray-02.wav, de fantasy sound effects tinysized sfx. Dura 1,20 segundos.
   policia_perdida.flac: Chime_Exit.mp3, de Chimey UI sounds. Dura 1,23 segundos.
   precio_escasez.flac: error_005.ogg, de Interface Sounds, de Kenney. Dura 0,14 segundos.
@@ -242,6 +247,8 @@ QUÉ SONIDO SALE DE DÓNDE
   regalo.flac: cover-paper-tear-01.wav, de fantasy sound effects tinysized sfx. Dura 0,60 segundos.
   reloj.flac: ticking clock - tick1.wav, de Ticking clock. Dura 0,15 segundos.
   reparar.flac: tools_01.ogg, de 100 CC0 SFX. Dura 0,46 segundos.
+  repostar.flac: loop_water_01.ogg, de 40 CC0 water, splash, slime SFX. Dura 1,60 segundos.
+  reserva.flac: error_004.ogg, de Interface Sounds, de Kenney. Dura 0,10 segundos.
   rodadura.flac: rolling.ogg, de 30 CC0 SFX loops. Dura 0,84 segundos.
   ruleta.flac: qubodup-bowling_roll.ogg, de bowling ball rolling. Dura 2,40 segundos.
   ruptura.flac: cover-paper-tear-02.wav, de fantasy sound effects tinysized sfx. Dura 1,01 segundos.

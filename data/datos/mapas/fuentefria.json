@@ -23,7 +23,8 @@
     {"id": "ff_fuente", "nombre": "La Fuente Fría", "tipo": "monumento", "bloque": [1, 0], "xy": [36, 36], "sonido": "lugar_fuente", "desc": ""},
     {"id": "ff_armeria", "nombre": "Caza y Pesca Río Frío", "tipo": "armeria", "bloque": [1, 1], "lado": "E", "pos": 36, "desc": "Escopetas, ballestas y cañas de pescar."},
     {"id": "fuentefria_tren", "nombre": "Estación de tren de Fuentefría", "tipo": "tren", "bloque": [0, 0], "lado": "S", "pos": 45, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
-    {"id": "fuentefria_aerodromo", "nombre": "Aeródromo de Fuentefría", "tipo": "aeropuerto", "aerodromo": true, "bloque": [0, 1], "lado": "N", "pos": 45, "precio": 120, "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas."}
+    {"id": "fuentefria_aerodromo", "nombre": "Aeródromo de Fuentefría", "tipo": "aeropuerto", "aerodromo": true, "bloque": [0, 1], "lado": "N", "pos": 45, "precio": 120, "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas."},
+    {"id": "ff_surtidor", "nombre": "Gasolinera de Fuentefría", "tipo": "tienda", "surtidor": true, "bloque": [0, 0], "lado": "O", "pos": 36, "desc": "Surtidores bajo una marquesina y una tienda pequeña. Aquí se llena el depósito."}
   ],
   "tren_eje": "H",
   "tren_n": 0,

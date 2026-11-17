@@ -616,7 +616,8 @@
      ],
      "lado": "S",
      "pos": 36,
-     "desc": "Una tienda de pueblo donde hay de todo y se fía hasta fin de mes."
+     "desc": "Una tienda de pueblo donde hay de todo y se fía hasta fin de mes.",
+     "surtidor": true
     },
     {
      "id": "vo_armeria",

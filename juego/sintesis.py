@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 14
+VERSION_CACHE = 16
 PI2 = 2 * np.pi
 
 
@@ -500,6 +500,23 @@ def generar(semilla=7):
     S["logro"] = _norm(_sec([784, 1047, 1319, 1568, 2093], 0.09, 0.6, 0.3, (1, 0.5, 0.25)), 0.6)
     S["nivel"] = _norm(_sec([659, 880, 1319], 0.1, 0.5, 0.25, (1, 0.4)), 0.5)
     S["campana_ring"] = _norm(sum(a * _seno(f, 1.2) * _decae(1.2, tau) for f, a, tau in ((1320, 1, 0.4), (2650, 0.5, 0.25), (3990, 0.3, 0.15))), 0.6)
+    # combustible
+    gor = _filtro(np.random.default_rng(31).standard_normal(int(SR * 1.6)), lo=180, hi=1400)
+    S["repostar"] = _norm(_bordes(gor * (0.55 + 0.45 * np.sin(PI2 * 7 * _t(1.6))) * (0.7 + 0.3 * np.sin(PI2 * 1.3 * _t(1.6))), 40), 0.5)
+    S["reserva"] = _norm(_sec([392, 392, 330], 0.16, 0.14, 0.09, (1, 0.5)), 0.5)
+    tos = np.concatenate([_filtro(_sierra(70 - 9 * k, 0.16) * _decae(0.16, 0.07), hi=900) for k in range(4)] + [np.zeros(int(SR * 0.05))])
+    S["motor_seco"] = _norm(tos, 0.55)
+    # averías y multas
+    aire = _filtro(np.random.default_rng(47).standard_normal(int(SR * 1.3)), lo=1500, hi=7000) * _decae(1.3, 0.45)
+    pum = _filtro(np.random.default_rng(48).standard_normal(int(SR * 0.12)), hi=900) * _decae(0.12, 0.03)
+    pin = np.zeros(int(SR * 1.3))
+    _poner(pin, pum, 0.0, 1.0)
+    _poner(pin, aire[:len(pin) - int(SR * 0.05)], 0.05, 0.6)
+    S["pinchazo"] = _norm(pin, 0.6)
+    pito = _seno(2350, 0.32) * (0.6 + 0.4 * np.sign(np.sin(PI2 * 38 * _t(0.32)))) * _decae(0.32, 0.5)
+    S["multa"] = _norm(np.concatenate([_bordes(pito, 8), np.zeros(int(SR * 0.12)), _bordes(pito, 8)]), 0.5)
+    trago = np.concatenate([_barrido(260 + 40 * k, 520 + 60 * k, 0.11) * _decae(0.11, 0.05) for k in range(3)])
+    S["beber"] = _norm(_filtro(trago, hi=1800), 0.45)
     S["evento"] = _norm(_sec([988, 784, 988, 784], 0.11, 0.3, 0.12), 0.55)
     S["cursor_mapa"] = _norm(_seno(900, 0.04) * _decae(0.04, 0.015), 0.4)
     for k, f in enumerate((784, 587, 392, 494)):          # arriba, derecha, abajo, izquierda

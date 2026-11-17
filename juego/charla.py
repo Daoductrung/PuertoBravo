@@ -187,25 +187,25 @@ class Charla:
         if intencion == "invitar":
             if f["invitado"]:
                 return f"{nombre}: Ya me has invitado antes. Otro día me toca a mí."
-            if j.dinero < 4:
+            if j.dinero < self.precio("cafe_invitar", 4):
                 return f"{nombre}: Si no llevas ni para ti. Déjalo."
-            j.dinero -= 4
+            j.dinero -= self.precio("cafe_invitar", 4)
             f["invitado"] = True
             self.son("caja", cat="interfaz", vol=0.5)
             self.pasar_horas(0.3)
             self._trato(f, 12)
             self.cambiar_animo(3)
-            return f"Le invitas a un café por 4 euros. {nombre}: Pues mira, te lo acepto. " + random.choice(["Me cuenta su vida durante un rato.", "Habláis de todo un poco.", "Resulta que conoce a media ciudad."])
+            return f"Le invitas a un café por {self.precio('cafe_invitar', 4)} euros. {nombre}: Pues mira, te lo acepto. " + random.choice(["Me cuenta su vida durante un rato.", "Habláis de todo un poco.", "Resulta que conoce a media ciudad."])
         if intencion == "limosna":
-            if j.dinero < 10:
+            if j.dinero < self.precio("limosna", 10):
                 return f"{nombre}: Guárdate eso, que te hace más falta a ti."
-            j.dinero -= 10
+            j.dinero -= self.precio("limosna", 10)
             self.son("donativo", cat="interfaz", vol=0.6)
             self._trato(f, 10 if not f["limosna"] else 2)
             if not f["limosna"]:
                 self.cambiar_ciudadania(1.5)
             f["limosna"] = True
-            return f"Le das 10 euros. {nombre}: " + random.choice(["Gracias, de verdad. No hay mucha gente así.", "No hacía falta, pero gracias.", "Que te lo paguen con salud."])
+            return f"Le das {self.precio('limosna', 10)} euros. {nombre}: " + random.choice(["Gracias, de verdad. No hay mucha gente así.", "No hacía falta, pero gracias.", "Que te lo paguen con salud."])
         if intencion == "amistad":
             if any(k["nombre"] == nombre and k["oficio"] == f["oficio"] for k in j.conocidos):
                 return f"{nombre}: Si ya tienes mi número. Llámame cuando quieras."

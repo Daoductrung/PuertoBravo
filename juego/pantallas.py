@@ -150,7 +150,7 @@ class TiroAlBlanco:
     def _fin(self):
         p = self.p
         n = self.aciertos
-        premio = 200 if n >= 9 else 80 if n >= 7 else 0
+        premio = p.precio("tiro_premio_9", 200) if n >= 9 else p.precio("tiro_premio_7", 80) if n >= 7 else 0
         self.app.cerrar(self)
         p.ganar_xp("punteria", n * 6)
         txt = f"Fin de la tanda: {n} dianas de {self.RONDAS}."
@@ -233,7 +233,7 @@ class SimonSonoro:
     def _fin(self):
         p = self.p
         rondas = len(self.sec) - 1
-        premio = 1000 if rondas >= 12 else 250 if rondas >= 8 else 60 if rondas >= 5 else 0
+        premio = p.precio("memoria_premio_12", 1000) if rondas >= 12 else p.precio("memoria_premio_8", 250) if rondas >= 8 else p.precio("memoria_premio_5", 60) if rondas >= 5 else 0
         self.app.cerrar(self)
         p.j.stats["simon"] = max(p.j.stats.get("simon", 0), rondas)
         txt = f"Fallo. Has aguantado {rondas} rondas."

@@ -254,6 +254,9 @@ def info(col):
 # Sonidos que comparten los packs de grabaciones: avisos y señales del juego para los que solo hay una buena
 # candidata entre lo descargado. Cada pack usa la suya si la tiene y, si no, esta.
 EXTRA = {
+    # combustible, averías, multas y beber (1.7.0)
+    "repostar": ("WAT", "loop_water_01", {"dur": 1.6}), "beber": ("WAT", "bubble_01"), "motor_seco": ("CAR", "Car_Engine_Turning_Off"),
+    "pinchazo": ("BANG", "bang_03", {"dur": 0.9}), "reserva": ("IF", "error_004"), "multa": ("@steam-whistle", "steamwhistle_0", {"dur": 0.35}),
     "buho": ("BIRD", "birdNight"), "claxon_camion": ("@steam-whistle", "steamwhistle_0", {"dur": 0.8}),
     "claxon_helados": ("@bell-arpeggio-24", "24", {"dur": 1.6}),
     "ganzua": ("@58-random-sound-effects", "Sound_Effects/Small_Chain_Rattle_01", {"bucle": 1.2, "desde": 0.1}),

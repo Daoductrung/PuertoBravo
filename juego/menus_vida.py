@@ -2,7 +2,7 @@
 from . import genero
 from .menus import EntradaTexto, Menu, Opcion
 from .trabajos import NOMBRE_TRABAJO
-from .vida import HAB_NOMBRE, JORNADAS, MAX_NIVEL, MAX_NOMBRE, PUNTOS, RANGOS, VENTAJAS, limpiar_nombre, personaje_propio
+from .vida import HAB_NOMBRE, MAX_NIVEL, MAX_NOMBRE, PUNTOS, RANGOS, VENTAJAS, limpiar_nombre, personaje_propio
 
 DONDE = {"taxi": "un taxi", "ambulancia": "una ambulancia", "autobus": "un autobús", "vigilante": "un coche patrulla", "camion": "un camión",
          "helados": "una furgoneta de helados", "bomberos": "un camión de bomberos", "grua": "una grúa", "paqueteria": "una bicicleta, un scooter o una moto",
@@ -173,7 +173,7 @@ def empleo(p, l):
             p.decir(f"Hay {DONDE[tipo]} aparcado junto a {donde.nombre}. Sube con F y pulsa J para empezar a trabajar.")
         return f
     ops = [Opcion(f"{nombre}: ocho horas, unos {int(paga * p.mult_trabajo('jornada'))} euros", (lambda c=clave, n=nombre, pg=paga, s=salud: p.jornada(c, n, pg, s)),
-                  ayuda="Trabajo sin vehículo: pasan ocho horas y cobras. Una jornada al día. Sube tu prestigio entre los vecinos.") for clave, nombre, paga, salud in JORNADAS]
+                  ayuda="Trabajo sin vehículo: pasan ocho horas y cobras. Una jornada al día. Sube tu prestigio entre los vecinos.") for clave, nombre, paga, salud in ((x["id"], x["nombre"], int(x.get("paga", 0)), float(x.get("salud", 0))) for x in p.datos.get("jornadas", []))]
     for tipo, nombre in NOMBRE_TRABAJO.items():
         ops.append(Opcion(f"Oficio de {nombre}: eres {RANGOS[p.rango(tipo)]}, con {p.servicios_de(tipo)} servicios. Se hace con {DONDE.get(tipo, 'su vehículo')}", buscar(tipo),
                           ayuda="Intro marca en el GPS dónde hay un vehículo de ese oficio. Cada ocho servicios asciendes y cobras un doce por ciento más."))
@@ -183,8 +183,12 @@ def empleo(p, l):
 
 def academia(p, l):
     cursos = [h for h in (l.get("cursos") or list(HAB_NOMBRE)) if h in HAB_NOMBRE]
-    ops = [Opcion((lambda h=h: f"Curso de {HAB_NOMBRE[h]}: 250 euros y cuatro horas. Tu nivel es {p.nivel(h)} de 10"), (lambda h=h: p.curso(h)),
+    ops = [Opcion((lambda h=h: f"Curso de {HAB_NOMBRE[h]}: {p.precio('curso', 250)} euros y cuatro horas. Tu nivel es {p.nivel(h)} de 10"), (lambda h=h: p.curso(h)),
                   ayuda="Sube la habilidad mucho más deprisa que la práctica. Un curso al día.") for h in cursos]
+    if p.normas_activas():
+        from . import realismo as R
+        ops.append(Opcion(lambda: f"Curso de recuperación de puntos del carné: {int(R.aj('precio_carne'))} euros y cuatro horas." + p.carne_txt(), p.recuperar_carne,
+                          ayuda=f"Devuelve {int(R.aj('puntos_curso'))} puntos, hasta el tope de {int(R.aj('puntos_carne'))}. Si te lo han retirado, con el curso vuelves a tenerlo."))
     _menu(p, l, ops)
 
 

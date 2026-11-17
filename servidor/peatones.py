@@ -6,6 +6,8 @@ Solo hay gente donde hay jugadores, y menos de noche y cuando llueve.
 """
 import math
 
+from .trafico import zonas_con_gente
+
 B = 90.0
 LADO = B - 15.0
 
@@ -23,6 +25,9 @@ def posicion(bi, bj, u):
     if k == 2:
         return x0 + LADO - r, y0 + LADO
     return x0, y0 + LADO - r
+
+
+ZONA = 260.0                      # lado de cada zona, en metros: lo que alcanza a oír un jugador a pie a cada lado
 
 
 class Peatones:
@@ -73,9 +78,25 @@ class Peatones:
             quiere = min(tope, max(1, n // 3) if noche else n) if n else 0
             if self.lluvia:
                 quiere = max(1, quiere // 2) if quiere else 0
+            zonas = zonas_con_gente(lista, ZONA)                # como el tráfico: tantos por cada zona con jugadores
+            base = quiere
+            quiere = base * len(zonas)
+            total = int(self.cfg.get("peatones_total", 0) or 0)
+            if total > 0:
+                quiere = min(quiere, max(base, total))
             hay = sum(1 for p in self.peatones.values() if p["m"] == mapa)
             if hay < quiere:
-                self._pe_nuevo(mapa, self.rng.choice(lista))
+                if len(zonas) == 1:
+                    self._pe_nuevo(mapa, self.rng.choice(lista))
+                else:
+                    cuenta = {}
+                    for p in self.peatones.values():
+                        if p["m"] == mapa:
+                            x, y = posicion(p["bi"], p["bj"], p["u"])
+                            z = (int(x // ZONA), int(y // ZONA))
+                            cuenta[z] = cuenta.get(z, 0) + 1
+                    for z in sorted(zonas, key=lambda z: cuenta.get(z, 0))[:max(1, min(quiere - hay, len(zonas)))]:
+                        self._pe_nuevo(mapa, self.rng.choice(zonas[z]))
 
     def peatones_mover(self, dt):
         for p in self.peatones.values():

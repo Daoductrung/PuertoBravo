@@ -56,6 +56,8 @@ POR_DEFECTO = {
     "tutorial_visto": False,
     "radar_filtro": "todo",
     "emisora": 1,
+    "radio_pausa": True,           # al bajarte o cambiar de emisora, la canción se queda en pausa y sigue luego por donde iba;
+                                   # con no, la emisora sigue «sonando» sin ti, como una radio de verdad
     "ia_activa": False,            # modo IA al hablar con la gente
     "ia_servicio": "auto",         # auto | local | gemini | otro | openai | anthropic
     "ia_url_otro": "",             # dirección de un servicio compatible con OpenAI; vacío = OpenRouter
@@ -66,6 +68,7 @@ POR_DEFECTO = {
     "motor_sonido": "clasico",
     "eco_lugares": True,           # con el motor envolvente, cada sitio tiene su eco: calle, nave, interior, campo     # clasico | envolvente (binaural con OpenAL Soft; se aplica al abrir el juego)
     "sonido_mono": False,          # los dos oídos oyen lo mismo
+    "sonido_holgado": False,       # con el motor clásico, un búfer de sonido más grande: quita chasquidos y cortes en equipos justos
     "atenuar_al_hablar": True,     # bajar ambiente y música mientras habla la voz
     "describir_zonas": True,       # la primera vez que entras en un barrio, lo describe
     "menu_posicion": False,        # decir «3 de 9» al moverse por los menús
@@ -75,6 +78,9 @@ POR_DEFECTO = {
     "atraccion": "todos",          # contenido para adultos: quién te atrae
     "mi_genero": "x",              # contenido para adultos: cómo te ven los demás (x = no dicho)
     "vida_realista": False,        # hambre y sueño
+    "combustible": False,          # los vehículos gastan combustible y hay que repostar
+    "averias": False,              # pinchazos y revisiones: los vehículos se desgastan con los kilómetros
+    "normas_trafico": False,       # multas y carné por puntos por saltarte semáforos o correr delante de la policía
     "red_nombre": "",              # cómo te ven tus amigos; vacío = el nombre de tu personaje
     "red_puerto": 47810,
     "red_ultima": "",              # última dirección a la que te uniste

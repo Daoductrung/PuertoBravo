@@ -35,11 +35,18 @@ if errorlevel 1 (
 
 echo Exportando el mundo para el servidor en linea...
 ".venv\Scripts\python.exe" herramientas\exportar_mundo_servidor.py
+echo Poniendo al dia la guia del servidor con sus opciones y sus ordenes...
+".venv\Scripts\python.exe" herramientas\preparar_carpeta_servidor.py --guia
+if errorlevel 1 (
+    echo ERROR: no se pudo poner al dia la guia del servidor.
+    pause
+    exit /b 1
+)
 echo Limpiando la compilacion anterior...
 if exist "build" rmdir /s /q "build"
 if exist "%D%" rmdir /s /q "%D%"
 
-echo Compilando el juego y el editor de mods con cx_Freeze. Tarda unos minutos...
+echo Compilando el juego, el editor de mods y el servidor con cx_Freeze. Tarda unos minutos...
 ".venv\Scripts\python.exe" setup_cx.py build_exe
 if errorlevel 1 (
     echo.
@@ -84,6 +91,14 @@ if exist "data\mods\noches_de_neon.json" copy /y "data\mods\noches_de_neon.json"
 if exist "data\mods\bahia_del_ocaso.json" copy /y "data\mods\bahia_del_ocaso.json" "%D%\data\mods" >nul
 if exist "LEEME.txt" copy /y "LEEME.txt" "%D%\LEEME.txt" >nul
 
+echo Preparando la carpeta del servidor: lanzadores, guia, ejemplo de configuracion y lo necesario para otros sistemas...
+".venv\Scripts\python.exe" herramientas\preparar_carpeta_servidor.py "%D%"
+if errorlevel 1 (
+    echo ERROR: la carpeta del servidor no ha quedado completa. Revisa los mensajes de arriba.
+    pause
+    exit /b 1
+)
+
 echo Firmando el mundo para los servidores en linea, si esta la clave de publicar...
 ".venv\Scripts\python.exe" herramientas\exportar_mundo_servidor.py --firmar "%D%\data\datos"
 echo Protegiendo los datos del juego y los mods...
@@ -122,8 +137,11 @@ if exist "PuertoBravo.egg-info" rmdir /s /q "PuertoBravo.egg-info"
 echo.
 echo Compilacion terminada.
 echo La carpeta para distribuir es %D%
-echo   Juego:           %D%\PuertoBravo.exe
-echo   Editor de mods:  %D%\EditorMods.exe
+echo   Juego:                %D%\PuertoBravo.exe
+echo   Editor de mods:       %D%\EditorMods.exe
+echo   Panel del servidor:   %D%\PuertoBravoServidorPanel.exe
+echo   Servidor por consola: %D%\PuertoBravoServidor.exe
+echo   Todo lo del servidor: %D%\servidor
 echo Es portable y esta limpia: puedes comprimirla en un zip y repartirla.
 echo Para publicarla como actualizacion, ejecuta publicar.bat
 echo Los datos del juego y los mods van protegidos: no se pueden editar con un editor de texto.

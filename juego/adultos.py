@@ -128,7 +128,7 @@ class Adultos:
         self._fin_persecucion()
         if self.trabajo:
             self.terminar_trabajo(None)
-        coste = min(j.dinero, 400)
+        coste = min(j.dinero, self.precio("hospital_sobredosis", 400))
         j.dinero -= coste
         h = self._reaparecer("hospital")
         j.salud = max(20.0, j.salud_max * 0.4)

@@ -54,15 +54,15 @@ def conversar(p, q):
                  Opcion("Preguntar por un sitio", sitios, ayuda="Te dice dónde está lo más cercano y te lo marca en el GPS."),
                  Opcion("Preguntar a qué se dedica", decir("trabajo_npc")),
                  Opcion("Hacer un cumplido", decir("cumplido")), Opcion("Contar un chiste", decir("chiste")),
-                 Opcion("Invitar a un café: 4 euros", decir("invitar"), ayuda="Sube mucho la confianza. Una vez por persona."),
-                 Opcion("Darle 10 euros", decir("limosna"), ayuda="Sube la confianza y, la primera vez, tu prestigio entre los vecinos."),
+                 Opcion(f"Invitar a un café: {p.precio('cafe_invitar', 4)} euros", decir("invitar"), ayuda="Sube mucho la confianza. Una vez por persona."),
+                 Opcion(f"Darle {p.precio('limosna', 10)} euros", decir("limosna"), ayuda="Sube la confianza y, la primera vez, tu prestigio entre los vecinos."),
                  Opcion("Pedirle el número y ser amigos", decir("amistad"), ayuda="Hace falta que le caigas bien. Tus conocidos están en el móvil y te cuentan cosas."),
                  Opcion("Escribir lo que quieras decirle", libre, ayuda="Con el modo IA activado en Opciones, la persona contesta con total libertad a lo que escribas.")]
         if p.modo_adulto():
             lista.append(Opcion("Coquetear", ligar, ayuda="Puede salir bien o mal, según la confianza, tu ánimo y lo que busque la otra persona. Un no es un no."))
             if p.puede_proponer(q):
-                lista.append(Opcion("Proponerle ir a tu casa", proponer(False), ayuda="Si no tienes casa en esta localidad, vais a un hotel por 70 euros."))
-                lista.append(Opcion("Proponerle ir a un hotel: 70 euros", proponer(True)))
+                lista.append(Opcion("Proponerle ir a tu casa", proponer(False), ayuda=f"Si no tienes casa en esta localidad, vais a un hotel por {p.precio('hotel_cita', 70)} euros."))
+                lista.append(Opcion(f"Proponerle ir a un hotel: {p.precio('hotel_cita', 70)} euros", proponer(True)))
         lista += [Opcion("Insultar", decir("insultar"), ayuda="Puede marcharse, o plantarte cara. Baja tu prestigio."),
                   Opcion("Amenazar para que te dé dinero", decir("amenazar"), ayuda="Es un delito. Puede darte lo que lleve, o gritar pidiendo ayuda."),
                   Opcion("Despedirte", lambda: (app.decir(p.responder(q, "despedir"), True), app.cerrar(menu)))]
@@ -200,6 +200,8 @@ def local(app):
 
             def trabajo(tarea):
                 def progreso(hecho, total):
+                    from .menus_actualizar import texto_progreso
+                    tarea.estado = texto_progreso(hecho, total)
                     decimo = int(10 * hecho / max(1, total))
                     if decimo > estado["decimo"] and decimo < 10:
                         estado["decimo"] = decimo
@@ -220,7 +222,9 @@ def local(app):
                     cfg["ia_activa"] = True
                 ia.ajustar_local(cfg)
                 app.decir("Modelo instalado y modo IA activado. El modelo se está cargando: en unos segundos puedes usar Probar ahora, en el menú anterior.", True)
-            app.abrir(Tarea(app, f"Descargando el modelo {ia.MODELOS_LOCALES[clave]['nombre'].split(',')[0].lower()}", trabajo, fin))
+            t = Tarea(app, f"Descargando el modelo {ia.MODELOS_LOCALES[clave]['nombre'].split(',')[0].lower()}", trabajo, fin)
+            t.fondo = True
+            app.abrir(t)
         return empezar
 
     def quitar():

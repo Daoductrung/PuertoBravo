@@ -1,0 +1,22 @@
+SERVIDOR EN LÍNEA DE PUERTO BRAVO: LEY DEL ASFALTO
+
+En esta carpeta está todo lo necesario para montar tu propio servidor, y aquí se guarda todo lo suyo: la
+configuración, los personajes y las copias de seguridad. Las actualizaciones del juego no tocan tus datos.
+
+Para empezar, en este mismo ordenador:
+
+- Panel del servidor: abre una ventana para arrancar, parar y administrar el servidor. Es lo más cómodo.
+- Servidor por consola: arranca el servidor en una ventana de texto, a la que se le escriben órdenes.
+- Parar el servidor: para con orden el servidor que esté en marcha, guardándolo todo.
+- Arrancar con Windows - activar, y Arrancar con Windows - quitar: para que el servidor arranque solo al iniciar sesión.
+
+Y además:
+
+- documentacion.html: la guía completa, paso a paso. Ábrela con tu navegador. Desde el panel se abre con F1.
+- servidor.conf.ejemplo: todas las opciones, explicadas. El panel las cambia desde Configuración, sin tocar archivos.
+- otros_sistemas: lo que hay que copiar a un Linux, un Mac, un NAS, una Raspberry Pi o un servidor alquilado, y los
+  archivos para montarlo con Docker. Allí no hace falta el juego: solo Python.
+
+Cuando arranques el servidor por primera vez aparecerán aquí servidor.conf, con tu configuración, y la carpeta
+datos_servidor, con los personajes, el certificado y las copias de seguridad. Si mueves el juego a otra carpeta o a
+otro ordenador, llévate esas dos cosas y el servidor seguirá como estaba.

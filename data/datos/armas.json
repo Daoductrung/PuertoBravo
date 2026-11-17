@@ -27,6 +27,7 @@
     {"id": "botiquin", "nombre": "Botiquín", "precio": 60, "desc": "Recupera cincuenta puntos de salud. Se usa con la tecla Z."},
     {"id": "ganzua", "nombre": "Juego de ganzúas", "precio": 150, "desc": "Abre los coches aparcados en la mitad de tiempo y sin que salte la alarma. Se gasta una por coche."},
     {"id": "pienso", "nombre": "Ración de pienso para perro", "precio": 12, "desc": "Comida para tu perro. Una ración le quita el hambre de casi un día. Se la das desde su menú, con Mayúsculas Y."},
+    {"id": "walkman", "nombre": "Reproductor con auriculares", "precio": 75, "desc": "Para oír las emisoras y tu música también a pie. Se enciende y se cambia de emisora con Mayúsculas R; una de las emisoras es apagado. Al subir a un vehículo sigue sonando la misma canción."},
     {"id": "chaleco", "nombre": "Chaleco antibalas", "precio": 350, "desc": "Cien puntos de blindaje que absorben los daños antes que tu salud."}
   ],
   "comidas": [

@@ -855,7 +855,8 @@
      ],
      "lado": "O",
      "pos": 36,
-     "desc": "De todo un poco, y amuletos de pescador."
+     "desc": "De todo un poco, y amuletos de pescador.",
+     "surtidor": true
     },
     {
      "id": "cd_armeria",

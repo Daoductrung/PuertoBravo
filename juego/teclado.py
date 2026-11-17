@@ -67,7 +67,7 @@ def funciones():
                    (pygame.K_TAB, "radar"), (pygame.K_w, "escáner: delante. Al volante, la velocidad"), (pygame.K_a, "escáner: izquierda. Al volante, cambiar de carril"),
                    (pygame.K_s, "escáner: detrás"), (pygame.K_d, "escáner: derecha. Al volante, arrimarte a la acera"), (pygame.K_COMMA, "arma siguiente"),
                    (pygame.K_PERIOD, "repetir el último mensaje"),
-                   (pygame.K_LSHIFT, "correr a pie, y hacer las combinaciones con Mayúsculas, como Mayúsculas Tabulador. La Mayúsculas derecha no cambia")):
+                   (pygame.K_LSHIFT, "correr a pie, y hacer las combinaciones con Mayúsculas, como Mayúsculas Tabulador. La Mayúsculas derecha no cambia, y sirve para las combinaciones pero no para correr")):
         if k not in vistas:
             vistas[k] = len(lista)
             lista.append((k, "Movimiento y acciones", que))

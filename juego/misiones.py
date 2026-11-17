@@ -387,8 +387,9 @@ class Misiones:
             d = self.lugares.get(p.get("destino", ""))
             ruta = self.mundo.ruta(l.x, l.y, d.x, d.y) if d is not None and d.mapa == l.mapa else [(l.x, l.y)]
             ms["movil"] = {"x": l.x, "y": l.y, "ruta": list(ruta), "i": 0, "t_paso": 0.0, "cerca": 0.0, "lejos": 0.0, "t_aviso": 0.0,
-                           "vel": float(p.get("velocidad", 2.3)), "nombre": self.txt(p.get("persona") or "tu objetivo"), "espera": 6.0}
-            self.cancelar_gps()
+                           "vel": float(p.get("velocidad", 2.3)), "nombre": self.txt(p.get("persona") or "tu objetivo"), "espera": 6.0,
+                           "visto": False, "aguante": 9.0 + 3.0 * min(3, self.fallos.get(ms["def"]["id"], 0))}
+            self.gps_a_lugar(l, auto=True, callar=True)           # todavía no ha salido: el GPS te lleva hasta donde está
             return
         if tipo == "escoltar" and l:
             ms["escolta"] = {"x": l.x, "y": l.y, "t_paso": 0.0, "t_aviso": 0.0, "nombre": self.txt(p.get("persona") or "tu acompañante"), "contigo": False}
@@ -461,6 +462,13 @@ class Misiones:
             v.hostil = True
             # Quien huye no va a fondo: se le tiene que poder alcanzar con un coche corriente. Más despacio en fácil y en normal.
             ms["vel_huida"] = v.vel_obj = min(v.modelo["vel_max"] * {"facil": 0.45, "normal": 0.54}.get(self.cfg["dificultad"], 0.62), 21.0)
+            veces = min(3, self.fallos.get(ms["def"]["id"], 0))
+            if veces:                                            # ya se te ha escapado antes: esta vez va más nervioso y comete más errores
+                ms["vel_huida"] = v.vel_obj = ms["vel_huida"] * (1.0 - 0.09 * veces)
+                if ms.get("limite") is not None:
+                    ms["limite"] = ms["limite"] * (1.0 + 0.15 * veces)
+                self.decir("Ya se te escapó antes, y lo sabe: va más nervioso y no corre tanto." + (" Tienes algo más de tiempo." if ms.get("limite") is not None else ""))
+            ms["t_canta"] = 12.0
             ms["veh_objetivo"] = v
             self.objetivo = v
             self.fijar_gps(x, y, v.nombre, sigue=v, auto=True)
@@ -644,6 +652,13 @@ class Misiones:
                     self.decir(f"{vo.nombre} te saca ventaja, pero se confía y afloja. Va a {int(lejos)} metros, {self.direccion_txt(vo.x, vo.y)}.")
                 elif lejos < 60:
                     ms["avisos"].discard("lejos")
+                ms["t_canta"] = ms.get("t_canta", 12.0) - dt
+                if ms["t_canta"] <= 0 and lejos > 45:            # cada poco, por dónde va: sin eso, de oído se le pierde enseguida
+                    ms["t_canta"] = 12.0
+                    self.decir(f"{vo.nombre}: a {int(lejos)} metros, {self.direccion_txt(vo.x, vo.y)}.")
+                elif lejos < 22 and "atiro" not in ms["avisos"] and j.veh:
+                    ms["avisos"].add("atiro")
+                    self.decir(f"Tienes {vo.nombre} a tiro. Fíjalo con la Q y dispara con Control, o embístelo: cada golpe y cada bala le restan.")
                 if j.veh and self.gps is None:
                     self.fijar_gps(vo.x, vo.y, vo.nombre, sigue=vo, auto=True, callar=True)
 
@@ -665,6 +680,19 @@ class Misiones:
             return
         j = self.j
         d = math.hypot(o["x"] - x, o["y"] - y)
+        if not o.get("visto", True):                          # no echa a andar hasta que das con él: da igual lo lejos que te pille la misión
+            o["t_paso"] -= dt
+            if o["t_paso"] <= 0:
+                o["t_paso"] = 0.9
+                self.son("paso_npc", xy=(o["x"], o["y"]), ref=5, maxd=75, vol=1.0)
+            if d > 42:
+                return
+            o["visto"] = True
+            self.cancelar_gps()
+            self.app.son("notificacion")
+            self.decir(f"Ahí está {o['nombre']}, a {int(d)} metros, {self.direccion_txt(o['x'], o['y'])}. Todavía no se ha movido: en unos segundos echa a andar. "
+                       "Síguele de oído, sin pegarte a él y sin perderle.")
+            return
         if o["espera"] > 0:                                   # al principio se queda quieto un momento: te da tiempo a localizarlo
             o["espera"] -= dt
         elif o["i"] < len(o["ruta"]):
@@ -690,7 +718,7 @@ class Misiones:
             self.decir("Estás demasiado cerca. Quédate atrás." if d < limite_cerca + 4 else f"Se te aleja: va a {int(d)} metros, {self.direccion_txt(o['x'], o['y'])}.")
         if o["cerca"] > 1.5:
             self.fallar_mision(f"{o['nombre'].capitalize()} se ha dado cuenta de que le seguías.")
-        elif o["lejos"] > 9:
+        elif o["lejos"] > o.get("aguante", 9.0):
             self.fallar_mision(f"Has perdido de vista a {o['nombre']}.")
         elif o["i"] >= len(o["ruta"]) and d < 55:
             self._paso_hecho()
@@ -1031,7 +1059,7 @@ class Misiones:
         if m.get("territorio") and m["territorio"] not in self.j.territorios:
             self.j.territorios.append(m["territorio"])
             self.son("territorio", cat="interfaz")
-            self.decir("El barrio es tuyo. Te pagará 300 euros cada medianoche.")
+            self.decir(f"El barrio es tuyo. Te pagará {self.precio('tributo_territorio', 300)} euros cada medianoche.")
             # quedarse con un barrio se sabe en toda la ciudad: el primero da mucha fama; los siguientes, cada vez menos
             self.cambiar_reputacion(max(3, 15 - 3 * (len(self.j.territorios) - 1)))
         if callable(m.get("al_completar")):

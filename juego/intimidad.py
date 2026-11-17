@@ -108,7 +108,7 @@ class Intimidad:
             return False
         casa = next((l for l in self.mundo.lugares.values() if l.tipo == "casa" and l.id in j.propiedades), None)
         if casa is None or en_hotel:
-            if not self.pagar(70):
+            if not self.pagar(self.precio("hotel_cita", 70)):
                 return False
             donde = "un hotel"
         else:
@@ -219,12 +219,13 @@ class Intimidad:
         if not j.its:
             self.decir("Te haces la prueba. Todo está bien.", True)
             return True
-        if not self.pagar(120):
+        coste = self.precio("tratamiento_its", 120)
+        if not self.pagar(coste):
             return False
         j.its = 0
         self.son("curar", cat="interfaz")
         self.cambiar_animo(5)
-        self.decir("La prueba da positivo. Te ponen tratamiento por 120 euros y en unos días estarás bien. La próxima vez, con protección.", True)
+        self.decir(f"La prueba da positivo. Te ponen tratamiento por {coste} euros y en unos días estarás bien. La próxima vez, con protección.", True)
         return True
 
     def estado_intimo_txt(self):

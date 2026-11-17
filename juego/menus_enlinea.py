@@ -44,6 +44,13 @@ def servidores(app):
             cfg.guardar()
             app.enlace = enlace
             if enlace.ok.get("partida"):
+                # El personaje vive en el servidor. Si la última vez se guardó con una versión del juego más nueva que esta,
+                # puede traer cosas que esta no conoce: se avisa, por si algo no va como se espera.
+                from . import VERSION
+                de = str(enlace.ok.get("partida_de") or "")
+                if de and enlinea.version_tupla(de) > enlinea.version_tupla(VERSION):
+                    app.decir(f"Aviso: este personaje se guardó la última vez con la versión {de} del juego, más nueva que la tuya. "
+                              "Si notas algo raro, actualiza el juego.", True)
                 app.empezar_partida(enlace.ok["partida"])
             else:
                 app.decir(f"Entras por primera vez en {s.get('nombre')}. Elige con qué personaje vas a jugar aquí.", True)
@@ -570,12 +577,24 @@ def menu(p):
             Opcion("Sí, salir al menú principal", lambda: p.sv_salir(al_menu=True))])
         app.abrir(mm)
 
+    def version_servidor():
+        from . import VERSION
+        m = sv.get("mundo") or {}
+        if not m.get("version"):
+            return f"Tu juego es la versión {VERSION}"
+        if m.get("igual", True):
+            return f"El servidor va con los datos de la versión {m['version']} del juego, los mismos que tienes tú"
+        return f"El servidor va con los datos de la versión {m['version']} del juego y tú tienes la {VERSION}: jugáis juntos, cada uno con lo que su versión conoce"
+
     def info():
         i = sv["info"]
         pr = i.get("precios", {})
         app.abrir(Menu(app, f"Servidor {sv['nombre_servidor']}", [
             Opcion(f"Te llamas {p.red.nombre}" + (". Eres administrador" if sv["admin"] else "")),
             Opcion("La conexión va cifrada" if sv["cifrado"] else "La conexión no va cifrada"),
+            Opcion(version_servidor(), ayuda="En un mismo servidor pueden jugar juntos jugadores con versiones distintas del juego. Cada uno ve y usa "
+                                             "lo que su versión conoce: lo que solo tiene una versión más nueva no lo ven quienes van con una anterior."),
+            Opcion("Caben " + (f"{i.get('max_jugadores')} jugadores a la vez" if i.get("max_jugadores") else "todos los jugadores que entren: no hay límite")),
             Opcion("Combate entre jugadores: " + ("sí" if i.get("pvp") else "no")),
             Opcion("Zonas seguras en hospitales, comisarías, casas y dentro de los locales: " + ("sí" if i.get("seguras") else "no")),
             Opcion("Modo pasivo permitido: " + ("sí" if i.get("pasivo") else "no")),

@@ -21,7 +21,7 @@
     {"id": "vs_cooperativa", "nombre": "Cooperativa agrícola", "tipo": "monumento", "bloque": [0, 1], "lado": "N", "pos": 36, "vehiculo": "tractor", "desc": "La cooperativa del pueblo. La preside el tío Anselmo, que no se fía de nadie de la capital."},
     {"id": "vs_granja", "nombre": "Granja Los Olivos", "tipo": "casa", "bloque": [2, 2], "lado": "S", "pos": 36, "precio": 7000, "garaje": 3, "desc": "Una casa de labranza con corral. Tranquilidad total y sitio para tres vehículos."},
     {"id": "vs_taller", "nombre": "Taller agrícola Hermanos Pardo", "tipo": "taller", "bloque": [2, 0], "lado": "N", "pos": 36, "desc": "Arreglan tractores, y lo que les echen."},
-    {"id": "vs_gasolinera", "nombre": "Gasolinera de Villaseca", "tipo": "tienda", "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Un surtidor y una tienda diminuta."},
+    {"id": "vs_gasolinera", "nombre": "Gasolinera de Villaseca", "tipo": "tienda", "surtidor": true, "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Un surtidor y una tienda diminuta."},
     {"id": "vs_casa_rural", "nombre": "Casa rural El Nogal", "tipo": "hotel", "bloque": [2, 1], "lado": "S", "pos": 36, "precio_noche": 45, "desc": "Habitaciones con chimenea y desayuno de pueblo."},
     {"id": "vs_consultorio", "nombre": "Consultorio médico", "tipo": "hospital", "bloque": [1, 2], "lado": "O", "pos": 36, "desc": "El consultorio del pueblo. El médico viene desde San Lucero."},
     {"id": "vs_cuartel", "nombre": "Cuartel de la Guardia", "tipo": "comisaria", "bloque": [0, 2], "lado": "S", "pos": 36, "desc": "Dos guardias y un todoterreno. Poco trabajo, hasta que llegas tú."},

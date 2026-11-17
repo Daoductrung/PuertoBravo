@@ -351,7 +351,7 @@ class Extras3:
     def ingresos_territorios(self):
         n = len(self.j.territorios)
         if n:
-            self.dar_dinero(300 * n, f"Tus {n} territorios te pagan tributo" if n > 1 else "Tu territorio te paga tributo")
+            self.dar_dinero(self.precio("tributo_territorio", 300) * n, f"Tus {n} territorios te pagan tributo" if n > 1 else "Tu territorio te paga tributo")
 
     # -------------------------------------------------------------------- bolsa
     def precio_accion(self, ident):

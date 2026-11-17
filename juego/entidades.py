@@ -21,6 +21,8 @@ class Jugador:
         self.lot_ultimo = -1        # último sorteo celebrado; -1, todavía sin poner en hora
         self.lot_botes = {}         # el bote que había en cada sorteo reciente, para pagar a quien lo acierte
         self.ropa = "ropa de calle"
+        self.walkman = False             # llevas el reproductor encendido: la radio suena también a pie
+        self.accesorios = {}             # complementos que llevas: clase (gafas, cadena...) -> nombre
         self.guardaespaldas = 0
         self.hab = {"conduccion": 0.0, "punteria": 0.0, "resistencia": 0.0, "pesca": 0.0}
         self.logros = []
@@ -51,6 +53,9 @@ class Jugador:
         self.semilla = 0             # la suerte propia de esta partida: precios y cómo viene cada día
         self.hambre = 0.0            # vida realista: de 0 a 100
         self.sueno = 0.0
+        self.sed = 0.0
+        self.suciedad = 0.0          # de 0, recién duchado, a 100
+        self.carne_puntos = 12       # puntos del carné de conducir; con 0, retirado
         self.pareja = ""
         self.sustancias = {}
         self.efectos = []

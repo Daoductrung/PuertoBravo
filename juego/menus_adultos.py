@@ -147,7 +147,7 @@ def vida_social(p, directo=None):
                 return
             casa = next((l for l in p.mundo.lugares.values() if l.tipo == "casa" and l.id in j.propiedades), None)
             if casa is None:
-                if not p.pagar(70):
+                if not p.pagar(p.precio("hotel_cita", 70)):
                     return
                 donde = "un hotel"
             else:
@@ -242,7 +242,7 @@ def vida_social(p, directo=None):
                                           "Si te metes en líos con la policía, no. Una vez al día; dura como mucho tres horas del juego."))
             lista += [Opcion(GESTOS[g][0], (lambda g=g: p.gesto(pid, pers, g)) if True else None, ayuda="Un gesto de cariño. Hace falta cierta confianza, y cada uno se puede repetir una vez al día.") for g in GESTOS]
             lista += [
-                      Opcion("Pasar la noche juntos", noche, ayuda="Necesitáis mucha confianza. Vais a una de tus casas en esta localidad o, si no tienes, a un hotel por 70 euros.")]
+                      Opcion("Pasar la noche juntos", noche, ayuda=f"Necesitáis mucha confianza. Vais a una de tus casas en esta localidad o, si no tienes, a un hotel por {p.precio('hotel_cita', 70)} euros.")]
             if j.pareja == pid:
                 lista.append(Opcion("Romper la relación", romper))
             else:
@@ -321,11 +321,11 @@ def club(p, l):
     j = p.j
 
     def copa():
-        if p.pagar(15):
+        if p.pagar(p.precio("club_copa", 15)):
             p.consumir("alcohol", de_inventario=False)
 
     def espectaculo():
-        if p.pagar(20):
+        if p.pagar(p.precio("club_espectaculo", 20)):
             p.pasar_horas(1)
             p.cambiar_animo(5)
             app.decir(f"Ves el espectáculo desde la barra. Sales una hora después, a las {p.hora_txt()}.", True)
@@ -335,7 +335,7 @@ def club(p, l):
             app.son("error")
             app.decir("El portero te ha reconocido de las noticias y no te deja pasar al reservado.", True)
             return
-        if not p.pagar(150):
+        if not p.pagar(p.precio("club_compania", 150)):
             return
         p.pasar_horas(1)
         j.stats["pagos"] = j.stats.get("pagos", 0) + 1
@@ -349,7 +349,7 @@ def club(p, l):
             j.its = p.dia
         azar = random.random()
         if azar < 0.08 and p.mundo.policia:
-            multa = min(j.dinero, 300)
+            multa = min(j.dinero, p.precio("club_redada", 300))
             j.dinero -= multa
             p.decir(f"¡Redada! La policía entra en el club y te cae una multa de {multa} euros.")
             p.poner_busqueda(1)
@@ -359,7 +359,7 @@ def club(p, l):
             p.decir(f"Al salir notas la cartera más ligera: te faltan {robo} euros.")
         p.celos()
     def bailar():
-        if not p.pagar(5):
+        if not p.pagar(p.precio("club_baile", 5)):
             return
         p.pasar_horas(1)
         p.cambiar_animo(6)
@@ -380,7 +380,7 @@ def club(p, l):
             app.decir(f"Bailas una hora en la pista y sales con otra cara. Son las {p.hora_txt()}.", True)
 
     def privado():
-        if p.pagar(60):
+        if p.pagar(p.precio("club_privado", 60)):
             p.pasar_horas(0.5)
             p.cambiar_animo(9)
             p.son("cita", cat="interfaz")
@@ -392,12 +392,12 @@ def club(p, l):
                   + [Opcion("Volver", lambda: app.cerrar(mt))])
         app.abrir(mt)
     m = Menu(app, lambda: f"{l.nombre}. Tienes {j.dinero} euros", [
-        Opcion("Tomar una copa: 15 euros", copa, ayuda="Es alcohol: sube el ánimo, pero cada copa te hace caminar más torcido y apuntar peor."),
-        Opcion("Bailar en la pista: 5 euros", bailar, ayuda="Sube el ánimo, y es buen sitio para conocer a alguien."),
-        Opcion("Ver el espectáculo: 20 euros", espectaculo),
-        Opcion("Pase privado: 60 euros", privado, ayuda="Un baile sensual solo para ti. Sube el ánimo."),
+        Opcion(f"Tomar una copa: {p.precio('club_copa', 15)} euros", copa, ayuda="Es alcohol: sube el ánimo, pero cada copa te hace caminar más torcido y apuntar peor."),
+        Opcion(f"Bailar en la pista: {p.precio('club_baile', 5)} euros", bailar, ayuda="Sube el ánimo, y es buen sitio para conocer a alguien."),
+        Opcion(f"Ver el espectáculo: {p.precio('club_espectaculo', 20)} euros", espectaculo),
+        Opcion(f"Pase privado: {p.precio('club_privado', 60)} euros", privado, ayuda="Un baile sensual solo para ti. Sube el ánimo."),
         Opcion("Tienda discreta: preservativos, lencería y más", tienda, ayuda="Lo que compres aquí mejora tus noches y sirve de regalo."),
-        Opcion("Pagar por compañía: 150 euros", compania, ayuda="Sube el ánimo. Puede haber redada, pueden robarte y, si tienes pareja, puede enterarse. Sin preservativos hay riesgo para tu salud."),
+        Opcion(f"Pagar por compañía: {p.precio('club_compania', 150)} euros", compania, ayuda="Sube el ánimo. Puede haber redada, pueden robarte y, si tienes pareja, puede enterarse. Sin preservativos hay riesgo para tu salud."),
         Opcion("Volver", lambda: app.cerrar())])
     app.abrir(m)
 
@@ -469,7 +469,7 @@ def desintoxicar(p):
     j = p.j
     if not j.adiccion:
         p.app.decir("No tienes ninguna dependencia.", True)
-    elif p.pagar(800):
+    elif p.pagar(p.precio("desintoxicacion", 800)):
         j.adiccion = {}
         j.efectos = []
         p.pasar_horas(48)

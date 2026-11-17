@@ -24,7 +24,8 @@ from . import mundo as M
 from .entidades import Persona
 from .online import Remoto
 
-VERSION_RED = 2
+VERSION_RED = 2                   # la versión del protocolo que habla este juego
+PROTOCOLO_MIN = 2                 # la más antigua con la que todavía se entiende
 PUERTO = 47820
 MAX_LINEA = 700 * 1024
 
@@ -136,6 +137,15 @@ def mundo_servidor():
     return out
 
 
+def version_tupla(texto):
+    """Una versión del juego, lista para compararla con otra: «1.7.0» va antes que «1.10.0»."""
+    out = []
+    for trozo in str(texto or "0").split("."):
+        num = "".join(c for c in trozo if c.isdigit())
+        out.append(int(num) if num else 0)
+    return tuple(out)
+
+
 def mundo_canonico(d):
     """El texto exacto que se firma y se envía: el mismo mundo da siempre el mismo texto."""
     return json.dumps(d, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
@@ -180,6 +190,19 @@ class ClienteServidor(red.Cliente):
         super().__init__()
         self.cifrado = False
         self.huella_cert = ""
+        self.protocolo = VERSION_RED             # la versión del protocolo acordada con el servidor
+
+    @staticmethod
+    def _respuesta(lineas, esperados, tope=12):
+        """El siguiente mensaje de los que se esperan en el saludo. Lo que no se conoce se deja pasar: un servidor de una
+        versión posterior puede decir cosas que este juego no entiende, y eso no es motivo para no entrar."""
+        for _ in range(tope):
+            r = lineas.leer()
+            if r is None:
+                return None
+            if r.get("t") in esperados:
+                return r
+        return None
 
     def _abrir(self, host, puerto, timeout, tls):
         s = socket.create_connection((host, puerto), timeout=timeout)
@@ -230,18 +253,27 @@ class ClienteServidor(red.Cliente):
                 lineas = _Lineas(s)
                 pub = binascii.hexlify(ed25519.publica(semilla)).decode("ascii")
                 from . import VERSION
-                red._enviar(s, self.lock, {"t": "hola", "v": VERSION_RED, "nombre": nombre, "pub": pub, "huella": huella, "juego": VERSION,
+                # v es la versión más nueva del protocolo que habla este juego y vmin la más antigua con la que se entiende:
+                # el servidor elige la más nueva que hablen los dos. Así se puede jugar con un servidor más nuevo o más antiguo.
+                red._enviar(s, self.lock, {"t": "hola", "v": VERSION_RED, "vmin": PROTOCOLO_MIN, "nombre": nombre, "pub": pub, "huella": huella, "juego": VERSION,
                                            "firmado": bool(firmado), "clave": red.huella(clave) if clave else "", "invitacion": invitacion})
-                r = lineas.leer()
+                r = self._respuesta(lineas, ("reto", "rechazo", "ok"), tope=3)
                 if not tls and huella_cert and r and r.get("t") in ("reto", "rechazo", "ok"):
                     s.close()
                     return False, ("Este servidor cifraba la conexión y ahora no lo hace. Por seguridad no entro. "
                                    "Si lo ha cambiado quien lo lleva, bórralo de tu lista y añádelo otra vez.")
                 if r and r.get("t") == "reto":
+                    try:
+                        minimo = int(r.get("vmin") or 0)
+                    except (TypeError, ValueError):
+                        minimo = 0
+                    if minimo > VERSION_RED:                     # el servidor ya no habla con juegos como este
+                        s.close()
+                        return False, "Este servidor necesita una versión más nueva del juego. Actualiza el juego para entrar."
                     s.settimeout(timeout)
                     f = ed25519.firmar(semilla, ("puertobravo-entrada|" + str(r.get("n", ""))).encode("ascii"))
                     red._enviar(s, self.lock, {"t": "firma", "f": binascii.hexlify(f).decode("ascii")})
-                    r = lineas.leer()
+                    r = self._respuesta(lineas, ("ok", "rechazo", "pide_mundo"))
                     if r and r.get("t") == "pide_mundo":         # el servidor no conoce el mundo de esta versión: se lo damos
                         texto, firma_m = mundo() if mundo is not None else ("", "")
                         import base64
@@ -249,7 +281,7 @@ class ClienteServidor(red.Cliente):
                         red._enviar(s, self.lock, {"t": "mundo", "z": base64.b64encode(zlib.compress(texto.encode("utf-8"), 9)).decode("ascii"), "firma": firma_m})
                         enviado_mundo = True
                         s.settimeout(max(timeout, 30))
-                        r = lineas.leer()
+                        r = self._respuesta(lineas, ("ok", "rechazo"))
             except (OSError, ValueError):
                 r = None
             if not r or r.get("t") not in ("ok", "rechazo"):
@@ -268,6 +300,10 @@ class ClienteServidor(red.Cliente):
             s.settimeout(None)
             self.sock, self.conectado, self.id, self.nombre = s, True, r.get("id"), r.get("nombre", nombre)
             self.host, self.puerto = host, puerto
+            try:
+                self.protocolo = max(PROTOCOLO_MIN, min(VERSION_RED, int(r.get("protocolo") or VERSION_RED)))
+            except (TypeError, ValueError):
+                self.protocolo = VERSION_RED
             threading.Thread(target=self._leer, args=(lineas,), daemon=True).start()
             return True, r
         return False, aviso or "No se pudo conectar con el servidor."
@@ -323,7 +359,11 @@ class EnLinea:
                    "inv_grupo": None, "segura": False, "protegido": time.time() + float((ok.get("servidor") or {}).get("proteccion", 0)),
                    "ecos": {}, "mision_grupo": None, "quien": [], "bandas": [], "nombre_servidor": enlace.servidor.get("nombre", "Servidor"),
                    "t_atropello": 0.0, "t_dicho": {}, "cifrado": enlace.cli.cifrado, "props": ok.get("props") or {}, "robo": None, "trafico": {}, "peatones": {},
-                   "agentes": {}, "id": ok.get("id"), "t_desfase": None}
+                   "agentes": {}, "id": ok.get("id"), "t_desfase": None,
+                   # con qué mundo trabaja el servidor y qué sabe hacer: puede ser de otra versión del juego que la tuya
+                   "mundo": ok.get("mundo") if isinstance(ok.get("mundo"), dict) else {},
+                   "funciones": [f for f in ok.get("funciones") or [] if isinstance(f, str)],
+                   "protocolo": getattr(enlace.cli, "protocolo", VERSION_RED)}
         if self.sv["info"].get("policia") and self.cfg["sin_policia"]:      # aquí la policía es de todos: la asistencia no vale
             self._sv_sin_policia = True
             self.cfg.v["sin_policia"] = False
@@ -385,8 +425,25 @@ class EnLinea:
                    + (f"Están: {quienes}. " if quienes else "De momento no hay nadie más. ")
                    + ("La conexión va cifrada. " if self.sv["cifrado"] else "Este servidor no cifra la conexión. ")
                    + ("Hay combate entre jugadores" + (", con zonas seguras en hospitales, comisarías y casas. " if info.get("seguras") else ". ") if info.get("pvp") else "Aquí no hay combate entre jugadores. ")
+                   + self.sv_aviso_version()
                    + "Abre el móvil con M y entra en En línea para verlo todo.")
         self.sv_guardar()
+
+    def sv_aviso_version(self):
+        """Lo que hay que saber cuando el servidor trabaja con los datos de otra versión del juego que la tuya.
+        Se juega igual, cada uno con lo que su versión conoce; aquí se dice qué se va a notar. Vacío si es la misma."""
+        from . import VERSION
+        m = self.sv.get("mundo") or {}
+        if not m or m.get("igual", True) or not m.get("version"):
+            return ""
+        suya, mia = version_tupla(m.get("version")), version_tupla(VERSION)
+        if suya > mia:
+            return (f"Este servidor va con los datos de la versión {m['version']} del juego y tú tienes la {VERSION}: puedes jugar, "
+                    "pero no verás los lugares, vehículos y armas nuevos de otros jugadores hasta que actualices. ")
+        if suya < mia:
+            return (f"Este servidor va con los datos de la versión {m['version']} del juego, anterior a la tuya: puedes jugar, "
+                    "pero lo nuevo de tu versión no lo verán los demás, y en las localidades nuevas no te verán a ti. ")
+        return "Los datos de tu juego no son exactamente los de este servidor: puedes jugar, pero lo que tengas distinto no lo verán los demás. "
 
     def sv_al_dia(self, dias):
         """Has estado fuera: pasan las medianoches que te has perdido, con un tope de tres."""
@@ -528,8 +585,13 @@ class EnLinea:
             return False
         f = getattr(self, "_svm_" + str(m.get("t")), None)
         if f is None:
-            return False
-        f(m)
+            return False                         # un mensaje que este juego no conoce: quien lo recibe después lo deja pasar
+        try:
+            f(m)
+        except (KeyError, TypeError, ValueError, AttributeError, IndexError):
+            # Un servidor de otra versión puede mandar un mensaje conocido con otra forma. No es motivo para que el juego
+            # se caiga: se anota y se sigue.
+            registro.excepcion("red", "Un mensaje del servidor no tiene la forma que este juego espera", tipo=str(m.get("t"))[:30])
         return True
 
     def _svm_aviso(self, m):
@@ -564,7 +626,11 @@ class EnLinea:
             for mapa in self.mapas.values():
                 mapa.desfase_luces = float(h["luces"]) - self.t
 
+    def _svm_aspecto(self, m):
+        self._aspecto_recibido(m.get("de"), m.get("texto"))
+
     def _svm_entra(self, m):
+        self._aspecto_enviado = None                             # que el que llega sepa también cómo vas
         registro.ocultar(m.get("nombre"))
         r = Remoto(m["id"], str(m.get("nombre", "Alguien")))
         r.banda, r.ia = m.get("banda"), bool(m.get("ia"))
@@ -1052,6 +1118,8 @@ class EnLinea:
             self.j.objetos[ident] = self.j.objetos.get(ident, 0) + n
             self.son("recoger", cat="interfaz")
             self.decir(f"{nombre} te da {n} de {next(o['nombre'] for o in self.datos['objetos'] if o['id'] == ident).lower()}.")
+        elif clase in ("arma", "objeto"):        # algo de otra versión del juego, o de un mod, que tu juego no tiene
+            self.decir(f"{nombre} te quiere dar algo que no existe en tu versión del juego, y no lo puedes recibir.")
 
     def _svm_dado(self, m):
         self.son("recoger", cat="interfaz", vol=0.5)

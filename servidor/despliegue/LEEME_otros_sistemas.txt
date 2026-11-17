@@ -1,0 +1,27 @@
+SERVIDOR DE PUERTO BRAVO PARA LINUX, MAC, NAS, RASPBERRY PI Y DOCKER
+
+Esta carpeta es todo lo que hace falta para montar el servidor en una máquina que no es Windows, sin el juego.
+Cópiala entera a esa máquina, con el nombre que quieras, por ejemplo puertobravo.
+
+Qué hay aquí:
+
+- servidor: el código del servidor. Solo necesita Python 3.8 o posterior; no hay que instalar nada más.
+- servidor.conf.ejemplo: todas las opciones, explicadas. Cópialo como servidor.conf y cámbialo a tu gusto.
+- arrancar.sh, parar.sh y estado.sh: para dejarlo en marcha en segundo plano, pararlo y ver cómo va.
+- puertobravo.service: para que arranque solo con el sistema, con systemd. Dentro dice cómo se instala.
+- Dockerfile, docker-compose.yml y entrada_docker.sh: para montarlo con Docker.
+
+Lo más corto, con Python:
+
+    python3 -m servidor --ejemplo      escribe servidor.conf
+    python3 -m servidor                arranca el servidor; se le escriben órdenes, y ayuda las dice todas
+
+En segundo plano:
+
+    sh arrancar.sh        sh estado.sh        sh parar.sh
+
+Con Docker:
+
+    docker compose up -d --build
+
+La guía completa, paso a paso, está en documentacion.html, en la carpeta servidor del juego.

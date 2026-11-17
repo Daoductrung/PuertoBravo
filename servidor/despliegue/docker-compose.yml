@@ -1,15 +1,24 @@
-# docker compose up -d --build     (desde la carpeta que contiene la carpeta servidor)
+# Servidor en línea de Puerto Bravo con Docker.
+#
+# Esta carpeta tiene que contener la carpeta servidor (el código), el archivo Dockerfile y este archivo.
+# Para arrancarlo:      docker compose up -d --build
+# Para ver qué dice:    docker compose logs -f
+# Para pararlo:         docker compose down        (avisa a los jugadores y lo guarda todo)
+# Para darle una orden: docker attach puertobravo   (escribe la orden; para salir sin pararlo, Control+P y Control+Q)
+#
+# La configuración (servidor.conf) y los datos quedan en la carpeta datos, que se crea aquí al lado.
 services:
   puertobravo:
-    build:
-      context: ../..
-      dockerfile: servidor/despliegue/Dockerfile
+    build: .
     container_name: puertobravo
     restart: unless-stopped
+    # Con estas dos líneas se le pueden escribir órdenes con docker attach.
+    stdin_open: true
+    tty: true
     ports:
+      # Si cambias el puerto en servidor.conf, cambia aquí los dos números.
       - "47820:47820"
     volumes:
       - ./datos:/datos
-    environment:
-      - PYTHONUNBUFFERED=1
-      - PYTHONPATH=/app
+    # Tiempo para avisar a los jugadores y guardarlo todo al parar.
+    stop_grace_period: 20s

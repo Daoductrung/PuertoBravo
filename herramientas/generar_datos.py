@@ -258,6 +258,31 @@ def generar_teclas():
 {html_teclas(2)}
 <p>Los nombres de los botones del mando son los de Xbox. Con un mando de PlayStation el juego los dice con sus nombres: equis, círculo, cuadrado y triángulo.</p>
 {botones}
+<h2>En el panel del servidor</h2>
+<p>El panel es la ventana para llevar tu propio servidor en línea. Está en la carpeta servidor del juego.</p>
+<ul>
+<li><kbd>F5</kbd>: arranca el servidor.</li>
+<li><kbd>Mayúsculas F5</kbd>: para el servidor, avisando a los jugadores y guardándolo todo.</li>
+<li><kbd>Control F5</kbd>: reinicia el servidor.</li>
+<li><kbd>Control P</kbd>: configuración.</li>
+<li><kbd>Control Q</kbd>: salir del panel. Si el servidor está en marcha, pregunta y lo para antes.</li>
+<li><kbd>Control N</kbd>: anuncio a todos los jugadores.</li>
+<li><kbd>Control M</kbd>: mensaje al jugador elegido en la lista.</li>
+<li><kbd>Control E</kbd>: expulsar al jugador elegido.</li>
+<li><kbd>Control I</kbd>: crear una invitación y copiarla al portapapeles.</li>
+<li><kbd>Control D</kbd>: cambiar el mensaje del día.</li>
+<li><kbd>Control O</kbd>: ir al campo para escribir una orden.</li>
+<li><kbd>F6</kbd>: actualizar el estado y las listas.</li>
+<li><kbd>Control S</kbd>: guardar ahora.</li>
+<li><kbd>Control B</kbd>: copia de seguridad ahora.</li>
+<li><kbd>Control R</kbd>: restaurar una copia de seguridad.</li>
+<li><kbd>Control G</kbd>: guardar el registro en un archivo.</li>
+<li><kbd>F1</kbd>: abrir la guía del servidor.</li>
+<li><kbd>Control H</kbd>: explica el control en el que estás.</li>
+<li><kbd>Control Tabulador</kbd> y <kbd>Control Mayúsculas Tabulador</kbd>: cambiar de pestaña.</li>
+<li><kbd>Alt</kbd> más la letra subrayada: ir a un control de la pestaña o abrir un menú.</li>
+<li>Tecla Aplicaciones o <kbd>Mayúsculas F10</kbd>: en las listas de jugadores y de cuentas, acciones sobre lo elegido.</li>
+</ul>
 </body>
 </html>
 """

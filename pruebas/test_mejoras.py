@@ -378,8 +378,9 @@ def test_seguir_a_alguien_de_oido(robot):
     p, m = _empezar(robot, "ocs1")
     o = p.mision["movil"]
     o["espera"] = 0
+    o["visto"] = True                                              # ya habías dado con él
     p.teletransportar(*p.mundo.punto_libre(o["x"] + 80, o["y"]))
-    robot.frames(30 * 11)
+    robot.frames(30 * 14)                                          # la segunda vez tarda algo más en perderte de vista
     assert p.mision is None and "Has perdido de vista" in robot.app.pila[-1].titulo
 
 
@@ -420,7 +421,7 @@ def test_pack_envolvente(app):
     assert meta["nombre"] == "Envolvente" and meta["ambientes_en_estereo"] == 11 and "CC0" in meta["licencia"]
     nombres = {os.path.splitext(f)[0] for f in os.listdir(carpeta) if f.endswith((".wav", ".ogg", ".flac", ".mp3"))}
     realista = {os.path.splitext(f)[0] for f in os.listdir(os.path.join(os.path.dirname(carpeta), "realista")) if f.endswith(".flac")}
-    assert nombres == realista and len(nombres) == 237          # los mismos archivos que los demás packs
+    assert nombres == realista and len(nombres) == 243          # los mismos archivos que los demás packs
     serie = os.path.join(os.path.dirname(carpeta), "por_defecto")
     orientacion = {k for k, g in enumerate(cat.GRUPOS) if g[0] in ("Orientación y GPS", "Localizadores", "Firmas de los lugares")}
     vistos = 0

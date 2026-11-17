@@ -27,9 +27,13 @@ class Tarea:
         self.hecho = False
         self.hilo = None
         self.t_eco = 0.0
+        self.estado = ""                      # cuánto lleva, dicho en una frase: lo pone el trabajo y se oye al pulsar una tecla
+        self.fondo = False                    # se puede dejar en segundo plano y seguir jugando
+        self.en_fondo = False
 
     def al_entrar(self):
-        self.app.decir(self.titulo + ". Espera. Escape cancela.", True)
+        self.app.decir(self.titulo + ". Espera. Cualquier tecla dice cuánto lleva. Escape cancela."
+                       + (" Con la B se queda en segundo plano y sigues con lo que estabas." if self.fondo else ""), True)
 
     def decir(self, texto):
         self.avisos.append(texto)
@@ -45,8 +49,24 @@ class Tarea:
         if ev.key == pygame.K_ESCAPE:
             self.cancelada = True
             self.app.decir("Cancelando.", True)
+        elif ev.key == pygame.K_b and self.fondo and not self.hecho and self.hilo is not None and not self.app.pruebas:
+            self.en_fondo = True
+            self.app.cerrar(self)
+            if not hasattr(self.app, "tareas_fondo"):
+                self.app.tareas_fondo = []
+            self.app.tareas_fondo.append(self)
+            self.app.son("notificacion")
+            self.app.decir(self.titulo + ": sigue en segundo plano. Te aviso cuando termine.", True)
         else:
-            self.app.decir(self.titulo + ". Espera.", True)
+            self.app.decir(f"{self.titulo}. {self.estado or 'Espera.'}", True)
+
+    def paso_fondo(self):
+        """Lo llama el juego en cada vuelta mientras la tarea sigue en segundo plano. True cuando ha terminado."""
+        self.avisos.clear()                    # en segundo plano no se va cantando el avance: se pregunta, o se espera al final
+        if not self.hecho:
+            return False
+        self.al_terminar(self.resultado, self.error)
+        return True
 
     def actualizar(self, dt):
         if self.hilo is None:
@@ -123,16 +143,31 @@ def ofrecer(app, info):
     app.abrir(m)
 
 
+def megas(n):
+    return f"{n / 2 ** 20:.0f}".replace(".", ",")
+
+
+def texto_progreso(hecho, total):
+    """«42 por ciento: 180 de 430 megas.» Lo que se oye al pulsar una tecla durante una descarga."""
+    if not total:
+        return f"{megas(hecho)} megas descargados."
+    return f"{int(100 * hecho / total)} por ciento: {megas(hecho)} de {megas(total)} megas."
+
+
 def descargar(app, info):
-    estado = {"cuarto": 0}
+    estado = {"cuarto": 0, "tarea": None}
 
     def trabajo(tarea):
+        estado["tarea"] = tarea
+
         def progreso(hecho, total):
+            tarea.estado = texto_progreso(hecho, total)
             cuarto = int(4 * hecho / max(1, total))
             if cuarto > estado["cuarto"] and cuarto < 4:
                 estado["cuarto"] = cuarto
                 tarea.decir(f"{cuarto * 25} por ciento.")
         ruta = A.descargar(info, progreso=progreso, cancelado=lambda: tarea.cancelada, abrir=_abrir(app))
+        tarea.estado = "Descarga comprobada. Preparando la instalación."
         tarea.decir("Descarga comprobada. Preparando la instalación.")
         nueva = A.extraer(ruta, os.path.join(A.carpeta_trabajo(), "nueva"))
         try:
@@ -150,6 +185,28 @@ def descargar(app, info):
             A.limpiar()
             app.decir(str(error) if isinstance(error, A.ErrorActualizacion) else "No se pudo preparar la actualización.", True)
             return
+        if getattr(estado["tarea"], "en_fondo", False):          # se descargó mientras jugabas: se instala cuando tú digas
+            app.act_lista = (bat, info.version)
+            app.son("guardado")
+            app.decir(f"La versión {info.version} ya está descargada. Para instalarla, entra en Opciones, Actualizaciones, Instalar la versión descargada. "
+                      "El juego se cerrará, se actualizará y volverá a abrirse solo.")
+            return
+        _instalar(app, bat)
+    app.act_version = info.version
+    t = Tarea(app, f"Descargando la versión {info.version}", trabajo, fin)
+    t.fondo = True
+    app.abrir(t)
+
+
+def _instalar(app, bat):
+    if not app.pruebas and A.servidor_abierto():
+        # con el servidor en línea abierto no se pueden sustituir sus programas: la descarga se guarda y se instala luego
+        app.act_lista = (bat, getattr(app, "act_version", "") or "nueva")
+        app.son("error")
+        app.decir("El servidor en línea de Puerto Bravo, o su panel, está abierto en este ordenador. Páralo y cierra el panel, y después entra en "
+                  "Opciones, Actualizaciones, Instalar la versión descargada. La descarga no se pierde.", True)
+        return
+    if True:
         p = app.partida
         if p is not None and not p.mision:
             try:
@@ -163,7 +220,6 @@ def descargar(app, info):
             pygame.time.wait(4500)
             A.lanzar_instalador(bat)
         app.salir()
-    app.abrir(Tarea(app, f"Descargando la versión {info.version}", trabajo, fin))
 
 
 def opciones(app):
@@ -191,7 +247,15 @@ def opciones(app):
         app.abrir(EntradaTexto(app, "Dirección personalizada del archivo version punto json", hecho, inicial=cfg["act_url"], maximo=300,
                                ayuda="La dirección completa, que empiece por https, del archivo version.json. Puedes pegarla con Control V. Sirva de donde sirva, la versión tiene que ir firmada por quien publica el juego."))
 
-    m = Menu(app, "Actualizaciones", [
+    def instalar_lista():
+        lista = getattr(app, "act_lista", None)
+        if lista:
+            app.act_lista = None
+            _instalar(app, lista[0])
+
+    m = Menu(app, "Actualizaciones", ([
+        Opcion(f"Instalar la versión descargada, la {app.act_lista[1]}", instalar_lista,
+               ayuda="Ya está descargada y comprobada. El juego guarda la partida, se cierra, se actualiza y vuelve a abrirse solo en unos segundos.")] if getattr(app, "act_lista", None) else []) + [
         Opcion(f"Versión instalada: {VERSION}", lambda: app.decir(f"Tienes la versión {VERSION}.", True)),
         Opcion("Buscar actualizaciones ahora", lambda: buscar(app)),
         Opcion(lambda: f"Buscar al arrancar el juego: {'sí' if cfg['act_auto'] else 'no'}", ajuste=auto,

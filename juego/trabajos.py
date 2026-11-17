@@ -256,7 +256,7 @@ class Trabajos:
                 if self._parado_en(l):
                     j.stats["carreras_taxi"] += 1
                     self.son("puerta_coche")
-                    self._cobrar(int(15 + t["dist"] * 0.12 + _resto(t) * 1.5), "Carrera cobrada")
+                    self._cobrar(int(self.precio("paga_taxi", 15) + t["dist"] * 0.12 + _resto(t) * 1.5), "Carrera cobrada")
                     self._servicio_nuevo()
                 elif _agotado(t):
                     self.son("puerta_coche")
@@ -276,22 +276,22 @@ class Trabajos:
                     self.decir(f"Herido a bordo. Llévalo a {h.nombre} cuanto antes.")
                     self.gps_a_lugar(h, auto=True)
                 else:
-                    self._cobrar(int(60 + t["dist"] * 0.15 + _resto(t) * 2), "Herido entregado en urgencias")
+                    self._cobrar(int(self.precio("paga_ambulancia", 60) + t["dist"] * 0.15 + _resto(t) * 2), "Herido entregado en urgencias")
                     self._servicio_nuevo()
         elif tipo == "mensajeria":
             l = t["lugar"]
             if self._parado_en(l, 32):
                 self.son("salpicadura", vol=0.5)
-                self._cobrar(int(40 + t["dist"] * 0.22), "Paquete entregado")
+                self._cobrar(int(self.precio("paga_mensajeria", 40) + t["dist"] * 0.22), "Paquete entregado")
                 self._servicio_nuevo()
         elif tipo in ("autobus", "helados"):
             l = t["lugar"]
             if self._parado_en(l):
                 self.son("lugar_estacion" if tipo == "autobus" else "claxon_helados", vol=0.5)
-                self._cobrar(int(18 + _resto(t) * 0.6), "Parada hecha")
+                self._cobrar(int(self.precio("paga_parada", 18) + _resto(t) * 0.6), "Parada hecha")
                 t["n"] += 1
                 if t["n"] >= len(t["paradas"]):
-                    self.dar_dinero(100, "Línea completa, prima")
+                    self.dar_dinero(self.precio("prima_linea", 100), "Línea completa, prima")
                     t["paradas"] = None
                 self._servicio_nuevo()
             elif _agotado(t):
@@ -304,7 +304,7 @@ class Trabajos:
             o = t.get("objetivo")
             if o is None or o.muerto:
                 t["objetivo"] = None
-                self._cobrar(int(220 + _resto(t)), "Sospechoso detenido")
+                self._cobrar(int(self.precio("paga_vigilante", 220) + _resto(t)), "Sospechoso detenido")
                 self._servicio_nuevo()
             elif _agotado(t) or o.dist(x, y) > 700:
                 self.quitar_vehiculo(o)
@@ -327,7 +327,7 @@ class Trabajos:
                     t["canal"].parar()
                     t["canal"] = None
                     self.son("salpicadura", vol=0.6)
-                    self._cobrar(int(90 + _resto(t) * 1.5), "Incendio apagado")
+                    self._cobrar(int(self.precio("paga_bomberos", 90) + _resto(t) * 1.5), "Incendio apagado")
                     self._servicio_nuevo()
             elif _agotado(t):
                 self.decir("Has llegado tarde: el edificio ha ardido entero.")
@@ -347,12 +347,12 @@ class Trabajos:
                 self.gps_a_lugar(dest, auto=True)
             elif t["fase"] == "llevar" and self._parado_en(l):
                 self.son("reparar", vol=0.6)
-                self._cobrar(int(110 + t["dist"] * 0.18), "Coche entregado en el depósito")
+                self._cobrar(int(self.precio("paga_grua", 110) + t["dist"] * 0.18), "Coche entregado en el depósito")
                 self._servicio_nuevo()
         elif tipo == "paqueteria":
             l = t["lugar"]
             if self._parado_en(l):
-                self._cobrar(int(15 + _resto(t) * 0.8), "Paquete entregado")
+                self._cobrar(int(self.precio("paga_paqueteria", 15) + _resto(t) * 0.8), "Paquete entregado")
                 self._servicio_nuevo()
             elif _agotado(t):
                 self.decir("Vas tarde: este paquete ya no tiene propina.")
@@ -360,14 +360,15 @@ class Trabajos:
         elif tipo == "pizza":
             l = t["lugar"]
             if self._dist(l) <= (18 if j.veh else 7) and (not j.veh or abs(j.veh.vel) < 2.5):
-                paga = int(20 + _resto(t) * 0.8)
+                paga = int(self.precio("paga_pizza", 20) + _resto(t) * 0.8)
                 t["quedan"] -= 1
                 t["ganado"] += paga
                 j.stats["pizzas"] += 1
                 self.dar_dinero(paga, "Pizza entregada")
                 if t["quedan"] <= 0:
-                    self.dar_dinero(60, "Propina por completar el reparto")
-                    self.terminar_trabajo(f"Reparto terminado. Has ganado {t['ganado'] + 60} euros.")
+                    propina = self.precio("propina_reparto", 60)
+                    self.dar_dinero(propina, "Propina por completar el reparto")
+                    self.terminar_trabajo(f"Reparto terminado. Has ganado {t['ganado'] + propina} euros.")
                 else:
                     self._pizza_siguiente()
             elif _agotado(t):

@@ -65,10 +65,10 @@ def premio(p, boleto):
     ganador = premiado(p, boleto["sorteo"])
     a = aciertos(boleto["n"], ganador)
     if a >= CIFRAS:
-        return int(boleto.get("bote") or p.j.lot_botes.get(str(boleto["sorteo"]), BOTE_INICIAL)), "las cinco cifras: el bote"
+        return int(boleto.get("bote") or p.j.lot_botes.get(str(boleto["sorteo"]), p.precio("loteria_bote", BOTE_INICIAL))), "las cinco cifras: el bote"
     if a == 0:
         return 0, "sin premio"
-    return PREMIOS[a], "la última cifra: el reintegro" if a == 1 else f"las {('dos', 'tres', 'cuatro')[a - 2]} últimas cifras"
+    return p.precio(f"loteria_premio_{a}", PREMIOS[a]), "la última cifra: el reintegro" if a == 1 else f"las {('dos', 'tres', 'cuatro')[a - 2]} últimas cifras"
 
 
 def colgados(p, l):
@@ -98,10 +98,11 @@ def comprar(p, numero, l=None):
         p.app.son("error")
         p.decir(f"Ese número ya lo llevas para ese sorteo: {cifras(numero)}.", True)
         return False
-    if not p.pagar(PRECIO):
+    coste = p.precio("boleto_loteria", PRECIO)
+    if not p.pagar(coste):
         return False
     j.boletos.append({"n": numero, "sorteo": sorteo, "donde": l.id if l is not None else ""})
-    j.lot_bote += PRECIO // 2                                    # la mitad de lo que se juega va al bote
+    j.lot_bote += coste // 2                                    # la mitad de lo que se juega va al bote
     p.son("caja", cat="interfaz")
     p.decir(f"Boleto comprado: el {cifras(numero)}. Juega en el sorteo de {cuando_txt(p, sorteo)}. Después compruébalo en el móvil, en Lotería, o donde vendan boletos.", True)
     return True
@@ -122,6 +123,7 @@ def al_dia(p):
 
 def _sortear(p, sorteo, callado=False):
     j = p.j
+    inicial, crece = p.precio("loteria_bote", BOTE_INICIAL), p.precio("loteria_bote_sube", BOTE_CRECE)
     ganador = premiado(p, sorteo)
     tuyos = boletos_de(p, sorteo)
     j.lot_botes[str(sorteo)] = j.lot_bote
@@ -138,13 +140,13 @@ def _sortear(p, sorteo, callado=False):
         p.son("campanadas", cat="interfaz", vol=0.35)
         frase = f"Sorteo de la lotería. Ha salido el {cifras(ganador)}."
         if cae is not None:
-            frase += f" El bote, {j.lot_bote} euros, ha caído en {p.nombre_lugar(cae)}. Mañana empieza otra vez en {BOTE_INICIAL}."
+            frase += f" El bote, {j.lot_bote} euros, ha caído en {p.nombre_lugar(cae)}. Mañana empieza otra vez en {inicial}."
         elif not acertado:
-            frase += f" Nadie acierta las cinco cifras: el bote sube a {j.lot_bote + BOTE_CRECE} euros."
+            frase += f" Nadie acierta las cinco cifras: el bote sube a {j.lot_bote + crece} euros."
         if tuyos:
             frase += f" Llevabas {len(tuyos)} {'boleto' if len(tuyos) == 1 else 'boletos'}: compruébalos en el móvil, en Lotería."
         p.decir(frase)
-    j.lot_bote = BOTE_INICIAL if (acertado or cae is not None) else j.lot_bote + BOTE_CRECE
+    j.lot_bote = inicial if (acertado or cae is not None) else j.lot_bote + crece
 
 
 def comprobar(p, l=None, hablar=True):
@@ -159,6 +161,7 @@ def comprobar(p, l=None, hablar=True):
             p.decir("No tienes boletos por comprobar." + (f" Tienes {len(esperan)} esperando el sorteo de {cuando_txt(p, esperan[0]['sorteo'])}." if esperan else ""), True)
         return 0, 0
     frases, cobrado, por_cobrar = [], 0, 0
+    tope = p.precio("loteria_paga_tienda", PAGA_TIENDA)
     for b in lista:
         euros, que = premio(p, b)
         ganador = premiado(p, b["sorteo"])
@@ -166,7 +169,7 @@ def comprobar(p, l=None, hablar=True):
             j.boletos.remove(b)
             frases.append(f"El {cifras(b['n'])}, del día {b['sorteo']}: salió el {cifras(ganador)}. Sin premio")
             continue
-        puede = l is not None and (l.tipo == "loteria" or euros <= PAGA_TIENDA)
+        puede = l is not None and (l.tipo == "loteria" or euros <= tope)
         if puede:
             j.boletos.remove(b)
             cobrado += euros
@@ -174,7 +177,7 @@ def comprobar(p, l=None, hablar=True):
         else:
             por_cobrar += euros
             b["visto"] = True
-            donde = "Se cobra en una administración de lotería" if euros > PAGA_TIENDA else "Se cobra en una administración de lotería, o en una tienda, un bar o una taberna"
+            donde = "Se cobra en una administración de lotería" if euros > tope else "Se cobra en una administración de lotería, o en una tienda, un bar o una taberna"
             caduca = b["sorteo"] + CADUCA - p.dia
             frases.append(f"El {cifras(b['n'])}, del día {b['sorteo']}: premiado con {euros} euros por {que}. {donde}. Caduca en {caduca} {'día' if caduca == 1 else 'días'}")
     if cobrado:
@@ -197,8 +200,11 @@ def estado_txt(p):
     return f"Próximo sorteo, {cuando_txt(p)}. Bote: {j.lot_bote} euros. Llevas {n} {'boleto' if n == 1 else 'boletos'}"
 
 
-AYUDA_PREMIOS = ("Se premia por las últimas cifras que coinciden con el número que sale: la última, el reintegro, 10 euros; las dos últimas, 60; las tres, 600; "
-                 "las cuatro, 6000; y las cinco, el bote, que crece cada día que nadie lo acierta.")
+def ayuda_premios(p):
+    """Lo que se premia, con las cantidades que valen ahora mismo."""
+    n = [p.precio(f"loteria_premio_{a}", PREMIOS[a]) for a in (1, 2, 3, 4)]
+    return (f"Se premia por las últimas cifras que coinciden con el número que sale: la última, el reintegro, {n[0]} euros; las dos últimas, {n[1]}; las tres, {n[2]}; "
+            f"las cuatro, {n[3]}; y las cinco, el bote, que crece cada día que nadie lo acierta.")
 
 
 def opciones_venta(p, l, refrescar=lambda: None):
@@ -225,15 +231,15 @@ def opciones_venta(p, l, refrescar=lambda: None):
             refrescar()
         app.abrir(EntradaTexto(app, f"Tu número, de hasta {CIFRAS} cifras", aceptar, maximo=CIFRAS,
                                ayuda="Escribe el número que quieres jugar y pulsa Intro. Si tiene menos de cinco cifras, se completa con ceros delante."))
-    ops = [Opcion(lambda: "Lotería. " + estado_txt(p), ayuda=AYUDA_PREMIOS + f" Cada boleto cuesta {PRECIO} euros y puedes llevar hasta {TOPE_BOLETOS} por sorteo.")]
+    ops = [Opcion(lambda: "Lotería. " + estado_txt(p), ayuda=ayuda_premios(p) + f" Cada boleto cuesta {p.precio('boleto_loteria', PRECIO)} euros y puedes llevar hasta {TOPE_BOLETOS} por sorteo.")]
     if l.tipo == "loteria":
-        ops += [Opcion(f"Comprar un boleto al azar: {PRECIO} euros", al_azar),
-                Opcion(f"Comprar un boleto con el número que tú digas: {PRECIO} euros", pedir, ayuda="Solo en las administraciones de lotería se puede pedir un número.")]
+        ops += [Opcion(f"Comprar un boleto al azar: {p.precio('boleto_loteria', PRECIO)} euros", al_azar),
+                Opcion(f"Comprar un boleto con el número que tú digas: {p.precio('boleto_loteria', PRECIO)} euros", pedir, ayuda="Solo en las administraciones de lotería se puede pedir un número.")]
     else:
-        ops += [Opcion(f"Comprar el boleto {cifras(n)}: {PRECIO} euros", vender(n), ayuda="Uno de los tres números que tienen colgados hoy. Para pedir tu número, ve a una administración de lotería.")
+        ops += [Opcion(f"Comprar el boleto {cifras(n)}: {p.precio('boleto_loteria', PRECIO)} euros", vender(n), ayuda="Uno de los tres números que tienen colgados hoy. Para pedir tu número, ve a una administración de lotería.")
                 for n in colgados(p, l)]
     ops.append(Opcion(lambda: f"Comprobar y cobrar tus boletos: tienes {len(pendientes(p))} ya sorteados", lambda: (comprobar(p, l), refrescar()),
-                      ayuda=f"Te dicen qué ha salido y te pagan los premios. Aquí pagan hasta {PAGA_TIENDA} euros; los mayores, en una administración de lotería."
+                      ayuda=f"Te dicen qué ha salido y te pagan los premios. Aquí pagan hasta {p.precio('loteria_paga_tienda', PAGA_TIENDA)} euros; los mayores, en una administración de lotería."
                       if l.tipo != "loteria" else "Te dicen qué ha salido y te pagan cualquier premio, también el bote."))
     return ops
 
@@ -254,7 +260,7 @@ def menu_movil(p):
     j = p.j
 
     def ops():
-        lista = [Opcion("Lotería de la Comarca. " + estado_txt(p), ayuda=AYUDA_PREMIOS + " Los boletos se compran en las administraciones de lotería, en tiendas, en bares y en tabernas.")]
+        lista = [Opcion("Lotería de la Comarca. " + estado_txt(p), ayuda=ayuda_premios(p) + " Los boletos se compran en las administraciones de lotería, en tiendas, en bares y en tabernas.")]
         for b in sorted(j.boletos, key=lambda b: b["sorteo"]):
             if b["sorteo"] > ultimo_celebrado(p):
                 lista.append(Opcion(f"Boleto {cifras(b['n'])}: juega {cuando_txt(p, b['sorteo'])}"))
@@ -263,7 +269,7 @@ def menu_movil(p):
             else:
                 lista.append(Opcion(f"Boleto {cifras(b['n'])}, del día {b['sorteo']}: sorteado, sin comprobar"))
         lista.append(Opcion(lambda: f"Comprobar tus boletos: {len(pendientes(p))} ya sorteados", lambda: (comprobar(p), m.refrescar(False)),
-                            ayuda="Te dice si ha tocado. Los premios se cobran donde venden boletos; los de más de 600 euros, en una administración de lotería."))
+                            ayuda=f"Te dice si ha tocado. Los premios se cobran donde venden boletos; los de más de {p.precio('loteria_paga_tienda', PAGA_TIENDA)} euros, en una administración de lotería."))
         for s in range(ultimo_celebrado(p), max(0, ultimo_celebrado(p) - HISTORIA), -1):
             if s >= 1 and s <= j.lot_ultimo:
                 lista.append(Opcion(f"Sorteo del día {s}: salió el {cifras(premiado(p, s))}"))

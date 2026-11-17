@@ -25,7 +25,7 @@
     {"id": "mf_mina", "nombre": "Mina La Esperanza", "tipo": "monumento", "bloque": [5, 0], "xy": [40, 40], "sonido": "lugar_mina", "desc": ""},
     {"id": "mf_taberna", "nombre": "Taberna del Sindicato", "tipo": "taberna", "bloque": [1, 2], "lado": "N", "pos": 36, "desc": "La taberna de los mineros. Carmela, la presidenta del sindicato, tiene aquí su despacho, que es una mesa junto a la estufa."},
     {"id": "mf_economato", "nombre": "Economato minero", "tipo": "tienda", "bloque": [2, 1], "lado": "O", "pos": 36, "desc": "La tienda de los mineros: barata y con de todo."},
-    {"id": "mf_gasolinera", "nombre": "Gasolinera de la Sierra", "tipo": "tienda", "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Gasolinera de montaña."},
+    {"id": "mf_gasolinera", "nombre": "Gasolinera de la Sierra", "tipo": "tienda", "surtidor": true, "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Gasolinera de montaña."},
     {"id": "mf_casa", "nombre": "Casa del capataz", "tipo": "casa", "bloque": [3, 3], "lado": "S", "pos": 36, "precio": 9000, "garaje": 2, "desc": "Una casa de piedra con tejado de pizarra y garaje para dos vehículos."},
     {"id": "mf_chale", "nombre": "Chalé de la ladera", "tipo": "casa", "bloque": [5, 2], "lado": "O", "pos": 36, "precio": 20000, "garaje": 4, "desc": "Un chalé de montaña con chimenea y garaje para cuatro vehículos."},
     {"id": "mf_ferreteria", "nombre": "Ferretería El Yunque", "tipo": "negocio", "bloque": [4, 3], "lado": "S", "pos": 36, "precio": 16000, "ingresos": 480, "sonido": "lugar_tienda", "desc": "La ferretería de toda la sierra."},

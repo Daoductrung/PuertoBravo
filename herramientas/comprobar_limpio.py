@@ -37,6 +37,20 @@ def rutas_de_este_equipo(raiz):
     return []
 
 
+def servidor_completo_y_limpio(raiz):
+    """La carpeta del servidor trae todo lo necesario para montarlo de cualquier manera, con el ejemplo de configuración y
+    la guía al día, y nada de nadie: ni configuración, ni datos, ni certificados, ni claves."""
+    from herramientas import preparar_carpeta_servidor as carpeta
+    problemas = carpeta.comprobar(raiz)
+    if os.path.exists(os.path.join(raiz, "servidor_despliegue")):
+        problemas.append("Sobra la carpeta servidor_despliegue: lo del servidor va ahora en la carpeta servidor")
+    for base, dirs, archivos in os.walk(raiz):               # en ningún sitio de lo que se reparte
+        for nombre in dirs + archivos:
+            if nombre in ("datos_servidor", "servidor.conf", "puertobravo.db", "firma_ed25519.key", "certificado.pem", "llave.pem", "claves"):
+                problemas.append("Dato de un servidor o clave que no debe repartirse: " + os.path.relpath(os.path.join(base, nombre), raiz))
+    return problemas
+
+
 def comprobar(raiz):
     problemas = []
     data = os.path.join(raiz, "data")
@@ -46,11 +60,13 @@ def comprobar(raiz):
 
     for necesario in (("PuertoBravo.exe",), ("EditorMods.exe",), ("data", "datos", "ciudad.pbd"), ("data", "docs", "manual.html"),
                       ("data", "docs", "teclas.html"), ("data", "docs", "cambiar_sonidos.html"), ("data", "docs", "editor_mods.html"),
-                      ("data", "docs", "novedades.html"), ("data", "docs", "servidor.html"), ("PuertoBravoServidor.exe",), ("lib", "servidor", "mundo.json"), ("data", "sonidos", "por_defecto"), ("data", "sonidos", "realista"), ("data", "sonidos", "alternativo"), ("data", "sonidos", "retro"),
+                      ("data", "docs", "novedades.html"), ("data", "docs", "servidor.html"), ("PuertoBravoServidor.exe",), ("PuertoBravoServidorPanel.exe",),
+                      ("lib", "servidor", "mundo.json"), ("lib", "servidor", "opciones.pyc"), ("lib", "panel_servidor"), ("data", "sonidos", "por_defecto"), ("data", "sonidos", "realista"), ("data", "sonidos", "alternativo"), ("data", "sonidos", "retro"),
                       ("data", "radio"), ("data", "musica"), ("lib", "numpy"), ("lib_antiguo", "numpy"), ("lib", "soft_oal.dll"), ("LICENCIA_OpenAL_Soft.txt",)) + tuple(("data", "mods", m) for m in MODS_DE_SERIE):
         if not hay(*necesario):
             problemas.append("Falta " + os.path.join(*necesario))
     problemas += rutas_de_este_equipo(raiz)
+    problemas += servidor_completo_y_limpio(raiz)
     for sobra in SOLO_DESARROLLO:
         if hay(*sobra):
             problemas.append("Es solo para desarrollo y no debe repartirse: " + os.path.join(*sobra))
@@ -99,8 +115,8 @@ def comprobar(raiz):
         ruta = os.path.join(data, "sonidos", pack)
         if os.path.isdir(ruta):
             n = len({os.path.splitext(f)[0] for f in os.listdir(ruta) if f.lower().endswith((".flac", ".ogg", ".wav", ".mp3"))})
-            if n != 237:
-                problemas.append(f"El pack {pack} tiene {n} sonidos y deberían ser 237")
+            if n != 243:
+                problemas.append(f"El pack {pack} tiene {n} sonidos y deberían ser 243")
     mods = os.path.join(data, "mods")
     if os.path.isdir(mods):
         for f in os.listdir(mods):

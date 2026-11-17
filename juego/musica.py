@@ -308,6 +308,9 @@ class Radio:
         self._pedido = 0
         self._listo = None
         self._larga = None           # la canción larga que suena por tramos: {"ruta", "trozo", "total", "g"}
+        self.nivel = 1.0             # 1 en el vehículo; más bajo por los auriculares o como música de fondo de un local
+        self.pausa = True            # al apagarse, la canción se queda en pausa; con False, la emisora sigue sonando sin ti
+        self._recuerdos = {}         # por emisora: la canción que sonaba y por dónde iba
         self._prox = None            # el tramo siguiente, ya leído: (pedido, número de tramo, datos)
         self._leyendo = False
         self._nombre_pista = ""
@@ -378,7 +381,58 @@ class Radio:
     def nombre(self, i=None):
         return self.emisoras[(self.actual if i is None else i) % len(self.emisoras)]["nombre"]
 
+    def _recordar(self):
+        """Apunta por dónde va la canción de la emisora que suena, para seguir luego desde ahí. Cada emisora recuerda la
+        suya: al volver a ella, o al subir a otro vehículo, la canción no empieza otra vez desde el principio."""
+        import time
+        larga = self._larga
+        if larga is None or self.canal is None:
+            return
+        if not hasattr(self, "_recuerdos"):
+            self._recuerdos = {}
+        ident = self.id_actual()
+        self._recuerdos[ident] = {"ruta": larga["ruta"], "pos": max(0.0, time.time() - getattr(self, "_t_ini_larga", time.time())),
+                                  "cuando": time.time(), "dur": larga.get("dur") or larga["total"] * TROZO}
+        if ident == "usuario":
+            self._recuerdo = self._recuerdos[ident]
+
+    def poner_nivel(self, nivel):
+        """Cambia el volumen de la radio, también el de la canción que ya suena."""
+        self.nivel = max(0.0, float(nivel))
+        if self.canal is not None:
+            try:
+                self.canal.volumen(self.nivel)
+            except Exception:
+                pass
+
+    def sonando_ahora(self):
+        return (self.canal is not None or self.pendiente) and self.id_actual() not in ("apagada",)
+
+    def musicales(self):
+        """Los números de las emisoras que ponen música, para el hilo musical de los locales."""
+        return [k for k, e in enumerate(self.emisoras) if e["id"] not in ("apagada", "noticias", "usuario")]
+
+    def recuerdo_de(self, ident):
+        """La canción que sonaba en esa emisora y los segundos por los que hay que seguirla, o None. Con la opción de pausa,
+        sigue justo donde se quedó; sin ella, por donde iría si la emisora hubiera seguido sonando sin ti."""
+        import time
+        r = getattr(self, "_recuerdos", {}).get(ident)
+        if ident == "usuario" and getattr(self, "_recuerdo", None) is not None:
+            r = self._recuerdo
+        if not r or r["dur"] <= 0:
+            return None
+        pos = r["pos"] if self.pausa else r["pos"] + time.time() - r["cuando"]
+        if self.pausa and pos >= r["dur"] - 3:
+            return None                                          # se quedó en el final: mejor otra
+        return r["ruta"], pos % r["dur"]
+
+    def _desde_recuerdo(self, ruta):
+        """Los segundos por los que hay que seguir la canción `ruta` de Mi música. Cero si no es la que se recordaba."""
+        r = self.recuerdo_de("usuario")
+        return r[1] if r and r[0] == ruta else 0.0
+
     def apagar(self):
+        self._recordar()
         self._pedido += 1                # lo que se estuviera cargando ya no interesa
         self.pendiente = False
         self.sonando = None
@@ -402,8 +456,9 @@ class Radio:
             return len(self.pistas_usuario) > 1
         return len(self.pistas.get(ident, [])) > 1
 
-    def _pedir(self, ruta):
-        """Carga una canción en segundo plano. Empieza a sonar en cuanto está lista."""
+    def _pedir(self, ruta, desde=0.0):
+        """Carga una canción en segundo plano. Empieza a sonar en cuanto está lista. Con `desde`, una canción larga empieza
+        por el tramo en el que caen esos segundos."""
         from .sintesis import leer_audio
         self._pedido += 1
         n = self._pedido
@@ -424,7 +479,9 @@ class Radio:
                     if n != self._pedido:
                         return
                     if dur > LARGA:                  # larga: solo el primer tramo, y la ganancia para toda la canción
-                        larga = {"ruta": ruta, "trozo": 0, "total": max(1, int(math.ceil(dur / TROZO))), "g": self._ganancia_larga(ruta, dur)}
+                        base = max(0.0, min(float(desde), dur - 5.0)) if desde else 0.0
+                        total = max(1, int(math.ceil((dur - base) / TROZO)))
+                        larga = {"ruta": ruta, "trozo": 0, "total": total, "g": self._ganancia_larga(ruta, dur), "base": base, "dur": dur}
                         datos = self._leer_trozo(larga, 0)
                     else:
                         datos = leer_audio(ruta, mono=False)
@@ -458,7 +515,7 @@ class Radio:
     def _leer_trozo(self, larga, k):
         """Lee del disco solo el tramo k, ya nivelado y con los fundidos de sus extremos."""
         from .sintesis import leer_audio
-        d = leer_audio(larga["ruta"], mono=False, desde=k * TROZO, maximo=TROZO + SOLAPE)
+        d = leer_audio(larga["ruta"], mono=False, desde=larga.get("base", 0.0) + k * TROZO, maximo=TROZO + SOLAPE)
         if d is None or len(d) < 100:
             return None
         d = np.clip(d * larga["g"], -1.0, 1.0).astype(np.float32)
@@ -498,9 +555,9 @@ class Radio:
         self._nombre_pista = nombre
         self.mez.registrar(nombre, datos)
         if tras is not None:
-            self.canal = self.mez.encadenar(tras, nombre, TROZO * SR, bucle=bucle, cat="musica")
+            self.canal = self.mez.encadenar(tras, nombre, TROZO * SR, bucle=bucle, cat="musica", vol=self.nivel)
         else:
-            self.canal = self.mez.sonar(nombre, bucle=bucle, cat="musica")
+            self.canal = self.mez.sonar(nombre, bucle=bucle, cat="musica", vol=self.nivel)
         self.t_fin = len(datos) / SR
 
     def actualizar(self, dt):
@@ -521,8 +578,11 @@ class Radio:
                     self._larga = larga
                     self._tocar(datos, bucle=larga is None and not self._rota())
                     self.sonando = ruta
-                    if larga is not None and larga["total"] > 1:
-                        self._pedir_trozo(1)
+                    if larga is not None:
+                        import time
+                        self._t_ini_larga = time.time() - larga.get("base", 0.0) - larga["trozo"] * TROZO
+                    if larga is not None and larga["trozo"] < larga["total"] - 1:
+                        self._pedir_trozo(larga["trozo"] + 1)
             return
         if self.canal is None or self.pendiente:
             return
@@ -574,14 +634,19 @@ class Radio:
             if not self.pistas_usuario:
                 return "Mi música: la carpeta data, radio, mi_musica está vacía. Copia en ella tus canciones."
             ruta = self.pistas_usuario[self.pista_idx % len(self.pistas_usuario)]
-            self._pedir(ruta)
+            self._pedir(ruta, desde=self._desde_recuerdo(ruta))     # sigue por donde iría, como una emisora de verdad
             return "Mi música: " + os.path.splitext(os.path.basename(ruta))[0].replace("_", " ")
+        r = self.recuerdo_de(e["id"])
         if "archivo" in e:
-            self._pedir(e["archivo"])
+            self._pedir(e["archivo"], desde=r[1] if r and r[0] == e["archivo"] else 0.0)
             return e["nombre"]
         if e["id"] not in self.listas:
             return e["nombre"] + ". Sintonizando, espera un momento."
-        self._pedir(self._elegir(e["id"]))
+        if r and r[0] in self.pistas.get(e["id"], []):           # la canción que sonaba aquí, por donde iba
+            self.ultima[e["id"]] = r[0]
+            self._pedir(r[0], desde=r[1])
+        else:
+            self._pedir(self._elegir(e["id"]))
         return e["nombre"]
 
     def siguiente_pista(self):

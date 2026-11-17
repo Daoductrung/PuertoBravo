@@ -84,6 +84,12 @@ ESQUEMAS = {
         c("precio_noche", "Precio por noche", "entero", si=_es("hotel")),
         c("descuento", "Factor de precio", "decimal", "Por ejemplo 0,7 para un 30 por ciento de descuento.", si=_es("armeria")),
         c("caro", "Precios triples", "si_no", si=_es("comida")),
+        c("musica", "Suena la radio de fondo al entrar", "si_no", "En tiendas, bares, restaurantes, gimnasios, talleres y otros locales ya suena sin marcar nada: "
+          "cada local tiene su emisora, bajita. Márcalo para ponerla en un lugar de otro tipo."),
+        c("sin_musica", "Aquí no suena música de fondo", "si_no", "Para un local que tendría hilo musical por su tipo y prefieres que esté en silencio."),
+        c("surtidor", "Es una gasolinera: tiene surtidor", "si_no", "Con la opción de combustible activada, aquí se reposta sin bajarse del vehículo y se compran bidones. "
+          "Pon al menos una en cada localidad con coches.", si=_es("tienda")),
+        c("precio_litro", "Precio del litro en esta gasolinera", "decimal", "Vacío, el precio general, que está en la sección Combustible.", si=lambda d: d.get("tipo") == "tienda" and d.get("surtidor")),
         c("a_mapa", "Lleva a la localidad", "ref", ref="mapa", si=_es("salida", "embarcadero", "muelle")),
         c("a_lugar", "Lugar de llegada", "ref", "El lugar del otro mapa en el que apareces.", ref="lugar", si=_es("salida", "embarcadero", "muelle")),
         c("km", "Kilómetros de carretera", "entero", si=_es("salida")),
@@ -214,6 +220,9 @@ ESQUEMAS = {
         c("claxon", "Claxon", "ref", ref="sonido"), c("sirena", "Sirena", "ref", ref="sonido"),
         c("trabajo", "Trabajo con la tecla J", "opcion", ops=TRABAJOS),
         c("barco", "Es una embarcación", "si_no"), c("vuela", "Vuela", "si_no"),
+        c("deposito", "Litros que caben en el depósito", "entero", "Solo cuenta con la opción de combustible activada. Vacío, el juego lo pone según el motor: 45 litros un coche, "
+          "14 una moto, 70 una furgoneta, 60 un deportivo y 160 un camión. Los barcos y lo que vuela no gastan.", minimo=1, maximo=600),
+        c("sin_motor", "No gasta combustible", "si_no", "Para bicicletas, patinetes y cualquier cosa que no lleve motor de gasolina."),
         c("desc", "Descripción", "largo")]},
     "carrera": {"titulo": "Carrera", "resumen": lambda d: f"{d.get('nombre', '?')} ({d.get('mapa', '?')})", "campos": [
         c("id", "Identificador", req=True), c("nombre", "Nombre", req=True),
@@ -226,7 +235,7 @@ ESQUEMAS = {
     "comida": {"titulo": "Comida", "resumen": lambda d: f"{d.get('nombre', '?')}: {d.get('precio', '?')} euros", "campos": [
         c("nombre", "Nombre", req=True), c("precio", "Precio", "entero", req=True, defecto=10), c("salud", "Salud que recupera", "entero", req=True, defecto=20)]},
     "objeto": {"titulo": "Objeto de tienda", "resumen": lambda d: f"{d.get('nombre', '?')}", "campos": [
-        c("id", "Identificador", req=True, ayuda="El juego usa botiquin, ganzua y chaleco. Aquí puedes cambiarles nombre, precio y descripción."),
+        c("id", "Identificador", req=True, ayuda="El juego usa botiquin, ganzua, pienso, chaleco y walkman. Aquí puedes cambiarles nombre, precio y descripción."),
         c("nombre", "Nombre", req=True), c("precio", "Precio", "entero", req=True), c("desc", "Descripción", "largo")]},
     "pez": {"titulo": "Pez", "resumen": lambda d: f"{d.get('nombre', '?')}: {d.get('valor', '?')} euros", "campos": [
         c("nombre", "Nombre con artículo, por ejemplo: una merluza", req=True), c("valor", "Valor", "entero", req=True, defecto=20),
@@ -315,7 +324,100 @@ ESQUEMAS = {
         c("ciudadania", "Prestigio inicial entre los vecinos, de 0 a 100", "entero", minimo=0, maximo=100),
         c("conduccion", "Nivel inicial de conducción", "entero", minimo=0, maximo=10), c("punteria", "Nivel inicial de puntería", "entero", minimo=0, maximo=10),
         c("resistencia", "Nivel inicial de resistencia", "entero", minimo=0, maximo=10), c("pesca", "Nivel inicial de pesca", "entero", minimo=0, maximo=10),
-        c("arma", "Arma inicial", "ref", ref="arma"), c("botiquines", "Botiquines", "entero"), c("ganzuas", "Ganzúas", "entero")]},
+        c("arma", "Arma inicial", "ref", ref="arma"),
+        c("balas", "Balas de reserva del arma inicial", "entero", "Vacío, las que trae el arma de serie.", minimo=0),
+        c("botiquines", "Botiquines", "entero"), c("ganzuas", "Ganzúas", "entero")]},
+    "prenda": {"titulo": "Prenda de la tienda de ropa", "resumen": lambda d: f"{d.get('nombre', '?')}: {d.get('precio', '?')} euros", "campos": [
+        c("id", "Identificador", req=True, ayuda="Si coincide con una prenda del juego, la sustituye."),
+        c("nombre", "Nombre", req=True, ayuda="Como lo dice el juego. Al comprarla dirá: Sales con, y el nombre."),
+        c("precio", "Precio", "entero", req=True, minimo=0),
+        c("blindaje", "Blindaje que da", "entero", "Vacío, es ropa corriente. Con un número, al ponértela el blindaje sube hasta ese valor si llevabas menos.", minimo=0, maximo=300)]},
+    "complemento": {"titulo": "Complemento", "resumen": lambda d: f"{d.get('nombre', '?')} ({d.get('clase', '?')}): {d.get('precio', '?')} euros", "campos": [
+        c("id", "Identificador", req=True),
+        c("nombre", "Nombre", req=True),
+        c("clase", "Clase", req=True, ayuda="De cada clase se lleva uno solo: gafas, cadena, anillo, reloj, gorra, pendiente o la que tú inventes. Comprar otro de la misma clase sustituye al que se llevaba."),
+        c("precio", "Precio", "entero", req=True, minimo=0),
+        c("animo", "Ánimo que da estrenarlo", "entero", minimo=0, maximo=30)]},
+    "proteccion": {"titulo": "Protección de la armería", "resumen": lambda d: f"{d.get('nombre', '?')}: blindaje {d.get('blindaje', '?')}", "campos": [
+        c("id", "Identificador", req=True),
+        c("nombre", "Nombre", req=True),
+        c("precio", "Precio", "entero", req=True, minimo=0),
+        c("blindaje", "Blindaje en el que te deja", "entero", "El chaleco deja 100.", req=True, minimo=1, maximo=400, defecto=150),
+        c("desc", "Descripción", "largo")]},
+    "jornada": {"titulo": "Jornada de trabajo", "resumen": lambda d: f"{d.get('nombre', '?')}: {d.get('paga', '?')} euros", "campos": [
+        c("id", "Identificador", req=True),
+        c("nombre", "Nombre", req=True, ayuda="Por ejemplo: Jornada de panadero. Sale en la oficina de empleo."),
+        c("paga", "Paga por las ocho horas", "entero", req=True, minimo=0),
+        c("salud", "Salud que cambia", "decimal", "Negativo si el trabajo es duro y desgasta; cero si no.", defecto=0)]},
+    "combate": {"titulo": "Combate del gimnasio", "resumen": lambda d: f"{d.get('nombre', '?')}, {d.get('asaltos', 1)} asaltos", "campos": [
+        c("id", "Identificador", req=True, ayuda="El juego trae boxeo y mma. Las victorias se cuentan con este identificador."),
+        c("nombre", "Nombre", req=True),
+        c("inscripcion", "Inscripción", "entero", req=True, minimo=0),
+        c("asaltos", "Asaltos seguidos", "entero", "Cada asalto es un rival distinto, sin descanso entre ellos.", req=True, minimo=1, maximo=6, defecto=1),
+        c("rivales", "Nombres de los rivales", "textos", "Uno por línea. Se eligen al azar."),
+        c("salud", "Salud del primer rival", "entero", req=True, minimo=10, defecto=60),
+        c("salud_asalto", "Salud de más en cada asalto", "entero", minimo=0, defecto=0),
+        c("salud_victoria", "Salud de más por cada victoria que lleves", "entero", minimo=0, defecto=20),
+        c("premio", "Premio", "entero", req=True, minimo=0),
+        c("premio_victoria", "Premio de más por cada victoria que lleves", "entero", minimo=0),
+        c("ayuda", "Explicación", "largo", "Lo que se oye con la ayuda de la opción.")]},
+    "ajuste_combustible": {"titulo": "Combustible", "resumen": lambda d: f"Litro a {d.get('precio_litro', '?')} euros", "campos": [
+        c("id", "Identificador", req=True, defecto="general", ayuda="Déjalo en general: solo se usa el primero."),
+        c("precio_litro", "Precio del litro", "decimal", req=True, defecto=1.6),
+        c("autonomia", "Metros que da un depósito lleno a velocidad de crucero", "entero", req=True, minimo=500, defecto=9000),
+        c("reserva", "Tanto por ciento en el que avisa la reserva", "entero", minimo=2, maximo=50, defecto=15),
+        c("litros_bidon", "Litros de un bidón", "entero", minimo=1, defecto=10),
+        c("precio_bidon", "Precio de un bidón", "entero", minimo=0, defecto=30),
+        c("precio_asistencia", "Precio de la asistencia en carretera", "entero", minimo=0, defecto=140),
+        c("litros_asistencia", "Litros que trae la asistencia", "entero", minimo=1, defecto=15),
+        c("depositos", "Litros del depósito según el sonido del motor", "lista", "Para los vehículos que no dicen su depósito. La línea llamada otros es la de los demás.",
+          sub="deposito_motor", como_dicc=("clave", "valor"))]},
+    "deposito_motor": {"titulo": "Depósito por motor", "resumen": lambda d: f"{d.get("clave", "?")}: {d.get('valor', '?')} litros", "campos": [
+        c("clave", "Sonido del motor", ayuda="Por ejemplo motor_moto. Con otros, vale para todos los que no estén en la lista."),
+        c("valor", "Litros", "entero", req=True, minimo=1, defecto=45)]},
+    "mueble": {"titulo": "Mueble de la casa", "resumen": lambda d: f"{d.get('nombre', '?')}: {d.get('precio', '?')} euros", "campos": [
+        c("id", "Identificador", req=True, ayuda="El juego trae recibidor, sofa, cocina, banera, cama y taller, y cada uno tiene su efecto. Puedes cambiarles el nombre, el precio y los textos. "
+          "Uno con un identificador nuevo se puede comprar y se describe al entrar en su habitación, pero no tiene efecto propio."),
+        c("habitacion", "Habitación", "opcion", "En cuál se nota.", ops=[("salir", "El recibidor"), ("salon", "El salón"), ("cocina", "La cocina"), ("bano", "El baño"), ("dormitorio", "El dormitorio"), ("garaje", "El garaje")], req=True, defecto="salon"),
+        c("nombre", "Nombre", req=True),
+        c("precio", "Precio", "entero", req=True, minimo=0),
+        c("desc", "Lo que se dice al entrar en la habitación", "largo"),
+        c("efecto", "Lo que mejora, explicado", "largo")]},
+    "mejora": {"titulo": "Mejora del taller", "resumen": lambda d: f"{d.get('nombre', '?')}: {d.get('precio', '?')} euros por nivel", "campos": [
+        c("id", "Identificador", req=True, ayuda="El juego trae motor, frenos y blindaje. Aquí se les cambia el nombre, el precio y la explicación; lo que hacen no cambia."),
+        c("nombre", "Nombre", req=True),
+        c("precio", "Precio del primer nivel", "entero", "Cada nivel cuesta este precio multiplicado por el número del nivel.", req=True, minimo=0),
+        c("desc", "Explicación", "largo")]},
+    "ajuste_realismo": {"titulo": "Realismo", "resumen": lambda d: "Sed, higiene, averías y normas de tráfico", "campos": [
+        c("id", "Identificador", req=True, defecto="general", ayuda="Déjalo en general: solo se usa el primero."),
+        c("sed_horas", "Horas de juego hasta morirse de sed", "entero", minimo=1, defecto=9),
+        c("higiene_horas", "Horas de juego hasta necesitar una ducha de verdad", "entero", minimo=1, defecto=30),
+        c("pinchazo_km", "Cada cuántos kilómetros se pincha, de media", "entero", minimo=1, defecto=35),
+        c("revision_km", "Cada cuántos kilómetros toca revisión", "entero", minimo=1, defecto=50),
+        c("precio_rueda", "Precio de una rueda de repuesto", "entero", minimo=0, defecto=80),
+        c("precio_cambio_rueda", "Precio de cambiar la rueda en el taller", "entero", minimo=0, defecto=60),
+        c("precio_revision", "Precio de la revisión", "entero", minimo=0, defecto=150),
+        c("limite_ciudad", "Límite de velocidad, en kilómetros por hora", "entero", minimo=10, defecto=50),
+        c("margen_velocidad", "Tanto por ciento que se puede pasar del límite sin multa", "entero", minimo=0, defecto=30),
+        c("multa_semaforo", "Multa por saltarse un semáforo", "entero", minimo=0, defecto=90),
+        c("multa_velocidad", "Multa por exceso de velocidad", "entero", minimo=0, defecto=120),
+        c("puntos_carne", "Puntos del carné", "entero", minimo=1, defecto=12),
+        c("puntos_semaforo", "Puntos que quita un semáforo", "entero", minimo=0, defecto=4),
+        c("puntos_velocidad", "Puntos que quita el exceso de velocidad", "entero", minimo=0, defecto=3),
+        c("precio_carne", "Precio del curso de recuperación de puntos", "entero", minimo=0, defecto=300),
+        c("puntos_curso", "Puntos que devuelve el curso", "entero", minimo=1, defecto=8)]},
+    "tarifa": {"titulo": "Tarifa o precio", "resumen": lambda d: f"{d.get('nombre', '?')}: {d.get('precio', '?')} euros", "campos": [
+        c("id", "Identificador", req=True, ayuda="Es el nombre con el que el juego busca esta tarifa: no lo cambies, o el juego dejará de encontrarla y cobrará el precio de siempre. "
+          "Se pueden cambiar el precio y el nombre. Una tarifa con un identificador nuevo no la usa nadie."),
+        c("nombre", "Nombre", req=True, ayuda="Explica qué es. Solo se ve aquí, en el editor."),
+        c("precio", "Precio o cantidad, en euros", "entero", "Es lo que el juego cobra o paga, y lo que dice en los menús y en las ayudas. "
+          "Donde el precio sale de una cuenta, por ejemplo por cada nivel de búsqueda, esta es la base.", req=True, minimo=0)]},
+    "ajuste_ambiente": {"titulo": "Radio a pie y en los locales", "resumen": lambda d: "Reproductor con auriculares e hilo musical", "campos": [
+        c("id", "Identificador", req=True, defecto="general", ayuda="Déjalo en general: solo se usa el primero."),
+        c("locales_con_musica", "Tipos de local donde suena la radio de fondo", "textos", "Uno por línea, con el nombre interno del tipo: tienda, comida, bar, taberna, ropa, gimnasio... "
+          "Cada lugar puede además pedirla o quitarla por su cuenta."),
+        c("volumen_auriculares", "Volumen de la radio por los auriculares, a pie, en tanto por ciento", "entero", minimo=5, maximo=100, defecto=70),
+        c("volumen_local", "Volumen de la música de fondo de los locales, en tanto por ciento", "entero", minimo=2, maximo=100, defecto=30)]},
     "capitulo": {"titulo": "Capítulo", "resumen": lambda d: f"{d.get('clave', '?')}: {d.get('valor', '?')}", "campos": [
         c("clave", "Número", req=True), c("valor", "Título", req=True)]},
 }
@@ -326,6 +428,11 @@ SECCIONES = [
     ("vehiculos", "Vehículos y barcos", "vehiculo"), ("carreras", "Carreras", "carrera"), ("mapas", "Localidades y mapas", "mapa"),
     ("comidas", "Comidas", "comida"), ("objetos", "Objetos de tienda", "objeto"), ("peces", "Peces", "pez"),
     ("capitulos", "Capítulos", "capitulo"), ("personajes", "Personajes para elegir", "personaje"),
+    ("prendas", "Ropa", "prenda"), ("complementos", "Complementos", "complemento"), ("protecciones", "Protecciones de la armería", "proteccion"),
+    ("jornadas", "Jornadas de trabajo", "jornada"), ("combates", "Combates del gimnasio", "combate"), ("combustible", "Combustible", "ajuste_combustible"),
+    ("muebles", "Muebles de la casa", "mueble"), ("mejoras", "Mejoras del taller", "mejora"), ("realismo", "Realismo", "ajuste_realismo"),
+    ("ambiente", "Radio a pie y en los locales", "ajuste_ambiente"),
+    ("tarifas", "Tarifas y precios", "tarifa"),
     ("personas", "Personas, contenido para adultos", "persona"), ("sustancias", "Sustancias, contenido para adultos", "sustancia"),
     ("actividades", "Planes para citas, contenido para adultos", "actividad"), ("regalos", "Regalos, contenido para adultos", "regalo"),
 ]

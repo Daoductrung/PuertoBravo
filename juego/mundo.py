@@ -79,6 +79,9 @@ def _es_dato(nombre):
     return nombre.lower().endswith((".json", rutas.EXT_DATOS))
 
 
+SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas")
+
+
 def cargar_datos(con_mods=True):
     """Lee datos/*.json y fusiona encima cualquier JSON de la carpeta mods."""
     d = {}
@@ -105,6 +108,12 @@ def cargar_datos(con_mods=True):
         d["adultos"] = _leer_json(os.path.join(rutas.DATOS, "adultos.json"))
     except (OSError, ValueError):
         d["adultos"] = {"personas": [], "actividades": [], "regalos": [], "sustancias": []}
+    try:
+        vida = _leer_json(os.path.join(rutas.DATOS, "vida.json"))
+    except (OSError, ValueError):
+        vida = {}
+    for clave in SECCIONES_VIDA:                               # ropa, complementos, protecciones, jornadas, combates, combustible, muebles, mejoras y tarifas
+        d[clave] = list(vida.get(clave, []))
     carpeta_mapas = os.path.join(rutas.DATOS, "mapas")
     if os.path.isdir(carpeta_mapas):
         for nombre in sorted(os.listdir(carpeta_mapas)):
@@ -134,7 +143,7 @@ def cargar_datos(con_mods=True):
             except (OSError, ValueError) as e:
                 d["errores_mods"].append(f"{nombre}: {e}")
                 continue
-            for clave in ("armas", "objetos", "vehiculos", "carreras", "misiones", "comidas", "personajes"):
+            for clave in ("armas", "objetos", "vehiculos", "carreras", "misiones", "comidas", "personajes") + SECCIONES_VIDA:
                 for nuevo in mod.get(clave, []):
                     lista = d[clave]
                     ident = nuevo.get("id")
@@ -169,6 +178,10 @@ def cargar_datos(con_mods=True):
                 else:
                     lista[pos] = nuevo
             d["capitulos"].update(mod.get("capitulos", {}))
+    from . import combustible, realismo, sistemas
+    combustible.configurar(d)
+    sistemas.configurar(d)
+    realismo.configurar(d)
     return d
 
 

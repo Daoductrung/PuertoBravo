@@ -1,0 +1,37 @@
+# Servicio de systemd para el servidor en línea de Puerto Bravo.
+#
+# 1. Copia la carpeta del servidor a /opt/puertobravo (dentro tiene que quedar la carpeta servidor con el código).
+# 2. Crea un usuario sin privilegios para él:    sudo useradd --system --home /opt/puertobravo puertobravo
+#    y dale la carpeta:                           sudo chown -R puertobravo: /opt/puertobravo
+# 3. Copia este archivo a /etc/systemd/system/puertobravo.service
+# 4. Actívalo:    sudo systemctl daemon-reload && sudo systemctl enable --now puertobravo
+#
+# Ver cómo va:    systemctl status puertobravo        Lo que dice:    journalctl -u puertobravo -f
+# Pararlo:        sudo systemctl stop puertobravo     (avisa a los jugadores y lo guarda todo)
+# Si usas otra carpeta u otro usuario, cambia WorkingDirectory y User.
+
+[Unit]
+Description=Servidor en línea de Puerto Bravo: Ley del Asfalto
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=puertobravo
+WorkingDirectory=/opt/puertobravo
+ExecStart=/usr/bin/python3 -m servidor servidor.conf
+Environment=PYTHONUNBUFFERED=1
+# Al parar se le manda la señal de terminar: avisa a los jugadores, lo guarda todo y sale.
+KillSignal=SIGTERM
+TimeoutStopSec=20
+Restart=on-failure
+RestartSec=5
+# Para servidores con muchísima gente: cada jugador ocupa una conexión abierta.
+LimitNOFILE=65536
+# Un poco de protección: el servidor no necesita tocar nada del sistema.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

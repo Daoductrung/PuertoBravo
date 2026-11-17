@@ -78,7 +78,16 @@ ACCIONES = {
     "hablar": ("hablar con la persona de al lado", K.K_j, 0, False),
     "especial": ("pescar en el mar, o sirena en vehículos de emergencias", K.K_p, 0, False),
     "velocidad": ("decir la velocidad", K.K_w, 0, False),
+    "cruce": ("siguiente cruce: qué calle viene y a cuántos metros", K.K_n, S, False),
+    "necesidades": ("hambre, sed, sueño e higiene", K.K_v, S, False),
+    "mi_vehiculo": ("dónde está mi vehículo, y marcarlo en el GPS", K.K_l, S, False),
+    "mirar_jugador": ("cómo va vestido el jugador de al lado", K.K_j, S, False),
+    "quitar_gps": ("cancelar el GPS", K.K_g, S, False),
+    "walkman": ("reproductor con auriculares: encender y emisora siguiente", K.K_r, S, False),
 }
+# El botón que, mantenido, convierte a los demás en una segunda función: Vista en Xbox, Crear o Share en PlayStation.
+# Pulsado y soltado solo, hace lo suyo (de serie, abrir el móvil).
+COMBINAR = "back"
 
 POR_DEFECTO = {
     "pie": {"a": "interactuar", "b": "agacharse", "x": "recargar", "y": "vehiculo", "lb": "arma_ant", "rb": "arma_sig",
@@ -87,6 +96,13 @@ POR_DEFECTO = {
     "coche": {"a": "interactuar", "b": "freno_mano", "x": "claxon", "y": "vehiculo", "lb": "fijar", "rb": "disparar_veh",
               "lt": "frenar", "rt": "acelerar", "l3": "media_vuelta", "r3": "trabajo", "arriba": "donde", "abajo": "estado",
               "izquierda": "radar_ant", "derecha": "radar_sig", "back": "movil", "start": "pausa", "touchpad": "mapa", "misc": "objetivo"},
+    # segundas funciones: manteniendo el botón de combinar y pulsando otro
+    "pie_combo": {"a": "paseo", "b": "hablar", "x": "baliza_radar", "y": "mi_vehiculo", "lb": "rumbo", "rb": "hora", "l3": "quitar_gps", "r3": "armas",
+                  "arriba": "cruce", "abajo": "necesidades", "izquierda": "lugares", "derecha": "walkman", "start": "ayuda", "misc": "mirar_jugador",
+                  "touchpad": "mirar_jugador"},
+    "coche_combo": {"a": "piloto", "b": "velocidad", "x": "gps", "y": "objetivo", "lb": "baliza_radar", "rb": "rumbo", "l3": "quitar_gps", "r3": "hora",
+                    "arriba": "cruce", "abajo": "necesidades", "izquierda": "radio_off", "derecha": "radio", "start": "ayuda", "misc": "lugares",
+                    "touchpad": "lugares"},
 }
 MENU = {"a": K.K_RETURN, "b": K.K_ESCAPE, "start": K.K_ESCAPE, "y": K.K_F1, "x": K.K_PERIOD, "lb": K.K_PAGEUP, "rb": K.K_PAGEDOWN,
         "arriba": K.K_UP, "abajo": K.K_DOWN, "izquierda": K.K_LEFT, "derecha": K.K_RIGHT}
@@ -116,6 +132,9 @@ class Mando:
         self.pulsados = set()
         self.mis_teclas = set()
         self.flick = {}             # estado de los «toques» de palanca
+        self._combinar_pendiente = False     # el botón de combinar está pulsado y aún no se sabe si es para una combinación
+        self._combinar_usado = False
+        self._de_combo = set()               # botones pulsados como segunda función: no cuentan como la primera hasta soltarlos
         self.t_rep = 0.0
         self.rep_tecla = None
         self.mapa = {c: dict(m) for c, m in POR_DEFECTO.items()}
@@ -279,8 +298,23 @@ class Mando:
         ctx = self.contexto()
         if not abajo:
             self.pulsados.discard(b)
+            self._de_combo.discard(b)
+            if b == COMBINAR and self._combinar_pendiente:
+                # Soltado sin haber pulsado nada más: hace lo suyo. Si entre medias se usó para una combinación, nada.
+                self._combinar_pendiente = False
+                if ctx in ("pie", "coche") and not self._combinar_usado:
+                    self._accion(self.mapa[ctx].get(b, "nada"), ctx)
             return
         self.pulsados.add(b)
+        if ctx in ("pie", "coche"):
+            if b == COMBINAR:
+                self._combinar_pendiente, self._combinar_usado = True, False
+                return
+            if COMBINAR in self.pulsados and self._combinar_pendiente:
+                self._combinar_usado = True
+                self._de_combo.add(b)                            # mientras siga pulsado no cuenta como su función normal
+                self._accion(self.mapa[ctx + "_combo"].get(b, "nada"), ctx)
+                return
         if ctx == "menu":
             k = MENU.get(b)
             if k:
@@ -291,7 +325,9 @@ class Mando:
             if k:
                 self._tecla(k)
             return
-        accion = self.mapa[ctx].get(b, "nada")
+        self._accion(self.mapa[ctx].get(b, "nada"), ctx)
+
+    def _accion(self, accion, ctx):
         p = self.app.pila[-1]
         if ctx == "coche":
             if accion == "interactuar" and p.pesca:
@@ -389,6 +425,8 @@ class Mando:
         # botones que se mantienen (acelerar, frenar, disparar...)
         if ctx in ("pie", "coche"):
             for b in self.pulsados:
+                if b in self._de_combo or (b == COMBINAR and self._combinar_pendiente):
+                    continue
                 accion = self.mapa[ctx].get(b, "nada")
                 _, key, mod, mantener = ACCIONES[accion]
                 if mantener and key is not None:
@@ -411,6 +449,14 @@ class Mando:
                         out.append(f"{titulos[c]}. {self.nombre_boton(b).capitalize()}: {ACCIONES[a][0]}.")
             for linea in PALANCAS_AYUDA.get(c, []):
                 out.append(f"{titulos[c]}. {linea}.")
+            if c + "_combo" in self.mapa:
+                mod = self.nombre_boton(COMBINAR).capitalize()
+                vistas = set()
+                for b in ORDEN_BOTONES:
+                    a = self.mapa[c + "_combo"].get(b, "nada")
+                    if a != "nada" and b != COMBINAR and (a, b in ("touchpad", "misc")) not in vistas:
+                        vistas.add((a, b in ("touchpad", "misc")))
+                        out.append(f"{titulos[c]}. {mod}, mantenido, más {self.nombre_boton(b)}: {ACCIONES[a][0]}.")
         return out
 
 

@@ -346,4 +346,6 @@ def crear(cfg, pruebas=False):
                 return MezcladorAL()
             except Exception as e:
                 registro.aviso("sonido", "El motor envolvente no ha arrancado; se usa el clásico", error=type(e).__name__)
+    from . import audio
+    audio.HOLGADO = bool(dict(getattr(cfg, "v", cfg)).get("sonido_holgado", False))      # búfer grande, para equipos donde el sonido da chasquidos
     return Mezclador(dispositivo=True)

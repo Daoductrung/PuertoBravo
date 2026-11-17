@@ -272,16 +272,35 @@ class Extras2:
                 {"tipo": "entregar", "lugar": l.id, "salud_min": 50, "texto": f"Lleva el vehículo a {l.nombre} en buen estado."}],
             "recompensa": {"dinero": int(mo["valor"] * 1.5) + 350}})
 
-    def empezar_boxeo(self, l):
-        g = self.j.stats.get("boxeo", 0)
-        rival = random.choice(["el Martillo", "la Apisonadora", "Puños de Hierro", "el Yunque", "la Cobra", "Mandíbula de Cristal"])
+    def combate_def(self, ident):
+        return next((c for c in self.datos.get("combates", []) if c.get("id") == ident), None)
+
+    def empezar_combate(self, l, c):
+        """Un combate del gimnasio, definido en los datos: uno o varios asaltos seguidos, solo con los puños."""
+        g = self.j.stats.get(c["id"], 0)
+        asaltos = max(1, int(c.get("asaltos", 1)))
+        nombres = list(c.get("rivales") or ["el Rival"])
+        rivales = random.sample(nombres, asaltos) if len(nombres) >= asaltos else [random.choice(nombres) for _ in range(asaltos)]
         self.j.arma = "punos"
-        self._empezar_repetible({
-            "id": "boxeo", "titulo": f"Combate contra {rival}", "lugar": l.id, "contador": "boxeo",
-            "pasos": [{"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": f"¡Suena la campana! Tu rival es {rival}. Pulsa Q para fijarlo y Espacio para golpear.",
-                       "enemigos": [{"n": 1, "tipo": rival.capitalize() if rival[0].islower() else rival, "arma": "punos", "salud": 60 + 22 * g}]}],
-            "recompensa": {"dinero": 150 + 110 * g}})
+        pasos = []
+        for n, rival in enumerate(rivales):
+            if asaltos == 1:
+                entrada = "¡Suena la campana!"
+            else:
+                entrada = "¡Se cierra la jaula! Primer asalto." if n == 0 else "Último asalto: el combate estelar." if n == asaltos - 1 else f"Asalto {n + 1}, sin descanso."
+            pasos.append({"tipo": "eliminar", "lugar": l.id, "ya": True,
+                          "texto": f"{entrada} Tu rival es {rival}. Pulsa Q para fijarlo y Espacio para golpear.",
+                          "enemigos": [{"n": 1, "tipo": rival[0].upper() + rival[1:], "arma": "punos",
+                                        "salud": int(c.get("salud", 60)) + int(c.get("salud_asalto", 0)) * n + int(c.get("salud_victoria", 20)) * g}]})
+        self._empezar_repetible({"id": c["id"], "titulo": f"{c['nombre']} contra {rivales[0]}" if asaltos == 1 else c["nombre"], "lugar": l.id, "contador": c["id"],
+                                 "pasos": pasos, "recompensa": {"dinero": int(c.get("premio", 150)) + int(c.get("premio_victoria", 100)) * g}})
         self.son("campana_ring", cat="interfaz")
+
+    def empezar_boxeo(self, l):
+        self.empezar_combate(l, self.combate_def("boxeo") or {"id": "boxeo", "nombre": "Combate de boxeo"})
+
+    def empezar_mma(self, l):
+        self.empezar_combate(l, self.combate_def("mma") or {"id": "mma", "nombre": "Velada de artes marciales mixtas", "asaltos": 3})
 
     # --------------------------------------------------------------- servicios
     def plaza_cercana(self):

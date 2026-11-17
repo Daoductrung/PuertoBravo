@@ -397,9 +397,20 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
         f"echo Actualizando Puerto Bravo a la version {version}. No cierres esta ventana.",
         "set /a N=0", ":espera",
         f'tasklist /fi "PID eq {pid}" 2>nul | find " {pid} " >nul',
-        "if errorlevel 1 goto copiar",
+        "if errorlevel 1 goto servidor",
         "set /a N+=1", "if %N% geq 90 goto abrir",
-        "timeout /t 1 /nobreak >nul", "goto espera",
+        "ping -n 2 127.0.0.1 >nul", "goto espera",
+        # Si el servidor en línea de esta misma carpeta está en marcha, sus programas no se pueden sustituir: se espera a
+        # que se cierre, y si no se cierra, no se actualiza a medias.
+        ":servidor",
+        'tasklist /fi "IMAGENAME eq PuertoBravoServidor.exe" 2>nul | find /i "PuertoBravoServidor" >nul',
+        "if not errorlevel 1 goto ocupado",
+        'tasklist /fi "IMAGENAME eq PuertoBravoServidorPanel.exe" 2>nul | find /i "PuertoBravoServidor" >nul',
+        "if errorlevel 1 goto copiar",
+        ":ocupado",
+        "if %N%==0 echo El servidor en linea de Puerto Bravo esta abierto. Paralo y cierra su panel para seguir con la actualizacion.",
+        "set /a N+=1", "if %N% geq 180 goto abrir",
+        "ping -n 2 127.0.0.1 >nul", "goto servidor",
         ":copiar",
         'if exist "%COPIA%" rmdir /s /q "%COPIA%"',
         'robocopy "%APP%" "%COPIA%" /e /xd "%APP%\\data" /r:2 /w:1 /njh /njs /ndl /nfl >nul',
@@ -432,9 +443,28 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
     return ruta
 
 
+PROGRAMAS_SERVIDOR = ("PuertoBravoServidor.exe", "PuertoBravoServidorPanel.exe")
+
+
+def servidor_abierto():
+    """¿Está en marcha el servidor en línea, o su panel? Con ellos abiertos no se pueden sustituir sus programas."""
+    try:
+        sin_ventana = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+        salida = subprocess.run(["tasklist", "/fo", "csv", "/nh"], capture_output=True, text=True, timeout=10, creationflags=sin_ventana).stdout.lower()
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return any('"%s"' % nombre.lower() in salida for nombre in PROGRAMAS_SERVIDOR)
+
+
 def lanzar_instalador(ruta_bat):
+    """Arranca el instalador en su propia consola, pero escondida: no se ve ninguna ventana mientras se actualiza."""
     banderas = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0) | getattr(subprocess, "CREATE_NEW_CONSOLE", 0)
-    subprocess.Popen(["cmd.exe", "/c", ruta_bat], cwd=os.path.dirname(ruta_bat), creationflags=banderas, close_fds=True)
+    info = None
+    if hasattr(subprocess, "STARTUPINFO"):
+        info = subprocess.STARTUPINFO()
+        info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        info.wShowWindow = 0                                      # SW_HIDE
+    subprocess.Popen(["cmd.exe", "/c", ruta_bat], cwd=os.path.dirname(ruta_bat), creationflags=banderas, close_fds=True, startupinfo=info)
 
 
 def limpiar():
