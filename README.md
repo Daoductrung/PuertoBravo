@@ -54,7 +54,9 @@ Todo lo que ocurre tiene su sonido, colocado a tu alrededor: lo que suena a la d
 - Dos motores de sonido: el clásico y uno envolvente, binaural, con eco distinto en cada sitio.
 - Sin inteligencia artificial, una base de más de mil cien frases en casi setenta temas (`juego/respuestas.py`) contesta a lo que escribas, según el carácter de cada persona.
 - Una ciudad que no se repite: cada día viene distinto (rebajas, mercado, fiesta, huelga, operación salida) y cambian los precios, la gente y el tráfico. Ninguna partida es igual a otra.
-- Vida realista, opcional: hambre y sueño.
+- Realismo a tu medida, todo opcional: hambre, sed, sueño e higiene; combustible con gasolineras; averías, pinchazos y revisiones; y normas de tráfico con multas y carné por puntos.
+- Jugar en un servidor: un mundo que sigue vivo con jugadores de verdad, bandas, territorios, casas y negocios, y con el tráfico, la gente y la policía iguales para todos. Cualquiera puede montar el suyo: el servidor viene con el juego, con un panel accesible para llevarlo y una guía paso a paso.
+- La radio se queda en pausa al bajarte y sigue donde quedó; con un reproductor con auriculares la oyes también a pie, y en los locales suena de fondo.
 - Jugar con amigos, sin servidores de nadie: tu propio juego abre la partida, con o sin contraseña, y les das una dirección. Os oís, os encontráis con el radar y el GPS, os escribís, vais en el mismo coche, hacéis carreras con apuesta y repartos en equipo.
 - Siete emisoras de radio con música original, una de noticias que comenta lo que haces y otra con tu propia música. Música de ambiente que cambia con la situación.
 - Un modo opcional para mayores de 18 años, desactivado de serie: relaciones, vida nocturna, sustancias y sus consecuencias, contado sin escenas explícitas.
@@ -107,6 +109,12 @@ El repositorio incluye el audio: los sonidos por defecto y los cuatro packs en `
 - `data/mods/`: los mods de serie, en JSON legible.
 - `data/docs/`: la documentación que se reparte con el juego, pensada solo para quien juega.
 - `desarrollo/`: documentación técnica que no se reparte, como el formato de los archivos de mods.
+
+### El servidor en línea
+
+El servidor (`servidor/`) solo usa la biblioteca de serie de Python y funciona sin el juego, en Windows, Linux, Mac, un NAS o Docker. No trae el contenido: los lugares, las armas, los vehículos y las misiones se los da el juego del primero que entra con cada versión, firmados por quien publica, y en un mismo servidor conviven versiones distintas. Sus opciones están descritas en un solo sitio, `servidor/opciones.py`, del que salen el archivo de ejemplo, la validación, el diálogo de configuración del panel y la guía. El panel (`panel_servidor/`, `servidor_panel.py`) es una ventana wxPython que reutiliza la accesibilidad del editor de mods. Se arranca en desarrollo con `servidor.bat` o `servidor_panel.bat`. La guía de quien lo monta es `data\docs\servidor.html`. `herramientas\prueba_servidor_real.py` arranca un servidor de verdad como proceso aparte y le conecta diez clientes por la red.
+
+Todo el contenido y todos los precios del juego están en los JSON de `data\datos` (lo más nuevo, en `vida.json`), y el editor de mods tiene una sección para cada cosa.
 
 ### Pruebas
 
