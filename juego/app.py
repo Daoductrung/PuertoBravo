@@ -371,6 +371,11 @@ class App:
             pass
         registro.estado()
         registro.vigilar_estado(None)
+        try:
+            from . import vozgen
+            vozgen.parar_prueba()                            # si se estaba probando el motor de voz en un proceso aparte, no se queda abierto
+        except Exception:
+            pass
         self.cfg.guardar()
         for cargador in (self.radio, self.ambiente):       # si aún están cargando música, se paran antes de cerrar
             try:

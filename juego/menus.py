@@ -23,6 +23,7 @@ SALIDAS = ("Volver", "Salir", "Dejarlo", "Cancelar", "Seguir", "Cerrar", "No", "
 
 class Menu:
     pausa_mundo = True
+    antes = None                           # una frase que se dice una sola vez, delante del título, al volver a este menú
 
     def __init__(self, app, titulo, opciones, al_cerrar=None, escapable=True, intro=None):
         self.app = app
@@ -54,6 +55,9 @@ class Menu:
     def al_entrar(self):
         self.refrescar(False)
         partes = [self.titulo]
+        if self.antes:
+            partes.insert(0, self.antes)
+            self.antes = None
         if self.intro:
             partes.append(self.intro)
             self.intro = None

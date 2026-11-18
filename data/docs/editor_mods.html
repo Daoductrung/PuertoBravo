@@ -43,7 +43,7 @@ li { margin-bottom: .3em; }
 <li>Complementos: gafas, cadenas, anillos, relojes y lo que inventes. Cada uno tiene su clase; de cada clase se lleva uno solo.</li>
 <li>Protecciones de la armería: lo que se vende además del chaleco, con el blindaje en el que deja.</li>
 <li>Jornadas de trabajo: los trabajos sin vehículo de la oficina de empleo, con su paga y lo que desgastan.</li>
-<li>Combates del gimnasio: el boxeo, las artes marciales mixtas y los que añadas. Cuántos asaltos, los nombres de los rivales, lo que aguantan y lo que se cobra.</li>
+<li>Combates del gimnasio: el boxeo, las artes marciales mixtas y los que añadas. Cuántos asaltos, los nombres de los rivales, lo que aguantan y lo que se cobra. La casilla Es un combate deportivo viene marcada: tumbar a los rivales no es delito ni baja el prestigio. Desmárcala solo si quieres una pelea ilegal, en la que cada rival que cae cuenta como una agresión si alguien lo ve.</li>
 <li>Muebles de la casa y mejoras del taller: su nombre, su precio y sus textos.</li>
 <li>Tarifas y precios: lo que cuestan los servicios, los billetes, las entradas, los alquileres, las multas y los sobornos, y lo que pagan los trabajos y los premios fijos. De cada una puedes cambiar el precio y el nombre; el identificador lo usa el juego para encontrarla y no debe cambiarse. Donde el precio sale de una cuenta, por ejemplo el soborno por cada nivel de búsqueda, la tarifa es la base.</li>
 <li>Radio a pie y en los locales: en qué tipos de local suena música de fondo y a qué volumen, y el volumen del reproductor con auriculares. Cada lugar puede además pedir o quitar la música por su cuenta.</li>
@@ -108,6 +108,8 @@ li { margin-bottom: .3em; }
 <h3>Copiar del juego original</h3>
 <p>El botón Copiar del juego original trae a tu mod una copia de un elemento original para modificarlo. Si le dejas el mismo identificador, sustituye al original; si se lo cambias, se añade como uno nuevo. Es la manera más rápida de aprender: copia una misión que te guste y mira cómo está hecha.</p>
 
+<h3>Crear un vehículo propio</h3>
+<p>Un vehículo nuevo es un elemento más: no hace falta programar nada. En la sección Vehículos, pulsa Añadir, o trae uno parecido con Copiar del juego original y cámbiale el identificador. Rellena el nombre, la velocidad máxima, la aceleración, la frenada y la resistencia; elige el sonido del motor y su tono, que con un número mayor suena más agudo; y, si quieres, el claxon, la sirena, los litros del depósito y el trabajo que se puede hacer con él. Marca si es una embarcación o si vuela. Para que aparezca en el juego: añádelo a los vehículos de un barrio para que circule y aparque por allí, ponle precio para que lo vendan los concesionarios o las náuticas, o úsalo en un paso de misión.</p>
 <h3>Aprender de los mods de ejemplo</h3>
 <p>En la carpeta de mods hay ocho mods completos: Bahía del Ocaso, que es una ciudad entera con una historia larga, Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos, Noches de neón, Oficios y recados, y Motor y asfalto. Ábrelos con <kbd>Control O</kbd>: <code>costa_dorada</code> tiene un ejemplo de cada cosa que se puede crear, incluido un mapa entero y misiones con los nueve tipos de paso.</p>
 
@@ -155,6 +157,8 @@ li { margin-bottom: .3em; }
 <p>En el mod Bahía del Ocaso, las misiones ocs1 a ocs6 son un ejemplo de cada uno.</p>
 <h3>Tutoriales y muñecos de prácticas</h3>
 <p>Una misión puede marcarse como tutorial: mientras dura, la policía no acude, haga lo que haga el jugador. Y en un grupo de enemigos, la casilla No ataca los convierte en muñecos de prácticas: se les puede fijar y tumbar, pero no se mueven ni hacen daño. Con las dos cosas se hace un tutorial de combate en el que no se puede fallar.</p>
+<h3>Barrios y bandas</h3>
+<p>En la descripción de un barrio cuenta cómo es, no de quién es. Si en tu barrio manda una banda, escribe su nombre en el campo Banda que manda en el barrio, y deja la descripción sin frases como «territorio de tal banda». El juego añade solo la frase que toca en cada momento: territorio de esa banda mientras mande ella, territorio del jugador cuando lo conquista, en guerra mientras se pelea por él, y de la banda que se lo quite si no lo defiende. Si escribes la banda en la descripción, el barrio seguirá diciendo que es suyo cuando ya no lo sea. Quien conquiste ese barrio peleará contra la banda que hayas puesto; si no pones ninguna, contra una al azar.</p>
 <h3>Gasolineras y combustible</h3>
 <p>Para que en tu localidad se pueda repostar, crea un lugar de tipo Tienda y marca Es una gasolinera: tiene surtidor. Puedes ponerle su propio precio del litro. Pon al menos una en cada localidad con coches: quien juegue con el combustible activado la va a necesitar. En cada vehículo puedes escribir los litros de su depósito, o marcar que no gasta combustible si no lleva motor.</p>
 <h3>Tranvía, tren y aeropuerto en tus localidades</h3>

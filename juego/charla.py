@@ -157,7 +157,7 @@ class Charla:
             x, y = self.pos()
             b = self.mundo.barrio(x, y)
             self._trato(f, 3)
-            return f"{nombre}: Esto es {b['nombre']}. {b.get('descripcion', '')}".strip()
+            return f"{nombre}: Esto es {b['nombre']}. {self.barrio_desc(b)}".strip()
         if intencion == "rumor":
             self._trato(f, 2)
             return f"{nombre}: " + self.rumor()

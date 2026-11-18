@@ -215,7 +215,7 @@ def test_crear_un_personaje_con_voz_y_pronunciacion(robot, monkeypatch, tmp_path
 def test_el_generador_de_verdad_dice_una_frase():
     """Con el modelo puesto en data/phonon y un procesador que pueda, el motor genera voz de verdad."""
     vozgen._estado.update(ok=None, motivo="")
-    if not vozgen.disponible():
+    if not vozgen.disponible(esperar=True):                  # la primera vez prueba el motor en un proceso aparte, y se espera a que termine
         pytest.skip("sin generador en esta copia: " + vozgen.motivo())
     rep = vozgen.reparto()
     assert len(rep["protagonista"]) == 8 and "Encarna" in rep["personajes"]

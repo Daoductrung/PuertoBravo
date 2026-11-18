@@ -10,7 +10,7 @@
     {"id": "sl_casco", "nombre": "Casco Histórico de San Lucero", "i": [0, 2], "j": [0, 1], "ambiente": "amb_residencial", "vehiculos": ["utilitario", "sedan", "moto", "taxi", "bici", "scooter"], "descripcion": "San Lucero, ciudad universitaria a cuarenta kilómetros de Puerto Bravo. Su casco histórico es un laberinto de piedra alrededor de la catedral."},
     {"id": "sl_ensanche", "nombre": "El Ensanche", "i": [3, 5], "j": [0, 1], "ambiente": "amb_ciudad", "vehiculos": ["sedan", "utilitario", "taxi", "autobus", "descapotable", "furgoneta"], "descripcion": "La parte nueva de San Lucero: bancos, la estación, la comisaría y el bingo."},
     {"id": "sl_campus", "nombre": "Barrio Universitario", "i": [3, 5], "j": [2, 4], "ambiente": "amb_ciudad", "vehiculos": ["utilitario", "moto", "cross", "sedan", "pickup", "bici", "scooter"], "descripcion": "Facultades, bares baratos y estudiantes a todas horas."},
-    {"id": "sl_marina", "nombre": "La Marina", "i": [0, 2], "j": [2, 4], "ambiente": "amb_playa", "vehiculos": ["descapotable", "deportivo", "todoterreno", "utilitario", "buggy", "caravana"], "descripcion": "El puerto deportivo de San Lucero, con sus marisquerías y sus yates. Territorio de la banda de Los Lagartos."}
+    {"id": "sl_marina", "nombre": "La Marina", "i": [0, 2], "j": [2, 4], "ambiente": "amb_playa", "vehiculos": ["descapotable", "deportivo", "todoterreno", "utilitario", "buggy", "caravana"], "banda": "Los Lagartos", "descripcion": "El puerto deportivo de San Lucero, con sus marisquerías y sus yates."}
   ],
   "bloques": {"1,1": "plaza", "4,3": "hierba", "0,4": "muelle", "1,4": "muelle", "2,4": "muelle"},
   "lugares": [

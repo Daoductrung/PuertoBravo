@@ -62,6 +62,7 @@ class Jugador:
         self.adiccion = {}
         self.ultima_dosis = {}
         self.territorios = []
+        self.barrios_banda = {}      # barrios que una banda te ha quitado: {barrio: banda}
         self.banda = 0               # cuánta gente tienes en tu banda
         self.banda_nombre = ""
         self.laboratorios = []       # casas tuyas con laboratorio (contenido para adultos)
@@ -92,6 +93,7 @@ class Jugador:
         self.casetes = []
         self.visitados = []
         self.barrios_vistos = []
+        self.recordado = []          # recordatorios que el juego ya te ha dado una vez (disparar desde el vehículo...)
         self.stats = {"muertes": 0, "detenciones": 0, "enemigos": 0, "vehiculos_robados": 0,
                       "metros_pie": 0.0, "metros_coche": 0.0, "dinero_ganado": 0, "misiones": 0,
                       "carreras_taxi": 0, "pizzas": 0, "carreras": [], "tiempo": 0.0, "vendidos": 0}

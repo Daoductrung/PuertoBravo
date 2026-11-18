@@ -91,7 +91,7 @@ li { margin-bottom: .3em; }
 <li><kbd>C</kbd>, dónde estoy: calle, entre qué avenidas, barrio y hacia dónde miras. Con <kbd>Mayúsculas</kbd> añade las coordenadas.</li>
 <li><kbd>W</kbd>, <kbd>A</kbd>, <kbd>S</kbd> y <kbd>D</kbd>, escáner direccional: tu bastón. Dice qué hay delante, a la izquierda, detrás y a la derecha: personas, vehículos, puertas, dónde empieza la calzada y a cuántos metros está la pared. Además suena un tono desde la pared.</li>
 <li><kbd>Tabulador</kbd>, radar: recorre todo lo que hay cerca, de lo más cercano a lo más lejano, con distancia y dirección, y hace sonar cada cosa desde su posición. <kbd>Mayúsculas Tabulador</kbd> va hacia atrás. <kbd>F6</kbd> filtra por lugares, vehículos, personas u objetos.</li>
-<li><kbd>B</kbd>: pone el GPS hacia lo último que dijo el radar. Si ya ibas a algún sitio, es un desvío: el juego lo dice, y al llegar a eso el GPS vuelve solo al destino que tenías. Sirve para ir a por dinero o un objeto que hay cerca sin perder la ruta. Con <kbd>Mayúsculas G</kbd> dejas el desvío y vuelves a tu destino; con otra pulsación quitas el GPS.</li>
+<li><kbd>B</kbd>: pone el GPS hacia lo último que dijo el radar. Si ya ibas a algún sitio, es un desvío: el juego lo dice, y al llegar a eso el GPS vuelve solo al destino que tenías. Sirve para ir a por dinero o un objeto que hay cerca sin perder la ruta. Con <kbd>Mayúsculas G</kbd> cancelas el desvío y vuelves a tu destino; con otra pulsación quitas el GPS. El aviso de desvío lo recuerda siempre, vayas a por algo quieto o sigas a alguien que se mueve.</li>
 <li><kbd>L</kbd>, lista de lugares: por categorías y en orden alfabético. Incluye una lista de lugares sin visitar y las demás localidades. <kbd>Intro</kbd> marca el destino.</li>
 <li><kbd>F9</kbd>, explorador de mapa: mueve un cursor de cruce en cruce con las flechas, sin mover al personaje, para aprenderte la localidad. <kbd>Tabulador</kbd> recorre los lugares junto al cursor, <kbd>N</kbd> los describe, <kbd>D</kbd> dice a qué distancia queda de ti, <kbd>Inicio</kbd> vuelve a tu posición e <kbd>Intro</kbd> marca el destino. También funciona en el mar.</li>
 <li>Marcadores personales: en el móvil puedes guardar el punto exacto en el que estás y volver a él con el GPS.</li>
@@ -100,7 +100,7 @@ li { margin-bottom: .3em; }
 <li>Sonido de los lugares: cada tipo de lugar tiene su firma sonora, que oyes al acercarte. Una armería suena a arma que se amartilla, un bar a música a través de la pared, una tienda a timbre de puerta. Están todos en el menú <em>Aprender los sonidos</em>.</li>
 <li>Pasos: suenan distinto en acera, asfalto, césped, arena y muelle.</li>
 <li>Semáforos acústicos: en cada cruce, un tictac rápido indica que puedes cruzar la calle andando hacia el norte o el sur, y un pío lento, que puedes cruzar la avenida hacia el este o el oeste.</li>
-<li><kbd>N</kbd>: descripción del lugar o del barrio. <kbd>K</kbd>: hacia dónde miras, con un tono que suena desde el norte. <kbd>T</kbd>: hora y tiempo. <kbd>V</kbd>: tu estado.</li>
+<li><kbd>N</kbd>: descripción del lugar o del barrio. Del barrio dice además de quién es en ese momento: de una banda, tuyo, o en guerra. <kbd>K</kbd>: hacia dónde miras, con un tono que suena desde el norte. <kbd>T</kbd>: hora y tiempo. <kbd>V</kbd>: tu estado.</li>
 <li><kbd>Mayúsculas N</kbd>: el siguiente cruce. Dice qué calle es la próxima que te vas a cruzar hacia donde miras o conduces, a cuántos metros está y por qué calle vas. Sirve igual a pie que al volante, y no dice nada más.</li>
 <li><kbd>Mayúsculas L</kbd>: dónde está tu vehículo. Dice dónde dejaste el vehículo del que te bajaste y lo marca en el GPS. Si ibas a otro sitio, por ejemplo al de una misión, al llegar al vehículo el GPS vuelve solo a ese destino. También está en el móvil: Dónde está mi vehículo.</li>
 </ul>
@@ -302,6 +302,7 @@ li { margin-bottom: .3em; }
 <li>Medio segundo antes de dispararte, el enemigo amartilla el arma. Agáchate con <kbd>X</kbd> para que te den menos.</li>
 <li><kbd>R</kbd> recarga. <kbd>Z</kbd> usa un botiquín. Con poca salud oirás tu corazón.</li>
 <li>Los explosivos se lanzan hacia el enemigo fijado y dañan todo alrededor. No los uses de cerca.</li>
+<li>Desde un vehículo también se dispara, sin bajarte: <kbd>Q</kbd> fija a quien tengas cerca y <kbd>Control</kbd> dispara, con un arma de fuego en la mano. La primera vez que te disparan yendo en un vehículo, el juego te lo recuerda.</li>
 <li>En Opciones puedes cambiar la ayuda de puntería a manual y elegir la dificultad.</li>
 </ul>
 <p>Si caes, despiertas en el hospital más cercano y pagas la cuenta. Si te detienen, pierdes las armas de fuego y una multa. El dinero del banco está siempre a salvo.</p>
@@ -312,6 +313,16 @@ li { margin-bottom: .3em; }
 <li>Aviso al acertar: cada vez que das en el blanco suena un toque agudo y el mando da un golpe corto. Al fijar un objetivo con la <kbd>Q</kbd>, el mando también avisa. Se quita en Opciones, Combate y dificultad.</li>
 <li>Si vas agachado sin darte cuenta, caminas muy despacio: la <kbd>V</kbd> te lo dice, y también el juego si intentas correr.</li>
 </ul>
+<h3>Qué hace cada arma</h3>
+<p>En la armería, en el inventario del móvil y en la lista de tus armas, que se abre con <kbd>I</kbd>, cada arma dice su daño y su alcance. Con <kbd>F1</kbd> sobre ella oyes la ficha entera, con palabras y con cifras:</p>
+<ul>
+<li>Daño: los puntos que quita cada bala, cada golpe o cada explosión, y si eso es poco, medio, alto o muy alto. Para comparar: un peatón aguanta 50 puntos y tú, 100.</li>
+<li>Alcance: hasta cuántos metros llega, y si es corto, medio o largo. Las armas de mano son cuerpo a cuerpo. De los explosivos dice además cuántos metros alcanza la explosión alrededor.</li>
+<li>Cadencia: cada cuánto dispara o golpea. De las automáticas, cuántos disparos por segundo.</li>
+<li>Precisión: cuántos tiros de cada cien acierta de cerca. De lejos acierta menos.</li>
+<li>Y lo demás: las balas del cargador y si hace ruido, mucho ruido o ninguno.</li>
+</ul>
+<p>Vale también para las armas que añadan los mods.</p>
 <h3>Mejorar tus armas</h3>
 <p>En cualquier armería puedes montar dos mejoras en cada arma de fuego que tengas:</p>
 <ul>
@@ -336,7 +347,8 @@ li { margin-bottom: .3em; }
 <li>Intentar un soborno: cuesta menos, pero puede salir mal. Sale bien más veces cuanta más fama tengas. Si sale mal, pierdes ese dinero y te detienen.</li>
 <li>Dejar que te detengan: lo de siempre.</li>
 </ul>
-<p>Con tres niveles o más, o sin dinero, te detienen directamente. Se puede quitar en Opciones, Combate y dificultad.</p>
+<p>El menú sale solo, en cuanto el agente te alcanza, y cada opción dice lo que cuesta. Con <kbd>F1</kbd> sobre el soborno oyes cuántas veces de cada cien sale bien en ese momento. Con tres niveles o más, o sin dinero, te detienen directamente: con mucha búsqueda no se negocia. Se puede quitar en Opciones, Combate y dificultad.</p>
+<p>Si quieres saber lo que te costaría antes de que te cojan, entra en una comisaría, recorre el local y lee el tablón: dice tu nivel de búsqueda y a cuánto subiría la multa.</p>
 
 <h2>9. El móvil</h2>
 <p>Con <kbd>M</kbd> abres el móvil: objetivo actual, misiones disponibles, lugares y GPS, explorador de mapa, marcadores personales, servicios, habilidades y logros, inventario, propiedades, barrios y estadísticas.</p>
@@ -496,7 +508,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <h3>Las opciones, por secciones</h3>
 <p>Las opciones están agrupadas. Pulsa <kbd>Intro</kbd> sobre una sección para entrar; dentro, la última opción es siempre Volver, y también sirve <kbd>Escape</kbd>. <kbd>F1</kbd> explica la opción en la que estás.</p>
 <ul>
-<li>Sonido y música: los cinco volúmenes, la música de ambiente con su propio volumen, el pack de sonidos, el igualado de volumen y el ajuste de cada sonido por separado. También el sonido mono, para quien oye por un solo oído, y bajar el ambiente y la música mientras habla la voz, que viene activado.</li>
+<li>Sonido y música: los cinco volúmenes, abrir la carpeta de mi música, la música de ambiente con su propio volumen, el pack de sonidos, el igualado de volumen y el ajuste de cada sonido por separado. También el sonido mono, para quien oye por un solo oído, y bajar el ambiente y la música mientras habla la voz, que viene activado.</li>
 <li>Movimiento y conducción: movimiento a pie con brújula o con giros, conducción asistida o libre, frenada automática, piloto del GPS y sensor de proximidad.</li>
 <li>Orientación y avisos: formato de las direcciones, voz y baliza del GPS, anuncios de cruces, lugares, barrios y suelo, sonido de los lugares y semáforos acústicos.</li>
 <li>Combate y dificultad: dificultad, ayuda de puntería, sucesos callejeros y las dos asistencias.</li>
@@ -535,7 +547,10 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <p>También se pueden recorrer por dentro los bares, tabernas, restaurantes, tiendas, farmacias, armerías, hospitales, comisarías, talleres, bancos, casinos, gimnasios, cines, hoteles y casi cualquier otro local. Al entrar a pie, el menú del local tiene la opción Recorrer el local por dentro.</p>
 <ul>
 <li>Vas de una sala a otra con las flechas izquierda y derecha, y el juego describe cada una.</li>
-<li><kbd>Intro</kbd> usa la sala en la que estás. En el mostrador, la barra o la ventanilla vuelves al menú del local, que es donde se compra o se pide. En las mesas y salas de espera puedes sentarte un rato o poner el oído a lo que habla la gente. En los aseos te refrescas.</li>
+<li><kbd>Intro</kbd> usa la sala en la que estás. En las mesas y salas de espera puedes sentarte un rato o poner el oído a lo que habla la gente. En los aseos te refrescas.</li>
+<li>En el mostrador, la barra o la ventanilla es donde te atienden: al pulsar <kbd>Intro</kbd> el juego dice que te acercas y vuelves al menú del local, que es donde están las opciones para comprar o pedir. No te echa: es la manera de pasar del paseo a la compra.</li>
+<li>Los tablones se leen con <kbd>Intro</kbd> y dicen lo que hay ese día. El de la comisaría: si te buscan, con qué nivel y lo que te costaría la multa, tus detenciones, las bandas a las que se busca en la ciudad y los avisos y sucesos del día; cada vez que lo lees cuenta algo distinto. El de la administración de lotería: los números que han salido en los últimos sorteos y el bote. El de la oficina de empleo: algunas jornadas de trabajo con su paga.</li>
+<li><kbd>F1</kbd> explica dónde estás, qué hace <kbd>Intro</kbd> en esa sala y a qué sala hay que ir para que te atiendan.</li>
 <li><kbd>Escape</kbd> vuelve al menú del local.</li>
 </ul>
 <p>Recorrer un local es opcional: todo lo que se puede comprar o hacer sigue estando en su menú, como siempre. Los sitios al aire libre, como plazas, muelles o paradas, no tienen interior.</p>
@@ -559,6 +574,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 </ul>
 <h3>Tener barrios tiene consecuencias</h3>
 <ul>
+<li>De quién es cada barrio: la tecla <kbd>N</kbd>, el explorador de mapa, la lista de barrios del móvil y la gente a la que preguntas dicen de quién es el barrio en ese momento. De una banda, mientras mande ella; tuyo, cuando lo conquistas; en guerra, mientras lo estás conquistando o mientras te lo atacan; y de la banda que te lo quitó, si no lo defiendes. En un servidor, de la banda de jugadores que lo tenga.</li>
 <li>Fama: quedarte con un barrio se sabe en toda la ciudad. El primero da mucha fama; los siguientes, cada vez menos.</li>
 <li>Ataques: de vez en cuando, a medianoche, otra banda ataca uno de tus barrios. Si tienes banda, puede que lo defienda sola: cuanta más gente, más probable. Si no, tienes hasta la medianoche siguiente para ir: en el móvil, Territorios, Defender. Son dos grupos de pandilleros. Si no vas, pierdes el barrio.</li>
 <li>Pactos: con tres barrios o más, alguna banda puede ofrecerte un pacto. Si aceptas, cobras y durante una semana nadie ataca. Si lo rechazas, ganas algo de fama.</li>
@@ -569,7 +585,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <p>Con cada banda tienes una relación, que se ve en el móvil, en Territorios. Si una banda te respeta, sus pandilleros no te atacan por la calle mientras no les toques, y no intentan quitarte barrios. Si va a por ti, pasa lo contrario. La relación cambia con las decisiones de la historia, con los pactos y cada vez que matas a uno de los suyos.</p>
 
 <h2>13. La radio y tu música</h2>
-<p>Al subir a un vehículo suena la radio. Con <kbd>R</kbd> cambias de emisora. Para oír tu música, copia tus canciones en la carpeta <strong>data\radio\mi_musica</strong> y elige la emisora <em>Mi música</em>; dentro de ella, <kbd>R</kbd> pasa a la canción siguiente. Cualquier archivo de audio que dejes directamente en <strong>data\radio</strong> es una emisora nueva.</p>
+<p>Al subir a un vehículo suena la radio. Con <kbd>R</kbd> cambias de emisora. Para oír tu música, copia tus canciones en la carpeta de mi música y elige la emisora <em>Mi música</em>; dentro de ella, <kbd>R</kbd> pasa a la canción siguiente. Para no tener que buscar esa carpeta, entra en Opciones, Sonido y música, y elige Abrir la carpeta de mi música: se abre en el Explorador de Windows, lista para copiar, y la propia opción dice cuántas canciones tiene. Valen los archivos mp3, ogg, flac y wav. No hace falta cerrar el juego: al volver a sintonizar Mi música ya están las canciones nuevas. La carpeta es <strong>data\radio\mi_musica</strong>, dentro de la del juego; si la emisora está vacía, ella misma te explica cómo llenarla. Cualquier archivo de audio que dejes directamente en <strong>data\radio</strong> es una emisora nueva.</p>
 <p>Las canciones pueden durar lo que quieras: un disco entero, un programa de radio o una grabación de varias horas en un solo archivo. Las de más de cinco minutos se leen y suenan por tramos de un minuto, sin cortes, para que no ocupen la memoria del ordenador.</p>
 <h3>La radio se queda en pausa cuando te bajas</h3>
 <p>Al bajarte del vehículo, la canción que sonaba se detiene, y al subir a cualquier otro sigue justo donde se quedó. Vale para todas las emisoras y para Mi música. Cada emisora recuerda la suya: si cambias de emisora y luego vuelves, sigue con la canción que tenía. Así puedes poner un programa de varias horas y oírlo entero a trozos, sin perderte nada.</p>
@@ -630,6 +646,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <p>Para quitar uno, desactívalo en el editor con <kbd>Control M</kbd> o borra su archivo de <strong>data\mods</strong>. Para añadir un mod que te hayan pasado, copia su archivo, de extensión <strong>.pbm</strong>, en esa misma carpeta.</p>
 <h3>El editor de mods</h3>
 <p>Para crear tus propios mods está el programa <strong>EditorMods.exe</strong>, junto al juego. Es un editor accesible con lector de pantalla con el que se crea todo lo que admite un mod, rellenando formularios: lugares, misiones con todos sus pasos, armas, vehículos, carreras, comida, objetos, peces, personajes, mapas enteros y, para el modo adulto, personas, planes, regalos y sustancias. Comprueba el mod antes de guardarlo y lo deja en <strong>data\mods</strong>, listo para jugar. Con él puedes abrir también los mods que vienen con el juego para ver cómo están hechos. Su manual es <a href="editor_mods.html">editor_mods.html</a>, y se abre desde el propio editor con <kbd>F1</kbd>.</p>
+<p>Con el editor puedes crear tus propios vehículos, sin saber programar: coches, motos, camiones, barcos y aeronaves. En la sección Vehículos, pulsa Añadir y rellena el nombre, la velocidad máxima, la aceleración, la frenada, la resistencia, el sonido del motor y su tono, el claxon, la sirena si la lleva, si es una embarcación o si vuela, el depósito y el precio. Después dile al juego dónde sale: en los barrios por los que circula y aparca, en un concesionario o una náutica, que lo venden si le has puesto precio, o como vehículo de un trabajo o de una misión. Lo más rápido es traer uno del juego con el botón Copiar del juego original y cambiarle lo que quieras.</p>
 
 <h2>15. Elegir personaje</h2>
 <p>Al empezar una partida nueva eliges personaje. La historia es la misma para todos, y los demás te llaman por el nombre del que elijas; cambian las ventajas con las que empiezas.</p>
@@ -682,6 +699,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 </ul>
 <h3>Combates en el gimnasio</h3>
 <p>Además del boxeo, en los gimnasios hay veladas de artes marciales mixtas: tres asaltos seguidos en la jaula, cada uno contra un rival más duro, sin descanso y solo con los puños. Si caes en cualquiera, pierdes la velada. Paga bastante más que el boxeo, y cada velada ganada sube el premio y la dureza de la siguiente.</p>
+<p>Los combates del gimnasio son deporte: tumbar a tu rival no es un delito, no llama a la policía y no baja tu prestigio entre los vecinos, haya quien haya mirando. Eso sí, un puñetazo a alguien que pasaba por allí sigue siendo una agresión.</p>
 <h2>17. Ánimo y fama</h2>
 <p>La tecla <kbd>V</kbd> dice tu estado: salud, dinero, arma, nivel de búsqueda y vehículo. El ánimo sube al comer bien, descansar, ganar, hacer deporte o ayudar, y baja con las heridas, las detenciones y los fracasos; con el ánimo bajo rindes peor. La fama en la calle sube con los golpes y abre puertas en el mundo del delito. El prestigio entre los vecinos es la otra cara: sube con la vida honrada.</p>
 
@@ -959,7 +977,8 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <li>Solo se hace una vez por personaje: lo preparado se guarda en <strong>data\voces_generadas</strong>. Si otro día creas un personaje con el mismo nombre, la misma voz y el mismo trato, ya está hecho. Esa carpeta se puede borrar cuando quieras; lo que falte se vuelve a preparar.</li>
 <li>Lo que tú dices en las escenas no hace falta generarlo: suena con la voz que elijas al crear el personaje, entre las de Dani, Álex, Sam y Cris, en hombre o en mujer según cómo te hablen.</li>
 <li>En Opciones, Voz, la opción Generar las voces de tu propio personaje lo quita. Con no, las frases que dicen tu nombre las lee tu lector de pantalla o la voz de Windows. Si notas que el juego va a tirones mientras se preparan las voces, quítala: deja de generar en el acto, también con la partida en marcha. Si la vuelves a poner, sigue por donde iba.</li>
-<li>El generador necesita un procesador con las instrucciones AVX2, que tienen casi todos los fabricados desde 2013 o 2015. En uno más antiguo el juego funciona igual y suenan todas las demás voces, pero las frases con tu nombre las dice el lector. La propia opción dice si tu equipo puede.</li>
+<li>El generador necesita un procesador con las instrucciones AVX2, FMA y F16C, que tienen casi todos los fabricados desde 2013 o 2015. El juego mira las tres antes de usarlo. En uno más antiguo el juego funciona igual y suenan todas las demás voces, pero las frases con tu nombre las dice el lector. La propia opción dice si tu equipo puede.</li>
+<li>La primera vez, el juego prueba el generador aparte, en segundo plano, antes de usarlo: son unos segundos, mientras escribes el nombre de tu personaje. Si en tu equipo el generador falla, falla esa prueba y no el juego: el juego sigue, lo recuerda para no insistir, y las frases con tu nombre las dice el lector. La prueba se repite sola cuando actualizas el juego. Si pulsas Escuchar cómo te llamarán mientras dura la prueba, el juego te dice que esperes un momento.</li>
 <li>Los nombres poco corrientes pueden no sonar bien a la primera. Por eso, al crear el personaje, puedes escuchar cómo te llamarán y, si hace falta, escribir cómo se pronuncia.</li>
 </ul>
 <h3>Grabar tus propias voces</h3>
@@ -1047,6 +1066,9 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <li>Durante la descarga, cualquier tecla dice cuánto lleva: el tanto por ciento y los megas descargados del total. Vale igual para la descarga del modelo de inteligencia artificial.</li>
 <li>Descargar en segundo plano: durante la descarga, pulsa <kbd>B</kbd> y sigue jugando. Cuando termine, el juego te avisa, y la instalas cuando te venga bien desde Opciones, Actualizaciones, Instalar la versión descargada. Si cierras el juego antes, la próxima vez la descarga sigue por donde iba.</li>
 <li>Al terminar la descarga, el juego se cierra, se actualiza y vuelve a abrirse solo en unos segundos. Si algo fallara, se queda la versión que tenías.</li>
+<li>Antes de descargar, el juego calcula el sitio que hace falta en el disco y, si no lo hay, lo dice con cifras: cuánto hace falta, cuánto hay y cuánto tienes que liberar. Hace falta sitio a la vez para la descarga, para la versión nueva y para una copia de la anterior, por si hay que volver atrás.</li>
+<li>Antes de cerrarse para instalar, comprueba lo que suele estropear una actualización: que sigue habiendo sitio, que Windows deja escribir en la carpeta del juego y que no está abierto el editor de mods, ni el servidor en línea, ni su panel, porque Windows no deja sustituir un programa en marcha. Si algo no está bien, lo dice, no se cierra y la descarga no se pierde: arréglalo y entra en Opciones, Actualizaciones, Instalar la versión descargada.</li>
+<li>Si aun así la instalación falla, al reabrirse el juego dice el motivo: qué archivo no se pudo sustituir y por qué, y qué hacer. Lo tienes otra vez en Opciones, Actualizaciones, Por qué falló la última actualización. El instalador lo deja todo apuntado, paso a paso, en el archivo <strong>actualizacion.log</strong> de la carpeta <strong>data\logs</strong>; si nos lo envías, sabremos qué pasó. No contiene tus carpetas ni tu nombre: de cada archivo queda solo el nombre.</li>
 <li>Tus partidas, tus opciones, tu música y tus mods no se tocan.</li>
 <li>Actualizar desde: con las flechas izquierda y derecha eliges de dónde se buscan y se descargan las versiones. Hay cuatro posibilidades: el servidor del juego; GitHub; las dos, que usa la versión más nueva y, si una falla, la otra; o una dirección personalizada, que escribes en la opción siguiente y tiene que empezar por https.</li>
 <li>Venga de donde venga, solo se instala una versión firmada por quien publica el juego: si alguien cambiara el archivo por el camino, el juego lo rechaza.</li>
@@ -1112,6 +1134,8 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <li>Un amigo no consigue entrar en mi partida: comprueba que le has dado la dirección de internet y no la de casa, que el puerto está abierto en el router y que ni tu cortafuegos ni un filtro como AdGuard bloquean el juego.</li>
 <li>El juego dice al arrancar que un mod no está preparado: ábrelo con el editor de mods y guárdalo.</li>
 <li>No encuentra actualizaciones o no conecta: comprueba tu conexión y, en Opciones, Actualizaciones, prueba a actualizar desde la otra fuente.</li>
+<li>El juego dice que la actualización no se pudo instalar: te dice también el motivo, y lo repite en Opciones, Actualizaciones. Lo más corriente: el editor de mods o el servidor abiertos, poco sitio en el disco, un antivirus que retiene los programas nuevos, o el juego en una carpeta protegida como Archivos de programa. Cierra los demás programas del juego, libera sitio o mueve el juego a otra carpeta, y vuelve a intentarlo. Si no hay manera, descarga el ZIP de la versión nueva y descomprímelo encima de la carpeta del juego: tus partidas y tus opciones se conservan.</li>
+<li>El juego se cerraba al crear un personaje propio o al entrar a jugar con él: desde la versión 1.7.1 el generador de voces se prueba aparte antes de usarlo, y si falla en tu equipo, el juego sigue y esas frases las dice el lector. Si te sigue pasando, quita Generar las voces de tu propio personaje en Opciones, Voz, y envía la carpeta de la sesión.</li>
 <li>El mando no responde: comprueba que Windows lo reconoce y que la ventana del juego está en primer plano. Si los nombres de los botones no coinciden con los de tu mando, cámbialos en Opciones, Mando.</li>
 </ul>
 </body>

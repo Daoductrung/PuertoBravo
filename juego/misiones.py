@@ -505,6 +505,7 @@ class Misiones:
                 e.hostil = True
                 e.estado = "ataca"
                 e.inofensivo = bool(grupo.get("inofensivo"))          # un muñeco de prácticas: se le puede fijar, pero no ataca
+                e.deportivo = bool(grupo.get("deportivo"))            # un rival del gimnasio: tumbarlo no es delito
                 e.tag = "mision"
                 e.t_disparo = random.uniform(1.5, 3.0)
                 self.personas.append(e)
@@ -1058,6 +1059,7 @@ class Misiones:
         self.sv_mision_fin(True, m)
         if m.get("territorio") and m["territorio"] not in self.j.territorios:
             self.j.territorios.append(m["territorio"])
+            self.j.barrios_banda.pop(m["territorio"], None)
             self.son("territorio", cat="interfaz")
             self.decir(f"El barrio es tuyo. Te pagará {self.precio('tributo_territorio', 300)} euros cada medianoche.")
             # quedarse con un barrio se sabe en toda la ciudad: el primero da mucha fama; los siguientes, cada vez menos

@@ -257,6 +257,16 @@ def main():
             fallos.append("el instalador sigue usando timeout, que necesita ventana")
         if not datos["bat_espera_servidor"]:
             fallos.append("el instalador no espera a que se cierre el servidor")
+        # el instalador deja su propio registro, con cada paso y cómo terminó
+        propio = os.path.join(logs, "actualizacion.log")
+        try:
+            apuntado = open(propio, encoding="utf-8", errors="replace").read()
+        except OSError:
+            apuntado = ""
+        if "TERMINADA bien" not in apuntado:
+            fallos.append("el instalador no ha dejado su registro, o no dice que terminó bien: " + (apuntado[-300:].replace("\n", " | ") or "no existe data\\logs\\actualizacion.log"))
+        elif "RESULTADO copiar_nueva" not in apuntado:
+            fallos.append("el registro del instalador no apunta los pasos")
 
     print()
     print("RESUMEN: de la %s a la %s con el actualizador %s." % (desde, ahora, opciones["--codigo"] or "de este proyecto"))

@@ -4,6 +4,18 @@ Las grabaciones que trae el juego llaman al protagonista por el nombre de los cu
 personaje propio hay que nombrarle con el nombre que ha escrito el jugador, y eso no se puede traer grabado: lo
 genera aquí el motor de voz Phonon, de Gradium, con las mismas voces de los personajes de la historia.
 
+El motor es código nativo y exigente: pide un procesador con AVX2, FMA y F16C, y si algo no le gusta puede cerrar el
+programa de golpe, sin dar un error que se pueda atrapar. Por eso va con red de seguridad:
+
+1. Antes de nada se miran las tres capacidades del procesador.
+2. La primera vez, el motor se prueba en un proceso aparte (el propio juego, lanzado con --probar-motor-voz): carga el
+   modelo y dice una frase corta. Si ese proceso se cae, el juego ni se entera: solo ve que no terminó bien.
+3. El resultado se recuerda en data/voces_generadas/motor_probado.json, y se vuelve a probar si cambia la versión del
+   juego o cambian los archivos del motor.
+4. Si aun así el juego se cierra dos veces seguidas mientras carga el motor, deja de intentarlo.
+
+Cuando no se puede, el juego sigue y las frases las dice el lector de pantalla.
+
 Va en un hilo aparte y sin prisa, para no dar tirones al juego. Lo generado se guarda en data/voces_generadas, en una
 carpeta por personaje, así que solo se hace una vez. Mientras una frase no está lista, la dice el lector de pantalla.
 
@@ -13,6 +25,8 @@ import hashlib
 import json
 import os
 import re
+import subprocess
+import sys
 import threading
 import time
 
@@ -34,37 +48,267 @@ def carpeta_generadas():
     return os.path.join(rutas.DATA, "voces_generadas")
 
 
-def _avx2():
-    """El motor necesita un procesador con AVX2. Sin él no se puede ni cargar: se comprueba antes."""
+ARG_PRUEBA = "--probar-motor-voz"                # el juego, lanzado con esto, solo prueba el motor y termina
+TIEMPO_PRUEBA = 240                              # segundos: en un equipo lento, cargar el modelo y decir una frase tarda
+ARCHIVOS_MOTOR = ("config.json", "tokenizer.json", "model.q8.gguf", "reparto.json")
+NECESARIAS = ("AVX2", "FMA", "F16C")             # lo que el motor pide al procesador, según su documentación
+PROBANDO = "El generador de voces se está comprobando en este equipo. Solo pasa la primera vez y tarda unos segundos: prueba otra vez enseguida."
+_prueba = {"hilo": None, "proc": None, "al_saber": []}
+_cerrojo = threading.Lock()
+
+
+def capacidades():
+    """Qué tiene el procesador de lo que pide el motor: {"AVX2": sí o no, "FMA": ..., "F16C": ...}. None en la que no se sepa."""
+    caps = dict.fromkeys(NECESARIAS)
     try:
         import ctypes
-        return bool(ctypes.windll.kernel32.IsProcessorFeaturePresent(40))        # PF_AVX2_INSTRUCTIONS_AVAILABLE
+        caps["AVX2"] = bool(ctypes.windll.kernel32.IsProcessorFeaturePresent(40))        # PF_AVX2_INSTRUCTIONS_AVAILABLE
     except Exception:
-        return True                                  # fuera de Windows no hay esa pregunta: se intenta
+        pass                                         # fuera de Windows no hay esa pregunta
+    try:                                             # Windows no sabe decir FMA ni F16C: lo sabe la biblioteca de cálculo, que ya está cargada
+        try:
+            from numpy._core._multiarray_umath import __cpu_features__ as cpu
+        except ImportError:
+            from numpy.core._multiarray_umath import __cpu_features__ as cpu
+        for nombre, clave in (("AVX2", "AVX2"), ("FMA", "FMA3"), ("F16C", "F16C")):
+            if clave in cpu:                          # si las dos fuentes opinan, hace falta que las dos digan que sí
+                caps[nombre] = bool(cpu[clave]) and caps[nombre] is not False
+    except Exception:
+        pass
+    return caps
 
 
-def disponible():
-    """¿Se pueden generar voces en este equipo? Lo dice una vez y lo recuerda."""
-    if _estado["ok"] is None:
-        c = carpeta_motor()
-        faltan = [n for n in ("config.json", "tokenizer.json", "model.q8.gguf", "reparto.json") if not os.path.exists(os.path.join(c, n))]
-        if faltan:
-            _estado.update(ok=False, motivo="Esta copia del juego no trae el generador de voces.")
-        elif not _avx2():
-            _estado.update(ok=False, motivo="El procesador de este equipo no puede con el generador de voces: le falta AVX2.")
-        else:
+def _avx2():
+    """Se conserva por compatibilidad: ¿tiene AVX2? Si no se sabe, se toma como que sí."""
+    return capacidades()["AVX2"] is not False
+
+
+def firma_motor():
+    """Una huella de los archivos del motor (el modelo y la biblioteca nativa), sin cargarlos: si cambian, hay que volver a probar."""
+    partes = []
+    carpetas = [carpeta_motor()]
+    try:
+        import importlib.util
+        spec = importlib.util.find_spec("ptts")       # busca el paquete sin ejecutarlo
+        carpetas += list(spec.submodule_search_locations or []) if spec else []
+    except Exception:
+        pass
+    for c in carpetas:
+        try:
+            for n in sorted(os.listdir(c)):
+                r = os.path.join(c, n)
+                if os.path.isfile(r) and (c != carpetas[0] or n in ARCHIVOS_MOTOR):
+                    partes.append(f"{n}:{os.path.getsize(r)}")
+        except OSError:
+            pass
+    return hashlib.sha1("|".join(partes).encode("utf-8")).hexdigest()[:16]
+
+
+def ruta_recuerdo():
+    return os.path.join(carpeta_generadas(), "motor_probado.json")
+
+
+def leer_recuerdo():
+    """Lo que se sabe de la última prueba del motor, si vale todavía: misma versión del juego y mismos archivos del motor."""
+    from . import VERSION as JUEGO
+    try:
+        with open(ruta_recuerdo(), encoding="utf-8") as f:
+            d = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(d, dict) or d.get("juego") != JUEGO or d.get("motor") != firma_motor() or not isinstance(d.get("ok"), bool):
+        return None
+    return d
+
+
+def guardar_recuerdo(ok, motivo_="", codigo=0, a_medias=0):
+    from . import VERSION as JUEGO
+    try:
+        os.makedirs(carpeta_generadas(), exist_ok=True)
+        tmp = ruta_recuerdo() + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump({"juego": JUEGO, "motor": firma_motor(), "ok": bool(ok), "motivo": motivo_, "codigo": codigo, "a_medias": int(a_medias)}, f, ensure_ascii=False)
+        os.replace(tmp, ruta_recuerdo())
+    except OSError:
+        pass                                         # sin sitio donde apuntarlo, se probará otra vez la próxima
+
+
+def orden_prueba():
+    """Cómo se lanza el proceso de prueba: el propio juego con un argumento. Compilado, es PuertoBravo.exe; desde el código, python main.py."""
+    if getattr(sys, "frozen", False):
+        return [sys.executable, ARG_PRUEBA, carpeta_motor()]
+    return [sys.executable, os.path.join(rutas.base(), "main.py"), ARG_PRUEBA, carpeta_motor()]
+
+
+def prueba_en_este_proceso(carpeta=None):
+    """Lo que hace el proceso de prueba: cargar el motor y decir una frase corta. Devuelve el código con el que termina:
+    0 si todo va bien, 10 si el motor no carga, 11 si no genera. Si el motor se cae de golpe, no devuelve nada: el
+    proceso muere, y eso es justo lo que el juego quiere saber sin morir él."""
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetErrorMode(0x8003)   # que Windows no saque un cuadro de error si este proceso se cae
+    except Exception:
+        pass
+    carpeta = carpeta or carpeta_motor()
+    try:
+        from . import procesador
+        if not procesador.preparar():
+            return 10
+        import ptts
+    except BaseException:
+        return 10
+    try:
+        tts = ptts.TTS(carpeta, lang="es", quant="q8")
+        voces = sorted(n for n in os.listdir(os.path.join(carpeta, "voces")) if n.endswith(".safetensors"))
+        voz = os.path.splitext(voces[0])[0]
+        tts.add_voice(voz, os.path.join(carpeta, "voces", voces[0]))
+        pcm = tts.synth("Hola.", voice=voz, seed=7)
+        return 0 if len(pcm) > 1000 else 11
+    except BaseException:
+        return 11
+
+
+def _ejecutar_prueba(orden, tiempo):
+    """Lanza el proceso de prueba y espera. Devuelve su código de salida, o None si no terminó a tiempo."""
+    entorno = dict(os.environ)
+    try:
+        from . import procesador
+        if procesador.estado["numpy"] in ("antigua", "oficial"):
+            entorno["PUERTOBRAVO_NUMPY"] = procesador.estado["numpy"]      # la misma biblioteca de cálculo que usa el juego
+    except Exception:
+        pass
+    banderas = getattr(subprocess, "CREATE_NO_WINDOW", 0) | getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0)
+    proc = subprocess.Popen(orden, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=banderas, env=entorno,
+                            cwd=os.path.dirname(os.path.abspath(sys.executable)) if getattr(sys, "frozen", False) else rutas.base())
+    _prueba["proc"] = proc
+    try:
+        return proc.wait(timeout=tiempo)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.wait(10)
+        return None
+    finally:
+        _prueba["proc"] = None
+
+
+def _motivo_de(codigo):
+    if codigo == 0:
+        return ""
+    if codigo is None:
+        return "El generador de voces tarda demasiado en este equipo."
+    if codigo == 10:
+        return "El generador de voces no se ha podido cargar en este equipo."
+    if codigo == 11:
+        return "El generador de voces ha cargado, pero no ha conseguido generar una frase en este equipo."
+    return "El generador de voces no funciona en este equipo: al probarlo aparte, se ha cerrado de golpe."
+
+
+SE_REPETIRA = " Las frases que te nombran las dirá el lector de pantalla. Se volverá a probar cuando actualices el juego."
+
+
+def probar_motor(ejecutar=None):
+    """Prueba el motor en un proceso aparte y apunta el resultado. Devuelve True si funciona. Tarda: no llamar desde el hilo del juego."""
+    ejecutar = ejecutar or _ejecutar_prueba
+    t0 = time.time()
+    try:
+        codigo = ejecutar(orden_prueba(), TIEMPO_PRUEBA)
+    except Exception as e:                           # ni siquiera se pudo lanzar el proceso
+        registro.una_vez("vozgen", "No se pudo lanzar la prueba del motor de voz", error=type(e).__name__)
+        _estado.update(ok=False, motivo="El generador de voces no se ha podido probar en este equipo." + SE_REPETIRA)
+        return False                                 # no se apunta: puede ser pasajero, se intentará la próxima vez
+    ok = codigo == 0
+    texto = _motivo_de(codigo)
+    guardar_recuerdo(ok, texto, -1 if codigo is None else codigo)
+    (registro.info if ok else registro.aviso)("vozgen", "Prueba del motor de voz en un proceso aparte", resultado="bien" if ok else "mal",
+                                              codigo="sin terminar" if codigo is None else hex(codigo & 0xFFFFFFFF), segundos=round(time.time() - t0, 1))
+    _estado.update(ok=ok, motivo="" if ok else texto + SE_REPETIRA)
+    return ok
+
+
+def _hilo_prueba(ejecutar=None):
+    try:
+        probar_motor(ejecutar)
+    finally:
+        with _cerrojo:
+            _prueba["hilo"] = None
+            avisar, _prueba["al_saber"] = _prueba["al_saber"], []
+        for f in avisar:                             # quien preguntó mientras se probaba, ya puede seguir
             try:
-                import ptts  # noqa: F401
-                _estado.update(ok=True, motivo="")
-            except Exception as e:
-                _estado.update(ok=False, motivo="El generador de voces no se ha podido cargar.")
-                registro.una_vez("vozgen", "No se pudo cargar el motor de voz", error=type(e).__name__)
-    return _estado["ok"]
+                f(bool(_estado["ok"]))
+            except Exception:
+                registro.excepcion("vozgen", "Fallo al seguir tras la prueba del motor de voz")
+
+
+def probando():
+    return _prueba["hilo"] is not None
+
+
+def cuando_se_sepa(f):
+    """Llama a f(funciona) en cuanto se sepa si el motor vale. Si ya se sabe, ahora mismo."""
+    with _cerrojo:
+        if _prueba["hilo"] is not None:
+            _prueba["al_saber"].append(f)
+            return
+    if _estado["ok"] is not None:
+        f(bool(_estado["ok"]))
+
+
+def parar_prueba():
+    """Al cerrar el juego o antes de actualizarlo: el proceso de prueba no puede quedarse abierto, que es el propio programa."""
+    proc = _prueba["proc"]
+    with _cerrojo:
+        _prueba["al_saber"] = []
+    if proc is not None:
+        try:
+            proc.kill()
+        except Exception:
+            pass
+
+
+def disponible(esperar=False, ejecutar=None):
+    """¿Se pueden generar voces en este equipo? Lo que se puede saber al momento, se dice al momento y se recuerda. Si hay
+    que probar el motor, se prueba en segundo plano y mientras tanto la respuesta es que no (con `esperar`, se aguarda al resultado)."""
+    if _estado["ok"] is None and not probando():
+        c = carpeta_motor()
+        caps = capacidades()
+        faltan = [n for n in NECESARIAS if caps[n] is False]
+        rec = None
+        if any(not os.path.exists(os.path.join(c, n)) for n in ARCHIVOS_MOTOR):
+            _estado.update(ok=False, motivo="Esta copia del juego no trae el generador de voces.")
+        elif faltan:
+            _estado.update(ok=False, motivo="El procesador de este equipo no puede con el generador de voces: le falta " + " y ".join(faltan) + ".")
+            registro.una_vez("vozgen", "El procesador no tiene lo que pide el motor de voz", faltan=", ".join(faltan))
+        else:
+            rec = leer_recuerdo()
+            if rec is None:                           # nunca se ha probado con esta versión: a probarlo, aparte
+                with _cerrojo:
+                    _prueba["hilo"] = threading.Thread(target=_hilo_prueba, args=(ejecutar,), name="voz-comprobar", daemon=True)
+                _prueba["hilo"].start()
+            elif rec["ok"] and int(rec.get("a_medias", 0)) >= 2:
+                _estado.update(ok=False, motivo="Las dos últimas veces, el juego se cerró mientras cargaba el generador de voces, así que se ha desactivado en este equipo." + SE_REPETIRA)
+                registro.una_vez("vozgen", "Motor de voz desactivado: el juego se cerró dos veces mientras lo cargaba")
+            else:
+                _estado.update(ok=rec["ok"], motivo="" if rec["ok"] else str(rec.get("motivo", "")) + SE_REPETIRA)
+    hilo = _prueba["hilo"]
+    if esperar and hilo is not None:
+        hilo.join()
+    return bool(_estado["ok"])
 
 
 def motivo():
     disponible()
-    return _estado["motivo"]
+    return PROBANDO if probando() else _estado["motivo"]
+
+
+def _carga_a_medias(delta):
+    """Apunta que el juego va a cargar el motor (delta 1) o que ya lo ha cargado y ha generado (delta 0: a cero). Si el
+    juego se cierra de golpe entre una cosa y otra, queda apuntado, y a la segunda no se vuelve a intentar."""
+    rec = leer_recuerdo()
+    if rec is None or not rec["ok"]:
+        return
+    n = int(rec.get("a_medias", 0)) + 1 if delta else 0
+    if n != int(rec.get("a_medias", 0)):
+        guardar_recuerdo(True, "", 0, n)
 
 
 def reparto():
@@ -210,10 +454,12 @@ class Generador:
 
     def _motor(self):
         if self._tts is None:
+            _carga_a_medias(1)                        # si el juego se cierra de golpe aquí dentro, queda apuntado
             import ptts
             self._hilos_puestos = None
             self._tts = ptts.TTS(carpeta_motor(), lang="es", quant="q8")
             self._voces = set()
+            self._estrenado = False
         return self._tts
 
     def sintetizar(self, voz, texto):
@@ -233,6 +479,9 @@ class Generador:
         for semilla in (7, 23, 51):                               # si sale con un ritmo raro es que se ha comido algo o ha metido ruido: otra vez
             pcm = _limpio(tts.synth(para_decir(texto), voice=voz, seed=semilla), tts.sample_rate)
             ritmo = len(texto) / max(0.1, len(pcm) / tts.sample_rate)
+            if not getattr(self, "_estrenado", True):                 # ha cargado y ha generado: el motor va bien dentro del juego
+                self._estrenado = True
+                _carga_a_medias(0)
             if mejor is None:
                 mejor = pcm
             if 7 <= ritmo <= 26:
@@ -293,7 +542,11 @@ def al_jugar(p, primero=None):
     if primero and generador.activo():
         generador.priorizar(primero)
         return generador.quedan()
-    return generador.pedir(Personaje.de_jugador(p.j), p.datos.get("misiones", []), primero)
+    pj, misiones = Personaje.de_jugador(p.j), p.datos.get("misiones", [])
+    n = generador.pedir(pj, misiones, primero)
+    if not n and probando():                         # el motor se está probando aparte: en cuanto se sepa que vale, se empieza
+        cuando_se_sepa(lambda ok: ok and generador.permitido() and generador.pedir(pj, misiones, primero))
+    return n
 
 
 class Preparando:
@@ -352,7 +605,7 @@ class Preparando:
 def probar(app, voz, texto, al_terminar=None):
     """Genera una frase suelta y la hace sonar: para oír cómo queda el nombre antes de empezar. No bloquea el juego."""
     if not disponible():
-        app.son("error")
+        app.son("menu_borde" if probando() else "error")
         app.decir(motivo(), True)
         return False
     app.decir("Un momento.", True)

@@ -131,6 +131,12 @@ def ofrecer(app, info):
             app.son("error")
             app.decir("Estás jugando desde el código fuente: la versión nueva solo se instala sola en el juego compilado.", True)
             return
+        falta = "" if app.pruebas and not hasattr(app, "act_libre") else A.problema_para_descargar(info, libre=getattr(app, "act_libre", None))
+        if falta:                                                # no va a caber: mejor saberlo antes de descargar nada
+            registro.aviso("actualizar", "No hay sitio en el disco para descargar la versión nueva", version=info.version)
+            app.son("error")
+            app.decir(falta, True)
+            return
         app.cerrar(m)
         descargar(app, info)
     m = Menu(app, f"Hay una versión nueva, la {info.version}. Tienes la {VERSION}", [
@@ -199,12 +205,20 @@ def descargar(app, info):
 
 
 def _instalar(app, bat):
-    if not app.pruebas and A.servidor_abierto():
-        # con el servidor en línea abierto no se pueden sustituir sus programas: la descarga se guarda y se instala luego
+    # Antes de cerrar: lo que haría fallar la instalación (otro programa del juego abierto, poco sitio en el disco, una carpeta
+    # en la que no se puede escribir). Si hay algo, se dice, la descarga se guarda y se instala cuando esté arreglado.
+    comprobar = getattr(app, "act_comprobar", None) or (None if app.pruebas else A.problemas_para_instalar)
+    try:
+        problemas = comprobar(os.path.join(os.path.dirname(bat), "nueva")) if comprobar else []
+    except Exception:
+        registro.excepcion("actualizar", "No se pudo comprobar si la actualización se puede instalar")
+        problemas = []
+    if problemas:
         app.act_lista = (bat, getattr(app, "act_version", "") or "nueva")
+        registro.aviso("actualizar", "La actualización no se instala todavía", motivos=" | ".join(problemas))
         app.son("error")
-        app.decir("El servidor en línea de Puerto Bravo, o su panel, está abierto en este ordenador. Páralo y cierra el panel, y después entra en "
-                  "Opciones, Actualizaciones, Instalar la versión descargada. La descarga no se pierde.", True)
+        app.decir("Todavía no se puede instalar. " + " ".join(problemas) + " Cuando esté arreglado, entra en Opciones, Actualizaciones, "
+                  "Instalar la versión descargada. La descarga no se pierde.", True)
         return
     if True:
         p = app.partida
@@ -216,6 +230,11 @@ def _instalar(app, bat):
                 pass
         app.son("guardado")
         app.decir("Todo listo. El juego se cierra, se actualiza y vuelve a abrirse solo en unos segundos.", True)
+        try:
+            from . import vozgen
+            vozgen.parar_prueba()                                # el proceso que prueba el motor de voz es el propio programa: no puede quedarse abierto
+        except Exception:
+            pass
         if not app.pruebas:
             pygame.time.wait(4500)
             A.lanzar_instalador(bat)
@@ -253,9 +272,14 @@ def opciones(app):
             app.act_lista = None
             _instalar(app, lista[0])
 
+    def fallo():
+        app.decir(app.act_fallo + " El detalle está en la carpeta de registros, en el archivo actualizacion punto log: se llega desde Opciones, Registro para informar de fallos, Abrir la carpeta con todas las sesiones.", True)
+
     m = Menu(app, "Actualizaciones", ([
         Opcion(f"Instalar la versión descargada, la {app.act_lista[1]}", instalar_lista,
-               ayuda="Ya está descargada y comprobada. El juego guarda la partida, se cierra, se actualiza y vuelve a abrirse solo en unos segundos.")] if getattr(app, "act_lista", None) else []) + [
+               ayuda="Ya está descargada y comprobada. El juego guarda la partida, se cierra, se actualiza y vuelve a abrirse solo en unos segundos.")] if getattr(app, "act_lista", None) else []) + ([
+        Opcion("Por qué falló la última actualización", fallo,
+               ayuda="Lo que dejó apuntado el instalador: en qué paso falló, con qué archivo y qué hacer para que la próxima vez salga bien.")] if getattr(app, "act_fallo", None) else []) + [
         Opcion(f"Versión instalada: {VERSION}", lambda: app.decir(f"Tienes la versión {VERSION}.", True)),
         Opcion("Buscar actualizaciones ahora", lambda: buscar(app)),
         Opcion(lambda: f"Buscar al arrancar el juego: {'sí' if cfg['act_auto'] else 'no'}", ajuste=auto,
@@ -272,14 +296,21 @@ def opciones(app):
 # ------------------------------------------------------------------ al arrancar
 def al_arrancar(app):
     """Tras actualizar, lo dice y limpia. Si está activado, busca una versión nueva sin molestar."""
+    if A.ARG_TRAS_ACTUALIZAR in sys.argv or "--actualizacion-fallida" in sys.argv:
+        A.limpiar_registro_instalador()                          # el instalador apunta rutas completas: se dejan en el nombre del archivo,
+        registro._sanear(A.ruta_registro_instalador())           # y lo demás se limpia como el resto del registro
     if A.ARG_TRAS_ACTUALIZAR in sys.argv:
         A.limpiar()
         registro.info("actualizar", "Primera sesión tras actualizar", version=VERSION)
         app.decir(f"Juego actualizado a la versión {VERSION}. Las novedades están en el manual.")
     elif "--actualizacion-fallida" in sys.argv:
         A.limpiar()
-        registro.aviso("actualizar", "La actualización anterior falló y se restauró la versión que había")
-        app.decir("La actualización no se pudo instalar y se ha dejado la versión que tenías.")
+        motivo = A.motivo_del_fallo()
+        registro.aviso("actualizar", "La actualización anterior falló y se restauró la versión que había", dicho=motivo, **{k: v for k, v in A.leer_registro_instalador().items() if v and k != "existe"})
+        app.act_fallo = motivo
+        app.son("error")
+        app.decir(f"La actualización no se pudo instalar y se ha dejado la versión que tenías, la {VERSION}. {motivo} "
+                  "Lo tienes otra vez en Opciones, Actualizaciones, y el detalle está en la carpeta de registros, en el archivo actualizacion punto log.")
     app.act_aviso = None
     if app.pruebas or not app.cfg["act_auto"]:
         return

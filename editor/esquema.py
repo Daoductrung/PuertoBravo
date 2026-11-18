@@ -300,7 +300,9 @@ ESQUEMAS = {
         c("j", "Manzanas, de sur a norte", "par", etiquetas=("Primera manzana, de sur a norte", "Última manzana, de sur a norte"), req=True),
         c("ambiente", "Sonido de ambiente", "ref", ref="sonido", req=True, defecto="amb_residencial"),
         c("vehiculos", "Vehículos que circulan y aparcan", "refs", ref="modelo"),
-        c("descripcion", "Descripción", "largo", req=True)]},
+        c("banda", "Banda que manda en el barrio", ayuda="Déjalo vacío si no es de ninguna. El nombre tal cual: Los Calaveras, Los Lagartos, Los Barrenos, Los Tiburones o Los Cuervos, "
+          "o el de una banda tuya. El juego dice solo de quién es el barrio en cada momento: de esa banda, del jugador si lo conquista, o en guerra."),
+        c("descripcion", "Descripción", "largo", "Cómo es el barrio. No escribas aquí de qué banda es: para eso está el campo anterior, y así la frase cambia cuando el barrio cambia de manos.", req=True)]},
     "bloque": {"titulo": "Manzana", "resumen": lambda d: f"Manzana {d.get('i', '?')}, {d.get('j', '?')}: {d.get('tipo', '?')}", "campos": [
         c("i", "Avenida, desde el oeste", "entero", req=True, defecto=0), c("j", "Calle, desde el sur", "entero", req=True, defecto=0),
         c("tipo", "Suelo", "opcion", ops=BLOQUES[1:], req=True, defecto="plaza")]},
@@ -360,6 +362,8 @@ ESQUEMAS = {
         c("salud_victoria", "Salud de más por cada victoria que lleves", "entero", minimo=0, defecto=20),
         c("premio", "Premio", "entero", req=True, minimo=0),
         c("premio_victoria", "Premio de más por cada victoria que lleves", "entero", minimo=0),
+        c("deportivo", "Es un combate deportivo", "si_no", "Con sí, que es lo normal, tumbar a los rivales no es delito ni baja tu prestigio entre los vecinos. "
+          "Con no, es una pelea ilegal: cada rival que cae cuenta como una agresión si alguien lo ve.", defecto=True),
         c("ayuda", "Explicación", "largo", "Lo que se oye con la ayuda de la opción.")]},
     "ajuste_combustible": {"titulo": "Combustible", "resumen": lambda d: f"Litro a {d.get('precio_litro', '?')} euros", "campos": [
         c("id", "Identificador", req=True, defecto="general", ayuda="Déjalo en general: solo se usa el primero."),

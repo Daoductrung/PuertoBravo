@@ -10,6 +10,7 @@ import zlib
 from . import NOMBRE, VERSION, ayuda, cifrado, packs, rutas
 from . import mundo as M
 from .config import OPCIONES
+from .combate import ayuda_arma, ficha_corta
 from .menus import Dialogo, Menu, Opcion
 
 RANURAS = ["auto", "rapido", "1", "2", "3", "4", "5"]
@@ -235,6 +236,26 @@ def acerca(app):
     app.abrir(m)
 
 
+def _canciones_txt(app):
+    try:
+        n = sum(1 for f in os.listdir(app.radio.usuario) if f.lower().endswith(rutas.EXT_AUDIO))
+    except OSError:
+        n = 0
+    return "está vacía" if n == 0 else "tiene una canción" if n == 1 else f"tiene {n} canciones"
+
+
+def abrir_mi_musica(app):
+    """Abre en el Explorador la carpeta de la emisora Mi música, creándola si falta."""
+    ruta = app.radio.usuario
+    try:
+        os.makedirs(ruta, exist_ok=True)
+        os.startfile(ruta)
+        app.decir(f"Carpeta de mi música abierta en el Explorador de Windows. Ahora {_canciones_txt(app)}. Copia en ella tus canciones y sintoniza Mi música en la radio de un vehículo.", True)
+    except (OSError, AttributeError):
+        app.son("error")
+        app.decir(f"No he podido abrir la carpeta. Está en {ruta}", True)
+
+
 def abrir_manual(app):
     ruta = rutas.data("docs", "manual.html")
     try:
@@ -434,6 +455,10 @@ def opciones(app):
                    ayuda="Vale para todas las emisoras y para Mi música. En pausa: al bajarte, la canción se detiene, y al subir a cualquier vehículo sigue justo donde se quedó; "
                          "cada emisora recuerda la suya, así que al volver a una que dejaste, sigue con su canción. Sin pausa: la emisora sigue su curso aunque no la oigas, "
                          "y al volver te la encuentras más adelante. Las canciones de menos de un minuto y medio empiezan siempre desde el principio."),
+            Opcion(lambda: f"Abrir la carpeta de mi música: {_canciones_txt(app)}", lambda: abrir_mi_musica(app),
+                   ayuda="Abre en el Explorador de Windows la carpeta donde se copian tus canciones, y la crea si no existe. Lo que copies ahí, en mp3, ogg, flac o wav, "
+                         "suena en la emisora Mi música, que está en la radio de cualquier vehículo: se cambia de emisora con la R. No hace falta cerrar el juego: "
+                         "al volver a sintonizar Mi música ya están las canciones nuevas."),
             si_no("musica_ambiente", "Música de ambiente", "Música de fondo que cambia con la situación. Se calla sola cuando pones la radio en un vehículo y vuelve cuando la apagas o te bajas."),
             vol("vol_ambiente_musical", "Volumen de la música de ambiente", "Respecto a la radio. Cámbialo con las flechas izquierda y derecha."),
             Opcion(lambda: f"Pack de sonidos: {nombre_pack()}", ajuste=cambiar_pack,
@@ -746,7 +771,7 @@ def movil(p):
         app.abrir(Menu(app, "Estadísticas", [Opcion(t) for t in ops]))
 
     def barrios():
-        ops = [Opcion(f"{b['nombre']}{'' if m.nombre == b['nombre'] else ', ' + m.nombre}{'' if b['id'] in j.barrios_vistos else ', sin visitar'}. {b['descripcion']}")
+        ops = [Opcion(f"{b['nombre']}{'' if m.nombre == b['nombre'] else ', ' + m.nombre}{'' if b['id'] in j.barrios_vistos else ', sin visitar'}. {p.barrio_desc(b, m)}")
                for m in p.mapas.values() for b in m.barrios]
         app.abrir(Menu(app, "Barrios y localidades", ops))
 
@@ -758,7 +783,7 @@ def movil(p):
                 t = f"{p.orden_armas.index(ident) + 1}: {a['nombre']}"
                 if a["tipo"] in ("fuego", "explosivo"):
                     t += f", {j.armas[ident]['cargador']} balas y {j.armas[ident]['reserva']} de reserva"
-                ops.append(Opcion(t, ayuda=a["desc"]))
+                ops.append(Opcion(t + ", " + ficha_corta(a), ayuda=ayuda_arma(a)))
         ops.append(Opcion(f"Botiquines: {j.objetos.get('botiquin', 0)}"))
         ops.append(Opcion(f"Ganzúas: {j.objetos.get('ganzua', 0)}"))
         if j.perro:
@@ -889,8 +914,8 @@ def menu_armas(p):
             t = a["nombre"]
             if a["tipo"] in ("fuego", "explosivo"):
                 t += f", {j.armas[ident]['cargador'] + j.armas[ident]['reserva']} disparos"
-            ops.append(Opcion(t + (", en la mano" if ident == j.arma else ""), elegir(ident), ayuda=a["desc"]))
-    m = Menu(app, "Tus armas", ops, intro="Intro para empuñar. F1 describe el arma")
+            ops.append(Opcion(t + ", " + ficha_corta(a) + (", en la mano" if ident == j.arma else ""), elegir(ident), ayuda=ayuda_arma(a)))
+    m = Menu(app, "Tus armas", ops, intro="Intro para empuñar. F1 describe el arma: daño, alcance, cadencia y precisión")
     m.i = next((k for k, i in enumerate([i for i in p.orden_armas if i in j.armas]) if i == j.arma), 0)
     app.abrir(m)
 
@@ -1175,9 +1200,9 @@ def _armeria(p, l):
             if a["precio"] <= 0:
                 continue
             if a["id"] not in j.armas:
-                lista.append(Opcion(f"{a['nombre']}: {int(a['precio'] * factor)} euros", comprar(a), ayuda=a["desc"]))
+                lista.append(Opcion(f"{a['nombre']}: {int(a['precio'] * factor)} euros. {ficha_corta(a).capitalize()}", comprar(a), ayuda=ayuda_arma(a)))
             elif a["tipo"] in ("fuego", "explosivo"):
-                lista.append(Opcion(f"Munición para {a['nombre']}, {a['balas']} balas: {int(a['precio_balas'] * factor)} euros. Tienes {j.armas[a['id']]['reserva']} de reserva", comprar(a), ayuda=a["desc"]))
+                lista.append(Opcion(f"Munición para {a['nombre']}, {a['balas']} balas: {int(a['precio_balas'] * factor)} euros. Tienes {j.armas[a['id']]['reserva']} de reserva", comprar(a), ayuda=ayuda_arma(a)))
         for a in p.datos["armas"]:                              # mejoras para las armas de fuego que ya tienes
             if a["id"] in j.armas and a["tipo"] == "fuego":
                 mio = j.armas[a["id"]]

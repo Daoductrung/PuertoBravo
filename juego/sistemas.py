@@ -301,6 +301,10 @@ def al_dormir_en_casa(p, lugar):
 class Interior:
     """Recorrer una casa tuya: flechas izquierda y derecha para ir de una habitación a otra, Intro para usarla."""
     pausa_mundo = True
+    pared = "Pared. No hay más casa por ahí."
+
+    def ayuda(self):
+        return "Estás dentro de tu casa. Flechas izquierda y derecha para ir de una habitación a otra, Intro para usar la habitación en la que estás y Escape para salir."
 
     def __init__(self, p, lugar, acciones):
         self.p, self.app, self.l, self.acciones = p, p.app, lugar, acciones
@@ -329,7 +333,7 @@ class Interior:
             nuevo = self.i + paso
             if not 0 <= nuevo < len(self.habitaciones):
                 self.app.son("menu_borde")
-                self.app.decir("Pared. No hay más casa por ahí.", True)
+                self.app.decir(self.pared, True)
                 return
             self.i = nuevo
             for n in range(3):                          # tres pasos sobre el suelo de casa
@@ -341,7 +345,7 @@ class Interior:
             self.app.son("puerta_entrar")
             self.app.cerrar(self)
         elif k == pygame.K_F1:
-            self.app.decir("Estás dentro de tu casa. Flechas izquierda y derecha para ir de una habitación a otra, Intro para usar la habitación en la que estás y Escape para salir.", True)
+            self.app.decir(self.ayuda(), True)
         else:
             self._decir()
 
@@ -392,6 +396,7 @@ class Interior:
 # Cada sala: (nombre, descripción, qué hace Intro). Las acciones:
 #   salir: a la calle del menú.  mostrador: vuelve al menú del lugar, que es donde se compra o se pide.
 #   sentarse: pasa media hora y sube el ánimo.  escuchar: oyes una conversación.  aseo: te refrescas.  mirar: solo se describe.
+#   tablon_policia, tablon_premios, tablon_ofertas: tablones que se leen, y dicen lo que hay hoy.
 _PUERTA = ("la puerta", "Por aquí se sale.", "salir")
 _ASEO = ("los aseos", "Un lavabo y un espejo.", "aseo")
 SALAS = {
@@ -407,7 +412,7 @@ SALAS = {
     "hospital": [_PUERTA, ("la recepción", "Un mostrador y gente esperando. Aquí te atienden.", "mostrador"), ("la sala de espera", "Sillas de plástico y una máquina de café.", "sentarse"),
                  ("el pasillo de consultas", "Puertas numeradas y pasos rápidos.", "escuchar"), _ASEO],
     "comisaria": [_PUERTA, ("el mostrador de guardia", "Un agente tras una mampara. Aquí te atienden.", "mostrador"), ("los bancos de espera", "Un banco atornillado al suelo.", "escuchar"),
-                  ("el tablón", "Carteles de personas buscadas y avisos.", "mirar")],
+                  ("el tablón", "Carteles de personas buscadas y avisos. Intro para leerlo.", "tablon_policia")],
     "taller": [_PUERTA, ("la oficina", "Un mostrador con facturas. Aquí se encarga el trabajo.", "mostrador"), ("el foso", "Un coche levantado y herramientas por el suelo.", "mirar"),
                ("el almacén de piezas", "Neumáticos apilados y cajas de recambios.", "escuchar")],
     "desguace": [_PUERTA, ("la caseta", "Una mesa y una báscula. Aquí se trata.", "mostrador"), ("el patio de chatarra", "Coches apilados de tres en tres.", "mirar")],
@@ -418,7 +423,7 @@ SALAS = {
                   ("el archivo", "Estanterías con periódicos viejos.", "escuchar")],
     "banco": [_PUERTA, ("la ventanilla", "Un cristal y un empleado. Aquí se opera.", "mostrador"), ("la cola", "Gente esperando con papeles en la mano.", "escuchar"),
               ("la puerta de la cámara", "Acero, y un guardia delante.", "mirar")],
-    "loteria": [_PUERTA, ("la ventanilla", "Décimos colgados y un bombo pequeño. Aquí se compra.", "mostrador"), ("el tablón de premios", "Los números premiados de la semana.", "mirar")],
+    "loteria": [_PUERTA, ("la ventanilla", "Décimos colgados y un bombo pequeño. Aquí se compra.", "mostrador"), ("el tablón de premios", "Los números premiados de la semana. Intro para leerlo.", "tablon_premios")],
     "empenos": [_PUERTA, ("el mostrador", "Una reja y una lupa. Aquí se trata.", "mostrador"), ("las estanterías", "Relojes, guitarras y televisores de otros.", "mirar")],
     "pescaderia": [_PUERTA, ("el mostrador", "Hielo picado y pescado fresco. Aquí se vende y se compra.", "mostrador"), ("la cámara", "Frío y cajas de corcho.", "mirar")],
     "gimnasio": [_PUERTA, ("la recepción", "Un mostrador con toallas. Aquí te apuntas.", "mostrador"), ("la sala de pesas", "Hierros que suenan y gente resoplando.", "escuchar"),
@@ -431,7 +436,7 @@ SALAS = {
     "nautica": [_PUERTA, ("el mostrador", "Cartas de navegación y cabos. Aquí se compra.", "mostrador"), ("la exposición", "Motores fueraborda y un velero pequeño en seco.", "mirar")],
     "club": [_PUERTA, ("la barra", "Luces bajas y música fuerte. Aquí te atienden.", "mostrador"), ("la pista", "Gente bailando apretada.", "escuchar"), _ASEO],
     "proveedor": [_PUERTA, ("la mesa", "Una mesa, una silla y pocas palabras. Aquí se trata.", "mostrador"), ("el cuarto de atrás", "Una puerta cerrada. Mejor no preguntar.", "mirar")],
-    "empleo": [_PUERTA, ("la mesa de atención", "Un ordenador y un montón de impresos. Aquí te atienden.", "mostrador"), ("el tablón de ofertas", "Papeles con trabajos, sujetos con chinchetas.", "mirar"),
+    "empleo": [_PUERTA, ("la mesa de atención", "Un ordenador y un montón de impresos. Aquí te atienden.", "mostrador"), ("el tablón de ofertas", "Papeles con trabajos, sujetos con chinchetas. Intro para leerlo.", "tablon_ofertas"),
                ("la sala de espera", "Sillas en fila y gente con carpetas.", "escuchar")],
     "academia": [_PUERTA, ("la secretaría", "Matrículas y horarios. Aquí te apuntas.", "mostrador"), ("el aula", "Pupitres y una pizarra.", "sentarse"), ("el pasillo", "Alumnos comentando el examen.", "escuchar")],
     "ong": [_PUERTA, ("la mesa de acogida", "Una voluntaria con una lista. Aquí te atienden.", "mostrador"), ("el almacén", "Cajas de comida y ropa doblada.", "mirar")],
@@ -445,6 +450,80 @@ OIDO = [
     "Un hombre presume de lo que pescó el domingo. Nadie le cree.", "Hablan de un negocio que cambió de dueño de un día para otro.", "Dos amigas se ríen de algo que no llegas a oír.",
     "Alguien dice que no se fía de los bancos, que el dinero, en casa.",
 ]
+
+
+QUE_HACE = {"salir": "sales del recorrido", "mostrador": "te atienden: vuelves al menú del lugar, donde están las opciones para comprar o pedir",
+            "sentarse": "te sientas un rato", "escuchar": "pones el oído a lo que se habla", "aseo": "te refrescas", "tragaperras": "echas unas monedas",
+            "mirar": "te lo describe", "tablon_policia": "lees los carteles y los avisos de hoy", "tablon_premios": "lees los números premiados",
+            "tablon_ofertas": "lees las ofertas de trabajo"}
+ACERCARSE = ("Te acercas a {}", "Vas hasta {}", "Te plantas ante {}", "Caminas hasta {}")
+ATIENDEN = (": aquí te atienden", ". Te atienden", ": te toca")
+
+
+def _con_a(frase):
+    """«a el mostrador» se dice «al mostrador»."""
+    return frase.replace(" a el ", " al ")
+
+
+def tablon_policia(p):
+    """Lo que dice hoy el tablón de la comisaría: si te buscan y lo que te costaría, las bandas de la ciudad y los sucesos del día."""
+    j, s = p.j, p.j.stats
+    if p.en_servidor and p.sv.get("recompensa"):
+        yo = f"Hay un cartel con tu cara: ofrecen {p.sv['recompensa']} euros por tu cabeza."
+    elif j.estrellas:
+        yo = random.choice(["En el cartel más reciente reconoces tu cara", "Hay un cartel nuevo, y el del retrato eres tú", "Uno de los carteles lleva tu descripción"]) + \
+            f": búsqueda de nivel {j.estrellas}. Si te cogen ahora, la multa rondaría los {p.coste_multa()} euros."
+    else:
+        yo = random.choice(["Repasas las caras de los carteles: ninguna es la tuya. No te busca nadie.", "Ningún cartel lleva tu cara: no te buscan.",
+                            "Buscas tu nombre en la lista de personas buscadas y no está: no te buscan."])
+    if s.get("detenciones"):
+        yo += f" Tu ficha: {s['detenciones']} {'detención' if s['detenciones'] == 1 else 'detenciones'}."
+    avisos = []
+    if not p.en_servidor:
+        for b in p.mundo.barrios:
+            banda = b["id"] not in j.territorios and p.banda_de_barrio(b)
+            if banda:
+                avisos.append(f"Se busca a miembros de {banda}, que se mueven por {b['nombre']}.")
+        if j.amenaza:
+            avisos.append(f"Aviso de la jefatura: se esperan enfrentamientos entre bandas en {_nombre_barrio(p, j.amenaza['territorio'])[0]}.")
+    ev = getattr(p, "evento", None)
+    if ev:
+        avisos.append({"atraco": "Aviso de última hora: están atracando a alguien cerca de aquí.", "banda": "Aviso de última hora: pandilleros alborotando en una calle cercana.",
+                       "maletin": "Objetos perdidos: alguien ha denunciado hoy la pérdida de un maletín por esta zona."}.get(ev.get("tipo"), ""))
+    if p.dia_txt():
+        avisos.append("Parte del día: " + p.dia_txt())
+    if s.get("vehiculos_robados", 0) > 2:
+        avisos.append(f"Robos de vehículos sin resolver: {s['vehiculos_robados']}.")
+    if s.get("atracos", 0):
+        avisos.append("Se recuerda a los comercios que refuercen sus alarmas tras los últimos atracos.")
+    avisos.append("Recorte del periódico: " + p.noticia())
+    avisos.append(random.choice(["Recuerda: la multa, pagada en el acto, sale más barata que la de comisaría.", "Un aviso pide testigos de una carrera ilegal nocturna.",
+                                 "Se han encontrado unas llaves: preguntar en el mostrador de guardia.", "La policía local busca voluntarios para la verbena. Nadie se ha apuntado.",
+                                 "Campaña de tráfico: este mes, más controles de velocidad.", "Un cartel descolorido ofrece recompensa por un loro que sabe decir palabrotas."]))
+    avisos = [a for a in avisos if a]
+    random.shuffle(avisos)
+    return yo + " " + " ".join(avisos[:2])
+
+
+def tablon_premios(p):
+    """El tablón de la administración de lotería: los números que han salido de verdad en los últimos sorteos, y el bote."""
+    from . import loteria
+    ult = loteria.ultimo_celebrado(p)
+    salidos = [f"{'hoy' if d == p.dia else 'ayer' if d == p.dia - 1 else 'hace ' + str(p.dia - d) + ' días'}, el {loteria.cifras(loteria.premiado(p, d))}"
+               for d in range(ult, max(0, ult - 3), -1)]
+    return ("Números premiados: " + "; ".join(salidos) + ". " if salidos else "Todavía no se ha celebrado ningún sorteo. ") + loteria.estado_txt(p) + "."
+
+
+def tablon_ofertas(p):
+    """El tablón de la oficina de empleo: unas cuantas jornadas de las que hay, con su paga de verdad."""
+    ofertas = [x for x in p.datos.get("jornadas", []) if x.get("nombre")]
+    if not ofertas:
+        return "Hoy el tablón está vacío."
+    return ("Lees algunas ofertas. " + " ".join(f"{x['nombre']}: {int(x.get('paga', 0))} euros." for x in random.sample(ofertas, min(3, len(ofertas))))
+            + " Para apuntarte, en la mesa de atención.")
+
+
+TABLONES = {"tablon_policia": tablon_policia, "tablon_premios": tablon_premios, "tablon_ofertas": tablon_ofertas}
 
 
 def salas_de(lugar):
@@ -462,6 +541,15 @@ class Local(Interior):
                 self.habitaciones.insert(2, (f"donde está {pers['nombre']}", pers["desc"], ("persona", pers["id"])))
         self.i = 0
         self.oidas = 0
+        self.pared = random.choice(("Pared. El local no sigue por ahí.", "Pared. No hay más local por ese lado.", "Pared. Por ahí no hay nada más."))
+
+    def ayuda(self):
+        nombre, _, que = self.habitaciones[self.i]
+        aqui = "te acercas a hablar" if isinstance(que, tuple) else QUE_HACE.get(que, "te lo describe")
+        atiende = next((n for n, _, q in self.habitaciones if q == "mostrador"), None)
+        return (f"Estás recorriendo {self.l.nombre} por dentro. Flechas izquierda y derecha para ir de un sitio a otro, Intro para usar el sitio donde estás y Escape para volver al menú del lugar. "
+                f"Ahora estás en {nombre}: con Intro, {aqui}."
+                + (f" Para comprar, pedir o que te atiendan, ve a {atiende} y pulsa Intro, o sal con Escape: las opciones están en el menú del lugar." if atiende and que != "mostrador" else ""))
 
     def al_entrar(self):
         self.app.mez.entorno = "nave" if self.l.tipo in ("taller", "desguace", "concesionario", "nautica", "gimnasio") else "interior"
@@ -474,16 +562,30 @@ class Local(Interior):
         if isinstance(que, tuple):
             from . import menus_adultos
             menus_adultos.vida_social(p, directo=que[1])
-        elif que in ("salir", "mostrador"):
+        elif que == "mostrador":                                 # donde te atienden: se dice, y se vuelve al menú del lugar
+            for n in range(2):
+                app.son(("paso_acera0", "paso_acera1")[n % 2], vol=0.5).eco = True
+            k = app.pila.index(self) if self in app.pila else 0
+            debajo = app.pila[k - 1] if k > 0 else None
+            frase = _con_a(random.choice(ACERCARSE).format(nombre)) + random.choice(ATIENDEN)
+            if debajo is not None and hasattr(debajo, "antes"):
+                debajo.antes = frase                              # el menú del lugar lo dice delante de su título
+                app.cerrar(self)
+            else:
+                app.cerrar(self)
+                app.decir(frase + ".")
+        elif que == "salir":
             app.son("menu_atras")
             app.cerrar(self)
+        elif que in TABLONES:
+            app.son("cursor_mapa", vol=0.6)
+            app.decir(TABLONES[que](p), True)
         elif que == "sentarse":
             p.pasar_horas(0.5)
             p.cambiar_animo(2)
             app.son("pasan_horas")
             app.decir(f"Te sientas un rato. Son las {p.hora_txt()}.", True)
         elif que == "escuchar":
-            import random
             self.oidas += 1
             app.son("murmullo", vol=0.5)
             app.decir("Pones el oído. " + random.choice(OIDO), True)
@@ -515,7 +617,7 @@ def con_recorrido(p, lugar, menu, Opcion):
                 lista.insert(0, Opcion(f"{pers['nombre']} está aquí: acercarte a hablar", lambda pid=pers["id"]: menus_adultos.vida_social(p, directo=pid),
                                        ayuda="Lo mismo que desde el móvil, pero en persona: charlar, quedar, hacerle un regalo o proponerle salir a dar una vuelta contigo."))
         o = Opcion("Recorrer el local por dentro", lambda: p.app.abrir(Local(p, lugar)),
-                   ayuda="Entras y vas de una sala a otra con las flechas izquierda y derecha. En el mostrador vuelves a este menú, que es donde se compra o se pide.")
+                   ayuda="Entras y vas de una sala a otra con las flechas izquierda y derecha. En el mostrador te atienden: vuelves a este menú, que es donde se compra o se pide. Dentro, F1 te explica dónde estás.")
         lista.insert(len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista), o)
         return lista
     menu._fuente = ops
@@ -544,6 +646,7 @@ def sucesos_territorio(p, azar=None):
         j.amenaza = None
         if a["territorio"] in j.territorios:
             j.territorios.remove(a["territorio"])
+            j.barrios_banda[a["territorio"]] = a["banda"]          # desde ahora ese barrio es de ellos
             p.son("mision_fallo", cat="interfaz")
             p.decir(f"No defendiste {_nombre_barrio(p, a['territorio'])[0]} y {a['banda']} se lo ha quedado. Ya no te paga.")
             p.cambiar_reputacion(-4)

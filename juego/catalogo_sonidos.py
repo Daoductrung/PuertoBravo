@@ -71,7 +71,7 @@ DESCRIPCIONES = {
     "sonar": "Sensor de proximidad al volante, y el pitido de frío o caliente al buscar tesoros.", "tono_objetivo": "Enemigo fijado y a tiro.",
     "tono_apuntado": "Enemigo fijado pero fuera de alcance.", "tono_pared": "El escáner direccional encuentra una pared.", "tono_libre": "El escáner direccional no encuentra pared.",
     "bordillo": "En conducción libre, te sales de la calzada.", "cruce": "Entras en un cruce.", "radar": "Suena desde lo que anuncia el radar.",
-    "cursor_mapa": "El cursor del explorador de mapa avanza.", "semaforo_tic": "Semáforo: puedes cruzar la calle. Se repite muy rápido, así que debe ser un clic muy corto.",
+    "cursor_mapa": "El cursor del explorador de mapa avanza. También, al leer un tablón dentro de un local.", "semaforo_tic": "Semáforo: puedes cruzar la calle. Se repite muy rápido, así que debe ser un clic muy corto.",
     "semaforo_pio": "Semáforo: puedes cruzar la avenida. Se repite una vez por segundo.", "choque_pared": "Chocas contra una pared caminando.",
     "paso_npc": "Pasos de otras personas.", "dolor": "Te hieren.", "dolor_npc": "Hieres a alguien.", "muerte_npc": "Alguien cae abatido.", "grito": "Un grito de susto.",
     "murmullo": "Un peatón murmura al hablarte.", "golpe": "Un puñetazo o un golpe que acierta.", "golpe_aire": "Un golpe al aire.",

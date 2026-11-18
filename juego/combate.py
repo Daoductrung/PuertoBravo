@@ -14,7 +14,56 @@ PATRULLAS = {1: 1, 2: 1, 3: 2, 4: 3, 5: 4}
 RITMO_PATRULLAS = {1: 9.0, 2: 7.0, 3: 6.0, 4: 5.0, 5: 4.0}
 
 
+RIVAL_CAE = ("cae a la lona.", "se va al suelo y no se levanta.", "besa la lona.", "se desploma: fuera de combate.", "dobla las rodillas y cae.")
+
 BANDAS_MUNDO = ("Los Calaveras", "Los Lagartos", "Los Barrenos", "Los Tiburones", "Los Cuervos")
+
+
+def _num(x):
+    """Un número como se dice: 0,4 y no 0.4; 35 y no 35.0."""
+    return f"{float(x):.2f}".rstrip("0").rstrip(".").replace(".", ",")
+
+
+def _grado(valor, tramos, ultimo):
+    return next((nombre for tope, nombre in tramos if valor < tope), ultimo)
+
+
+def ficha_corta(a):
+    """Lo justo para comparar armas de un vistazo, en la propia opción del menú."""
+    cuerpo = a.get("tipo") == "cuerpo"
+    return f"daño {_num(a.get('dano', 0))}, " + ("cuerpo a cuerpo" if cuerpo else f"alcance {_num(a.get('alcance', 0))} metros")
+
+
+def ficha_arma(a):
+    """Daño, alcance, cadencia y precisión de un arma, con palabras y con cifras. Sale de los datos del arma, así que vale para las de los mods."""
+    dano, alcance, cad, prec = float(a.get("dano", 0)), float(a.get("alcance", 0)), float(a.get("cadencia", 1) or 1), float(a.get("precision", 1))
+    tipo = a.get("tipo")
+    golpe = "por golpe" if tipo == "cuerpo" else "por explosión, en el centro" if tipo == "explosivo" else "por bala"
+    partes = [f"Daño {_grado(dano, ((20, 'bajo'), (40, 'medio'), (70, 'alto')), 'muy alto')}: {_num(dano)} puntos {golpe}; un peatón aguanta 50 y tú, 100"]
+    if tipo == "cuerpo":
+        partes.append(f"Alcance: cuerpo a cuerpo, {_num(alcance)} metros")
+    else:
+        partes.append(f"Alcance {_grado(alcance, ((25, 'corto'), (50, 'medio')), 'largo')}: {_num(alcance)} metros")
+    if tipo == "explosivo" and a.get("radio"):
+        partes.append(f"La explosión alcanza {_num(a['radio'])} metros alrededor")
+    que = "golpe" if tipo == "cuerpo" else "lanzamiento" if tipo == "explosivo" else "disparo"
+    ritmo = _grado(cad, ((0.2, "muy rápida"), (0.5, "rápida"), (0.9, "media")), "lenta")
+    if cad < 0.34:
+        partes.append(f"Cadencia {ritmo}: unos {int(round(1 / cad))} {que}s por segundo" + (", automática: dispara mientras mantienes pulsado" if a.get("automatica") else ""))
+    else:
+        partes.append(f"Cadencia {ritmo}: un {que} cada {'segundo' if cad == 1 else _num(cad) + ' segundos'}")
+    if tipo != "explosivo":
+        partes.append(f"Precisión {_grado(prec, ((0.75, 'baja'), (0.85, 'regular'), (0.93, 'buena')), 'muy buena')}: acierta {int(round(prec * 100))} de cada cien, y menos cuanto más lejos")
+    if a.get("cargador") and tipo == "fuego":
+        partes.append(f"Cargador de {int(a['cargador'])} balas")
+    if tipo != "cuerpo":
+        partes.append("No hace ruido" if not a.get("ruido", 2) else "Hace mucho ruido" if a.get("ruido", 2) >= 3 else "Hace ruido")
+    return ". ".join(partes) + "."
+
+
+def ayuda_arma(a):
+    """La descripción del arma y, detrás, su ficha."""
+    return " ".join(t for t in (str(a.get("desc", "")).strip(), ficha_arma(a)) if t)
 
 
 class Combate:
@@ -340,6 +389,11 @@ class Combate:
                 self.decir("Policía abatido.")
             elif getattr(p, "inofensivo", False):                # un muñeco o una diana de prácticas: ni delito, ni botín, ni cuenta
                 self.decir(f"{p.nombre}: al suelo.")
+                return
+            elif getattr(p, "deportivo", False):                 # un rival del gimnasio: es deporte, ni delito ni botín
+                self.decir(f"{p.nombre} {random.choice(RIVAL_CAE)}")
+                if self.objetivo is p:
+                    self.objetivo = None
                 return
             else:
                 j.stats["enemigos"] += 1
@@ -704,6 +758,11 @@ class Combate:
                     self.danar_jugador(a["dano"] * 0.5, (p.x, p.y))
                 continue
             self.son(a["sonido"], xy=(p.x, p.y), ref=14, maxd=220, vol=0.9)
+            if j.veh and "disparo_veh" not in j.recordado:       # la primera vez que te disparan yendo en un vehículo
+                j.recordado.append("disparo_veh")
+                self.son("notificacion", cat="interfaz")
+                self.decir("¡Te disparan! Puedes responder sin bajarte: pulsa Q para fijar a quien te dispara y Control para disparar desde el vehículo, con un arma de fuego en la mano. "
+                           "La tecla I cambia de arma.")
             prob = 0.42 * (1.0 - 0.6 * d / alcance)
             if j.agachado:
                 prob *= 0.45

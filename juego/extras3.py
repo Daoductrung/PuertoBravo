@@ -272,8 +272,39 @@ class Extras3:
             return []
         return [b for b in self.mundo.barrios if b["id"] not in self.j.territorios]
 
+    def banda_de_barrio(self, b):
+        """La banda que manda en un barrio que no es tuyo: la que te lo quitó, o la que dicen los datos del mapa. Puede no haber ninguna."""
+        return self.j.barrios_banda.get(b["id"]) or b.get("banda") or ""
+
+    def barrio_dueno_txt(self, b, mapa=None):
+        """De quién es un barrio ahora mismo, en una frase: tuyo, de una banda o en guerra. Vacío si no es de nadie."""
+        j = self.j
+        mapa = mapa or self.mundo
+        if self.en_servidor:                                     # en un servidor, los barrios son de las bandas de los jugadores
+            g = next((g for g in self.sv["territorios"].get("guerras", []) if g.get("mapa") == mapa.id and g.get("barrio") == b["id"]), None)
+            if g:
+                return f"En guerra: {g.get('ataca_n', 'una banda')} se lo disputa a {g.get('defiende_n', 'otra')}."
+            t = self.sv_dueno_barrio(mapa.id, b["id"])
+            if not t:
+                return ""
+            mia = self.sv.get("banda")
+            return "Territorio de tu banda." if mia and mia.get("nombre") == t.get("nombre") else f"Territorio de la banda {t.get('nombre', '')}."
+        ms = self.mision
+        if b["id"] in j.territorios:
+            if j.amenaza and j.amenaza.get("territorio") == b["id"]:
+                return f"En guerra: es territorio tuyo, pero {j.amenaza['banda']} lo está atacando."
+            return f"Territorio tuyo: aquí manda {j.banda_nombre}." if j.banda_nombre else "Territorio tuyo."
+        banda = self.banda_de_barrio(b)
+        if ms and ms["def"].get("territorio") == b["id"]:
+            return f"En guerra: se lo estás disputando a {ms['def'].get('banda') or banda or 'una banda'}."
+        return f"Territorio de la banda de {banda}." if banda else ""
+
+    def barrio_desc(self, b, mapa=None):
+        """La descripción de un barrio, con la frase de quién es ahora."""
+        return " ".join(t for t in (str(b.get("descripcion", "")).strip(), self.barrio_dueno_txt(b, mapa)) if t)
+
     def empezar_conquista(self, b):
-        banda = random.choice(BANDAS)
+        banda = self.banda_de_barrio(b) or random.choice(BANDAS)
         ls = [l for l in self.mundo.lugares.values() if self.mundo.barrio(l.x, l.y)["id"] == b["id"] and l.tipo not in ("salida", "embarcadero")]
         if len(ls) < 2:
             self.decir("En ese barrio no hay dónde pelear.", True)
@@ -286,7 +317,7 @@ class Extras3:
                           "texto": f"{['Primer', 'Segundo', 'Último'][k]} grupo de {banda}: {n} pandilleros junto a {l.nombre}.",
                           "enemigos": [{"n": n - 1, "tipo": f"Pandillero de {banda}", "arma": random.choice(["pistola", "pistola", "subfusil"]), "salud": 70 + 8 * k},
                                        {"n": 1, "tipo": f"Pandillero de {banda}", "arma": random.choice(["escopeta", "bate", "navaja"]), "salud": 80 + 8 * k}]})
-        self._empezar_repetible({"id": "conquista", "titulo": f"Conquista de {b['nombre']}", "lugar": ls[0].id, "territorio": b["id"],
+        self._empezar_repetible({"id": "conquista", "titulo": f"Conquista de {b['nombre']}", "lugar": ls[0].id, "territorio": b["id"], "banda": banda,
                                  "contador": "conquistas", "pasos": pasos, "recompensa": {"dinero": 2500}})
 
     # ---------------------------------------------------------------- negocios

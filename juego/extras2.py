@@ -290,7 +290,7 @@ class Extras2:
                 entrada = "¡Se cierra la jaula! Primer asalto." if n == 0 else "Último asalto: el combate estelar." if n == asaltos - 1 else f"Asalto {n + 1}, sin descanso."
             pasos.append({"tipo": "eliminar", "lugar": l.id, "ya": True,
                           "texto": f"{entrada} Tu rival es {rival}. Pulsa Q para fijarlo y Espacio para golpear.",
-                          "enemigos": [{"n": 1, "tipo": rival[0].upper() + rival[1:], "arma": "punos",
+                          "enemigos": [{"n": 1, "tipo": rival[0].upper() + rival[1:], "arma": "punos", "deportivo": bool(c.get("deportivo", True)),
                                         "salud": int(c.get("salud", 60)) + int(c.get("salud_asalto", 0)) * n + int(c.get("salud_victoria", 20)) * g}]})
         self._empezar_repetible({"id": c["id"], "titulo": f"{c['nombre']} contra {rivales[0]}" if asaltos == 1 else c["nombre"], "lugar": l.id, "contador": c["id"],
                                  "pasos": pasos, "recompensa": {"dinero": int(c.get("premio", 150)) + int(c.get("premio_victoria", 100)) * g}})

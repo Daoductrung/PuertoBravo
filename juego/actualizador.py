@@ -9,8 +9,13 @@ Cómo funciona:
    la fuente solo decide de dónde se descarga, no en quién se confía. Sin firma válida no se actualiza.
 3. Si la versión es más nueva que la instalada, se descarga el ZIP, se comprueban su tamaño y su SHA-256
    (que también van firmados), y se extrae en una carpeta aparte, rechazando rutas peligrosas.
-4. Un pequeño .bat espera a que el juego se cierre, guarda una copia del programa, copia la versión nueva
+4. Antes de cerrar, el juego comprueba lo que suele estropear una instalación: que hay sitio en el disco (lo que
+   hace falta de verdad, calculado), que se puede escribir en su carpeta y que no hay otro programa del juego
+   abierto (el editor de mods, el servidor o su panel). Si algo no está bien, lo dice y no se cierra.
+5. Un pequeño .bat espera a que el juego se cierre, guarda una copia del programa, copia la versión nueva
    y vuelve a abrir el juego. Si algo falla, restaura la copia.
+6. El .bat apunta cada paso en data/logs/actualizacion.log, con el archivo que no se pudo copiar y el error de
+   Windows. Si falla, el juego lee ese registro al reabrirse y dice el motivo.
 
 Lo que nunca se toca: partidas, opciones, tu música, tus mods. Solo se admiten direcciones https.
 No se envía ningún dato del jugador: son descargas normales.
@@ -381,8 +386,25 @@ def carpeta_programa():
     return os.path.dirname(os.path.abspath(sys.executable)) if puede_instalar() else rutas.base()
 
 
+REGISTRO_INSTALADOR = "actualizacion.log"
+# Los pasos del instalador, como se apuntan en su registro y como se le cuentan al jugador.
+PASOS = {"esperar_cierre": "esperar a que el juego se cerrara", "esperar_programas": "esperar a que se cerraran los demás programas del juego",
+         "copia_seguridad": "guardar una copia de la versión que tenías", "copiar_nueva": "copiar la versión nueva",
+         "copiar_lib": "copiar el programa nuevo", "copiar_datos": "copiar los datos nuevos del juego", "restaurar": "volver a dejar la versión anterior"}
+# Los otros programas del juego: con uno abierto, Windows no deja sustituir su archivo.
+OTROS_PROGRAMAS = {"EditorMods.exe": "el editor de mods", "PuertoBravoServidor.exe": "el servidor en línea", "PuertoBravoServidorPanel.exe": "el panel del servidor en línea"}
+PROGRAMAS_SERVIDOR = ("PuertoBravoServidor.exe", "PuertoBravoServidorPanel.exe")
+MARGEN_DISCO = 48 * 1024 ** 2
+
+
+def ruta_registro_instalador(programa=None):
+    """Dónde apunta el instalador lo que hace: en la carpeta de registros, junto a los de las sesiones."""
+    return os.path.join(programa, "data", "logs", REGISTRO_INSTALADOR) if programa else os.path.join(rutas.DATA, "logs", REGISTRO_INSTALADOR)
+
+
 def escribir_instalador(nueva, programa=None, pid=None, version=""):
-    """Escribe el .bat que sustituye el programa cuando el juego se haya cerrado. Devuelve su ruta."""
+    """Escribe el .bat que sustituye el programa cuando el juego se haya cerrado. Devuelve su ruta.
+    El .bat apunta cada paso en data\\logs\\actualizacion.log: qué hace, con qué resultado y, si falla, qué archivo y por qué."""
     programa = programa or carpeta_programa()
     pid = os.getpid() if pid is None else pid
     for ruta in (nueva, programa):
@@ -391,47 +413,76 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
     trabajo = os.path.dirname(nueva)
     copia = os.path.join(trabajo, "anterior")
     excluir = " ".join(INTOCABLES)
+    callado = '/njh /njs /ndl /nfl /np /log+:"%REG%"'        # robocopy no lista lo que va bien: en el registro solo quedan los errores
+
+    def apunta(texto):
+        return f'>>"%REG%" echo {texto}'
+
+    def paso(nombre, orden, vital=True, si=None):
+        """Un paso con robocopy: se apunta que empieza, se hace, y se apunta el código con el que termina (8 o más es fallo)."""
+        lineas = [f"set PASO={nombre}", apunta(f"PASO {nombre}"), orden, "set RC=%errorlevel%", apunta(f"RESULTADO {nombre} codigo=%RC%")]
+        if vital:
+            lineas.append("if %RC% geq 8 goto fallo")
+        if si:                                               # solo si existe esa carpeta en la versión nueva
+            salto = f"sin_{nombre}"
+            lineas = [f'if not exist "{si}" goto {salto}'] + lineas + [f":{salto}"]
+        return lineas
+
     lineas = [
         "@echo off", "chcp 65001 >nul", "setlocal",
         f'set "APP={programa}"', f'set "NUEVA={nueva}"', f'set "COPIA={copia}"',
+        'set "REG=%APP%\\data\\logs\\' + REGISTRO_INSTALADOR + '"', "set PASO=empezar", "set RC=0",
+        'if not exist "%APP%\\data\\logs" mkdir "%APP%\\data\\logs"',
+        f'>"%REG%" echo Instalador de Puerto Bravo. Actualizacion a la version {version}.',
+        apunta("EMPIEZA %date% %time%"),
         f"echo Actualizando Puerto Bravo a la version {version}. No cierres esta ventana.",
+        "set PASO=esperar_cierre", apunta("PASO esperar_cierre"),
         "set /a N=0", ":espera",
         f'tasklist /fi "PID eq {pid}" 2>nul | find " {pid} " >nul',
-        "if errorlevel 1 goto servidor",
-        "set /a N+=1", "if %N% geq 90 goto abrir",
+        "if errorlevel 1 goto programas",
+        "set /a N+=1", "if %N% geq 90 goto no_cierra",
         "ping -n 2 127.0.0.1 >nul", "goto espera",
-        # Si el servidor en línea de esta misma carpeta está en marcha, sus programas no se pueden sustituir: se espera a
-        # que se cierre, y si no se cierra, no se actualiza a medias.
-        ":servidor",
-        'tasklist /fi "IMAGENAME eq PuertoBravoServidor.exe" 2>nul | find /i "PuertoBravoServidor" >nul',
-        "if not errorlevel 1 goto ocupado",
-        'tasklist /fi "IMAGENAME eq PuertoBravoServidorPanel.exe" 2>nul | find /i "PuertoBravoServidor" >nul',
-        "if errorlevel 1 goto copiar",
+        # Si el editor de mods, el servidor en línea o su panel están en marcha, sus programas no se pueden sustituir: se
+        # espera a que se cierren, y si no se cierran, no se actualiza a medias.
+        ":programas",
+        "set PASO=esperar_programas", apunta("PASO esperar_programas"), "set /a N=0",
+        ":mirar",
+    ]
+    for exe in OTROS_PROGRAMAS:
+        lineas += [f'tasklist /fi "IMAGENAME eq {exe}" 2>nul | find /i "{exe}" >nul', "if not errorlevel 1 goto ocupado"]
+    lineas += [
+        "goto copiar",
         ":ocupado",
-        "if %N%==0 echo El servidor en linea de Puerto Bravo esta abierto. Paralo y cierra su panel para seguir con la actualizacion.",
-        "set /a N+=1", "if %N% geq 180 goto abrir",
-        "ping -n 2 127.0.0.1 >nul", "goto servidor",
+        "if %N%==0 echo El editor de mods o el servidor en linea de Puerto Bravo esta abierto. Cierralo para seguir con la actualizacion.",
+        "set /a N+=1", "if %N% geq 180 goto no_cierra",
+        "ping -n 2 127.0.0.1 >nul", "goto mirar",
+        ":no_cierra",
+        apunta("FALLO paso=%PASO% codigo=0 motivo=sigue_abierto"),
+        "goto abrir",
         ":copiar",
         'if exist "%COPIA%" rmdir /s /q "%COPIA%"',
-        'robocopy "%APP%" "%COPIA%" /e /xd "%APP%\\data" /r:2 /w:1 /njh /njs /ndl /nfl >nul',
-        'robocopy "%APP%\\data\\datos" "%COPIA%\\data\\datos" /e /r:2 /w:1 /njh /njs /ndl /nfl >nul',
-        'robocopy "%APP%\\data\\mods" "%COPIA%\\data\\mods" /e /r:2 /w:1 /njh /njs /ndl /nfl >nul',
-        'robocopy "%APP%\\data\\docs" "%COPIA%\\data\\docs" /e /r:2 /w:1 /njh /njs /ndl /nfl >nul',
-        f'robocopy "%NUEVA%" "%APP%" /e /xd {excluir} /r:3 /w:1 /njh /njs /ndl /nfl >nul',
-        "if errorlevel 8 goto fallo",
-        'if exist "%NUEVA%\\lib" robocopy "%NUEVA%\\lib" "%APP%\\lib" /mir /r:3 /w:1 /njh /njs /ndl /nfl >nul',
-        "if errorlevel 8 goto fallo",
-        'if exist "%NUEVA%\\data\\datos" robocopy "%NUEVA%\\data\\datos" "%APP%\\data\\datos" /mir /r:3 /w:1 /njh /njs /ndl /nfl >nul',
-        "if errorlevel 8 goto fallo",
+    ]
+    lineas += paso("copia_seguridad", f'robocopy "%APP%" "%COPIA%" /e /xd "%APP%\\data" /r:2 /w:1 {callado}', vital=False)
+    for sub_ in ("datos", "mods", "docs"):
+        lineas.append(f'robocopy "%APP%\\data\\{sub_}" "%COPIA%\\data\\{sub_}" /e /r:2 /w:1 {callado}')
+    lineas += paso("copiar_nueva", f'robocopy "%NUEVA%" "%APP%" /e /xd {excluir} /r:3 /w:1 {callado}')
+    lineas += paso("copiar_lib", f'robocopy "%NUEVA%\\lib" "%APP%\\lib" /mir /r:3 /w:1 {callado}', si="%NUEVA%\\lib")
+    lineas += paso("copiar_datos", f'robocopy "%NUEVA%\\data\\datos" "%APP%\\data\\datos" /mir /r:3 /w:1 {callado}', si="%NUEVA%\\data\\datos")
+    lineas += [
         'if exist "%APP%\\data\\voces_serie" rmdir /s /q "%APP%\\data\\voces_serie"',     # las voces van ahora en data\voces
         'rmdir /s /q "%NUEVA%"',
         'rmdir /s /q "%COPIA%"',
+        apunta("TERMINADA bien %date% %time%"),
         f'start "" "%APP%\\{EJECUTABLE}" {ARG_TRAS_ACTUALIZAR}',
         "goto fin",
         ":fallo",
+        apunta("FALLO paso=%PASO% codigo=%RC% motivo=copia"),
         "echo La actualizacion ha fallado. Se restaura la version anterior.",
-        'robocopy "%COPIA%" "%APP%" /e /r:3 /w:1 /njh /njs /ndl /nfl >nul',
+    ]
+    lineas += paso("restaurar", f'robocopy "%COPIA%" "%APP%" /e /r:3 /w:1 {callado}', vital=False)
+    lineas += [
         ":abrir",
+        apunta("TERMINADA mal %date% %time%"),
         f'start "" "%APP%\\{EJECUTABLE}" --actualizacion-fallida',
         ":fin",
         "endlocal",
@@ -443,17 +494,273 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
     return ruta
 
 
-PROGRAMAS_SERVIDOR = ("PuertoBravoServidor.exe", "PuertoBravoServidorPanel.exe")
+# ------------------------------------------------- el registro del instalador
+# Errores de Windows que salen al copiar, y lo que quieren decir para quien juega.
+_EN_USO = (32, 33)
+_DENEGADO = (5, 19, 1920)
+_SIN_SITIO = (39, 112)
+_ANTIVIRUS = (225, 226)
 
 
-def servidor_abierto():
-    """¿Está en marcha el servidor en línea, o su panel? Con ellos abiertos no se pueden sustituir sus programas."""
+_RE_ERROR_COPIA = r"(ERROR\s+(\d+)\s+\(0x[0-9A-Fa-f]+\)\s+)(.*)$"
+_RE_CAMINO = r"(?:[A-Za-z]:[\\/]|\\\\|<)[^\r\n]*$"
+
+
+def _texto_registro(ruta):
+    """El registro del instalador, como texto. Lo que apunta el .bat va sin tildes; lo de robocopy, en la codificación de la consola de Windows."""
+    with open(ruta, "rb") as f:
+        crudo = f.read(2 * 1024 * 1024)
+    try:
+        return crudo.decode("utf-8")
+    except UnicodeDecodeError:
+        return crudo.decode("oem" if os.name == "nt" else "latin-1", errors="replace")      # robocopy escribe en la página de códigos de la consola
+
+
+def _archivo_de(resto):
+    """De lo que robocopy escribe tras el error («Copiando archivo D:\\Juegos\\PB\\EditorMods.exe»), el nombre del archivo."""
+    import re
+    camino = re.search(_RE_CAMINO, resto)
+    if camino:
+        return re.split(r"[\\/]", camino.group(0).rstrip("\\/ "))[-1]
+    ultimo = resto.split()[-1] if resto.split() else ""
+    return ultimo if "." in ultimo else ""
+
+
+def limpiar_registro_instalador(ruta=None):
+    """Quita del registro del instalador las carpetas de quien juega: de cada archivo que no se pudo copiar queda solo el nombre.
+    Lo hace el juego al reabrirse, para que el registro se pueda enviar sin dar datos personales."""
+    import re
+    ruta = ruta or ruta_registro_instalador()
+    try:
+        lineas = _texto_registro(ruta).splitlines()
+        limpias = []
+        for linea in lineas:
+            m = re.search(_RE_ERROR_COPIA, linea)
+            if m and re.search(_RE_CAMINO, m.group(3)):
+                linea = linea[:m.start(3)] + re.sub(_RE_CAMINO, lambda c: _archivo_de(m.group(3)), m.group(3))
+            limpias.append(linea)
+        with open(ruta, "w", encoding="utf-8", newline="\r\n") as f:
+            f.write("\n".join(limpias) + "\n")
+    except OSError:
+        pass
+
+
+def leer_registro_instalador(ruta=None):
+    """Lo que dejó apuntado el instalador: {"existe", "bien", "paso", "codigo", "motivo", "error", "archivo"}. Nunca falla."""
+    import re
+    r = {"existe": False, "bien": None, "paso": "", "codigo": 0, "motivo": "", "error": 0, "archivo": ""}
+    try:
+        texto = _texto_registro(ruta or ruta_registro_instalador())
+    except OSError:
+        return r
+    r["existe"] = True
+    paso_actual = ""
+    for linea in texto.splitlines():
+        linea = linea.strip()
+        if linea.startswith("PASO "):
+            paso_actual = linea[5:].strip()
+        elif linea.startswith("TERMINADA "):
+            r["bien"] = linea.split()[1] == "bien"
+        elif linea.startswith("FALLO "):
+            m = re.search(r"paso=(\S+)\s+codigo=(-?\d+)(?:\s+motivo=(\S+))?", linea)
+            if m:
+                r["paso"], r["codigo"], r["motivo"] = m.group(1), int(m.group(2)), m.group(3) or ""
+        else:
+            # robocopy: «2026/11/18 10:00:00 ERROR 32 (0x00000020) Copiando archivo D:\Juegos\Puerto Bravo\EditorMods.exe»
+            m = re.search(_RE_ERROR_COPIA, linea)
+            if m and not r["error"] and paso_actual != "copia_seguridad":
+                r["error"] = int(m.group(2))
+                r["archivo"] = _archivo_de(m.group(3))            # vale con la ruta entera y con el registro ya limpio de rutas
+                r.setdefault("paso_error", paso_actual)
+    return r
+
+
+def motivo_del_fallo(ruta=None):
+    """Por qué no se instaló la última actualización, dicho para quien juega, a partir del registro del instalador."""
+    r = leer_registro_instalador(ruta)
+    if not r["existe"]:
+        return "El instalador no dejó apuntado el motivo."
+    que = f"el archivo {r['archivo']}" if r["archivo"] else "un archivo del juego"
+    paso = PASOS.get(r["paso"] or r.get("paso_error", ""), "")
+    if r["motivo"] == "sigue_abierto":
+        if r["paso"] == "esperar_cierre":
+            texto = "El juego no terminó de cerrarse a tiempo. Vuelve a intentarlo, y si se repite, reinicia el ordenador antes."
+        else:
+            texto = ("El editor de mods, el servidor en línea o su panel seguían abiertos, y Windows no deja sustituir un programa en marcha. "
+                     "Ciérralos y vuelve a intentarlo.")
+    elif r["error"] in _EN_USO:
+        texto = (f"No se pudo sustituir {que} porque lo estaba usando otro programa. Cierra el editor de mods, el servidor en línea y cualquier otra "
+                 "ventana de Puerto Bravo, y vuelve a intentarlo. Si no tienes nada abierto, puede ser el antivirus, que lo estaba examinando.")
+    elif r["error"] in _DENEGADO:
+        texto = (f"Windows no dejó escribir {que}: acceso denegado. Suele pasar si el juego está en una carpeta protegida, como Archivos de programa, "
+                 "si está activado el acceso controlado a carpetas de Windows, o si un antivirus lo impide. Mueve el juego a otra carpeta, por ejemplo "
+                 "dentro de Documentos, o añade una excepción en el antivirus.")
+    elif r["error"] in _SIN_SITIO:
+        texto = "No había sitio suficiente en el disco. Libera espacio y vuelve a intentarlo."
+    elif r["error"] in _ANTIVIRUS:
+        texto = f"El antivirus bloqueó {que}. Añade la carpeta del juego a las excepciones del antivirus y vuelve a intentarlo."
+    elif r["error"]:
+        texto = f"No se pudo copiar {que}: Windows dio el error {r['error']}."
+    elif paso:
+        texto = f"Falló el paso de {paso}, y el instalador no apuntó con qué archivo."
+    else:
+        texto = "El instalador no llegó a apuntar en qué paso falló."
+    if paso and (r["error"] or r["motivo"] == "sigue_abierto"):
+        texto += f" Fue al {paso}."
+    return texto
+
+
+# ------------------------------------------- comprobaciones antes de instalar
+def _tareas():
+    """Los nombres de los programas en marcha, en minúsculas. Vacío si no se puede preguntar."""
     try:
         sin_ventana = getattr(subprocess, "CREATE_NO_WINDOW", 0)
         salida = subprocess.run(["tasklist", "/fo", "csv", "/nh"], capture_output=True, text=True, timeout=10, creationflags=sin_ventana).stdout.lower()
     except (OSError, subprocess.SubprocessError):
+        return set()
+    return {linea.split('","')[0].strip('"') for linea in salida.splitlines() if linea.startswith('"')}
+
+
+def servidor_abierto():
+    """¿Está en marcha el servidor en línea, o su panel? Con ellos abiertos no se pueden sustituir sus programas."""
+    tareas = _tareas()
+    return any(nombre.lower() in tareas for nombre in PROGRAMAS_SERVIDOR)
+
+
+def carpeta_escribible(programa):
+    """¿Se puede crear un archivo en la carpeta del juego? En una carpeta protegida, o con un antivirus estricto, no."""
+    prueba = os.path.join(programa, f"prueba_de_escritura_{os.getpid()}.tmp")
+    try:
+        with open(prueba, "wb") as f:
+            f.write(b"x")
+        os.remove(prueba)
+        return True
+    except OSError:
         return False
-    return any('"%s"' % nombre.lower() in salida for nombre in PROGRAMAS_SERVIDOR)
+
+
+def programas_abiertos(programa=None, tareas=None):
+    """Los otros programas del juego que están abiertos, con el nombre que entiende quien juega. Se mira de dos maneras:
+    por la lista de programas en marcha, y probando si Windows deja abrir para escribir cada programa de la carpeta."""
+    programa = programa or carpeta_programa()
+    tareas = _tareas() if tareas is None else {t.lower() for t in tareas}
+    abiertos = [nombre for exe, nombre in OTROS_PROGRAMAS.items() if exe.lower() in tareas]
+    propio = os.path.normcase(os.path.abspath(sys.executable))
+    try:
+        ejecutables = [n for n in os.listdir(programa) if n.lower().endswith(".exe")]
+    except OSError:
+        ejecutables = []
+    for n in ejecutables:
+        ruta = os.path.join(programa, n)
+        nombre = OTROS_PROGRAMAS.get(n, f"el programa {n}")
+        if os.path.normcase(os.path.abspath(ruta)) == propio or nombre in abiertos:
+            continue
+        try:
+            with open(ruta, "r+b"):                           # un programa en marcha no se deja abrir para escribir
+                pass
+        except PermissionError:
+            abiertos.append(nombre)
+        except OSError:
+            pass
+    return abiertos
+
+
+def tamano(ruta, excluir=()):
+    """Bytes que ocupa una carpeta, sin contar las subcarpetas llamadas como diga `excluir`."""
+    total = 0
+    for base, dirs, archivos in os.walk(ruta):
+        dirs[:] = [d for d in dirs if d not in excluir]
+        for n in archivos:
+            try:
+                total += os.path.getsize(os.path.join(base, n))
+            except OSError:
+                pass
+    return total
+
+
+def tamano_copia(programa):
+    """Lo que ocupará la copia de seguridad que hace el instalador: el programa sin data, más los datos, los mods y los manuales."""
+    return tamano(programa, excluir=("data",)) + sum(tamano(os.path.join(programa, "data", s)) for s in ("datos", "mods", "docs"))
+
+
+def espacio_para_instalar(nueva, programa=None):
+    """Los bytes libres que hacen falta para instalar una versión ya extraída: la copia de seguridad de la anterior, lo que
+    crece el juego al ponerle la nueva (archivo a archivo) y un margen para el archivo más grande mientras se escribe."""
+    programa = programa or carpeta_programa()
+    crece, mayor = 0, 0
+    raiz = os.path.abspath(nueva)
+    for base, dirs, archivos in os.walk(raiz):
+        dirs[:] = [d for d in dirs if d not in INTOCABLES]
+        for n in archivos:
+            origen = os.path.join(base, n)
+            try:
+                nuevo = os.path.getsize(origen)
+            except OSError:
+                continue
+            try:
+                viejo = os.path.getsize(os.path.join(programa, os.path.relpath(origen, raiz)))
+            except OSError:
+                viejo = 0
+            crece += max(0, nuevo - viejo)
+            mayor = max(mayor, nuevo)
+    return tamano_copia(programa) + crece + mayor + MARGEN_DISCO
+
+
+def espacio_para_descargar(info, programa=None):
+    """Los bytes libres que hacen falta antes de empezar: el ZIP, la versión nueva extraída (que ocupará más o menos lo que
+    ocupa hoy el programa, y nunca menos que el ZIP) y, cuando el ZIP ya se ha borrado, la copia de seguridad."""
+    programa = programa or carpeta_programa()
+    instalado = tamano(programa, excluir=INTOCABLES)
+    extraida = max(instalado, int(info.tamano * 1.15))
+    return extraida + max(info.tamano, tamano_copia(programa) + extraida // 10) + MARGEN_DISCO
+
+
+def espacio_libre(ruta):
+    try:
+        return shutil.disk_usage(ruta).free
+    except OSError:
+        return None
+
+
+def megas_txt(n):
+    """«850 megas» o «1,6 gigas»."""
+    m = n / 1024 ** 2
+    return f"{m / 1024:.1f} gigas".replace(".", ",") if m >= 1000 else f"{max(1, int(round(m)))} megas"
+
+
+def _falta_sitio(hace_falta, programa, libre=None):
+    libre = espacio_libre(programa) if libre is None else libre
+    if libre is None or libre >= hace_falta:
+        return ""
+    disco = os.path.splitdrive(os.path.abspath(programa))[0].rstrip(":").upper()
+    return (f"No hay sitio suficiente en el disco{' ' + disco if disco else ''}: hacen falta {megas_txt(hace_falta)} libres y hay {megas_txt(libre)}. "
+            f"Libera al menos {megas_txt(hace_falta - libre)} y vuelve a intentarlo.")
+
+
+def problema_para_descargar(info, programa=None, libre=None):
+    """Antes de descargar: si no va a caber, se dice ya. Cadena vacía si hay sitio."""
+    programa = programa or carpeta_programa()
+    return _falta_sitio(espacio_para_descargar(info, programa), programa, libre)
+
+
+def problemas_para_instalar(nueva, programa=None, libre=None, tareas=None):
+    """Antes de cerrar el juego para actualizar: lo que haría fallar la instalación, dicho con claridad. Lista vacía si todo está bien."""
+    programa = programa or carpeta_programa()
+    problemas = []
+    if not carpeta_escribible(programa):
+        problemas.append("Windows no deja escribir en la carpeta del juego. Suele pasar si está en una carpeta protegida, como Archivos de programa, "
+                         "o si un antivirus o el acceso controlado a carpetas lo impiden. Mueve el juego a otra carpeta, por ejemplo dentro de Documentos, "
+                         "o añade una excepción en el antivirus.")
+    else:
+        abiertos = programas_abiertos(programa, tareas)
+        if abiertos:
+            lista = abiertos[0] if len(abiertos) == 1 else ", ".join(abiertos[:-1]) + " y " + abiertos[-1]
+            problemas.append(f"Está abierto {lista}. Windows no deja sustituir un programa en marcha: ciérralo antes de actualizar."
+                             if len(abiertos) == 1 else f"Están abiertos {lista}. Windows no deja sustituir un programa en marcha: ciérralos antes de actualizar.")
+    falta = _falta_sitio(espacio_para_instalar(nueva, programa), programa, libre)
+    if falta:
+        problemas.append(falta)
+    return problemas
 
 
 def lanzar_instalador(ruta_bat):

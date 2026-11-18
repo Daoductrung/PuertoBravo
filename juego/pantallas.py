@@ -101,7 +101,7 @@ class ExploradorMapa:
             elif not self.mar:
                 x, y = self._xy()
                 b = self.m.barrio(min(max(x, 1), self.m.ancho - 1), min(max(y, 1), self.m.alto - 1))
-                self.app.decir(f"{b['nombre']}. {b['descripcion']}", True)
+                self.app.decir(f"{b['nombre']}. {self.p.barrio_desc(b, self.m)}", True)
         elif k == pygame.K_HOME:
             px, py = self.p.pos()
             if self.mar:

@@ -1117,7 +1117,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.decir(f"{l.nombre}. {l.desc}", True)
         else:
             b = self.mundo.barrio(x, y)
-            self.decir(f"{b['nombre']}. {b['descripcion']}", True)
+            self.decir(f"{b['nombre']}. {self.barrio_desc(b)}", True)
 
     def mirar(self, rumbo):
         """Escáner direccional: describe lo que hay en una dirección."""
@@ -1219,7 +1219,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.fijar_gps(ex, ey, nom, sigue=sigue)
         if antes is not None and self.gps:
             self.gps["anterior"] = antes
-            self.decir(f"Desvío a {nom}. Al llegar, el GPS vuelve a {antes['nombre']}." + (" Con Mayúsculas G lo dejas y vuelves." if sigue is not None else ""))
+            self.decir(f"Desvío a {nom}. Al llegar, el GPS vuelve a {antes['nombre']}. Con Mayúsculas G cancelas el desvío y vuelves a lo que llevabas.")
 
     def _volver_del_desvio(self, texto=""):
         """Se acabó el desvío marcado con el radar: el GPS vuelve al destino que había. False si no había ninguno."""
@@ -1812,7 +1812,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             if self.cfg["anunciar_barrios"] and not primera:
                 # la primera vez que pisas un barrio, además del nombre, cómo es
                 if nuevo and self.cfg["describir_zonas"] and b.get("descripcion"):
-                    self.decir(f"Entras en {b['nombre']} por primera vez. {b['descripcion']}")
+                    self.decir(f"Entras en {b['nombre']} por primera vez. {self.barrio_desc(b)}")
                 else:
                     self.decir(f"Entras en {b['nombre']}.")
         if not j.veh or not self.modo_asistido():

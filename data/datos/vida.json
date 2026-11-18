@@ -35,10 +35,10 @@
     {"id": "socorrista", "nombre": "Jornada de socorrista en la playa", "paga": 95, "salud": 0}
   ],
   "combates": [
-    {"id": "boxeo", "nombre": "Combate de boxeo", "inscripcion": 50, "asaltos": 1, "salud": 60, "salud_asalto": 0, "salud_victoria": 22, "premio": 150, "premio_victoria": 110,
+    {"id": "boxeo", "nombre": "Combate de boxeo", "deportivo": true, "inscripcion": 50, "asaltos": 1, "salud": 60, "salud_asalto": 0, "salud_victoria": 22, "premio": 150, "premio_victoria": 110,
      "rivales": ["el Martillo", "la Apisonadora", "Puños de Hierro", "el Yunque", "la Cobra", "Mandíbula de Cristal"],
      "ayuda": "Un combate a puñetazos. Cada victoria sube el premio y la dureza del siguiente rival."},
-    {"id": "mma", "nombre": "Velada de artes marciales mixtas", "inscripcion": 120, "asaltos": 3, "salud": 55, "salud_asalto": 18, "salud_victoria": 20, "premio": 480, "premio_victoria": 260,
+    {"id": "mma", "nombre": "Velada de artes marciales mixtas", "deportivo": true, "inscripcion": 120, "asaltos": 3, "salud": 55, "salud_asalto": 18, "salud_victoria": 20, "premio": 480, "premio_victoria": 260,
      "rivales": ["el Carnicero", "la Guillotina", "Rodilla de Acero", "el Estrangulador", "la Tormenta", "Codo Loco", "el Muro", "la Víbora"],
      "ayuda": "Tres asaltos en la jaula, cada uno contra un rival más duro que el anterior, sin descanso entre ellos y solo con los puños. Si caes en cualquiera, pierdes la velada. Paga bastante más que el boxeo, y cada velada ganada sube el premio y la dureza de la siguiente."}
   ],

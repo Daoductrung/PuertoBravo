@@ -130,7 +130,7 @@ def crear_personaje(app):
                  Opcion(lambda: f"Te hablan {TRATO[e['genero']]}", ajuste=trato, ayuda=AYUDA_TRATO + " Izquierda, derecha o Intro para cambiar."),
                  Opcion(lambda: f"Tu voz en las escenas: {vozgen.NOMBRE_VOZ[vozgen.VOCES_PROTA[e['voz']]]}, {TRATO[e['genero']]}", ajuste=voz,
                         ayuda="La voz con la que hablas tú en las escenas de la historia. Hay cuatro de hombre y cuatro de mujer; suena la que corresponde a cómo te hablan. Izquierda y derecha para cambiar.")]
-        if vozgen.disponible():
+        if vozgen.disponible() or vozgen.probando():      # mientras el motor se comprueba, las opciones ya están: si se pulsan, lo dicen
             lista += [Opcion(lambda: f"Cómo se pronuncia tu nombre: {e['dicho'] or 'igual que se escribe'}", pedir("dicho", "Cómo se pronuncia tu nombre"),
                              ayuda="Si al escuchar tu nombre no suena bien, escríbelo aquí como se pronuncia, por ejemplo Yónatan en vez de Jonathan. En pantalla y en braille sigue saliendo como lo escribiste arriba. Puedes dejarlo vacío."),
                       Opcion("Escuchar cómo te llamarán", oir_nombre, ayuda="Genera una frase con tu nombre, dicha por un personaje de la historia. Tarda un momento."),

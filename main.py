@@ -31,6 +31,11 @@ def ya_abierto():
 
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "--probar-motor-voz":
+        # El juego se lanza a sí mismo así para probar el motor de voz en un proceso aparte: si el motor se cae de golpe,
+        # se cae este proceso y no el juego. No abre ventana, ni registro, ni cuenta como «ya abierto».
+        from juego import vozgen
+        os._exit(vozgen.prueba_en_este_proceso(sys.argv[2] if len(sys.argv) > 2 else None))
     if ya_abierto():
         return 4
     from juego import procesador, registro
