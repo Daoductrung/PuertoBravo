@@ -9,7 +9,8 @@ TECLAS = {
         ("N", "descripción del lugar o del barrio en el que estás"),
         ("Mayúsculas N", "siguiente cruce: qué calle es la próxima que te vas a cruzar hacia donde miras o conduces, y a cuántos metros está"),
         ("Mayúsculas V", "solo el hambre, la sed, el sueño y la higiene, con la vida realista activada"),
-        ("Mayúsculas L", "dónde está el vehículo del que te bajaste: lo dice y lo marca en el GPS. Si ibas a otro sitio, al llegar al vehículo el GPS vuelve solo a ese destino"),
+        ("Mayúsculas L", "dónde está el vehículo del que te bajaste: lo dice y lo marca en el GPS. Si ibas a otro sitio, al llegar al vehículo el GPS vuelve solo a ese destino. "
+                         "Si tienes más vehículos, dice cuántos: están en el móvil, en Mis vehículos"),
         ("K", "hacia dónde miras o conduces, y hace sonar un tono desde el norte para orientarte"),
         ("F10", "jugando con amigos, escribir un mensaje: se lee en voz alta a los demás. Para abrir tu partida a tus amigos o unirte a la de uno, abre el móvil con M y entra en Jugar con amigos"),
         ("F9", "explorador de mapa: recorre la localidad con un cursor, cruce a cruce, sin mover al personaje. Tabulador dice los lugares junto al cursor e Intro marca el destino"),

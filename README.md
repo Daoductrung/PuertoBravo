@@ -128,6 +128,18 @@ Todo el contenido y todos los precios del juego están en los JSON de `data\dato
 
 Las mejoras del taller (`juego/sistemas.py`) también salen de los datos: cada una dice su `efecto`, de la lista `sistemas.EFECTOS`, sus niveles y cuánto da cada nivel.
 
+### Mis vehículos y el chófer
+
+`juego/misvehiculos.py` (mixin `MisVehiculos` de la partida, y los menús del móvil):
+
+- Un vehículo del jugador lleva `v.mio = True` y `v.mio_n` (orden de antigüedad). `Partida.hacer_mio(v)` lo marca: lo llaman la compra, la primera mejora del taller, sacar del garaje, que te lo traigan y ponerle nombre. `_poblar` no retira los marcados.
+- Los de la localidad actual son vehículos vivos; los de las demás esperan como datos en `Partida.mis_lejos` (`mis_al_cambiar_mapa`, `_reponer_mis_vehiculos`). En la partida guardada van en `mis_vehiculos`, con `n` y, el último usado, `ultimo`; el que llevas puesto, en `veh` con `mio`. El número de formato no cambia: una versión anterior ignora las claves nuevas, y una partida anterior carga sin ellas (`mis_cargar`).
+- `ultimo_veh` y `veh_fuera` siguen siendo «el último que has usado», sea tuyo o no; si es tuyo, no se duplica en `veh_fuera`.
+- El tope (`vehiculos_propios.tope_calle` en `vida.json`) lo aplica `_tope_mis_vehiculos`.
+- En un servidor no se marca ni se guarda nada (`hacer_mio` devuelve `False`): los vehículos de la calle son del servidor. El servidor añade a su respuesta de entrada `mis_vehiculos` (los identificadores de los aparcados a nombre de la cuenta) y acepta `nombre` en `veh_dejar`; un juego o un servidor anterior ignora las dos cosas. El juego lleva la cuenta en `sv["mios"]` y `sv_mis_vehiculos()`.
+- Misiones: `mision_vehiculo(m)` y `mision_vehiculo_txt(m)` dicen qué pasa con el vehículo; con `vehiculo_libre`, el paso `robar` acepta el vehículo del jugador (`ms["veh_tuyo"]`) y `entregar` no se lo quita.
+- Chófer: `Partida.chofer` es `None` o un diccionario con `estado` (`espera`, `viene`, `aqui`, `contigo`). El vehículo viene con `ia == "chofer"` (`_ia_chofer`); contigo dentro, `chofer_conduce()` hace que `piloto_puesto()` y `modo_asistido()` valgan aunque el jugador no tenga el piloto ni la conducción asistida, y `conducir` ignora los pedales. El vehículo de la banda lleva `tag == "banda"`; el de tu garaje, no lleva marca y es tuyo. No se guarda con la partida.
+
 `mundo_servidor()` le cuenta además al servidor los nombres de sus personajes (`gente`) y las armas de sus agentes por nivel (`policia`). Son dos claves de más: un servidor anterior no las mira, y uno nuevo usa lo suyo si no vienen. La huella del mundo no depende de ellas, pero sí de las armas y los vehículos: al añadir unas u otros hay que regenerar `servidor/mundo.json` con `herramientas/exportar_mundo_servidor.py`.
 
 ### Pruebas

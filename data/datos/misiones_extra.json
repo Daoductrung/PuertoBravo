@@ -296,6 +296,7 @@
   {
    "id": "v02",
    "titulo": "Cosecha urgente",
+   "vehiculo_libre": true,
    "capitulo": 6,
    "contacto": "Anselmo",
    "lugar": "vs_cooperativa",

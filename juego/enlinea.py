@@ -404,6 +404,10 @@ class EnLinea:
             self.app.aplicar_adultos()
         for v in ok.get("vehiculos", []):
             self.sv["vehs"][v["id"]] = v
+        # Los vehículos de la calle que el servidor reconoce como tuyos. Un servidor anterior no lo dice: entonces solo se
+        # sabe de los que dejes en esta sesión.
+        self.sv["mios"] = {i for i in (ok.get("mis_vehiculos") or []) if isinstance(i, int)}
+        self.mis_al_servidor()
         self.sv_poner_vehiculos()
         self.sv_al_dia(int(ok.get("dias_fuera") or 0))
         for cosa in ok.get("pendientes", []):                    # lo que pasó con tus propiedades mientras no estabas
@@ -514,6 +518,7 @@ class EnLinea:
         if self.en_servidor and self.red is not None and self.red.conectado:
             d = self.a_dict()
             d.pop("veh_fuera", None)                 # en un servidor, los vehículos de la calle los lleva el servidor
+            d.pop("mis_vehiculos", None)
             self.red.enviar({"t": "guardar", "p": d, "ya": bool(ya)})
             self.sv["t_guardar"] = 45.0
             return True
@@ -1500,6 +1505,7 @@ class EnLinea:
             d = {"id": v.id_red, "modelo": v.modelo["id"], "nombre": v.nombre, "m": self.mundo.id, "x": round(v.x, 1), "y": round(v.y, 1),
                  "r": round(v.rumbo), "salud": round(v.salud, 1), "por": None}
             self.sv["vehs"][v.id_red] = d
+            self.sv.setdefault("mios", set()).add(v.id_red)
             self.red.enviar(dict(d, t="veh_dejar"))
 
     def sv_quitado(self, v):
@@ -1507,6 +1513,7 @@ class EnLinea:
         if self.en_servidor and getattr(v, "id_red", None) is not None and (getattr(v, "red_mio", False) or getattr(v, "red_dueno", False)):
             v.red_mio = v.red_dueno = False
             self.sv["vehs"].pop(v.id_red, None)
+            self.sv.setdefault("mios", set()).discard(v.id_red)
             self.red.enviar({"t": "veh_fin", "id": v.id_red})
 
     def sv_pedir_vehiculo(self, v):
@@ -1561,6 +1568,7 @@ class EnLinea:
         d = m.get("v") or {}
         if d.get("id") is not None:
             self.sv["vehs"][d["id"]] = d
+            self.sv.setdefault("mios", set()).discard(d["id"])   # lo lleva otro: ya no es tuyo
         if m.get("tr") is not None:                              # otro jugador se ha quedado un coche del tráfico
             t = self.sv["trafico"].pop(m["tr"], None)
             if t is not None and not t.muerto and t is not self.j.veh:
@@ -1646,6 +1654,7 @@ class EnLinea:
 
     def _svm_veh_revienta(self, m):
         self.sv["vehs"].pop(m.get("id"), None)
+        self.sv.setdefault("mios", set()).discard(m.get("id"))
         v = self._sv_copia(m.get("id"))
         if v is not None and v is not self.j.veh:
             v.id_red = None
@@ -1655,6 +1664,7 @@ class EnLinea:
 
     def _svm_veh_fuera(self, m):
         self.sv["vehs"].pop(m.get("id"), None)
+        self.sv.setdefault("mios", set()).discard(m.get("id"))
         v = self._sv_copia(m.get("id"))
         if v is not None and v is not self.j.veh:
             v.red_dueno = False

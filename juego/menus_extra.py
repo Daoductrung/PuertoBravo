@@ -152,14 +152,11 @@ def servicios(p):
                 return
             d = j.garajes[pid].pop(k)
             x, y, di = p.plaza_cercana()
-            v = p.crear_vehiculo(d["modelo"], x, y, di, None, d.get("nombre"))
-            from . import sistemas
-            sistemas.poner(v, d.get("mejoras"))
-            v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
-            v.propio = True
+            v = p._veh_de_dict(dict(d, rumbo=di * 90.0), x, y)
             _volver_al_juego(p)
             p.son("claxon", xy=(x, y))
             p.decir(f"Tu mecánico te deja {v.nombre} en la calle. {p.situar(x, y, 'Está')}.", True)
+            p.hacer_mio(v)
         return f
 
     def vehiculos():
@@ -179,7 +176,7 @@ def servicios(p):
             return
         if v.tag or v.modelo.get("barco") or p.mundo.tipo == "mar":
             app.son("error")
-            app.decir("Ese vehículo no se puede guardar en un garaje.", True)
+            app.decir(p.motivo_ajeno(v) if v.tag else "Ese vehículo no se puede guardar en un garaje.", True)
             return
 
         def llevar(l):
@@ -191,7 +188,7 @@ def servicios(p):
                     return
                 if v.muerto or not p.pagar(p.precio("mandar_vehiculo", 100)):
                     return
-                g.append({"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "mejoras": dict(getattr(v, "mejoras", {}))})
+                g.append(p._ficha_garaje(v))
                 if j.veh is v:
                     p.salir_vehiculo(forzado=True)
                 p.quitar_vehiculo(v)
@@ -268,6 +265,10 @@ def servicios(p):
         Opcion(f"Que te traigan un vehículo de tus garajes: {p.precio('traer_vehiculo', 150)} euros", vehiculos),
         Opcion(f"Mandar tu vehículo a uno de tus garajes: {p.precio('mandar_vehiculo', 100)} euros", al_garaje,
                ayuda="Tu mecánico se lleva el vehículo que llevas, o el que acabas de dejar aparcado cerca, al garaje de la casa que elijas. Vale para casas de cualquier localidad."),
+        Opcion(lambda: "Chófer de tu banda" + (f": {p.chofer['nombre']}" if p.chofer else f": {p.precio('chofer', 80)} euros"),
+               lambda: __import__("juego.misvehiculos", fromlist=["x"]).menu_chofer(p),
+               ayuda="Alguien de tu banda viene a recogerte con un vehículo de tu garaje o con uno de la banda, y conduce él hasta el destino que marques en el GPS. "
+                     "Tú vas de pasajero y puedes disparar. Hace falta tener a alguien reclutado. Desde aquí también lo despides."),
         Opcion(f"Llamar a un guardaespaldas: {p.precio('guardaespaldas', 350)} euros", guardaespaldas),
         Opcion(lambda: f"Despedir a tus guardaespaldas: llevas {sum(1 for e in p.personas if e.tipo == 'aliado' and not e.muerto and not getattr(e, 'de_banda', False))}", despedir,
                ayuda=f"Se marchan y dejan de cobrarte los {p.precio('guardaespaldas_sueldo', 200)} euros de cada medianoche."),

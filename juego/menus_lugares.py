@@ -399,7 +399,9 @@ def concesionario(p, l):
                 v.propio = True
                 app.cerrar(m)
                 app.son("mision_ok")
-                app.decir(f"¡{mo['nombre']} es tuyo, con papeles y todo! {p.situar(x, y, 'Te espera')}. Guárdalo en el garaje de una de tus casas.", True)
+                app.decir(f"¡{mo['nombre']} es tuyo, con papeles y todo! {p.situar(x, y, 'Te espera')}. " + ("Guárdalo en el garaje de una de tus casas." if p.en_servidor else
+                          "No se pierde aunque lo dejes en la calle: lo tienes en el móvil, en Mis vehículos."), True)
+                p.hacer_mio(v)
         return f
     def vender():
         app.cerrar(m)

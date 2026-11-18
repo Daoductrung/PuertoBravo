@@ -795,7 +795,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             "banda": self._banda_datos(j.banda), "territorios": self._territorios(), "recompensa": int(fila["recompensa"] or 0),
             "pendientes": pendientes,
             "props": self._props(), "robos": self.alm.cobrar_robos(j.cuenta),
-            "vehiculos": [self._veh_publico(v) for v in self.vehiculos.values()]})
+            "vehiculos": [self._veh_publico(v) for v in self.vehiculos.values()],
+            # los que el servidor tiene apuntados a nombre de este jugador y están aparcados (un juego anterior no lo mira)
+            "mis_vehiculos": [v["id"] for v in self.vehiculos.values() if v.get("dueno") == j.cuenta and v["por"] is None]})
         dia = str(self.cfg.get("mensaje_dia", "")).strip()
         if dia:
             self._aviso(j, "Mensaje del día: " + dia[:300], "notificacion")
@@ -1344,6 +1346,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                      salud=max(0.0, min(2000.0, finito(datos.get("salud", v["salud"])))))
         except (TypeError, ValueError):
             pass
+        if datos.get("nombre") and v.get("dueno") == j.cuenta:   # le ha puesto nombre: un juego anterior manda el de siempre
+            v["nombre"] = limpiar_nombre(datos.get("nombre"), 40) or v["nombre"]
         v["por"] = None
         v["t"] = self.ahora()
         j.vid = None

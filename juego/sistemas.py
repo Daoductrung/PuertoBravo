@@ -164,9 +164,9 @@ def opciones_taller(p, v, Opcion):
     def comprar(cual):
         def f():
             n = nivel(v, cual)
-            if v.tag:
+            if v.tag:                                            # no te lo puedes quedar: se avisa antes de cobrar nada
                 app.son("error")
-                app.decir("Ese vehículo es de una misión: no se puede tocar.", True)
+                app.decir(p.motivo_ajeno(v), True)
             elif n >= niveles(cual):
                 app.decir(f"{MEJORAS[cual]['nombre']} ya está al máximo.", True)
             elif p.pagar(precio(v, cual)):
@@ -176,7 +176,9 @@ def opciones_taller(p, v, Opcion):
                 p.son("reparar", cat="interfaz")
                 if v.canal and v is p.j.veh:                     # el escape nuevo se oye ya: el motor baja de volumen
                     v.canal.volumen(0.42 * factor_motor_volumen(v))
-                app.decir(f"{MEJORAS[cual]['nombre']} mejorado al nivel {n + 1} de {niveles(cual)}. {resumen(v)}.", True)
+                suyo = not p.es_mio(v) and p.hacer_mio(v, callar=True)      # lo que mejoras es tuyo: ya no se pierde en la calle
+                app.decir(f"{MEJORAS[cual]['nombre']} mejorado al nivel {n + 1} de {niveles(cual)}. {resumen(v)}."
+                          + (f" {v.nombre} queda a tu nombre: no desaparece aunque lo dejes en la calle, y lo tienes en el móvil, en Mis vehículos." if suyo else ""), True)
         return f
 
     def texto(cual):
@@ -184,7 +186,8 @@ def opciones_taller(p, v, Opcion):
             n = nivel(v, cual)
             return f"Mejorar {MEJORAS[cual]['nombre'].lower()}: nivel {n} de {niveles(cual)}" + (f". Subir cuesta {precio(v, cual)} euros" if n < niveles(cual) else ". Al máximo")
         return f
-    return [Opcion(texto(k), comprar(k), ayuda=MEJORAS[k]["desc"] + " Las mejoras van con este vehículo: se conservan en el garaje.") for k in MEJORAS]
+    return [Opcion(texto(k), comprar(k), ayuda=MEJORAS[k]["desc"] + " Las mejoras van con este vehículo, que desde la primera queda a tu nombre: no se pierde aunque lo dejes en la calle o cojas otro, "
+                                                              "y se conservan en el garaje. Vale también para los vehículos de trabajo.") for k in MEJORAS]
 
 
 # ============================================================ banda propia
@@ -289,6 +292,9 @@ def menu_banda(p, Menu, Opcion, EntradaTexto):
         Opcion(lambda: f"Reclutar a alguien: {p.precio('recluta', PRECIO_RECLUTA)} euros. Tienes {j.dinero}", hacer(reclutar),
                ayuda=f"Cada territorio te deja mantener a uno más, hasta {TOPE_BANDA}. Cada miembro cobra {p.precio('sueldo_banda', SUELDO)} euros cada medianoche; si no puedes pagar, se va uno."),
         Opcion("Llamar a tu banda", hacer(llamar), ayuda="Acuden a donde estés, te siguen a pie, suben contigo al vehículo y pelean a tu lado."),
+        Opcion(lambda: "Chófer: " + (f"{p.chofer['nombre']}" if p.chofer else f"que venga uno de los tuyos a recogerte, {p.precio('chofer', 80)} euros"),
+               lambda: __import__("juego.misvehiculos", fromlist=["x"]).menu_chofer(p),
+               ayuda="Uno de tu banda viene con un vehículo de tu garaje o con uno de la banda y conduce él hasta el destino que marques en el GPS. Tú vas de pasajero y puedes disparar."),
         Opcion("Mandarlos a casa", hacer(despedir)),
         Opcion("Cambiar el nombre de la banda", nombrar),
     ])

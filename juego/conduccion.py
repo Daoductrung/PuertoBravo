@@ -23,7 +23,7 @@ class Conduccion:
         v = self.j.veh
         if v is not None and v.modelo.get("vuela"):
             return False
-        return self.cfg["conduccion"] == "asistida" and not self.libre_temp and self.mundo.tipo != "mar"
+        return (self.cfg["conduccion"] == "asistida" or self.chofer_conduce()) and not self.libre_temp and self.mundo.tipo != "mar"
 
     def _alinear(self, v):
         """Coloca el vehículo en el sentido de la vía más cercana. False si está fuera de la calzada."""
@@ -44,7 +44,7 @@ class Conduccion:
             return
         if self.mundo.tipo == "mar" or v.modelo.get("vuela"):
             self.libre_temp = False
-        elif self.cfg["conduccion"] == "asistida":
+        elif self.cfg["conduccion"] == "asistida" or self.chofer_conduce():
             self.libre_temp = not self._alinear(v)
             if self.libre_temp:
                 self.decir("Estás fuera de la calzada: conducción libre hasta que vuelvas a una calle.")
@@ -145,7 +145,7 @@ class Conduccion:
     def _decidir_jugador(self, v, i, j):
         m = self.mundo
         g = v.giro
-        if g == 0 and self.cfg["piloto_gps"]:
+        if g == 0 and self.piloto_puesto():
             g = self.giro_gps()
         cand = {-1: (v.dir - 1) % 4, 1: (v.dir + 1) % 4, 2: (v.dir + 2) % 4}.get(g, v.dir)
         forzado = False
@@ -224,6 +224,8 @@ class Conduccion:
         if v.ia == "enemigos" and v.ocupado:
             self.decir("Ese vehículo está lleno de enemigos.", True)
             return
+        if v.ia == "chofer":                                     # tu chófer, que todavía está llegando: para y te recoge
+            self._chofer_llega(v)
         if v.ia in ("trafico", "huida") and v.ocupado:
             if abs(v.vel) > 6:
                 self.decir("Va demasiado rápido para abrir la puerta.", True)
@@ -306,6 +308,7 @@ class Conduccion:
             j.stats["vehiculos_robados"] += 1
         v.propio = True
         j.veh = v
+        con_chofer = self.chofer_al_subir(v)                     # si lo trae tu chófer, vas de pasajero
         j.agachado = False
         self.oy_rumbo = v.rumbo
         self.ultimo_veh = None
@@ -326,7 +329,11 @@ class Conduccion:
             r = radio.sintonizar(self.cfg["emisora"])
         if callar:
             return
-        txt = f"Subes a {v.nombre}. Estado {int(100 * v.salud / v.salud_max)} por ciento. Miras al {M.cardinal(v.rumbo)}."
+        if con_chofer:
+            self.decir(self.chofer_texto_subir(v), True)
+            return
+        suyo = f", tu {v.modelo['nombre']}" if v.nombre != v.modelo["nombre"] and getattr(v, "mio", False) else ""      # con nombre propio: se dice también qué es
+        txt = f"Subes a {v.nombre}{suyo}. Estado {int(100 * v.salud / v.salud_max)} por ciento. Miras al {M.cardinal(v.rumbo)}."
         if v.modelo.get("trabajo"):
             txt += " Pulsa J para trabajar con este vehículo."
         if v.modelo.get("sirena"):
@@ -441,6 +448,8 @@ class Conduccion:
         if not v.tag and not v.muerto:
             self.ultimo_veh = v
             self.veh_fuera = None                                # el que cuenta es el último del que te bajas
+            for d in self.mis_lejos:
+                d.pop("ultimo", None)
         self.sv_bajado(v)
         if not forzado:
             self.son_puerta(v)
@@ -450,6 +459,8 @@ class Conduccion:
     def tecla_coche(self, ev, mayus):
         k = ev.key
         v = self.j.veh
+        if self.chofer_tecla(k):                                 # conduce tu chófer: las teclas de conducir no hacen nada
+            return
         if k in (pygame.K_LEFT, pygame.K_RIGHT) and self.modo_asistido():
             g = 1 if k == pygame.K_RIGHT else -1
             self._parar_intermitente()
@@ -508,10 +519,14 @@ class Conduccion:
             else:
                 self.decir(f"Piloto del GPS activado: el coche va solo hasta {self.gps['nombre']}. Con cualquier flecha o el espacio mandas tú.", True)
 
+    def piloto_puesto(self):
+        """El piloto del GPS está activado, o conduce tu chófer, que usa el mismo piloto."""
+        return bool(self.cfg["piloto_gps"]) or self.chofer_conduce()
+
     def piloto_completo(self):
         """¿Conduce el coche solo? Con el piloto del GPS activado, en conducción asistida, en tierra y con un destino marcado."""
         v = self.j.veh
-        return bool(self.cfg["piloto_gps"] and self.gps and v and self.modo_asistido() and self.mundo.tipo != "mar"
+        return bool(self.piloto_puesto() and self.gps and v and self.modo_asistido() and self.mundo.tipo != "mar"
                     and not v.modelo.get("barco") and not v.modelo.get("vuela"))
 
     def _pilotar(self, v, dt, freno):
@@ -525,8 +540,9 @@ class Conduccion:
         prisa = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None) \
             or bool(self.trabajo and self.trabajo.get("limite") is not None)
         objetivo = min(mo["vel_max"] * 0.85, 21.0) if prisa else min(mo["vel_max"] * 0.6, 14.0)
+        quien = self.chofer["nombre"].split(",")[0] if self.chofer_conduce() else "El piloto"
         if prisa and not getattr(self, "_piloto_prisa", False):
-            self.decir("Vas con prisa: el piloto corre más y no espera en los semáforos.")
+            self.decir(f"Vas con prisa: {'el piloto' if quien == 'El piloto' else quien} corre más y no espera en los semáforos.")
         self._piloto_prisa = prisa
         ruta = self.gps.get("ruta") or []
         if ruta and self.modo_asistido():                        # el destino ha quedado atrás (te has pasado, o el que persigues ha girado): media vuelta
@@ -541,7 +557,7 @@ class Conduccion:
                 v.aviso_cruce = None
                 if self.t - getattr(self, "t_piloto_vuelta", -99) > 5:
                     self.t_piloto_vuelta = self.t
-                    self.decir(f"El piloto da media vuelta. Ahora vas hacia el {M.NOMBRE_DIR[v.dir]}.")
+                    self.decir(f"{quien} da media vuelta. Ahora vas hacia el {M.NOMBRE_DIR[v.dir]}.")
                 return
         if self.gps.get("sigue") is None:                        # a un sitio se llega y se para; a quien persigues, no
             radio = self.gps.get("radio") or 16
@@ -553,14 +569,18 @@ class Conduccion:
                     self._piloto_parado = False
                 elif not getattr(self, "_piloto_parado", False):
                     self._piloto_parado = True
-                    self.decir(f"El piloto se detiene: has llegado a {self.gps['nombre']}.")
+                    if self.chofer_conduce():
+                        self.son("llegada", cat="interfaz", vol=0.6)
+                        self._chofer_dice("chofer_frases_llegada", f"{self.gps['nombre']}. Con F te bajas, y te espera.")
+                    else:
+                        self.decir(f"El piloto se detiene: has llegado a {self.gps['nombre']}.")
             else:
                 self._piloto_parado = False
         if not prisa and self._semaforo_rojo(v):
             objetivo = 0.0
             if self.t - getattr(self, "t_aviso_rojo", -99) > 20:
                 self.t_aviso_rojo = self.t
-                self.decir("Semáforo en rojo. El piloto espera.")
+                self.decir(f"Semáforo en rojo. {quien} espera.")
         if v.vel < objetivo:
             v.vel = min(objetivo, v.vel + mo["acel"] * 0.8 * dt)
         elif v.vel > objetivo:
@@ -571,6 +591,8 @@ class Conduccion:
         j = self.j
         v = j.veh
         t = self.app.teclas
+        if self.chofer_conduce():                       # conduce tu chófer: los pedales y el volante son suyos
+            t = frozenset()
         mo = v.modelo
         from . import sistemas                          # las mejoras del taller cambian cómo va el vehículo
         freno = mo["freno"] * (sistemas.factor_lluvia(v) if self.lluvia else 1.0) * sistemas.factor_frenada(v) * self.factor_averia_frenos(v)
@@ -593,7 +615,7 @@ class Conduccion:
         elif self.piloto_completo() and pygame.K_SPACE not in t:
             self._pilotando = True
             self._pilotar(v, dt, freno)
-        elif getattr(self, "_pilotando", False) and self.cfg["piloto_gps"] and not self.gps and v.vel > 0:
+        elif (getattr(self, "_pilotando", False) or self.chofer_conduce()) and self.piloto_puesto() and not self.gps and v.vel > 0:
             v.vel = max(0.0, v.vel - freno * dt)                 # el piloto ha llegado: no suelta el coche rodando, lo para
         else:
             v.vel -= math.copysign(min(abs(v.vel), 1.8 * dt), v.vel)
@@ -672,7 +694,7 @@ class Conduccion:
         clave = (v.dir, idx)
         if d < max(32.0, v.vel * 3.2) and v.aviso_cruce != clave:
             v.aviso_cruce = clave
-            if v.giro == 0 and self.cfg["piloto_gps"]:
+            if v.giro == 0 and self.piloto_puesto():
                 g = self.giro_gps()
                 if g in (-1, 1):
                     v.giro = g
@@ -919,6 +941,10 @@ class Conduccion:
                 obj, decidir = self._ia_patrulla(v, d, dt)
             elif v.ia == "enemigos":
                 obj, decidir = self._ia_enemigos(v, d, dt)
+            elif v.ia == "chofer":
+                obj, decidir = self._ia_chofer(v, d, dt)
+                if v.ia != "chofer":                             # acaba de llegar: ya está parado a tu lado
+                    continue
             v.vel += max(-v.modelo["freno"] * dt, min(v.modelo["acel"] * dt, obj - v.vel))
             if v.vel > 0.05:
                 self._mover_via(v, dt, 0.0, decidir)

@@ -110,6 +110,10 @@ ESQUEMAS = {
         c("requiere", "Misiones que hay que completar antes", "refs", ref="mision"),
         c("resumen", "Resumen para el móvil", "largo"),
         c("tutorial", "Es un tutorial: mientras dura, la policía no acude", "si_no"),
+        c("vehiculo_libre", "Se puede hacer con el vehículo del jugador", "si_no", "Solo cuenta si la misión tiene un paso de robar un vehículo. Con no, que es lo normal, la misión exige el suyo: "
+          "hay que subir a ese vehículo concreto y entregarlo. Con sí, el jugador puede llegar con el suyo hasta donde está el de la misión, detenerse a su lado y hacerla con él: "
+          "al entregar, se lo queda. Tiene que ser de la misma clase: si el de la misión vuela, el suyo también. El resumen de la misión le dice al jugador, antes de aceptarla, "
+          "si le dan vehículo y si vale el suyo."),
         c("si_clave", "Solo aparece si se tomó la decisión", ayuda="Vacío, la misión aparece siempre. Si escribes el nombre de una decisión, solo aparece cuando se eligió la opción que indiques debajo. Sirve para que la historia se bifurque."),
         c("si_opcion", "Número de la opción elegida", "entero", "La primera opción es la 1.", minimo=1, maximo=4, defecto=1),
         c("requiere_alguna", "Y al menos una de cada grupo", ayuda="Para misiones que llegan después de una bifurcación. Escribe los identificadores de las misiones de cada rama separados por espacios, "
@@ -436,6 +440,21 @@ ESQUEMAS = {
           "Cada lugar puede además pedirla o quitarla por su cuenta."),
         c("volumen_auriculares", "Volumen de la radio por los auriculares, a pie, en tanto por ciento", "entero", minimo=5, maximo=100, defecto=70),
         c("volumen_local", "Volumen de la música de fondo de los locales, en tanto por ciento", "entero", minimo=2, maximo=100, defecto=30)]},
+    "ajuste_vehiculos": {"titulo": "Mis vehículos y chófer", "resumen": lambda d: f"Hasta {d.get('tope_calle', 6)} vehículos del jugador en la calle; chófer de la banda", "campos": [
+        c("id", "Identificador", req=True, defecto="general", ayuda="Déjalo en general: solo se usa el primero."),
+        c("tope_calle", "Vehículos del jugador que caben en la calle", "entero", "Los vehículos del jugador no desaparecen. Al pasar de este número, el más antiguo va solo a un garaje con sitio; "
+          "si no hay sitio, el juego avisa.", minimo=1, maximo=40, defecto=6),
+        c("chofer_espera_min", "El chófer tarda en llegar, como poco, estos segundos", "entero", minimo=1, maximo=600, defecto=25, grupo="Chófer"),
+        c("chofer_espera_max", "Y como mucho", "entero", "Cada vez tarda un tiempo distinto entre los dos. Con lluvia tarda más, y de noche, algo menos.", minimo=1, maximo=900, defecto=75, grupo="Chófer"),
+        c("chofer_busqueda_max", "Nivel de búsqueda con el que todavía viene", "entero", "Con más nivel de búsqueda que este, ni el chófer ni el mecánico se acercan.", minimo=0, maximo=5, defecto=2, grupo="Chófer"),
+        c("chofer_modelos", "Vehículos de la banda con los que puede venir", "refs", "Viene con uno de ellos, al azar, cuando no le pides uno de tu garaje.", ref="modelo", grupo="Chófer"),
+        c("chofer_frases_sale", "Lo que dice al salir", "textos", "Una frase por línea; dice una al azar. Lo que cambie según el protagonista sea él o ella va entre corchetes: jef[e|a].", grupo="Frases"),
+        c("chofer_frases_llega", "Lo que dice al llegar", "textos", "Una por línea.", grupo="Frases"),
+        c("chofer_frases_destino", "Lo que dice cuando no hay destino marcado", "textos", "Una por línea.", grupo="Frases"),
+        c("chofer_frases_marcha", "Lo que dice al marcarle un destino", "textos", "Una por línea.", grupo="Frases"),
+        c("chofer_frases_llegada", "Lo que dice al llegar al destino", "textos", "Una por línea.", grupo="Frases"),
+        c("chofer_frases_espera", "Lo que dice cuando te bajas", "textos", "Una por línea.", grupo="Frases"),
+        c("chofer_frases_adios", "Lo que dice al despedirlo", "textos", "Una por línea.", grupo="Frases")]},
     "ajuste_gente": {"titulo": "Gente de la calle", "resumen": lambda d: "Nombres, apellidos, oficios, frases, apodos y nombres de perro" + (", en lugar de los del juego" if d.get("sustituir") else ", añadidos a los del juego"), "campos": [
         c("id", "Identificador", req=True, defecto="general", ayuda="Déjalo en general: solo se usa el primero."),
         c("sustituir", "Mis listas sustituyen a las del juego", "si_no", "Con no, que es lo normal, lo que escribas en cada lista se añade a lo que ya trae el juego. "
@@ -513,7 +532,7 @@ SECCIONES = [
     ("jornadas", "Jornadas de trabajo", "jornada"), ("combates", "Combates del gimnasio", "combate"), ("combustible", "Combustible", "ajuste_combustible"),
     ("muebles", "Muebles de la casa", "mueble"), ("mejoras", "Mejoras del taller", "mejora"), ("realismo", "Realismo", "ajuste_realismo"),
     ("ambiente", "Radio a pie y en los locales", "ajuste_ambiente"),
-    ("tarifas", "Tarifas y precios", "tarifa"),
+    ("tarifas", "Tarifas y precios", "tarifa"), ("vehiculos_propios", "Mis vehículos y chófer", "ajuste_vehiculos"),
     ("gente", "Gente de la calle", "ajuste_gente"), ("caracteres", "Caracteres de la gente", "caracter"), ("bandas", "Bandas", "banda"),
     ("tipos_enemigo", "Tipos de enemigo", "tipo_enemigo"), ("policia_niveles", "Policía por nivel de búsqueda", "policia_nivel"),
     ("cajas_locales", "Caja de los locales", "caja_local"),

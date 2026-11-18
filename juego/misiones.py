@@ -289,6 +289,8 @@ class Misiones:
             return
         if p.get("texto"):
             self.decir(self.txt(p["texto"]))
+        if tipo == "robar":                                      # la misión te da vehículo: qué pasa con el tuyo
+            self.aviso_vehiculo_mision(ms["def"], p)
         ms["pendiente"] = True
         self._materializar()
         self.sv_mision_paso()
@@ -478,7 +480,7 @@ class Misiones:
     def _despejar_plaza(self, x, y):
         """Quita los vehículos aparcados que estorban donde va a aparecer uno de misión."""
         for o in list(self.vehiculos):
-            if o.ia == "aparcado" and not o.tag and o is not self.j.veh and o.dist(x, y) < 9:
+            if o.ia == "aparcado" and not o.tag and o is not self.j.veh and not getattr(o, "mio", False) and o.dist(x, y) < 9:
                 if o.plaza is not None:
                     self.plazas_usadas.add(o.plaza)
                 self.quitar_vehiculo(o)
@@ -630,15 +632,25 @@ class Misiones:
                 if p.get("busqueda"):
                     self.poner_busqueda(p["busqueda"])
                 self._paso_hecho()
+            elif (v is not None and j.veh is not None and ms["def"].get("vehiculo_libre") and self.vale_para_mision(j.veh, p)
+                  and j.veh.dist(v.x, v.y) < 25 and abs(j.veh.vel) < 3):
+                # la misión no exige su vehículo y has venido con el tuyo hasta donde está el suyo: la haces con el tuyo
+                self.quitar_vehiculo(v)
+                ms["veh"], ms["veh_tuyo"] = j.veh, True
+                self.hacer_mio(j.veh, callar=True)
+                self.son("puerta_coche")
+                self.decir(f"Haces la misión con {j.veh.nombre}: lo que hay que llevar va contigo.")
+                self._paso_hecho()
         elif tipo == "entregar":
             if v is None:
                 self.fallar_mision("Has perdido el vehículo de la misión.")
             elif j.veh is v:
                 cerca = 32 if v.modelo.get("vuela") else 18
                 if l and l.mapa == self.mundo.id and math.hypot(l.x - x, l.y - y) <= cerca and abs(v.vel) < 2.5:
-                    self.salir_vehiculo(forzado=True)
-                    self.j.x, self.j.y = l.x, l.y
-                    self.quitar_vehiculo(v)
+                    if not ms.get("veh_tuyo"):                   # el de la misión se entrega; el tuyo te lo quedas, y sigues en él
+                        self.salir_vehiculo(forzado=True)
+                        self.j.x, self.j.y = l.x, l.y
+                        self.quitar_vehiculo(v)
                     ms["veh"] = None
                     self.son("puerta_coche")
                     self._paso_hecho()
@@ -1054,7 +1066,7 @@ class Misiones:
         if not ms:
             return
         v = ms.get("veh")
-        if v is not None and not v.muerto:
+        if v is not None and not v.muerto and not ms.get("veh_tuyo"):      # si la hacías con el tuyo, el tuyo se queda
             if self.j.veh is v:
                 self.salir_vehiculo(forzado=True)
             self.quitar_vehiculo(v)
@@ -1182,10 +1194,7 @@ class Misiones:
             self.j.stats.update({k: stats[k] for k in ("muertes", "detenciones", "tiempo")})
             self.reloj, self.dia = control["reloj"], control["dia"]
             self._fin_persecucion()
-            if self.j.veh:
-                v = self.j.veh
-                self.salir_vehiculo(forzado=True)
-                self.quitar_vehiculo(v)
+            self.dejar_o_quitar(self.j.veh)                      # el tuyo se queda aparcado donde estaba
             if control["mapa"] != self.mundo.id:
                 self.cambiar_mapa(control["mapa"], control["x"], control["y"])
             self.teletransportar(control["x"], control["y"])
@@ -1208,10 +1217,7 @@ class Misiones:
             self._fin_persecucion()
             l = self.lugares[m["lugar"]]
             if l.mapa != self.mundo.id:
-                if self.j.veh:
-                    v = self.j.veh
-                    self.salir_vehiculo(forzado=True)
-                    self.quitar_vehiculo(v)
+                self.dejar_o_quitar(self.j.veh)
                 self.cambiar_mapa(l.mapa, l.x, l.y)
             self.teletransportar(l.x, l.y)
             self.iniciar_mision(m, True, repeticion)

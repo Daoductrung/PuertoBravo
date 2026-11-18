@@ -79,6 +79,7 @@
     {"id": "agua", "nombre": "Botella de agua", "precio": 1},
     {"id": "traer_vehiculo", "nombre": "Que te traigan un vehículo de tus garajes", "precio": 150},
     {"id": "mandar_vehiculo", "nombre": "Mandar tu vehículo a uno de tus garajes", "precio": 100},
+    {"id": "chofer", "nombre": "Chófer de tu banda: que venga a recogerte", "precio": 80},
     {"id": "guardaespaldas", "nombre": "Llamar a un guardaespaldas por teléfono", "precio": 350},
     {"id": "guardaespaldas_taberna", "nombre": "Contratar un guardaespaldas en una taberna", "precio": 300},
     {"id": "guardaespaldas_sueldo", "nombre": "Sueldo de cada guardaespaldas, cada medianoche", "precio": 200},
@@ -168,5 +169,20 @@
   ],
   "ambiente": [
     {"id": "general", "locales_con_musica": ["tienda", "comida", "pizzeria", "bar", "taberna", "ropa", "gimnasio", "club", "casino", "taller", "concesionario", "feria", "empenos", "nautica", "armeria"], "volumen_auriculares": 70, "volumen_local": 30}
+  ],
+  "vehiculos_propios": [
+    {"id": "general",
+     "tope_calle": 6,
+     "chofer_espera_min": 25,
+     "chofer_espera_max": 75,
+     "chofer_busqueda_max": 2,
+     "chofer_modelos": ["sedan", "todoterreno", "utilitario"],
+     "chofer_frases_sale": ["Voy para allá. Dame un minuto.", "Arranco ahora mismo. No te muevas de ahí.", "Hecho. Salgo ya.", "Cojo las llaves y voy."],
+     "chofer_frases_llega": ["Ya estoy aquí. Sube cuando quieras.", "Tu coche, jef[e|a]. Sube.", "Aquí me tienes. ¿Nos vamos?"],
+     "chofer_frases_destino": ["¿A dónde vamos? Márcame el sitio.", "Tú dirás a dónde.", "Dime dónde y te llevo."],
+     "chofer_frases_marcha": ["Marchando.", "Vamos para allá.", "Agárrate, que salimos.", "Eso está hecho."],
+     "chofer_frases_llegada": ["Hemos llegado.", "Ya estamos.", "Aquí es."],
+     "chofer_frases_espera": ["Te espero aquí.", "Aquí me quedo, con el motor a punto.", "No me muevo de aquí."],
+     "chofer_frases_adios": ["Hasta luego, jef[e|a].", "Cuando me necesites, llama.", "Me vuelvo con los demás."]}
   ]
 }

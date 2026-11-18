@@ -21,6 +21,7 @@ from .misiones import Misiones
 from .necesidades import Necesidades
 from .combustible import Combustible
 from .realismo import Realismo
+from .misvehiculos import MisVehiculos
 from .online import Online
 from .enlinea import EnLinea
 from .trabajos import Trabajos
@@ -67,7 +68,7 @@ def migrar(d):
     return d
 
 
-class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo):
+class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -167,6 +168,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.veh_guardado = None
         self.veh_fuera = None
         self.ultimo_veh = None           # el vehículo del que te acabas de bajar: no desaparece aunque te alejes
+        self.mis_iniciar()               # tus vehículos: no desaparecen nunca (misvehiculos.py)
         if guardado:
             self.cargar_dict(guardado)
         else:
@@ -180,19 +182,16 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.walkman_al_empezar()
         if self.veh_guardado:
             d = self.veh_guardado
-            v = self.crear_vehiculo(d.get("modelo"), self.j.x, self.j.y, M.dir_de_rumbo(d.get("rumbo", 0)), None, d.get("nombre"))
-            v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
-            v.rumbo = float(d.get("rumbo", 0))
-            v.propio = True
-            from . import sistemas
-            sistemas.poner(v, d.get("mejoras"))
-            if "litros" in d:
-                v.litros = float(d["litros"])
-            self.averias_de_dict(v, d)
+            v = self._veh_de_dict(dict(d, modelo=d.get("modelo")), self.j.x, self.j.y)
+            if d.get("mio"):
+                v.mio, v.mio_n = True, int(d["mio"]) if isinstance(d["mio"], (int, float)) else 1
+            elif any((d.get("mejoras") or {}).values()):         # el de una partida anterior, si lo habías mejorado, es tuyo
+                self.hacer_mio(v, callar=True)
             self._subir(v, False, callar=True)
         elif self.mundo.tipo == "mar":
             self.naufragar(callar=True)
         self._reponer_veh_fuera()
+        self._reponer_mis_vehiculos()
         for _ in range(int(self.j.guardaespaldas)):
             self.crear_aliado()
         if self.j.perro and self.mundo.tipo != "mar" and not self.j.perro_en_casa:
@@ -203,15 +202,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         d = self.veh_fuera
         if not d or self.j.veh or d.get("mapa") != self.mundo.id or d.get("modelo") not in self.modelos:
             return None
-        v = self.crear_vehiculo(d["modelo"], float(d.get("x", self.j.x)), float(d.get("y", self.j.y)), M.dir_de_rumbo(d.get("rumbo", 0)), None, d.get("nombre"))
-        v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
-        v.rumbo = float(d.get("rumbo", 0))
-        v.propio = True
-        from . import sistemas
-        sistemas.poner(v, d.get("mejoras"))
-        if "litros" in d:
-            v.litros = float(d["litros"])
-        self.averias_de_dict(v, d)
+        v = self._veh_de_dict(d)
         self.ultimo_veh = v
         self.veh_fuera = None
         return v
@@ -227,16 +218,16 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         """Mayúsculas L, o desde el móvil: dónde está el vehículo del que te bajaste, y el GPS te lleva a él."""
         j = self.j
         if j.veh:
-            self.decir(f"Vas en {j.veh.nombre}. Cuando te bajes, con Mayúsculas L sabrás dónde lo has dejado.", True)
+            self.decir(f"Vas en {j.veh.nombre}. Cuando te bajes, con Mayúsculas L sabrás dónde lo has dejado." + self.mas_vehiculos_txt(j.veh), True)
             return False
         u = self.tu_vehiculo()
         if u is None:
-            d = self.veh_fuera
+            d = self.veh_fuera or next((x for x in self.mis_lejos if x.get("ultimo")), None)
             if d and d.get("mapa") in self.mapas and d.get("mapa") != self.mundo.id:
-                self.decir(f"Dejaste {d.get('nombre') or 'tu vehículo'} en {self.mapas[d['mapa']].nombre}, {d.get('donde') or 'en la calle'}. Te espera allí.", True)
+                self.decir(f"Dejaste {d.get('nombre') or 'tu vehículo'} en {self.mapas[d['mapa']].nombre}, {d.get('donde') or 'en la calle'}. Te espera allí." + self.mas_vehiculos_txt(d), True)
             else:
                 self.app.son("error")
-                self.decir("No has dejado ningún vehículo aparcado, o ya no está donde lo dejaste.", True)
+                self.decir("No has dejado ningún vehículo aparcado, o ya no está donde lo dejaste." + self.mas_vehiculos_txt(), True)
             return False
         antes = self.gps.get("anterior") or self.gps if self.gps else None
         if antes is not None and math.hypot(antes["dest"][0] - u.x, antes["dest"][1] - u.y) < 3:
@@ -246,7 +237,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if antes is not None and self.gps:
             self.gps["anterior"] = antes
             t += f" Al llegar, el GPS vuelve a {antes['nombre']}."
-        self.decir(t, True)
+        self.decir(t + self.mas_vehiculos_txt(u), True)
         return True
 
     def proximo_cruce(self):
@@ -424,8 +415,11 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             if getattr(v, "litros", None) is not None:
                 d["veh"]["litros"] = round(v.litros, 1)
             self.averias_a_dict(v, d["veh"])
+            if self.es_mio(v):
+                d["veh"]["mio"] = int(getattr(v, "mio_n", 0)) or 1
         u = self.tu_vehiculo()
-        if not v and u is not None:
+        self.mis_a_dict(d, u)
+        if not v and u is not None and not self.es_mio(u):
             d["veh_fuera"] = self._veh_fuera_dict(u)
         elif self.veh_fuera and self.veh_fuera.get("mapa") != self.mundo.id:
             d["veh_fuera"] = dict(self.veh_fuera)             # lo dejaste en otra localidad y allí sigue
@@ -458,6 +452,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.j.mapa = self.mundo.id
         self.veh_guardado = d.get("veh")
         self.veh_fuera = d.get("veh_fuera")
+        self.mis_cargar(d)
         self.atracadas = dict(d.get("atracadas", {}))
         self.reloj = float(d.get("reloj", 540))
         self.dia = int(d.get("dia", 1))
@@ -581,9 +576,11 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.terminar_trabajo("Al salir de la localidad se acaba el trabajo.")
         v = j.veh
         u = self.tu_vehiculo() if not v and not getattr(self, "en_servidor", False) else None
-        if u is not None:
+        if u is not None and not self.es_mio(u):
             self.veh_fuera = self._veh_fuera_dict(u)           # te vas a pie: el vehículo se queda aquí, y aquí estará cuando vuelvas
-            self.ultimo_veh = None
+        self.mis_al_cambiar_mapa(u)                             # y los que son tuyos, todos: cada uno donde lo dejaste
+        self.chofer_al_cambiar_mapa()
+        self.ultimo_veh = None
         gps_final = self.gps.get("final") if self.gps else None
         gps_auto = self.gps.get("auto") if self.gps else False
         for o in self.vehiculos:
@@ -632,6 +629,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self._crear_casetes()
         if not getattr(self, "en_servidor", False):
             self._reponer_veh_fuera()
+            self._reponer_mis_vehiculos()
         self.barrio_act = self.mundo.barrio(x, y)["id"]
         if self.barrio_act not in j.barrios_vistos:
             j.barrios_vistos.append(self.barrio_act)
@@ -1693,6 +1691,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.pesca:
             self.actualizar_pesca(dt)
         self.actualizar_vehiculos(dt)
+        self.actualizar_chofer(dt)
         self.actualizar_personas(dt)
         self.actualizar_policia(dt)
         self.actualizar_combate(dt)
@@ -1946,7 +1945,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         m = self.mundo
         noche = self.es_noche()
         for v in list(self.vehiculos):
-            if v is j.veh or v.tag or v is self.ultimo_veh or getattr(v, "id_red", None) is not None:      # el tuyo te espera donde lo dejaste; los de otros jugadores, también
+            if v is j.veh or v.tag or v is self.ultimo_veh or getattr(v, "id_red", None) is not None or getattr(v, "mio", False) or getattr(v, "con_chofer", False):      # el tuyo te espera donde lo dejaste; los de otros jugadores, también
                 continue
             d = v.dist(x, y)
             if (v.ia == "trafico" and d > 240) or (v.ia in ("aparcado", None) and d > 170) or \
@@ -2000,10 +1999,13 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 v.vel = v.vel_obj = random.uniform(9, 13)
                 self.vehiculos.append(v)
         # coches aparcados
+        mios = [v for v in self.vehiculos if getattr(v, "mio", False)]
         for pl in m.aparcados:
             if pl["id"] in self.plazas_activas or pl["id"] in self.plazas_usadas:
                 continue
             if abs(pl["x"] - x) < 130 and abs(pl["y"] - y) < 130:
+                if any(o.dist(pl["x"], pl["y"]) < 5 for o in mios):      # en esa plaza hay aparcado un vehículo tuyo
+                    continue
                 ids = [i for i in m.barrio(pl["x"], pl["y"])["vehiculos"] if i in self.modelos] or ["utilitario"]
                 v = Vehiculo(self.modelos[ids[int(pl["azar"] * len(ids)) % len(ids)]], pl["x"], pl["y"], pl["dir"], "aparcado")
                 v.cerrado = True

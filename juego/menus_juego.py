@@ -712,9 +712,9 @@ def movil(p):
                         while app.pila and app.pila[-1] is not p:
                             app.cerrar(app.pila[-1])
                         p.iniciar_mision(m)
-                    lista.append(Opcion(f"Tutorial: {m['titulo']}. {p.txt(m['resumen'])}", empezar, ayuda="Pulsa Intro para empezarlo ahora, estés donde estés. Si estás lejos de donde se hace, el tutorial te lleva allí él mismo."))
+                    lista.append(Opcion(f"Tutorial: {m['titulo']}. {p.txt(m['resumen'])} {p.mision_vehiculo_txt(m)}".rstrip(), empezar, ayuda="Pulsa Intro para empezarlo ahora, estés donde estés. Si estás lejos de donde se hace, el tutorial te lleva allí él mismo."))
                     continue
-                lista.append(Opcion(f"{m['titulo']}. {p.txt(m['resumen'])} {donde}", ir, ayuda="Pulsa Intro para marcar el lugar en el GPS."))
+                lista.append(Opcion(f"{m['titulo']}. {p.txt(m['resumen'])} {p.mision_vehiculo_txt(m)} {donde}".replace("  ", " "), ir, ayuda="Pulsa Intro para marcar el lugar en el GPS."))
             return lista or [Opcion("No hay misiones disponibles ahora mismo")]
         mm = Menu(app, "Misiones disponibles", ops, intro="Intro marca en el GPS el lugar donde empieza")
         app.abrir(mm)
@@ -811,10 +811,7 @@ def movil(p):
                     while app.pila and app.pila[-1] is not p:
                         app.cerrar(app.pila[-1])
                     if l.mapa != p.mundo.id:
-                        if j.veh:
-                            v = j.veh
-                            p.salir_vehiculo(forzado=True)
-                            p.quitar_vehiculo(v)
+                        p.dejar_o_quitar(j.veh)
                         p.cambiar_mapa(l.mapa, l.x, l.y)
                     p.teletransportar(l.x, l.y)
                     p.iniciar_mision(m, repeticion=True)
@@ -851,8 +848,13 @@ def movil(p):
                   Opcion("Marcadores personales", lambda: mx.marcadores(p)),
                   Opcion("Dónde está mi vehículo", lambda: (app.cerrar(menu), p.localizar_vehiculo()),
                          ayuda="Dice dónde dejaste el vehículo del que te bajaste y lo marca en el GPS. Si ibas a otro sitio, al llegar al vehículo el GPS vuelve solo a ese destino. "
-                               "Sin abrir el móvil, se hace con Mayúsculas L."),
-                  Opcion("Servicios: vehículo, guardaespaldas, ambulancia y taxi", lambda: mx.servicios(p)),
+                               "Sin abrir el móvil, se hace con Mayúsculas L. Si tienes más vehículos, están todos en Mis vehículos."),
+                  Opcion(lambda: "Mis vehículos" + (f": {p.mis_en_calle()} en la calle y {p.mis_en_garajes()} en garajes" if not p.en_servidor else ""),
+                         lambda: __import__("juego.misvehiculos", fromlist=["x"]).menu_mis_vehiculos(p),
+                         ayuda="Todos tus vehículos, con su nombre, su modelo, su estado, sus mejoras y dónde está cada uno. Desde ahí marcas cualquiera en el GPS, pides que te lo traigan, "
+                               "lo mandas a un garaje o le cambias el nombre. Son tuyos los que compras, los que mejoras en un taller, los que sacas de un garaje y los que bautizas: "
+                               "esos no desaparecen aunque te alejes o cojas otro."),
+                  Opcion("Servicios: vehículo, chófer, guardaespaldas, ambulancia y taxi", lambda: mx.servicios(p)),
                   ] + ([Opcion(lambda: "Tu perro. " + p.perro_txt(), lambda: mx.menu_perro(p), ayuda="Acariciarlo, darle de comer, mandarlo a casa o llamarlo. A pie también se abre con Mayúsculas Y.")] if j.perro else []) + [
                   Opcion(lambda: "Jugar con amigos" + (f": conectado, {len(p.remotos) + 1} jugadores" if p.online_activo() else ""),
                          lambda: __import__("juego.menus_online", fromlist=["x"]).amigos(p),
@@ -1086,14 +1088,15 @@ def _casa(p, l):
             return
         if v.tag:
             app.son("error")
-            app.decir("Ese vehículo es de una misión.", True)
+            app.decir(p.motivo_ajeno(v), True)
             return
         if len(garaje) >= int(l.get("garaje", 0)):
             app.son("error")
             app.decir("El garaje está lleno.", True)
             return
-        garaje.append({"modelo": v.modelo["id"], "salud": v.salud, "nombre": v.nombre, "mejoras": dict(getattr(v, "mejoras", {})),
-                       **({"litros": round(v.litros, 1)} if getattr(v, "litros", None) is not None else {})})
+        garaje.append(p._ficha_garaje(v))
+        if p.chofer and p.chofer.get("veh") is v:
+            p.despedir_chofer(callar=True)
         if j.veh is v:
             p.salir_vehiculo(forzado=True)
             j.x, j.y = l.x, l.y
@@ -1107,16 +1110,23 @@ def _casa(p, l):
         def f():
             d = garaje.pop(k)
             x, y, di = p.mundo.plaza_junto_a(l)
-            v = p.crear_vehiculo(d["modelo"], x, y, di, None, d.get("nombre"))
-            from . import sistemas
-            sistemas.poner(v, d.get("mejoras"))
-            v.salud = min(v.salud_max, float(d.get("salud", v.salud_max)))
-            v.propio = True
-            if "litros" in d:
-                v.litros = float(d["litros"])
+            v = p._veh_de_dict(dict(d, rumbo=di * 90.0), x, y)
             app.cerrar(m)
             app.decir(f"{v.nombre} te espera en la calle. {p.situar(x, y, 'Está')}.", True)
+            p.hacer_mio(v)                                      # lo que sale de tu garaje es tuyo: ya no se pierde en la calle
         return f
+
+    def nombres():
+        """Ponerle nombre al vehículo que traes, al que has dejado cerca o a los del garaje."""
+        from .misvehiculos import nombre_completo
+
+        def ops_n():
+            cosas = ([j.veh] if j.veh and not j.veh.tag else []) + ([p.tu_vehiculo(90)] if not j.veh and p.tu_vehiculo(90) is not None else [])
+            lista = [Opcion(f"{nombre_completo(p, v.nombre, v.modelo['id'])}, en la calle", lambda v=v: p.renombrar_vehiculo(v, lambda: mn.refrescar(False))) for v in cosas]
+            lista += [Opcion(f"{nombre_completo(p, d.get('nombre'), d['modelo'])}, en el garaje", lambda d=d: p.renombrar_vehiculo(d, lambda: mn.refrescar(False))) for d in garaje]
+            return lista or [Opcion("No hay ningún vehículo aquí al que ponerle nombre")]
+        mn = Menu(app, "A qué vehículo le pones nombre", ops_n)
+        app.abrir(mn)
 
     def ops():
         lista = []
@@ -1134,9 +1144,13 @@ def _casa(p, l):
                 lista.append(Opcion("Esconderte hasta que la policía deje de buscarte", esconderse))
         for k, d in enumerate(garaje):
             lista.append(Opcion(f"Sacar del garaje: {d.get('nombre', d['modelo'])}", sacar(k)))
+        if garaje or j.veh or p.tu_vehiculo(90) is not None:
+            lista.append(Opcion("Ponerle nombre a un vehículo", nombres,
+                                ayuda="Bautiza el vehículo que traes o cualquiera de los del garaje. El juego dirá ese nombre al subir, al localizarlo y en las listas."))
         lista.append(Opcion(f"Garaje: {len(garaje)} de {l.get('garaje', 0)} plazas ocupadas",
                             ayuda="Para guardar un vehículo, ven con él hasta la puerta y pulsa Intro sin bajarte, o déjalo aparcado cerca y entra: la opción de meterlo sale en este menú. "
-                                  "También puedes mandarlo desde el móvil, en Servicios. Para sacar uno, elige Sacar del garaje."))
+                                  "También puedes mandarlo desde el móvil, en Mis vehículos o en Servicios. Para sacar uno, elige Sacar del garaje. "
+                                  "Lo que sacas de aquí sigue siendo tuyo en la calle: no desaparece, y lo tienes en el móvil, en Mis vehículos."))
         if j.perro and j.perro_en_casa:
             lista.append(Opcion(f"{j.perro} te espera en casa: llévatelo contigo", lambda: (p.llamar_perro(), m.refrescar(False))))
         elif j.perro and p.perro() is not None:
@@ -1468,6 +1482,13 @@ def _taller(p, l):
             p.son("reparar", cat="interfaz")
             app.decir(f"Revisión pasada: aceite, frenos y ruedas. {v.nombre} queda como debe.", True)
 
+    def nombre():
+        if v.tag:
+            app.son("error")
+            app.decir(p.motivo_ajeno(v), True)
+        else:
+            p.renombrar_vehiculo(v)
+
     def repuesto():
         if p.pagar(int(R.aj("precio_rueda"))):
             j.objetos["rueda"] = j.objetos.get("rueda", 0) + 1
@@ -1480,7 +1501,9 @@ def _taller(p, l):
                       ayuda="Para llevarla encima. Si pinchas, la cambias tú desde el móvil, en Servicios, con el vehículo parado.")] if p.averias_activas() else []
     _menu_lugar(p, l, [Opcion(lambda: f"Reparar {v.nombre}: {coste()} euros. Estado {int(100 * v.salud / v.salud_max)} por ciento", reparar),
                        Opcion(f"Pintar y cambiar matrículas: {p.precio('pintura', 300)} euros. Elimina la búsqueda policial", pintar)] + averias + sistemas.opciones_taller(p, v, Opcion) +
-                [Opcion(lambda: sistemas.resumen(v) + p.averias_txt(v))])
+                [Opcion(lambda: f"Ponerle nombre: se llama {v.nombre}", nombre,
+                        ayuda="Bautiza este vehículo, gratis. El juego dirá ese nombre al subir, al localizarlo y en las listas, y el vehículo queda a tu nombre: ya no se pierde en la calle."),
+                 Opcion(lambda: sistemas.resumen(v) + p.averias_txt(v) + ("" if p.puede_ser_mio(v) or p.en_servidor else ". " + p.motivo_ajeno(v) if v.tag else ""))])
 
 
 def _desguace(p, l):
@@ -1504,7 +1527,7 @@ def _desguace(p, l):
     def vender():
         if v.tag:
             app.son("error")
-            app.decir("Ese vehículo es de una misión. No se vende.", True)
+            app.decir(p.motivo_ajeno(v), True)
             return
         n = precio()
         if n <= 0:
@@ -1512,6 +1535,8 @@ def _desguace(p, l):
             app.decir("Eso no lo quieren ni regalado.", True)
             return
         app.cerrar(m)
+        if p.chofer and p.chofer.get("veh") is v:
+            p.despedir_chofer(callar=True)
         p.salir_vehiculo(forzado=True)
         p.quitar_vehiculo(v)
         j.x, j.y = l.x, l.y

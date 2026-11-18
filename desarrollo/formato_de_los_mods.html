@@ -91,6 +91,8 @@ Un grupo puede llevar además <code>clase</code>, el identificador de un tipo de
 <li><code>cajas_locales</code>: <code>{"id", "minimo", "maximo", "guardias", "guardia", "busqueda"}</code>; el identificador es el tipo de lugar.</li>
 </ul>
 <p>Salvo <code>gente</code>, se fusionan como todo lo demás: un elemento con el identificador de uno del juego lo sustituye. Las armas admiten además <code>donde</code> (<code>armeria</code>, <code>tienda</code> o <code>empenos</code>) y <code>sin_silenciador</code>, y las mejoras del taller (<code>mejoras</code>), <code>efecto</code> (<code>motor</code>, <code>frenos</code>, <code>blindaje</code>, <code>neumaticos</code>, <code>suspension</code>, <code>escape</code> o <code>deposito</code>), <code>niveles</code> y <code>por_nivel</code>.</p>
+<p>Una misión admite <code>"vehiculo_libre": true</code>: si tiene un paso <code>robar</code>, se puede hacer con el vehículo del jugador en lugar de con el de la misión. Sin la clave, la misión exige el suyo.</p>
+<p>La sección <code>vehiculos_propios</code> (en <code>vida.json</code>) es una lista con un solo elemento, <code>{"id": "general", ...}</code>: <code>tope_calle</code> (vehículos del jugador en la calle), <code>chofer_espera_min</code> y <code>chofer_espera_max</code> (segundos), <code>chofer_busqueda_max</code>, <code>chofer_modelos</code> (identificadores de vehículo) y las listas de frases <code>chofer_frases_sale</code>, <code>chofer_frases_llega</code>, <code>chofer_frases_destino</code>, <code>chofer_frases_marcha</code>, <code>chofer_frases_llegada</code>, <code>chofer_frases_espera</code> y <code>chofer_frases_adios</code>. Lo que falte vale lo de serie. El precio del chófer es la tarifa <code>chofer</code>.</p>
 
 <h2>Personajes</h2>
 <pre><code>{

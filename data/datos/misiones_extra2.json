@@ -647,6 +647,7 @@
   {
    "id": "x05",
    "titulo": "Caído del cielo",
+   "vehiculo_libre": true,
    "capitulo": 10,
    "contacto": "Mendoza",
    "lugar": "cb_taberna",

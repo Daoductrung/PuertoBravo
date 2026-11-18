@@ -890,8 +890,11 @@ class Combate:
         self.j.barco_actual = None
         if self.j.veh:
             v = self.j.veh
-            self.j.veh = None
-            self.quitar_vehiculo(v)
+            if self.es_mio(v):                                   # el tuyo se queda donde estaba: no se pierde
+                self.salir_vehiculo(forzado=True)
+            else:
+                self.j.veh = None
+                self.quitar_vehiculo(v)
             self.app.radio.apagar()
         self.cambiar_mapa(l.mapa, l.x, l.y)
         return l

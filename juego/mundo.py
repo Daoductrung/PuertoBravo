@@ -79,7 +79,7 @@ def _es_dato(nombre):
     return nombre.lower().endswith((".json", rutas.EXT_DATOS))
 
 
-SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas")
+SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas", "vehiculos_propios")
 
 
 def cargar_datos(con_mods=True):
@@ -187,11 +187,12 @@ def cargar_datos(con_mods=True):
                 else:
                     lista[pos] = nuevo
             d["capitulos"].update(mod.get("capitulos", {}))
-    from . import combustible, realismo, sistemas
+    from . import combustible, misvehiculos, realismo, sistemas
     combustible.configurar(d)
     sistemas.configurar(d)
     realismo.configurar(d)
     gente.configurar(d)
+    misvehiculos.configurar(d)
     return d
 
 
