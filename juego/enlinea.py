@@ -28,6 +28,14 @@ VERSION_RED = 2                   # la versión del protocolo que habla este jue
 PROTOCOLO_MIN = 2                 # la más antigua con la que todavía se entiende
 PUERTO = 47820
 MAX_LINEA = 700 * 1024
+# Lo nuevo que este juego entiende, dicho al saludar: un servidor anterior no lo mira, y uno nuevo le habla a cada juego
+# según lo que sabe. Lo que sabe hacer el servidor viene de vuelta en «funciones».
+SABE = ("rol", "radio", "pasajeros", "mis_vehiculos", "topes", "encargos")
+CANALES_ROL = {"ic": ("en personaje", "chat_personaje"), "ooc": ("fuera de personaje", "chat_fuera"), "yo": ("acción", "chat_accion")}
+ORDENES_ROL = {"yo": "yo", "me": "yo", "ep": "ic", "ic": "ic", "fp": "ooc", "ooc": "ooc"}
+MAX_FICHA = 200
+RADIO_AJENA_M = 34.0              # a cuántos metros se deja de oír la radio del vehículo de otro jugador
+SON_RADIO_AJENA = "radio_ajena"   # no es un sonido de los packs: es un trozo de la emisora, que se carga cuando hace falta
 
 
 # ------------------------------------------------------------------ identidad
@@ -143,7 +151,41 @@ def mundo_servidor():
     policia = gente.policia_para_servidor(out["armas"])
     if policia:
         out["policia"] = policia
+    frases = {c: list(gente.lista("frases_servidor_" + c)) for c in ("paseante", "ratero", "pistolero", "ladron", "atracador") if gente.lista("frases_servidor_" + c)}
+    if frases:
+        out["gente"] = dict(out.get("gente") or {}, frases=frases)
+    encargos = encargos_para_servidor(datos)
+    if encargos:
+        out["encargos"] = encargos
     return out
+
+
+def encargos_para_servidor(datos):
+    """Lo más que puede pagar cada encargo repetible, según los datos del juego: con esto un servidor que lleva la cuenta
+    del dinero sabe hasta dónde creerse la paga de un contrato, un combate, un atraco o un encargo de coche. Un servidor
+    anterior no lo mira; uno nuevo, si no viene, usa unas cifras suyas."""
+    from . import gente
+    out = {}
+    try:
+        contratos = [int(c.get("paga", 600)) + 5 * int(c.get("paga_escolta", 380)) for c in datos.get("contratos") or []]
+        out["contrato"] = max(contratos + [2500])
+        for c in datos.get("combates") or []:                   # la bolsa sube con cada victoria: se cuenta hasta cuarenta
+            out[str(c["id"])[:40]] = int(c.get("premio", 150)) + 40 * int(c.get("premio_victoria", 100))
+        banco = gente.caja_local("banco")
+        out["atraco_banco"] = max(13000, int(banco["maximo"]) if banco else 0)
+        cajas = [int(v.get("maximo", 0) or 0) for k, v in gente.CAJAS.items() if k not in ("banco", "proveedor")]
+        if cajas:
+            out["atraco_local"] = max(cajas)
+        proveedor = gente.caja_local("proveedor")
+        if proveedor:
+            out["asalto_proveedor"] = int(proveedor["maximo"])
+        from .extras2 import MODELOS_ENCARGO
+        valores = [int(v.get("valor", 0) or 0) for v in datos.get("vehiculos") or [] if v.get("id") in MODELOS_ENCARGO]
+        if valores:
+            out["encargo_coche"] = int(max(valores) * 1.5) + 350
+    except (KeyError, TypeError, ValueError, AttributeError):
+        pass
+    return {k: int(v) for k, v in out.items() if isinstance(v, (int, float)) and v > 0}
 
 
 def version_tupla(texto):
@@ -265,7 +307,7 @@ class ClienteServidor(red.Cliente):
                 # v es la versión más nueva del protocolo que habla este juego y vmin la más antigua con la que se entiende:
                 # el servidor elige la más nueva que hablen los dos. Así se puede jugar con un servidor más nuevo o más antiguo.
                 red._enviar(s, self.lock, {"t": "hola", "v": VERSION_RED, "vmin": PROTOCOLO_MIN, "nombre": nombre, "pub": pub, "huella": huella, "juego": VERSION,
-                                           "firmado": bool(firmado), "clave": red.huella(clave) if clave else "", "invitacion": invitacion})
+                                           "firmado": bool(firmado), "clave": red.huella(clave) if clave else "", "invitacion": invitacion, "sabe": list(SABE)})
                 r = self._respuesta(lineas, ("reto", "rechazo", "ok"), tope=3)
                 if not tls and huella_cert and r and r.get("t") in ("reto", "rechazo", "ok"):
                     s.close()
@@ -372,7 +414,11 @@ class EnLinea:
                    # con qué mundo trabaja el servidor y qué sabe hacer: puede ser de otra versión del juego que la tuya
                    "mundo": ok.get("mundo") if isinstance(ok.get("mundo"), dict) else {},
                    "funciones": [f for f in ok.get("funciones") or [] if isinstance(f, str)],
-                   "protocolo": getattr(enlace.cli, "protocolo", VERSION_RED)}
+                   "protocolo": getattr(enlace.cli, "protocolo", VERSION_RED),
+                   # lo de la 1.7.1; con un servidor anterior, todo esto se queda vacío y el juego lo dice cuando hace falta
+                   "ficha": str(ok.get("ficha") or "")[:MAX_FICHA], "fichas": {}, "historial": [], "pasajeros": set(), "radio_ajena": None,
+                   "economia": (ok.get("servidor") or {}).get("economia") if isinstance((ok.get("servidor") or {}).get("economia"), dict) else None,
+                   "veh_pend": {}, "dinero_visto": None, "t_gasto": None}
         if self.sv["info"].get("policia") and self.cfg["sin_policia"]:      # aquí la policía es de todos: la asistencia no vale
             self._sv_sin_policia = True
             self.cfg.v["sin_policia"] = False
@@ -490,6 +536,7 @@ class EnLinea:
             if p in self.personas:
                 self.personas.remove(p)
         self.sv["agentes"] = {}
+        self._sv_parar_radio_ajena()
         for e in list(self.sv.get("ecos", {}).values()):
             if e in self.personas:
                 self.personas.remove(e)
@@ -521,8 +568,31 @@ class EnLinea:
             d.pop("mis_vehiculos", None)
             self.red.enviar({"t": "guardar", "p": d, "ya": bool(ya)})
             self.sv["t_guardar"] = 45.0
+            self.sv["t_gasto"] = None
+            self.sv["dinero_visto"] = int(self.j.dinero + self.j.banco)
             return True
         return False
+
+    def sv_sabe(self, que):
+        """¿Sabe hacer eso el servidor en el que estás? Uno anterior a la 1.7.1 no sabe de rol, ni de radios, ni de traerte vehículos."""
+        return self.en_servidor and que in self.sv.get("funciones", ())
+
+    def _sv_vigilar_gasto(self, dt):
+        """Lo que compras se guarda en el servidor a los pocos segundos, sin esperar al guardado de cada tres cuartos de
+        minuto: así, si se corta la conexión nada más comprar, lo comprado no se pierde."""
+        sv = self.sv
+        total = int(self.j.dinero + self.j.banco)
+        visto = sv.get("dinero_visto")
+        sv["dinero_visto"] = total
+        if visto is not None and total < visto and sv.get("t_gasto") is None:
+            # un momento, por si son varias compras seguidas; y si no paras de gastar (en el casino, por ejemplo), no más de
+            # un guardado cada doce segundos: el personaje entero pesa lo suyo
+            sv["t_gasto"] = max(2.5, 12.0 - (self.t - sv.get("t_guardado_gasto", -99.0)))
+        if sv.get("t_gasto") is not None:
+            sv["t_gasto"] -= dt
+            if sv["t_gasto"] <= 0 and not self.transicion:
+                sv["t_guardado_gasto"] = self.t
+                self.sv_guardar()
 
     def sv_estado(self):
         """Lo que se añade a tu posición en cada envío: salud, dinero, arma, barrio y demás."""
@@ -533,8 +603,72 @@ class EnLinea:
             barrio = self.mundo.barrio(x, y)["id"]
         except Exception:
             barrio = None
-        return {"sa": round(max(0.0, j.salud), 1), "di": int(j.dinero), "ba": int(j.banco), "ar": j.arma, "b": barrio, "ag": int(bool(j.agachado)),
-                "in": int(getattr(self, "interior", None) is not None), "es": int(j.estrellas), "po": self._sv_mi_policia(), "vi": getattr(v, "id_red", None) if v is not None and getattr(v, "red_mio", False) else None}
+        e = {"sa": round(max(0.0, j.salud), 1), "di": int(j.dinero), "ba": int(j.banco), "ar": j.arma, "b": barrio, "ag": int(bool(j.agachado)),
+             "in": int(getattr(self, "interior", None) is not None), "es": int(j.estrellas), "po": self._sv_mi_policia(), "vi": getattr(v, "id_red", None) if v is not None and getattr(v, "red_mio", False) else None}
+        if getattr(self, "pasajero", None) is not None:          # vas en el vehículo de otro: que no te tomen por alguien a pie
+            e["pj"] = self.pasajero
+        emisora = self.sv_emisora()
+        if emisora:
+            e["ra"] = emisora
+        return e
+
+    def sv_emisora(self):
+        """La emisora del juego que llevas puesta al volante, para que la oiga quien esté cerca. Solo sale su nombre corto,
+        y solo si es una de las emisoras de serie: de «Mi música» y de las emisoras hechas con archivos tuyos no sale nada."""
+        if self.j.veh is None or not self.sv_sabe("radio") or not self.sv["info"].get("radio_coches"):
+            return ""
+        radio = self.app.radio
+        ident = radio.id_actual()
+        return ident if ident in radio.comunes() and radio.sonando_ahora() else ""
+
+    def _sv_parar_radio_ajena(self):
+        ra = self.sv.get("radio_ajena")
+        if ra is not None and ra.get("canal") is not None:
+            ra["canal"].parar()
+        self.sv["radio_ajena"] = None
+
+    def _sv_radio_ajena(self):
+        """La radio del vehículo de otro jugador: si está cerca y lleva una emisora de las de serie, se oye desde su
+        vehículo, floja y apagada. Solo una a la vez, la más cercana, y nunca encima de tu propia radio."""
+        sv = self.sv
+        ra = sv.get("radio_ajena")
+        mejor = None
+        radio = self.app.radio
+        if self.cfg["radio_coches"] and not self.transicion and getattr(self, "interior", None) is None and not radio.sonando_ahora():
+            x, y = self.pos()
+            listas = radio.comunes()
+            cerca = [r for r in self.remotos.values() if r.mapa == self.mundo.id and r.visto and r.veh and getattr(r, "radio", "") in listas
+                     and r.dist(x, y) < RADIO_AJENA_M]
+            if cerca:
+                mejor = min(cerca, key=lambda r: r.dist(x, y))
+        if ra is not None and (mejor is None or ra["de"] != mejor.id or ra["emisora"] != mejor.radio):
+            self._sv_parar_radio_ajena()
+            ra = None
+        if mejor is None:
+            return
+        if ra is None:
+            ra = sv["radio_ajena"] = {"de": mejor.id, "emisora": mejor.radio, "canal": None, "datos": None, "listo": False}
+            guardadas = self.app.__dict__.setdefault("_radio_muestras", {})
+            if mejor.radio in guardadas:
+                ra["datos"], ra["listo"] = guardadas[mejor.radio], True
+            else:
+                def cargar(ra=ra, ident=mejor.radio):
+                    d = radio.muestra(ident)
+                    if d is not None:
+                        if len(guardadas) >= 2:
+                            guardadas.clear()
+                        guardadas[ident] = d
+                    ra["datos"], ra["listo"] = d, True
+                ra["hilo"] = threading.Thread(target=cargar, daemon=True)
+                ra["hilo"].start()
+        if ra["canal"] is None and ra["listo"] and ra["datos"] is not None:
+            self.mez.registrar(SON_RADIO_AJENA, ra["datos"])
+            ra["canal"] = self.son(SON_RADIO_AJENA, bucle=True, xy=(mejor.x, mejor.y), ref=5, maxd=RADIO_AJENA_M, vol=0.45, cat="musica")
+            if not sv.get("radio_ajena_dicha"):                  # la primera vez se explica qué es y cómo se quita
+                sv["radio_ajena_dicha"] = True
+                self.decir(f"Lo que suena es la radio del vehículo de {mejor.nombre}. Si no quieres oír las radios de los demás, se quita en Opciones, Sonido y música.")
+        elif ra["canal"] is not None:
+            ra["canal"].mover(mejor.x, mejor.y)
 
     def sv_dicho(self, clave, texto, cada=4.0, interrumpir=False):
         """Dice algo, pero no la misma cosa a cada momento."""
@@ -558,6 +692,8 @@ class EnLinea:
         sv["t_guardar"] -= dt
         if sv["t_guardar"] <= 0 and not self.transicion:
             self.sv_guardar()
+        self._sv_vigilar_gasto(dt)
+        self._sv_radio_ajena()
         if sv["info"].get("pvp"):
             segura = self.sv_segura()
             if segura != sv["segura"]:
@@ -586,6 +722,9 @@ class EnLinea:
         sv["t_atropello"] -= dt
         if v is not None and abs(v.vel) > 4 and sv["t_atropello"] <= 0 and sv["info"].get("pvp"):
             for r in self.remotos.values():
+                # quien va de pasajero, contigo o con otro, no está en la calzada: su posición es la del vehículo que le lleva
+                if getattr(r, "pasajero_de", None) is not None or r.id in sv["pasajeros"]:
+                    continue
                 if r.mapa == self.mundo.id and r.visto and not r.veh and r.dist(v.x, v.y) < 3.2:
                     sv["t_atropello"] = 1.2
                     self.red.enviar({"t": "atropello", "a": r.id})
@@ -656,6 +795,7 @@ class EnLinea:
 
     def _svm_sale(self, m):
         r = self.remotos.pop(m.get("id"), None)
+        self.sv["pasajeros"].discard(m.get("id"))
         if r:
             r.callar()
             self._sv_quitar_policia(r)
@@ -700,6 +840,8 @@ class EnLinea:
             if "vi" in e:
                 r.vid, r.agachado, r.pasivo, r.segura, r.dentro = e.get("vi"), bool(e.get("ag")), bool(e.get("pa")), bool(e.get("sg")), bool(e.get("in"))
                 r.estrellas = int(e.get("es") or 0)
+                r.pasajero_de = e.get("pj") if isinstance(e.get("pj"), int) else None      # de quién va de pasajero, si va
+                r.radio = e.get("ra") if isinstance(e.get("ra"), str) else ""               # la emisora del juego que lleva puesta
                 self._sv_policia_de(r, e.get("po") or [])
 
     # ------------------------------------------------------------ policía común
@@ -888,6 +1030,10 @@ class EnLinea:
             if p is None:
                 p = Persona("policia", x, y)
                 p.po_id, p.tag, p.salud, p.estado, p.activo = ident, "comun", 80, "ataca", True
+                try:                                         # la salud que dice el servidor, según el nivel de búsqueda; uno anterior no la manda
+                    p.salud = max(1.0, min(1000.0, float(f[5]))) if len(f) > 5 else 80
+                except (TypeError, ValueError):
+                    p.salud = 80
                 self.personas.append(p)
                 gente[ident] = p
             p.tx, p.ty, p.t_visto = x, y, self.t
@@ -1089,7 +1235,8 @@ class EnLinea:
         j = self.j
         if v.sirena:
             v.sirena.mover(v.x, v.y)
-        if not j.veh and v.vel > 3 and d < 2.4 and self.t > v.t_choque and not getattr(v, "eco_poli", False):      # te atropella, como cualquier coche
+        # te atropella, como cualquier coche; pero no si vas de pasajero en el vehículo de otro jugador
+        if not j.veh and v.vel > 3 and d < 2.4 and self.t > v.t_choque and not getattr(v, "eco_poli", False) and getattr(self, "pasajero", None) is None:
             v.t_choque = self.t + 1.5
             self.son("golpe")
             self.danar_jugador(v.vel * 2.2, (v.x, v.y))
@@ -1104,6 +1251,8 @@ class EnLinea:
             self.son("explosion", xy=(float(m.get("x", 0)), float(m.get("y", 0))), ref=30, maxd=400)
 
     def _svm_chat(self, m):
+        if m.get("canal") in CANALES_ROL:
+            return self._sv_chat_rol(m.get("canal"), str(m.get("nombre", "Alguien")), str(m.get("texto", "")), m.get("de"))
         canal = {"cerca": " aquí cerca", "banda": " a la banda", "priv": " solo a ti", "grupo": " al grupo"}.get(m.get("canal"), "")
         linea = f"{m.get('nombre', 'Alguien')}{canal}: {m.get('texto', '')}"
         self.chat.append(linea)
@@ -1111,6 +1260,118 @@ class EnLinea:
         self.son("chat", cat="interfaz")
         with registro.privado():
             self.decir(f"{m.get('nombre', 'Alguien')} dice{canal}: {m.get('texto', '')}")
+
+    # --------------------------------------------------------------------- rol
+    def sv_rol(self):
+        """¿Hay canales de rol en este servidor? No los hay en uno anterior a la 1.7.1, ni si quien lo lleva los ha apagado."""
+        return self.sv_sabe("rol") and bool(self.sv["info"].get("rol"))
+
+    def sv_rol_motivo(self):
+        if not self.sv_sabe("rol"):
+            return "Este servidor va con una versión anterior y no tiene canales de rol: usa el chat de siempre."
+        return "Quien lleva este servidor tiene apagados los canales de rol: usa el chat de siempre."
+
+    def _sv_apuntar_rol(self, canal, linea):
+        self.sv["historial"].append((canal, linea))
+        del self.sv["historial"][:-80]
+        self.chat.append(linea)
+        del self.chat[:-40]
+
+    def _sv_chat_rol(self, canal, nombre, texto, de=None):
+        """Llega algo por un canal de rol: cada canal suena distinto y se dice de una manera. Lo dicho en personaje y las
+        acciones suenan además desde donde está quien habla, para saber por dónde anda."""
+        nombre_canal, sonido = CANALES_ROL[canal]
+        if canal == "yo":
+            linea = dicho = f"{nombre} {texto}"
+        elif canal == "ic":
+            linea, dicho = f"{nombre}, en personaje: {texto}", f"{nombre} dice: {texto}"
+        else:
+            linea = dicho = f"{nombre}, fuera de personaje: {texto}"
+        self._sv_apuntar_rol(canal, linea)
+        r = self.remotos.get(de)
+        cerca = canal != "ooc" and r is not None and r.visto and r.mapa == self.mundo.id
+        self.son(sonido if sonido in self.mez.sonidos else "chat", cat="interfaz", xy=(r.x, r.y) if cerca else None, ref=12, maxd=400)
+        with registro.privado():
+            self.decir(dicho)
+
+    def sv_enviar_chat(self, texto, canal="todos", a=None):
+        """Manda un mensaje por un canal. Si empieza por una orden de rol (barra yo, barra ep, barra fp), va por ese canal.
+        Devuelve si se ha enviado."""
+        texto = (texto or "").strip()[:300]
+        if texto.startswith("/"):
+            orden, _, resto = texto[1:].partition(" ")
+            if orden.lower() == "ficha":
+                self.sv_poner_ficha(resto)
+                return True
+            if orden.lower() in ORDENES_ROL:
+                canal, texto = ORDENES_ROL[orden.lower()], resto.strip()
+        if not texto:
+            return False
+        if canal in CANALES_ROL:
+            if not self.sv_rol():
+                self.app.son("error")
+                self.decir(self.sv_rol_motivo(), True)
+                return False
+            self.red.enviar({"t": "chat", "texto": texto, "canal": canal})
+            linea = f"Tú {texto}" if canal == "yo" else f"Tú, {CANALES_ROL[canal][0]}: {texto}"
+            self._sv_apuntar_rol(canal, linea)
+            self.son(CANALES_ROL[canal][1] if CANALES_ROL[canal][1] in self.mez.sonidos else "chat", cat="interfaz", vol=0.6)
+            self.decir(f"{self.red.nombre} {texto}" if canal == "yo" else "Enviado.", True)
+            return True
+        self.red.enviar({"t": "chat", "texto": texto, "canal": canal, "a": a})
+        self.chat.append(f"Tú: {texto}")
+        del self.chat[:-40]
+        self.son("chat", cat="interfaz", vol=0.6)
+        self.decir("Enviado.", True)
+        return True
+
+    def _svm_rol_oido(self, m):
+        if not m.get("n") and m.get("canal") != "ooc":
+            self.decir("No hay nadie lo bastante cerca para oírlo.")
+
+    def sv_poner_ficha(self, texto):
+        """Tu frase de ficha: la que los demás leen cuando te miran. Vacía, la quita."""
+        if not self.sv_rol():
+            self.app.son("error")
+            self.decir(self.sv_rol_motivo(), True)
+            return False
+        texto = " ".join("".join(c for c in str(texto or "") if c.isprintable()).split())[:MAX_FICHA]
+        registro.ocultar(texto) if texto else None
+        self.red.enviar({"t": "ficha", "texto": texto})
+        return True
+
+    def sv_pedir_ficha(self, r, de_paso=False):
+        """Pide al servidor la ficha de otro jugador; al llegar, se lee. Con «de_paso» (al mirarle con Mayúsculas J) no dice
+        nada si no hay canales de rol ni si no ha escrito ninguna."""
+        if not self.sv_rol():
+            if not de_paso:
+                self.app.son("error")
+                self.decir(self.sv_rol_motivo(), True)
+            return False
+        self.sv["ficha_pedida"], self.sv["ficha_de_paso"] = r.id, bool(de_paso)
+        self.red.enviar({"t": "ficha", "a": r.id})
+        return True
+
+    def _svm_ficha(self, m):
+        texto = "".join(c for c in str(m.get("texto") or "") if c.isprintable())[:MAX_FICHA]
+        nombre = str(m.get("nombre", "Alguien"))
+        if m.get("tuya") or m.get("de") == self.sv.get("id"):
+            self.sv["ficha"] = texto
+            self.app.son("menu_ok")
+            with registro.privado():
+                self.decir(f"Tu ficha dice ahora: {texto}" if texto else "Has quitado tu ficha.", True)
+            return
+        self.sv["fichas"][m.get("de")] = texto
+        r = self.remotos.get(m.get("de"))
+        if r is not None:
+            r.ficha = texto
+        if self.sv.pop("ficha_pedida", None) == m.get("de"):
+            de_paso = self.sv.pop("ficha_de_paso", False)
+            with registro.privado():
+                if texto:
+                    self.decir(f"Ficha de {nombre}: {texto}", not de_paso)
+                elif not de_paso:
+                    self.decir(f"{nombre} no ha escrito ninguna ficha.", True)
 
     def _svm_cobro(self, m):
         n = min(self.j.dinero, max(0, int(m.get("n", 0))))
@@ -1158,7 +1419,7 @@ class EnLinea:
         self.sv_salir("Se ha perdido la conexión con el servidor. Tu personaje se guardó hace menos de un minuto: vuelve a entrar para seguir.", al_menu=True)
 
     # ----------------------------------------------------------------- economía
-    def _sv_ajustar_saldo(self, sobra, callar=False):
+    def _sv_ajustar_saldo(self, sobra, callar=False, datos=None):
         """Quita lo que el servidor no reconoce: primero del bolsillo y luego del banco."""
         if sobra <= 0:
             return
@@ -1168,16 +1429,73 @@ class EnLinea:
         j.banco -= min(j.banco, sobra - de_mano)
         if not callar:
             self.app.son("error")
-            self.decir(f"El servidor no reconoce {sobra} euros de lo que llevas, y se retiran. En un servidor no se puede ganar más de un tanto por hora "
-                       "fuera de las misiones y de lo que te dan otros jugadores.")
+            self.decir(self._sv_texto_tope(sobra, datos))
+
+    def _sv_texto_tope(self, sobra, d=None):
+        """Lo que se dice cuando el servidor retira dinero, con las cifras que mande. Uno anterior no manda ninguna."""
+        if not d or d.get("tope") is None:
+            return (f"El servidor no reconoce {sobra} euros de lo que llevas, y se retiran. En un servidor no se puede ganar más de un tanto por hora "
+                    "fuera de las misiones y de lo que te dan otros jugadores.")
+        try:
+            tope, acumula, margen, por_minuto = int(d["tope"]), int(d.get("acumula") or d["tope"]), int(d.get("margen") or 0), int(d.get("por_minuto") or 0)
+            ganado, aceptado = int(d.get("ganado") or 0), int(d.get("aceptado") or 0)
+        except (TypeError, ValueError):
+            return f"El servidor no reconoce {sobra} euros de lo que llevas, y se retiran."
+        texto = (f"De los {ganado} euros que acabas de ganar, el servidor acepta {aceptado} y retira {sobra}. " if ganado else
+                 f"El servidor retira {sobra} euros que no reconoce. ")
+        texto += f"Aquí se pueden ganar por cuenta propia hasta {tope} euros por hora"
+        if acumula > tope:
+            texto += f", y lo que no uses se te guarda hasta {acumula}"
+        texto += ". "
+        if margen <= 0 and por_minuto > 0:
+            texto += f"Ahora mismo has llegado al tope: recuperas {por_minuto} euros de margen cada minuto. "
+        elif margen > 0:
+            texto += f"Te quedan {margen} euros de margen. "
+        texto += "No cuentan contra el tope las misiones de la historia, lo que te dan otros jugadores"
+        if int(d.get("encargos_hora") or 0) > 0:
+            texto += f", ni los encargos repetibles, como contratos, combates y atracos, hasta {int(d['encargos_hora'])} por hora de cada tipo"
+        return texto + ". Cómo vas de margen está en el móvil, En línea, Datos y reglas de este servidor."
 
     def _svm_saldo(self, m):
-        self._sv_ajustar_saldo(max(0, int(m.get("quita", 0))))
+        self.sv["economia"] = {k: m.get(k) for k in ("tope", "acumula", "horas", "margen", "por_minuto", "encargos_hora", "encargo_max")} if m.get("tope") is not None else self.sv.get("economia")
+        self._sv_ajustar_saldo(max(0, int(m.get("quita", 0))), datos=m)
+
+    def _svm_economia(self, m):
+        self.sv["economia"] = m.get("e") if isinstance(m.get("e"), dict) else None
+
+    def sv_economia_txt(self):
+        """Cómo va el tope de dinero de este servidor, en una frase, para el menú."""
+        d = self.sv.get("economia")
+        if not self.sv_sabe("topes"):
+            return "Este servidor puede poner un tope a lo que ganas por hora, pero su versión no dice cuál"
+        if not d:
+            return "En este servidor no hay tope de ganancias: el dinero lo lleva tu juego"
+        try:
+            texto = f"Ganancia por tu cuenta: hasta {int(d['tope'])} euros por hora"
+            if int(d.get("acumula") or 0) > int(d["tope"]):
+                texto += f", que se acumulan hasta {int(d['acumula'])} si no los usas"
+            texto += f". Ahora te quedan {int(d.get('margen') or 0)} de margen"
+            if int(d.get("encargos_hora") or 0) > 0:
+                texto += f". Aparte, se reconocen {int(d['encargos_hora'])} encargos repetibles por hora de cada tipo, hasta {int(d.get('encargo_max') or 0)} euros cada uno"
+            return texto
+        except (TypeError, ValueError, KeyError):
+            return "Este servidor pone un tope a lo que ganas por hora"
 
     def sv_mision_ok(self, m):
-        """Has completado una misión tuya: se lo dices al servidor para que dé por buena la recompensa."""
+        """Has completado una misión tuya: se lo dices al servidor para que dé por buena la recompensa. Si es un encargo
+        repetible (un contrato, un combate, un atraco), le dices además cuánto paga: el servidor lo reconoce hasta un número
+        de veces por hora, sin que gaste tu ganancia por hora. Un servidor anterior no hace caso de eso."""
         if self.en_servidor and not m.get("generada"):
-            self.red.enviar({"t": "mision_ok", "id": m["id"]})
+            d = {"t": "mision_ok", "id": m["id"]}
+            if m.get("repetible"):
+                paga = int(((m.get("recompensa") or {}).get("dinero") or 0) * (0.5 if self.cfg["mod_dinero"] else 1.0))
+                d.update(encargo=1, n=paga)
+            self.red.enviar(d)
+
+    def sv_encargo(self, tipo, paga):
+        """Un cobro de los que se repiten y no pasan por una misión (la caja de un local sin guardia)."""
+        if self.en_servidor and paga > 0:
+            self.red.enviar({"t": "mision_ok", "id": str(tipo), "encargo": 1, "n": int(paga)})
 
     # -------------------------------------------------------------- propiedades
     def sv_dueno(self, l):
@@ -1583,8 +1901,72 @@ class EnLinea:
         if d.get("id") is None:
             return
         self.sv["vehs"][d["id"]] = d
-        if d.get("m") == self.mundo.id and self._sv_copia(d["id"]) is None:
+        v = self._sv_copia(d["id"])
+        if d.get("m") == self.mundo.id and v is None:
             self._sv_crear_copia(d)
+        elif v is not None and d.get("nombre") and v is not self.j.veh:      # su dueño le ha cambiado el nombre
+            v.nombre = str(d["nombre"])[:40]
+
+    # ------------------------------------------- tus vehículos aparcados, desde la lista del móvil
+    def sv_veh_orden(self, que, d, **mas):
+        """Pide al servidor algo para un vehículo tuyo que está aparcado: ponerle nombre, que te lo traigan o mandarlo a un
+        garaje. Devuelve False, y lo dice, si el servidor es anterior y no sabe hacerlo."""
+        if not self.sv_sabe("mis_vehiculos"):
+            self.app.son("error")
+            self.decir("Este servidor va con una versión anterior y no sabe hacer eso con un vehículo aparcado. Ve hasta él: puedes cambiarle el nombre "
+                       "al subir, y mandarlo al garaje desde Servicios con el vehículo al lado.", True)
+            return False
+        self.red.enviar(dict(mas, t="veh_" + que, id=d["id"]))
+        return True
+
+    def _svm_veh_mio(self, m):
+        que, d = m.get("que"), m.get("v") or {}
+        ident = m.get("id")
+        pend = self.sv["veh_pend"].pop(ident, None) or {}
+        if que == "no":
+            self.sv["vehs"].pop(ident, None)
+            self.sv.setdefault("mios", set()).discard(ident)
+            self.app.son("error")
+            self.decir(str(m.get("motivo") or "No se ha podido."), True)
+            return
+        if d.get("id") is None:
+            return
+        v = self._sv_copia(d["id"])
+        if que == "nombre":
+            self.sv["vehs"][d["id"]] = d
+            if v is not None:
+                v.nombre = str(d.get("nombre") or v.nombre)[:40]
+            self.app.son("menu_ok")
+            self.decir(f"Ahora se llama {d.get('nombre')}.", True)
+        elif que == "traer":
+            self.pagar(int(pend.get("precio", 0)))
+            self.sv["vehs"][d["id"]] = d
+            self.sv.setdefault("mios", set()).add(d["id"])
+            if v is not None and v is not self.j.veh:
+                v.x, v.y, v.vel, v.rumbo = float(d["x"]), float(d["y"]), 0.0, float(d.get("r", 0))
+                v.dir = M.dir_de_rumbo(v.rumbo)
+            elif v is None and d.get("m") == self.mundo.id:
+                v = self._sv_crear_copia(d)
+            if v is not None:
+                v.red_dueno = True
+                self.son(v.modelo.get("claxon", "claxon"), xy=(v.x, v.y))
+                self.decir(f"Tu mecánico te deja {v.nombre} en la calle. {self.situar(v.x, v.y, 'Está')}.", True)
+        elif que == "garaje":
+            casa = self.lug(m.get("ref") or pend.get("casa") or "")
+            self.sv["vehs"].pop(d["id"], None)
+            self.sv.setdefault("mios", set()).discard(d["id"])
+            if v is not None and v is not self.j.veh:
+                v.red_dueno = False
+                self.quitar_vehiculo(v)
+            if casa is None or d.get("modelo") not in self.modelos:
+                return
+            self.pagar(int(pend.get("precio", 0)))
+            ficha = {"modelo": d["modelo"], "salud": float(d.get("salud") or self.modelos[d["modelo"]]["salud"]), "nombre": d.get("nombre") or self.modelos[d["modelo"]]["nombre"],
+                     "mejoras": dict(d.get("mejoras") or {})}
+            self.j.garajes.setdefault(casa.id, []).append(ficha)
+            self.son("arranque", vol=0.6)
+            self.decir(f"Tu mecánico se lleva {ficha['nombre']} al garaje de {self.nombre_lugar(casa)}.", True)
+            self.sv_guardar()                                    # ya no está en la calle del servidor: que conste en tu personaje cuanto antes
 
     def _svm_veh_ok(self, m):
         d = m.get("v") or {}
@@ -1763,8 +2145,10 @@ class EnLinea:
         for k, e in enumerate(ms["enemigos"]):
             e.eco_k = k
             if not e.muerto:
+                # deportivo (un rival del gimnasio: tumbarlo no es delito) y la puntería de su tipo viajan desde la 1.7.1
                 lista.append({"k": k, "nombre": e.nombre, "salud": round(e.salud, 1), "arma": e.arma, "x": round(e.x, 1), "y": round(e.y, 1),
-                              "inofensivo": bool(getattr(e, "inofensivo", False))})
+                              "inofensivo": bool(getattr(e, "inofensivo", False)), "deportivo": bool(getattr(e, "deportivo", False)),
+                              "punteria": round(float(getattr(e, "punteria", 0) or 0), 2), "tono": round(float(getattr(e, "tono", 1.0) or 1.0), 2)})
         self.red.enviar({"t": "grupo_msg", "d": {"que": "enemigos", "mapa": self.mundo.id, "e": lista}})
 
     def sv_mision_fin(self, hecha, m=None):
@@ -1815,6 +2199,14 @@ class EnLinea:
                 e.arma = q.get("arma") if q.get("arma") in self.armas_d else "pistola"
                 e.hostil, e.estado, e.tag = True, "ataca", "grupo"
                 e.inofensivo = bool(q.get("inofensivo"))
+                e.deportivo = bool(q.get("deportivo"))               # un juego anterior no lo manda: como hasta ahora
+                try:
+                    if float(q.get("punteria") or 0) > 0:
+                        e.punteria = max(0.02, min(1.0, float(q["punteria"])))
+                    if float(q.get("tono") or 0) > 0:
+                        e.tono = max(0.5, min(2.0, float(q["tono"])))
+                except (TypeError, ValueError):
+                    pass
                 e.eco_k = k
                 e.t_disparo = 2.5
                 self.personas.append(e)

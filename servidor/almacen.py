@@ -8,6 +8,8 @@ import os
 import sqlite3
 import time
 
+MAX_APUNTES = 200                 # apuntes que se conservan de la caja de cada banda
+
 ESQUEMA = """
 CREATE TABLE IF NOT EXISTS meta (clave TEXT PRIMARY KEY, valor TEXT);
 CREATE TABLE IF NOT EXISTS cuentas (
@@ -36,7 +38,8 @@ class Almacen:
         self.db = sqlite3.connect(ruta)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(ESQUEMA)
-        for columna in ("saldo INTEGER", "misiones TEXT DEFAULT '[]'", "juego TEXT DEFAULT ''"):      # añadidos después: se ponen si faltan
+        # añadidos después: se ponen si faltan. La ficha es la frase de rol del jugador; el margen, lo que aún puede ganar por su cuenta.
+        for columna in ("saldo INTEGER", "misiones TEXT DEFAULT '[]'", "juego TEXT DEFAULT ''", "ficha TEXT DEFAULT ''", "margen REAL", "t_margen REAL"):
             try:
                 self.db.execute("ALTER TABLE cuentas ADD COLUMN " + columna)
             except sqlite3.OperationalError:
@@ -45,6 +48,8 @@ class Almacen:
             self.db.execute("ALTER TABLE propiedades ADD COLUMN pagada INTEGER DEFAULT 1")
         except sqlite3.OperationalError:
             pass
+        for f in self.db.execute("SELECT DISTINCT banda FROM apuntes").fetchall():      # las cajas de antes, que crecían sin tope
+            self._podar_apuntes(f["banda"])
         self.db.commit()
 
     def cerrar(self):
@@ -199,7 +204,13 @@ class Almacen:
     def apunte(self, banda, nombre, cantidad, motivo):
         self.db.execute("INSERT INTO apuntes (banda, momento, nombre, cantidad, motivo) VALUES (?,?,?,?,?)", (banda, time.time(), nombre, cantidad, motivo))
         self.db.execute("UPDATE bandas SET caja=MAX(0, caja+?) WHERE id=?", (cantidad, banda))
+        self._podar_apuntes(banda)
         self.db.commit()
+
+    def _podar_apuntes(self, banda):
+        """De cada caja se guardan los últimos apuntes, no todos: si no, la lista crece sin fin. La caja no cambia."""
+        self.db.execute("DELETE FROM apuntes WHERE banda=? AND id NOT IN (SELECT id FROM apuntes WHERE banda=? ORDER BY id DESC LIMIT ?)",
+                        (banda, banda, MAX_APUNTES))
 
     def apuntes(self, banda, n=12):
         return self.db.execute("SELECT * FROM apuntes WHERE banda=? ORDER BY id DESC LIMIT ?", (banda, n)).fetchall()

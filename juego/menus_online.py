@@ -29,11 +29,19 @@ def deletrear(direccion):
     return direccion.replace("://", ", dos puntos, barra, barra, ").replace(":", ", dos puntos, ").replace(".", " punto ")
 
 
-def escribir_mensaje(p):
+def escribir_mensaje(p, canal=None):
+    """F10: un mensaje para los demás. En un servidor, con «canal» va por un canal de rol: «ic», en personaje, o «yo», una acción."""
     app = p.app
     if not p.online_activo():
         app.son("error")
         app.decir("No estás jugando con nadie. Abre el móvil con M y entra en Jugar con amigos.", True)
+        return
+    if getattr(p, "en_servidor", False):
+        from . import menus_enlinea
+        return menus_enlinea.chat(p, canal) if canal else menus_enlinea.chat(p)
+    if canal:
+        app.son("error")
+        app.decir("Los canales de rol son de los servidores en línea. Jugando con amigos, el mensaje es para todos: pulsa F10.", True)
         return
     app.abrir(EntradaTexto(app, "Mensaje para tus amigos", p.enviar_chat, maximo=300))
 

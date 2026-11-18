@@ -33,7 +33,18 @@ from .policia import Policia
 VERSION_RED = 2                   # la versión del protocolo que habla este servidor
 PROTOCOLO_MIN = 2                 # la más antigua con la que todavía se entiende
 # Lo que sabe hacer este servidor. El juego lo mira para no pedir lo que el servidor no tiene, sea cual sea su versión.
-FUNCIONES = ("vehiculos", "combate", "bandas", "barrios", "grupos", "propiedades", "robos", "personajes", "mundo", "versiones")
+FUNCIONES = ("vehiculos", "combate", "bandas", "barrios", "grupos", "propiedades", "robos", "personajes", "mundo", "versiones",
+             # desde la 1.7.1: canales de rol y ficha, la radio de los coches de otros, traer, renombrar y guardar tus vehículos
+             # aparcados, los pasajeros, las cifras del tope de dinero y los encargos repetibles reconocidos
+             "rol", "radio", "mis_vehiculos", "pasajeros", "topes", "encargos")
+CANALES = ("todos", "cerca", "banda", "priv", "grupo")
+CANALES_ROL = ("ic", "ooc", "yo")                 # en personaje, fuera de personaje y una acción
+# Órdenes que cualquiera puede escribir en el chat con una barra delante, también con un juego anterior a los canales de rol.
+ORDENES_ROL = {"yo": "yo", "me": "yo", "ep": "ic", "ic": "ic", "fp": "ooc", "ooc": "ooc", "ficha": "ficha"}
+MAX_FICHA = 200
+# Lo más que paga un encargo repetible de cada tipo, si el mundo del juego no lo dice (un juego anterior a la 1.7.1).
+ENCARGOS_DE_SERIE = {"contrato": 4000, "atraco_banco": 15000, "atraco_local": 8000, "asalto_proveedor": 6000, "encargo_coche": 12000,
+                     "conquista": 3000, "defensa": 1500, "boxeo": 6000, "mma": 12000}
 # Claves públicas de quien publica el juego: con ellas se comprueba que el mundo que trae un jugador es el de una
 # versión de verdad. Son las mismas con las que el juego comprueba sus actualizaciones.
 CLAVES_PUBLICAS = ("2793c73fefcdb5518570569e41e9ae291373c41126b30d4b3fb99359b09ca23f",)
@@ -158,6 +169,15 @@ class Jugador:
         self.huella = ""           # huella del mundo que trae su juego
         self.proto = VERSION_RED   # versión del protocolo acordada con su juego
         self.t_actividad = time.monotonic()      # la última vez que se movió o hizo algo
+        self.sabe = set()          # lo nuevo que su juego dice entender: a quien no lo dice se le habla como a un juego anterior
+        self.pasajero_de = None    # id del jugador en cuyo vehículo va de pasajero
+        self.radio = ""            # la emisora del juego que lleva puesta en el vehículo, si quiere que se oiga
+        self.ficha = ""            # su frase de rol, la que los demás pueden leer
+        self.fiado = []            # pagas de encargos repetibles reconocidas y aún no vistas en su juego: [momento, euros]
+        self.gasto_pend = 0        # lo que se le ha visto gastar por su cuenta desde la última vez que guardó el personaje
+        self.descuento = 0         # lo que el servidor le ha dicho que pierde (un atraco, una caída) y su juego aún no ha restado
+        self.total_guardado = None # el dinero (bolsillo más banco) que hay en su personaje guardado
+        self.t_aviso_encargo = 0.0
         self.avisado = set()       # avisos de compatibilidad que ya se le han dado: no se repiten
         self.raros = set()         # tipos de mensaje suyos que no se han podido atender: se apuntan una vez
 
@@ -197,6 +217,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                     continue
         self._poner_mundo(mundo or dict(MUNDO_VACIO), guardar=False)
         self.robos = {}                                       # atracos a negocios en marcha: id de sesión -> datos
+        self.encargos = {}                                    # encargos repetibles cobrados: cuenta -> {tipo: [momentos]}. Solo en memoria
         self.jugadores = {}
         self._n = 0
         self.vehiculos = {v["id"]: v for v in self.alm.vehiculos()}
@@ -509,6 +530,10 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             j.credito += max(0, int(obj.get("n", 0)))
         elif t in ("baja", "atraco_ok", "robo_fin") and not j.bot:
             j.credito += max(0, int(obj.get("botin", 0)))
+        elif t in ("atracado", "caes") and not j.bot:          # lo que le quita el servidor no es una compra suya
+            j.descuento += max(0, int(obj.get("pierde", 0)))
+        elif t == "robos_dia" and not j.bot:
+            j.descuento += max(0, int(obj.get("total", 0)))
         if j.conectado:
             j.cola.put_nowait(obj if hecho is None else hecho)
             if j.cola.qsize() > 600:                         # no lee: fuera, sin frenar a nadie
@@ -689,6 +714,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         j.proto = min(v, VERSION_RED)
         j.juego = "".join(ch for ch in str(m.get("juego") or "") if ch.isalnum() or ch in ".-")[:20]
         j.huella = str(m.get("huella") or "")[:64]
+        if isinstance(m.get("sabe"), list):                   # un juego anterior no lo manda: se le habla como siempre
+            j.sabe = {x[:20] for x in m["sabe"][:30] if isinstance(x, str)}
         pub = str(m.get("pub", "")).lower()
         if len(pub) != 64 or any(ch not in "0123456789abcdef" for ch in pub):
             return self._rechazo(j, "Tu juego no ha enviado una identidad válida.")
@@ -753,7 +780,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             j.misiones_pagadas = set(json.loads(fila["misiones"] or "[]"))
         except (ValueError, TypeError, IndexError):
             j.misiones_pagadas = set()
-        j.margen = float(self.cfg["ganancia_hora"]) / 4.0       # entra con un cuarto de hora de margen
+        j.margen = self._margen_de_entrada(fila)
+        j.t_margen = time.monotonic()
+        j.ficha = str((fila["ficha"] if "ficha" in fila.keys() else "") or "")[:MAX_FICHA]
         j.t_actividad = time.monotonic()
         j.dentro = True
         self.jugadores[j.id] = j
@@ -763,8 +792,13 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 partida = json.loads(fila["partida"])
             except ValueError:
                 partida = None
+        j.total_guardado = self._dinero_de_partida(partida)
         dias_fuera = max(0, self.dia - int(fila["dia_salida"] or self.dia)) if fila["partida"] else 0
         pendientes = self.alm.pendientes(j.cuenta)
+        try:                                                  # lo que perdió al caer estando fuera: su juego lo resta al entrar
+            j.descuento = sum(max(0, int(c.get("pierde", 0) or 0)) for c in pendientes if isinstance(c, dict) and c.get("que") == "caido")
+        except (TypeError, ValueError):
+            j.descuento = 0
         if j.saldo is not None:
             # Lo que cobró estando fuera (le compraron una casa, o volvió al mercado) es dinero suyo: entra en su saldo.
             # Si no, su juego se lo daría y acto seguido se lo quitaría por no cuadrar con lo que el servidor tiene apuntado.
@@ -789,12 +823,16 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             "servidor": {"nombre": self.cfg["nombre"], "bienvenida": self.cfg["bienvenida"], "pvp": si(self.cfg["pvp"]), "pasivo": si(self.cfg["modo_pasivo"]),
                          "seguras": si(self.cfg["zonas_seguras"]), "adultos": si(self.cfg["adultos"]), "trafico": self._tr_activo(), "peatones": self._pe_activo(), "policia": self._po_activo(), "proteccion": int(self.cfg["proteccion"]),
                          "max_jugadores": tope,
+                         # lo de la 1.7.1: un juego anterior no mira estas claves
+                         "rol": si(self.cfg["rol"]), "rol_metros": int(self.cfg["rol_metros"]), "radio_coches": si(self.cfg["radio_coches"]),
+                         "economia": self._economia_datos(j),
                          "precios": {k: int(self.cfg[k]) for k in ("precio_banda", "precio_barrio", "renta_barrio", "precio_guerra", "guerra_espera", "guerra_dura")}},
+            "ficha": j.ficha,
             "saldo": j.saldo if si(self.cfg["economia"]) else None,
             "partida": partida, "dias_fuera": dias_fuera, "hora": self._hora(), "semilla": self.semilla,
             "banda": self._banda_datos(j.banda), "territorios": self._territorios(), "recompensa": int(fila["recompensa"] or 0),
             "pendientes": pendientes,
-            "props": self._props(), "robos": self.alm.cobrar_robos(j.cuenta),
+            "props": self._props(), "robos": self._robos_de_entrada(j),
             "vehiculos": [self._veh_publico(v) for v in self.vehiculos.values()],
             # los que el servidor tiene apuntados a nombre de este jugador y están aparcados (un juego anterior no lo mira)
             "mis_vehiculos": [v["id"] for v in self.vehiculos.values() if v.get("dueno") == j.cuenta and v["por"] is None]})
@@ -805,6 +843,21 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         self.po_entra(j)
         self.log("Entra %s%s. Hay %d." % (j.nombre, (", con el juego %s" % j.juego) if j.juego else "", self._cuantos()))
         return True
+
+    def _robos_de_entrada(self, j):
+        total = self.alm.cobrar_robos(j.cuenta)
+        j.descuento += total                                  # su juego lo descuenta al entrar: no es una compra
+        return total
+
+    def _va_con(self, o):
+        """El jugador en cuyo vehículo va «o» de pasajero, o None. Quien va dentro de un vehículo no anda por la calle:
+        ni le atropellan, ni le atracan a pie, y la chapa le cubre como al conductor."""
+        if o.pasajero_de is None or o.veh is not None:
+            return None
+        c = self.jugadores.get(o.pasajero_de)
+        if c is None or not c.dentro or c.veh is None or c.mapa != o.mapa or c.dist(o) > 45:
+            return None
+        return c
 
     def _aviso_compat(self, j, clave, texto):
         """Un aviso de compatibilidad, una sola vez por sesión: algo de su versión del juego que aquí no existe."""
@@ -827,6 +880,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         for ident in [i for i, lider in self.invitaciones_grupo.items() if lider == j.id]:
             self.invitaciones_grupo.pop(ident, None)
         self.po_sale(j)
+        self._devolver_sin_guardar(j)
         self._guardar_saldo(j)
         if j.cuenta is not None:
             self.alm.poner(j.cuenta, visto=self.ahora(), dia_salida=self.dia)
@@ -884,6 +938,13 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                                    "contra otros jugadores cuenta como ir con las manos.")
             j.barrio = e.get("b") if isinstance(e.get("b"), str) else None
             j.agachado, j.interior = bool(e.get("ag")), bool(e.get("in"))
+            # Lo de la 1.7.1, que un juego anterior no manda: de quién va de pasajero y qué emisora del juego lleva puesta.
+            if "pj" in e:
+                pj = e.get("pj")
+                j.pasajero_de = pj if isinstance(pj, int) and not isinstance(pj, bool) and pj != j.id and pj in self.jugadores else None
+            ra = e.get("ra")
+            j.radio = ra if (isinstance(ra, str) and 0 < len(ra) <= 24 and ra.replace("_", "").isalnum() and j.veh is not None
+                             and si(self.cfg["radio_coches"])) else ""
             if not self._po_activo():                         # sin policía del servidor, la búsqueda la lleva su juego
                 j.estrellas = max(0, min(5, int(e.get("es") or 0)))
                 po = e.get("po")                              # y la policía que le persigue la ven también los que están cerca
@@ -924,29 +985,136 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                     j.dinero = max(0, j.dinero - falta)
                     total -= falta
         tope = float(self.cfg["ganancia_hora"])
-        j.margen = min(tope, j.margen + (ahora - j.t_margen) * tope / 3600.0)
+        # El margen que no se usa se guarda, hasta unas horas: así una buena racha cabe entera.
+        j.margen = min(tope * self._acumula(), j.margen + (ahora - j.t_margen) * tope / 3600.0)
         j.t_margen = ahora
         delta = total - j.saldo
         if delta <= 0:
             if delta < 0:                                     # ha gastado: se apunta, por si su juego se lo tiene que devolver
                 j.gastos.append([ahora, -delta])
                 del j.gastos[:-8]
+                ajeno = min(-delta, j.descuento)              # lo que le han quitado no es un gasto suyo
+                j.descuento -= ajeno
+                j.gasto_pend += -delta - ajeno                # y por si se corta la conexión antes de que guarde el personaje
             j.saldo = total
             if j.prop_pend:
                 self._ver_pagos(j)
             return
         de_credito = min(delta, j.credito)
         j.credito -= de_credito
-        de_margen = min(delta - de_credito, int(j.margen))
+        de_fiado = 0                                          # la paga de un encargo repetible reconocido: vale un momento
+        j.fiado = [f for f in j.fiado if ahora - f[0] <= 30 and f[1] > 0]
+        for f in j.fiado:
+            parte = min(delta - de_credito - de_fiado, f[1])
+            f[1] -= parte
+            de_fiado += parte
+        de_margen = min(delta - de_credito - de_fiado, int(j.margen))
         j.margen -= de_margen
-        j.saldo += de_credito + de_margen
+        j.saldo += de_credito + de_fiado + de_margen
         sobra = total - j.saldo
         if sobra > 0:
             j.dinero = max(0, j.dinero - sobra)               # para el servidor, ese dinero no existe
             if ahora - j.t_saldo > 4:
                 j.t_saldo = ahora
-                self.log("A %s no se le reconocen %d euros." % (j.nombre, sobra))
-                self._enviar(j, {"t": "saldo", "quita": sobra, "saldo": j.saldo})
+                self.log("A %s no se le reconocen %d euros de %d: el tope es de %d por hora." % (j.nombre, sobra, delta, int(tope)))
+                # Con las cifras: cuánto ha ganado, cuánto vale, cuál es el tope y cuándo vuelve a tener margen. Un juego
+                # anterior solo mira «quita» y «saldo».
+                self._enviar(j, dict(self._economia_datos(j), t="saldo", quita=sobra, saldo=j.saldo, ganado=int(delta), aceptado=int(delta - sobra)))
+
+    def _acumula(self):
+        try:
+            return max(1, int(self.cfg.get("ganancia_acumula", 1) or 1))
+        except (TypeError, ValueError):
+            return 1
+
+    def _economia_datos(self, j):
+        """Las cifras del tope de dinero, para decírselas al jugador con claridad. None si aquí el servidor no lleva el dinero."""
+        if not si(self.cfg["economia"]):
+            return None
+        tope = int(self.cfg["ganancia_hora"])
+        return {"tope": tope, "acumula": tope * self._acumula(), "horas": self._acumula(), "margen": int(max(0.0, j.margen)),
+                "por_minuto": tope // 60, "encargos_hora": int(self.cfg["encargos_hora"]), "encargo_max": int(self.cfg["encargo_max"])}
+
+    def _m_economia(self, j, m):
+        """El jugador pregunta cómo va de margen: se le dice el tope, lo que le queda y a qué ritmo vuelve."""
+        d = self._economia_datos(j)
+        if d is not None:
+            ahora = time.monotonic()
+            j.margen = min(float(d["acumula"]), j.margen + (ahora - j.t_margen) * d["tope"] / 3600.0)
+            j.t_margen = ahora
+            d = self._economia_datos(j)
+        self._enviar(j, {"t": "economia", "e": d})
+
+    def _margen_de_entrada(self, fila):
+        """Con cuánto margen entra: quien es nuevo, con un cuarto de hora; quien vuelve, con el que tenía más lo que se le
+        ha ido acumulando mientras estaba fuera, hasta el tope de horas. Entrar y salir no lo rellena."""
+        tope = float(self.cfg["ganancia_hora"])
+        try:
+            guardado = fila["margen"] if "margen" in fila.keys() else None
+            cuando = fila["t_margen"] if "t_margen" in fila.keys() else None
+            if guardado is None or cuando is None:
+                return tope / 4.0
+            return max(0.0, min(tope * self._acumula(), float(guardado) + max(0.0, self.ahora() - float(cuando)) * tope / 3600.0))
+        except (TypeError, ValueError, IndexError):
+            return tope / 4.0
+
+    @staticmethod
+    def _dinero_de_partida(p):
+        """El dinero (bolsillo más banco) que hay en un personaje guardado, o None si no se puede saber."""
+        try:
+            jd = p["jugador"]
+            return max(0, int(jd.get("dinero", 0) or 0)) + max(0, int(jd.get("banco", 0) or 0))
+        except (TypeError, KeyError, ValueError, AttributeError):
+            return None
+
+    def _devolver_sin_guardar(self, j):
+        """Se va sin que su juego haya guardado lo último (un corte de conexión): lo que gastó por su cuenta desde el último
+        guardado se le reconoce otra vez, porque lo que compró no está en el personaje guardado. Nunca más de lo que ese
+        personaje tiene: lo que cobró el servidor o le dio a otro jugador no vuelve."""
+        if not si(self.cfg["economia"]) or j.bot or j.saldo is None or j.total_guardado is None or j.gasto_pend <= 0:
+            return
+        vuelve = int(min(j.gasto_pend, max(0, j.total_guardado - j.saldo)))
+        j.gasto_pend = 0
+        if vuelve > 0:
+            j.saldo += vuelve
+            self.log("%s se ha ido sin guardar su última compra: se le reconocen otra vez %d euros." % (j.nombre, vuelve))
+
+    def _encargo_tope(self, tipo):
+        """Lo más que paga un encargo repetible de ese tipo, o None si el servidor no lo conoce."""
+        try:
+            suyo = (self.mundo.get("encargos") or {}).get(tipo)
+            n = int(suyo) if suyo is not None else ENCARGOS_DE_SERIE.get(tipo)
+        except (TypeError, ValueError, AttributeError):
+            n = ENCARGOS_DE_SERIE.get(tipo)
+        return None if n is None else max(0, min(int(n), int(self.cfg["encargo_max"])))
+
+    def _encargo(self, j, tipo, paga):
+        """Ha cumplido un encargo repetible (un contrato, un combate, un atraco): su paga queda justificada, sin gastar la
+        ganancia por hora, hasta un número de veces por hora de cada tipo y con un máximo por encargo."""
+        if not si(self.cfg["economia"]) or j.bot or j.cuenta is None:
+            return
+        tipo = str(tipo)[:40]
+        por_hora = int(self.cfg["encargos_hora"])
+        tope = self._encargo_tope(tipo)
+        try:
+            paga = max(0, int(paga))
+        except (TypeError, ValueError):
+            return
+        if por_hora <= 0 or tope is None or paga <= 0:
+            return
+        ahora = time.monotonic()
+        mios = self.encargos.setdefault(j.cuenta, {})
+        hechos = [x for x in mios.get(tipo, []) if ahora - x < 3600]
+        if len(hechos) >= por_hora:
+            mios[tipo] = hechos
+            if ahora - j.t_aviso_encargo > 60:
+                j.t_aviso_encargo = ahora
+                falta = int((3600 - (ahora - hechos[0])) // 60) + 1
+                self._aviso(j, "Ya has cobrado %d encargos de este tipo en la última hora, que es lo que este servidor reconoce: este cuenta "
+                               "contra tu ganancia por hora. Dentro de %d minutos vuelve a reconocerte otro." % (por_hora, falta))
+            return
+        mios[tipo] = hechos + [ahora]
+        j.fiado.append([ahora, min(paga, tope)])
 
     def _ver_pagos(self, j):
         """Casa cada compra de casa o negocio pendiente con un gasto que se le haya visto al jugador en esos segundos. La
@@ -965,6 +1133,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             if falta <= 0:
                 for g, parte in usados:
                     g[1] -= parte                              # ese gasto ya ha servido para esto: no vale también para otra cosa
+                j.gasto_pend = max(0, j.gasto_pend - precio)   # y la casa ya es suya en el servidor: ese dinero no vuelve
                 self.alm.marcar_pagada(lugar, j.cuenta)
                 del j.prop_pend[lugar]
             elif ahora - cuando > 20:
@@ -988,8 +1157,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
 
     def _m_mision_ok(self, j, m):
         """Ha completado una misión de su historia: su recompensa queda justificada, una vez."""
-        mi = self.mundo["misiones"].get(m.get("id"))
-        if mi is None or mi["dinero"] <= 0:
+        mi = self.mundo["misiones"].get(m.get("id")) if isinstance(m.get("id"), str) else None
+        if mi is None:
+            # No es de la historia: es un encargo repetible que el juego arma al momento (un contrato, un combate del
+            # gimnasio, un atraco, un encargo de coche). El juego dice cuánto ha pagado; el servidor, hasta dónde lo cree.
+            if m.get("encargo") and isinstance(m.get("id"), str):
+                self._encargo(j, m["id"], m.get("n"))
+            return
+        if mi["dinero"] <= 0:
             return
         if not mi["repetible"]:
             if m["id"] in j.misiones_pagadas:
@@ -997,10 +1172,12 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             j.misiones_pagadas.add(m["id"])
             self.alm.poner(j.cuenta, misiones=json.dumps(sorted(j.misiones_pagadas)))
             j.credito += int(mi["dinero"])
+        else:
+            self._encargo(j, m["id"], mi["dinero"])
 
     def _guardar_saldo(self, j):
         if j.cuenta is not None and j.saldo is not None and not j.bot:
-            self.alm.poner(j.cuenta, saldo=int(j.saldo))
+            self.alm.poner(j.cuenta, saldo=int(j.saldo), margen=float(j.margen), t_margen=float(self.ahora()))
 
     def _m_guardar(self, j, m):
         self._guardar_saldo(j)
@@ -1009,6 +1186,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             texto = json.dumps(p, ensure_ascii=False, separators=(",", ":"))
             if len(texto) <= MAX_LINEA:
                 self.alm.poner(j.cuenta, partida=texto, dia_salida=self.dia)
+                j.gasto_pend, j.total_guardado = 0, self._dinero_de_partida(p)      # lo comprado hasta aquí ya está en el personaje
                 if m.get("ya"):
                     self.alm.guardar()
                     self._enviar(j, {"t": "guardado"})
@@ -1024,10 +1202,22 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         texto = str(m.get("texto", "")).strip()[:300]
         if not texto:
             return
-        if texto.startswith("/") and j.admin:
-            self._aviso(j, self.orden(texto[1:], j.nombre))
-            return
-        canal = m.get("canal") if m.get("canal") in ("todos", "cerca", "banda", "priv", "grupo") else "todos"
+        canal = m.get("canal") if m.get("canal") in CANALES + CANALES_ROL else "todos"
+        if texto.startswith("/"):
+            # Las órdenes de rol las puede escribir cualquiera, y con cualquier versión del juego: barra yo, barra ep
+            # (en personaje), barra fp (fuera de personaje) y barra ficha. Las demás son de quien administra.
+            orden, _, resto = texto[1:].partition(" ")
+            de_rol = ORDENES_ROL.get(orden.lower())
+            if de_rol == "ficha":
+                return self._m_ficha(j, {"texto": resto})
+            if de_rol is not None:
+                canal, texto = de_rol, resto.strip()
+                if not texto:
+                    return self._aviso(j, "Detrás de esa orden va lo que quieres decir. Por ejemplo: barra yo abre la puerta.")
+            elif j.admin:
+                return self._aviso(j, self.orden(texto[1:], j.nombre))
+        if canal in CANALES_ROL:
+            return self._chat_rol(j, canal, texto)
         obj = {"t": "chat", "de": j.id, "nombre": j.nombre, "texto": texto, "canal": canal}
         if canal == "cerca":
             for o in self.jugadores.values():
@@ -1048,9 +1238,63 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         else:
             self._a_todos(obj, menos=j)
 
+    def _chat_rol(self, j, canal, texto):
+        """Los canales de rol. En personaje («ic») y las acciones («yo») llegan a quien está cerca; fuera de personaje
+        («ooc»), a todo el servidor. A quien juega con una versión que no los conoce le llegan por el chat de siempre,
+        con unas palabras delante que dicen qué son."""
+        if not si(self.cfg["rol"]):
+            return self._aviso(j, "En este servidor los canales de rol están apagados: usa el chat de siempre.")
+        texto = "".join(ch for ch in texto if ch.isprintable()).strip()
+        if not texto:
+            return
+        metros = float(self.cfg["rol_metros"])
+        nuevo = {"t": "chat", "de": j.id, "nombre": j.nombre, "texto": texto, "canal": canal}
+        if canal == "ooc":
+            viejo = dict(nuevo, canal="todos", texto="(fuera de personaje) " + texto)
+        elif canal == "yo":
+            viejo = dict(nuevo, canal="cerca", texto="(acción) %s %s" % (j.nombre, texto))
+        else:
+            viejo = dict(nuevo, canal="cerca", texto="(en personaje) " + texto)
+        oyen = 0
+        for o in self.jugadores.values():
+            if not o.dentro or o is j or o.bot:
+                continue
+            if canal != "ooc" and (j.mapa is None or o.mapa != j.mapa or j.dist(o) > metros):
+                continue
+            oyen += 1
+            self._enviar(o, nuevo if "rol" in o.sabe else viejo)
+        if "rol" in j.sabe:                                     # para que sepa si le ha oído alguien: no se ve quién hay cerca
+            self._enviar(j, {"t": "rol_oido", "canal": canal, "n": oyen})
+        elif oyen == 0 and canal != "ooc":
+            self._aviso(j, "No hay nadie lo bastante cerca para oírlo.")
+
+    def _m_ficha(self, j, m):
+        """La frase de ficha de un jugador: con «a», leer la de otro; sin ella, poner la propia (vacía, la quita)."""
+        if "a" in m:
+            o = self.jugadores.get(m.get("a")) if isinstance(m.get("a"), int) else None
+            if o is None or not o.dentro:
+                return self._aviso(j, "Esa persona ya no está.")
+            return self._enviar(j, {"t": "ficha", "de": o.id, "nombre": o.nombre, "texto": o.ficha if si(self.cfg["rol"]) else ""})
+        if not si(self.cfg["rol"]):
+            return self._aviso(j, "En este servidor los canales de rol están apagados: no hay fichas.")
+        texto = " ".join("".join(ch for ch in str(m.get("texto", "")) if ch.isprintable()).split())[:MAX_FICHA]
+        j.ficha = texto
+        if j.cuenta is not None and not j.bot:
+            self.alm.poner(j.cuenta, ficha=texto)
+        if "rol" in j.sabe:
+            self._enviar(j, {"t": "ficha", "de": j.id, "nombre": j.nombre, "texto": texto, "tuya": True})
+        else:
+            self._aviso(j, ("Tu ficha dice ahora: " + texto) if texto else "Has quitado tu ficha.")
+
     def _m_act(self, j, m):
         d = m.get("d")
         if isinstance(d, dict) and len(json.dumps(d)) < 3000:
+            # Subir y bajar del vehículo de otro lo cuenta así el juego, también el de antes de la 1.7.1: de aquí sabe el
+            # servidor quién va de pasajero aunque ese juego no lo diga con su posición.
+            if d.get("que") == "sube" and isinstance(d.get("a"), int) and not isinstance(d.get("a"), bool) and d["a"] != j.id and d["a"] in self.jugadores:
+                j.pasajero_de = d["a"]
+            elif d.get("que") == "baja":
+                j.pasajero_de = None
             self._a_todos({"t": "act", "de": j.id, "nombre": j.nombre, "d": d}, menos=j)
 
     def _m_evento(self, j, m):
@@ -1165,6 +1409,10 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                      "vi": o.vid, "ag": int(o.agachado), "pa": int(o.pasivo), "sg": int(self.segura(o)), "in": int(o.interior), "es": o.estrellas}
             if o.po:
                 ficha["po"] = o.po
+            if o.radio:
+                ficha["ra"] = o.radio
+            if o.pasajero_de is not None and self._va_con(o) is not None:
+                ficha["pj"] = o.pasajero_de
             f = '"%d":%s,' % (o.id, escribir(ficha, separators=(",", ":")))
             mia[o.id] = f
             clave = (o.mapa, int(o.x // radio), int(o.y // radio)) if radio > 0 else (o.mapa, 0, 0)
@@ -1436,6 +1684,47 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 j.vid = None
             self._quitar_vehiculo(v["id"])
 
+    # Lo que se puede hacer desde lejos con un vehículo propio que está aparcado: ponerle nombre, que te lo traigan y
+    # mandarlo a un garaje. El garaje lo lleva el juego de cada uno; el servidor solo dice que sí y lo quita de la calle.
+    def _veh_mio(self, j, m):
+        v = self.vehiculos.get(m.get("id")) if isinstance(m.get("id"), int) else None
+        if v is None or v["por"] is not None or v.get("dueno") != j.cuenta:
+            self._enviar(j, {"t": "veh_mio", "que": "no", "id": m.get("id"), "motivo": "Ese vehículo ya no está aparcado a tu nombre: se lo han llevado, lo han reventado o ha caducado."})
+            return None
+        return v
+
+    def _m_veh_nombre(self, j, m):
+        v = self._veh_mio(j, m)
+        if v is None:
+            return
+        v["nombre"] = limpiar_nombre(m.get("nombre"), 40) or (self.mundo["modelos"].get(v["modelo"]) or {}).get("nombre") or v["nombre"]
+        self._a_todos({"t": "veh_libre", "v": self._veh_publico(v)}, menos=j)
+        self._enviar(j, {"t": "veh_mio", "que": "nombre", "id": v["id"], "v": self._veh_publico(v)})
+
+    def _m_veh_traer(self, j, m):
+        if j.mapa is None:
+            return self._enviar(j, {"t": "veh_mio", "que": "no", "id": m.get("id"), "motivo": "Aquí no te lo pueden traer."})
+        v = self._veh_mio(j, m)
+        if v is None:
+            return
+        try:
+            x, y, r = finito(m.get("x", j.x)), finito(m.get("y", j.y)), finito(m.get("r", 0))
+        except (TypeError, ValueError):
+            x, y, r = j.x, j.y, 0.0
+        if math.hypot(x - j.x, y - j.y) > 60:                  # se lo dejan a su lado, no donde él diga
+            x, y = j.x, j.y
+        self._a_todos({"t": "veh_fuera", "id": v["id"]}, menos=j)      # de donde estaba, desaparece
+        v.update(m=j.mapa, x=x, y=y, r=r, t=self.ahora())
+        self._a_todos({"t": "veh_libre", "v": self._veh_publico(v)}, menos=j)
+        self._enviar(j, {"t": "veh_mio", "que": "traer", "id": v["id"], "v": self._veh_publico(v)})
+
+    def _m_veh_guardar(self, j, m):
+        v = self._veh_mio(j, m)
+        if v is None:
+            return
+        self._enviar(j, {"t": "veh_mio", "que": "garaje", "id": v["id"], "v": self._veh_publico(v), "ref": str(m.get("ref", ""))[:60]})
+        self._quitar_vehiculo(v["id"])
+
     def _quitar_vehiculo(self, ident, avisar=True):
         v = self.vehiculos.pop(ident, None)
         if v is not None:
@@ -1677,9 +1966,10 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if d > alcance * 1.15 + 3.0:
             return self._enviar(j, {"t": "fallo", "a": o.id, "motivo": "", "lejos": True})
         prob = float(arma["precision"]) * (1.0 - 0.45 * min(1.0, d / max(1.0, alcance)))
+        dentro = o.veh or self._va_con(o) is not None         # al volante o de pasajero: la chapa cubre igual
         if o.agachado:
             prob *= 0.8
-        if o.veh:
+        if dentro:
             prob *= 0.75
         if arma["tipo"] == "cuerpo":
             prob = max(prob, 0.85)
@@ -1688,7 +1978,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self._enviar(o, {"t": "silbido", "de": j.id, "nombre": j.nombre, "x": round(j.x, 1), "y": round(j.y, 1)})
             return
         dano = float(arma["dano"]) * (1.0 - 0.4 * min(1.0, d / max(1.0, alcance))) * self.rng.uniform(0.85, 1.15)
-        if o.veh:
+        if dentro:
             dano *= 0.5                                        # la chapa para parte
         dano = round(max(1.0, dano), 1)
         o.salud = max(0.0, o.salud - dano)
@@ -1703,6 +1993,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
     def _m_atropello(self, j, m):
         o = self.jugadores.get(m.get("a"))
         if o is None or o is j or not o.dentro or j.veh is None or o.veh is not None:
+            return
+        if self._va_con(o) is not None:                        # va de pasajero, en este vehículo o en otro: no está en la calzada
             return
         if o.mapa != j.mapa or j.dist(o) > 7 or not self._puede_atacar(j, o, avisar=True):
             return
@@ -1723,7 +2015,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         o = self.jugadores.get(m.get("a"))
         if o is None or o is j or not o.dentro:
             return
-        if o.mapa != j.mapa or j.dist(o) > 6 or j.veh or o.veh:
+        if o.mapa != j.mapa or j.dist(o) > 6 or j.veh or o.veh or self._va_con(o) is not None or self._va_con(j) is not None:
             return self._aviso(j, "Para atracar a alguien tenéis que estar los dos a pie y a un paso.")
         if j.arma == "punos":
             return self._aviso(j, "Con las manos vacías no impones. Saca un arma.")
@@ -1779,7 +2071,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             if d > radio or not self._puede_atacar(j, o):
                 continue
             self._marcar_agresion(j, o)
-            dano = round(max(1.0, float(arma["dano"]) * (1.0 - 0.6 * d / radio) * (0.5 if o.veh else 1.0)), 1)
+            dano = round(max(1.0, float(arma["dano"]) * (1.0 - 0.6 * d / radio) * (0.5 if (o.veh or self._va_con(o) is not None) else 1.0)), 1)
             o.salud = max(0.0, o.salud - dano)
             self._enviar(j, {"t": "impacto", "a": o.id, "nombre": o.nombre, "dano": dano})
             if o.bot:

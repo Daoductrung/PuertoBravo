@@ -964,8 +964,8 @@ class Conduccion:
                 v.canal = None
             if v.sirena:
                 v.sirena.mover(v.x, v.y)
-            # atropello del jugador a pie
-            if not j.veh and v.vel > 3 and d < 2.4 and self.t > v.t_choque and v.ia != "ambulancia":
+            # atropello del jugador a pie (quien va de pasajero con otro jugador no está en la calzada)
+            if not j.veh and v.vel > 3 and d < 2.4 and self.t > v.t_choque and v.ia != "ambulancia" and getattr(self, "pasajero", None) is None:
                 v.t_choque = self.t + 1.5
                 self.son("golpe")
                 self.danar_jugador(v.vel * 2.2, (v.x, v.y))

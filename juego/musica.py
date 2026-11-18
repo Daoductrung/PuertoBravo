@@ -412,6 +412,39 @@ class Radio:
         """Los números de las emisoras que ponen música, para el hilo musical de los locales."""
         return [k for k, e in enumerate(self.emisoras) if e["id"] not in ("apagada", "noticias", "usuario")]
 
+    def comunes(self):
+        """Las emisoras de serie que ya están listas: las que tiene cualquier copia del juego. Ni «Mi música», ni las
+        emisoras hechas con archivos tuyos, ni las noticias."""
+        return {i for i in self.pistas if i in self.listas and self.pistas[i]}
+
+    def muestra(self, ident, segundos=40.0):
+        """Un trozo de una canción de una emisora de serie, en mono y apagado, para hacerlo sonar desde el vehículo de otro
+        jugador como se oye una radio desde fuera. None si esa emisora no es de las de serie o no está lista. Lee del
+        disco: se llama desde un hilo aparte."""
+        from .audio import apagar
+        from .sintesis import duracion_audio, leer_audio
+        if ident not in self.comunes():
+            return None
+        ruta = self.pistas[ident][0]
+        try:
+            if ruta.startswith("memoria:"):
+                d = np.asarray(self.memoria.get(ruta[8:]), dtype=np.float32)[:int(segundos * SR)]
+                d = d.mean(axis=1) if d.ndim == 2 else d
+            else:
+                dur = duracion_audio(ruta)
+                desde = random.uniform(0.0, dur - segundos - 2.0) if dur > segundos + 8.0 else 0.0
+                d = leer_audio(ruta, mono=True, desde=desde, maximo=segundos)
+            if d is None or len(d) < SR:
+                return None
+            d = apagar(normalizar_musica(np.array(d, dtype=np.float32), NIVEL_RADIO), 1500.0)
+            n = min(int(0.4 * SR), len(d) // 4)                  # se repite: que el final se funda con el principio
+            rampa = np.linspace(0.0, 1.0, n, dtype=np.float32)
+            d[:n] *= rampa
+            d[-n:] *= rampa[::-1]
+            return d
+        except Exception:
+            return None
+
     def recuerdo_de(self, ident):
         """La canción que sonaba en esa emisora y los segundos por los que hay que seguirla, o None. Con la opción de pausa,
         sigue justo donde se quedó; sin ella, por donde iría si la emisora hubiera seguido sonando sin ti."""

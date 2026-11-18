@@ -79,7 +79,8 @@ def test_el_juego_obedece_al_saldo_del_servidor(robot, tmp_path):
         while time.time() < fin and p.j.dinero + p.j.banco > inicial + 5000:
             robot.frames(3)
             time.sleep(0.02)
-        assert p.j.dinero + p.j.banco <= inicial + 5000 and "El servidor no reconoce" in robot.dicho()
+        # desde la 1.7.1 lo dice con cifras: cuánto se acepta, cuánto se retira y cuál es el tope
+        assert p.j.dinero + p.j.banco <= inicial + 5000 and "el servidor acepta" in robot.dicho() and "hasta 3600 euros por hora" in robot.dicho()
         # una misión de verdad sí se cobra entera
         import test_misiones
         m = next(x for x in p.datos["misiones"] if x["id"] == "m01")

@@ -36,6 +36,8 @@ a { color: #9fd0ff; }
 <li><a href="#entrada">Quién puede entrar</a></li>
 <li><a href="#administrar">Administrar el servidor</a></li>
 <li><a href="#versiones">Jugar juntos con versiones distintas del juego</a></li>
+<li><a href="#dinero">El dinero de los jugadores: el tope por hora y los encargos</a></li>
+<li><a href="#rol">Rol por texto, la voz y la radio de los vehículos</a></li>
 <li><a href="#copias">Copias de seguridad, mover el servidor y actualizarlo</a></li>
 <li><a href="#grandes">Servidores con mucha gente</a></li>
 <li><a href="#problemas">Solución de problemas</a></li>
@@ -80,7 +82,7 @@ a { color: #9fd0ff; }
 <li>Usas Docker: <a href="#docker">apartado 11</a>.</li>
 <li>Tienes un NAS Synology: <a href="#synology">apartado 12</a>.</li>
 </ul>
-<p>La configuración y los datos son los mismos en todas: puedes empezar en tu PC y llevarte el servidor a otra máquina más adelante. El apartado 18 dice cómo.</p>
+<p>La configuración y los datos son los mismos en todas: puedes empezar en tu PC y llevarte el servidor a otra máquina más adelante. El apartado 20 dice cómo.</p>
 
 <h2 id="panel">4. En tu Windows, con el panel</h2>
 <h3>Arrancarlo por primera vez</h3>
@@ -414,7 +416,71 @@ a { color: #9fd0ff; }
 
 <h3>Lo nuevo de la calle en la versión 1.7.1, en un servidor</h3>
 <p>Desde la versión 1.7.1 el juego tiene, para quien juega en solitario, patrullas que hacen la ronda sin buscar a nadie, un helicóptero de la policía opcional y la posibilidad de rendirse con las manos arriba. Con la policía común, que es la opción <code>policia</code> en <code>si</code>, nada de eso se pone en el juego de cada jugador: las patrullas son las del servidor, y no hay helicóptero ni rendición. Con esa opción en <code>no</code>, cada jugador las tiene según sus propias opciones, y solo las ve él. Las ambulancias que acuden tras un tiroteo y el modo de guerra de barrios en la calle tampoco cuentan en un servidor. La defensa propia sí: a quien se defiende de un pandillero que le ha atacado primero, su juego no le apunta el delito.</p>
-<h2 id="copias">18. Copias de seguridad, mover el servidor y actualizarlo</h2>
+<h2 id="dinero">18. El dinero de los jugadores: el tope por hora y los encargos</h2>
+<p>Con la opción <code>economia</code> en <code>si</code>, que es como viene, el servidor lleva la cuenta del dinero de cada jugador para que nadie se lo invente con un juego trucado. Gastar se puede siempre. Ganar, depende de dónde venga el dinero.</p>
+<h3>Lo que el servidor da por bueno sin límite</h3>
+<ul>
+<li>Lo que da el propio servidor: botines entre jugadores, ventas de casas y negocios, la caja de la banda, la paga por ayudar en una misión en grupo.</li>
+<li>Lo que da otro jugador.</li>
+<li>La recompensa de cada misión de la historia, una sola vez.</li>
+</ul>
+<h3>Los encargos repetibles</h3>
+<p>Los contratos del tablón, los combates del gimnasio, los atracos a bancos y a locales y los encargos de coches se pueden hacer una y otra vez. El servidor los reconoce sin que gasten la ganancia por hora, con dos límites:</p>
+<ul>
+<li><code>encargos_hora</code>: cuántos se reconocen por hora, de cada tipo. De serie, 6.</li>
+<li><code>encargo_max</code>: lo más que se da por bueno de la paga de uno solo. De serie, 15.000 euros. Además, el servidor sabe por los datos del juego lo más que puede pagar cada tipo de encargo, y no reconoce más que eso.</li>
+</ul>
+<p>Al jugador que pasa de ese número en una hora se le avisa, y ese encargo le cuenta como una ganancia cualquiera. Quien juega con una versión anterior a la 1.7.1 no avisa al servidor de sus encargos: a esa persona todo le cuenta contra la ganancia por hora, como antes, hasta que actualice.</p>
+<h3>Lo demás: la ganancia por hora</h3>
+<p>Todo lo demás que se gana jugando por cuenta propia (trabajos, ventas, juego, botín de la calle) tiene un tope por hora de reloj, la opción <code>ganancia_hora</code>, que de serie son 30.000 euros. Lo que pasa del tope se retira, y al jugador se le dice con cifras: cuánto ha ganado, cuánto se le acepta, cuál es el tope y a qué ritmo recupera margen.</p>
+<ul>
+<li>El margen que no se usa se acumula, hasta las horas que diga <code>ganancia_acumula</code>, que de serie son 3. Así, quien lleva un rato sin ganar nada puede hacer una buena racha entera sin perder dinero. Se acumula también mientras el jugador está fuera.</li>
+<li>Quien entra por primera vez empieza con el margen de un cuarto de hora. Salir y volver a entrar no lo rellena.</li>
+<li>El jugador puede mirar cómo va en su móvil: En línea, Datos y reglas de este servidor.</li>
+</ul>
+<h3>Qué poner en tu servidor</h3>
+<ul>
+<li>Entre amigos de confianza: sube <code>ganancia_hora</code> sin miedo, a 100.000 o más, o quita la cuenta del dinero con <code>economia = no</code>. El tope está para los servidores abiertos a desconocidos, no para amargar a tu gente.</li>
+<li>En un servidor abierto: deja el tope de serie y, si tu gente vive de los contratos o de los atracos y se queja, sube antes <code>encargos_hora</code> que <code>ganancia_hora</code>.</li>
+<li>Si alguien te dice que el servidor le quita dinero, pregúntale qué le ha dicho el juego: desde la 1.7.1 le da las cifras. En el registro del servidor sale una línea cada vez, con lo que se le retira y el tope.</li>
+<li>Las seis opciones se cambian con el servidor en marcha.</li>
+</ul>
+<h3>Si se corta la conexión nada más comprar</h3>
+<p>El personaje se guarda en el servidor cada tres cuartos de minuto y, desde la 1.7.1, a los pocos segundos de una compra: a los dos o tres segundos de la primera y, si el jugador sigue gastando, cada doce como mucho. Si aun así a alguien se le corta la conexión antes de que su juego guarde, el servidor le devuelve al saldo lo que gastó desde el último guardado: lo comprado no está en su personaje, pero el dinero tampoco se ha perdido. Sale una línea en el registro. No vale para fabricar dinero: lo que se le dio a otro jugador, lo que cobró el servidor y las casas compradas no vuelven.</p>
+
+<h2 id="rol">19. Rol por texto, la voz y la radio de los vehículos</h2>
+<h3>Los canales de rol</h3>
+<p>Con la opción <code>rol</code> en <code>si</code>, que es como viene, los jugadores tienen además del chat de siempre:</p>
+<ul>
+<li>Un canal para hablar en personaje. Solo lo oye quien está cerca: a menos de los metros que diga <code>rol_metros</code>, que de serie son 30.</li>
+<li>Una orden para contar lo que hace su personaje. Quien escribe «abre la puerta» hace que los que están cerca oigan su nombre y «abre la puerta». Tiene el mismo alcance.</li>
+<li>Un canal para hablar fuera de personaje, como jugador. Lo oye todo el servidor.</li>
+<li>Una frase de ficha, de hasta doscientas letras, que dice quién es su personaje. Los demás la leen cuando quieren.</li>
+</ul>
+<p>Cada canal tiene su propio sonido en el juego, y todo lo dicho se puede repasar en el móvil, En línea, Rol. En el juego se usa así:</p>
+<ul>
+<li>Mayúsculas F10 habla en personaje, y Control F10 describe una acción. F10 a secas es el chat general de siempre.</li>
+<li>En cualquier mensaje se puede escribir delante una orden: barra yo y lo que hace el personaje; barra ep y lo que dice en personaje; barra fp y lo que se dice fuera de personaje; y barra ficha y la frase de ficha. Por ejemplo, <code>/yo abre la puerta</code>.</li>
+<li>La ficha de otro jugador se lee en el móvil, En línea, Quién hay, eligiéndole; o con Mayúsculas J cuando se le tiene cerca.</li>
+</ul>
+<ul>
+<li>Quien juega con una versión anterior a la 1.7.1 no tiene esos canales en su juego, pero no se queda fuera: lo dicho en personaje y las acciones le llegan por el chat de los que están cerca, con unas palabras delante que dicen qué son, y puede usar las órdenes con barra desde su chat general.</li>
+<li>Con <code>rol = no</code> no hay canales de rol ni fichas, y queda el chat de siempre. Se cambia con el servidor en marcha: quien ya está dentro se entera al intentar usarlos.</li>
+<li>Las órdenes de administración se siguen escribiendo en el chat con una barra delante. Las cuatro órdenes de rol son de todos; las demás, solo de quien administra.</li>
+<li>El servidor no guarda lo que se dice por ningún canal. La frase de ficha sí se guarda, con la cuenta de cada jugador.</li>
+</ul>
+<h3>La voz</h3>
+<p>El juego no lleva voz por micrófono. Si en tu servidor queréis hablaros de viva voz mientras jugáis, que es lo habitual en los servidores de rol, usad aparte un programa de voz: cualquiera de los que sirven para hablar en grupo por internet vale, y no hay que configurar nada en el servidor ni en el juego. Un consejo si usáis lector de pantalla: poned la voz de los demás por un altavoz o un auricular distinto del lector, o bajadle el volumen, para que no se pisen.</p>
+<h3>La radio de los vehículos de otros jugadores</h3>
+<p>Con la opción <code>radio_coches</code> en <code>si</code>, que es como viene, quien está cerca del vehículo de otro jugador oye, floja y apagada, la emisora que lleva puesta, y deja de oírla al alejarse.</p>
+<ul>
+<li>Solo vale para las emisoras que trae el juego. De «Mi música» y de las emisoras que cada uno se hace con sus propios archivos no se cuenta nada: ni la música ni el nombre salen de su ordenador.</li>
+<li>Por el servidor solo pasa el nombre corto de la emisora, unas pocas letras. No pasa sonido: cada juego hace sonar su propia copia de esa emisora, así que puede no ser la misma canción que oye quien conduce.</li>
+<li>Cada jugador puede quitársela en sus Opciones, en Sonido y música. Con <code>radio_coches = no</code> no la oye nadie.</li>
+<li>Quien juega con una versión anterior ni la oye ni la da a oír.</li>
+</ul>
+
+<h2 id="copias">20. Copias de seguridad, mover el servidor y actualizarlo</h2>
 <h3>Copias de seguridad</h3>
 <ul>
 <li>De serie, el servidor hace una copia cada 24 horas y conserva las 7 últimas. Se cambia con las opciones <code>copia_auto_horas</code> y <code>copias_guardar</code>.</li>
@@ -444,7 +510,7 @@ a { color: #9fd0ff; }
 <li>Las opciones nuevas valen con su valor de serie aunque tu <code>servidor.conf</code> no las tenga. Si guardas la configuración desde el panel, el archivo se reescribe con todas. Las opciones que un servidor no conoce las deja pasar y lo dice al arrancar.</li>
 </ul>
 
-<h2 id="grandes">19. Servidores con mucha gente</h2>
+<h2 id="grandes">21. Servidores con mucha gente</h2>
 <ul>
 <li>No hay un tope fijo de jugadores. Con <code>max_jugadores = 0</code> entra todo el que llegue.</li>
 <li>Lo que más pesa, en procesador y sobre todo en red, es contar a cada jugador dónde están los demás. Por eso a los que tiene cerca se los cuenta diez veces por segundo; de los demás de su localidad le dice por dónde andan una vez por segundo; y de los de otras localidades, cada dos segundos. Si alrededor hay una multitud, se lo cuenta menos veces por segundo.</li>
@@ -457,7 +523,7 @@ a { color: #9fd0ff; }
 <li>Guardar cada minuto con miles de cuentas se nota poco, pero puedes espaciarlo con <code>guardado_minutos</code>.</li>
 </ul>
 
-<h2 id="problemas">20. Solución de problemas</h2>
+<h2 id="problemas">22. Solución de problemas</h2>
 <h3>El servidor no arranca</h3>
 <ul>
 <li>«No se pudo abrir el puerto»: el servidor ya está en marcha en otra ventana, o en el panel y en la consola a la vez, o hay otro programa usando ese puerto. Cierra el otro, o cambia la opción <code>puerto</code>.</li>
@@ -483,23 +549,24 @@ a { color: #9fd0ff; }
 </ul>
 <h3>Otras cosas</h3>
 <ul>
-<li>A alguien se le quita dinero: el servidor lleva la cuenta y no reconoce lo que se gana más deprisa de lo que permite <code>ganancia_hora</code>. Se cambia en la configuración, o se quita con <code>economia = no</code>.</li>
+<li>A alguien se le quita dinero: el servidor lleva la cuenta y no reconoce lo que se gana más deprisa de lo que permite <code>ganancia_hora</code>. Desde la 1.7.1 el juego le dice las cifras. Qué cuenta, qué no y qué conviene poner está en el <a href="#dinero">apartado 18</a>.</li>
 <li>He perdido la administración: para el servidor, pon tu nombre de jugador en la opción <code>admins</code> y arranca.</li>
 <li>Quiero empezar de cero: para el servidor y borra o aparta la carpeta de datos. Se crea una nueva al arrancar, con un certificado nuevo.</li>
 <li>Para pedir ayuda, guarda el registro: en el panel, Control+G. No lleva nada personal salvo los nombres de jugador, y las direcciones si activaste <code>registro_ip</code>.</li>
 </ul>
 
-<h2 id="privacidad">21. Qué guarda el servidor</h2>
+<h2 id="privacidad">23. Qué guarda el servidor</h2>
 <ul>
 <li>De cada jugador: su clave pública, que es un número que le identifica; el nombre que eligió; su personaje; y la versión del juego con la que entró la última vez.</li>
 <li>No guarda correos, contraseñas de cuenta ni direcciones de red.</li>
 <li>La dirección de red de quien se conecta solo se anota en el registro, y solo se ve en el panel, si pones <code>registro_ip = si</code>. De serie, no.</li>
-<li>Los mensajes del chat no se guardan.</li>
+<li>Los mensajes del chat no se guardan, tampoco los de los canales de rol. La frase de ficha que escribe cada jugador sí, con su cuenta, y se borra con ella.</li>
+<li>De la radio de los vehículos solo pasa por el servidor el nombre corto de una emisora del juego, y no se guarda.</li>
 <li>La contraseña de entrada, si la usas, está escrita en <code>servidor.conf</code>: no compartas ese archivo.</li>
 <li>Si llevas un servidor abierto a desconocidos, eres responsable de sus datos: dilo a tu gente y borra la cuenta de quien te lo pida. Se hace con el botón Borrar la cuenta, en la pestaña Cuentas del panel, o con la orden <code>borrarcuenta</code> y el nombre.</li>
 </ul>
 
-<h2 id="opciones">22. Todas las opciones de configuración</h2>
+<h2 id="opciones">24. Todas las opciones de configuración</h2>
 <p>Cada opción va en una línea de <code>servidor.conf</code>, con la forma <code>nombre = valor</code>. Las líneas que empiezan por almohadilla son comentarios. En el panel están en Configuración, Control+P, cada grupo en su pestaña.</p>
 <p>La mayoría se aplica con el servidor en marcha: desde el panel, al aceptar; por texto, con la orden <code>recargar</code>. Algunas reglas, como el tráfico, la policía, los peatones, el combate, el contenido para adultos y los precios, las recibe el juego de cada jugador al entrar: quien ya esté dentro las notará del todo al volver a entrar. Las que piden reiniciar el servidor lo dicen.</p>
 <!-- OPCIONES:INICIO -->
@@ -884,6 +951,27 @@ a { color: #9fd0ff; }
 <li>De serie: <code>30000</code>.</li>
 <li>Se aplica sin reiniciar el servidor.</li>
 </ul>
+<h4>Horas de ganancia que se pueden acumular: <code>ganancia_acumula</code></h4>
+<p>La ganancia por hora que un jugador no usa no se pierde: se le guarda hasta este número de horas, también mientras está fuera, para que una buena racha quepa entera. Con 1, nunca tiene más margen que el de una hora.</p>
+<ul>
+<li>Un número entero entre 1 y 48.</li>
+<li>De serie: <code>3</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Encargos repetibles reconocidos por hora, de cada tipo: <code>encargos_hora</code></h4>
+<p>Los contratos, los combates del gimnasio, los atracos y los encargos de coches que se cumplen de verdad no gastan la ganancia por hora: el servidor los da por buenos, hasta este número por hora de cada tipo. Con 0 no reconoce ninguno y todos cuentan contra la ganancia por hora.</p>
+<ul>
+<li>Un número entero entre 0 y 1000.</li>
+<li>De serie: <code>6</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Paga máxima reconocida por un encargo repetible: <code>encargo_max</code></h4>
+<p>Lo más que se da por bueno de la paga de un solo encargo repetible, en euros. Lo que pase de ahí cuenta contra la ganancia por hora.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>15000</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
 <h4>Dinero inicial máximo: <code>saldo_inicial</code></h4>
 <p>Lo más con que puede empezar un personaje nuevo, en euros.</p>
 <ul>
@@ -961,6 +1049,29 @@ a { color: #9fd0ff; }
 <ul>
 <li>Un número entero entre 1 y 1440.</li>
 <li>De serie: <code>10</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Rol y convivencia</h3>
+<p>Los canales de chat para interpretar a tu personaje y lo que se oye de los demás jugadores.</p>
+<h4>Canales de rol: <code>rol</code></h4>
+<p>Con si, los jugadores tienen un canal para hablar en personaje, que solo oye quien está cerca, otro para hablar fuera de personaje, que oye todo el servidor, una orden para describir lo que hace su personaje y una frase de ficha que los demás pueden leer. Con no, solo queda el chat de siempre.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Metros a los que llega lo dicho en personaje: <code>rol_metros</code></h4>
+<p>A qué distancia se oye lo que un jugador dice en personaje y las acciones que describe. Lo dicho fuera de personaje llega siempre a todo el servidor.</p>
+<ul>
+<li>Un número entero entre 5 y 2000.</li>
+<li>De serie: <code>30</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Radio de los coches de otros jugadores: <code>radio_coches</code></h4>
+<p>Con si, quien está cerca del vehículo de otro jugador oye, floja, la emisora del juego que lleva puesta. Solo se cuenta qué emisora del juego es: nunca viaja música ni nada personal. Con no, no se oye la radio de nadie.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
 <li>Se aplica sin reiniciar el servidor.</li>
 </ul>
 <!-- OPCIONES:FIN -->

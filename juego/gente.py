@@ -16,7 +16,9 @@ mod que deja una lista vacía): entonces se usa esto.
 import random
 
 SECCIONES = ("gente", "caracteres", "bandas", "tipos_enemigo", "policia_niveles", "cajas_locales")
-LISTAS = ("nombres_h", "nombres_m", "apellidos", "frases", "apodos", "perros", "bandas_propias", "rivales_carrera", "nombres_servidor")
+LISTAS = ("nombres_h", "nombres_m", "apellidos", "frases", "apodos", "perros", "bandas_propias", "rivales_carrera", "nombres_servidor",
+          # lo que dicen los personajes de un servidor en línea, según su clase; sin ellas, el servidor usa las suyas
+          "frases_servidor_paseante", "frases_servidor_ratero", "frases_servidor_pistolero", "frases_servidor_ladron", "frases_servidor_atracador")
 PUNTERIA = 0.42                   # la de un enemigo corriente: lo que acierta a quemarropa
 HABLAS = ("amable", "hablador", "seco", "timido", "chulo")      # los caracteres para los que el juego trae frases escritas
 
@@ -27,6 +29,8 @@ _SERIE = {
     "bandas_propias": ["Los del Puerto", "La Cuadrilla"], "rivales_carrera": ["el coche rojo", "el coche negro", "la furgoneta blanca", "el deportivo amarillo"],
     "nombres_servidor": [],
 }
+SIN_SERIE = ("nombres_servidor",) + tuple(l for l in LISTAS if l.startswith("frases_servidor_"))      # las que pueden venir vacías: el servidor trae las suyas
+_SERIE.update({l: [] for l in SIN_SERIE})
 _OFICIOS_SERIE = [{"nombre": "camarero", "femenino": "camarera", "edad_max": 66}, {"nombre": "estudiante", "edad_max": 27, "peso": 3},
                   {"nombre": "taxista", "edad_max": 66}, {"nombre": "jubilado", "femenino": "jubilada", "edad_min": 62, "peso": 6}]
 _CARACTERES_SERIE = {
@@ -131,7 +135,7 @@ def configurar(datos):
 # ------------------------------------------------------------------ gente de la calle
 def lista(cual):
     """Una de las listas de la gente de la calle: nombres_h, nombres_m, apellidos, frases, apodos, perros, bandas_propias,
-    rivales_carrera o nombres_servidor. Nunca viene vacía, salvo la de nombres del servidor."""
+    rivales_carrera, nombres_servidor o frases_servidor_ y una clase. Nunca viene vacía, salvo las del servidor (SIN_SERIE)."""
     return G.get(cual) or list(_SERIE.get(cual, []))
 
 

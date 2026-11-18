@@ -189,19 +189,65 @@ def _numero(app, titulo, hecho, tope=10 ** 7):
     app.abrir(EntradaTexto(app, titulo, f, maximo=9))
 
 
+TITULOS_ROL = {"ic": "Qué dice tu personaje. Lo oye quien esté cerca", "yo": "Qué hace tu personaje. Por ejemplo: abre la puerta",
+               "ooc": "Mensaje fuera de personaje, para todo el servidor"}
+
+
 def chat(p, canal="todos", a=None, titulo="Mensaje para todo el servidor"):
     app = p.app
+    if canal in TITULOS_ROL:
+        if not p.sv_rol():
+            app.son("error")
+            return app.decir(p.sv_rol_motivo(), True)
+        titulo = TITULOS_ROL[canal]
+    ayuda = None
+    if p.sv_rol():
+        ayuda = ("Escribe y pulsa Intro. En cualquier mensaje, si empiezas por barra yo y un espacio, cuentas lo que hace tu personaje; con barra ep hablas en personaje, "
+                 "para los que están cerca; y con barra fp, fuera de personaje, para todo el servidor.")
+    app.abrir(EntradaTexto(app, titulo, lambda t: p.sv_enviar_chat(t, canal, a), maximo=300, ayuda=ayuda))
 
-    def enviar(t):
-        t = t.strip()[:300]
-        if not t:
-            return
-        p.red.enviar({"t": "chat", "texto": t, "canal": canal, "a": a})
-        p.chat.append(f"Tú: {t}")
-        del p.chat[:-40]
-        p.son("chat", cat="interfaz", vol=0.6)
-        app.decir("Enviado.", True)
-    app.abrir(EntradaTexto(app, titulo, enviar, maximo=300))
+
+def ficha_propia(p):
+    """Escribir tu frase de ficha: lo que los demás leen de tu personaje."""
+    app = p.app
+    if not p.sv_rol():
+        app.son("error")
+        return app.decir(p.sv_rol_motivo(), True)
+    app.abrir(EntradaTexto(app, "Tu ficha: una frase sobre tu personaje", p.sv_poner_ficha, inicial=p.sv.get("ficha", ""), maximo=enlinea.MAX_FICHA,
+                           ayuda="Quién es tu personaje, cómo es o a qué se dedica, en una frase de hasta doscientas letras. La puede leer cualquier jugador del servidor. "
+                                 "Si la dejas vacía, se quita. Lo que escribas no se anota en el registro del juego."))
+
+
+def rol(p):
+    """El menú de rol: hablar en personaje, describir una acción, hablar fuera de personaje, la ficha y lo dicho."""
+    app, sv = p.app, p.sv
+
+    def repasar(canales, titulo):
+        def abrir():
+            lineas = [t for c, t in reversed(sv["historial"]) if c in canales]
+            app.abrir(Menu(app, titulo, [Opcion(t) for t in lineas] or [Opcion("Todavía no hay nada")], intro="Lo último, primero"))
+        return abrir
+
+    def ops():
+        if not p.sv_rol():
+            return [Opcion(p.sv_rol_motivo())]
+        metros = sv["info"].get("rol_metros", 30)
+        return [Opcion("Hablar en personaje", lambda: chat(p, "ic"),
+                       ayuda=f"Lo que dice tu personaje. Lo oye quien esté a menos de {metros} metros. También con Mayúsculas F10 durante el juego."),
+                Opcion("Describir lo que hace tu personaje", lambda: chat(p, "yo"),
+                       ayuda=f"Escribes, por ejemplo, abre la puerta, y los que están a menos de {metros} metros oyen tu nombre y abre la puerta. También con Control F10."),
+                Opcion("Hablar fuera de personaje", lambda: chat(p, "ooc"),
+                       ayuda="Para hablar como jugador y no como tu personaje: dudas, avisos, quedar. Lo oye todo el servidor."),
+                Opcion(lambda: "Tu ficha: " + (sv.get("ficha") or "sin escribir"), lambda: ficha_propia(p),
+                       ayuda="Una frase sobre tu personaje que cualquier jugador puede leer: en Quién hay, eligiéndote, o con Mayúsculas J si te tiene cerca."),
+                Opcion("Repasar lo dicho en personaje y las acciones", repasar(("ic", "yo"), "En personaje y acciones")),
+                Opcion("Repasar lo dicho fuera de personaje", repasar(("ooc",), "Fuera de personaje")),
+                Opcion("Cómo se rolea aquí",
+                       ayuda=f"Hay tres canales, cada uno con su sonido. En personaje: habla tu personaje, y lo oye quien esté a menos de {metros} metros. Acción: cuentas lo que hace, "
+                             "y se oye tu nombre seguido de lo que escribas. Fuera de personaje: hablas tú, y lo oye todo el servidor. En cualquier mensaje puedes empezar por "
+                             "barra yo, barra ep o barra fp para elegir el canal, y barra ficha y una frase cambia tu ficha. Para hablar de viva voz, usad un programa de voz aparte.")]
+
+    app.abrir(Menu(app, "Rol", ops, intro="F1 explica cada opción"))
 
 
 def jugador(p, r):
@@ -270,7 +316,10 @@ def jugador(p, r):
         rel = p.sv_relacion(r)
         out = [Opcion(lambda: p.donde_esta(r) + (f", {rel}" if rel else "") + (", en modo pasivo" if getattr(r, "pasivo", False) else "")
                       + (", en zona segura" if getattr(r, "segura", False) else "")),
-               Opcion("Marcarle en el GPS", lambda: (_al_juego(p), p.gps_a_amigo(r))),
+               Opcion("Marcarle en el GPS", lambda: (_al_juego(p), p.gps_a_amigo(r)))]
+        if p.sv_rol() and not getattr(r, "ia", False):
+            out.append(Opcion("Leer su ficha", lambda: p.sv_pedir_ficha(r), ayuda="La frase que ha escrito sobre su personaje."))
+        out += [
                Opcion("Mensaje solo para él o ella", lambda: chat(p, "priv", r.id, f"Mensaje privado para {r.nombre}")),
                Opcion("Darle dinero", dinero),
                Opcion("Darle un arma, balas o un objeto", dar, ayuda="En mano: tiene que estar a tu lado.")]
@@ -589,6 +638,8 @@ def menu(p):
     def info():
         i = sv["info"]
         pr = i.get("precios", {})
+        if p.sv_sabe("topes"):
+            p.red.enviar({"t": "economia"})                      # cómo vas de margen ahora mismo
         app.abrir(Menu(app, f"Servidor {sv['nombre_servidor']}", [
             Opcion(f"Te llamas {p.red.nombre}" + (". Eres administrador" if sv["admin"] else "")),
             Opcion("La conexión va cifrada" if sv["cifrado"] else "La conexión no va cifrada"),
@@ -603,6 +654,11 @@ def menu(p):
             Opcion(f"Fundar una banda: {pr.get('precio_banda')} euros. Reclamar un barrio: {pr.get('precio_barrio')}. Declarar una guerra: {pr.get('precio_guerra')}"),
             Opcion(f"Una guerra empieza a los {pr.get('guerra_espera')} minutos de declararla y dura {pr.get('guerra_dura')}"),
             Opcion(f"Ofrecen {sv['recompensa']} euros por tu cabeza" if sv["recompensa"] else "Nadie ofrece nada por tu cabeza"),
+            Opcion(lambda: p.sv_economia_txt(),
+                   ayuda="En un servidor que lleva la cuenta del dinero, lo que ganas por tu cuenta tiene un tope por hora. No cuentan contra él las misiones de la historia, "
+                         "lo que te da el servidor o te dan otros jugadores, ni los encargos repetibles que el servidor reconoce. Lo que pase del tope se retira, y el juego te dice cuánto."),
+            Opcion("Canales de rol: " + ((f"sí; lo dicho en personaje llega a {i.get('rol_metros', 30)} metros") if p.sv_rol() else "no")),
+            Opcion("Radio de los vehículos de otros jugadores: " + ("sí, la de las emisoras del juego" if p.sv_sabe("radio") and i.get("radio_coches") else "no")),
         ] + ([Opcion("Órdenes de administrador", ayuda="Escríbelas en el chat general con una barra delante: barra ayuda las dice todas. Por ejemplo, barra jugadores, barra aviso y el texto, "
                                                          "barra expulsar y el nombre, barra vetar y el nombre, barra invitar, barra guardar.")] if sv["admin"] else [])))
 
@@ -613,6 +669,9 @@ def menu(p):
                Opcion("Quién hay", quien, ayuda="Dónde está cada uno y todo lo que puedes hacer con él: marcarle en el GPS, escribirle, darle dinero o cosas, invitarle a tu banda o a tu grupo."),
                Opcion("Mensaje para todos", lambda: chat(p), ayuda="También con F10 durante el juego."),
                Opcion("Mensaje para los que están cerca", lambda: chat(p, "cerca", None, "Mensaje para quien esté a menos de ochenta metros")),
+               Opcion("Rol: hablar en personaje, acciones y tu ficha" if p.sv_rol() else "Rol: este servidor no tiene canales de rol", lambda: rol(p),
+                      ayuda="Un canal para hablar como tu personaje, que oye quien está cerca; otro para hablar fuera de personaje, que oye todo el servidor; "
+                            "una orden para contar lo que hace tu personaje; y una frase de ficha que los demás pueden leer. Depende de que el servidor los tenga."),
                Opcion("Repasar los últimos mensajes", repasar)]
         if sv["inv_banda"] or sv["inv_grupo"]:
             out.insert(1, Opcion("Tienes invitaciones pendientes: están en Tu banda y en Grupo de misión"))

@@ -20,3 +20,13 @@ Y además:
 Cuando arranques el servidor por primera vez aparecerán aquí servidor.conf, con tu configuración, y la carpeta
 datos_servidor, con los personajes, el certificado y las copias de seguridad. Si mueves el juego a otra carpeta o a
 otro ordenador, llévate esas dos cosas y el servidor seguirá como estaba.
+
+Lo nuevo de la versión 1.7.1, que la guía explica en sus apartados 18 y 19:
+
+- El tope de dinero se dice a los jugadores con cifras, el margen que no gastan se les acumula y los encargos que se
+  repiten (contratos, combates, atracos) se reconocen aparte. Entre amigos, sube la ganancia por hora sin miedo.
+- Canales de rol por texto: hablar en personaje, describir acciones, hablar fuera de personaje y una frase de ficha.
+  Se apagan con la opción rol.
+- Quien está cerca del vehículo de otro jugador oye la emisora del juego que lleva puesta. Se apaga con radio_coches.
+- El juego no lleva voz por micrófono: para hablar de viva voz, usad aparte cualquier programa de voz.
+- Un servidor nuevo sigue valiendo para quien juega con la 1.7.0, y un juego nuevo entra en un servidor de la 1.7.0.

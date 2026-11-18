@@ -42,7 +42,12 @@
     "bandas_propias": ["Los del Puerto", "La Cuadrilla", "Los Mareas", "La Peña del Muelle", "Los Faroles", "Los del Espigón", "La Marejada"],
     "rivales_carrera": ["el coche rojo", "el coche negro", "la furgoneta blanca", "el deportivo amarillo"],
     "nombres_servidor": ["el Chato", "la Rubia", "Manolo el Largo", "la Toñi", "el Pecas", "Charo", "el Legionario", "la Moños", "Paquito", "el Gallego",
-                         "la Chispa", "el Mudo", "Encarni", "el Niño", "la Gata", "Curro", "el Tieso", "la Seca", "Ramiro", "el Zurdo"]
+                         "la Chispa", "el Mudo", "Encarni", "el Niño", "la Gata", "Curro", "el Tieso", "la Seca", "Ramiro", "el Zurdo"],
+    "frases_servidor_paseante": ["Buenas.", "Vaya día.", "¿Tienes hora?", "Hoy el puerto huele a tormenta.", "Cuidado por ahí, que andan robando.", "Hasta luego."],
+    "frases_servidor_ratero": ["¿Tienes fuego?", "Bonito reloj.", "No te había visto por aquí."],
+    "frases_servidor_pistolero": ["Tú y yo tenemos algo pendiente.", "Hay quien paga bien por algunos."],
+    "frases_servidor_ladron": ["Buen coche el de ahí.", "Yo no he visto nada."],
+    "frases_servidor_atracador": ["Hoy va a ser un buen día.", "¿Ese negocio de quién es?"]
   }],
   "caracteres": [
     {"id": "amable", "desc": "amable", "desc_ia": "amable y cordial", "saludo": 6, "cumplido": 8, "chiste": 5, "insulto": -30, "valor": 0.2},

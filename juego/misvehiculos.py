@@ -793,6 +793,64 @@ def menu_mis_vehiculos(p):
             def chofer():
                 if p.pedir_chofer(f["garaje"], d):
                     _volver_al_juego(p)
+
+            # En un servidor, un vehículo tuyo aparcado en la calle lo guarda el servidor: estas tres cosas se le piden a él.
+            def sv_datos():
+                if d is not None:
+                    return d
+                return p.sv["vehs"].get(v.id_red) or {"id": v.id_red, "modelo": v.modelo["id"], "nombre": v.nombre, "salud": v.salud, "mejoras": dict(getattr(v, "mejoras", {}) or {})}
+
+            def sv_traer():
+                if p.mundo.tipo == "mar":
+                    app.son("error")
+                    return p.decir("En mitad del mar no te pueden traer un vehículo.", True)
+                if j.estrellas > AJUSTES["chofer_busqueda_max"]:
+                    app.son("error")
+                    return p.decir("Con tanta policía buscándote, tu mecánico no se acerca.", True)
+                precio = p.precio("traer_vehiculo", 150)
+                if j.dinero < precio:
+                    app.son("error")
+                    return p.decir(f"No tienes suficiente dinero. Cuesta {precio} euros y tienes {j.dinero}.", True)
+                x, y, di = p.plaza_cercana()
+                dd = sv_datos()
+                if p.sv_veh_orden("traer", dd, x=round(x, 1), y=round(y, 1), r=di * 90):
+                    p.sv["veh_pend"][dd["id"]] = {"precio": precio}
+                    _volver_al_juego(p)
+
+            def sv_al_garaje():
+                dd = sv_datos()
+                precio = p.precio("mandar_vehiculo", 100)
+
+                def llevar(l):
+                    def g():
+                        if len(j.garajes.get(l.id, [])) >= int(l.get("garaje", 0)):
+                            app.son("error")
+                            return p.decir("Ese garaje está lleno.", True)
+                        if j.dinero < precio:
+                            app.son("error")
+                            return p.decir(f"No tienes suficiente dinero. Cuesta {precio} euros y tienes {j.dinero}.", True)
+                        if p.sv_veh_orden("guardar", dd, ref=l.id):
+                            p.sv["veh_pend"][dd["id"]] = {"precio": precio, "casa": l.id}
+                            _volver_al_juego(p)
+                    return g
+                if (p.modelos.get(dd.get("modelo")) or {}).get("barco"):
+                    app.son("error")
+                    return p.decir("Ese vehículo no se puede guardar en un garaje.", True)
+                lista = [Opcion(f"{p.nombre_lugar(l)}: {len(j.garajes.get(l.id, []))} de {l.get('garaje', 0)} plazas ocupadas", llevar(l)) for l in casas()]
+                app.abrir(Menu(app, f"Mandar {f['nombre']} a un garaje: {precio} euros", lista or [Opcion("No tienes ninguna casa con garaje")]))
+
+            def sv_renombrar():
+                dd = sv_datos()
+
+                def hecho(t):
+                    t = " ".join(str(t).split())[:NOMBRE_MAX] or _modelo_nombre(p, dd["modelo"])
+                    if t != _modelo_nombre(p, dd["modelo"]):
+                        registro.ocultar(t)
+                    if p.sv_veh_orden("nombre", dd, nombre=t):
+                        app.cerrar(mm)
+                        m.refrescar(False)
+                app.abrir(EntradaTexto(app, f"Nombre para {f['nombre']}", hecho, inicial="" if f["nombre"] == _modelo_nombre(p, dd["modelo"]) else f["nombre"], maximo=NOMBRE_MAX,
+                                       ayuda=f"Hasta {NOMBRE_MAX} letras. Lo guarda el servidor y lo ven también los demás jugadores. Si lo dejas vacío, vuelve a llamarse como el modelo."))
             ops = []
             if tipo in ("calle", "ultimo") or (tipo == "servidor" and v is not None):
                 ops.append(Opcion("Marcarlo en el GPS", gps, ayuda="El GPS te lleva hasta él. Sin abrir el móvil, Mayúsculas L hace lo mismo con el último que has usado."))
@@ -814,6 +872,13 @@ def menu_mis_vehiculos(p):
                 ops.append(Opcion("Ponerlo a tu nombre", quedar, ayuda="Desde ese momento es tuyo: no desaparece al alejarte ni al coger otro, y se guarda con la partida."))
             if not servidor or tipo in ("llevas", "garaje"):
                 ops.append(Opcion("Cambiarle el nombre", renombrar, ayuda="El juego dirá ese nombre al subir, al localizarlo y en las listas."))
+            if tipo == "servidor":
+                viejo = "" if p.sv_sabe("mis_vehiculos") else " Este servidor va con una versión anterior y todavía no sabe hacerlo: al pulsar, el juego te dice qué puedes hacer en su lugar."
+                ops += [Opcion(f"Pedir que te lo traigan: {p.precio('traer_vehiculo', 150)} euros", sv_traer,
+                               ayuda="Tu mecánico lo deja aparcado en la calle, a tu lado, esté donde esté, también si está en otra localidad. No viene si te busca mucho la policía." + viejo),
+                        Opcion(f"Mandarlo a un garaje: {p.precio('mandar_vehiculo', 100)} euros", sv_al_garaje,
+                               ayuda="Tu mecánico se lo lleva al garaje de la casa que elijas, y deja de estar en la calle del servidor: ya no caduca ni se lo puede llevar nadie." + viejo),
+                        Opcion("Cambiarle el nombre", sv_renombrar, ayuda="El nombre lo guarda el servidor, y lo ven también los demás jugadores." + viejo)]
             ops.append(Opcion(f["texto"]))
             mm = Menu(app, f["nombre"], ops)
             app.abrir(mm)

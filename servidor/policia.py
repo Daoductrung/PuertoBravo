@@ -391,7 +391,8 @@ class Policia:
         out = []
         for a in self.agentes.values():
             if a["m"] == j.mapa and abs(a["x"] - j.x) < 200 and abs(a["y"] - j.y) < 200:
-                out.append([a["id"], round(a["x"], 1), round(a["y"], 1), a["obj"], a["arma"]])
+                # el último dato, la salud, es de la 1.7.1: un juego anterior no lo mira y les pone la de siempre
+                out.append([a["id"], round(a["x"], 1), round(a["y"], 1), a["obj"], a["arma"], int(round(a["salud"]))])
         return out
 
     def _m_po_dano(self, j, m):

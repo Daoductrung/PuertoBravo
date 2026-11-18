@@ -456,6 +456,10 @@ def opciones(app):
                    ayuda="Vale para todas las emisoras y para Mi música. En pausa: al bajarte, la canción se detiene, y al subir a cualquier vehículo sigue justo donde se quedó; "
                          "cada emisora recuerda la suya, así que al volver a una que dejaste, sigue con su canción. Sin pausa: la emisora sigue su curso aunque no la oigas, "
                          "y al volver te la encuentras más adelante. Las canciones de menos de un minuto y medio empiezan siempre desde el principio."),
+            si_no("radio_coches", "En un servidor, oír la radio de los vehículos de otros jugadores",
+                  "Con sí, cuando tienes cerca el vehículo de otro jugador que lleva puesta una emisora del juego, la oyes floja y apagada, desde donde está su vehículo, "
+                  "y se pierde al alejarte. Solo suena si tú no llevas tu propia radio puesta, y solo una a la vez. Nunca se oye la música propia de nadie: de «Mi música» "
+                  "no sale nada de tu ordenador, solo se cuenta qué emisora del juego llevas. Con no, no oyes la radio de nadie; los demás siguen oyendo la tuya."),
             Opcion(lambda: f"Abrir la carpeta de mi música: {_canciones_txt(app)}", lambda: abrir_mi_musica(app),
                    ayuda="Abre en el Explorador de Windows la carpeta donde se copian tus canciones, y la crea si no existe. Lo que copies ahí, en mp3, ogg, flac o wav, "
                          "suena en la emisora Mi música, que está en la radio de cualquier vehículo: se cambia de emisora con la R. No hace falta cerrar el juego: "

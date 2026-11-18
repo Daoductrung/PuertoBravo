@@ -25,6 +25,7 @@ SECCIONES = (
     ("mundo", "Mundo vivo", "El tráfico, la gente de la calle, la policía y los personajes que lleva el servidor."),
     ("economia", "Economía y propiedades", "El dinero que reconoce el servidor, las casas, los negocios y los vehículos."),
     ("bandas", "Bandas y territorios", "Lo que cuesta fundar una banda, reclamar un barrio y declarar una guerra."),
+    ("rol", "Rol y convivencia", "Los canales de chat para interpretar a tu personaje y lo que se oye de los demás jugadores."),
 )
 
 SI_NO = (("si", "sí"), ("no", "no"))
@@ -210,6 +211,16 @@ OPCIONES = (
     _o("ganancia_hora", "economia", "Ganancia máxima por hora",
        "Lo más que se puede ganar en una hora de reloj con trabajos, ventas, juego y botín de la calle, en euros. Lo que da el "
        "propio servidor no cuenta.", ENTERO, 30000, 0, 1000000000),
+    _o("ganancia_acumula", "economia", "Horas de ganancia que se pueden acumular",
+       "La ganancia por hora que un jugador no usa no se pierde: se le guarda hasta este número de horas, también mientras está "
+       "fuera, para que una buena racha quepa entera. Con 1, nunca tiene más margen que el de una hora.", ENTERO, 3, 1, 48),
+    _o("encargos_hora", "economia", "Encargos repetibles reconocidos por hora, de cada tipo",
+       "Los contratos, los combates del gimnasio, los atracos y los encargos de coches que se cumplen de verdad no gastan la "
+       "ganancia por hora: el servidor los da por buenos, hasta este número por hora de cada tipo. Con 0 no reconoce ninguno "
+       "y todos cuentan contra la ganancia por hora.", ENTERO, 6, 0, 1000),
+    _o("encargo_max", "economia", "Paga máxima reconocida por un encargo repetible",
+       "Lo más que se da por bueno de la paga de un solo encargo repetible, en euros. Lo que pase de ahí cuenta contra la "
+       "ganancia por hora.", ENTERO, 15000, 0, 1000000000),
     _o("saldo_inicial", "economia", "Dinero inicial máximo",
        "Lo más con que puede empezar un personaje nuevo, en euros.", ENTERO, 5000, 0, 1000000000),
     _o("venta_mercado", "economia", "Venta al mercado, en tanto por ciento",
@@ -231,6 +242,17 @@ OPCIONES = (
     _o("guerra_espera", "bandas", "Minutos hasta que empieza una guerra",
        "Minutos de verdad entre declarar una guerra y que empiece.", ENTERO, 20, 1, 10080),
     _o("guerra_dura", "bandas", "Minutos que dura una guerra", "Minutos de verdad.", ENTERO, 10, 1, 1440),
+    # ---------------------------------------------------------------------- rol
+    _o("rol", "rol", "Canales de rol",
+       "Con si, los jugadores tienen un canal para hablar en personaje, que solo oye quien está cerca, otro para hablar fuera de "
+       "personaje, que oye todo el servidor, una orden para describir lo que hace su personaje y una frase de ficha que los demás "
+       "pueden leer. Con no, solo queda el chat de siempre.", SINO, "si"),
+    _o("rol_metros", "rol", "Metros a los que llega lo dicho en personaje",
+       "A qué distancia se oye lo que un jugador dice en personaje y las acciones que describe. Lo dicho fuera de personaje "
+       "llega siempre a todo el servidor.", ENTERO, 30, 5, 2000),
+    _o("radio_coches", "rol", "Radio de los coches de otros jugadores",
+       "Con si, quien está cerca del vehículo de otro jugador oye, floja, la emisora del juego que lleva puesta. Solo se cuenta "
+       "qué emisora del juego es: nunca viaja música ni nada personal. Con no, no se oye la radio de nadie.", SINO, "si"),
 )
 
 POR_CLAVE = {o.clave: o for o in OPCIONES}

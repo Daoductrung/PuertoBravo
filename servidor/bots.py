@@ -33,6 +33,16 @@ def nombres_del_mundo(mundo):
     return lista or NOMBRES
 
 
+def frases_del_mundo(mundo, clase):
+    """Lo que dice un personaje de esa clase: las frases que traiga el mundo del juego (se editan con el editor de mods, en
+    «Gente de la calle») y, si no trae ninguna para esa clase, las de siempre."""
+    try:
+        lista = [str(f).strip()[:200] for f in ((mundo.get("gente") or {}).get("frases") or {}).get(clase) or [] if isinstance(f, str) and f.strip()]
+    except AttributeError:
+        lista = []
+    return lista or FRASES[clase]
+
+
 class Bots:
     """Mixin del servidor."""
 
@@ -150,7 +160,7 @@ class Bots:
             b.t_frase -= dt
             if b.t_frase <= 0 and cerca and b.dist(cerca[0]) < 14 and b.presa is None:
                 b.t_frase = self.rng.uniform(60, 240)
-                self._enviar(cerca[0], {"t": "chat", "de": b.id, "nombre": b.nombre, "texto": self.rng.choice(FRASES[b.clase]), "canal": "cerca"})
+                self._enviar(cerca[0], {"t": "chat", "de": b.id, "nombre": b.nombre, "texto": self.rng.choice(frases_del_mundo(self.mundo, b.clase)), "canal": "cerca"})
             if b.huye > 0:
                 continue
             presa = self.jugadores.get(b.presa) if b.presa is not None else None

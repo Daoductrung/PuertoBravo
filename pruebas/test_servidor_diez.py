@@ -305,7 +305,8 @@ def test_diez_entran_por_las_tres_puertas_y_se_hablan_por_todos_los_canales(tmp_
 
 # ==================================================================== el dinero
 def test_diez_y_el_dinero_gastar_ganar_el_tope_por_hora_transferir_y_dar_cosas(tmp_path):
-    banco = Banco(tmp_path, economia="si", ganancia_hora=3600, saldo_inicial=1000, precio_banda=500)
+    # ganancia_acumula=1: el margen no pasa del de una hora, como en la 1.7.0 (de serie, desde la 1.7.1, se acumulan tres)
+    banco = Banco(tmp_path, economia="si", ganancia_hora=3600, saldo_inicial=1000, precio_banda=500, ganancia_acumula=1)
     g = []
     try:
         g = diez(banco)

@@ -304,3 +304,8 @@ SONIDOS AÑADIDOS DESPUÉS
   cocina_freir.flac: sonido original del juego.
   cocina_hervir.flac: sonido original del juego.
   plato_servido.flac: sonido original del juego.
+
+SONIDOS AÑADIDOS DESPUÉS
+  chat_personaje.flac: sonido original del juego.
+  chat_fuera.flac: sonido original del juego.
+  chat_accion.flac: sonido original del juego.

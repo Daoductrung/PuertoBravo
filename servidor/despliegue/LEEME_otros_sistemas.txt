@@ -24,4 +24,5 @@ Con Docker:
 
     docker compose up -d --build
 
-La guía completa, paso a paso, está en documentacion.html, en la carpeta servidor del juego.
+La guía completa, paso a paso, está en documentacion.html, en la carpeta servidor del juego. Sus apartados 18 y 19
+explican lo nuevo de la versión 1.7.1: el tope de dinero y los encargos, los canales de rol y la radio de los vehículos.

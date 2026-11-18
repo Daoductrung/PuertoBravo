@@ -85,7 +85,7 @@ def test_un_mod_anade_a_las_listas_o_las_sustituye(monkeypatch, tmp_path, datos_
 def test_unos_datos_antiguos_sin_gente_usan_lo_de_serie(datos_de_serie):
     G.configurar({})                                       # como si no existiera gente.json
     for lista in G.LISTAS:
-        assert G.lista(lista) or lista == "nombres_servidor", lista
+        assert G.lista(lista) or lista in G.SIN_SERIE, lista     # las del servidor pueden venir vacías: él trae las suyas
     assert G.OFICIOS and set(G.CARACTERES) == set(G.HABLAS) and len(G.nombres_bandas()) == 5
     assert G.enemigo({"n": 2, "tipo": "Matón", "arma": "bate", "salud": 33}) == {"nombre": "Matón", "arma": "bate", "salud": 33.0, "punteria": G.PUNTERIA, "vehiculo": "",
                                                                                  "ocupantes": 4, "frases": [], "voz": "", "clase": ""}

@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 20
+VERSION_CACHE = 21
 PI2 = 2 * np.pi
 
 
@@ -816,6 +816,18 @@ def generar(semilla=7):
     for t0, f0 in ((0.34, 4200), (0.43, 5100)):
         _poner(pl, (_seno(f0, 0.3) + 0.4 * _seno(f0 * 1.51, 0.3)) * _decae(0.3, 0.07), t0, 0.3)
     S["plato_servido"] = _norm(pl, 0.5)
+    # ----------------------------------------------- canales de rol de los servidores (versión 1.7.1): cada canal, su aviso
+    S["chat_personaje"] = _norm(_sec([392, 523], 0.11, 0.42, 0.2, (1, 0.5, 0.25)), 0.45)        # en personaje: dos notas graves y cálidas, como una voz cercana
+    fp = np.zeros(int(SR * 0.3))                                 # fuera de personaje: dos toques secos de madera, como abrir y cerrar un paréntesis
+    for t0, f0 in ((0.0, 880), (0.13, 880)):
+        _poner(fp, _seno(f0, 0.07) * _decae(0.07, 0.016), t0)
+        _poner(fp, _filtro(ruido(0.02), 1500, 5000) * _decae(0.02, 0.006), t0, 0.35)
+    S["chat_fuera"] = _norm(fp, 0.42)
+    ac = np.zeros(int(SR * 0.45))                                # una acción: el roce de un movimiento y una nota que lo remata
+    ta = _t(0.22)
+    _poner(ac, _filtro(ruido(0.22), 500, 3500) * np.sin(np.pi * ta / 0.22) ** 2, 0.0, 0.6)
+    _poner(ac, (_seno(659, 0.22) + 0.3 * _seno(1318, 0.22)) * _decae(0.22, 0.07), 0.18)
+    S["chat_accion"] = _norm(ac, 0.45)
     return S
 
 

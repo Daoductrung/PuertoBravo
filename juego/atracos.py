@@ -139,6 +139,7 @@ class Atracos:
         self.j.stats["atracos_locales"] = self.j.stats.get("atracos_locales", 0) + 1
         if not caja["enemigos"]:
             self.son("grito", vol=0.5)
+            self.sv_encargo("atraco_local", botin)             # en un servidor: es un cobro de los que se repiten, no cuenta contra el tope por hora
             self.dar_dinero(botin)
             self.decir(AJ.frase("frases_atraco", quien=quien, botin=botin))
             self.poner_busqueda(nivel)

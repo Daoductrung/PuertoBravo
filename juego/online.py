@@ -25,6 +25,9 @@ class Remoto:
         self.t_paso = 0.0
         self.visto = False
         self.aspecto = ""          # lo que lleva puesto, como lo cuenta su juego
+        self.pasajero_de = None    # en un servidor: id del jugador en cuyo vehículo va de pasajero
+        self.radio = ""            # en un servidor: la emisora del juego que lleva puesta en su vehículo
+        self.ficha = ""            # en un servidor: su frase de rol, cuando la has pedido
 
     def dist(self, x, y):
         return math.hypot(self.x - x, self.y - y)
@@ -242,6 +245,8 @@ class Online:
             self.decir(f"{r.nombre}{donde}, lleva {r.aspecto}.", True)
         else:
             self.decir(f"{r.nombre}{donde}. Su juego no ha dicho cómo va vestido.", True)
+        if getattr(self, "en_servidor", False):                 # y si el servidor tiene fichas de rol, la suya, a continuación
+            self.sv_pedir_ficha(r, de_paso=True)
         return r
 
     def red_paso(self, dt):
@@ -379,7 +384,7 @@ class Online:
                     r.canal = self.son(modelo.get("motor", "motor_coche"), bucle=True, xy=(r.x, r.y), ref=7, maxd=160, vol=0.6)
                 r.canal.mover(r.x, r.y)
                 r.canal.tono(modelo.get("tono", 1.0) * (0.6 + 1.3 * min(1.0, r.vel / max(1.0, modelo.get("vel_max", 25)))))
-            elif math.hypot(r.tx - r.x, r.ty - r.y) > 0.25:
+            elif math.hypot(r.tx - r.x, r.ty - r.y) > 0.25 and getattr(r, "pasajero_de", None) is None:      # quien va de pasajero no da pasos
                 r.t_paso -= dt
                 if r.t_paso <= 0:
                     r.t_paso = 0.45
@@ -509,6 +514,8 @@ class Online:
             self.son("evento", cat="interfaz")
             self.decir(texto + " Para aceptar, abre el móvil con M y entra en Jugar con amigos.")
         elif que in ("sube", "baja"):
+            if d.get("a") == self.red.id and getattr(self, "en_servidor", False):      # quién va contigo: a tus pasajeros no los atropellas
+                (self.sv["pasajeros"].add if que == "sube" else self.sv["pasajeros"].discard)(de)
             if d.get("a") == self.red.id:
                 self.son("puerta_coche", vol=0.7)
                 self.decir(f"{nombre} {'sube a tu vehículo' if que == 'sube' else 'se baja de tu vehículo'}.")

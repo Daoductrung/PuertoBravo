@@ -728,7 +728,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.decir(self.rumbo_txt() + ". El tono suena desde el norte.", True)
         elif k == pygame.K_F10:
             from . import menus_online
-            menus_online.escribir_mensaje(self)
+            menus_online.escribir_mensaje(self, "ic" if mayus else "yo" if ctrl else None)      # en un servidor: en personaje, o una acción
         elif k == pygame.K_F9:
             from .pantallas import ExploradorMapa
             self.app.abrir(ExploradorMapa(self.app, self))

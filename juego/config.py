@@ -94,6 +94,7 @@ POR_DEFECTO = {
     "ia_acciones": False,          # con el modo IA: el modelo puede proponer una acción de una lista cerrada, y el juego decide si pasa
     "pareja_convive": False,       # contenido para adultos: poder pedirle a tu pareja que se venga a vivir contigo
     "oficio_policia": False,       # modo: poder ingresar en la policía y trabajar de agente
+    "radio_coches": True,          # en un servidor, oír floja la emisora del juego que lleva el vehículo de otro jugador que está cerca
     "red_nombre": "",              # cómo te ven tus amigos; vacío = el nombre de tu personaje
     "red_puerto": 47810,
     "red_ultima": "",              # última dirección a la que te uniste
