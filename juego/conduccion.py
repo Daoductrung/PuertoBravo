@@ -4,6 +4,7 @@ import random
 
 import pygame
 
+from . import gente as G
 from . import mundo as M
 from .entidades import Persona, Vehiculo
 
@@ -51,10 +52,17 @@ class Conduccion:
             self.libre_temp = False
         v.aviso_cruce = None
 
+    @staticmethod
+    def _golpe(v):
+        """Cuánto daño le hace un choque a este vehículo respecto a uno de serie: menos con la suspensión reforzada."""
+        from . import sistemas
+        return sistemas.factor_golpes(v)
+
     def _motor(self, v, propio):
         if v.canal is None:
             if propio:
-                v.canal = self.son(v.modelo["motor"], bucle=True, vol=0.42, tono=v.modelo["tono"] * 0.6)
+                from . import sistemas
+                v.canal = self.son(v.modelo["motor"], bucle=True, vol=0.42 * sistemas.factor_motor_volumen(v), tono=v.modelo["tono"] * 0.6)
             else:
                 v.canal = self.son(v.modelo["motor"], bucle=True, xy=(v.x, v.y), ref=7, maxd=95, vol=0.85, tono=v.modelo["tono"] * 0.6)
 
@@ -212,6 +220,9 @@ class Conduccion:
             return
         if v.ia == "policia" and not v.desplegado and v.ocupado:
             self.decir("Ese coche patrulla está lleno de policías.", True)
+            return
+        if v.ia == "enemigos" and v.ocupado:
+            self.decir("Ese vehículo está lleno de enemigos.", True)
             return
         if v.ia in ("trafico", "huida") and v.ocupado:
             if abs(v.vel) > 6:
@@ -562,7 +573,7 @@ class Conduccion:
         t = self.app.teclas
         mo = v.modelo
         from . import sistemas                          # las mejoras del taller cambian cómo va el vehículo
-        freno = mo["freno"] * (0.6 if self.lluvia else 1.0) * sistemas.factor_frenada(v) * self.factor_averia_frenos(v)
+        freno = mo["freno"] * (sistemas.factor_lluvia(v) if self.lluvia else 1.0) * sistemas.factor_frenada(v) * self.factor_averia_frenos(v)
         con_motor = self.gastar_combustible(v, dt)
         self.rodar(v, dt)
         self.vigilar_velocidad(v, dt)
@@ -612,8 +623,9 @@ class Conduccion:
             carga = 0.12 if pygame.K_UP in t else 0.0
             v.canal.tono(mo["tono"] * sistemas.factor_tono(v) * (0.6 + carga + 1.3 * abs(v.vel) / mo["vel_max"]))
         if getattr(self, "rodadura", None):
-            self.rodadura.volumen(min(0.5, abs(v.vel) / 50.0))
-            self.rodadura.tono(0.7 + abs(v.vel) / 40.0)
+            rv, rt = sistemas.factor_rodadura(v)                 # unos neumáticos mejores ruedan más bajo y más graves
+            self.rodadura.volumen(min(0.5, abs(v.vel) / 50.0) * rv)
+            self.rodadura.tono((0.7 + abs(v.vel) / 40.0) * rt)
         self._choques_jugador(v)
         self._sonar(v, dt)
         if (pygame.K_LCTRL in t or pygame.K_RCTRL in t) and self.arma().get("automatica"):
@@ -700,7 +712,7 @@ class Conduccion:
                 imp = abs(v.vel)
                 if imp > 2:
                     self.son("choque" if imp > 8 else "choque_leve")
-                    self.danar_vehiculo(v, imp * 1.2)
+                    self.danar_vehiculo(v, imp * 1.2 * self._golpe(v))
                     self.decir("¡Encallas en la arena de una isla!" if s == "arena" else "Fin del mapa: aquí empieza el océano abierto. Da la vuelta.")
                 v.vel = -v.vel * 0.2
                 return
@@ -710,10 +722,11 @@ class Conduccion:
         if s in ("pared", "fuera"):
             imp = abs(v.vel)
             if imp > 2:
-                self.son("choque" if imp > 8 else "choque_leve")
-                self.danar_vehiculo(v, imp * 1.3)
+                fg = self._golpe(v)                              # con la suspensión reforzada el golpe hace menos daño, y suena más seco y más bajo
+                self.son("choque" if imp > 8 else "choque_leve", vol=0.5 + 0.5 * fg, tono=0.8 + 0.2 * fg)
+                self.danar_vehiculo(v, imp * 1.3 * fg)
                 if imp > 12:
-                    self.danar_jugador(imp * 0.6, None)
+                    self.danar_jugador(imp * 0.6 * fg, None)
                 self.app.vibrar(min(1.0, imp / 12.0), 0.6, 350)
                 self.decir("¡Te estrellas contra una pared!" if s == "pared" else "Fin de la ciudad.")
             v.vel = -v.vel * 0.25
@@ -778,12 +791,13 @@ class Conduccion:
                 if imp < 1.5:
                     continue
                 v.t_choque = self.t + 0.6
-                self.son("choque" if imp > 8 else "choque_leve", xy=(o.x, o.y), ref=10)
+                fg = self._golpe(v)
+                self.son("choque" if imp > 8 else "choque_leve", xy=(o.x, o.y), ref=10, vol=0.5 + 0.5 * fg, tono=0.8 + 0.2 * fg)
                 self.app.vibrar(min(1.0, imp / 14.0), 0.5, 300)
-                self.danar_vehiculo(v, imp * (0.4 if o.tag == "objetivo" else 0.6) * (1 - 0.03 * self.nivel("conduccion")))
+                self.danar_vehiculo(v, imp * (0.4 if o.tag == "objetivo" else 0.6) * (1 - 0.03 * self.nivel("conduccion")) * fg)
                 self.danar_vehiculo(o, imp * (2.2 if o.tag == "objetivo" else 1.4))
                 if imp > 14:
-                    self.danar_jugador(imp * 0.4, None)
+                    self.danar_jugador(imp * 0.4 * fg, None)
                 atras = -1 if v.vel > 0 else 1
                 v.x += math.sin(rad) * 1.5 * atras
                 v.y += math.cos(rad) * 1.5 * atras
@@ -903,6 +917,8 @@ class Conduccion:
                     obj *= 0.55        # espera un poco al jugador para que la persecución no se pierda
             elif v.ia == "policia":
                 obj, decidir = self._ia_patrulla(v, d, dt)
+            elif v.ia == "enemigos":
+                obj, decidir = self._ia_enemigos(v, d, dt)
             v.vel += max(-v.modelo["freno"] * dt, min(v.modelo["acel"] * dt, obj - v.vel))
             if v.vel > 0.05:
                 self._mover_via(v, dt, 0.0, decidir)
@@ -944,12 +960,12 @@ class Conduccion:
             if v.vel < 1.0:
                 v.desplegado = True
                 v.ocupado = False
-                for k in range(2):
+                e = getattr(v, "agentes", None) or G.agentes_nivel(j.estrellas)      # qué agentes trae: lo dice la tabla de la policía de los datos
+                for k in range(e["ocupantes"]):
                     x, y = self.mundo.punto_libre(v.x + random.uniform(-3, 3), v.y + random.uniform(-3, 3))
-                    p = Persona("policia", x, y)
-                    p.salud = 80
+                    f = G.enemigo({"clase": e["clase"]}) if k and e["clase"] else e      # cada agente, su arma, si el tipo trae varias
+                    p = G.vestir(Persona("policia", x, y, f["nombre"]), f)
                     p.hostil = True
-                    p.arma = "subfusil" if j.estrellas >= 4 else "pistola"
                     p.estado = "ataca"
                     p.coche = v
                     self.personas.append(p)
@@ -968,6 +984,79 @@ class Conduccion:
             j.veh.vel *= 0.75
             v.vel *= 0.5
         lim = v.modelo["vel_max"] * (0.62 + 0.06 * j.estrellas)
+        if d < 30:
+            lim = min(lim, max(8.0, vel_j + 3))
+        return lim, self._decidir_policia
+
+    # ------------------------------------------------- enemigos que llegan en un vehículo
+    def llegar_en_vehiculo(self, modelo_id, gente, x=None, y=None):
+        """Un grupo de enemigos llega en un vehículo: sale a unos doscientos metros, viene por la calle hacia ti con la
+        misma conducción que una patrulla, para cerca y se bajan. «gente» son las personas ya creadas, que no están en la
+        calle hasta que se bajan. Devuelve el vehículo, o None si aquí no puede venir ninguno (en el mar, o un modelo
+        que no existe o no es de tierra): entonces quien llama los pone a pie."""
+        mo = self.modelos.get(modelo_id)
+        if not gente or mo is None or mo.get("barco") or mo.get("vuela"):
+            return None
+        px, py = self.pos() if x is None else (x, y)
+        pos = self._punto_llegada(px, py)
+        if pos is None:
+            return None
+        v = Vehiculo(mo, pos[0], pos[1], pos[2], "enemigos")
+        v.nombre = f"{mo['nombre']} con {len(gente)} enemigos" if len(gente) > 1 else f"{mo['nombre']} de {gente[0].nombre}"
+        v.ocupado = v.hostil = True
+        v.vel = 11.0
+        v.tag = "enemigos"
+        v.pasajeros = list(gente)
+        v.t_llegada = self.t + 50.0                              # si para entonces no te ha alcanzado, se bajan donde estén
+        for q in gente:
+            q.x, q.y = v.x, v.y
+        self.vehiculos.append(v)
+        self.son("frenazo", xy=(v.x, v.y), ref=30, maxd=320, vol=0.6)      # se le oye arrancar derrapando, a lo lejos
+        return v
+
+    def bajar_enemigos(self, v):
+        """El vehículo de los enemigos ha llegado: se bajan y van a por ti. El vehículo se queda ahí, vacío."""
+        gente = [q for q in getattr(v, "pasajeros", []) if not q.muerto]
+        v.pasajeros = []
+        v.desplegado, v.ocupado, v.hostil, v.tag, v.ia, v.vel = True, False, False, None, "aparcado", 0.0
+        if v.canal:
+            v.canal.parar()
+            v.canal = None
+        for q in gente:
+            q.x, q.y = self.mundo.punto_libre(v.x + random.uniform(-3, 3), v.y + random.uniform(-3, 3))
+            q.t_disparo = random.uniform(1.2, 2.4)
+            self.personas.append(q)
+        if self.objetivo is v:
+            self.objetivo = None
+        if not gente:
+            return
+        self.son("puerta_coche", xy=(v.x, v.y))
+        self.decir(f"{'Se baja uno' if len(gente) == 1 else f'Se bajan {len(gente)}'} de {v.modelo['nombre']}. {self.situar(v.x, v.y, 'Está')}. Pulsa Q para fijar al más cercano.")
+        if self.cfg["punteria"] == "completa":
+            self.fijar(callar=True)
+
+    def _ia_enemigos(self, v, d, dt):
+        """Un vehículo con enemigos dentro: viene a por ti como una patrulla, sin sirena; al alcanzarte, para y se bajan."""
+        j = self.j
+        vel_j = abs(j.veh.vel) if j.veh else 0.0
+        if (d < 16 and vel_j < 4) or self.t > getattr(v, "t_llegada", 1e18):
+            if v.vel < 1.0:
+                self.bajar_enemigos(v)
+            return 0.0, self._decidir_policia
+        px, py = self.pos()
+        dx, dy = M.DIRS[v.dir]
+        a = (px - v.x) * dx + (py - v.y) * dy
+        lat = abs((px - v.x) * dy - (py - v.y) * dx)
+        if a < -15 and lat < 20 and self.t > v.t_giro:           # te ha pasado de largo: da la vuelta
+            v.t_giro = self.t + 3
+            v.dir = (v.dir + 2) % 4
+        if j.veh and d < 4.6 and self.t > v.t_choque and not j.veh.modelo.get("vuela"):      # te embiste
+            v.t_choque = self.t + 2.5
+            self.son("choque_leve")
+            self.danar_vehiculo(j.veh, 6)
+            j.veh.vel *= 0.8
+            v.vel *= 0.5
+        lim = v.modelo["vel_max"] * 0.7
         if d < 30:
             lim = min(lim, max(8.0, vel_j + 3))
         return lim, self._decidir_policia

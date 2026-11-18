@@ -12,22 +12,11 @@ import json
 import math
 import random
 
+from . import gente as G
 from . import mundo as M
 
-NOMBRES = {"h": ["Antonio", "Manolo", "Paco", "Javi", "Luis", "Rafa", "Pepe", "Sergio", "Andrés", "Tomás", "Fermín", "Óscar", "Iván", "Nacho", "Ramón", "Julián"],
-           "m": ["Carmen", "Lola", "Pilar", "Marta", "Lucía", "Rosa", "Inma", "Paqui", "Sara", "Elena", "Amparo", "Nuria", "Vero", "Chelo", "Maite", "Olga"]}
-OFICIOS = ["camarero", "pescador", "estudiante", "taxista", "enfermero", "albañil", "funcionario", "mecánico", "panadero", "jubilado", "dependiente",
-           "músico", "repartidor", "profesor", "electricista", "peluquero", "vigilante", "cocinero", "administrativo", "en paro"]
-FEMENINO = {"camarero": "camarera", "pescador": "pescadora", "enfermero": "enfermera", "funcionario": "funcionaria", "mecánico": "mecánica", "panadero": "panadera",
-            "jubilado": "jubilada", "músico": "música", "repartidor": "repartidora", "profesor": "profesora", "peluquero": "peluquera", "cocinero": "cocinera",
-            "administrativo": "administrativa", "dependiente": "dependienta"}
-CARACTERES = {
-    "amable": {"desc": "amable", "saludo": 6, "cumplido": 8, "chiste": 5, "insulto": -30, "valor": 0.2},
-    "hablador": {"desc": "con ganas de hablar", "saludo": 8, "cumplido": 6, "chiste": 8, "insulto": -25, "valor": 0.3},
-    "seco": {"desc": "de pocas palabras", "saludo": 2, "cumplido": 2, "chiste": -2, "insulto": -35, "valor": 0.6},
-    "timido": {"desc": "con timidez", "saludo": 3, "cumplido": 4, "chiste": 3, "insulto": -40, "valor": 0.05},
-    "chulo": {"desc": "con chulería", "saludo": 1, "cumplido": 9, "chiste": 4, "insulto": -45, "valor": 0.85},
-}
+# Los nombres, los apellidos, los oficios y los caracteres de la gente salen de los datos (data/datos/gente.json): los lleva gente.py.
+CARACTERES = G.CARACTERES
 SITIOS = {"comer": ("comida", "pizzeria", "taberna", "bar"), "curarme": ("hospital", "farmacia"), "dinero": ("banco", "empenos"), "armas": ("armeria",),
           "trabajo": ("empleo",), "dormir": ("hotel",), "taller": ("taller",), "policía": ("comisaria",), "comprar": ("tienda",), "fiesta": ("club", "casino", "bar")}
 PALABRAS = [
@@ -47,16 +36,9 @@ PALABRAS = [
 ]
 
 
-def oficio_para(edad, rng=random):
+def oficio_para(edad, rng=random, genero="h"):
     """Un oficio que cuadre con la edad: nadie estudia a los sesenta ni se jubila a los veinte."""
-    if edad >= 67:
-        return "jubilado"
-    ops = [o for o in OFICIOS if o != "jubilado" and (o != "estudiante" or edad <= 27)]
-    if edad >= 62:
-        ops += ["jubilado"] * 6                       # a esa edad, muchos ya lo están
-    if edad <= 23:
-        ops += ["estudiante"] * 6
-    return rng.choice(ops)
+    return G.oficio_para(edad, genero, rng)
 
 
 def ficha(persona, rng=random):
@@ -65,8 +47,7 @@ def ficha(persona, rng=random):
         return persona.ficha
     g = rng.choice("hm")
     edad = rng.randint(19, 74)
-    oficio = oficio_para(edad, rng)
-    f = {"nombre": rng.choice(NOMBRES[g]), "genero": g, "edad": edad, "oficio": FEMENINO.get(oficio, oficio) if g == "m" else oficio,
+    f = {"nombre": rng.choice(G.nombres(g)), "apellido": rng.choice(G.lista("apellidos")), "genero": g, "edad": edad, "oficio": oficio_para(edad, rng, g),
          "caracter": rng.choice(list(CARACTERES)), "confianza": 0, "frases": 0, "disponible": rng.random() < 0.55,
          "le_atraen": rng.choice(["h", "m", "hm"]), "invitado": False, "limosna": False, "presentado": False, "ofendido": False}
     persona.ficha = f
@@ -137,13 +118,13 @@ class Charla:
             f["presentado"] = True
             q.nombre = f["nombre"]
             self.j.stats["charlas"] = self.j.stats.get("charlas", 0) + 1
-        return f"{f['nombre']}, {f['edad']} años, {f['oficio']}. Te habla {CARACTERES[f['caracter']]['desc']}"
+        return f"{f['nombre']}{' ' + f['apellido'] if f.get('apellido') else ''}, {f['edad']} años, {f['oficio']}. Te habla {G.caracter(f['caracter'])['desc']}"
 
     def responder(self, q, intencion, dato=None):
         """Lo que contesta una persona a una intención. Devuelve el texto y aplica las consecuencias."""
         j = self.j
         f = ficha(q)
-        c = CARACTERES[f["caracter"]]
+        c = G.caracter(f["caracter"])
         nombre = f["nombre"]
         f["frases"] += 1
         self.son("murmullo", xy=(q.x, q.y), vol=0.5)

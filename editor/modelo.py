@@ -209,6 +209,7 @@ class Catalogo:
                     out[l["id"]] = f"{l.get('nombre', l['id'])}, en {nombres.get(l.get('mapa', 'puerto_bravo'), l.get('mapa', ''))}, del mod"
             return sorted(out.items(), key=lambda e: e[1].lower())
         tabla = {"modelo": ("vehiculos", b["vehiculos"]), "arma": ("armas", b["armas"]), "mision": ("misiones", b["misiones"]),
+                 "tipo_enemigo": ("tipos_enemigo", b.get("tipos_enemigo", [])),
                  "sustancia": ("sustancias", b["adultos"].get("sustancias", [])), "persona": ("personas", b["adultos"].get("personas", [])),
                  "actividad": ("actividades", b["adultos"].get("actividades", [])), "regalo": ("regalos", b["adultos"].get("regalos", []))}
         if ref in tabla:
@@ -427,6 +428,9 @@ def comprobar(mod, cat):
                 errores.append(f"{donde}, paso {n}: el diálogo no tiene frases.")
             if t == "eliminar" and not p.get("enemigos"):
                 errores.append(f"{donde}, paso {n}: no hay enemigos que eliminar.")
+            for k, g in enumerate(p.get("enemigos") or [] if t == "eliminar" else [], 1):
+                if not g.get("clase") and not (g.get("tipo") and g.get("arma")):
+                    errores.append(f"{donde}, paso {n}, grupo de enemigos {k}: elige un tipo de enemigo, o escribe su nombre y su arma.")
             if t in ("ir", "robar", "entregar", "eliminar", "perseguir", "seguir", "escoltar", "sigilo", "vigilar", "carrera") and not p.get("lugar"):
                 errores.append(f"{donde}, paso {n}: falta el lugar.")
             if t in ("seguir", "escoltar") and not p.get("destino"):

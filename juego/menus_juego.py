@@ -1166,6 +1166,40 @@ def _casa(p, l):
 SIN_SILENCIADOR = ("escopeta", "escopeta_combate", "ametralladora", "minigun", "lanzacohetes", "ballesta")
 
 
+def donde_se_vende(a):
+    """El tipo de local donde se compra un arma: lo dicen sus datos. Si no dicen nada, en la armería."""
+    return a.get("donde") or "armeria"
+
+
+def armas_en_venta(p, l, factor=1.0):
+    """Las armas que se venden en un local que no es una armería (una tienda, una casa de empeños), y su munición."""
+    j = p.j
+
+    def comprar(a):
+        def f():
+            if a["id"] not in j.armas:
+                if p.pagar(int(a["precio"] * factor)):
+                    p.dar_arma(a["id"], a.get("balas", 0))
+                    p.son("dinero", cat="interfaz")
+            elif a["tipo"] == "cuerpo":
+                p.app.decir(f"Ya tienes {a['nombre']}.", True)
+            elif p.pagar(int(a.get("precio_balas", 0) * factor)):
+                j.armas[a["id"]]["reserva"] += a.get("balas", 0)
+                p.son("recarga", cat="interfaz")
+                p.app.decir(f"Munición comprada. Reserva: {j.armas[a['id']]['reserva']} balas.", True)
+        return f
+
+    def texto(a):
+        def f():
+            if a["id"] not in j.armas:
+                return f"{a['nombre']}: {int(a['precio'] * factor)} euros. {ficha_corta(a).capitalize()}"
+            if a["tipo"] == "cuerpo":
+                return f"{a['nombre']}: ya la tienes"
+            return f"Munición para {a['nombre']}, {a.get('balas', 0)} balas: {int(a.get('precio_balas', 0) * factor)} euros. Tienes {j.armas[a['id']]['reserva']} de reserva"
+        return f
+    return [Opcion(texto(a), comprar(a), ayuda=ayuda_arma(a)) for a in p.datos["armas"] if a.get("precio", 0) > 0 and donde_se_vende(a) == l.tipo]
+
+
 def _armeria(p, l):
     app = p.app
     j = p.j
@@ -1200,13 +1234,15 @@ def _armeria(p, l):
             if a["precio"] <= 0:
                 continue
             if a["id"] not in j.armas:
+                if donde_se_vende(a) != "armeria":               # esa se compra en otro tipo de local; aquí, solo su munición
+                    continue
                 lista.append(Opcion(f"{a['nombre']}: {int(a['precio'] * factor)} euros. {ficha_corta(a).capitalize()}", comprar(a), ayuda=ayuda_arma(a)))
             elif a["tipo"] in ("fuego", "explosivo"):
                 lista.append(Opcion(f"Munición para {a['nombre']}, {a['balas']} balas: {int(a['precio_balas'] * factor)} euros. Tienes {j.armas[a['id']]['reserva']} de reserva", comprar(a), ayuda=ayuda_arma(a)))
         for a in p.datos["armas"]:                              # mejoras para las armas de fuego que ya tienes
             if a["id"] in j.armas and a["tipo"] == "fuego":
                 mio = j.armas[a["id"]]
-                if not mio.get("silenciador") and a.get("ruido", 2) > 0 and a["id"] not in SIN_SILENCIADOR:
+                if not mio.get("silenciador") and a.get("ruido", 2) > 0 and a["id"] not in SIN_SILENCIADOR and not a.get("sin_silenciador"):
                     lista.append(Opcion(f"Silenciador para {a['nombre']}: {int(p.precio('silenciador', 900) * factor)} euros", mejorar(a, "silenciador", p.precio("silenciador", 900)),
                                         ayuda="Los disparos dejan de oírse desde lejos: la gente no huye y nadie llama a la policía por el ruido. Lo que hagas a la vista de alguien se sigue viendo. Se pierde con el arma si te detienen."))
                 if not mio.get("ampliado") and a.get("cargador", 0) > 1:
@@ -1253,7 +1289,7 @@ def _surtidor(p, l):
             n = p.repostar(v, litros, precio=pl)
             if n:
                 app.decir(f"{int(round(n))} litros a {v.nombre}: {max(1, int(round(n * pl)))} euros.{p.combustible_txt(v)}", True)
-            elif C.deposito(v.modelo) - p.litros(v) < 0.5:
+            elif C.capacidad(v) - p.litros(v) < 0.5:
                 app.decir("El depósito ya está lleno.", True)
         return f
 
@@ -1267,7 +1303,7 @@ def _surtidor(p, l):
         v = p.vehiculo_para_repostar()
         if v is None or C.deposito(v.modelo) <= 0:
             return "Llenar el depósito: ven con tu vehículo o déjalo aparcado al lado"
-        hueco = C.deposito(v.modelo) - p.litros(v)
+        hueco = C.capacidad(v) - p.litros(v)
         return f"Llenar el depósito de {v.nombre}: {int(round(hueco))} litros, {int(round(hueco * pl))} euros"
     return [Opcion(cuanto, echar(None), ayuda="Llena el depósito del vehículo que llevas o del que has dejado aparcado al lado. Se paga al momento."),
             Opcion(f"Echar diez litros: {int(round(10 * pl))} euros", echar(10)),
@@ -1290,12 +1326,13 @@ def _tienda(p, l):
             app.decir("La caja está vacía: ya la atracaste hoy.", True)
             return
         atracadas[l.id] = p.dia
-        botin = random.randint(150, 500)
+        caja = p.caja_de_local(l) or {"dinero": random.randint(150, 500), "busqueda": 2}      # lo que hay en la caja lo dicen los datos
         app.cerrar(m)
         p.son("grito", vol=0.5)
+        botin = int(caja["dinero"])
         p.dar_dinero(botin)
         p.decir(f"¡Manos arriba! El dependiente vacía la caja: {botin} euros. ¡Ha pulsado la alarma, lárgate!")
-        p.poner_busqueda(2)
+        p.poner_busqueda(max(1, int(caja["busqueda"])))
     factor = p.mercado("comida", l.id)
     ops = _surtidor(p, l) + _agua(p)
     if tiene_surtidor_rueda(p, l):
@@ -1309,7 +1346,7 @@ def _tienda(p, l):
         ops.append(Opcion(lambda: f"Rueda de repuesto: {int(R.aj('precio_rueda'))} euros. Llevas {j.objetos.get('rueda', 0)}", repuesto,
                           ayuda="Si pinchas, la cambias tú desde el móvil, en Servicios, con el vehículo parado."))
     ops += [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {int(c['precio'] * factor)} euros", _comprar_comida(p, c, factor)) for c in p.datos["comidas"][:3:2]]
-    ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua"), _comprar_walkman(p)] + ([_comprar_objeto(p, "pienso")] if p.j.perro else []) + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará.")]
+    ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua"), _comprar_walkman(p)] + armas_en_venta(p, l) + ([_comprar_objeto(p, "pienso")] if p.j.perro else []) + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará.")]
     m = _menu_lugar(p, l, ops)
 
 

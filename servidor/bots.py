@@ -23,6 +23,16 @@ FRASES = {
 ARMA = {"paseante": "punos", "ratero": "navaja", "pistolero": "pistola", "ladron": "bate", "atracador": "pistola"}
 
 
+def nombres_del_mundo(mundo):
+    """Los nombres de los personajes: los que traiga el mundo del juego (se editan con el editor de mods, en «Gente de la
+    calle») y, si no trae ninguno porque el juego es de una versión anterior, los de siempre."""
+    try:
+        lista = [str(n).strip()[:24] for n in (mundo.get("gente") or {}).get("nombres") or [] if isinstance(n, str) and n.strip()]
+    except AttributeError:
+        lista = []
+    return lista or NOMBRES
+
+
 class Bots:
     """Mixin del servidor."""
 
@@ -39,7 +49,8 @@ class Bots:
         b.dentro = True
         b.clase = self.rng.choice(CLASES)
         usados = {x.nombre for x in self.jugadores.values()}
-        libres = [n for n in NOMBRES if n not in usados] or NOMBRES
+        nombres = nombres_del_mundo(self.mundo)
+        libres = [n for n in nombres if n not in usados] or nombres
         b.nombre = self.rng.choice(libres)
         b.arma = ARMA[b.clase]
         b.salud = float(self.rng.randint(60, 110))

@@ -142,7 +142,8 @@ def responder(texto, ficha, ctx, rng=random):
     ctx: diccionario con barrio, ciudad, hora y tu (nombre del jugador).
     """
     _cargar()
-    caracter = ficha.get("caracter", "amable")
+    from . import gente
+    caracter = gente.habla_de(ficha.get("caracter", "amable"))       # un carácter de un mod habla con las frases de uno de los de serie
     conf = ficha.get("confianza", 0)
     dichas = ficha.setdefault("dichas", [])
     tema = tema_de(texto)

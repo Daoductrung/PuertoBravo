@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 16
+VERSION_CACHE = 17
 PI2 = 2 * np.pi
 
 
@@ -725,6 +725,28 @@ def generar(semilla=7):
         tp = _t(0.2)
         rail = (np.sin(PI2 * f0 * tp) + 0.5 * np.sin(PI2 * f0 * 1.52 * tp)) * _decae(0.2, 0.035, 0.001)
         S[f"paso_via{pie}"] = _norm(rail + 0.8 * _filtro(ruido(0.2), 900, 5000) * _decae(0.2, 0.05), 0.4)
+    # ----------------------------------------------- armas nuevas (versión 1.7.1): cada una, su sonido
+    S["disparo_rafaga"] = disparo(450, 5600, 0.16, 0.024, 0.45)               # pistola de ráfagas: seco y muy corto, para que se repita deprisa
+    caza = np.zeros(int(SR * 1.1))                                            # escopeta de corredera: un estampido grave y, detrás, la corredera: atrás y adelante
+    _poner(caza, disparo(90, 2400, 0.6, 0.13, 1.4), 0.0)
+    _poner(caza, _filtro(ruido(0.09), 700, 3800) * _decae(0.09, 0.03), 0.66, 0.4)
+    _poner(caza, _filtro(ruido(0.08), 1000, 5200) * _decae(0.08, 0.022), 0.86, 0.45)
+    S["disparo_corredera"] = _norm(caza, 0.95)
+    pal = np.zeros(int(SR * 1.0))                                             # rifle de palanca: el disparo y, detrás, la palanca: dos chasquidos de metal
+    _poner(pal, disparo(220, 5200, 0.5, 0.085, 0.9), 0.0)
+    _poner(pal, _filtro(ruido(0.05), 1800, 7000) * _decae(0.05, 0.012), 0.55, 0.35)
+    _poner(pal, _filtro(ruido(0.06), 1200, 5000) * _decae(0.06, 0.015), 0.72, 0.4)
+    S["disparo_palanca"] = _norm(pal, 0.95)
+    S["disparo_semiautomatico"] = disparo(280, 6800, 0.42, 0.06, 0.75)        # fusil semiautomático: entre la carabina y el fusil de asalto
+    ha = np.zeros(int(SR * 0.42))                                             # hacha: el silbido del arco y el golpe sordo del filo
+    _poner(ha, _filtro(ruido(0.16), 500, 2600) * np.sin(np.pi * _t(0.16) / 0.16) ** 2, 0.0, 0.5)
+    _poner(ha, _filtro(ruido(0.2), 50, 650) * _decae(0.2, 0.05) + _seno(70, 0.2) * _decae(0.2, 0.06), 0.15)
+    _poner(ha, _filtro(ruido(0.05), 2500, 8000) * _decae(0.05, 0.01), 0.15, 0.4)
+    S["hacha"] = _norm(ha, 0.8)
+    lg = np.zeros(int(SR * 0.6))                                              # lanzagranadas: un «pum» hueco, de tubo, y el siseo de la granada al salir
+    _poner(lg, (_barrido(280, 80, 0.22) + 0.6 * _filtro(ruido(0.22), 150, 1500)) * _decae(0.22, 0.05, 0.002), 0.0)
+    _poner(lg, _filtro(ruido(0.4), 1500, 6000) * _decae(0.4, 0.12, 0.03), 0.08, 0.25)
+    S["lanzagranadas"] = _norm(np.tanh(lg * 2.0), 0.9)
     return S
 
 

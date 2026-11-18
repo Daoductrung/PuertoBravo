@@ -497,8 +497,10 @@ def empenos(p, l):
         return f
 
     def ops():
+        from .menus_juego import armas_en_venta
         lista = [Opcion(f"Vender {a['nombre']} por {int(a['precio'] * 0.4)} euros", vender(a)) for a in p.datos["armas"] if a["id"] in j.armas and a["precio"] > 0]
-        return lista or [Opcion("No tienes nada que le interese al prestamista")]
+        venta = armas_en_venta(p, l)                              # lo que el prestamista tiene de segunda mano
+        return venta + (lista or [Opcion("No tienes nada que le interese al prestamista")])
     m = _menu(p, l, ops)
 
 

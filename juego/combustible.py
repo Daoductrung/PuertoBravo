@@ -49,6 +49,12 @@ def deposito(modelo):
     return float(modelo.get("deposito") or DEPOSITOS.get(modelo.get("motor"), DEPOSITOS.get("otros", 45)))
 
 
+def capacidad(v):
+    """Los litros que caben en un vehículo concreto: los de su modelo, y más si lleva el depósito ampliado en el taller."""
+    from . import sistemas
+    return deposito(v.modelo) * sistemas.factor_deposito(v)
+
+
 def tiene_surtidor(lugar):
     """¿Se puede repostar aquí? Lo dice el mapa: el lugar lleva la marca de surtidor."""
     return lugar is not None and bool(lugar.get("surtidor"))
@@ -70,7 +76,7 @@ class Combustible:
 
     def litros(self, v):
         """Los litros que lleva. Un vehículo que no se había mirado aún aparece con el depósito a medias, como en la vida."""
-        cap = deposito(v.modelo)
+        cap = capacidad(v)
         if getattr(v, "litros", None) is None:
             v.litros = cap * (1.0 if getattr(v, "propio", False) else random.uniform(0.4, 1.0))
         v.litros = max(0.0, min(cap, float(v.litros)))
@@ -84,7 +90,7 @@ class Combustible:
         if not self.gasta(v):
             v.seco = False
             return True
-        cap = deposito(v.modelo)
+        cap = capacidad(v)
         antes = self.litros(v)
         if antes <= 0:
             v.seco = True
@@ -117,13 +123,13 @@ class Combustible:
     def combustible_txt(self, v):
         if not self.gasta(v):
             return ""
-        cap = deposito(v.modelo)
+        cap = capacidad(v)
         l = self.litros(v)
         return f" Depósito al {int(round(100 * l / cap))} por ciento, {int(round(l))} litros" + (", en reserva." if l / cap <= RESERVA else ".")
 
     def repostar(self, v, litros=None, gratis=False, precio=None):
         """Echa combustible. Con litros=None, llena. Devuelve los litros echados, o 0 si no se pudo pagar o ya estaba lleno."""
-        cap = deposito(v.modelo)
+        cap = capacidad(v)
         if cap <= 0:
             return 0
         hueco = cap - self.litros(v)
@@ -166,7 +172,7 @@ class Combustible:
             self.app.son("error")
             self.decir("Con la policía buscándote, la grúa no se acerca.", True)
             return False
-        if deposito(v.modelo) - self.litros(v) < 1:
+        if capacidad(v) - self.litros(v) < 1:
             self.decir("El depósito está lleno.", True)
             return False
         if not self.pagar(PRECIO_ASISTENCIA):

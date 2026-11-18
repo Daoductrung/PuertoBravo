@@ -2,11 +2,10 @@
 import math
 import random
 
+from . import gente as G
 from . import mundo as M
 from .entidades import Persona
 
-NOMBRES_PERRO = ["Canela", "Trufa", "Rayo", "Luna", "Chispa", "Coco", "Nube", "Toby"]
-BANDAS = ["Los Calaveras", "Los Lagartos", "Los Barrenos", "Los Tiburones", "Los Cuervos"]
 EMPRESAS = {
     "naviera": ("Naviera Poniente", 40, "Barcos y mercancías. Estable y aburrida."),
     "minas": ("Minas de Monteferro", 60, "Sube y baja con la huelga minera."),
@@ -304,7 +303,17 @@ class Extras3:
         return " ".join(t for t in (str(b.get("descripcion", "")).strip(), self.barrio_dueno_txt(b, mapa)) if t)
 
     def empezar_conquista(self, b):
-        banda = self.banda_de_barrio(b) or random.choice(BANDAS)
+        banda = self.banda_de_barrio(b) or random.choice(G.nombres_bandas())
+        tipos, refuerzo = G.tipos_de_banda(banda)
+        if refuerzo and (self.en_servidor or G.tipo_enemigo(refuerzo).get("vehiculo") not in self.modelos):
+            refuerzo = None
+
+        def grupo(clase, n, k, mas, **serie):
+            """n pandilleros de un tipo de la banda, más duros en cada asalto. Sin tipos en los datos, los de siempre."""
+            t = G.tipo_enemigo(clase)
+            if not t:
+                return dict(serie, n=n, tipo=f"Pandillero de {banda}", salud=70 + mas + 8 * k)
+            return {"n": n, "clase": clase, "tipo": f"{t.get('nombre', 'Pandillero')} de {banda}", "salud": float(t.get("salud", 70)) + 8 * k}
         ls = [l for l in self.mundo.lugares.values() if self.mundo.barrio(l.x, l.y)["id"] == b["id"] and l.tipo not in ("salida", "embarcadero")]
         if len(ls) < 2:
             self.decir("En ese barrio no hay dónde pelear.", True)
@@ -313,10 +322,15 @@ class Extras3:
         pasos = []
         for k, n in enumerate((3, 4, 5)):
             l = ls[k % len(ls)]
+            base, duro = (tipos[0], tipos[-1]) if tipos else ("", "")
+            llegan = min(n - 2, int(G.tipo_enemigo(refuerzo).get("ocupantes", 3) or 3)) if refuerzo and k == 2 else 0      # los últimos traen refuerzos en un vehículo
+            grupos = [grupo(base, n - 1 - llegan, k, 0, arma=random.choice(["pistola", "pistola", "subfusil"])),
+                      grupo(duro, 1, k, 10, arma=random.choice(["escopeta", "bate", "navaja"]))]
+            if llegan:
+                grupos.append(grupo(refuerzo, llegan, k, 5))
             pasos.append({"tipo": "eliminar", "lugar": l.id,
-                          "texto": f"{['Primer', 'Segundo', 'Último'][k]} grupo de {banda}: {n} pandilleros junto a {l.nombre}.",
-                          "enemigos": [{"n": n - 1, "tipo": f"Pandillero de {banda}", "arma": random.choice(["pistola", "pistola", "subfusil"]), "salud": 70 + 8 * k},
-                                       {"n": 1, "tipo": f"Pandillero de {banda}", "arma": random.choice(["escopeta", "bate", "navaja"]), "salud": 80 + 8 * k}]})
+                          "texto": f"{['Primer', 'Segundo', 'Último'][k]} grupo de {banda}: {n} pandilleros junto a {l.nombre}." + (" Algunos llegan de refuerzo en un vehículo." if llegan else ""),
+                          "enemigos": [g for g in grupos if g["n"] > 0]})
         self._empezar_repetible({"id": "conquista", "titulo": f"Conquista de {b['nombre']}", "lugar": ls[0].id, "territorio": b["id"], "banda": banda,
                                  "contador": "conquistas", "pasos": pasos, "recompensa": {"dinero": 2500}})
 

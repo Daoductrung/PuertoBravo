@@ -4,6 +4,7 @@ import random
 
 import pygame
 
+from . import gente as G
 from . import mundo as M
 from .entidades import Objeto, Persona, Vehiculo
 from .menus import Dialogo
@@ -15,9 +16,6 @@ RITMO_PATRULLAS = {1: 9.0, 2: 7.0, 3: 6.0, 4: 5.0, 5: 4.0}
 
 
 RIVAL_CAE = ("cae a la lona.", "se va al suelo y no se levanta.", "besa la lona.", "se desploma: fuera de combate.", "dobla las rodillas y cae.")
-
-BANDAS_MUNDO = ("Los Calaveras", "Los Lagartos", "Los Barrenos", "Los Tiburones", "Los Cuervos")
-
 
 def _num(x):
     """Un número como se dice: 0,4 y no 0.4; 35 y no 35.0."""
@@ -397,7 +395,7 @@ class Combate:
                 return
             else:
                 j.stats["enemigos"] += 1
-                banda = "Los Calaveras" if p.tipo == "banda" else next((b for b in BANDAS_MUNDO if b in (p.nombre or "")), None)
+                banda = getattr(p, "banda", None) or ("Los Calaveras" if p.tipo == "banda" else G.banda_en(p.nombre))
                 if banda:
                     self.cambiar_rep_banda(banda, -4)            # matar a los suyos no se olvida
                 if p.tag != "evento":
@@ -494,6 +492,10 @@ class Combate:
         for p in list(self.personas):
             if not p.muerto and p.dist(x, y) < 8:
                 self.danar_persona(p, 300)
+        for q in getattr(v, "pasajeros", []):                    # los enemigos que venían dentro y no se habían bajado caen con él
+            if not q.muerto:
+                q.muerto = True
+                j.stats["enemigos"] += 1
         if v.tag == "objetivo" and self.mision:
             self.mision["restos"] = (x, y)
         if v.modelo["id"] == "blindado" and not v.tag:
@@ -564,7 +566,8 @@ class Combate:
             self.son("estrella_sube", cat="interfaz")
             self.app.vibrar(0.5, 0.5, 250)
             pista = " Aléjate de las sirenas hasta que dejen de buscarte, o pinta el vehículo en un taller." if j.estrellas == 0 else ""
-            self.decir(f"Nivel de búsqueda {n} de 5.{pista}")
+            aviso = G.aviso_nivel(n) if self.mundo.policia and not self.sv_policia_comun() else ""      # con mucha búsqueda sale gente mejor armada: lo dicen los datos
+            self.decir(f"Nivel de búsqueda {n} de 5.{pista}" + (" " + aviso if aviso else ""))
         j.estrellas = n
         if n == 0:
             return
@@ -574,6 +577,9 @@ class Combate:
         x, y = self.pos()
         # A pie se te ve menos que en un coche: basta con alejarse media manzana para que te pierdan.
         r_p, r_v = (70, 80) if j.veh else (38, 45)
+        if j.veh:                                                # con el escape silenciado te oyen de menos lejos
+            from . import sistemas
+            r_p, r_v = r_p * sistemas.factor_oido_policia(j.veh), r_v * sistemas.factor_oido_policia(j.veh)
         cerca = any(p.tipo == "policia" and not p.muerto and p.dist(x, y) < r_p for p in self.personas) or \
             any(v.ia == "policia" and not v.muerto and v.dist(x, y) < r_v for v in self.vehiculos)
         if cerca:
@@ -600,8 +606,11 @@ class Combate:
             if v.ia == "policia":
                 v.hostil = True
 
-    def _llegar_patrulla(self, x, y):
+    def _punto_llegada(self, x, y):
+        """Un punto de la calzada a unos doscientos metros, y el sentido para venir desde él: (x, y, sentido). None si no lo hay."""
         m = self.mundo
+        if m.tipo == "mar" or m.NX < 2 or m.NY < 2:
+            return None
         for _ in range(6):
             dist = random.uniform(150, 230) * random.choice([-1, 1])
             if random.random() < 0.5:
@@ -618,12 +627,21 @@ class Combate:
                     continue
                 d = 2 if dist > 0 else 0
                 pos = (m.carril("V", ii, d), vy)
-            v = Vehiculo(self.modelos["patrulla"], pos[0], pos[1], d, "policia")
-            v.ocupado = True
-            v.hostil = True
-            v.vel = 12.0
-            self.vehiculos.append(v)
+            return pos[0], pos[1], d
+        return None
+
+    def _llegar_patrulla(self, x, y):
+        """Sale una patrulla a por ti. Qué agentes trae y en qué vehículo lo dice la tabla de la policía de los datos, según el nivel de búsqueda."""
+        pos = self._punto_llegada(x, y)
+        if pos is None:
             return
+        e = G.agentes_nivel(self.j.estrellas)
+        v = Vehiculo(self.modelos.get(e["vehiculo"]) or self.modelos["patrulla"], pos[0], pos[1], pos[2], "policia")
+        v.agentes = e
+        v.ocupado = True
+        v.hostil = True
+        v.vel = 12.0
+        self.vehiculos.append(v)
 
     # ---------------------------------------------------------------- personas
     def _andar_hacia(self, p, tx, ty, vel, dt):
@@ -711,7 +729,7 @@ class Combate:
                     p.activo = True
                 else:
                     continue
-            if p.tipo == "banda" and self.rep_banda("Los Calaveras") >= 30 and not getattr(p, "provocado", False):
+            if p.tipo == "banda" and self.rep_banda(getattr(p, "banda", None) or "Los Calaveras") >= 30 and not getattr(p, "provocado", False):
                 continue                                         # te respetan: no te hacen nada mientras no les toques
             if p.tipo == "banda" and not p.avisado:
                 if d > 26:
@@ -720,7 +738,13 @@ class Combate:
                     continue
                 p.avisado = True
                 self.son("grito", xy=(p.x, p.y), vol=0.5, tono=0.8)
-                self.decir(f"¡Un Calavera te ha visto! {self.situar(p.x, p.y, 'Está')}. Pulsa Q para fijarlo.")
+                self.decir(f"¡Un {p.nombre} te ha visto! {self.situar(p.x, p.y, 'Está')}. Pulsa Q para fijarlo.")
+            if getattr(p, "frases", None) and not getattr(p, "ha_gritado", False) and d < 32:      # los enemigos con frases gritan la suya al verte, de uno en uno
+                p.ha_gritado = True
+                if self.t - getattr(self, "t_frase_enemigo", -99.0) > 5.0:
+                    self.t_frase_enemigo = self.t
+                    self.son("grito", xy=(p.x, p.y), vol=0.4, tono=p.tono)
+                    self.decir(f"{p.nombre}: {random.choice(p.frases)}")
             a = self.armas_d.get(p.arma or "punos", self.armas_d["punos"])
             cuerpo = a["tipo"] == "cuerpo"
             alcance = a["alcance"] if cuerpo else min(a["alcance"], 30.0)
@@ -763,7 +787,7 @@ class Combate:
                 self.son("notificacion", cat="interfaz")
                 self.decir("¡Te disparan! Puedes responder sin bajarte: pulsa Q para fijar a quien te dispara y Control para disparar desde el vehículo, con un arma de fuego en la mano. "
                            "La tecla I cambia de arma.")
-            prob = 0.42 * (1.0 - 0.6 * d / alcance)
+            prob = getattr(p, "punteria", G.PUNTERIA) * (1.0 - 0.6 * d / alcance)
             if j.agachado:
                 prob *= 0.45
             if j.veh:

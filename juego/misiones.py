@@ -5,6 +5,7 @@ import random
 
 import pygame
 
+from . import gente as G
 from . import mundo as M
 from .entidades import Objeto, Persona
 from .menus import Dialogo, Menu, Opcion
@@ -222,6 +223,7 @@ class Misiones:
                 return
             ms["veh"] = None
         ms["enemigos"] = []
+        ms["veh_enemigos"] = []
         ms["generado"] = False
         if not ms["recogido"]:
             ms["objeto"] = None
@@ -486,11 +488,43 @@ class Misiones:
                 if math.hypot(px - x, py - y) < 9:
                     self.plazas_usadas.add("L:" + l.id)
 
+    def _crear_enemigo(self, grupo, x, y):
+        """Un enemigo de un grupo de una misión. El grupo dice su tipo («clase», del catálogo de tipos de enemigo) o, como
+        siempre, su nombre, su arma y su salud; lo que el grupo diga manda sobre lo que diga el tipo."""
+        f = G.enemigo(grupo)
+        e = G.vestir(Persona("enemigo", x, y, f["nombre"]), f)
+        e.salud = e.salud * (1.5 if self.cfg["mod_enemigos"] else 1.0) * (1.0 + 0.15 * min(4, self.j.ciclo))
+        e.banda = G.banda_en(e.nombre)
+        e.hostil = True
+        e.estado = "ataca"
+        e.inofensivo = bool(grupo.get("inofensivo"))          # un muñeco de prácticas: se le puede fijar, pero no ataca
+        e.deportivo = bool(grupo.get("deportivo"))            # un rival del gimnasio: tumbarlo no es delito
+        e.tag = "mision"
+        e.t_disparo = random.uniform(1.5, 3.0)
+        return e
+
     def _generar_enemigos(self, p, l):
         ms = self.mision
         ms["generado"] = True
+        en_coche = 0
         for grupo in p["enemigos"]:
-            for _ in range(grupo.get("n", 1)):
+            n = int(grupo.get("n", 1))
+            f = G.enemigo(grupo)
+            a_pie = None
+            # Un grupo cuyo tipo va en vehículo llega en él: viene por la calle, para cerca de ti y se bajan. En un servidor, a pie.
+            if f["vehiculo"] and n > 0 and not self.en_servidor and not grupo.get("inofensivo") and not grupo.get("deportivo"):
+                a_pie = [self._crear_enemigo(grupo, l.x, l.y) for _ in range(n)]
+                while a_pie:
+                    viajan = a_pie[:f["ocupantes"]]
+                    v = self.llegar_en_vehiculo(f["vehiculo"], viajan)
+                    if v is None:                                # aquí no puede venir un vehículo: van a pie, como los demás
+                        break
+                    a_pie = a_pie[len(viajan):]
+                    ms.setdefault("veh_enemigos", []).append(v)
+                    ms["enemigos"] += viajan
+                    en_coche += len(viajan)
+                n = len(a_pie)
+            for k in range(n):
                 for _ in range(20):
                     a = random.uniform(0, 2 * math.pi)
                     r = random.uniform(5, 16)
@@ -499,15 +533,11 @@ class Misiones:
                         break
                 else:
                     x, y = l.x, l.y
-                e = Persona("enemigo", x, y, grupo.get("tipo", "Enemigo"))
-                e.salud = float(grupo.get("salud", 60)) * (1.5 if self.cfg["mod_enemigos"] else 1.0) * (1.0 + 0.15 * min(4, self.j.ciclo))
-                e.arma = grupo.get("arma", "pistola")
-                e.hostil = True
-                e.estado = "ataca"
-                e.inofensivo = bool(grupo.get("inofensivo"))          # un muñeco de prácticas: se le puede fijar, pero no ataca
-                e.deportivo = bool(grupo.get("deportivo"))            # un rival del gimnasio: tumbarlo no es delito
-                e.tag = "mision"
-                e.t_disparo = random.uniform(1.5, 3.0)
+                if a_pie is None:
+                    e = self._crear_enemigo(grupo, x, y)
+                else:
+                    e = a_pie[k]
+                    e.x, e.y = x, y
                 self.personas.append(e)
                 ms["enemigos"].append(e)
         n = ms["quedan"] = len(ms["enemigos"])
@@ -517,7 +547,11 @@ class Misiones:
             self.decir((f"Hay un objetivo de prácticas, {M.metros(cerca.dist(x, y))}." if n == 1 else f"Hay {n} objetivos de prácticas; el más cercano, {M.metros(cerca.dist(x, y))}.")
                        + " Pulsa Q para fijarlo.")
         else:
-            self.decir(("Hay un enemigo. Pulsa Q para fijarlo." if n == 1 else f"Hay {n} enemigos. Pulsa Q para fijar al más cercano."))
+            llegan = ""
+            if en_coche:
+                llegan = (" Viene en un vehículo: escucha el motor." if n == 1 else " Vienen en un vehículo: escucha el motor." if en_coche == n
+                          else f" {en_coche} de ellos vienen en un vehículo: escucha el motor.") + " Con Q fijas también el vehículo: si lo destruyes antes de que se bajen, caen con él."
+            self.decir(("Hay un enemigo. Pulsa Q para fijarlo." if n == 1 else f"Hay {n} enemigos. Pulsa Q para fijar al más cercano.") + llegan)
         if self.cfg["punteria"] == "completa":
             self.fijar(callar=True)
         self.sv_mision_enemigos()                                # en grupo, los enemigos son de todos
@@ -895,7 +929,6 @@ class Misiones:
                 self.decir(self.txt(p["resultado"]))
             self._paso_hecho()
 
-    NOMBRES_RIVALES = ("el coche rojo", "el coche negro", "la furgoneta blanca", "el deportivo amarillo")
 
     def _parar_rivales(self, ms):
         for r in (ms.get("carrera") or {}).get("rivales", []):
@@ -954,7 +987,7 @@ class Misiones:
                     n_riv = max(1, min(4, int(p.get("rivales", 2))))
                     base = float(p.get("velocidad", 10))
                     ca.update({"fase": "cuenta", "t": 3.0, "pts": pts, "cum": cum, "marcas": marcas, "rectos": rectos, "puesto": -1,
-                               "rivales": [{"s": 5.0 + 5.0 * k, "vel": base * (1.0 - 0.07 * k), "nombre": self.NOMBRES_RIVALES[k], "canal": None, "k": k} for k in range(n_riv)]})
+                               "rivales": [{"s": 5.0 + 5.0 * k, "vel": base * (1.0 - 0.07 * k), "nombre": G.lista("rivales_carrera")[k % len(G.lista("rivales_carrera"))], "canal": None, "k": k} for k in range(n_riv)]})
                     if self.gps and self.gps.get("auto"):
                         self.cancelar_gps()
                     self.app.son("reloj", cat="interfaz")
@@ -1033,6 +1066,9 @@ class Misiones:
         for e in ms["enemigos"]:
             if e in self.personas:
                 self.personas.remove(e)
+        for ve in ms.get("veh_enemigos", []):                    # los vehículos en los que venían, si aún no se habían bajado
+            if not ve.muerto and not ve.desplegado:
+                self.quitar_vehiculo(ve)
         o = ms.get("objeto")
         if o is not None and o in self.objetos:
             if o.canal:

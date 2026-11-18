@@ -175,16 +175,21 @@ ESQUEMAS = {
         c("fama", "Fama que da o quita", "entero"),
         c("animo", "Ánimo que da o quita", "entero"),
         c("renta", "Dinero que deja cada medianoche, para siempre", "entero", "Una consecuencia que dura después de la misión y del final de la historia. Negativo, si cuesta dinero."),
-        c("banda", "Banda con la que cambia la relación", ayuda="El nombre tal cual: Los Calaveras, Los Lagartos, Los Barrenos, Los Tiburones o Los Cuervos."),
+        c("banda", "Banda con la que cambia la relación", ayuda="El nombre tal cual: Los Calaveras, Los Lagartos, Los Barrenos, Los Tiburones o Los Cuervos, o el de una banda de la sección Bandas."),
         c("banda_puntos", "Puntos de relación con esa banda", "entero", "De menos cien a cien. Con treinta o más, esa banda te deja en paz; con menos treinta o menos, va a por ti.", minimo=-100, maximo=100)]},
     "linea": {"titulo": "Frase", "resumen": lambda d: f"{d.get('quien', '?')}: {d.get('texto', '')[:60]}", "campos": [
         c("quien", "Quién habla", req=True, defecto="Narrador", ayuda="Escribe Narrador para la narración."),
         c("texto", "Qué dice", "largo", req=True)]},
-    "enemigo": {"titulo": "Grupo de enemigos", "resumen": lambda d: f"{d.get('n', 1)} × {d.get('tipo', '?')} con {d.get('arma', '?')}", "campos": [
+    "enemigo": {"titulo": "Grupo de enemigos", "resumen": lambda d: f"{d.get('n', 1)} × {d.get('tipo') or d.get('clase') or '?'}" + (f" con {d['arma']}" if d.get("arma") else ""), "campos": [
         c("n", "Cuántos", "entero", req=True, defecto=1, minimo=1),
-        c("tipo", "Nombre", req=True, defecto="Matón"),
-        c("arma", "Arma", "ref", ref="arma", req=True, defecto="pistola"),
-        c("salud", "Salud", "entero", defecto=60),
+        c("clase", "Tipo de enemigo", "ref", "Uno del catálogo de la sección Tipos de enemigo: de él salen el nombre, el arma, la salud, la puntería, las frases y, si lo tiene, el vehículo en el que llegan. "
+          "Si lo eliges, los campos de abajo solo hacen falta para cambiar algo de ese tipo en este grupo. Si lo dejas sin valor, escribe al menos el nombre y el arma.", ref="tipo_enemigo", defecto="maton"),
+        c("tipo", "Nombre", ayuda="Cómo los llama el juego. Vacío, el nombre de su tipo de enemigo."),
+        c("arma", "Arma", "ref", "Vacío, la de su tipo de enemigo.", ref="arma"),
+        c("salud", "Salud", "entero", "Vacío, la de su tipo de enemigo. Un peatón aguanta 50 y el jugador, 100.", minimo=1),
+        c("punteria", "Puntería, de 0 a 1", "decimal", "Lo que acierta a quemarropa. Un enemigo corriente tiene 0,42. Vacío, la de su tipo.", minimo=0.02, maximo=1),
+        c("vehiculo", "Llegan en este vehículo", "ref", "Vienen por la calle hacia el jugador, paran cerca y se bajan. Vacío, lo que diga su tipo de enemigo, que puede ser ir a pie.", ref="modelo"),
+        c("a_pie", "Van a pie aunque su tipo tenga vehículo", "si_no"),
         c("inofensivo", "No ataca: es un muñeco de prácticas", "si_no")]},
     "recompensa": {"titulo": "Recompensa", "campos": [
         c("dinero", "Dinero", "entero"), c("arma", "Arma", "ref", ref="arma"), c("balas", "Balas", "entero"),
@@ -208,6 +213,9 @@ ESQUEMAS = {
         c("ruido", "Ruido, de 0 a 3", "entero", "Con 0 nadie oye el disparo.", minimo=0, maximo=3, defecto=2),
         c("precio", "Precio", "entero", defecto=0), c("balas", "Balas al comprar", "entero", si=_es("fuego", "explosivo")),
         c("precio_balas", "Precio de la munición", "entero", si=_es("fuego", "explosivo")),
+        c("donde", "Dónde se compra", "opcion", "El tipo de local que la vende. Sin valor, en las armerías. La munición se compra también en las armerías, se venda donde se venda el arma.",
+          ops=[("armeria", "En las armerías"), ("tienda", "En las tiendas"), ("empenos", "En las casas de empeños")]),
+        c("sin_silenciador", "No admite silenciador", "si_no", si=_es("fuego")),
         c("desc", "Descripción", "largo")]},
     "vehiculo": {"titulo": "Vehículo", "resumen": lambda d: f"{d.get('nombre', '?')} ({'barco' if d.get('barco') else 'aeronave' if d.get('vuela') else 'tierra'})", "campos": [
         c("id", "Identificador", req=True), c("nombre", "Nombre", req=True),
@@ -301,7 +309,7 @@ ESQUEMAS = {
         c("ambiente", "Sonido de ambiente", "ref", ref="sonido", req=True, defecto="amb_residencial"),
         c("vehiculos", "Vehículos que circulan y aparcan", "refs", ref="modelo"),
         c("banda", "Banda que manda en el barrio", ayuda="Déjalo vacío si no es de ninguna. El nombre tal cual: Los Calaveras, Los Lagartos, Los Barrenos, Los Tiburones o Los Cuervos, "
-          "o el de una banda tuya. El juego dice solo de quién es el barrio en cada momento: de esa banda, del jugador si lo conquista, o en guerra."),
+          "o el de una banda de la sección Bandas. El juego dice solo de quién es el barrio en cada momento: de esa banda, del jugador si lo conquista, o en guerra."),
         c("descripcion", "Descripción", "largo", "Cómo es el barrio. No escribas aquí de qué banda es: para eso está el campo anterior, y así la frase cambia cuando el barrio cambia de manos.", req=True)]},
     "bloque": {"titulo": "Manzana", "resumen": lambda d: f"Manzana {d.get('i', '?')}, {d.get('j', '?')}: {d.get('tipo', '?')}", "campos": [
         c("i", "Avenida, desde el oeste", "entero", req=True, defecto=0), c("j", "Calle, desde el sur", "entero", req=True, defecto=0),
@@ -387,9 +395,15 @@ ESQUEMAS = {
         c("precio", "Precio", "entero", req=True, minimo=0),
         c("desc", "Lo que se dice al entrar en la habitación", "largo"),
         c("efecto", "Lo que mejora, explicado", "largo")]},
-    "mejora": {"titulo": "Mejora del taller", "resumen": lambda d: f"{d.get('nombre', '?')}: {d.get('precio', '?')} euros por nivel", "campos": [
-        c("id", "Identificador", req=True, ayuda="El juego trae motor, frenos y blindaje. Aquí se les cambia el nombre, el precio y la explicación; lo que hacen no cambia."),
+    "mejora": {"titulo": "Mejora del taller", "resumen": lambda d: f"{d.get('nombre', '?')}: {d.get('niveles', 3)} niveles, {d.get('precio', '?')} euros el primero", "campos": [
+        c("id", "Identificador", req=True, ayuda="El juego trae motor, frenos, blindaje, neumaticos, suspension, escape y deposito. Con uno de esos identificadores cambias esa mejora; con uno nuevo, añades otra al taller."),
         c("nombre", "Nombre", req=True),
+        c("efecto", "Qué mejora", "opcion", "Lo que hace en el vehículo. Sin valor, la mejora se puede comprar y se describe, pero no cambia nada.",
+          ops=[("motor", "Motor: más velocidad punta y aceleración, y suena más agudo"), ("frenos", "Frenos: frena en menos metros"), ("blindaje", "Blindaje: más resistencia"),
+               ("neumaticos", "Neumáticos: frena mejor con lluvia, pincha menos y rueda con menos ruido"), ("suspension", "Suspensión: los choques hacen menos daño"),
+               ("escape", "Escape: el motor suena más bajo y la policía te oye de menos lejos"), ("deposito", "Depósito: caben más litros de combustible")]),
+        c("niveles", "Cuántos niveles tiene", "entero", minimo=1, maximo=5, defecto=3),
+        c("por_nivel", "Cuánto da cada nivel, en tanto por ciento", "decimal", "Vacío, lo de serie: 7 el motor, 15 los frenos, 25 el blindaje, 25 los neumáticos, 15 la suspensión, 30 el escape y 30 el depósito.", minimo=0, maximo=100),
         c("precio", "Precio del primer nivel", "entero", "Cada nivel cuesta este precio multiplicado por el número del nivel.", req=True, minimo=0),
         c("desc", "Explicación", "largo")]},
     "ajuste_realismo": {"titulo": "Realismo", "resumen": lambda d: "Sed, higiene, averías y normas de tráfico", "campos": [
@@ -422,6 +436,69 @@ ESQUEMAS = {
           "Cada lugar puede además pedirla o quitarla por su cuenta."),
         c("volumen_auriculares", "Volumen de la radio por los auriculares, a pie, en tanto por ciento", "entero", minimo=5, maximo=100, defecto=70),
         c("volumen_local", "Volumen de la música de fondo de los locales, en tanto por ciento", "entero", minimo=2, maximo=100, defecto=30)]},
+    "ajuste_gente": {"titulo": "Gente de la calle", "resumen": lambda d: "Nombres, apellidos, oficios, frases, apodos y nombres de perro" + (", en lugar de los del juego" if d.get("sustituir") else ", añadidos a los del juego"), "campos": [
+        c("id", "Identificador", req=True, defecto="general", ayuda="Déjalo en general: solo se usa el primero."),
+        c("sustituir", "Mis listas sustituyen a las del juego", "si_no", "Con no, que es lo normal, lo que escribas en cada lista se añade a lo que ya trae el juego. "
+          "Con sí, cada lista que rellenes ocupa el sitio de la del juego; las que dejes vacías siguen siendo las del juego."),
+        c("nombres_h", "Nombres de hombre", "textos", "Uno por línea. Son los de la gente con la que hablas por la calle.", grupo="Nombres"),
+        c("nombres_m", "Nombres de mujer", "textos", "Uno por línea.", grupo="Nombres"),
+        c("apellidos", "Apellidos", "textos", "Uno por línea.", grupo="Nombres"),
+        c("apodos", "Apodos de los objetivos de los contratos", "textos", "Uno por línea, con su artículo: el Chato, la Culebra.", grupo="Nombres"),
+        c("perros", "Nombres de perro de la protectora", "textos", "Uno por línea.", grupo="Nombres"),
+        c("oficios", "Oficios", "lista", "A qué se dedica la gente de la calle. Cada oficio dice entre qué edades se tiene.", sub="oficio", grupo="Oficios y frases"),
+        c("frases", "Frases sueltas de la gente", "textos", "Una por línea. Es lo que te dice alguien al pulsar Intro a su lado.", grupo="Oficios y frases"),
+        c("bandas_propias", "Nombres para la banda del jugador", "textos", "Uno por línea. El juego elige uno al reclutar al primero; después se puede cambiar.", grupo="Otros nombres"),
+        c("rivales_carrera", "Cómo se llama a los rivales de las carreras de las misiones", "textos", "Uno por línea, hasta cuatro: el coche rojo, la furgoneta blanca.", grupo="Otros nombres"),
+        c("nombres_servidor", "Nombres de los personajes de un servidor en línea", "textos", "Uno por línea. Son los personajes que lleva el servidor cuando alguien entra en él con estos datos.", grupo="Otros nombres")]},
+    "oficio": {"titulo": "Oficio", "resumen": lambda d: f"{d.get('nombre', '?')}" + (f", {d['femenino']}" if d.get("femenino") else ""), "campos": [
+        c("nombre", "Nombre, en masculino", req=True, ayuda="Como lo dice la persona: camarero, en paro."),
+        c("femenino", "En femenino", ayuda="Vacío, si se dice igual: taxista, estudiante."),
+        c("edad_min", "Edad mínima", "entero", "Vacío, cualquiera. La gente de la calle tiene entre 19 y 74 años.", minimo=0, maximo=120),
+        c("edad_max", "Edad máxima", "entero", "Vacío, cualquiera. Por ejemplo 27 para un estudiante, o 66 para un trabajo del que uno se jubila.", minimo=0, maximo=120),
+        c("peso", "Cuánto abunda", "decimal", "Vacío, 1. Con 3 sale tres veces más que uno corriente entre la gente de su edad.", minimo=0.01, maximo=100)]},
+    "caracter": {"titulo": "Carácter de la gente", "resumen": lambda d: f"{d.get('id', '?')}: {d.get('desc', '')}", "campos": [
+        c("id", "Identificador", req=True, ayuda="El juego trae amable, hablador, seco, timido y chulo. Con uno de esos cambias ese carácter; con uno nuevo, añades otro, y la gente de la calle puede salir con él."),
+        c("desc", "Cómo te habla", req=True, ayuda="Completa la frase «Te habla...»: amable, con chulería, de pocas palabras."),
+        c("desc_ia", "Cómo es, para el modo de inteligencia artificial", ayuda="Completa la frase «Eres una persona...», en femenino: amable y cordial, seca, de pocas palabras."),
+        c("habla", "Habla con las frases de", "opcion", "El juego trae frases escritas para sus cinco caracteres. Un carácter nuevo usa las de uno de ellos.",
+          ops=[("amable", "El amable"), ("hablador", "El hablador"), ("seco", "El seco"), ("timido", "El tímido"), ("chulo", "El chulo")]),
+        c("saludo", "Confianza que gana con un saludo", "entero", minimo=-100, maximo=100, defecto=4),
+        c("cumplido", "Confianza que gana con un cumplido", "entero", minimo=-100, maximo=100, defecto=6),
+        c("chiste", "Confianza que gana con un chiste que le hace gracia", "entero", "También decide cuántas veces le hace gracia.", minimo=-100, maximo=100, defecto=4),
+        c("insulto", "Confianza que pierde con un insulto", "entero", "En negativo.", minimo=-100, maximo=0, defecto=-30),
+        c("valor", "Valor, de 0 a 1", "decimal", "Con mucho valor, se te encara si le insultas y grita pidiendo ayuda si le amenazas; con poco, huye o suelta el dinero.", minimo=0, maximo=1, defecto=0.3)]},
+    "banda": {"titulo": "Banda", "resumen": lambda d: f"{d.get('nombre', '?')}", "campos": [
+        c("id", "Identificador", req=True),
+        c("nombre", "Nombre", req=True, ayuda="Como lo dice el juego, y como se escribe en el campo Banda de un barrio: Los Calaveras."),
+        c("tipos", "Tipos de enemigo con los que pelea", "refs", "Los que salen al conquistarle un barrio. El primero es el pandillero corriente y el último, el más duro. Sin marcar ninguno, los pandilleros del juego.", ref="tipo_enemigo"),
+        c("refuerzo", "Tipo de enemigo de sus refuerzos", "ref", "Si ese tipo va en vehículo, en el último asalto de una conquista llegan en él. Sin valor, no tiene refuerzos.", ref="tipo_enemigo"),
+        c("callejero", "Tipo de enemigo de los suyos que andan por la calle", "ref", "Sin valor, no se les ve por la calle. Con valor, entre la gente de los barrios que son de esta banda hay alguno de los suyos.", ref="tipo_enemigo")]},
+    "tipo_enemigo": {"titulo": "Tipo de enemigo", "resumen": lambda d: f"{d.get('nombre', '?')} ({d.get('id', '?')}): {d.get('arma', '?')}, salud {d.get('salud', 60)}" + (f", en {d['vehiculo']}" if d.get("vehiculo") else ", a pie"), "campos": [
+        c("id", "Identificador", req=True, ayuda="Con él lo eligen los grupos de enemigos de las misiones, las bandas, la policía y la caja de los locales. Si coincide con uno del juego, lo cambia: "
+          "por ejemplo agente, guardaespaldas, vigilante o pandillero."),
+        c("nombre", "Nombre", req=True, ayuda="Cómo lo llama el juego: Matón, Vigilante de seguridad."),
+        c("arma", "Arma", "ref", ref="arma", req=True, defecto="pistola"),
+        c("armas", "O una de estas armas, al azar", "refs", "Si marcas alguna, cada enemigo de este tipo sale con una de ellas. Marca la misma idea varias veces en tipos distintos si quieres más variedad.", ref="arma"),
+        c("salud", "Salud", "entero", "Un peatón aguanta 50 y el jugador, 100.", req=True, minimo=1, defecto=60),
+        c("punteria", "Puntería, de 0 a 1", "decimal", "Lo que acierta a quemarropa; de lejos acierta menos. Un enemigo corriente tiene 0,42.", minimo=0.02, maximo=1, defecto=0.42),
+        c("vehiculo", "Va en este vehículo", "ref", "Sin valor, va a pie. Con valor, llega en él: viene por la calle hacia el jugador, para cerca y se bajan. En la policía es el vehículo de la patrulla.", ref="modelo"),
+        c("ocupantes", "Cuántos caben en el vehículo", "entero", "Si el grupo es mayor, vienen en varios vehículos. En la policía, cuántos agentes se bajan de cada patrulla.", minimo=1, maximo=8, defecto=2,
+          si=lambda d: d.get("vehiculo")),
+        c("voz", "Voz", "opcion", "El tono de sus gritos. Sin valor, cada uno la suya.", ops=[("grave", "Grave"), ("aguda", "Aguda")]),
+        c("frases", "Frases que grita al verte", "textos", "Una por línea. Las dice el lector, con su nombre delante. Lo que cambie según el protagonista sea él o ella va entre corchetes: A por [él|ella].")]},
+    "policia_nivel": {"titulo": "Policía de un nivel de búsqueda", "resumen": lambda d: f"Nivel {d.get('nivel', '?')}: {', '.join(d.get('tipos') or []) or 'sin tipos'}", "campos": [
+        c("id", "Identificador", req=True, ayuda="El juego usa nivel_1, nivel_2, nivel_3, nivel_4 y nivel_5: con uno de esos cambias ese nivel."),
+        c("nivel", "Nivel de búsqueda", "entero", req=True, minimo=1, maximo=5, defecto=1),
+        c("tipos", "Tipos de agente que salen", "refs", "Cada patrulla que sale a por el jugador con este nivel trae agentes de uno de estos tipos, al azar. El tipo dice su arma, su salud, su vehículo y cuántos se bajan.",
+          ref="tipo_enemigo", req=True),
+        c("aviso", "Aviso al llegar a este nivel", "largo", "Se dice después de «Nivel de búsqueda tantos de 5». Sirve para avisar de que sale una unidad especial.")]},
+    "caja_local": {"titulo": "Caja de un tipo de local", "resumen": lambda d: f"{d.get('id', '?')}: de {d.get('minimo', 0)} a {d.get('maximo', 0)} euros" + (f", {d['guardias']} de guardia" if d.get("guardias") else ""), "campos": [
+        c("id", "Tipo de local", "opcion", "Lo que hay en la caja vale para todos los locales de ese tipo.", ops=TIPOS_LUGAR, req=True, defecto="tienda"),
+        c("minimo", "En la caja hay, como poco", "entero", req=True, minimo=0, defecto=150),
+        c("maximo", "Y como mucho", "entero", "Cada día, cada local tiene una cantidad distinta entre las dos.", req=True, minimo=0, defecto=500),
+        c("guardias", "Cuántos la guardan", "entero", "Vacío o cero, nadie.", minimo=0, maximo=12),
+        c("guardia", "Tipo de enemigo de la guardia", "ref", ref="tipo_enemigo"),
+        c("busqueda", "Nivel de búsqueda al atracarla", "entero", minimo=0, maximo=5, defecto=2)]},
     "capitulo": {"titulo": "Capítulo", "resumen": lambda d: f"{d.get('clave', '?')}: {d.get('valor', '?')}", "campos": [
         c("clave", "Número", req=True), c("valor", "Título", req=True)]},
 }
@@ -437,6 +514,9 @@ SECCIONES = [
     ("muebles", "Muebles de la casa", "mueble"), ("mejoras", "Mejoras del taller", "mejora"), ("realismo", "Realismo", "ajuste_realismo"),
     ("ambiente", "Radio a pie y en los locales", "ajuste_ambiente"),
     ("tarifas", "Tarifas y precios", "tarifa"),
+    ("gente", "Gente de la calle", "ajuste_gente"), ("caracteres", "Caracteres de la gente", "caracter"), ("bandas", "Bandas", "banda"),
+    ("tipos_enemigo", "Tipos de enemigo", "tipo_enemigo"), ("policia_niveles", "Policía por nivel de búsqueda", "policia_nivel"),
+    ("cajas_locales", "Caja de los locales", "caja_local"),
     ("personas", "Personas, contenido para adultos", "persona"), ("sustancias", "Sustancias, contenido para adultos", "sustancia"),
     ("actividades", "Planes para citas, contenido para adultos", "actividad"), ("regalos", "Regalos, contenido para adultos", "regalo"),
 ]

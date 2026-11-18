@@ -2,6 +2,8 @@
 
     .venv\\Scripts\\python.exe herramientas\\crear_packs.py            monta los packs en adjuntos/packs
     .venv\\Scripts\\python.exe herramientas\\crear_packs.py instalar   y además los copia a data/sonidos
+    .venv\\Scripts\\python.exe herramientas\\crear_packs.py anadir hacha disparo_corredera
+                                        añade solo esos sonidos a los packs ya instalados en data/sonidos, sin rehacerlos
 
 Cada pack es una tabla: sonido del juego -> archivo de una colección y cómo recortarlo.
 Para añadir o cambiar un sonido basta con tocar su línea y volver a ejecutar.
@@ -87,6 +89,9 @@ PACKS = {
             "disparo_subfusil": ("ARM", "Carl Gustav M45/G_24P", {"golpe": 0.22}), "disparo_escopeta": ("ARM", "Mossberg/N_26P", {"golpe": 0.9}),
             "disparo_rifle": ("ARM", "Tikka/W_24P", {"golpe": 1.0}), "disparo_fusil": ("ARM", "AK-47/C_27P", {"golpe": 0.35}),
             "disparo_silenciado": ("ARM", "Savage 10 .300 Blackout/T_17P", {"golpe": 0.3}),
+            "disparo_rafaga": ("ARM", "Bersa/F_41P", {"golpe": 0.2}), "disparo_corredera": ("ARM", "Model 12/K_17P", {"golpe": 0.9}),
+            "disparo_palanca": ("ARM", "Marlin 336/I_17P", {"golpe": 0.9}), "disparo_semiautomatico": ("ARM", "SKS/U_14P", {"golpe": 0.45}),
+            "lanzagranadas": ("BANG", "shot_01", {"dur": 0.6}), "hacha": ("K", "impactPlank_medium_000", {"dur": 0.4}),
             "recarga": ("REL", "gun_reload.1"), "amartillar": ("RK", "metalLatch"), "sin_balas": ("UI", "switch12"),
             "sirena": ("@sirens-and-alarm-noise", "siren_0", {"bucle": 4.0, "desde": 2.0}), "sirena_lejana": ("@sirens-and-alarm-noise", "siren_0", {"dur": 2.0}),
             "sirena_barco": ("@their-coming-generic-horn-sound", "theircoming3_0", {"dur": 2.5}),
@@ -164,6 +169,9 @@ PACKS = {
             "disparo_subfusil": ("ARM", "PPSh/P_22P", {"golpe": 0.22}), "disparo_escopeta": ("ARM", "Nova/O_17P", {"golpe": 0.9}),
             "disparo_rifle": ("ARM", "Mosin Nagant/M_21P", {"golpe": 1.0}), "disparo_fusil": ("ARM", "AR-15/D_24P", {"golpe": 0.35}),
             "disparo_silenciado": ("ARM", "Ruger Mark III/R_30P", {"golpe": 0.3}),
+            "disparo_rafaga": ("ARM", "Bersa/F_47P", {"golpe": 0.2}), "disparo_corredera": ("ARM", "Model 12/K_22P", {"golpe": 0.9}),
+            "disparo_palanca": ("ARM", "Model 1894/L_17P", {"golpe": 0.9}), "disparo_semiautomatico": ("ARM", "SKS/U_19P", {"golpe": 0.45}),
+            "lanzagranadas": ("BANG", "shot_02", {"dur": 0.6}), "hacha": ("K", "impactPlank_medium_002", {"dur": 0.4}),
             "recarga": ("SHG", "Rack"), "amartillar": ("RK", "metalClick", {"dur": 0.3}), "sin_balas": ("SND", "Guns/gunempty"),
             "sirena": ("@sirens-and-alarm-noise", "siren_0", {"bucle": 4.0, "desde": 14.0}), "sirena_lejana": ("@sirens-and-alarm-noise", "siren_0", {"bucle": 1.9, "desde": 24.0}),
             "sirena_ambulancia": ("@sirens-and-alarm-noise", "siren_0", {"bucle": 3.0, "desde": 30.0}),
@@ -226,6 +234,9 @@ PACKS = {
             "disparo_pistola": ("S16", "Pew/Wav/Pew__001"), "disparo_revolver": ("S16", "Pew/Wav/Pew__002"), "disparo_rifle": ("S16", "Pew/Wav/Pew__003"),
             "disparo_subfusil": ("S16", "Pew/Wav/Pew__004", {"dur": 0.2}), "disparo_fusil": ("S16", "Pew/Wav/Pew__007", {"dur": 0.3}),
             "disparo_silenciado": ("S16", "Pew/Wav/Pew__006", {"dur": 0.15}), "disparo_escopeta": ("S16", "Explosion/Wav/Explosion__001"),
+            "disparo_rafaga": ("S16", "Pew/Wav/Pew__005", {"dur": 0.15}), "disparo_corredera": ("S16", "Explosion/Wav/Explosion__004"),
+            "disparo_palanca": ("S16", "Pew/Wav/Pew__008"), "disparo_semiautomatico": ("S16", "Pew/Wav/Pew__009", {"dur": 0.3}),
+            "lanzagranadas": ("S16", "Explosion3/Wav/Explosion3__001", {"dur": 0.5}), "hacha": ("S16", "Punch/Wav/Punch__006"),
             "explosion": ("S16", "Explosion2/Wav/Explosion2__001"), "cohete": ("S16", "Explosion3/Wav/Explosion3__003"),
             "cristal": ("S16", "Explosion/Wav/Explosion__003"), "choque": ("S16", "Explosion/Wav/Explosion__002"), "choque_leve": ("S16", "Explosion/Wav/Explosion__005"),
             "dolor": ("S16", "Ouch/Wav/Ouch__001"), "dolor_npc": ("S16", "Ouch/Wav/Ouch__004"), "muerte_npc": ("S16", "Ouch/Wav/Ouch__002"),
@@ -441,12 +452,79 @@ def montar(clave, pack):
     return hechos, faltan
 
 
+def anadir(sonidos):
+    """Añade unos sonidos sueltos a los packs que ya están en data/sonidos, sin rehacerlos: la grabación que diga la tabla
+    de cada pack o, si no la hay, el sonido original del juego. El pack envolvente, que parte del realista, los toma de él.
+    Deja al día la cuenta de pack.json y apunta en CREDITOS.txt de dónde sale cada uno. Devuelve lo hecho, pack a pack."""
+    hecho = {}
+    for clave, pack in PACKS.items():
+        dest = os.path.join(rutas.PACKS, clave)
+        if not os.path.isdir(dest):
+            continue
+        lineas, grab, orig = [], 0, 0
+        for sonido in sonidos:
+            nuevo = not any(os.path.exists(os.path.join(dest, sonido + e)) for e in rutas.EXT_AUDIO)
+            origen = pack["sonidos"].get(sonido)
+            ruta = buscar(origen[0], origen[1]) if origen else None
+            if ruta is not None:
+                d = preparar(sintesis.leer_audio(ruta), origen[2] if len(origen) > 2 else {})
+                sintesis.escribir_audio(os.path.join(dest, sonido), d)
+                lineas.append(f"  {sonido}{sintesis.FORMATO}: {os.path.basename(ruta)}, de {info(origen[0])[1]}. Dura " + f"{len(d) / SR:.2f}".replace(".", ",") + " segundos.")
+                grab += nuevo
+            else:
+                sintesis.escribir_audio(os.path.join(dest, sonido), ORIGINALES[sonido])
+                lineas.append(f"  {sonido}{sintesis.FORMATO}: sonido original del juego.")
+                orig += nuevo
+            hecho.setdefault(clave, []).append((sonido, ruta is not None))
+        try:
+            with open(os.path.join(dest, "pack.json"), encoding="utf-8") as f:
+                meta = json.load(f)
+            meta["grabaciones"] = int(meta.get("grabaciones", 0)) + grab
+            meta["originales_del_juego"] = int(meta.get("originales_del_juego", 0)) + orig
+            with open(os.path.join(dest, "pack.json"), "w", encoding="utf-8", newline="
+") as f:
+                json.dump(meta, f, ensure_ascii=False, indent=2)
+            with open(os.path.join(dest, "CREDITOS.txt"), "a", encoding="utf-8", newline="\r\n") as f:
+                f.write("\n".join(["", "SONIDOS AÑADIDOS DESPUÉS"] + lineas) + "\n")
+        except (OSError, ValueError):
+            pass
+    env = os.path.join(rutas.PACKS, "envolvente")              # el envolvente lleva los del realista
+    real = os.path.join(rutas.PACKS, "realista")
+    if os.path.isdir(env) and os.path.isdir(real):
+        nuevos = 0
+        for sonido in sonidos:
+            origen = os.path.join(real, sonido + sintesis.FORMATO)
+            if os.path.exists(origen):
+                nuevos += not any(os.path.exists(os.path.join(env, sonido + e)) for e in rutas.EXT_AUDIO)
+                shutil.copy2(origen, os.path.join(env, sonido + sintesis.FORMATO))
+                hecho.setdefault("envolvente", []).append((sonido, True))
+        try:
+            with open(os.path.join(env, "pack.json"), encoding="utf-8") as f:
+                meta = json.load(f)
+            meta["sonidos"] = int(meta.get("sonidos", 0)) + nuevos
+            with open(os.path.join(env, "pack.json"), "w", encoding="utf-8", newline="
+") as f:
+                json.dump(meta, f, ensure_ascii=False, indent=2)
+        except (OSError, ValueError):
+            pass
+    return hecho
+
+
 ORIGINALES = {}
 
 
 if __name__ == "__main__":
     instalar = "instalar" in sys.argv[1:]
     ORIGINALES.update(sintesis.generar())
+    if "anadir" in sys.argv[1:]:
+        nombres = [a for a in sys.argv[1:] if a != "anadir"]
+        desconocidos = [n for n in nombres if n not in ORIGINALES]
+        if desconocidos or not nombres:
+            print("Indica sonidos del juego. No existen:", ", ".join(desconocidos) or "ninguno indicado")
+            sys.exit(1)
+        for clave, lista in anadir(nombres).items():
+            print(f"Pack {clave}: " + ", ".join(f"{s} ({'grabación' if g else 'original del juego'})" for s, g in lista))
+        sys.exit(0)
     for clave, pack in PACKS.items():
         hechos, faltan = montar(clave, pack)
         print(f"Pack {clave}: {len(hechos)} grabaciones y {len(ORIGINALES) - len(hechos)} originales, {len(ORIGINALES)} en total")

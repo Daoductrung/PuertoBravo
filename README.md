@@ -105,7 +105,7 @@ El repositorio incluye el audio: los sonidos por defecto y los cuatro packs en `
 - `editor/`: el editor de mods, con wxPython.
 - `herramientas/`: generación de sonidos y guías, protección y comprobación de la compilación, montaje de packs, mods de serie y publicación.
 - `pruebas/`: pruebas automáticas con pytest.
-- `data/datos/`: mapas, lugares, misiones, armas, vehículos y personajes, en JSON.
+- `data/datos/`: mapas, lugares, misiones, armas, vehículos, personajes y la gente de la calle con sus enemigos, en JSON.
 - `data/mods/`: los mods de serie, en JSON legible.
 - `data/docs/`: la documentación que se reparte con el juego, pensada solo para quien juega.
 - `desarrollo/`: documentación técnica que no se reparte, como el formato de los archivos de mods.
@@ -115,6 +115,20 @@ El repositorio incluye el audio: los sonidos por defecto y los cuatro packs en `
 El servidor (`servidor/`) solo usa la biblioteca de serie de Python y funciona sin el juego, en Windows, Linux, Mac, un NAS o Docker. No trae el contenido: los lugares, las armas, los vehículos y las misiones se los da el juego del primero que entra con cada versión, firmados por quien publica, y en un mismo servidor conviven versiones distintas. Sus opciones están descritas en un solo sitio, `servidor/opciones.py`, del que salen el archivo de ejemplo, la validación, el diálogo de configuración del panel y la guía. El panel (`panel_servidor/`, `servidor_panel.py`) es una ventana wxPython que reutiliza la accesibilidad del editor de mods. Se arranca en desarrollo con `servidor.bat` o `servidor_panel.bat`. La guía de quien lo monta es `data\docs\servidor.html`. `herramientas\prueba_servidor_real.py` arranca un servidor de verdad como proceso aparte y le conecta diez clientes por la red.
 
 Todo el contenido y todos los precios del juego están en los JSON de `data\datos` (lo más nuevo, en `vida.json`), y el editor de mods tiene una sección para cada cosa.
+
+### Gente, enemigos, policía y cajas
+
+`data/datos/gente.json` y `juego/gente.py` llevan todo lo que antes eran listas escritas en el código: los nombres, apellidos, oficios y frases de la gente, los caracteres, las bandas, el catálogo de tipos de enemigo, la tabla de la policía por nivel de búsqueda y la caja de cada tipo de local. `gente.configurar(datos)` se llama al final de `mundo.cargar_datos()`; lo que falte en los datos vale lo de serie. Lo que usa el resto del código:
+
+- `gente.lista(cual)`, `gente.nombres(genero)`, `gente.oficio_para(edad, genero, rng)`, `gente.caracter(id)`.
+- `gente.enemigo(grupo)` resuelve un grupo de un paso «eliminar» (con `clase`, o con nombre, arma y salud como siempre) y `gente.vestir(persona, ficha)` se lo pone a una `Persona`. `gente.grupo(clase, n, **serie)` escribe un grupo que vale aunque el tipo no esté en los datos.
+- `gente.agentes_nivel(nivel)` da el tipo de agente de una patrulla; `gente.banda(nombre)` y `gente.tipos_de_banda(nombre)`, lo de las bandas.
+- `gente.caja_local(tipo)` y, en la partida, `caja_de_local(lugar)`: lo que hay hoy en la caja y quién la guarda.
+- `Partida.llegar_en_vehiculo(modelo, personas)` hace llegar a un grupo en un vehículo, con la misma conducción que las patrullas (`ia == "enemigos"`), y `bajar_enemigos(v)` los baja.
+
+Las mejoras del taller (`juego/sistemas.py`) también salen de los datos: cada una dice su `efecto`, de la lista `sistemas.EFECTOS`, sus niveles y cuánto da cada nivel.
+
+`mundo_servidor()` le cuenta además al servidor los nombres de sus personajes (`gente`) y las armas de sus agentes por nivel (`policia`). Son dos claves de más: un servidor anterior no las mira, y uno nuevo usa lo suyo si no vienen. La huella del mundo no depende de ellas, pero sí de las armas y los vehículos: al añadir unas u otros hay que regenerar `servidor/mundo.json` con `herramientas/exportar_mundo_servidor.py`.
 
 ### Pruebas
 

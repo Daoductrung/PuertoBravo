@@ -7,7 +7,8 @@ pueden decir que no; un no se respeta y no hay ninguna opción para forzar a nad
 """
 import random
 
-from .charla import CARACTERES, ficha
+from . import gente
+from .charla import ficha
 
 # tipo de encuentro: (nombre, lo que se cuenta, ánimo que da, horas)
 ENCUENTROS = {
@@ -81,7 +82,7 @@ class Intimidad:
         if encanto < 12:
             self._trato(f, 2)
             return f"{n}: " + random.choice(["Uy, qué directo. Primero invítame a algo, ¿no?", "Ja. Tú no pierdes el tiempo. Ya veremos.", "No vayas tan deprisa, que acabamos de conocernos."])
-        self._trato(f, 9 if CARACTERES[f["caracter"]]["cumplido"] > 5 else 6)
+        self._trato(f, 9 if gente.caracter(f["caracter"])["cumplido"] > 5 else 6)
         self.cambiar_animo(3)
         f["interes"] = True
         return f"{n}: " + random.choice(["Pues tú tampoco estás nada mal.", "Me gusta cómo me miras. Sigue hablando.", "¿Siempre eres así, o es que hoy te has levantado con suerte?"]) + " Le gustas."

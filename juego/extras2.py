@@ -2,6 +2,7 @@
 import math
 import random
 
+from . import gente as G
 from . import mundo as M
 from .entidades import Objeto, Persona
 
@@ -12,7 +13,6 @@ HABILIDADES = {
     "pesca": ("Pesca", "Cada nivel hace que piquen antes y que tus capturas valgan más."),
 }
 
-NOMBRES = ["el Chato", "la Culebra", "el Rubio", "la Tuerta", "el Mudo", "la Marquesa", "el Polaco", "la Zurda", "el Notario", "la Perla"]
 MODELOS_ENCARGO = ["sedan", "deportivo", "todoterreno", "furgoneta", "moto", "descapotable", "pickup", "utilitario", "buggy", "limusina"]
 
 LOGROS = [
@@ -206,14 +206,13 @@ class Extras2:
             v.tag = "evento"
             personas.append(v)
             n = 1
-            nombre = "Atracador"
+            clase, nombre = "atracador", "Atracador"
         else:
             n = random.randint(2, 3)
-            nombre = "Pandillero"
+            clase, nombre = "pandillero_calle", "Pandillero"
         for _ in range(n):
-            e = Persona("enemigo", *self.mundo.punto_libre(x + random.uniform(-3, 3), y + random.uniform(-3, 3)), nombre)
-            e.salud = 55.0
-            e.arma = random.choice(["navaja", "pistola", "bate"])
+            f = G.enemigo(G.grupo(clase, tipo=nombre, arma=random.choice(["navaja", "pistola", "bate"]), salud=55))
+            e = G.vestir(Persona("enemigo", *self.mundo.punto_libre(x + random.uniform(-3, 3), y + random.uniform(-3, 3)), f["nombre"]), f)
             e.hostil = True
             e.estado = "ataca"
             e.activo = False
@@ -239,26 +238,53 @@ class Extras2:
     def empezar_contrato(self, l):
         dest = self._destino_azar(150, 900, l)
         n = min(5, 1 + self.j.stats.get("contratos", 0) // 2)
-        quien = random.choice(NOMBRES)
+        quien = random.choice(G.lista("apodos"))
         armas = ["pistola", "pistola", "subfusil", "escopeta", "navaja"]
+        objetivo = dict(G.grupo("objetivo_contrato", arma="pistola", salud=95), tipo=f"Objetivo, {quien}")
+        # con escolta numerosa, a veces parte de ella llega en un vehículo
+        moto = G.tipo_enemigo("escolta_motorizada") if n >= 3 and random.random() < 0.5 else None
+        en_coche = min(n - 1, int(moto.get("ocupantes", 3) or 3)) if moto and moto.get("vehiculo") in self.modelos and not self.en_servidor else 0
+        escolta = [G.grupo("guardaespaldas", tipo="Guardaespaldas", arma=random.choice(armas), salud=70) for _ in range(n - en_coche)]
+        if en_coche:
+            escolta.append({"n": en_coche, "clase": "escolta_motorizada"})
         self._empezar_repetible({
             "id": "contrato", "titulo": f"Contrato: {quien}", "lugar": l.id, "contador": "contratos",
             "pasos": [
-                {"tipo": "eliminar", "lugar": dest.id, "texto": f"El objetivo, {quien}, está en {dest.nombre} con {n} guardaespaldas. Ve allí y cumple el contrato.",
-                 "enemigos": [{"n": 1, "tipo": f"Objetivo, {quien}", "arma": "pistola", "salud": 95}] + [{"n": 1, "tipo": "Guardaespaldas", "arma": random.choice(armas), "salud": 70} for _ in range(n)]},
+                {"tipo": "eliminar", "lugar": dest.id, "texto": f"El objetivo, {quien}, está en {dest.nombre} con {n} guardaespaldas. Ve allí y cumple el contrato."
+                 + (" Parte de la escolta ronda la zona en un vehículo." if en_coche else ""),
+                 "enemigos": [objetivo] + escolta},
                 {"tipo": "ir", "lugar": l.id, "texto": f"Contrato cumplido. Vuelve a {l.nombre} a cobrar."}],
             "recompensa": {"dinero": 600 + 380 * n}})
 
     def empezar_atraco_banco(self, l):
+        caja = self.caja_de_local(l) or {"dinero": random.randint(7000, 13000), "guardias": 5, "busqueda": 4}
         self.atracadas["banco:" + l.id] = self.dia
+        n = max(1, int(caja["guardias"]) or 5)
+        armados = n * 2 // 5                                     # de cada cinco vigilantes, dos llevan subfusil
         self._empezar_repetible({
             "id": "atraco_banco", "titulo": f"Atraco a {l.nombre}", "lugar": l.id, "contador": "atracos",
             "pasos": [
                 {"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": "¡Esto es un atraco! Acaba con los vigilantes de seguridad.",
-                 "enemigos": [{"n": 3, "tipo": "Vigilante de seguridad", "arma": "pistola", "salud": 80}, {"n": 2, "tipo": "Vigilante de seguridad", "arma": "subfusil", "salud": 85}]},
+                 "enemigos": [g for g in (G.grupo(caja.get("guardia") or "vigilante", n - armados, tipo="Vigilante de seguridad", arma="pistola", salud=80),
+                                          G.grupo("vigilante_armado", armados, tipo="Vigilante de seguridad", arma="subfusil", salud=85)) if g["n"] > 0]},
                 {"tipo": "recoger", "lugar": l.id, "objeto": "Botín de la cámara acorazada", "texto": "La cámara acorazada está abierta. Recoge el botín."},
-                {"tipo": "policia", "nivel": 4, "texto": "¡Ha saltado la alarma silenciosa! Despista a la policía para quedarte el botín."}],
-            "recompensa": {"dinero": random.randint(7000, 13000)}})
+                {"tipo": "policia", "nivel": max(1, int(caja["busqueda"]) or 4), "texto": "¡Ha saltado la alarma silenciosa! Despista a la policía para quedarte el botín."}],
+            "recompensa": {"dinero": int(caja["dinero"])}})
+
+    def caja_de_local(self, l):
+        """Lo que hay hoy en la caja de un local y quién la guarda, según los datos (sección «Caja de los locales»).
+
+        Devuelve None si ese tipo de local no tiene caja que llevarse, o un diccionario con: «dinero», lo que hay hoy (la
+        misma cifra todo el día, distinta cada día, cada local y cada partida); «guardias», cuántos la guardan; «guardia»,
+        su tipo de enemigo; «busqueda», el nivel de búsqueda que cae al atracarla; y «enemigos», los grupos ya listos para
+        un paso «eliminar» de una misión (vacío si no hay guardia)."""
+        c = G.caja_local(getattr(l, "tipo", l))
+        if c is None:
+            return None
+        rng = random.Random(f"caja:{self.j.semilla}:{self.dia}:{getattr(l, 'id', l)}")
+        c = dict(c, dinero=rng.randint(c["minimo"], c["maximo"]))
+        c["enemigos"] = [{"n": c["guardias"], "clase": c["guardia"]}] if c["guardias"] and c["guardia"] else []
+        return c
 
     def empezar_encargo_coche(self, l):
         ids = [i for i in MODELOS_ENCARGO if i in self.modelos]

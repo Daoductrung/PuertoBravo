@@ -5,7 +5,7 @@ import time
 
 import pygame
 
-from . import genero, registro
+from . import genero, gente, registro
 from . import mundo as M
 from .combate import Combate
 from .conduccion import Conduccion
@@ -65,12 +65,6 @@ def migrar(d):
         v += 1
     d["version"] = FORMATO
     return d
-FRASES = [
-    "Buenos días.", "¿Tienes hora? Da igual, voy tarde.", "Dicen que va a llover.", "Con Belmonte esta ciudad ya no es lo que era.",
-    "Cuidado por el puerto, que andan Los Calaveras.", "¿Has probado las sardinas del Espeto? Gloria bendita.",
-    "Perdona, llevo prisa.", "Qué calor hace hoy.", "Ayer robaron tres coches en mi calle. Tres.", "Yo no he visto nada, ¿eh?",
-    "En La Gaviota ponen las mejores tapas del barrio.", "El periódico El Faro es el único que cuenta la verdad.",
-]
 
 
 class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo):
@@ -1602,7 +1596,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                     self.decir(f"{p.nombre} no quiere hablar.", True)
                 else:
                     self.son("murmullo", xy=(p.x, p.y))
-                    self.decir(f"{p.nombre}: {random.choice(FRASES)}", True)
+                    self.decir(f"{p.nombre}: {random.choice(gente.lista('frases'))}", True)
                 return
         self.decir("Aquí no hay nada con lo que interactuar. Pulsa Tabulador para explorar con el radar.", True)
 
@@ -2047,11 +2041,17 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             p.vel = random.uniform(1.1, 1.7)
             self._pos_perimetro(p)
             if 28 < p.dist(x, y) < 95:
-                if m.barrio(p.x, p.y)["id"] == "puerto" and "m05" in self.completadas and "e05" not in self.completadas and random.random() < 0.3:
+                # Por los barrios de una banda con gente en la calle andan los suyos. Los del puerto, solo mientras dura su parte de la historia.
+                b = m.barrio(p.x, p.y)
+                bd = gente.banda(self.banda_de_barrio(b)) if b["id"] not in self.j.territorios else None
+                calle = (bd or {}).get("callejero")
+                historia = ("m05" in self.completadas and "e05" not in self.completadas) if b["id"] == "puerto" else calle in gente.TIPOS
+                if bd and historia and (calle in gente.TIPOS or bd["nombre"] == "Los Calaveras") and random.random() < 0.3:
+                    f = gente.enemigo(gente.grupo(calle, tipo="Calavera", arma=random.choice(["pistola", "navaja", "punos"]), salud=60))
                     p.tipo = "banda"
-                    p.nombre = "Calavera"
-                    p.salud = 60
-                    p.arma = random.choice(["pistola", "navaja", "punos"])
+                    p.nombre = f["nombre"]
+                    gente.vestir(p, f)
+                    p.banda = bd["nombre"]
                     p.hostil = True
                 self.personas.append(p)
 

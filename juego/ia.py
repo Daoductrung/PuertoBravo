@@ -30,7 +30,7 @@ import time
 import urllib.error
 import urllib.request
 
-from . import cifrado, registro, rutas
+from . import cifrado, gente, registro, rutas
 from . import genero
 
 SERVICIOS = ("local", "gemini", "otro", "openai", "anthropic")          # orden del modo automático: primero lo gratuito
@@ -70,7 +70,6 @@ FORMATO_TEXTO = "\n\nEscribe solo lo que dice el personaje, sin comillas y sin p
 SISTEMA_LOCAL = ("Interpretas a una persona corriente de una ciudad costera española que habla por la calle con alguien. "
                  "Contesta solo con lo que dice esa persona, en español de España, con una o dos frases cortas, naturales y que respondan a lo que le dicen. "
                  "Sin emojis, sin comillas, sin explicaciones y sin contenido sexual explícito.")
-CARACTERES = {"amable": "amable y cordial", "hablador": "muy habladora" , "seco": "seca, de pocas palabras", "timido": "tímida, se corta al hablar", "chulo": "chula y presumida"}
 HUMORES = ("tranquilo", "con prisa", "de buen humor", "cansado", "distraído", "con ganas de charla", "algo mosqueado", "pensando en sus cosas", "contento",
            "con hambre", "con sueño", "nervioso", "aburrido", "curioso", "con calor", "preocupado por el dinero", "recién salido del trabajo", "esperando a alguien")
 
@@ -608,7 +607,7 @@ def texto_local(ficha, sit, texto):
     c = ficha["confianza"]
     trato = "No os conocéis." if -15 < c < 15 else "Os lleváis bien." if c >= 15 else "No te cae bien."
     extra = " Lleva un arma en la mano." if sit["jugador"]["lleva_un_arma_en_la_mano"] else ""
-    return (f"Eres {ficha['nombre']}, {ficha['edad']} años, {ficha['oficio']}. Eres una persona {CARACTERES.get(ficha['caracter'], ficha['caracter'])} y ahora estás {sit['humor_de_ahora']}. "
+    return (f"Eres {ficha['nombre']}, {ficha['edad']} años, {ficha['oficio']}. Eres una persona {gente.caracter(ficha['caracter'])['desc_ia']} y ahora estás {sit['humor_de_ahora']}. "
             f"Estás en {sit['lugar']}, son {sit['hora']}{' y llueve' if sit['llueve'] else ''}. Te habla {sit['jugador']['nombre']}. {trato}{extra}\n"
             f"Te dice: {texto[:300]}\nContestas:")
 

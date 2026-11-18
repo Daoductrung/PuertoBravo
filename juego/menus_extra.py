@@ -305,7 +305,8 @@ def progreso(p):
 
 # =================================================================== protectora
 def protectora(p, l):
-    from .extras3 import NOMBRES_PERRO
+    from . import gente
+    NOMBRES_PERRO = gente.lista("perros")
     app = p.app
     j = p.j
 
@@ -335,7 +336,7 @@ def protectora(p, l):
     if j.perro:
         ops = [Opcion(lambda: p.perro_txt()), pienso, Opcion(f"Cómo está y qué necesita {j.perro}", lambda: menu_perro(p)), Opcion(f"Dejar a {j.perro} en la protectora", dejar)]
     else:
-        ops = [Opcion(f"Adoptar a {n}: {p.precio('adoptar_perro', 200)} euros de donativo", adoptar(n), ayuda="Un perro te acompaña a todas partes, avisa de los enemigos y encuentra objetos por el olfato.") for n in random.sample(NOMBRES_PERRO, 4)]
+        ops = [Opcion(f"Adoptar a {n}: {p.precio('adoptar_perro', 200)} euros de donativo", adoptar(n), ayuda="Un perro te acompaña a todas partes, avisa de los enemigos y encuentra objetos por el olfato.") for n in random.sample(NOMBRES_PERRO, min(4, len(NOMBRES_PERRO)))]
     app.abrir(Menu(app, lambda: f"{l.nombre}. Tienes {j.dinero} euros", ops))
 
 

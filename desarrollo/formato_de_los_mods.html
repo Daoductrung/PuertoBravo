@@ -68,7 +68,8 @@ code { color: #9fe89f; }
 <li><code>dar</code>: entrega <code>arma</code> con <code>balas</code>, o <code>dinero</code>.</li>
 <li><code>robar</code>: aparece un vehículo <code>modelo</code> junto al <code>lugar</code> y hay que subirse. Con <code>"abierto": true</code> no hay que forzarlo. <code>busqueda</code> pone nivel de búsqueda al subir.</li>
 <li><code>entregar</code>: llevar ese vehículo a un <code>lugar</code>. <code>salud_min</code> es el estado mínimo en porcentaje.</li>
-<li><code>eliminar</code>: <code>enemigos</code>, una lista de grupos con <code>n</code>, <code>tipo</code>, <code>arma</code> y <code>salud</code>. Con <code>"ya": true</code> aparecen al instante.</li>
+<li><code>eliminar</code>: <code>enemigos</code>, una lista de grupos con <code>n</code>, <code>tipo</code>, <code>arma</code> y <code>salud</code>. Con <code>"ya": true</code> aparecen al instante.
+Un grupo puede llevar además <code>clase</code>, el identificador de un tipo de enemigo de <code>tipos_enemigo</code>: de él salen el nombre, el arma, la salud, la puntería, las frases y el vehículo, y lo que el grupo diga manda sobre el tipo. También admite <code>punteria</code>, <code>vehiculo</code> (un modelo: llegan en él) y <code>"a_pie": true</code>.</li>
 <li><code>recoger</code>: un <code>objeto</code> en un <code>lugar</code>, o donde estés con <code>"aqui": true</code>.</li>
 <li><code>policia</code>: pone <code>nivel</code> de búsqueda y hay que despistarla.</li>
 <li><code>perseguir</code>: un vehículo <code>modelo</code> huye desde el <code>lugar</code> y hay que destruirlo. <code>salud</code> es su resistencia.</li>
@@ -78,6 +79,18 @@ code { color: #9fe89f; }
 
 <h2>Armas y vehículos</h2>
 <p>Copia una entrada de <code>data\datos\armas.json</code> o <code>data\datos\vehiculos.json</code>, cámbiale el <code>id</code> y los valores. En un vehículo, <code>"barco": true</code> lo convierte en embarcación, <code>"vuela": true</code> en aeronave, <code>trabajo</code> le da un oficio con la tecla J y <code>precio</code> lo pone a la venta. Los vehículos de un barrio se eligen de la lista <code>vehiculos</code> de ese barrio en el mapa.</p>
+
+<h2>Gente de la calle, bandas, tipos de enemigo, policía y cajas</h2>
+<p>Están en <code>data/datos/gente.json</code>, y un mod puede traer las mismas claves:</p>
+<ul>
+<li><code>gente</code>: una lista con un solo elemento, <code>{"id": "general", ...}</code>, con las listas <code>nombres_h</code>, <code>nombres_m</code>, <code>apellidos</code>, <code>frases</code>, <code>apodos</code>, <code>perros</code>, <code>bandas_propias</code>, <code>rivales_carrera</code> y <code>nombres_servidor</code>, y <code>oficios</code>, una lista de <code>{"nombre", "femenino", "edad_min", "edad_max", "peso"}</code>. Las listas de un mod se añaden a las del juego; con <code>"sustituir": true</code>, las que traiga las sustituyen. Una lista que falte o quede vacía vale la de serie.</li>
+<li><code>caracteres</code>: <code>{"id", "desc", "desc_ia", "habla", "saludo", "cumplido", "chiste", "insulto", "valor"}</code>. <code>habla</code> es uno de los cinco de serie, para las frases escritas.</li>
+<li><code>bandas</code>: <code>{"id", "nombre", "tipos": [...], "refuerzo", "callejero"}</code>, con identificadores de tipos de enemigo.</li>
+<li><code>tipos_enemigo</code>: <code>{"id", "nombre", "arma", "armas": [...], "salud", "punteria", "vehiculo", "ocupantes", "voz", "frases": [...]}</code>. <code>voz</code> es <code>grave</code> o <code>aguda</code>.</li>
+<li><code>policia_niveles</code>: <code>{"id", "nivel", "tipos": [...], "aviso"}</code>, uno por nivel de búsqueda, del 1 al 5.</li>
+<li><code>cajas_locales</code>: <code>{"id", "minimo", "maximo", "guardias", "guardia", "busqueda"}</code>; el identificador es el tipo de lugar.</li>
+</ul>
+<p>Salvo <code>gente</code>, se fusionan como todo lo demás: un elemento con el identificador de uno del juego lo sustituye. Las armas admiten además <code>donde</code> (<code>armeria</code>, <code>tienda</code> o <code>empenos</code>) y <code>sin_silenciador</code>, y las mejoras del taller (<code>mejoras</code>), <code>efecto</code> (<code>motor</code>, <code>frenos</code>, <code>blindaje</code>, <code>neumaticos</code>, <code>suspension</code>, <code>escape</code> o <code>deposito</code>), <code>niveles</code> y <code>por_nivel</code>.</p>
 
 <h2>Personajes</h2>
 <pre><code>{

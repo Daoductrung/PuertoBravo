@@ -9,7 +9,7 @@ GRUPOS = [
     ("Pasos", "Hay dos variantes de cada suelo, que se alternan pie izquierdo y pie derecho. Deben durar menos de un cuarto de segundo.",
      ("paso_",), {"choque_pared"}),
     ("Personas", "Voces sin palabras, golpes y animales.", (), {"dolor", "dolor_npc", "muerte_npc", "grito", "murmullo", "golpe", "golpe_aire", "latido", "ladrido"}),
-    ("Armas", "Disparos, recargas, impactos y explosiones.", ("disparo_", "bala_"), {"sin_balas", "recarga", "amartillar", "explosion", "navaja", "lanzar", "cohete"}),
+    ("Armas", "Disparos, recargas, impactos y explosiones.", ("disparo_", "bala_"), {"sin_balas", "recarga", "amartillar", "explosion", "navaja", "lanzar", "cohete", "hacha", "lanzagranadas"}),
     ("Motores", "Se reproducen en bucle y el juego les sube el tono con la velocidad. Graba el motor al ralentí, a régimen constante.",
      ("motor_",), {"rodadura"}),
     ("Tren, tranvía, avión y agua", "Los viajes en tren, en tranvía y en avión, y nadar y bucear en el mar. El tren, el tranvía, la cabina del avión y el fondo de debajo del agua suenan en bucle.",
@@ -49,7 +49,9 @@ AMBIENTES = {"playa": "playa, con olas", "puerto": "puerto, con olas y una siren
              "mar": "mar abierto", "campo": "campo, con pájaros y cencerros", "montana": "montaña, con viento"}
 MOTORES = {"avioneta": "avioneta", "coche": "coche", "deportivo": "deportivo", "moto": "moto", "camion": "camión o autobús", "furgoneta": "furgoneta o todoterreno", "lancha": "lancha",
            "barco": "barco grande", "tractor": "tractor", "helicoptero": "helicóptero", "bici": "bicicleta, el clic de la cadena"}
-ARMAS = {"pistola": "pistola", "revolver": "revólver", "subfusil": "subfusil", "escopeta": "escopeta", "rifle": "rifle", "fusil": "fusil de asalto", "silenciado": "pistola con silenciador"}
+ARMAS = {"pistola": "pistola", "revolver": "revólver", "subfusil": "subfusil", "escopeta": "escopeta", "rifle": "rifle", "fusil": "fusil de asalto", "silenciado": "pistola con silenciador",
+         "rafaga": "pistola de ráfagas: seco y muy corto", "corredera": "escopeta de corredera: un estampido grave y, detrás, la corredera",
+         "palanca": "rifle de palanca: el disparo y, detrás, la palanca", "semiautomatico": "fusil semiautomático"}
 
 DESCRIPCIONES = {
     "avion": "La cabina del avión de pasajeros en vuelo. En bucle.", "avion_despegue": "El avión acelerando por la pista y despegando.",
@@ -78,6 +80,7 @@ DESCRIPCIONES = {
     "latido": "Tu corazón cuando te queda poca salud. En bucle.", "ladrido": "Ladrido de perro.", "sin_balas": "Aprietas el gatillo sin balas.", "recarga": "Recargas el arma.",
     "amartillar": "Un enemigo va a dispararte, y también al cambiar de arma.", "bala_impacto": "Una bala da en algo.", "bala_silbido": "Una bala te pasa rozando.",
     "explosion": "Explosión.", "navaja": "Tajo de navaja, machete o katana.", "lanzar": "Lanzas una granada o disparas la ballesta.", "cohete": "Disparo del lanzacohetes.",
+    "hacha": "Golpe de hacha: el silbido y el golpe sordo del filo.", "lanzagranadas": "Disparo del lanzagranadas: un golpe hueco, de tubo.",
     "rodadura": "Ruido de neumáticos de tu vehículo. En bucle; el volumen sube con la velocidad.", "claxon": "Claxon de coche.", "claxon_camion": "Bocina de camión.",
     "claxon_bici": "Timbre de bicicleta.", "claxon_helados": "Musiquilla de la furgoneta de helados.", "claxon_lejano": "Un claxon a lo lejos, de ambiente.",
     "frenazo": "Frenazo o derrape.", "choque": "Choque fuerte.", "choque_leve": "Choque leve.", "puerta_coche": "Puerta de un vehículo.",

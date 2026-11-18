@@ -62,8 +62,14 @@ class Realismo:
             v.revision_debida = True
             self.son("reserva", cat="interfaz")
             self.decir(f"{v.nombre} lleva {int(v.km)} kilómetros: le toca revisión. Si no la pasas en un taller, los frenos irán a peor.")
-        if not getattr(v, "pinchada", False) and abs(v.vel) > 4 and random.random() < metros / (aj("pinchazo_km") * 1000.0):
+        if not getattr(v, "pinchada", False) and abs(v.vel) > 4 and random.random() < metros / (aj("pinchazo_km") * 1000.0) * self._riesgo_pinchazo(v):
             self.pinchar(v)
+
+    @staticmethod
+    def _riesgo_pinchazo(v):
+        """Con neumáticos reforzados, del taller, se pincha menos."""
+        from . import sistemas
+        return sistemas.factor_pinchazo(v)
 
     def pinchar(self, v):
         v.pinchada = True

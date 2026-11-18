@@ -134,6 +134,15 @@ def mundo_servidor():
     for mi in datos["misiones"]:
         r = mi.get("recompensa") or {}
         out["misiones"][mi["id"]] = {"titulo": mi["titulo"], "dinero": int(r.get("dinero", 0) or 0), "repetible": bool(mi.get("repetible"))}
+    # La gente que lleva el servidor y sus agentes salen también de los datos del juego. Un servidor anterior no mira
+    # estas dos claves; uno nuevo, si no vienen (un juego anterior), usa lo que trae él.
+    from . import gente
+    nombres = gente.lista("nombres_servidor")
+    if nombres:
+        out["gente"] = {"nombres": list(nombres)}
+    policia = gente.policia_para_servidor(out["armas"])
+    if policia:
+        out["policia"] = policia
     return out
 
 

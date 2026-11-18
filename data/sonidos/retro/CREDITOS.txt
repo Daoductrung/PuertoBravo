@@ -276,3 +276,11 @@ QUÉ SONIDO SALE DE DÓNDE
 SONIDOS ORIGINALES DEL JUEGO INCLUIDOS PARA QUE EL PACK ESTÉ COMPLETO
   Sustituye cualquiera de ellos por una grabación tuya con el mismo nombre.
   baliza, baliza_destino, bordillo, cruce, cursor_mapa, loc_casete, loc_lugar, loc_mision, loc_objeto, loc_vehiculo, lugar_academia, lugar_aeropuerto, lugar_armeria, lugar_banco, lugar_bar, lugar_boya, lugar_casa, lugar_casino, lugar_cine, lugar_club, lugar_comida, lugar_comisaria, lugar_contacto, lugar_embarcadero, lugar_empleo, lugar_estacion, lugar_generico, lugar_gimnasio, lugar_helipuerto, lugar_hospital, lugar_iglesia, lugar_mina, lugar_ong, lugar_periodico, lugar_prision, lugar_protectora, lugar_proveedor, lugar_salida, lugar_taller, lugar_taxi, lugar_tienda, lugar_tranvia, lugar_tren, radar, semaforo_pio, semaforo_tic, sonar, tono_apuntado, tono_libre, tono_objetivo, tono_pared
+
+SONIDOS AÑADIDOS DESPUÉS
+  disparo_rafaga.flac: Pew__005.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,15 segundos.
+  disparo_corredera.flac: Explosion__004.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,71 segundos.
+  disparo_palanca.flac: Pew__008.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,26 segundos.
+  disparo_semiautomatico.flac: Pew__009.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,30 segundos.
+  hacha.flac: Punch__006.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,30 segundos.
+  lanzagranadas.flac: Explosion3__001.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.

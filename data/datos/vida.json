@@ -62,9 +62,13 @@
     {"id": "taller", "habitacion": "garaje", "nombre": "Un banco de herramientas", "precio": 900, "desc": "En la pared, un banco de herramientas bien surtido.", "efecto": "Mientras duermes, los vehículos guardados en este garaje se quedan reparados."}
   ],
   "mejoras": [
-    {"id": "motor", "nombre": "Motor", "precio": 900, "desc": "Más velocidad punta y más aceleración. Se oye: el motor suena más agudo."},
-    {"id": "frenos", "nombre": "Frenos", "precio": 500, "desc": "Frena en menos metros."},
-    {"id": "blindaje", "nombre": "Blindaje", "precio": 700, "desc": "Aguanta más golpes y más disparos."}
+    {"id": "motor", "nombre": "Motor", "efecto": "motor", "niveles": 3, "por_nivel": 7, "precio": 900, "desc": "Más velocidad punta y más aceleración. Se oye: el motor suena más agudo."},
+    {"id": "frenos", "nombre": "Frenos", "efecto": "frenos", "niveles": 3, "por_nivel": 15, "precio": 500, "desc": "Frena en menos metros."},
+    {"id": "blindaje", "nombre": "Blindaje", "efecto": "blindaje", "niveles": 3, "por_nivel": 25, "precio": 700, "desc": "Aguanta más golpes y más disparos."},
+    {"id": "neumaticos", "nombre": "Neumáticos reforzados", "efecto": "neumaticos", "niveles": 3, "por_nivel": 25, "precio": 350, "desc": "Agarran mejor con lluvia, así que frenas casi como en seco, y pinchan mucho menos si juegas con averías. Se oye: ruedan más graves y con menos ruido."},
+    {"id": "suspension", "nombre": "Suspensión y parachoques reforzados", "efecto": "suspension", "niveles": 3, "por_nivel": 15, "precio": 600, "desc": "Los choques contra paredes y contra otros vehículos le hacen menos daño al tuyo, y a ti dentro. Se oye: los golpes suenan más secos y más bajos."},
+    {"id": "escape", "nombre": "Silenciador de escape", "efecto": "escape", "niveles": 2, "por_nivel": 30, "precio": 450, "desc": "El motor suena mucho más bajo. La policía te oye de menos lejos: cuando te buscan, te pierde antes al alejarte."},
+    {"id": "deposito", "nombre": "Depósito de combustible mayor", "efecto": "deposito", "niveles": 2, "por_nivel": 30, "precio": 400, "desc": "Caben más litros, así que repostas menos veces. Solo se nota jugando con combustible. Al llenarlo, el surtidor tarda más."}
   ],
   "realismo": [
     {"id": "general", "sed_horas": 9, "higiene_horas": 30, "pinchazo_km": 35, "revision_km": 50, "precio_rueda": 80, "precio_revision": 150, "precio_cambio_rueda": 60, "limite_ciudad": 50, "margen_velocidad": 30, "multa_semaforo": 90, "multa_velocidad": 120, "puntos_carne": 12, "puntos_semaforo": 4, "puntos_velocidad": 3, "precio_carne": 300, "puntos_curso": 8}

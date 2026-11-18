@@ -258,14 +258,26 @@ class Policia:
     def _po_desplegar(self, c, o):
         c["desp"], c["vel"] = True, 0.0
         x, y, _ = self.tr_pos(c)
-        arma = "subfusil" if o.estrellas >= 4 and "subfusil" in self.mundo["armas"] else "pistola"
-        for _ in range(2):
+        arma, salud, cuantos = self._po_dotacion(o.estrellas)
+        for _ in range(cuantos):
             ax, ay = x + self.rng.uniform(-3, 3), y + self.rng.uniform(-3, 3)
             if not self._po_transitable(c["m"], ax, ay):
                 ax, ay = x, y
             self._na += 1
-            self.agentes[self._na] = {"id": self._na, "m": c["m"], "x": ax, "y": ay, "obj": o.id, "salud": 80.0, "arma": arma,
+            self.agentes[self._na] = {"id": self._na, "m": c["m"], "x": ax, "y": ay, "obj": o.id, "salud": salud, "arma": arma,
                                       "t_disparo": 0.6 + self.rng.uniform(0, 0.6), "t_arresto": 0.0, "amart": False, "coche": c["id"]}
+
+    def _po_dotacion(self, nivel):
+        """(arma, salud, cuántos agentes) de una patrulla con ese nivel de búsqueda. Sale de la tabla de la policía que
+        trae el mundo del juego; si no la trae (un juego anterior), lo de siempre: pistola, y subfusil desde el nivel 4."""
+        try:
+            ops = [d for d in (self.mundo.get("policia") or {}).get(str(int(nivel))) or [] if isinstance(d, dict) and d.get("arma") in self.mundo["armas"]]
+            if ops:
+                d = self.rng.choice(ops)
+                return d["arma"], max(1.0, min(1000.0, float(d.get("salud", 80)))), max(1, min(4, int(d.get("agentes", 2))))
+        except (AttributeError, TypeError, ValueError):
+            pass
+        return ("subfusil" if nivel >= 4 and "subfusil" in self.mundo["armas"] else "pistola"), 80.0, 2
 
     # ------------------------------------------------------------ los agentes
     def _po_transitable(self, mapa, x, y):

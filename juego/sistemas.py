@@ -13,22 +13,54 @@ import pygame
 from .entidades import Persona
 
 # ============================================================ mejoras de vehículos
-MEJORAS = {
-    "motor": ("Motor", 900, "Más velocidad punta y más aceleración. Se oye: el motor suena más agudo."),
-    "frenos": ("Frenos", 500, "Frena en menos metros."),
-    "blindaje": ("Blindaje", 700, "Aguanta más golpes y más disparos."),
+# Lo que puede hacer una mejora, y cuánto da cada nivel de serie, en tanto por ciento. Cada mejora de los datos dice cuál
+# de estos efectos tiene, cuántos niveles y cuánto da cada uno: así un mod puede poner las suyas.
+EFECTOS = {
+    "motor": 7.0,          # más velocidad punta y más aceleración; el motor suena más agudo
+    "frenos": 15.0,        # frena en menos metros
+    "blindaje": 25.0,      # más resistencia
+    "neumaticos": 25.0,    # frena mejor con lluvia, pincha menos y rueda con menos ruido
+    "suspension": 15.0,    # los choques hacen menos daño
+    "escape": 30.0,        # el motor suena más bajo y la policía te oye de menos lejos
+    "deposito": 30.0,      # caben más litros
 }
-NIVEL_MAX = 3
+_SERIE = (("motor", "Motor", 900, "Más velocidad punta y más aceleración. Se oye: el motor suena más agudo."),
+          ("frenos", "Frenos", 500, "Frena en menos metros."),
+          ("blindaje", "Blindaje", 700, "Aguanta más golpes y más disparos."))
+NIVEL_MAX = 3                     # los niveles de una mejora que no diga los suyos
+MEJORAS = {}                      # identificador -> {"nombre", "precio", "desc", "efecto", "niveles", "por_nivel"}
+
+
+def _mejora(ident, nombre, precio_, desc, efecto=None, niveles=None, por_nivel=None):
+    efecto = efecto if efecto in EFECTOS else (ident if ident in EFECTOS else "")
+    try:
+        niveles = max(1, min(5, int(niveles or NIVEL_MAX)))
+    except (TypeError, ValueError):
+        niveles = NIVEL_MAX
+    try:
+        por_nivel = max(0.0, min(100.0, float(por_nivel if por_nivel not in (None, "") else EFECTOS.get(efecto, 0.0))))
+    except (TypeError, ValueError):
+        por_nivel = EFECTOS.get(efecto, 0.0)
+    return {"nombre": str(nombre or ident), "precio": int(precio_ or 0), "desc": str(desc or ""), "efecto": efecto, "niveles": niveles, "por_nivel": por_nivel}
+
+
+for _m in _SERIE:
+    MEJORAS[_m[0]] = _mejora(*_m)
 
 
 def configurar(datos):
-    """Los nombres, los precios y los textos de las mejoras del taller y de los muebles de la casa salen de los datos del
-    juego (vida.json), que un mod puede cambiar. Lo que hace cada uno lo decide su identificador, aquí en el código: un
-    mueble o una mejora con un identificador nuevo se puede comprar y se describe, pero no tiene efecto propio."""
-    mej = [m for m in datos.get("mejoras", []) if isinstance(m, dict) and m.get("id") in MEJORAS]
+    """Las mejoras del taller y los muebles de la casa salen de los datos del juego (vida.json), que un mod puede cambiar.
+    Cada mejora dice su nombre, su precio, cuántos niveles tiene, qué efecto hace de los que el juego sabe hacer y cuánto
+    da cada nivel. Una mejora sin efecto se puede comprar y se describe, pero no cambia nada. Lo que hace cada mueble lo
+    decide su identificador, aquí en el código."""
+    mej = [m for m in datos.get("mejoras", []) if isinstance(m, dict) and m.get("id")]
+    MEJORAS.clear()
     for m in mej:
-        viejo = MEJORAS[m["id"]]
-        MEJORAS[m["id"]] = (str(m.get("nombre") or viejo[0]), int(m.get("precio", viejo[1]) or viejo[1]), str(m.get("desc") or viejo[2]))
+        serie = next((x for x in _SERIE if x[0] == m["id"]), (m["id"], m["id"], 0, ""))
+        MEJORAS[str(m["id"])] = _mejora(m["id"], m.get("nombre") or serie[1], m.get("precio", serie[2]) or serie[2], m.get("desc") or serie[3],
+                                         m.get("efecto"), m.get("niveles"), m.get("por_nivel"))
+    for x in _SERIE:                                           # las tres de siempre no faltan nunca
+        MEJORAS.setdefault(x[0], _mejora(*x))
     mue = [m for m in datos.get("muebles", []) if isinstance(m, dict) and m.get("id") and m.get("habitacion")]
     if mue:
         MUEBLES[:] = [(m["id"], m["habitacion"], str(m.get("nombre", m["id"])), int(m.get("precio", 0) or 0), str(m.get("desc", "")), str(m.get("efecto", "")))
@@ -39,40 +71,89 @@ def nivel(v, cual):
     return int(getattr(v, "mejoras", {}).get(cual, 0))
 
 
+def niveles(cual):
+    """Cuántos niveles tiene una mejora."""
+    return MEJORAS[cual]["niveles"] if cual in MEJORAS else NIVEL_MAX
+
+
 def precio(v, cual):
-    return MEJORAS[cual][1] * (nivel(v, cual) + 1)
+    return MEJORAS[cual]["precio"] * (nivel(v, cual) + 1)
+
+
+def efecto(v, cual):
+    """Cuánto lleva ganado un vehículo en un efecto, en tanto por uno: la suma de sus mejoras con ese efecto."""
+    return sum(n * MEJORAS[k]["por_nivel"] / 100.0 for k, n in getattr(v, "mejoras", {}).items() if n and k in MEJORAS and MEJORAS[k]["efecto"] == cual)
 
 
 def factor_velocidad(v):
-    return 1.0 + 0.07 * nivel(v, "motor")
+    return 1.0 + efecto(v, "motor")
 
 
 def factor_aceleracion(v):
-    return 1.0 + 0.12 * nivel(v, "motor")
+    return 1.0 + efecto(v, "motor") * 12.0 / 7.0
 
 
 def factor_frenada(v):
-    return 1.0 + 0.15 * nivel(v, "frenos")
+    return 1.0 + efecto(v, "frenos")
 
 
 def factor_tono(v):
-    return 1.0 + 0.04 * nivel(v, "motor")
+    return 1.0 + efecto(v, "motor") * 4.0 / 7.0
+
+
+def factor_blindaje(v):
+    return 1.0 + efecto(v, "blindaje")
+
+
+def factor_lluvia(v):
+    """Lo que frena con lluvia respecto a en seco: 0,6 con ruedas corrientes; con neumáticos reforzados, casi como en seco."""
+    return 0.6 + 0.4 * min(1.0, efecto(v, "neumaticos"))
+
+
+def factor_pinchazo(v):
+    """Cuánto pincha respecto a unas ruedas corrientes."""
+    return max(0.1, 1.0 - efecto(v, "neumaticos"))
+
+
+def factor_rodadura(v):
+    """(volumen, tono) del ruido de las ruedas: unos neumáticos mejores ruedan más bajo y más graves."""
+    e = min(1.0, efecto(v, "neumaticos"))
+    return 1.0 - 0.45 * e, 1.0 - 0.18 * e
+
+
+def factor_golpes(v):
+    """El daño que le hace un choque respecto a un vehículo de serie."""
+    return max(0.2, 1.0 - efecto(v, "suspension"))
+
+
+def factor_motor_volumen(v):
+    """A qué volumen suena el motor respecto a uno de serie."""
+    return max(0.3, 1.0 - efecto(v, "escape"))
+
+
+def factor_oido_policia(v):
+    """Desde cuánto te oye la policía respecto a un vehículo de serie: con el escape silenciado, de menos lejos."""
+    return max(0.6, 1.0 - 0.5 * efecto(v, "escape"))
+
+
+def factor_deposito(v):
+    return 1.0 + efecto(v, "deposito")
 
 
 def poner(v, mejoras):
     """Deja el vehículo con las mejoras dadas (al comprarlas o al sacarlo de un garaje)."""
-    mejoras = {k: max(0, min(NIVEL_MAX, int(n))) for k, n in dict(mejoras or {}).items() if k in MEJORAS}
-    antes = nivel(v, "blindaje")
+    mejoras = {k: max(0, min(niveles(k), int(n))) for k, n in dict(mejoras or {}).items() if k in MEJORAS}
+    antes = factor_blindaje(v)
     v.mejoras = mejoras
     base = float(v.modelo["salud"])
-    nueva = base * (1.0 + 0.25 * mejoras.get("blindaje", 0))
+    nueva = base * factor_blindaje(v)
     if nueva != v.salud_max:
-        v.salud = min(nueva, v.salud + max(0.0, nueva - base * (1.0 + 0.25 * antes)))
+        v.salud = min(nueva, v.salud + max(0.0, nueva - base * antes))
         v.salud_max = nueva
 
 
 def resumen(v):
-    partes = [f"{MEJORAS[k][0].lower()} nivel {n}" for k, n in getattr(v, "mejoras", {}).items() if n]
+    partes = [f"{MEJORAS[k]['nombre'].lower()} nivel {n}" for k, n in getattr(v, "mejoras", {}).items() if n and k in MEJORAS]
     return "Mejoras: " + ", ".join(partes) if partes else "Sin mejoras"
 
 
@@ -86,29 +167,30 @@ def opciones_taller(p, v, Opcion):
             if v.tag:
                 app.son("error")
                 app.decir("Ese vehículo es de una misión: no se puede tocar.", True)
-            elif n >= NIVEL_MAX:
-                app.decir(f"{MEJORAS[cual][0]} ya está al máximo.", True)
+            elif n >= niveles(cual):
+                app.decir(f"{MEJORAS[cual]['nombre']} ya está al máximo.", True)
             elif p.pagar(precio(v, cual)):
                 m = dict(getattr(v, "mejoras", {}))
                 m[cual] = n + 1
                 poner(v, m)
                 p.son("reparar", cat="interfaz")
-                app.decir(f"{MEJORAS[cual][0]} mejorado al nivel {n + 1} de {NIVEL_MAX}. {resumen(v)}.", True)
+                if v.canal and v is p.j.veh:                     # el escape nuevo se oye ya: el motor baja de volumen
+                    v.canal.volumen(0.42 * factor_motor_volumen(v))
+                app.decir(f"{MEJORAS[cual]['nombre']} mejorado al nivel {n + 1} de {niveles(cual)}. {resumen(v)}.", True)
         return f
 
     def texto(cual):
         def f():
             n = nivel(v, cual)
-            return f"Mejorar {MEJORAS[cual][0].lower()}: nivel {n} de {NIVEL_MAX}" + (f". Subir cuesta {precio(v, cual)} euros" if n < NIVEL_MAX else ". Al máximo")
+            return f"Mejorar {MEJORAS[cual]['nombre'].lower()}: nivel {n} de {niveles(cual)}" + (f". Subir cuesta {precio(v, cual)} euros" if n < niveles(cual) else ". Al máximo")
         return f
-    return [Opcion(texto(k), comprar(k), ayuda=MEJORAS[k][2] + " Las mejoras van con este vehículo: se conservan en el garaje.") for k in MEJORAS]
+    return [Opcion(texto(k), comprar(k), ayuda=MEJORAS[k]["desc"] + " Las mejoras van con este vehículo: se conservan en el garaje.") for k in MEJORAS]
 
 
 # ============================================================ banda propia
 PRECIO_RECLUTA = 400
 SUELDO = 60
 TOPE_BANDA = 6
-NOMBRES_BANDA = ["Los del Puerto", "La Cuadrilla", "Los Mareas", "La Peña del Muelle", "Los Faroles"]
 
 
 def cupo(j):
@@ -130,7 +212,8 @@ def reclutar(p):
         return False, ""
     j.banda += 1
     if not j.banda_nombre:
-        j.banda_nombre = random.choice(NOMBRES_BANDA)
+        from . import gente
+        j.banda_nombre = random.choice(gente.lista("bandas_propias"))
     p.son("pareja", cat="interfaz", vol=0.5)
     return True, f"Uno más en {j.banda_nombre}. Ya sois {j.banda} además de ti. Cada uno cobra {p.precio('sueldo_banda', SUELDO)} euros cada medianoche."
 
@@ -637,7 +720,8 @@ def _nombre_barrio(p, ident):
 def sucesos_territorio(p, azar=None):
     """Cada medianoche: se cumplen los plazos pendientes y, a veces, pasa algo nuevo."""
     import random
-    from .extras3 import BANDAS
+    from . import gente
+    BANDAS = gente.nombres_bandas()
     azar = azar or random
     j = p.j
     # --- plazos que vencen

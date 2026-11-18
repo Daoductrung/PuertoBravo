@@ -114,6 +114,13 @@ def cargar_datos(con_mods=True):
         vida = {}
     for clave in SECCIONES_VIDA:                               # ropa, complementos, protecciones, jornadas, combates, combustible, muebles, mejoras y tarifas
         d[clave] = list(vida.get(clave, []))
+    from . import gente
+    try:
+        gen = _leer_json(os.path.join(rutas.DATOS, "gente.json"))
+    except (OSError, ValueError):
+        gen = {}                                               # unos datos antiguos, sin ese archivo: vale lo de serie
+    for clave in gente.SECCIONES:                              # gente de la calle, caracteres, bandas, tipos de enemigo, policía y cajas
+        d[clave] = [x for x in gen.get(clave, []) if isinstance(x, dict)] if isinstance(gen.get(clave, []), list) else []
     carpeta_mapas = os.path.join(rutas.DATOS, "mapas")
     if os.path.isdir(carpeta_mapas):
         for nombre in sorted(os.listdir(carpeta_mapas)):
@@ -143,7 +150,9 @@ def cargar_datos(con_mods=True):
             except (OSError, ValueError) as e:
                 d["errores_mods"].append(f"{nombre}: {e}")
                 continue
-            for clave in ("armas", "objetos", "vehiculos", "carreras", "misiones", "comidas", "personajes") + SECCIONES_VIDA:
+            for nuevo in mod.get("gente", []) if isinstance(mod.get("gente", []), list) else []:      # las listas de la gente se suman, o se sustituyen si el mod lo pide
+                d["gente"] = [gente.fusionar_gente(d["gente"][0] if d["gente"] else {}, nuevo)]
+            for clave in ("armas", "objetos", "vehiculos", "carreras", "misiones", "comidas", "personajes") + SECCIONES_VIDA + gente.SECCIONES[1:]:
                 for nuevo in mod.get(clave, []):
                     lista = d[clave]
                     ident = nuevo.get("id")
@@ -182,6 +191,7 @@ def cargar_datos(con_mods=True):
     combustible.configurar(d)
     sistemas.configurar(d)
     realismo.configurar(d)
+    gente.configurar(d)
     return d
 
 
