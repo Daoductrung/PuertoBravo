@@ -418,7 +418,7 @@ def al_arrancar(app):
         A.limpiar()
         registro.info("actualizar", "Primera sesión tras actualizar", version=VERSION)
         servidores = A.texto_relanzados(A.leer_registro_instalador())
-        app.decir(f"Juego actualizado a la versión {VERSION}. Las novedades están en el manual." + (" " + servidores if servidores else ""))
+        app.decir(f"Juego actualizado a la versión {VERSION}. Las novedades están en el menú principal, en Acerca de, Novedades de esta versión." + (" " + servidores if servidores else ""))
     elif "--actualizacion-fallida" in sys.argv:
         A.limpiar()
         motivo = A.motivo_del_fallo()

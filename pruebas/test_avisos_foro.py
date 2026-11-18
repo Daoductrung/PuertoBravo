@@ -157,7 +157,7 @@ def test_el_gps_vuelve_a_la_mision_despues_de_un_desvio(robot):
 
 def test_la_persecucion_afloja_si_el_objetivo_se_escapa(robot):
     p, j = _partida(robot)
-    p.cfg["dificultad"] = "normal"
+    p.cfg["dificultad"], p.cfg["ayuda_persecucion"] = "normal", False      # sin la ayuda en las persecuciones: los números de siempre
     _mision(p, "m10")
     _pasar_escenas(robot)
     robot.frames(3)

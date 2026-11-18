@@ -258,6 +258,115 @@ class MisVehiculos:
         if not self.es_mio(v):
             self.quitar_vehiculo(v)
 
+    # ------------------------------------------------------------------ cuando el juego te lleva a otro sitio
+    def vehiculo_para_llevar(self):
+        """El vehículo que va contigo cuando el juego te devuelve a otro sitio: el que conduces o el que acabas de dejar
+        al lado, si es de calle (ni de una misión ni de la banda, ni un barco, ni algo que vuela, ni con chófer)."""
+        v = self.j.veh or self.tu_vehiculo(120)
+        if v is None or v.muerto or v.tag or v.ardiendo >= 0 or v.modelo.get("barco") or v.modelo.get("vuela") or self.mundo.tipo == "mar" \
+                or getattr(v, "con_chofer", False) or getattr(self, "en_servidor", False):
+            return None
+        return v
+
+    def _plaza_al_lado(self, x, y):
+        """Un hueco junto al bordillo cerca de ese punto, sin nada aparcado encima y sin tapar la puerta (ahí aparca el
+        vehículo que dé la misión)."""
+        px, py, _ = self.mundo.plaza_en(x, y)
+        for dx, dy in ((13, 0), (-13, 0), (0, 13), (0, -13), (26, 0), (-26, 0), (0, 26), (0, -26), (39, 0), (-39, 0), (0, 39), (0, -39)):
+            qx, qy, d = self.mundo.plaza_en(x + dx, y + dy)
+            if math.hypot(qx - px, qy - py) >= 8 and all(o.muerto or o.dist(qx, qy) > 7 for o in self.vehiculos):
+                return qx, qy, d
+        return self.mundo.plaza_en(x + 13, y)
+
+    def preparar_traslado(self, mapa):
+        """Antes de que el juego te lleve a otro sitio (y antes de rebobinar al jugador, que le quita el vehículo de las
+        manos): qué vehículo va contigo, y tu barco, si ibas en él, a un amarre. Devuelve {"veh": vehículo o None}."""
+        j = self.j
+        u = j.veh
+        if j.barco_actual and u is not None and u.modelo.get("barco"):      # ibas en tu barco: no se pierde, vuelve a puerto
+            emb = next((l for l in self.mapas[mapa].lugares.values() if l.tipo == "embarcadero"), None) or \
+                next((l for m in self.mapas.values() for l in m.lugares.values() if l.tipo == "embarcadero"), None)
+            if emb is not None:
+                j.barcos.append({"modelo": j.barco_actual["modelo"], "nombre": j.barco_actual.get("nombre"), "salud": u.salud, "en": emb.id})
+                self.decir(f"Tu barco, {u.nombre}, queda amarrado en {self.nombre_lugar(emb)}.")
+            j.barco_actual = None
+            self.salir_vehiculo(forzado=True)
+            self.quitar_vehiculo(u)
+            return {"veh": None}
+        v = self.vehiculo_para_llevar()
+        if v is not None and self.mapas[mapa].tipo == "mar":
+            v = None
+        if u is not None:
+            self.salir_vehiculo(forzado=True)
+            if u is not v and mapa != self.mundo.id and not self.es_mio(u):
+                self.quitar_vehiculo(u)                          # el que no es tuyo y no puede venir desaparece, como siempre
+        return {"veh": v}
+
+    def llevarte_a(self, mapa, x, y, lleva=None):
+        """El juego te devuelve a un sitio: al reintentar o repetir una misión, o al volver a un punto de control. Tu
+        vehículo, el que llevabas o el que acababas de dejar al lado, va contigo y queda aparcado junto a ti, que es donde
+        estaba cuando empezaste. Si no puede ir (uno de misión, un barco, algo que vuela), el tuyo se queda donde estaba y
+        sale en Mis vehículos. Un barco tuyo vuelve a un amarre. `lleva` es lo que devolvió `preparar_traslado`, si hubo
+        que llamarlo antes. Devuelve el vehículo que ha venido contigo, o None."""
+        if lleva is None:
+            lleva = self.preparar_traslado(mapa)
+        v = lleva.get("veh")
+        if v is not None and (v.muerto or v not in self.vehiculos):
+            v = None
+        if v is None:
+            if mapa != self.mundo.id:
+                self.cambiar_mapa(mapa, x, y)
+            self.teletransportar(x, y)
+            return None
+        if mapa != self.mundo.id:                                # a otra localidad: viaja como datos y vuelve a la calle allí
+            ficha = dict(self._veh_fuera_dict(v), n=int(getattr(v, "mio_n", 0)))
+            mio = self.es_mio(v)
+            self.quitar_vehiculo(v)
+            self.ultimo_veh = None
+            self.cambiar_mapa(mapa, x, y)
+            px, py, d = self._plaza_al_lado(x, y)
+            v = self._veh_de_dict(ficha, px, py)
+            if mio:
+                v.mio, v.mio_n = True, ficha["n"]
+        else:
+            px, py, d = self._plaza_al_lado(x, y)
+            v.x, v.y = px, py
+        v.dir, v.rumbo, v.vel, v.ia = d, d * 90.0, 0.0, None
+        self.ultimo_veh = v
+        self.teletransportar(x, y)
+        self.decir(f"{v.nombre} viene contigo: queda aparcado a tu lado, {self.direccion_txt(v.x, v.y)}.")
+        return v
+
+    def ficha_a_la_calle(self, ficha, casa=None):
+        """Saca a la calle, a tu nombre, un vehículo guardado como ficha de garaje: delante de esa casa, o junto a ti.
+        En otra localidad queda apuntado y allí estará cuando vuelvas."""
+        self.mio_sec += 1
+        mapa = casa.mapa if casa is not None else self.mundo.id
+        x, y = (casa.x, casa.y) if casa is not None else self.pos()
+        if mapa == self.mundo.id and self.mundo.tipo != "mar":
+            px, py, d = self._plaza_al_lado(x, y)
+            v = self._veh_de_dict(dict(ficha, rumbo=d * 90.0), px, py)
+            v.mio, v.mio_n = True, self.mio_sec
+            return v
+        px, py, d = self.mapas[mapa].plaza_en(x, y)
+        self.mis_lejos.append(dict(ficha, x=px, y=py, rumbo=d * 90.0, mapa=mapa, n=self.mio_sec, donde=self.mapas[mapa].describir(px, py)))
+        return None
+
+    def vehiculos_tras_reintento_txt(self):
+        """Tras reintentar: dónde están tus vehículos, en una frase, para que no parezca que falta ninguno."""
+        if getattr(self, "en_servidor", False):
+            return ""
+        calle = self.mis_en_calle() - (1 if self.es_mio(self.tu_vehiculo(60)) else 0)
+        garaje = self.mis_en_garajes()
+        if calle <= 0 and garaje <= 0:
+            return ""
+        partes = []
+        if garaje:
+            partes.append(f"{garaje} en {'tu garaje' if len([g for g in self.j.garajes.values() if g]) == 1 else 'tus garajes'}")
+        if calle > 0:
+            partes.append(f"{calle} en la calle")
+        return "Tus vehículos siguen donde estaban: " + " y ".join(partes) + ". Los tienes en el móvil, en Mis vehículos."
+
     def mas_vehiculos_txt(self, menos=None):
         """Lo que añade Mayúsculas L: cuántos vehículos más tienes y dónde mirarlos."""
         if getattr(self, "en_servidor", False):

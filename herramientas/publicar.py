@@ -79,7 +79,26 @@ def novedades():
         return ""
     cuerpo = re.sub(r"</(li|p|h3)>", "\n", m.group(2))
     texto = html.unescape(re.sub(r"<[^>]+>", "", m.group(1) + ".\n" + cuerpo))
-    return "\n".join(l.strip() for l in texto.splitlines() if l.strip())[:6000]
+    return recortar_novedades([l.strip() for l in texto.splitlines() if l.strip()])
+
+
+NOVEDADES_MAX = 6000
+
+
+def recortar_novedades(lineas, tope=NOVEDADES_MAX):
+    """El resumen de novedades que viaja con la versión: cada línea es un punto, y solo entran puntos completos. Si no
+    caben todos, se corta al final del último que quepa (nunca a mitad de palabra) y se dice dónde está el resto."""
+    cola = "Hay más: la lista completa está en el menú principal del juego, en Acerca de, Novedades de esta versión."
+    entero = "\n".join(lineas)
+    if len(entero) <= tope:
+        return entero
+    dentro, largo = [], len(cola)
+    for l in lineas:
+        if largo + len(l) + 1 > tope:
+            break
+        dentro.append(l)
+        largo += len(l) + 1
+    return "\n".join(dentro + [cola])
 
 
 def comprimir(carpeta, destino):

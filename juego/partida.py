@@ -30,6 +30,7 @@ from .atracos import Atracos
 from .pactos import Pactos
 from .reconquista import Reconquista
 from .escolta import Escolta
+from .destinos import Destinos
 from .contratos import Contratos
 from .reacciones import Reacciones
 from .convivencia import Convivencia
@@ -81,7 +82,7 @@ def migrar(d):
 
 
 class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos, Calle, Guerra,
-              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra, Reconquista, Escolta):
+              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra, Reconquista, Escolta, Destinos):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -248,13 +249,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 self.app.son("error")
                 self.decir("No has dejado ningún vehículo aparcado, o ya no está donde lo dejaste." + self.mas_vehiculos_txt(), True)
             return False
-        antes = self.gps.get("anterior") or self.gps if self.gps else None
-        if antes is not None and math.hypot(antes["dest"][0] - u.x, antes["dest"][1] - u.y) < 3:
-            antes = None
-        self.fijar_gps(u.x, u.y, u.nombre)
+        self.fijar_gps(u.x, u.y, u.nombre, desvio=True, cosa=u)
         t = f"{self.situar(u.x, u.y, u.nombre)}. {self.mundo.describir(u.x, u.y)}. Marcado en el GPS."
-        if antes is not None and self.gps:
-            self.gps["anterior"] = antes
+        antes = (self.gps or {}).get("anterior")
+        if antes is not None:
             t += f" Al llegar, el GPS vuelve a {antes['nombre']}."
         self.decir(t + self.mas_vehiculos_txt(u), True)
         return True
@@ -713,7 +711,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.decir(texto)
         self.mision_cambio_mapa()
         self.sv_poner_vehiculos()
-        if not self.gps and gps_final and self.lug(gps_final):
+        if gps_final and self.lug(gps_final) and (not self.gps or (self.gps["auto"] and not gps_auto)):      # tu viaje sigue, aunque la misión haya marcado lo suyo
             self.gps_a_lugar(self.lug(gps_final), auto=gps_auto, callar=True)
             self.repetir_gps_suave()
 
@@ -772,7 +770,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         elif k == pygame.K_t:
             self.decir(f"Son las {self.hora_txt()}, día {self.dia}. {'Llueve.' if self.lluvia else 'Cielo despejado.'} {self.dia_txt()}".strip(), True)
         elif k == pygame.K_o:
-            self.decir(self.objetivo_txt(), True)
+            if mayus:
+                self.enfocar_objetivo()
+            else:
+                self.decir_objetivo()
         elif k == pygame.K_n:
             if mayus:
                 self.proximo_cruce()
@@ -797,13 +798,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             else:
                 mj.lista_lugares(self)
         elif k == pygame.K_g:
-            if mayus:
-                habia = self.gps is not None
-                self.cancelar_gps(True)
-                if self.mision:
-                    self.mision["gps_callado"] = True            # lo has quitado tú: la misión no lo vuelve a poner sola
-                    if habia:
-                        self.decir("Con la G vuelves a marcar la misión.")
+            if ctrl:
+                self.recuperar_gps()
+            elif mayus:
+                self.quitar_gps_jugador()
             elif not self.gps and self.mision and self.gps_mision(hablar=False):
                 self.app.son("notificacion")
                 self.repetir_gps()
@@ -812,6 +810,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 self.app.son("notificacion")
                 self.decir(self.trabajo.get("texto", ""))
                 self.repetir_gps_suave()
+            elif not self.gps and getattr(self, "gps_cancelado", None):
+                self.recuperar_gps()                             # sin destino y sin misión: la G recupera el último que quitaste
             else:
                 self.repetir_gps()
         elif k == pygame.K_TAB:
@@ -1287,40 +1287,99 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             return
         nom, ex, ey, obj = self.radar_lista[self.radar_idx]
         sigue = obj if isinstance(obj, (Vehiculo, Persona)) else None
-        # Si ya ibas a algún sitio, esto es un desvío: el destino de antes se guarda y vuelve solo al llegar a esto.
-        antes = self.gps.get("anterior") or self.gps if self.gps else None
-        if antes is not None and math.hypot(antes["dest"][0] - ex, antes["dest"][1] - ey) < 3:
-            antes = None                                         # es el mismo sitio: no hay desvío que valga
-        self.fijar_gps(ex, ey, nom, sigue=sigue)
-        if antes is not None and self.gps:
-            self.gps["anterior"] = antes
-            self.decir(f"Desvío a {nom}. Al llegar, el GPS vuelve a {antes['nombre']}. Con Mayúsculas G cancelas el desvío y vuelves a lo que llevabas.")
+        # Si ya ibas a algún sitio, esto es un desvío: el destino de antes se guarda y vuelve solo al acabar con esto.
+        self.fijar_gps(ex, ey, nom, sigue=sigue, desvio=True, cosa=obj)
+        antes = (self.gps or {}).get("anterior")
+        if antes is not None:
+            como = "Al subir a él" if isinstance(obj, Vehiculo) else "Al llegar a su lado" if isinstance(obj, Persona) else "Al llegar"
+            self.decir(f"Desvío a {nom}. {como}, el GPS vuelve a {antes['nombre']}. Con Mayúsculas G cancelas el desvío y vuelves a lo que llevabas.")
 
     def _volver_del_desvio(self, texto=""):
-        """Se acabó el desvío marcado con el radar: el GPS vuelve al destino que había. False si no había ninguno."""
+        """Se acabó el desvío: el GPS vuelve al destino que esperaba debajo, y lo dice. False si no había ninguno."""
         antes = (self.gps or {}).get("anterior")
         if antes is None:
             return False
         self.gps = antes
         antes["clave"] = None
         self.t_gps = 0.0
-        self._recalcular_gps()
         self.app.son("notificacion")
         self.decir(f"{texto} El GPS vuelve a {antes['nombre']}.".strip())
+        self._recalcular_gps()
+        return True
+
+    def _gps_cosa_acabada(self, g):
+        """El destino era una cosa (un vehículo, una persona, un objeto) y ya no hay nada que buscar: te has subido a
+        ese vehículo, has llegado junto a esa persona, has recogido el objeto, o ya no está. El destino se acaba y,
+        si era un desvío, el GPS vuelve a lo de antes diciéndolo. True si se ha acabado."""
+        c = g.get("cosa") if g.get("cosa") is not None else g.get("sigue")
+        if c is None:
+            return False
+        if g["auto"]:                                            # lo que persigue una misión o un trabajo: solo si ha caído
+            if not getattr(c, "muerto", False):
+                return False
+            if g is self.gps:
+                self.gps = None
+            return True
+        if isinstance(c, Vehiculo):
+            if self.j.veh is c:
+                texto = f"Ya estás en {c.nombre}."
+            elif c.muerto or c not in self.vehiculos:
+                texto = f"{c.nombre} ya no está."
+            else:
+                return False
+        elif isinstance(c, Persona):
+            if c.muerto or c not in self.personas:
+                texto = f"{c.nombre} ya no está."
+            elif g.get("anterior") is not None and c.dist(*self.pos()) <= (10 if self.j.veh else 3):
+                texto = f"Has llegado junto a {c.nombre}."
+            else:
+                return False
+        elif isinstance(c, Objeto):
+            if c in self.objetos:
+                return False
+            texto = f"{c.nombre}: recogido." if getattr(c, "recogido", False) else f"{c.nombre} ya no está."
+        else:
+            return False
+        if g is self.gps and not self._volver_del_desvio(texto):
+            self.decir(texto + " El GPS se queda sin destino.")
+            self.gps = None
         return True
 
     # -------------------------------------------------------------------- GPS
-    def fijar_gps(self, x, y, nombre, sigue=None, auto=False, radio=None, callar=False):
-        self.gps = {"dest": (x, y), "nombre": nombre, "ruta": [], "clave": None, "recordado": None,
-                    "sigue": sigue, "auto": auto, "radio": radio}
+    def fijar_gps(self, x, y, nombre, sigue=None, auto=False, radio=None, callar=False, desvio=False, cosa=None):
+        """Marca un destino. El GPS tiene un solo destino, `self.gps`: de él salen la G, los pitidos, la baliza y el piloto.
+        Debajo puede esperar otro (`anterior`), al que se vuelve, diciéndolo, cuando el de arriba se acaba:
+        - lo que marcas tú mientras la misión o el trabajo tienen marcado lo suyo es un desvío: lo suyo espera debajo;
+        - lo que marcas con la B del radar o con Mayúsculas L (`desvio`) es un desvío de lo que llevaras, fuera lo que fuera;
+        - si la misión o el trabajo cambian de destino mientras estás en un desvío, cambia lo que espera debajo.
+        `auto` es lo que marca el juego (misión o trabajo). `cosa` es el vehículo, la persona o el objeto al que se va.
+        Devuelve el destino creado."""
+        g = {"dest": (x, y), "nombre": nombre, "ruta": [], "clave": None, "recordado": None,
+             "sigue": sigue, "auto": auto, "radio": radio, "cosa": cosa, "mapa": self.mundo.id}
+        viejo = self.gps
+        if viejo is not None and auto and not viejo["auto"] and viejo.get("sobre_auto"):
+            viejo["anterior"] = g                                # estás en un desvío: lo nuevo de la misión espera debajo
+            self.decir(f"Sigues en el desvío a {viejo['nombre']}. Cuando lo acabes, el GPS irá a {nombre}.")
+            return g
+        if viejo is not None and not auto:
+            base = viejo.get("anterior") or (viejo if viejo["auto"] or desvio else None)
+            if base is not None and math.hypot(base["dest"][0] - x, base["dest"][1] - y) >= 3:      # si es el mismo sitio, no hay desvío que valga
+                g["anterior"] = base
+                g["sobre_auto"] = bool(base["auto"] or base.get("sobre_auto"))      # un desvío de lo que marca la misión o el trabajo
+        self.gps = g
         self.t_gps = 0.0
         self._recalcular_gps()
+        if self.gps is not g:                                    # lo que se iba a buscar ya no estaba
+            return g
         if callar:
-            self.gps["clave"] = self._instruccion()[0]
+            g["clave"] = self._instruccion()[0]
         else:
             self.app.son("notificacion")
+            if g.get("anterior") is not None and not desvio:
+                self.decir(f"Desvío a {nombre}. Al llegar, el GPS vuelve a {g['anterior']['nombre']}.")
+        return g
 
-    def gps_a_lugar(self, lugar, auto=False, callar=False):
+    def gps_a_lugar(self, lugar, auto=False, callar=False, desvio=False):
         if lugar.mapa != self.mundo.id:
             con = self.conexion_hacia(lugar.mapa)
             destino = self.mapas[lugar.mapa].nombre
@@ -1329,21 +1388,35 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 return
             como = {"salida": "Coge la carretera en un vehículo", "estacion": "Toma el autobús", "embarcadero": "Zarpa en barco",
                     "muelle": "Atraca", "helipuerto": "Vuela"}.get(con.tipo, "Ve")
-            self.fijar_gps(con.x, con.y, con.nombre, auto=auto, callar=True, radio=6 if con.tipo != "salida" else None)
-            self.gps["final"] = lugar.id
+            g = self.fijar_gps(con.x, con.y, con.nombre, auto=auto, callar=True, radio=6 if con.tipo != "salida" else None, desvio=desvio)
+            g["final"] = lugar.id
             if not callar:
                 self.app.son("notificacion")
             self.decir(f"{lugar.nombre} está en {destino}. {como}: te guío hasta {con.nombre}.")
             return
-        self.fijar_gps(lugar.x, lugar.y, lugar.nombre, auto=auto, callar=callar)
+        self.fijar_gps(lugar.x, lugar.y, lugar.nombre, auto=auto, callar=callar, desvio=desvio)
+
+    def quitar_gps_auto(self, fin=False):
+        """La misión o el trabajo ya no tienen ese destino: se quita el suyo, esté arriba o esperando debajo de un desvío.
+        Lo que hayas marcado tú se queda. Con `fin`, la misión o el trabajo se han acabado: tu destino deja de ser un desvío."""
+        g = self.gps
+        if g is None:
+            return
+        if g["auto"]:
+            self.gps = None
+            return
+        if (g.get("anterior") or {}).get("auto"):
+            g["anterior"] = None
+        if fin:
+            g.pop("sobre_auto", None)
 
     def cancelar_gps(self, hablar=False):
-        if hablar and self._volver_del_desvio("Dejas el desvío."):       # lo quita el jugador: primero se deshace el desvío
-            return
+        """Sin `hablar` lo quita el juego: se va todo, también lo que esperaba debajo. Con `hablar` lo quita el jugador
+        (Mayúsculas G): primero el desvío y, a la siguiente, el destino. Lo que quita el jugador se recupera con Control G."""
         if hablar:
-            self.app.son("menu_atras" if self.gps else "error")
-            self.decir("GPS cancelado." if self.gps else "No hay ningún destino marcado.", True)
+            return self.quitar_gps_jugador()
         self.gps = None
+
 
     def repetir_gps(self):
         if not self.gps:
@@ -1356,12 +1429,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
 
     def _recalcular_gps(self):
         g = self.gps
+        if self._gps_cosa_acabada(g):
+            return
         if g["sigue"] is not None:
             s = g["sigue"]
-            if getattr(s, "muerto", False):
-                if not self._volver_del_desvio():
-                    self.gps = None
-                return
             g["dest"] = (s.x, s.y)
         x, y = self.pos()
         d = math.hypot(g["dest"][0] - x, g["dest"][1] - y)
@@ -1487,7 +1558,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                     self.decir(f"Has llegado a {g['nombre']}. {self.pista_de_llegada(self._lugar_del_gps()) or 'Pulsa Intro para continuar el viaje.'}")
                     g["clave"] = "fin"
                 return
-            elif llegado and not g["auto"] and g["sigue"] is None:
+            elif llegado and not g["auto"] and g["sigue"] is None and (d < 1.5 or not isinstance(g.get("cosa"), Objeto)):       # a un objeto se llega al estar encima, o al recogerlo
                 self.app.son("llegada")
                 self.app.vibrar(0.2, 0.6, 150)
                 if not self._volver_del_desvio(f"Has llegado a {g['nombre']}."):
@@ -1695,6 +1766,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             o.canal.parar()
         if o in self.objetos:
             self.objetos.remove(o)
+        o.recogido = True
         if o.tipo in ("municion", "arma"):                       # lo que suelta un enemigo caído
             self.recoger_botin(o)
             return

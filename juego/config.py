@@ -94,6 +94,7 @@ POR_DEFECTO = {
     "ia_acciones": False,          # con el modo IA: el modelo puede proponer una acción de una lista cerrada, y el juego decide si pasa
     "pareja_convive": False,       # contenido para adultos: poder pedirle a tu pareja que se venga a vivir contigo
     "escolta_misiones": "moderado",  # las misiones se ajustan a tu escolta: no | moderado | fuerte
+    "ayuda_persecucion": True,     # persecuciones: avisos más seguidos de por dónde va quien huye, cada giro, y afloja antes si te quedas atrás
     "reconquista": "normal",       # sin conexión, las bandas vencidas intentan recuperar tus barrios: apagado | tranquilo | normal | duro
     "oficio_policia": False,       # modo: poder ingresar en la policía y trabajar de agente
     "radio_coches": True,          # en un servidor, oír floja la emisora del juego que lleva el vehículo de otro jugador que está cerca

@@ -43,8 +43,8 @@ class Trabajos:
         self.trabajo = None
         if t.get("tipo") == "policia":                           # fin del turno: se retira lo del aviso y se devuelve el coche patrulla
             self.fin_turno_limpieza(t)
-        if self.gps and self.gps.get("auto"):
-            self.cancelar_gps()
+        if self.gps:
+            self.quitar_gps_auto(fin=True)
         o = t.get("objetivo")
         if o is not None and not o.muerto:
             self.quitar_vehiculo(o)

@@ -594,6 +594,11 @@ def opciones(app):
                   "que aguantan más y apuntan mejor, según cuántos lleves. El primero de los tuyos no cuenta, y hay un tope para que ninguna misión se vuelva imposible. "
                   "Moderado, que es lo de serie: como mucho la mitad más de enemigos. Fuerte: como mucho el doble. No: te esperan siempre los mismos. "
                   "No cuenta en los tutoriales ni en un servidor en línea. El juego te avisa cuando la oposición sube por tu escolta."),
+            si_no("ayuda_persecucion", "Ayuda en las persecuciones",
+                  "Para las misiones en las que hay que perseguir un vehículo o seguir a alguien a pie. Con sí, que es lo de serie, el juego te dice más a menudo por dónde va, "
+                  "con la calle y hacia dónde tira, y te canta cada giro; quien huye afloja antes si te quedas atrás, tienes algo más de tiempo cuando hay un límite, "
+                  "y a pie se tarda un poco más en perder de vista a quien sigues. Es una ayuda suave: la persecución sigue habiendo que hacerla. "
+                  "Con no, todo va como siempre: menos avisos y sin esas ventajas. No cuenta en un servidor en línea."),
             si_no("mod_enemigos", "Modificador: enemigos más duros", "Los enemigos de las misiones aguantan la mitad más. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
             si_no("mod_policia", "Modificador: policía más severa", "Cada delito cuenta la mitad más, así que la búsqueda sube antes. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
             si_no("mod_dinero", "Modificador: misiones peor pagadas", "Las misiones pagan la mitad. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
@@ -812,6 +817,15 @@ def lista_lugares(p, al_elegir=None, titulo=None, mapa=None, otras=True):
         mg = Menu(app, nombre, ops, intro="En orden alfabético. Pulsa una letra para saltar, Intro para elegir y F1 para la descripción")
         app.abrir(mg)
     grupos = [Opcion(n, (lambda n=n, f=f: abrir_grupo(n, f))) for n, f in GRUPOS]
+    if al_elegir is None and mapa is None and (p.mision or p.trabajo):
+        def al_objetivo():
+            while len(app.pila) > 1 and app.pila[-1] is not p:
+                app.pila.pop()
+            app.teclas.clear()
+            p.enfocar_objetivo()
+        grupos.insert(0, Opcion(lambda: "Objetivo de la misión. " + (p.objetivo_posicion_txt() or "Pulsa Intro para oír qué toca ahora."), al_objetivo,
+                                ayuda="El sitio, el vehículo o la persona que pide ahora la misión o el trabajo, con su nombre tal como sale en el mapa. Intro lo marca en el GPS, dejando cualquier desvío. "
+                                      "Sin abrir esta lista se hace con Mayúsculas O."))
     if otras and len(p.mapas) > 1:
         grupos.append(Opcion("Otras localidades", otras_localidades))
     mp = Menu(app, titulo, grupos)
@@ -822,10 +836,22 @@ def movil(p):
     app = p.app
     j = p.j
 
+    def volver_al_objetivo():
+        while app.pila and app.pila[-1] is not p:
+            app.cerrar(app.pila[-1])
+        p.enfocar_objetivo()
+
     def misiones():
         def ops():
             lista = []
+            en_curso = p.mision["def"] if p.mision else None
+            if en_curso is not None:                             # la que estás haciendo: Intro guía a lo que toca ahora, no a donde empezó
+                lista.append(Opcion(lambda: f"En curso: {en_curso['titulo']}. {p.objetivo_posicion_txt() or 'Pulsa Intro para oír qué toca ahora.'}", volver_al_objetivo,
+                                    ayuda="Es la misión que estás haciendo. Intro vuelve a su objetivo de ahora: lo marca en el GPS, dejando cualquier desvío, y si está cerca lo deja elegido en el radar. "
+                                          "Fuera del móvil se hace con Mayúsculas O."))
             for m in p.misiones_disponibles():
+                if en_curso is not None and m.get("id") == en_curso.get("id"):
+                    continue
                 l = p.lugares[m["lugar"]]
 
                 def ir(l=l):
@@ -850,7 +876,7 @@ def movil(p):
                     continue
                 lista.append(Opcion(f"{m['titulo']}. {p.txt(m['resumen'])} {p.mision_vehiculo_txt(m)} {donde}".replace("  ", " "), ir, ayuda="Pulsa Intro para marcar el lugar en el GPS."))
             return lista or [Opcion("No hay misiones disponibles ahora mismo")]
-        mm = Menu(app, "Misiones disponibles", ops, intro="Intro marca en el GPS el lugar donde empieza")
+        mm = Menu(app, "Misiones disponibles", ops, intro="Intro marca en el GPS el lugar donde empieza" + (". La primera es la que tienes en curso: Intro vuelve a su objetivo de ahora" if p.mision else ""))
         app.abrir(mm)
 
     def abandonar():
@@ -945,10 +971,7 @@ def movil(p):
                 def si():
                     while app.pila and app.pila[-1] is not p:
                         app.cerrar(app.pila[-1])
-                    if l.mapa != p.mundo.id:
-                        p.dejar_o_quitar(j.veh)
-                        p.cambiar_mapa(l.mapa, l.x, l.y)
-                    p.teletransportar(l.x, l.y)
+                    p.llevarte_a(l.mapa, l.x, l.y)                 # tu vehículo va contigo y queda aparcado a tu lado
                     p.iniciar_mision(m, repeticion=True)
                 app.abrir(Menu(app, f"¿Repetir {m['titulo']}? Te lleva al lugar donde empieza. No cuenta ni da recompensa",
                                [Opcion("Sí, repetirla", si), Opcion("No", lambda: app.cerrar())]))
@@ -974,6 +997,10 @@ def movil(p):
                  Opcion("Misiones disponibles", misiones),
                  Opcion("Diario: lo que ha pasado y repetir misiones", diario,
                         ayuda="Un resumen de por dónde vas en la historia y la lista de las misiones que has hecho. Desde ahí puedes repetir cualquiera.")]
+        if p.mision or p.trabajo:
+            lista.insert(1, Opcion("Volver al objetivo: marcarlo en el GPS y en el radar", volver_al_objetivo,
+                                   ayuda="Deja cualquier desvío y vuelve a marcar en el GPS lo que pide ahora la misión o el trabajo. Si está cerca, lo deja elegido en el radar. "
+                                         "Fuera del móvil se hace con Mayúsculas O."))
         if p.mision:
             lista.append(Opcion("Abandonar la misión en curso", abandonar))
         from . import menus_extra as mx

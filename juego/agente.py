@@ -376,8 +376,8 @@ class Agente:
         v = a.get("veh")
         if v is not None and not v.muerto and v in self.vehiculos and v is not self.j.veh:
             self.quitar_vehiculo(v)
-        if self.gps and self.gps.get("auto"):
-            self.cancelar_gps()
+        if self.gps:
+            self.quitar_gps_auto()
         if self.objetivo is v or self.objetivo in a.get("sospechosos", []):
             self.objetivo = None
 
@@ -549,8 +549,8 @@ class Agente:
         if a["fase"] == "ir":
             if math.hypot(l.x - x, l.y - y) > 42:
                 return
-            if self.gps and self.gps.get("auto"):
-                self.cancelar_gps()
+            if self.gps:
+                self.quitar_gps_auto()
             clase = d.get("sospechoso") or "atracador"
             if a["tipo"] == "pelea":
                 a["sospechosos"] = [self._sospechoso(clase, l.x, l.y, n) for n in random.sample(["El de la camisa rota", "El grandullón", "El del chándal", "El de la gorra", "El borracho"], 2)]
@@ -675,8 +675,8 @@ class Agente:
                     s = self._sospechoso(a["def"].get("sospechoso") or "atracador", v.x, v.y, "Conductor fugado")
                     s.estado, s.t_estado, s.arma, s.ha_resistido = "huye", 60.0, None, True
                     a["sospechosos"], a["veh"], a["fase"] = [s], None, "actuar"
-                    if self.gps and self.gps.get("auto"):
-                        self.cancelar_gps()
+                    if self.gps:
+                        self.quitar_gps_auto()
                     self.son("puerta_coche", xy=(v.x, v.y))
                     self.decir(AJ.frase("frases_conductor_corre"))
             return

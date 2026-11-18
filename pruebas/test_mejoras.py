@@ -375,6 +375,7 @@ def test_seguir_a_alguien_de_oido(robot):
     assert p.mision is None and "se ha dado cuenta" in robot.app.pila[-1].titulo
     robot.app.cerrar(robot.app.pila[-1])
     # quedarte muy atrás: lo pierdes
+    p.cfg["ayuda_persecucion"] = False                             # sin la ayuda en las persecuciones: los tiempos de siempre
     p, m = _empezar(robot, "ocs1")
     o = p.mision["movil"]
     o["espera"] = 0

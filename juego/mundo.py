@@ -81,7 +81,7 @@ def _es_dato(nombre):
 
 SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas", "vehiculos_propios", "calle", "guerra_barrios",
                   "carta_domicilio", "domicilio", "atracos", "pactos", "reconquista", "contratos", "reacciones", "planes_pareja", "convivencia", "policia_oficio", "avisos_policia",
-                  "pasillos", "productos", "tipos_tienda", "recetas", "cocina", "escolta_misiones")
+                  "pasillos", "productos", "tipos_tienda", "recetas", "cocina", "escolta_misiones", "persecuciones")
 
 
 def cargar_datos(con_mods=True):

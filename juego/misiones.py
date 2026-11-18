@@ -7,6 +7,7 @@ import pygame
 
 from . import gente as G
 from . import mundo as M
+from . import destinos as D
 from .entidades import Objeto, Persona
 from .menus import Dialogo, Menu, Opcion
 
@@ -121,19 +122,16 @@ class Misiones:
             return self.rec_asalto_txt()
         if self.mision:
             p = self.mision["def"]["pasos"][self.mision["paso"]]
-            t = f"Misión {self.mision['def']['titulo']}. {p.get('texto', '')}"
+            donde = self.objetivo_posicion_txt()                 # lo primero, dónde está: con prisa no hay tiempo para oír lo demás
+            t = (donde + " " if donde else "") + f"Misión {self.mision['def']['titulo']}. {p.get('texto', '')}"
             if self.mision.get("limite") is not None:
                 t += f" Te quedan {int(self.mision['limite'])} segundos."
             x, y = self.pos()
             o = self.mision.get("movil")
             if p["tipo"] == "seguir" and o:
-                t += f" {o['nombre'].capitalize()} va a {int(math.hypot(o['x'] - x, o['y'] - y))} metros, {self.direccion_txt(o['x'], o['y'])}. Síguele por el sonido de sus pasos, sin acercarte a menos de seis metros."
-            e = self.mision.get("escolta")
-            if p["tipo"] == "escoltar" and e:
-                t += f" {e['nombre'].capitalize()} " + (f"está a {int(math.hypot(e['x'] - x, e['y'] - y))} metros de ti." if e["contigo"] else "te espera en el punto de recogida.")
+                t += " Síguele por el sonido de sus pasos, sin acercarte a menos de seis metros."
             if p["tipo"] == "sigilo" and self.mision.get("guardias"):
-                cerca = min(math.hypot(g["x"] - x, g["y"] - y) for g in self.mision["guardias"])
-                t += f" Hay {len(self.mision['guardias'])} vigilantes; el más cercano, a {int(cerca)} metros. Si te agachas con la X, te oyen mucho menos. No corras."
+                t += " Si te agachas con la X, te oyen mucho menos. No corras."
             vg = self.mision.get("vigia")
             if p["tipo"] == "vigilar" and vg:
                 t += (f" Estás en tu puesto. Te quedan {max(0, int(float(p.get('segundos', 45)) - vg['t']))} segundos. Si oyes pasos que se acercan, quédate quiet[o|a] o agáchate con la X."
@@ -150,7 +148,9 @@ class Misiones:
                 t += f" Quedan {sum(1 for e in self.mision['enemigos'] if not e.muerto and not getattr(e, 'rendido', False))} enemigos."
             return t
         if self.trabajo:
-            return self.trabajo.get("texto", "Estás trabajando.")
+            g = self.gps if self.gps is None or self.gps["auto"] else self.gps.get("anterior")
+            donde = f" Destino: {self.situar(g['dest'][0], g['dest'][1], g['nombre'])}." if g is not None and g["auto"] else ""
+            return self.trabajo.get("texto", "Estás trabajando.") + donde
         disp = [m for m in self.misiones_disponibles() if not m.get("explicacion")]
         if disp:
             m = disp[0]
@@ -485,7 +485,7 @@ class Misiones:
         if tipo == "policia":
             ms["pendiente"] = False
             self.poner_busqueda(p.get("nivel", 2))
-            self.cancelar_gps()
+            self.quitar_gps_auto()
             return
         if tipo == "practica":                                   # una práctica de un tutorial: no crea nada, solo vigila lo que haces
             ms["pendiente"] = False
@@ -506,7 +506,8 @@ class Misiones:
             ruta = self.mundo.ruta(l.x, l.y, d.x, d.y) if d is not None and d.mapa == l.mapa else [(l.x, l.y)]
             ms["movil"] = {"x": l.x, "y": l.y, "ruta": list(ruta), "i": 0, "t_paso": 0.0, "cerca": 0.0, "lejos": 0.0, "t_aviso": 0.0,
                            "vel": float(p.get("velocidad", 2.3)), "nombre": self.txt(p.get("persona") or "tu objetivo"), "espera": 6.0,
-                           "visto": False, "aguante": 9.0 + 3.0 * min(3, self.fallos.get(ms["def"]["id"], 0))}
+                           "visto": False, "rumbo": None,
+                           "aguante": 9.0 + 3.0 * min(3, self.fallos.get(ms["def"]["id"], 0)) + (D.AJ("ayuda_seguir_aguante") if self.ayuda_persecucion() else 0.0)}
             self.gps_a_lugar(l, auto=True, callar=True)           # todavía no ha salido: el GPS te lleva hasta donde está
             return
         if tipo == "escoltar" and l:
@@ -586,10 +587,14 @@ class Misiones:
                 if ms.get("limite") is not None:
                     ms["limite"] = ms["limite"] * (1.0 + 0.15 * veces)
                 self.decir("Ya se te escapó antes, y lo sabe: va más nervioso y no corre tanto." + (" Tienes algo más de tiempo." if ms.get("limite") is not None else ""))
-            ms["t_canta"] = 12.0
+            if self.ayuda_persecucion() and ms.get("limite") is not None and D.AJ("ayuda_tiempo") > 0:
+                ms["limite"] = ms["limite"] * (1.0 + D.AJ("ayuda_tiempo") / 100.0)
+            ms["t_canta"] = self.pers("canta_cada")
+            ms["rumbo_obj"] = None
             ms["veh_objetivo"] = v
             self.objetivo = v
             self.fijar_gps(x, y, v.nombre, sigue=v, auto=True)
+            self.pers_explicar(v)
 
     def _despejar_plaza(self, x, y):
         """Quita los vehículos aparcados que estorban donde va a aparecer uno de misión."""
@@ -821,16 +826,18 @@ class Misiones:
             else:
                 lejos = vo.dist(x, y)
                 # si se te escapa mucho, afloja: se oye que aminora y vuelves a tener ocasión
-                vo.vel_obj = ms.get("vel_huida", vo.vel_obj) * (0.55 if lejos > 150 else 0.8 if lejos > 90 else 1.0)
-                if lejos > 150 and "lejos" not in ms["avisos"]:
+                a_lejos, a_medio = self.pers("afloja_lejos"), self.pers("afloja_medio")
+                vo.vel_obj = ms.get("vel_huida", vo.vel_obj) * (self.pers("factor_lejos") / 100.0 if lejos > a_lejos else self.pers("factor_medio") / 100.0 if lejos > a_medio else 1.0)
+                if lejos > a_lejos and "lejos" not in ms["avisos"]:
                     ms["avisos"].add("lejos")
-                    self.decir(f"{vo.nombre} te saca ventaja, pero se confía y afloja. Va a {int(lejos)} metros, {self.direccion_txt(vo.x, vo.y)}.")
-                elif lejos < 60:
+                    self.decir(f"{vo.nombre} te saca ventaja, pero se confía y afloja. Va {self.pers_donde(vo)}.")
+                elif lejos < min(60, a_medio):
                     ms["avisos"].discard("lejos")
+                self.pers_giros(ms, vo, dt)                      # con la ayuda puesta, cada giro
                 ms["t_canta"] = ms.get("t_canta", 12.0) - dt
-                if ms["t_canta"] <= 0 and lejos > 45:            # cada poco, por dónde va: sin eso, de oído se le pierde enseguida
-                    ms["t_canta"] = 12.0
-                    self.decir(f"{vo.nombre}: a {int(lejos)} metros, {self.direccion_txt(vo.x, vo.y)}.")
+                if ms["t_canta"] <= 0 and lejos > self.pers("canta_desde"):      # cada poco, por dónde va: sin eso, de oído se le pierde enseguida
+                    ms["t_canta"] = self.pers("canta_cada")
+                    self.decir(f"{vo.nombre}: {self.pers_donde(vo)}.")
                 elif lejos < 22 and "atiro" not in ms["avisos"] and j.veh:
                     ms["avisos"].add("atiro")
                     self.decir(f"Tienes {vo.nombre} a tiro. Fíjalo con la Q y dispara con Control, o embístelo: cada golpe y cada bala le restan.")
@@ -863,7 +870,7 @@ class Misiones:
             if d > 42:
                 return
             o["visto"] = True
-            self.cancelar_gps()
+            self.quitar_gps_auto()
             self.app.son("notificacion")
             self.decir(f"Ahí está {o['nombre']}, a {int(d)} metros, {self.direccion_txt(o['x'], o['y'])}. Todavía no se ha movido: en unos segundos echa a andar. "
                        "Síguele de oído, sin pegarte a él y sin perderle.")
@@ -886,10 +893,20 @@ class Misiones:
             self.son("paso_npc", xy=(o["x"], o["y"]), ref=5, maxd=75, vol=1.0)
         limite_cerca = 12.0 if j.veh else 3.5 if j.agachado else 6.0
         o["cerca"] = o["cerca"] + dt if d < limite_cerca else 0.0
-        o["lejos"] = o["lejos"] + dt if d > 55 else 0.0
+        tope = self.pers("seguir_lejos")
+        o["lejos"] = o["lejos"] + dt if d > tope else 0.0
         o["t_aviso"] -= dt
-        if o["t_aviso"] <= 0 and (d < limite_cerca + 4 or d > 40):
-            o["t_aviso"] = 5.0
+        if self.ayuda_persecucion() and o["espera"] <= 0 and o["i"] < len(o["ruta"]):      # con la ayuda puesta, cada vez que dobla una esquina
+            tx, ty = o["ruta"][o["i"]]
+            if math.hypot(tx - o["x"], ty - o["y"]) > 2:
+                rumbo = M.cardinal(M.rumbo_a(tx - o["x"], ty - o["y"]))
+                if o.get("rumbo") is not None and rumbo != o["rumbo"]:
+                    calle = self._calle_de(tx, ty)
+                    self.decir(f"{o['nombre'].capitalize()} tuerce hacia el {rumbo}" + (f" por {calle}" if calle else "") + f". Va a {int(d)} metros, {self.direccion_txt(o['x'], o['y'])}.")
+                    o["t_aviso"] = max(o["t_aviso"], 2.5)
+                o["rumbo"] = rumbo
+        if o["t_aviso"] <= 0 and (d < limite_cerca + 4 or d > tope - 15):
+            o["t_aviso"] = self.pers("seguir_aviso")
             self.decir("Estás demasiado cerca. Quédate atrás." if d < limite_cerca + 4 else f"Se te aleja: va a {int(d)} metros, {self.direccion_txt(o['x'], o['y'])}.")
         if o["cerca"] > 1.5:
             self.fallar_mision(f"{o['nombre'].capitalize()} se ha dado cuenta de que le seguías.")
@@ -1011,8 +1028,8 @@ class Misiones:
         if not vg["dentro"]:
             if d <= radio and (not j.veh or abs(j.veh.vel) < 2):
                 vg["dentro"] = True
-                if self.gps and self.gps.get("auto"):
-                    self.cancelar_gps()
+                if self.gps:
+                    self.quitar_gps_auto()
                 self.app.son("llegada")
                 self.decir(f"Estás en tu puesto. Quédate a menos de {int(radio)} metros durante {int(float(p.get('segundos', 45)))} segundos y escucha. "
                            "Cuando oigas pasos que se acercan, quédate quiet[o|a] o agáchate con la X.")
@@ -1128,8 +1145,8 @@ class Misiones:
                     base = float(p.get("velocidad", 10))
                     ca.update({"fase": "cuenta", "t": 3.0, "pts": pts, "cum": cum, "marcas": marcas, "rectos": rectos, "puesto": -1,
                                "rivales": [{"s": 5.0 + 5.0 * k, "vel": base * (1.0 - 0.07 * k), "nombre": G.lista("rivales_carrera")[k % len(G.lista("rivales_carrera"))], "canal": None, "k": k} for k in range(n_riv)]})
-                    if self.gps and self.gps.get("auto"):
-                        self.cancelar_gps()
+                    if self.gps:
+                        self.quitar_gps_auto()
                     self.app.son("reloj", cat="interfaz")
                     self.decir(f"En la salida, con {n_riv} {'rival' if n_riv == 1 else 'rivales'}. Son {len(puntos)} puntos. Preparad[o|a].")
             return
@@ -1183,8 +1200,8 @@ class Misiones:
             self.decir(self._carrera_puesto_txt(ca))
 
     def _paso_hecho(self):
-        if self.gps and self.gps.get("auto"):
-            self.cancelar_gps()
+        if self.gps:
+            self.quitar_gps_auto()
         self.app.son("llegada")
         self._siguiente_paso()
 
@@ -1214,8 +1231,8 @@ class Misiones:
             if o.canal:
                 o.canal.parar()
             self.objetos.remove(o)
-        if self.gps and self.gps.get("auto"):
-            self.cancelar_gps()
+        if self.gps:
+            self.quitar_gps_auto(fin=True)
         self.objetivo = None
         self.mision = None
 
@@ -1224,8 +1241,8 @@ class Misiones:
         m = ms["def"]
         antes = {x["id"] for x in self.misiones_disponibles()}
         self.mision = None
-        if self.gps and self.gps.get("auto") and not self.trabajo:      # si sigues trabajando (el tutorial de los trabajos), el destino es el del trabajo
-            self.cancelar_gps()
+        if self.gps and not self.trabajo:      # si sigues trabajando (el tutorial de los trabajos), el destino es el del trabajo
+            self.quitar_gps_auto(fin=True)
         if ms.get("repeticion"):                               # repetir una misión ya hecha es por gusto: no cambia nada
             self.app.son("mision_ok")
             self.decir(f"Has repetido {m['titulo']}.")
@@ -1288,22 +1305,27 @@ class Misiones:
         menus_juego.autoguardar(self)
 
     def _rebobinar_jugador(self, copia):
-        """Devuelve al jugador a como estaba al empezar la misión (o en el punto de control), menos sus garajes. Los vehículos
-        no vuelven atrás: los de la calle nunca lo han hecho, así que los garajes tampoco. Si no, el que sacaste del garaje
-        durante la misión quedaba duplicado (en el garaje y en la calle), y el que guardaste se perdía."""
+        """Devuelve al jugador a como estaba al empezar la misión (o en el punto de control), menos sus vehículos. Los
+        vehículos no vuelven atrás: los de la calle nunca lo han hecho, así que los garajes y los barcos amarrados tampoco.
+        Si no, el que sacaste del garaje durante la misión quedaba duplicado (en el garaje y en la calle), y el que
+        mandaste al garaje con la misión ya empezada se perdía: ni en la calle ni en el garaje. Lo mismo un barco tuyo
+        que amarraste, o con el que zarpaste, durante la misión."""
         j = self.j
         stats = dict(j.stats)
-        garajes = j.garajes
+        garajes, barcos, barco_actual = j.garajes, j.barcos, j.barco_actual
         j.de_dict(copy.deepcopy(copia))
         j.stats.update({k: stats[k] for k in ("muertes", "detenciones", "tiempo")})
-        j.garajes = garajes
+        j.garajes, j.barcos, j.barco_actual = garajes, barcos, barco_actual
         for pid in [k for k, fichas in garajes.items() if fichas and k not in j.propiedades]:
+            casa_perdida = self.lug(pid)
             for ficha in list(garajes[pid]):                     # la casa la compraste durante la misión y vuelve a no ser tuya
                 casa = self.garaje_con_sitio()
-                if casa is None:
-                    break
                 garajes[pid].remove(ficha)
-                garajes.setdefault(casa.id, []).append(ficha)
+                if casa is not None:
+                    garajes.setdefault(casa.id, []).append(ficha)
+                else:                                            # sin sitio en ningún garaje: a la calle, a tu nombre, delante de esa casa
+                    self.ficha_a_la_calle(ficha, casa_perdida)
+            garajes.pop(pid, None)
 
     def fallar_mision(self, motivo):
         ms = self.mision
@@ -1335,13 +1357,11 @@ class Misiones:
 
         def desde_control():
             self.app.cerrar(menu)
+            lleva = self.preparar_traslado(control["mapa"])      # antes de rebobinar: el vehículo que llevas va contigo
             self._rebobinar_jugador(control["copia"])
             self.reloj, self.dia = control["reloj"], control["dia"]
             self._fin_persecucion()
-            self.dejar_o_quitar(self.j.veh)                      # el tuyo se queda aparcado donde estaba
-            if control["mapa"] != self.mundo.id:
-                self.cambiar_mapa(control["mapa"], control["x"], control["y"])
-            self.teletransportar(control["x"], control["y"])
+            self.llevarte_a(control["mapa"], control["x"], control["y"], lleva)      # si no puede ir, el tuyo se queda donde estaba
             if self.trabajo:
                 self.terminar_trabajo("")
             self.cancelar_gps()
@@ -1354,15 +1374,14 @@ class Misiones:
 
         def reintentar():
             self.app.cerrar(menu)
+            l = self.lugares[m["lugar"]]
+            lleva = self.preparar_traslado(l.mapa)               # antes de rebobinar: el vehículo que llevas va contigo
             self._rebobinar_jugador(copia)
             self.reloj, self.dia = reloj, dia
             self._fin_persecucion()
-            l = self.lugares[m["lugar"]]
-            if l.mapa != self.mundo.id:
-                self.dejar_o_quitar(self.j.veh)
-                self.cambiar_mapa(l.mapa, l.x, l.y)
-            self.teletransportar(l.x, l.y)
+            self.llevarte_a(l.mapa, l.x, l.y, lleva)             # y queda aparcado a tu lado
             self.iniciar_mision(m, True, repeticion)
+            self.decir(self.vehiculos_tras_reintento_txt())
 
         def abandonar():
             self.app.cerrar(menu)

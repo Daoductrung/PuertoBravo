@@ -33,7 +33,8 @@ li { margin-bottom: .3em; }
 <li><kbd>C</kbd>: dónde estoy: calle, barrio y hacia dónde miro. Con Mayúsculas añade las coordenadas.</li>
 <li><kbd>V</kbd>: estado: salud, dinero, arma, nivel de búsqueda y vehículo.</li>
 <li><kbd>T</kbd>: hora, día y tiempo que hace.</li>
-<li><kbd>O</kbd>: objetivo de la misión o del trabajo en curso.</li>
+<li><kbd>O</kbd>: objetivo de la misión o del trabajo en curso: dice primero dónde está, a cuántos metros, en qué dirección y, si se mueve, hacia dónde va, y después lo demás. Si el objetivo se mueve o corre el tiempo, una pulsación dice solo eso, y dos seguidas leen la explicación entera.</li>
+<li><kbd>Mayúsculas O</kbd>: volver al objetivo de la misión o del trabajo: deja cualquier desvío, lo marca en el GPS y, si está al alcance, lo deja elegido en el radar. Siempre hace lo mismo.</li>
 <li><kbd>N</kbd>: descripción del lugar o del barrio en el que estás.</li>
 <li><kbd>Mayúsculas N</kbd>: siguiente cruce: qué calle es la próxima que te vas a cruzar hacia donde miras o conduces, y a cuántos metros está.</li>
 <li><kbd>Mayúsculas V</kbd>: solo el hambre, la sed, el sueño y la higiene, con la vida realista activada.</li>
@@ -44,10 +45,12 @@ li { margin-bottom: .3em; }
 <li><kbd>Control F10</kbd>: en un servidor con canales de rol, describir lo que hace tu personaje: escribes «abre la puerta» y los que están cerca oyen tu nombre y «abre la puerta».</li>
 <li><kbd>F9</kbd>: explorador de mapa: recorre la localidad con un cursor, cruce a cruce, sin mover al personaje. Tabulador dice los lugares junto al cursor e Intro marca el destino.</li>
 <li><kbd>Tabulador y Mayúsculas Tabulador</kbd>: radar: recorre lo que hay alrededor, de lo más cercano a lo más lejano.</li>
-<li><kbd>B</kbd>: pone el GPS y la baliza hacia lo último que dijo el radar.</li>
+<li><kbd>B</kbd>: pone el GPS y la baliza hacia lo último que dijo el radar. Si ya ibas a algún sitio, es un desvío: al subir a ese vehículo, llegar junto a esa persona, llegar a ese objeto o recogerlo, o llegar a ese lugar, el GPS vuelve solo a lo que llevabas, y lo dice.</li>
 <li><kbd>F6</kbd>: cambia el filtro del radar: todo, lugares, vehículos, personas u objetos.</li>
 <li><kbd>L</kbd>: lista de lugares de la ciudad para marcar un destino.</li>
-<li><kbd>G</kbd>: repite la indicación del GPS. Mayúsculas G lo cancela. En una misión, sin destino marcado, vuelve a marcar lo que pide la misión.</li>
+<li><kbd>G</kbd>: repite la indicación del GPS. En una misión, sin destino marcado, vuelve a marcar lo que pide la misión; sin misión, recupera el último destino que quitaste.</li>
+<li><kbd>Mayúsculas G</kbd>: quita el destino del GPS. Si estabas en un desvío, el GPS vuelve a lo que llevabas; otra pulsación quita también eso.</li>
+<li><kbd>Control G</kbd>: recupera el último destino o desvío que quitaste con Mayúsculas G, sin tener que buscarlo otra vez. Si ahora vas a otro sitio, entra como desvío.</li>
 <li><kbd>M</kbd>: abre el móvil: misiones, lugares, explorador de mapa, marcadores, servicios, habilidades, logros, propiedades y estadísticas.</li>
 <li><kbd>Intro</kbd>: interactuar: entrar en un lugar, empezar una misión, recoger un objeto o hablar.</li>
 <li><kbd>F</kbd>: subir a un vehículo o bajarte.</li>
@@ -229,6 +232,8 @@ li { margin-bottom: .3em; }
 <li>Enderezar el vehículo hacia el punto cardinal más cercano. Solo al volante.</li>
 <li>Pescar en el mar, o sirena en vehículos de emergencias.</li>
 <li>Objetivo de la misión o del trabajo.</li>
+<li>Volver al objetivo de la misión: GPS y radar.</li>
+<li>Recuperar el último destino que quitaste del GPS.</li>
 <li>Lista de lugares, para marcar un destino.</li>
 <li>Explorador de mapa.</li>
 <li>Descripción del lugar o del barrio en el que estás.</li>
