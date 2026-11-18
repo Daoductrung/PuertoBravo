@@ -72,6 +72,7 @@ DESCRIPCIONES = {
     "chat_personaje": "En un servidor, alguien que está cerca habla en personaje, o lo haces tú. Dos notas graves y cálidas, más lentas que las del mensaje normal.",
     "chat_fuera": "En un servidor, llega o se envía un mensaje fuera de personaje. Dos toques secos de madera, como abrir y cerrar un paréntesis.",
     "chat_accion": "En un servidor, alguien que está cerca describe lo que hace su personaje, o lo haces tú. Un roce corto, como un movimiento, rematado con una nota.",
+    "espera_servidor": "En un servidor, el juego está esperando para volver a entrar solo: el servidor se está actualizando o se ha cortado la conexión. Dos notas lentas y flojas, la segunda más grave, como una llamada que da tono. Se repite cada pocos segundos mientras dura la espera.",
     "llegada": "Has llegado al destino o has cumplido un paso.", "recoger": "Recoges un objeto.", "curar": "Recuperas salud.", "comer": "Comes o bebes.",
     "baliza": "Baliza del GPS hacia el siguiente punto de la ruta.", "baliza_destino": "Baliza del GPS cuando lo siguiente ya es el destino. También es el tono del norte.",
     "sonar": "Sensor de proximidad al volante, y el pitido de frío o caliente al buscar tesoros.", "tono_objetivo": "Enemigo fijado y a tiro.",

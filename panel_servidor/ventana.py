@@ -24,7 +24,7 @@ from editor.accesibilidad.dialogos import (confirmar, crear_botonera, elegir_opc
                                            preparar_dialogo)
 from editor.accesibilidad.nombres import crear_campo
 from editor.accesibilidad.teclado import vincular_menu_contextual
-from servidor import copias, opciones
+from servidor import copias, enmarcha, opciones
 
 from . import CONF, NOMBRE, carpeta_servidor, ruta_documentacion
 from .configuracion import DialogoConfiguracion
@@ -179,6 +179,7 @@ class VentanaPanel(wx.Frame):
         self._reiniciar_al_parar = False
         self._tras_parar = None
         self._ocupada = False
+        self._arrancar_al_abrir = False          # se ha abierto con --arrancar: tras una actualización, el servidor vuelve solo
         self._router = None                      # el puerto abierto en el router con UPnP, para cerrarlo al parar
         self.buscar_router = None                # las pruebas ponen aquí un router de mentira
         self._menus()
@@ -196,6 +197,7 @@ class VentanaPanel(wx.Frame):
         self.refrescar(todo=True)
         self.Centre()
         self.estado.SetFocus()
+        self.motor.anotar()
 
     # ------------------------------------------------------------------- menús
     def _menus(self):
@@ -378,6 +380,15 @@ class VentanaPanel(wx.Frame):
             return
         # Que ha terminado de arrancar o de parar no lo puede saber el lector de pantalla: se dice. Al registro ya lo
         # ha apuntado el propio servidor.
+        if que == "estado":
+            self.motor.anotar()                                # la ficha dice si el servidor está en marcha: al día
+        if dato == PARADO and self.motor.causa_parada == "actualizacion" and not self._cerrar_al_parar:
+            # Lo ha pedido la actualización del juego (o la orden actualizar): el panel se cierra para que se pueda
+            # sustituir su programa. Al terminar, la actualización lo vuelve a abrir y el servidor arranca solo.
+            self._linea("%s  El panel se cierra para que el juego se pueda actualizar." % time.strftime("%H:%M:%S"))
+            self._cerrar_al_parar = True
+        elif dato == PARADO and self.motor.causa_parada == "reinicio" and not self._cerrar_al_parar and not self._tras_parar:
+            self._reiniciar_al_parar = True                    # reiniciar por mantenimiento: vuelve a arrancar solo
         if dato == EN_MARCHA:
             self.anunciar("Servidor en marcha en el puerto %s." % ((self.motor.foto or {}).get("puerto") or self.cfg.get("puerto")))
         elif dato == PARADO and not self.motor.ultimo_error and not self._cerrar_al_parar:
@@ -388,6 +399,7 @@ class VentanaPanel(wx.Frame):
             despues, self._tras_parar = self._tras_parar, None
             if self._cerrar_al_parar:
                 self.reloj.Stop()
+                enmarcha.quitar()
                 self.Destroy()
             elif self._reiniciar_al_parar:
                 self._reiniciar_al_parar = False
@@ -414,6 +426,13 @@ class VentanaPanel(wx.Frame):
         """Pone al día lo que se ve. Cada segundo, lo que cambia solo; con ``todo``, también las cuentas y las invitaciones."""
         estado, foto = self.motor.estado, self.motor.foto
         en_marcha = estado == EN_MARCHA
+        if estado == PARADO and not self._cerrar_al_parar and self.motor.orden_pendiente() == "actualizar":
+            # La actualización del juego pide paso y el servidor está parado: el panel se cierra sin más.
+            self._cerrar_al_parar = True
+            self.reloj.Stop()
+            enmarcha.quitar()
+            self.Destroy()
+            return
         texto = texto_estado(estado, foto, self.cfg, self.local, self.motor.ultimo_error)
         actual = self.estado.GetValue().replace("\r\n", "\n")
         if texto != actual:
@@ -466,7 +485,7 @@ class VentanaPanel(wx.Frame):
         self.motor.arrancar()
         self.refrescar(forzar=True)
 
-    def parar(self, preguntar=True):
+    def parar(self, preguntar=True, causa="apagado"):
         if self.motor.estado != EN_MARCHA:
             return False
         n = len(self.jugadores)
@@ -474,17 +493,19 @@ class VentanaPanel(wx.Frame):
                 n, "jugador dentro" if n == 1 else "jugadores dentro"), "Parar el servidor", peligroso=True) != wx.ID_YES:
             return False
         self.SetStatusText("Parando el servidor y guardándolo todo...")
-        self.motor.parar()
+        self.motor.parar(causa=causa)
         self.refrescar(forzar=True)
         return True
 
     def reiniciar(self):
-        if self.motor.estado == EN_MARCHA and self.parar():
+        # Se para diciendo que es un reinicio: los juegos esperan y vuelven a entrar solos en cuanto arranca otra vez.
+        if self.motor.estado == EN_MARCHA and self.parar(causa="reinicio"):
             self._reiniciar_al_parar = True
 
     def _al_cerrar(self, evento):
         if self.motor.estado == PARADO:
             self.reloj.Stop()
+            enmarcha.quitar()
             self.Destroy()
             return
         if evento.CanVeto() and not self._cerrar_al_parar:
@@ -502,6 +523,7 @@ class VentanaPanel(wx.Frame):
             evento.Veto()                                      # se cierra sola en cuanto el servidor termina de guardar
         else:                                                  # Windows se apaga: no hay más remedio que esperar aquí
             self.motor.esperar_parado(15)
+            enmarcha.quitar()
             self.Destroy()
 
     # ---------------------------------------------------------------- órdenes
@@ -832,7 +854,7 @@ class VentanaPanel(wx.Frame):
         if elegir_opcion(wx.GetActiveWindow() or self, texto, "Hay cambios que piden reiniciar", ["&Reiniciar ahora", "&Más tarde"]) == 0:
             if self.motor.estado == EN_MARCHA:
                 self._reiniciar_al_parar = True
-                self.motor.parar("El servidor se reinicia para aplicar cambios. Vuelve a entrar dentro de un momento.")
+                self.motor.parar(causa="reinicio")
                 self.refrescar(forzar=True)
 
     # ------------------------------------------------------------------ copias
@@ -987,7 +1009,7 @@ Alt más la letra subrayada: ir a un control de la pestaña o abrir un menú.
 Tecla Aplicaciones o Mayúsculas+F10 en las listas de jugadores y de cuentas: acciones sobre lo elegido."""
 
 
-def ejecutar(ruta_conf=None):
+def ejecutar(ruta_conf=None, arrancar=False):
     app = wx.App(False)
     wx.HelpProvider.Set(wx.SimpleHelpProvider())
     try:
@@ -997,4 +1019,6 @@ def ejecutar(ruta_conf=None):
         pass
     ventana = VentanaPanel(ruta_conf)
     ventana.Show()
+    if arrancar:                                 # --arrancar: lo pone la actualización del juego si el servidor estaba en marcha
+        wx.CallAfter(ventana.arrancar)
     app.MainLoop()

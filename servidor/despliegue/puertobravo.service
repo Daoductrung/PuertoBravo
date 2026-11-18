@@ -24,6 +24,8 @@ Environment=PYTHONUNBUFFERED=1
 # Al parar se le manda la señal de terminar: avisa a los jugadores, lo guarda todo y sale.
 KillSignal=SIGTERM
 TimeoutStopSec=20
+# Si se cae, vuelve a arrancar. También cuando se para para volver (las órdenes actualizar y reiniciar): entonces termina
+# con el código 75, y los juegos de los jugadores, que se han quedado esperando, vuelven a entrar solos.
 Restart=on-failure
 RestartSec=5
 # Para servidores con muchísima gente: cada jugador ocupa una conexión abierta.

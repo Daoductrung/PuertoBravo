@@ -335,7 +335,8 @@ def test_ordenes_nuevas_de_administracion(tmp_path, sin_firma):
         ayuda = o("ayuda")
         for orden, _ in nucleo.Servidor.AYUDA_ORDENES:           # la ayuda dice todas, y todas existen
             assert orden in ayuda
-            assert "No conozco esa orden" not in o(orden.split()[0] if orden.split()[0] != "apagar" else "estado")
+            # las tres que paran el servidor no se prueban aquí: lo pararían (actualizar y reiniciar tienen su prueba aparte)
+            assert "No conozco esa orden" not in o(orden.split()[0] if orden.split()[0] not in ("apagar", "actualizar", "reiniciar") else "estado")
         assert "Ana (administra) (dentro)" in o("cuentas") and "Blas el Largo (dentro)" in o("cuentas")
         # mensaje privado: solo le llega a él, con nombres con espacios
         assert "Dicho a Blas el Largo" in o("decir Blas el Largo: baja la música")

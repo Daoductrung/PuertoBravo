@@ -10,11 +10,15 @@ Cómo funciona:
 3. Si la versión es más nueva que la instalada, se descarga el ZIP, se comprueban su tamaño y su SHA-256
    (que también van firmados), y se extrae en una carpeta aparte, rechazando rutas peligrosas.
 4. Antes de cerrar, el juego comprueba lo que suele estropear una instalación: que hay sitio en el disco (lo que
-   hace falta de verdad, calculado), que se puede escribir en su carpeta y que no hay otro programa del juego
-   abierto (el editor de mods, el servidor o su panel). Si algo no está bien, lo dice y no se cierra.
-5. Un pequeño .bat espera a que el juego se cierre, guarda una copia del programa, copia la versión nueva
-   y vuelve a abrir el juego. Si algo falla, restaura la copia.
-6. El .bat apunta cada paso en data/logs/actualizacion.log, con el archivo que no se pudo copiar y el error de
+   hace falta de verdad, calculado), que se puede escribir en su carpeta y que no está abierto el editor de mods.
+   Si algo no está bien, lo dice y no se cierra.
+5. Si hay un servidor en línea abierto (el de consola o el panel), no hace falta cerrarlo a mano: el juego lo dice,
+   pide permiso, apunta qué había abierto y con qué argumentos, y le deja al servidor la orden de pararse «para
+   actualizar». El servidor avisa a los jugadores, espera sus guardados, lo guarda todo y se cierra.
+6. Un pequeño .bat espera a que el juego y el servidor se cierren, guarda una copia del programa, copia la versión
+   nueva, vuelve a arrancar el servidor que hubiera (tanto si ha ido bien como si no) y vuelve a abrir el juego.
+   Si algo falla, restaura la copia.
+7. El .bat apunta cada paso en data/logs/actualizacion.log, con el archivo que no se pudo copiar y el error de
    Windows. Si falla, el juego lee ese registro al reabrirse y dice el motivo.
 
 Lo que nunca se toca: partidas, opciones, tu música, tus mods. Solo se admiten direcciones https.
@@ -48,6 +52,9 @@ FUENTES = ("servidor", "github", "ambas", "personalizada")
 NOMBRE_FUENTE = {"servidor": "el servidor del juego", "github": "GitHub", "ambas": "el servidor del juego y GitHub", "personalizada": "una dirección personalizada"}
 CAMPO_FIRMA = "firma_ed25519"
 ARG_TRAS_ACTUALIZAR = "--tras-actualizar"
+ARG_RELANZAR = "--relanzar-servidores"          # el instalador llama así al juego para que vuelva a arrancar los servidores que había
+NOTA_SERVIDORES = "servidores_abiertos.json"    # lo que había abierto antes de actualizar, en la carpeta de trabajo
+ORDEN_SERVIDOR = "parar.txt"                    # el archivo de órdenes que mira el servidor en su carpeta de datos
 MAX_MANIFIESTO = 256 * 1024
 MAX_DESCARGA = 3 * 1024 ** 3
 MAX_EXPANDIDO = 6 * 1024 ** 3
@@ -430,7 +437,7 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
 
     lineas = [
         "@echo off", "chcp 65001 >nul", "setlocal",
-        f'set "APP={programa}"', f'set "NUEVA={nueva}"', f'set "COPIA={copia}"',
+        f'set "APP={programa}"', f'set "NUEVA={nueva}"', f'set "COPIA={copia}"', f'set "NOTA={os.path.join(trabajo, NOTA_SERVIDORES)}"',
         'set "REG=%APP%\\data\\logs\\' + REGISTRO_INSTALADOR + '"', "set PASO=empezar", "set RC=0",
         'if not exist "%APP%\\data\\logs" mkdir "%APP%\\data\\logs"',
         f'>"%REG%" echo Instalador de Puerto Bravo. Actualizacion a la version {version}.',
@@ -453,7 +460,7 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
     lineas += [
         "goto copiar",
         ":ocupado",
-        "if %N%==0 echo El editor de mods o el servidor en linea de Puerto Bravo esta abierto. Cierralo para seguir con la actualizacion.",
+        "if %N%==0 echo Esperando a que se cierren el servidor en linea o el editor de mods de Puerto Bravo. El servidor avisa a los jugadores y se cierra solo.",
         "set /a N+=1", "if %N% geq 180 goto no_cierra",
         "ping -n 2 127.0.0.1 >nul", "goto mirar",
         ":no_cierra",
@@ -473,6 +480,9 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
         'rmdir /s /q "%NUEVA%"',
         'rmdir /s /q "%COPIA%"',
         apunta("TERMINADA bien %date% %time%"),
+        # Si antes de actualizar había un servidor en línea abierto, se vuelve a arrancar igual que estaba. Lo hace el
+        # propio juego, ya actualizado, que sabe leer la nota y lo apunta en este mismo registro.
+        f'if exist "%NOTA%" start "" /wait "%APP%\\{EJECUTABLE}" {ARG_RELANZAR} "%NOTA%"',
         f'start "" "%APP%\\{EJECUTABLE}" {ARG_TRAS_ACTUALIZAR}',
         "goto fin",
         ":fallo",
@@ -483,6 +493,8 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
     lineas += [
         ":abrir",
         apunta("TERMINADA mal %date% %time%"),
+        # La instalación ha fallado, pero el servidor que hubiera abierto vuelve a arrancar igualmente, con la versión de antes.
+        f'if exist "%NOTA%" start "" /wait "%APP%\\{EJECUTABLE}" {ARG_RELANZAR} "%NOTA%"',
         f'start "" "%APP%\\{EJECUTABLE}" --actualizacion-fallida',
         ":fin",
         "endlocal",
@@ -548,7 +560,7 @@ def limpiar_registro_instalador(ruta=None):
 def leer_registro_instalador(ruta=None):
     """Lo que dejó apuntado el instalador: {"existe", "bien", "paso", "codigo", "motivo", "error", "archivo"}. Nunca falla."""
     import re
-    r = {"existe": False, "bien": None, "paso": "", "codigo": 0, "motivo": "", "error": 0, "archivo": ""}
+    r = {"existe": False, "bien": None, "paso": "", "codigo": 0, "motivo": "", "error": 0, "archivo": "", "relanzados": [], "sin_relanzar": []}
     try:
         texto = _texto_registro(ruta or ruta_registro_instalador())
     except OSError:
@@ -561,6 +573,13 @@ def leer_registro_instalador(ruta=None):
             paso_actual = linea[5:].strip()
         elif linea.startswith("TERMINADA "):
             r["bien"] = linea.split()[1] == "bien"
+        elif linea.startswith("SERVIDOR "):
+            # «SERVIDOR relanzado tipo=consola» o «SERVIDOR sin_relanzar tipo=panel motivo=servicio»
+            m = re.search(r"SERVIDOR (\S+)\s+tipo=(\S+)(?:\s+motivo=(\S+))?", linea)
+            if m and m.group(1) == "relanzado":
+                r["relanzados"].append(m.group(2))
+            elif m:
+                r["sin_relanzar"].append((m.group(2), m.group(3) or ""))
         elif linea.startswith("FALLO "):
             m = re.search(r"paso=(\S+)\s+codigo=(-?\d+)(?:\s+motivo=(\S+))?", linea)
             if m:
@@ -615,7 +634,9 @@ def _tareas():
     """Los nombres de los programas en marcha, en minúsculas. Vacío si no se puede preguntar."""
     try:
         sin_ventana = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-        salida = subprocess.run(["tasklist", "/fo", "csv", "/nh"], capture_output=True, text=True, timeout=10, creationflags=sin_ventana).stdout.lower()
+        # en bytes y descodificando con manga ancha: tasklist escribe en la página de códigos de la consola, y un programa
+        # con tilde en el nombre no puede hacer fallar la comprobación
+        salida = subprocess.run(["tasklist", "/fo", "csv", "/nh"], capture_output=True, timeout=10, creationflags=sin_ventana).stdout.decode("utf-8", "replace").lower()
     except (OSError, subprocess.SubprocessError):
         return set()
     return {linea.split('","')[0].strip('"') for linea in salida.splitlines() if linea.startswith('"')}
@@ -639,12 +660,14 @@ def carpeta_escribible(programa):
         return False
 
 
-def programas_abiertos(programa=None, tareas=None):
+def programas_abiertos(programa=None, tareas=None, salvo=()):
     """Los otros programas del juego que están abiertos, con el nombre que entiende quien juega. Se mira de dos maneras:
-    por la lista de programas en marcha, y probando si Windows deja abrir para escribir cada programa de la carpeta."""
+    por la lista de programas en marcha, y probando si Windows deja abrir para escribir cada programa de la carpeta.
+    ``salvo`` son los programas que no cuentan: los servidores a los que se les puede pedir que se cierren solos."""
     programa = programa or carpeta_programa()
     tareas = _tareas() if tareas is None else {t.lower() for t in tareas}
-    abiertos = [nombre for exe, nombre in OTROS_PROGRAMAS.items() if exe.lower() in tareas]
+    salvo = {e.lower() for e in salvo}
+    abiertos = [nombre for exe, nombre in OTROS_PROGRAMAS.items() if exe.lower() in tareas and exe.lower() not in salvo]
     propio = os.path.normcase(os.path.abspath(sys.executable))
     try:
         ejecutables = [n for n in os.listdir(programa) if n.lower().endswith(".exe")]
@@ -653,7 +676,7 @@ def programas_abiertos(programa=None, tareas=None):
     for n in ejecutables:
         ruta = os.path.join(programa, n)
         nombre = OTROS_PROGRAMAS.get(n, f"el programa {n}")
-        if os.path.normcase(os.path.abspath(ruta)) == propio or nombre in abiertos:
+        if os.path.normcase(os.path.abspath(ruta)) == propio or nombre in abiertos or n.lower() in salvo:
             continue
         try:
             with open(ruta, "r+b"):                           # un programa en marcha no se deja abrir para escribir
@@ -743,16 +766,20 @@ def problema_para_descargar(info, programa=None, libre=None):
     return _falta_sitio(espacio_para_descargar(info, programa), programa, libre)
 
 
-def problemas_para_instalar(nueva, programa=None, libre=None, tareas=None):
-    """Antes de cerrar el juego para actualizar: lo que haría fallar la instalación, dicho con claridad. Lista vacía si todo está bien."""
+def problemas_para_instalar(nueva, programa=None, libre=None, tareas=None, servidores=None):
+    """Antes de cerrar el juego para actualizar: lo que haría fallar la instalación, dicho con claridad. Lista vacía si todo está bien.
+    Un servidor en línea abierto ya no es un problema si ha dejado su ficha: se le pide que se cierre solo y se vuelve a
+    arrancar al terminar (``servidores`` son esas fichas; si no se dan, se buscan)."""
     programa = programa or carpeta_programa()
+    servidores = servidores_en_marcha(programa) if servidores is None else servidores
+    controlados = {os.path.basename(f["exe"]) for f in servidores}
     problemas = []
     if not carpeta_escribible(programa):
         problemas.append("Windows no deja escribir en la carpeta del juego. Suele pasar si está en una carpeta protegida, como Archivos de programa, "
                          "o si un antivirus o el acceso controlado a carpetas lo impiden. Mueve el juego a otra carpeta, por ejemplo dentro de Documentos, "
                          "o añade una excepción en el antivirus.")
     else:
-        abiertos = programas_abiertos(programa, tareas)
+        abiertos = programas_abiertos(programa, tareas, salvo=controlados)
         if abiertos:
             lista = abiertos[0] if len(abiertos) == 1 else ", ".join(abiertos[:-1]) + " y " + abiertos[-1]
             problemas.append(f"Está abierto {lista}. Windows no deja sustituir un programa en marcha: ciérralo antes de actualizar."
@@ -761,6 +788,211 @@ def problemas_para_instalar(nueva, programa=None, libre=None, tareas=None):
     if falta:
         problemas.append(falta)
     return problemas
+
+
+# ------------------------------------- los servidores en línea abiertos: pararlos y volver a arrancarlos
+TIPO_DE = {"PuertoBravoServidor.exe": "consola", "PuertoBravoServidorPanel.exe": "panel"}
+NOMBRE_TIPO = {"consola": "el servidor en línea", "panel": "el panel del servidor en línea"}
+
+
+def carpeta_fichas(programa=None):
+    """Donde cada servidor en marcha deja su ficha: servidor\\en_marcha, dentro de la carpeta del juego."""
+    return os.path.join(programa or carpeta_programa(), "servidor", "en_marcha")
+
+
+def _mi_sesion():
+    """La sesión de Windows de este proceso. None si no se puede saber."""
+    try:
+        import ctypes
+        n = ctypes.c_ulong(0)
+        if ctypes.windll.kernel32.ProcessIdToSessionId(os.getpid(), ctypes.byref(n)):
+            return int(n.value)
+    except Exception:
+        pass
+    return None
+
+
+def proceso_vivo(pid, exe=""):
+    """¿Sigue en marcha ese proceso, y es ese programa? Se pregunta a Windows por su número."""
+    try:
+        sin_ventana = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+        salida = subprocess.run(["tasklist", "/fi", f"PID eq {int(pid)}", "/fo", "csv", "/nh"], capture_output=True, timeout=10,
+                                creationflags=sin_ventana).stdout.decode("utf-8", "replace").lower()
+    except (OSError, subprocess.SubprocessError, ValueError):
+        return False
+    for linea in salida.splitlines():
+        campos = [c.strip('"') for c in linea.split('","')]
+        if len(campos) > 1 and campos[1].strip('"') == str(int(pid)):
+            return not exe or campos[0] == os.path.basename(exe).lower()
+    return False
+
+
+def servidores_en_marcha(programa=None, vivo=None, sesion=None):
+    """Los servidores en línea de esta carpeta del juego que están abiertos ahora, según las fichas que dejan al arrancar:
+    [{"pid", "tipo", "exe", "args", "cwd", "datos", "conf", "activo", "servicio"}]. Las fichas de procesos que ya no
+    existen se borran. Solo valen los programas del servidor que están en la propia carpeta del juego."""
+    programa = programa or carpeta_programa()
+    vivo = vivo or proceso_vivo
+    sesion = _mi_sesion() if sesion is None else sesion
+    carpeta = carpeta_fichas(programa)
+    fichas = []
+    try:
+        nombres = sorted(os.listdir(carpeta))
+    except OSError:
+        return fichas
+    for n in nombres:
+        if not n.endswith(".json"):
+            continue
+        ruta = os.path.join(carpeta, n)
+        try:
+            with open(ruta, encoding="utf-8") as f:
+                d = json.load(f)
+            pid, exe = int(d["pid"]), str(d["exe"])
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+        tipo = TIPO_DE.get(os.path.basename(exe))
+        if tipo is None or os.path.normcase(os.path.abspath(os.path.dirname(exe))) != os.path.normcase(os.path.abspath(programa)):
+            continue                                     # no es un programa del servidor de esta carpeta: no se toca
+        if not vivo(pid, exe):
+            _quitar(ruta)                                # se cerró sin borrar su ficha
+            continue
+        suya = d.get("sesion")
+        fichas.append({"pid": pid, "tipo": tipo, "exe": exe, "args": [str(a) for a in d.get("args") or [] if isinstance(a, str)][:20],
+                       "cwd": str(d.get("cwd") or ""), "datos": str(d.get("datos") or ""), "conf": str(d.get("conf") or ""),
+                       "activo": bool(d.get("activo", True)),
+                       # Arrancado por un servicio o una tarea de Windows (otra sesión): quien lo arrancó lo volverá a arrancar,
+                       # o no; desde aquí no se puede repetir igual.
+                       "servicio": isinstance(suya, int) and (suya == 0 or (sesion is not None and suya != sesion))})
+    return fichas
+
+
+def texto_servidores(fichas):
+    """Qué hay abierto, dicho para quien juega: «el servidor en línea», «el panel del servidor en línea, con el servidor parado»."""
+    partes = []
+    for f in fichas:
+        t = NOMBRE_TIPO[f["tipo"]]
+        if f["tipo"] == "panel" and not f["activo"]:
+            t += ", con el servidor parado"
+        if t not in partes:
+            partes.append(t)
+    return partes[0] if len(partes) == 1 else ", ".join(partes[:-1]) + " y " + partes[-1] if partes else ""
+
+
+def pedir_parada_servidores(fichas, trabajo=None):
+    """Apunta qué servidores había abiertos (para volver a arrancarlos igual) y les deja en su carpeta de datos la orden de
+    pararse para actualizar: avisan a los jugadores, esperan sus guardados, lo guardan todo y se cierran solos.
+    Devuelve la ruta de la nota. Si a alguno no se le puede dejar la orden, no se le deja a ninguno."""
+    trabajo = trabajo or carpeta_trabajo()
+    os.makedirs(trabajo, exist_ok=True)
+    for f in fichas:
+        if not f.get("datos") or not os.path.isdir(f["datos"]):
+            raise ErrorActualizacion("No encuentro la carpeta de datos de " + NOMBRE_TIPO[f["tipo"]] + " para pedirle que se cierre. "
+                                     "Ciérralo tú y vuelve a intentarlo.")
+    nota = os.path.join(trabajo, NOTA_SERVIDORES)
+    with open(nota, "w", encoding="utf-8") as fo:
+        json.dump({"version": 1, "momento": int(time.time()), "servidores": fichas}, fo, ensure_ascii=False, indent=1)
+    hechas = []
+    try:
+        for carpeta in sorted({f["datos"] for f in fichas}):
+            ruta = os.path.join(carpeta, ORDEN_SERVIDOR)
+            with open(ruta, "w", encoding="utf-8") as fo:
+                fo.write("actualizar\n")
+            hechas.append(ruta)
+    except OSError as e:
+        for ruta in hechas:
+            _quitar(ruta)
+        _quitar(nota)
+        raise ErrorActualizacion("No se pudo dejar al servidor en línea la orden de cerrarse. Ciérralo tú y vuelve a intentarlo.") from e
+    return nota
+
+
+def orden_de_arranque(ficha):
+    """Con qué se vuelve a arrancar: el mismo programa, con los mismos argumentos y en la misma carpeta. El panel, además,
+    con --arrancar si su servidor estaba en marcha, para que vuelva a funcionar solo."""
+    args = [a for a in ficha.get("args") or [] if a != "--arrancar"]
+    if ficha["tipo"] == "panel" and ficha.get("activo"):
+        args.append("--arrancar")
+    cwd = ficha.get("cwd") if ficha.get("cwd") and os.path.isdir(ficha["cwd"]) else os.path.dirname(ficha["exe"])
+    return [ficha["exe"]] + args, cwd
+
+
+def _lanzar_servidor(orden, cwd, tipo):
+    """Arranca el programa minimizado y sin quitarle el foco al juego, que se abre a continuación. El de consola, en su propia consola."""
+    banderas = getattr(subprocess, "CREATE_NEW_CONSOLE", 0) if tipo == "consola" else 0
+    info = None
+    if hasattr(subprocess, "STARTUPINFO"):
+        info = subprocess.STARTUPINFO()
+        info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        info.wShowWindow = 7                                      # SW_SHOWMINNOACTIVE
+    subprocess.Popen(orden, cwd=cwd, creationflags=banderas, close_fds=True, startupinfo=info)
+
+
+def relanzar_servidores(nota, programa=None, lanzar=None, vivo=None, registro=None):
+    """Vuelve a arrancar los servidores que había abiertos antes de actualizar, según la nota. Lo llama el instalador al
+    terminar, haya ido bien o mal. Apunta en el registro del instalador lo que hace con cada uno, sin rutas, y borra la
+    nota. Devuelve [(tipo, relanzado, motivo)]. Solo arranca los programas del servidor de la propia carpeta del juego."""
+    programa = programa or carpeta_programa()
+    lanzar = lanzar or _lanzar_servidor
+    vivo = vivo or proceso_vivo
+    registro = registro or ruta_registro_instalador(programa)
+    hecho = []
+    try:
+        with open(nota, encoding="utf-8") as f:
+            fichas = json.load(f).get("servidores") or []
+    except (OSError, ValueError, AttributeError):
+        fichas = []
+    for f in fichas:
+        try:
+            exe, tipo = str(f["exe"]), TIPO_DE.get(os.path.basename(str(f["exe"])))
+            en_casa = os.path.normcase(os.path.abspath(os.path.dirname(exe))) == os.path.normcase(os.path.abspath(programa))
+        except (KeyError, TypeError):
+            continue
+        if tipo is None or not en_casa:
+            hecho.append((tipo or "desconocido", False, "ajeno"))
+        elif f.get("servicio"):
+            hecho.append((tipo, False, "servicio"))          # lo arrancó un servicio o una tarea: le toca a quien lo montó
+        elif vivo(int(f.get("pid") or 0), exe):
+            hecho.append((tipo, False, "sigue_abierto"))     # no llegó a cerrarse: no se arranca dos veces
+        elif not os.path.isfile(exe):
+            hecho.append((tipo, False, "no_esta"))
+        else:
+            try:
+                orden, cwd = orden_de_arranque(dict(f, tipo=tipo))
+                lanzar(orden, cwd, tipo)
+                hecho.append((tipo, True, ""))
+            except (OSError, ValueError) as e:
+                hecho.append((tipo, False, "error_" + type(e).__name__))
+    try:
+        if hecho:
+            os.makedirs(os.path.dirname(registro), exist_ok=True)
+            with open(registro, "a", encoding="utf-8", newline="\r\n") as f:
+                for tipo, bien, motivo in hecho:
+                    f.write(f"SERVIDOR {'relanzado' if bien else 'sin_relanzar'} tipo={tipo}" + (f" motivo={motivo}" if motivo else "") + "\n")
+    except OSError:
+        pass
+    _quitar(nota)
+    return hecho
+
+
+MOTIVO_SIN_RELANZAR = {
+    "servicio": "lo había arrancado un servicio o una tarea programada de Windows, y desde aquí no se puede arrancar igual: si no ha vuelto solo, arráncalo como lo tengas montado",
+    "sigue_abierto": "no llegó a cerrarse y sigue en marcha",
+    "no_esta": "no se encuentra su programa",
+    "ajeno": "no era un programa del servidor de esta carpeta",
+}
+
+
+def texto_relanzados(r):
+    """Lo que pasó con los servidores tras actualizar, a partir del registro del instalador, dicho para quien juega. Vacío si no había ninguno."""
+    partes = []
+    if r.get("relanzados"):
+        tipos = sorted(set(r["relanzados"]))
+        que = " y ".join(NOMBRE_TIPO.get(t, "el servidor") for t in tipos)
+        partes.append(f"{que[0].upper()}{que[1:]} que tenías {'abierto ha vuelto' if len(tipos) == 1 else 'abiertos han vuelto'} a arrancar solo: los jugadores que estaban esperando volverán a entrar.")
+    for tipo, motivo in r.get("sin_relanzar") or []:
+        que = NOMBRE_TIPO.get(tipo, "el servidor en línea")
+        partes.append(f"{que[0].upper()}{que[1:]} no se ha vuelto a arrancar: " + MOTIVO_SIN_RELANZAR.get(motivo, "no se pudo abrir su programa: ábrelo tú") + ".")
+    return " ".join(partes)
 
 
 def lanzar_instalador(ruta_bat):

@@ -36,6 +36,12 @@ def main():
         # se cae este proceso y no el juego. No abre ventana, ni registro, ni cuenta como «ya abierto».
         from juego import vozgen
         os._exit(vozgen.prueba_en_este_proceso(sys.argv[2] if len(sys.argv) > 2 else None))
+    if len(sys.argv) > 2 and sys.argv[1] == "--relanzar-servidores":
+        # Lo llama el instalador al terminar de actualizar: vuelve a arrancar los servidores en línea que había abiertos
+        # antes, según la nota que dejó el juego. No abre ventana ni registro, ni cuenta como «ya abierto».
+        from juego import actualizador
+        actualizador.relanzar_servidores(sys.argv[2])
+        os._exit(0)
     if ya_abierto():
         return 4
     from juego import procesador, registro

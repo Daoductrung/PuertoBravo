@@ -63,7 +63,7 @@ a { color: #9fd0ff; }
 <li><code>Arrancar con Windows - activar.bat</code> y <code>Arrancar con Windows - quitar.bat</code>: para que arranque solo al iniciar sesión.</li>
 <li><code>documentacion.html</code>: esta guía.</li>
 <li><code>servidor.conf.ejemplo</code>: todas las opciones, explicadas una a una.</li>
-<li><code>otros_sistemas</code>: lo que se copia a un Linux, un Mac, un NAS o una Raspberry Pi. Lleva el código del servidor, los guiones <code>arrancar.sh</code>, <code>parar.sh</code> y <code>estado.sh</code>, el servicio de systemd <code>puertobravo.service</code>, y los archivos de Docker: <code>Dockerfile</code>, <code>docker-compose.yml</code> y <code>entrada_docker.sh</code>.</li>
+<li><code>otros_sistemas</code>: lo que se copia a un Linux, un Mac, un NAS o una Raspberry Pi. Lleva el código del servidor, los guiones <code>arrancar.sh</code>, <code>parar.sh</code>, <code>reiniciar.sh</code> y <code>estado.sh</code>, el servicio de systemd <code>puertobravo.service</code>, y los archivos de Docker: <code>Dockerfile</code>, <code>docker-compose.yml</code> y <code>entrada_docker.sh</code>.</li>
 </ul>
 <p>Cuando arranques el servidor por primera vez aparecerán además:</p>
 <ul>
@@ -129,6 +129,8 @@ a { color: #9fd0ff; }
 <li>Mayúsculas+F5 para el servidor: avisa a los jugadores, guarda todo y los desconecta. Si hay gente dentro, antes pregunta.</li>
 <li>Si cierras el panel con el servidor en marcha, pregunta y, si dices que sí, lo para con orden antes de cerrarse.</li>
 <li>El servidor solo funciona mientras el panel está abierto. Puedes minimizarlo.</li>
+<li>Control+F5 lo reinicia: se dice a los jugadores que es un reinicio, y sus juegos esperan y vuelven a entrar solos en cuanto arranca otra vez.</li>
+<li>Si actualizas el juego con el panel abierto, el panel se cierra solo, con orden, y vuelve a abrirse al terminar, con el servidor otra vez en marcha si lo estaba. Está en el <a href="#copias">apartado 20</a>.</li>
 </ul>
 
 <h2 id="consola">5. En tu Windows, por consola</h2>
@@ -147,6 +149,8 @@ a { color: #9fd0ff; }
 <li><code>PuertoBravoServidor.exe --comprobar</code>: revisa <code>servidor.conf</code>, dice lo que no vale y sale.</li>
 <li><code>PuertoBravoServidor.exe --opciones</code>: dice todas las opciones con su explicación.</li>
 <li><code>PuertoBravoServidor.exe --parar</code>: para con orden el servidor que está en marcha.</li>
+<li><code>PuertoBravoServidor.exe --actualizar</code>: lo para avisando a los jugadores de que se reinicia para actualizarse. Sus juegos esperan y vuelven a entrar solos cuando lo arranques otra vez.</li>
+<li><code>PuertoBravoServidor.exe --reiniciar</code>: lo mismo, diciendo que es por mantenimiento.</li>
 <li><code>PuertoBravoServidor.exe --puerto=47821</code>: cualquier opción se puede dar así, sin tocar el archivo.</li>
 </ul>
 
@@ -185,6 +189,7 @@ a { color: #9fd0ff; }
 <li><code>sh arrancar.sh</code>: lo arranca en segundo plano, si no está ya en marcha. Lo que va diciendo queda en <code>servidor.log</code>.</li>
 <li><code>sh estado.sh</code>: dice si está en marcha y enseña lo último que ha dicho.</li>
 <li><code>sh parar.sh</code>: lo para con orden.</li>
+<li><code>sh reiniciar.sh</code>: avisa a los jugadores con la cuenta atrás, lo para con orden y lo vuelve a arrancar. Es lo que hay que usar después de poner el código nuevo del servidor: los juegos esperan y vuelven a entrar solos.</li>
 <li>Para que arranque al encender la máquina sin systemd, añade a tu cron una línea como <code>@reboot sh /home/tu_usuario/puertobravo/arrancar.sh</code>, con <code>crontab -e</code>.</li>
 <li>Arrancado así no tiene consola. Se administra desde el chat del juego, con las órdenes del apartado 16.</li>
 </ul>
@@ -211,6 +216,7 @@ a { color: #9fd0ff; }
 <li>Pararlo: <code>sudo systemctl stop puertobravo</code>. Arrancarlo: <code>sudo systemctl start puertobravo</code>. Reiniciarlo, por ejemplo tras cambiar el puerto: <code>sudo systemctl restart puertobravo</code>.</li>
 <li>Si usas otra carpeta u otro usuario, cambia las líneas <code>WorkingDirectory</code> y <code>User</code> del archivo del servicio.</li>
 <li>Como servicio no tiene consola: se administra desde el chat del juego.</li>
+<li>Reiniciarlo avisando, por ejemplo tras actualizarlo: un administrador escribe en el chat del juego <code>/reiniciar</code> o <code>/actualizar</code>, o en la máquina, desde la carpeta del servidor, <code>sudo -u puertobravo python3 -m servidor --actualizar</code>. El servidor avisa con su cuenta atrás, lo guarda todo y termina con el código 75; el servicio lo vuelve a arrancar solo a los cinco segundos, y los juegos vuelven a entrar.</li>
 </ul>
 
 <h2 id="raspberry">9. En una Raspberry Pi</h2>
@@ -229,7 +235,7 @@ a { color: #9fd0ff; }
 <li>Copia la carpeta <code>otros_sistemas</code> al Mac, por ejemplo a tu carpeta personal con el nombre <code>puertobravo</code>.</li>
 <li>En Terminal: <code>cd ~/puertobravo</code>, después <code>python3 -m servidor --ejemplo</code> y, cuando hayas cambiado <code>servidor.conf</code> a tu gusto, <code>python3 -m servidor</code>.</li>
 <li>La primera vez, el Mac pregunta si permites conexiones entrantes a Python: di que sí.</li>
-<li>Para dejarlo en segundo plano valen los mismos guiones: <code>sh arrancar.sh</code>, <code>sh estado.sh</code> y <code>sh parar.sh</code>.</li>
+<li>Para dejarlo en segundo plano valen los mismos guiones: <code>sh arrancar.sh</code>, <code>sh estado.sh</code>, <code>sh parar.sh</code> y <code>sh reiniciar.sh</code>.</li>
 <li>Para que el Mac no se duerma mientras hay gente jugando, mira en Ajustes del Sistema, en el apartado de energía o de batería.</li>
 </ol>
 
@@ -245,6 +251,7 @@ a { color: #9fd0ff; }
 <li>Pararlo con orden: <code>docker compose down</code>. Avisa a los jugadores y lo guarda todo.</li>
 <li>Escribirle órdenes: <code>docker attach puertobravo</code>, escribe la orden y pulsa Intro. Para salir sin pararlo, pulsa Control+P y después Control+Q. Lo más cómodo es administrarlo desde el chat del juego.</li>
 <li>No uses la orden <code>apagar</code> dentro de Docker para pararlo: Docker lo volvería a arrancar. Usa <code>docker compose down</code>.</li>
+<li>Para reiniciarlo avisando sí valen las órdenes <code>reiniciar</code> y <code>actualizar</code>, desde el chat del juego o con <code>docker attach</code>: el servidor avisa con su cuenta atrás, lo guarda todo y sale, y Docker lo vuelve a arrancar. Los juegos esperan y vuelven a entrar solos.</li>
 <li>Si cambias el puerto en <code>servidor.conf</code>, cambia también los dos números de la línea <code>ports</code> de <code>docker-compose.yml</code>.</li>
 <li>Con Docker, todas las conexiones pueden llegarle al servidor desde la misma dirección interna. Por eso la opción <code>conexiones_por_ip</code> debe quedarse en 0.</li>
 </ul>
@@ -385,6 +392,8 @@ a { color: #9fd0ff; }
 <li><code>copia</code>: hace una copia de seguridad.</li>
 <li><code>copias</code>: las copias de seguridad que hay.</li>
 <li><code>recargar</code>: vuelve a leer servidor.conf y aplica lo que se puede cambiar sin reiniciar.</li>
+<li><code>actualizar</code>: avisa a todos de que el servidor se reinicia para actualizarse, espera la cuenta atrás, lo guarda todo y lo para; los juegos esperan y vuelven a entrar solos cuando lo arranques otra vez. Detrás se pueden poner los segundos de aviso.</li>
+<li><code>reiniciar</code>: lo mismo, pero diciendo que es por mantenimiento. Detrás se pueden poner los segundos de aviso.</li>
 <li><code>apagar</code>: avisa a todos, lo guarda todo y para el servidor.</li>
 </ul>
 <!-- ORDENES:FIN -->
@@ -503,10 +512,37 @@ a { color: #9fd0ff; }
 <li>Arranca. Los personajes, las bandas y el certificado son los mismos: nadie nota el cambio, salvo la dirección nueva.</li>
 </ol>
 <h3>Actualizar el servidor</h3>
+<p>Desde la versión 1.7.1, actualizar ya no echa a nadie al menú. El servidor avisa a los jugadores con una cuenta atrás, espera a que cada juego guarde su personaje, lo guarda todo y se cierra diciendo por qué. Los juegos se quedan en una pantalla de espera, con la partida tal cual, y cuando el servidor vuelve, esperan y vuelven a entrar solos: cada uno sigue donde estaba.</p>
+<h4>En Windows</h4>
 <ul>
-<li>En Windows: basta con actualizar el juego. Para el servidor antes. Tu configuración y tus datos no se tocan.</li>
-<li>En Linux, Mac, NAS o Raspberry Pi: para el servidor, sustituye la carpeta <code>servidor</code> del código por la de la carpeta <code>otros_sistemas</code> del juego nuevo, y arranca. No toques <code>servidor.conf</code> ni la carpeta de datos.</li>
-<li>Con Docker: sustituye la carpeta <code>servidor</code> igual y escribe <code>docker compose up -d --build</code>.</li>
+<li>Basta con actualizar el juego, con el servidor o el panel abiertos. No hace falta pararlo antes.</li>
+<li>El juego dice que tienes abierto el servidor, explica lo que va a pasar y pide permiso. Si dices que sí: avisa a los jugadores, el servidor se para solo, el juego se cierra y se actualiza, y al terminar el servidor vuelve a arrancar solo, igual que estaba: el de consola en su ventana, minimizada, o el panel, con el servidor en marcha si lo estaba.</li>
+<li>Si la actualización fallara, se deja la versión que tenías y el servidor se vuelve a arrancar igualmente.</li>
+<li>Al abrirse, el juego dice si el servidor ha vuelto a arrancar. Todo queda apuntado en el archivo <code>actualizacion.log</code> de la carpeta <code>data\logs</code> del juego.</li>
+<li>Si el servidor arranca solo al iniciar tu sesión, con Arrancar con Windows, también vuelve a arrancar solo.</li>
+<li>Si lo tienes montado como un servicio o como una tarea programada que funciona sin que nadie inicie sesión, el juego le puede pedir que se cierre, pero no puede arrancarlo igual que lo arranca Windows: te lo avisa antes de empezar, y después tendrás que arrancarlo como lo tengas montado, si no vuelve solo.</li>
+<li>Tu configuración y tus datos no se tocan.</li>
+</ul>
+<h4>En Linux, Mac, NAS, Raspberry Pi o Docker</h4>
+<p>Ahí el servidor no se actualiza con el juego: se cambia su código a mano. Para que los jugadores tengan la misma espera y la misma vuelta, páralo con la orden de reinicio en vez de cortarlo:</p>
+<ol>
+<li>Sustituye la carpeta <code>servidor</code> del código por la de la carpeta <code>otros_sistemas</code> del juego nuevo. Se puede hacer con el servidor en marcha: no lee el código nuevo hasta que arranca otra vez. No toques <code>servidor.conf</code> ni la carpeta de datos.</li>
+<li>Reinícialo avisando. Según cómo lo tengas montado:
+<ul>
+<li>Con los guiones: <code>sh reiniciar.sh</code>. Avisa, lo para y lo vuelve a arrancar.</li>
+<li>Con systemd o con Docker: un administrador escribe <code>/actualizar</code> en el chat del juego. El servidor avisa, se cierra con el código 75, y systemd o Docker lo vuelven a arrancar solos. Con Docker, si además has cambiado la imagen, escribe <code>docker compose up -d --build</code>: al parar el contenedor, el servidor avisa igual a los juegos de que vuelve.</li>
+<li>A mano, con la consola delante: escribe <code>actualizar</code>, espera a que termine y arráncalo otra vez.</li>
+<li>Sin consola: desde la carpeta del servidor, <code>python3 -m servidor --actualizar</code>. O deja en la carpeta de datos un archivo de texto llamado <code>parar.txt</code> con la palabra <code>actualizar</code> dentro: el servidor lo mira cada segundo, lo borra y obedece. Con <code>reiniciar</code> dice que es por mantenimiento, y con <code>parar</code> se para sin más. Detrás de la palabra se pueden poner los segundos de aviso, por ejemplo <code>actualizar 60</code>.</li>
+</ul></li>
+</ol>
+<ul>
+<li>La cuenta atrás es la de la opción <code>parada_aviso</code>, que de serie son 20 segundos. Lo que espera al último guardado de cada juego, la de <code>parada_espera</code>.</li>
+<li>Cuando el servidor se para para volver (las órdenes <code>actualizar</code> y <code>reiniciar</code>), su programa termina con el código 75. Si lo para quien lo lleva (<code>apagar</code>, Control+C), termina con el 0 y los juegos vuelven al menú, como siempre.</li>
+<li>Si lo para el sistema (<code>systemctl stop</code>, <code>docker compose down</code>, <code>sh parar.sh</code>, apagar la máquina), no hay tiempo para una cuenta atrás, pero el servidor dice igualmente a los juegos que es un reinicio: esperan y vuelven a entrar solos si vuelve antes de que se cansen, que de serie son diez minutos.</li>
+<li>Quien juega con la versión 1.7.0 oye el aviso como un aviso normal y, al cerrarse el servidor, vuelve al menú con un texto que dice que el servidor se reinicia y que vuelva a entrar en unos minutos. Su personaje queda guardado igual.</li>
+</ul>
+<h4>En todos los casos</h4>
+<ul>
 <li>Las opciones nuevas valen con su valor de serie aunque tu <code>servidor.conf</code> no las tenga. Si guardas la configuración desde el panel, el archivo se reescribe con todas. Las opciones que un servidor no conoce las deja pasar y lo dice al arrancar.</li>
 </ul>
 
@@ -549,6 +585,8 @@ a { color: #9fd0ff; }
 </ul>
 <h3>Otras cosas</h3>
 <ul>
+<li>Tras actualizar el juego, el servidor no ha vuelto a arrancar: el juego lo dice al abrirse, con el motivo, y queda apuntado en <code>actualizacion.log</code>, en la carpeta <code>data\logs</code> del juego. Lo normal es que estuviera montado como servicio o tarea de Windows: arráncalo como lo tengas montado. Si no, ábrelo tú desde la carpeta <code>servidor</code>.</li>
+<li>Los jugadores se quedan esperando y no entran: esperan como mucho lo que cada uno tenga puesto en sus opciones, de serie diez minutos, y prueban cada pocos segundos. Si el servidor vuelve pidiendo una versión más nueva del juego (<code>version_minima</code>), su juego se lo dice y les ofrece actualizar.</li>
 <li>A alguien se le quita dinero: el servidor lleva la cuenta y no reconoce lo que se gana más deprisa de lo que permite <code>ganancia_hora</code>. Desde la 1.7.1 el juego le dice las cifras. Qué cuenta, qué no y qué conviene poner está en el <a href="#dinero">apartado 18</a>.</li>
 <li>He perdido la administración: para el servidor, pon tu nombre de jugador en la opción <code>admins</code> y arranca.</li>
 <li>Quiero empezar de cero: para el servidor y borra o aparta la carpeta de datos. Se crea una nueva al arrancar, con un certificado nuevo.</li>
@@ -605,6 +643,20 @@ a { color: #9fd0ff; }
 <ul>
 <li>Valores: si o no.</li>
 <li>De serie: <code>no</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Segundos de aviso antes de reiniciar por actualización o mantenimiento: <code>parada_aviso</code></h4>
+<p>Cuando el servidor se va a parar para actualizarlo o por mantenimiento (las órdenes actualizar y reiniciar, o la actualización del juego en Windows), avisa a los jugadores con esta cuenta atrás antes de cerrarse. Con 0 se cierra enseguida. Los juegos esperan y vuelven a entrar solos cuando el servidor vuelve.</p>
+<ul>
+<li>Un número entero entre 0 y 120.</li>
+<li>De serie: <code>20</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Guardado final: segundos que se espera al parar: <code>parada_espera</code></h4>
+<p>Al pararse, el servidor pide a cada juego que guarde su personaje y espera hasta estos segundos a que llegue. Si todos guardan antes, no espera más.</p>
+<ul>
+<li>Un número entero entre 0 y 30.</li>
+<li>De serie: <code>6</code>.</li>
 <li>Se aplica sin reiniciar el servidor.</li>
 </ul>
 <h3>Red y cifrado</h3>

@@ -29,7 +29,7 @@ OTROS = "otros_sistemas"
 # Lo que tiene que haber en la carpeta del servidor del juego compilado. Lo comprueba también comprobar_limpio.py.
 LANZADORES = ("Panel del servidor.bat", "Servidor por consola.bat", "Parar el servidor.bat",
               "Arrancar con Windows - activar.bat", "Arrancar con Windows - quitar.bat")
-GUIONES = ("arrancar.sh", "parar.sh", "estado.sh", "entrada_docker.sh")
+GUIONES = ("arrancar.sh", "parar.sh", "reiniciar.sh", "estado.sh", "entrada_docker.sh")
 DE_DOCKER = ("Dockerfile", "docker-compose.yml")
 CONTENIDO = tuple((n,) for n in LANZADORES) + (("LEEME.txt",), ("servidor.conf.ejemplo",), ("documentacion.html",),
                                                 (OTROS, "LEEME.txt"), (OTROS, "servidor.conf.ejemplo"), (OTROS, "puertobravo.service"),

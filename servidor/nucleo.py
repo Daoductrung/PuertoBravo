@@ -36,7 +36,10 @@ PROTOCOLO_MIN = 2                 # la más antigua con la que todavía se entie
 FUNCIONES = ("vehiculos", "combate", "bandas", "barrios", "grupos", "propiedades", "robos", "personajes", "mundo", "versiones",
              # desde la 1.7.1: canales de rol y ficha, la radio de los coches de otros, traer, renombrar y guardar tus vehículos
              # aparcados, los pasajeros, las cifras del tope de dinero y los encargos repetibles reconocidos
-             "rol", "radio", "mis_vehiculos", "pasajeros", "topes", "encargos")
+             "rol", "radio", "mis_vehiculos", "pasajeros", "topes", "encargos",
+             # avisa antes de pararse para una actualización o un mantenimiento, espera a que los juegos guarden y dice
+             # por qué se cierra, para que el juego espere y vuelva a entrar solo
+             "reconexion")
 CANALES = ("todos", "cerca", "banda", "priv", "grupo")
 CANALES_ROL = ("ic", "ooc", "yo")                 # en personaje, fuera de personaje y una acción
 # Órdenes que cualquiera puede escribir en el chat con una barra delante, también con un juego anterior a los canales de rol.
@@ -48,6 +51,17 @@ ENCARGOS_DE_SERIE = {"contrato": 4000, "atraco_banco": 15000, "atraco_local": 80
 # Claves públicas de quien publica el juego: con ellas se comprueba que el mundo que trae un jugador es el de una
 # versión de verdad. Son las mismas con las que el juego comprueba sus actualizaciones.
 CLAVES_PUBLICAS = ("2793c73fefcdb5518570569e41e9ae291373c41126b30d4b3fb99359b09ca23f",)
+# Parar con orden desde fuera: basta con dejar este archivo en la carpeta de datos. El servidor lo mira cada segundo, lo
+# borra y hace lo que diga su primera palabra: parar, actualizar o reiniciar (con los segundos de aviso detrás, si se quiere).
+ARCHIVO_ORDEN = "parar.txt"
+# Por qué se para el servidor. Se lo dice a los juegos en el mensaje de cierre: con «apagado» vuelven al menú; con las
+# otras dos, esperan y vuelven a entrar solos. El texto es el que oye quien juega con una versión anterior.
+CAUSAS = {"apagado": "El servidor se ha cerrado.",
+          "actualizacion": "El servidor se reinicia para actualizarse. Volverá en unos minutos: vuelve a entrar entonces.",
+          "reinicio": "El servidor se reinicia por mantenimiento. Volverá en unos minutos: vuelve a entrar entonces."}
+VUELVE = {"actualizacion": 120, "reinicio": 60}      # segundos que se calcula que tarda en volver, para decírselo a los juegos
+AVISOS_PARADA = (60, 30, 10)                          # se repite la cuenta atrás cuando queda esto
+CODIGO_VUELVE = 75                                    # código con el que termina el programa cuando se ha parado para volver
 MUNDO_VACIO = {"version": "0", "huella": "", "mapas": {}, "armas": {}, "modelos": {}, "misiones": {}}
 
 
@@ -239,6 +253,12 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         self.servidor = None
         self.activo = False
         self.detenido = False                                 # pasa a True cuando ha parado del todo y lo ha guardado todo
+        self.parando = None                                   # la causa, mientras avisa y espera antes de parar
+        self.cerrando = False                                 # ya ha dicho a los juegos que se cierra: no entra nadie más
+        self.causa_parada = None                              # por qué se paró, para quien lo arrancó
+        self.codigo_salida = 0                                # con qué código debe terminar el programa que lo lleva
+        self._parada_fin = 0.0
+        self._guardan = set()                                 # juegos de los que se espera el último guardado antes de cortar
         self.tareas = []
         self.conexiones = set()
         self.log = print
@@ -247,6 +267,12 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         self.trafico_iniciar()
         self.peatones_iniciar()
         self.policia_iniciar()
+        try:                                                  # a quién buscaba la policía cuando el servidor se paró: no se libra por el reinicio
+            for cuenta, puntos in dict(self.alm.meta("buscados", {})).items():
+                self.buscados_fuera[int(cuenta)] = (float(puntos), time.monotonic())
+        except (TypeError, ValueError):
+            pass
+        self.alm.poner_meta("buscados", {})
         self.alm.guardar()
 
     # El registro: lo que va diciendo el servidor. Quien lo arranca dice adónde va (la consola, el panel, una lista en las
@@ -456,6 +482,10 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         self.servidor = await asyncio.start_server(self._atender, self.cfg["interfaz"], int(self.cfg["puerto"]), ssl=ctx, limit=MAX_LINEA)
         self.puerto = self.servidor.sockets[0].getsockname()[1]
         self.activo = True
+        try:
+            os.remove(os.path.join(self.cfg["datos"], ARCHIVO_ORDEN))      # una orden que quedó de otra vez no cuenta
+        except OSError:
+            pass
         self.t_inicio = time.time()
         self._t_guardado = self._t_copia = time.monotonic()
         loop = asyncio.get_event_loop()
@@ -484,23 +514,84 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         except Exception:
             pass
 
-    async def detener(self, motivo="El servidor se ha cerrado."):
-        if not self.activo:
+    def _humanos(self):
+        return [j for j in self.jugadores.values() if j.dentro and not j.bot and j.conectado]
+
+    def _anunciar_parada(self, j, causa, queda, vuelve):
+        """La cuenta atrás, a un jugador: a un juego que sabe reconectar, con cifras, para que lo diga a su manera y sepa
+        que tiene que esperar; a uno anterior, como un aviso de los de siempre."""
+        queda = max(0, int(round(queda)))
+        if "reconexion" in j.sabe:
+            self._enviar(j, {"t": "parada", "causa": causa, "en": queda, "vuelve": int(vuelve)})
             return
-        self.activo = False
+        que = "para actualizarse" if causa == "actualizacion" else "por mantenimiento"
+        self._aviso(j, "Aviso del servidor: dentro de %d segundos se reinicia %s. Tu personaje se guarda solo. Volverá en unos minutos: "
+                       "vuelve a entrar entonces." % (queda, que), "notificacion")
+
+    async def detener(self, motivo=None, causa="apagado", aviso=0.0, vuelve=None, espera=None, codigo=0):
+        """Para el servidor con orden: avisa (con cuenta atrás si se pide), dice a los juegos que se cierra y por qué,
+        espera un momento a que manden su último guardado, saca a cada jugador por el camino de siempre (su vehículo queda
+        aparcado, y su saldo y su margen, guardados) y lo guarda todo.
+
+        ``causa`` es «apagado», «actualizacion» o «reinicio»: con las dos últimas, los juegos que saben hacerlo esperan y
+        vuelven a entrar solos. ``aviso`` son los segundos de cuenta atrás; ``espera``, lo más que se aguarda a los
+        guardados (si no se dice, la opción parada_espera); ``codigo``, con qué código debe salir el programa."""
+        if not self.activo or self.parando:
+            return
+        causa = causa if causa in CAUSAS else "apagado"
+        self.parando = causa
+        self.causa_parada, self.codigo_salida = causa, int(codigo)
+        vuelve = int(VUELVE.get(causa, 0) if vuelve is None else vuelve)
+        try:
+            aviso = max(0.0, float(aviso or 0))
+        except (TypeError, ValueError):
+            aviso = 0.0
+        if aviso > 0 and causa != "apagado" and self._humanos():
+            self.log("Aviso a los jugadores: el servidor se para dentro de %d segundos, %s." % (aviso, "para actualizarse" if causa == "actualizacion" else "por mantenimiento"))
+            self._parada_fin = time.monotonic() + aviso
+            for j in self._humanos():
+                self._anunciar_parada(j, causa, aviso, vuelve)
+            dichos = set(m for m in AVISOS_PARADA if m >= aviso - 3)      # lo que ya queda dicho con el primer aviso
+            while True:
+                queda = self._parada_fin - time.monotonic()
+                if queda <= 0 or not self._humanos():             # se han ido todos: no hay a quién esperar
+                    break
+                marca = next((m for m in AVISOS_PARADA if m not in dichos and queda <= m), None)
+                if marca is not None:
+                    dichos.add(marca)
+                    for j in self._humanos():
+                        self._anunciar_parada(j, causa, queda, vuelve)
+                await asyncio.sleep(0.2)
+        # El cierre. Quien lo recibe guarda su personaje y se despide: se le espera un momento, sin dejar entrar a nadie más.
+        self.cerrando = True
+        cierre = {"t": "cerrado", "motivo": str(motivo or CAUSAS[causa])[:300], "causa": causa, "vuelve": vuelve}
+        self._guardan = set(j.id for j in self._humanos())
         for j in list(self.jugadores.values()):
-            self._enviar(j, {"t": "cerrado", "motivo": motivo})
-        await asyncio.sleep(0.2)
+            self._enviar(j, cierre)
+        try:
+            espera = float(self.cfg.get("parada_espera", 6) if espera is None else espera)
+        except (TypeError, ValueError):
+            espera = 6.0
+        ahora = time.monotonic()
+        minimo, tope = ahora + 0.2, ahora + max(0.2, espera)
+        while time.monotonic() < tope and (self._guardan or time.monotonic() < minimo):
+            await asyncio.sleep(0.05)
+        if self._guardan:
+            self.log("No ha llegado a tiempo el último guardado de %d %s: su personaje queda como estaba en el anterior." % (
+                len(self._guardan), "jugador" if len(self._guardan) == 1 else "jugadores"))
+        self.activo = False
         for t in self.tareas:
             t.cancel()
         self.servidor.close()
         for j in list(self.jugadores.values()):
-            if j.dentro and j.vid is not None and j.vid in self.vehiculos:      # lo que conducían se queda aparcado
-                self.vehiculos[j.vid].update(por=None, m=j.mapa, x=j.x, y=j.y, r=j.rumbo, t=self.ahora())
-            if j.dentro and j.cuenta is not None:
-                self.alm.poner(j.cuenta, visto=self.ahora(), dia_salida=self.dia)
+            if j.dentro and not j.bot:
+                # Por el camino de siempre: lo que conducía queda aparcado, y su saldo y su margen, guardados. A quien no
+                # haya llegado a guardar se le reconoce otra vez lo que gastó desde su último guardado.
+                self._salida(j, callar=True)
             j.dentro = False
             self._cortar(j)
+        ahora = time.monotonic()                              # la búsqueda de quien estaba dentro, o salió hace poco, sobrevive al reinicio
+        self.alm.poner_meta("buscados", {str(c): p for c, (p, cuando) in self.buscados_fuera.items() if p and ahora - cuando < 600})
         self.guardar_todo()
         for t in list(self.conexiones):
             t.cancel()
@@ -512,6 +603,49 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             pass
         self.alm.cerrar()
         self.detenido = True                                  # ya está todo guardado y cerrado
+
+    def parar_para_volver(self, causa="actualizacion", aviso=None, codigo=CODIGO_VUELVE):
+        """Para el servidor avisando de que va a volver: para actualizarlo o por mantenimiento. Los juegos esperan y
+        vuelven a entrar solos. Se le llama desde dentro del bucle del servidor; devuelve los segundos de aviso."""
+        if aviso is None:
+            aviso = self.cfg.get("parada_aviso", 20)
+        try:
+            aviso = max(0, min(600, int(aviso)))
+        except (TypeError, ValueError):
+            aviso = 20
+        asyncio.get_event_loop().create_task(self.detener(causa=causa, aviso=aviso, codigo=codigo))
+        return aviso
+
+    def orden_externa(self, texto):
+        """Una orden dejada en el archivo de órdenes de la carpeta de datos: parar, actualizar o reiniciar. Detrás puede
+        llevar los segundos de aviso."""
+        partes = str(texto or "").split()
+        que = partes[0].lower() if partes else "parar"
+        try:
+            aviso = int(partes[1]) if len(partes) > 1 else None
+        except ValueError:
+            aviso = None
+        if que in ("actualizar", "actualizacion"):
+            self.log("Se ha pedido parar el servidor para actualizarlo.")
+            self.parar_para_volver("actualizacion", aviso)
+        elif que in ("reiniciar", "reinicio", "mantenimiento"):
+            self.log("Se ha pedido parar el servidor por mantenimiento.")
+            self.parar_para_volver("reinicio", aviso)
+        else:
+            self.log("Se ha pedido parar el servidor.")
+            asyncio.get_event_loop().create_task(self.detener())
+
+    def _mirar_orden(self):
+        ruta = os.path.join(self.cfg["datos"], ARCHIVO_ORDEN)
+        if self.parando or not os.path.exists(ruta):
+            return
+        try:
+            with open(ruta, encoding="utf-8", errors="replace") as f:
+                texto = f.read(200)
+            os.remove(ruta)
+        except OSError:
+            return
+        self.orden_externa(texto)
 
     def guardar_todo(self):
         self.alm.poner_meta("reloj", self.reloj)
@@ -686,8 +820,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         j.fichas -= 1.0
         return j.fichas > 0
 
-    def _rechazo(self, j, motivo):
-        self._enviar(j, {"t": "rechazo", "motivo": motivo})
+    def _rechazo(self, j, motivo, codigo="", **mas):
+        """No entra, y se le dice por qué. Con ``codigo``, además, de un modo que el juego entiende sin leer el texto:
+        «version», «lleno» o «reiniciando». Un juego anterior no lo mira."""
+        m = {"t": "rechazo", "motivo": motivo}
+        if codigo:
+            m["codigo"] = codigo
+            m.update(mas)
+        self._enviar(j, m)
         return False
 
     def _nombres(self, opcion):
@@ -703,6 +843,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         m = await self._leer(lector, MAX_NORMAL, 15)
         if not m or m.get("t") != "hola":
             return False
+        if self.cerrando:
+            return self._rechazo(j, "El servidor se está reiniciando. Prueba otra vez dentro de un momento.", "reiniciando")
         # La versión del protocolo se acuerda: el juego dice la más nueva que habla (v) y la más antigua con la que se
         # entiende (vmin); se usa la más nueva que hablen los dos. Así entra tanto quien va por delante como quien va por detrás.
         v = m.get("v")
@@ -724,6 +866,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         f = await self._leer(lector, MAX_NORMAL, 20)
         if not f or f.get("t") != "firma":
             return False
+        if self.cerrando:                                     # se ha empezado a cerrar mientras saludaba
+            return self._rechazo(j, "El servidor se está reiniciando. Prueba otra vez dentro de un momento.", "reiniciando")
         try:
             # Comprobar la firma cuesta unas décimas de segundo en una máquina modesta: se hace aparte, sin parar a los que juegan.
             valida = await asyncio.get_event_loop().run_in_executor(
@@ -738,7 +882,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             return self._rechazo(j, "No puedes entrar en este servidor.")
         minima = str(self.cfg.get("version_minima", "")).strip()
         if minima and version_tupla(j.juego) < version_tupla(minima):
-            return self._rechazo(j, "Este servidor pide la versión %s del juego o una posterior, y la tuya es la %s. Actualiza el juego para entrar." % (minima, j.juego or "desconocida"))
+            return self._rechazo(j, "Este servidor pide la versión %s del juego o una posterior, y la tuya es la %s. Actualiza el juego para entrar." % (minima, j.juego or "desconocida"),
+                                 "version", minima=minima)
         admins = self._nombres("admins")
         es_admin = (fila is not None and (bool(fila["admin"]) or fila["nombre"].lower() in admins)) or (fila is None and si(self.cfg["primer_admin"]) and not self.alm.hay_cuentas())
         if j.huella != self.mundo["huella"] and (si(self.cfg["comprobar_datos"]) or not self.mundo["mapas"]):
@@ -747,7 +892,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 return self._rechazo(j, motivo)
         tope = int(self.cfg["max_jugadores"])                 # con 0 no hay límite; quien administra entra siempre
         if tope > 0 and not es_admin and self._cuantos() >= tope:
-            return self._rechazo(j, "El servidor está lleno.")
+            return self._rechazo(j, "El servidor está lleno.", "lleno")
         if fila is None:                                      # cuenta nueva: aquí se mira quién puede entrar
             modo = str(self.cfg["entrada"]).lower()
             if modo == "clave" and not secrets.compare_digest(str(m.get("clave", "")), hashlib.sha256(("puerto-bravo|" + str(self.cfg["clave"])).encode("utf-8")).hexdigest()):
@@ -765,8 +910,16 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             fila = self.alm.crear_cuenta(pub, nombre, admin=primera)
             if modo == "invitacion":
                 self.alm.usar_invitacion(str(m.get("invitacion", "")).strip().upper(), fila["id"])
+        heredado = None
         for o in list(self.jugadores.values()):               # una sola sesión por cuenta: la nueva echa a la vieja
             if o.cuenta == fila["id"] and o is not j and not si(self.cfg["varias_sesiones"]):
+                if not o.dentro and o.fantasma:
+                    # Se le cortó la conexión en plena pelea y vuelve antes de quince segundos: no quedan dos con su
+                    # nombre. El que vuelve hereda la pelea, y no estrena protección de llegada: cortar no es escapatoria.
+                    heredado = o
+                    self.jugadores.pop(o.id, None)
+                    self._a_todos({"t": "sale", "id": o.id})
+                    continue
                 self._salida(o, callar=True)
                 self._echar(o, "Has entrado con tu personaje desde otro sitio.")
         j.cuenta, j.nombre = fila["id"], fila["nombre"]
@@ -775,6 +928,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if mi is not None:
             j.banda, j.rango = mi["banda"], mi["rango"]
         j.protegido = time.monotonic() + float(self.cfg["proteccion"])
+        if heredado is not None:
+            j.protegido, j.golpeado, j.agredio = 0.0, dict(heredado.golpeado), dict(heredado.agredio)
         j.saldo = fila["saldo"] if "saldo" in fila.keys() else None
         try:
             j.misiones_pagadas = set(json.loads(fila["misiones"] or "[]"))
@@ -841,6 +996,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self._aviso(j, "Mensaje del día: " + dia[:300], "notificacion")
         self._a_todos({"t": "entra", "id": j.id, "nombre": j.nombre, "banda": j.banda}, menos=j)
         self.po_entra(j)
+        if self.parando and self.parando != "apagado" and self._parada_fin > time.monotonic():      # entra en plena cuenta atrás: que lo sepa
+            self._anunciar_parada(j, self.parando, self._parada_fin - time.monotonic(), VUELVE.get(self.parando, 0))
         self.log("Entra %s%s. Hay %d." % (j.nombre, (", con el juego %s" % j.juego) if j.juego else "", self._cuantos()))
         return True
 
@@ -865,6 +1022,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             j.avisado.add(clave)
             self._aviso(j, texto, "notificacion")
     def _salida(self, j, callar=False):
+        self._guardan.discard(j.id)
         if not j.dentro:
             return
         j.dentro = False
@@ -1190,6 +1348,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 if m.get("ya"):
                     self.alm.guardar()
                     self._enviar(j, {"t": "guardado"})
+                    self._guardan.discard(j.id)                # si el servidor se está parando, de este ya no hay que esperar nada
 
     def _m_aspecto(self, j, m):
         """Lo que lleva puesto un jugador, como lo cuenta su juego: se reparte tal cual a los demás. El servidor no sabe de
@@ -1489,6 +1648,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             await asyncio.sleep(1.0)
             k += 1
             try:
+                self._mirar_orden()
                 self._tic(1.0, k)
             except Exception as e:
                 self.log("Error en el reloj del servidor: %s: %s" % (type(e).__name__, e))
@@ -1613,11 +1773,11 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         """Subirse a un vehículo aparcado de otro jugador: el primero que lo pide se lo lleva."""
         v = self.vehiculos.get(m.get("id"))
         if v is None:
-            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": "Ese vehículo ya no está."})
+            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": "Ese vehículo ya no está.", "por": "no_esta"})
         if v["por"] is not None and v["por"] != j.id:
-            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Alguien se te ha adelantado."})
+            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Alguien se te ha adelantado.", "por": "ocupado"})
         if v["m"] != j.mapa or math.hypot(v["x"] - j.x, v["y"] - j.y) > 14:
-            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Estás demasiado lejos."})
+            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Estás demasiado lejos.", "por": "lejos"})
         if j.vid is not None and j.vid in self.vehiculos and j.vid != v["id"]:
             self._soltar_vehiculo(j, self.vehiculos[j.vid])
         robo = v.get("dueno") not in (None, j.cuenta)
@@ -1639,9 +1799,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         v = self.vehiculos.get(m.get("id"))
         o = self.jugadores.get(v["por"]) if v is not None else None
         if v is None or o is None or o is j:
-            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": "Ese vehículo ya no está."})
+            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": "Ese vehículo ya no está.", "por": "no_esta"})
         if o.mapa != j.mapa or j.dist(o) > 9:
-            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Estás demasiado lejos."})
+            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Estás demasiado lejos.", "por": "lejos"})
         if o.vel > 6:
             return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Va demasiado rápido para abrir la puerta."})
         if not self._puede_atacar(j, o, avisar=True):
@@ -2558,6 +2718,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         ("copia", "hace una copia de seguridad"),
         ("copias", "las copias de seguridad que hay"),
         ("recargar", "vuelve a leer servidor.conf y aplica lo que se puede cambiar sin reiniciar"),
+        ("actualizar", "avisa a todos de que el servidor se reinicia para actualizarse, espera la cuenta atrás, lo guarda todo y lo para; "
+                       "los juegos esperan y vuelven a entrar solos cuando lo arranques otra vez. Detrás se pueden poner los segundos de aviso"),
+        ("reiniciar", "lo mismo, pero diciendo que es por mantenimiento. Detrás se pueden poner los segundos de aviso"),
         ("apagar", "avisa a todos, lo guarda todo y para el servidor"),
     )
 
@@ -2572,7 +2735,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                               "mapa": self.mundo["mapas"].get(j.mapa, {}).get("nombre") if j.mapa else None,
                               "fuera": bool(j.mapa is None and j.mapa_fuera), "mismo_mundo": j.huella == self.mundo.get("huella"),
                               "ip": j.ip if con_ip else None})
-        return {"activo": self.activo, "nombre": self.cfg["nombre"], "puerto": getattr(self, "puerto", None), "cifrado": self.cifrado,
+        return {"activo": self.activo, "parando": self.parando, "nombre": self.cfg["nombre"], "puerto": getattr(self, "puerto", None), "cifrado": self.cifrado,
                 "huella_cert": self.huella_cert, "mundo_version": self.mundo.get("version"), "mundo_huella": self.mundo.get("huella"),
                 "localidades": len(self.mundo["mapas"]), "inicio": self.t_inicio, "max_jugadores": int(self.cfg["max_jugadores"]),
                 "entrada": str(self.cfg["entrada"]), "personajes": len(self.bots), "protocolo": VERSION_RED,
@@ -2780,6 +2943,16 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             return " ".join(avisos + [
                 ("Aplicado: %s." % ", ".join(nombre(c) for c in al_momento)) if al_momento else "No había nada que aplicar al momento.",
                 ("Esperan a que reinicies el servidor: %s." % ", ".join(nombre(c) for c in con_reinicio)) if con_reinicio else ""]).strip()
+        if que in ("actualizar", "reiniciar", "mantenimiento"):
+            if self.parando:
+                return "El servidor ya se está parando."
+            try:
+                aviso = int(resto) if resto else None
+            except ValueError:
+                return "Detrás de %s, si pones algo, tienen que ser los segundos de aviso." % que
+            aviso = self.parar_para_volver("actualizacion" if que == "actualizar" else "reinicio", aviso)
+            return ("Aviso dado. El servidor se para dentro de %d segundos, guardándolo todo. Los juegos esperarán y volverán a entrar solos "
+                    "cuando lo arranques otra vez." % aviso)
         if que == "apagar":
             asyncio.get_event_loop().create_task(self.detener("Un administrador ha apagado el servidor."))
             return "Apagando."

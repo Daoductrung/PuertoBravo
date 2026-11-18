@@ -1983,12 +1983,15 @@ def test_diez_juegos_de_verdad_en_un_servidor_cifrado_con_todo_encendido(diez_ju
             _todos(robots, 3)
             time.sleep(0.1)
         assert _hasta(lambda: tid not in srv.trafico and all(tid not in p.sv["trafico"] for p in ps), robots)
-        # un corte de conexión a secas: el juego lo nota, lo dice y vuelve al menú; el personaje está guardado y se puede volver
+        # un corte de conexión a secas: desde la 1.7.1 el juego lo nota, lo dice, se queda esperando con la partida tal cual
+        # y vuelve a entrar solo; los demás le ven irse y volver
+        from juego import reconexion
         banco.hacer(lambda: srv._cortar(cuenta(1)))
-        assert _hasta(lambda: robots[1].app.partida is None, robots, 20)
-        assert "Se ha perdido la conexión con el servidor" in robots[1].dicho()
+        assert _hasta(lambda: isinstance(robots[1].app.pila[-1], reconexion.Espera), robots[1:2], 20)
+        assert "Se ha cortado la conexión con el servidor" in robots[1].dicho() and robots[1].app.partida is ps[1]
         assert _hasta(lambda: all(len(gente(p)) == N - 2 for k, p in enumerate(ps) if k != 1), [r for k, r in enumerate(robots) if k != 1])
-        ps[1] = entrar(robots[1], banco, nombres[1])
+        assert _hasta(lambda: robots[1].app.pila[-1] is ps[1] and ps[1].online_activo(), robots, 30), robots[1].dicho()[-300:]
+        assert "Reconectado" in robots[1].dicho()
         assert _hasta(lambda: all(len(gente(p)) == N - 1 for p in ps), robots)
         for r in robots:
             r.saltar_dialogos()

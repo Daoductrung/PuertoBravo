@@ -8,6 +8,7 @@ Qué hay aquí:
 - servidor: el código del servidor. Solo necesita Python 3.8 o posterior; no hay que instalar nada más.
 - servidor.conf.ejemplo: todas las opciones, explicadas. Cópialo como servidor.conf y cámbialo a tu gusto.
 - arrancar.sh, parar.sh y estado.sh: para dejarlo en marcha en segundo plano, pararlo y ver cómo va.
+- reiniciar.sh: lo para avisando a los jugadores y lo vuelve a arrancar. Es lo que hay que usar tras actualizarlo.
 - puertobravo.service: para que arranque solo con el sistema, con systemd. Dentro dice cómo se instala.
 - Dockerfile, docker-compose.yml y entrada_docker.sh: para montarlo con Docker.
 
@@ -18,11 +19,29 @@ Lo más corto, con Python:
 
 En segundo plano:
 
-    sh arrancar.sh        sh estado.sh        sh parar.sh
+    sh arrancar.sh        sh estado.sh        sh parar.sh        sh reiniciar.sh
 
 Con Docker:
 
     docker compose up -d --build
 
+Actualizar el servidor sin echar a nadie al menú:
+
+Aquí el servidor no se actualiza con el juego: se sustituye la carpeta servidor por la del juego nuevo y se reinicia.
+Si lo reinicias con la orden de actualizar, en vez de cortarlo, avisa a los jugadores con una cuenta atrás, espera a
+que sus juegos guarden, lo guarda todo y se cierra diciendo por qué. Los juegos esperan y vuelven a entrar solos
+cuando arranca otra vez, y cada jugador sigue donde estaba. Cualquiera de estas maneras vale:
+
+    sh reiniciar.sh                         avisa, lo para y lo vuelve a arrancar
+    python3 -m servidor --actualizar        le pide que pare avisando; después lo arrancas tú, o systemd, o Docker
+    actualizar                              la misma orden, escrita en su consola o, con una barra delante, por un
+                                            administrador en el chat del juego. reiniciar dice que es por mantenimiento
+    un archivo parar.txt en la carpeta de datos, con la palabra actualizar dentro: el servidor lo mira cada segundo
+
+Parado así, el programa termina con el código 75. El servicio de systemd y el docker-compose.yml que vienen aquí lo
+vuelven a arrancar solos. La cuenta atrás es la opción parada_aviso, que de serie son 20 segundos. Si lo para el
+sistema (systemctl stop, docker compose down, parar.sh), avisa igual de que es un reinicio, pero sin cuenta atrás.
+
 La guía completa, paso a paso, está en documentacion.html, en la carpeta servidor del juego. Sus apartados 18 y 19
 explican lo nuevo de la versión 1.7.1: el tope de dinero y los encargos, los canales de rol y la radio de los vehículos.
+El apartado 20 explica cómo actualizar el servidor.

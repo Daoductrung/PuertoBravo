@@ -115,7 +115,8 @@ PALANCAS_AYUDA = {
               "Palanca derecha a los lados: cambiar de carril para adelantar", "Palanca derecha arriba: emisora siguiente",
               "Palanca derecha abajo: pescar en el mar, o sirena en vehículos de emergencias"],
     "menu": ["En los menús: cruceta o palanca izquierda para moverte", "A o Equis para elegir", "B o Círculo para volver",
-             "Y o Triángulo para la ayuda de la opción", "X o Cuadrado para repetir", "LB y RB, o L1 y R1, para repasar los mensajes anteriores"],
+             "Y o Triángulo para la ayuda de la opción", "X o Cuadrado para repetir", "LB y RB, o L1 y R1, para repasar los mensajes anteriores",
+             "En la pantalla de espera de un servidor: A o Equis repite cómo va, B o Círculo deja de esperar, e Y o Triángulo lo explica"],
 }
 
 

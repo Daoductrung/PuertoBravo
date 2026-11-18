@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 21
+VERSION_CACHE = 22
 PI2 = 2 * np.pi
 
 
@@ -828,6 +828,8 @@ def generar(semilla=7):
     _poner(ac, _filtro(ruido(0.22), 500, 3500) * np.sin(np.pi * ta / 0.22) ** 2, 0.0, 0.6)
     _poner(ac, (_seno(659, 0.22) + 0.3 * _seno(1318, 0.22)) * _decae(0.22, 0.07), 0.18)
     S["chat_accion"] = _norm(ac, 0.45)
+    # ----------------------------------------------- la espera a que vuelva un servidor: dos notas lentas y flojas, como una llamada que da tono
+    S["espera_servidor"] = _norm(_sec([330, 247], 0.42, 0.8, 0.38, (1, 0.3, 0.1)), 0.3)
     return S
 
 

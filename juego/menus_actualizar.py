@@ -204,10 +204,52 @@ def descargar(app, info):
     app.abrir(t)
 
 
-def _instalar(app, bat):
-    # Antes de cerrar: lo que haría fallar la instalación (otro programa del juego abierto, poco sitio en el disco, una carpeta
+def _servidores_abiertos(app):
+    """Los servidores en línea de esta carpeta que están abiertos ahora y se pueden parar y volver a arrancar solos."""
+    buscar_ = getattr(app, "act_servidores", None) or (None if app.pruebas else A.servidores_en_marcha)
+    try:
+        return list(buscar_()) if buscar_ else []
+    except Exception:
+        registro.excepcion("actualizar", "No se pudo mirar si hay un servidor en línea abierto")
+        return []
+
+
+def _confirmar_servidor(app, bat, fichas):
+    """Hay un servidor en línea abierto: se explica lo que va a pasar y se pide permiso antes de tocarlo."""
+    que = A.texto_servidores(fichas)
+    servicio = any(f.get("servicio") for f in fichas)
+    explica = ("Se avisa a los jugadores que haya dentro, con la cuenta atrás que tengas puesta en el servidor, que de serie son 20 segundos, y sus juegos se quedan esperando. "
+               "El servidor lo guarda todo y se cierra, el juego se actualiza y, al terminar, el servidor vuelve a arrancar solo, igual que estaba, "
+               "y los jugadores vuelven a entrar solos y siguen donde estaban. Si la actualización fallara, el servidor se vuelve a arrancar igualmente, con la versión que tenías. "
+               "Todo queda apuntado en el archivo actualizacion punto log de la carpeta de registros."
+               + (" Ojo: parece que este servidor lo arranca un servicio o una tarea programada de Windows. Se le puede pedir que se cierre, pero desde aquí no se puede "
+                  "volver a arrancar igual: tendrás que arrancarlo como lo tengas montado, si no vuelve solo." if servicio else ""))
+
+    app.act_lista = (bat, getattr(app, "act_version", "") or "nueva")      # si sale con Escape, la descarga sigue ahí para luego
+
+    def si():
+        app.cerrar(m)
+        app.act_lista = None
+        _instalar(app, bat, confirmado=True)
+
+    def no():
+        app.cerrar(m)
+        app.act_lista = (bat, getattr(app, "act_version", "") or "nueva")
+        app.decir("No se toca nada. La versión queda descargada: se instala cuando quieras desde Opciones, Actualizaciones, Instalar la versión descargada.", True)
+    m = Menu(app, f"Tienes abierto {que}. Para actualizar hay que pararlo un momento", [
+        Opcion("Actualizar ahora: avisar a los jugadores, parar el servidor y volver a arrancarlo al terminar", si, ayuda=explica),
+        Opcion("Ahora no", no, ayuda="No se para el servidor ni se instala nada. La descarga no se pierde.")],
+        intro="F1 explica lo que va a pasar")
+    app.son("evento")
+    app.abrir(m)
+
+
+def _instalar(app, bat, confirmado=False):
+    # Antes de cerrar: lo que haría fallar la instalación (el editor de mods abierto, poco sitio en el disco, una carpeta
     # en la que no se puede escribir). Si hay algo, se dice, la descarga se guarda y se instala cuando esté arreglado.
-    comprobar = getattr(app, "act_comprobar", None) or (None if app.pruebas else A.problemas_para_instalar)
+    # Un servidor en línea abierto no impide actualizar: se pide permiso, se para con orden y se vuelve a arrancar al terminar.
+    fichas = _servidores_abiertos(app)
+    comprobar = getattr(app, "act_comprobar", None) or (None if app.pruebas else (lambda nueva: A.problemas_para_instalar(nueva, servidores=fichas)))
     try:
         problemas = comprobar(os.path.join(os.path.dirname(bat), "nueva")) if comprobar else []
     except Exception:
@@ -220,6 +262,20 @@ def _instalar(app, bat):
         app.decir("Todavía no se puede instalar. " + " ".join(problemas) + " Cuando esté arreglado, entra en Opciones, Actualizaciones, "
                   "Instalar la versión descargada. La descarga no se pierde.", True)
         return
+    if fichas and not confirmado:
+        return _confirmar_servidor(app, bat, fichas)
+    if fichas:
+        try:
+            parar = getattr(app, "act_parar_servidores", None) or A.pedir_parada_servidores
+            parar(fichas)
+            registro.info("actualizar", "Se pide a los servidores en línea abiertos que se cierren para actualizar", cuantos=len(fichas),
+                          tipos=",".join(f["tipo"] for f in fichas))
+        except A.ErrorActualizacion as e:
+            app.act_lista = (bat, getattr(app, "act_version", "") or "nueva")
+            registro.aviso("actualizar", "No se pudo pedir al servidor en línea que se cierre", motivo=str(e))
+            app.son("error")
+            app.decir(str(e) + " La descarga no se pierde.", True)
+            return
     if True:
         p = app.partida
         if p is not None and not p.mision:
@@ -228,8 +284,18 @@ def _instalar(app, bat):
                 menus_juego.escribir_ranura(p, "auto")
             except Exception:
                 pass
+        amigos = False
+        try:                                                     # con la partida abierta a los amigos: que sepan por qué se cierra
+            if p is not None and p.es_anfitrion() and p.online_activo() and p.remotos:
+                amigos = True
+                p.red.enviar({"t": "chat", "texto": "Cierro la partida unos minutos para actualizar el juego. Cuando vuelva a abrirla, entrad otra vez."})
+        except Exception:
+            pass
         app.son("guardado")
-        app.decir("Todo listo. El juego se cierra, se actualiza y vuelve a abrirse solo en unos segundos.", True)
+        app.decir("Todo listo. " + ("La partida que tienes abierta a tus amigos se cierra, y se lo he dicho: ábrela otra vez cuando vuelvas. " if amigos else "")
+                  + ("El servidor en línea avisa a los jugadores y se cierra. " if fichas else "")
+                  + "El juego se cierra, se actualiza y vuelve a abrirse solo en " + ("un minuto más o menos" if fichas else "unos segundos")
+                  + (", y el servidor vuelve a arrancar con él." if fichas else "."), True)
         try:
             from . import vozgen
             vozgen.parar_prueba()                                # el proceso que prueba el motor de voz es el propio programa: no puede quedarse abierto
@@ -302,16 +368,25 @@ def al_arrancar(app):
     if A.ARG_TRAS_ACTUALIZAR in sys.argv:
         A.limpiar()
         registro.info("actualizar", "Primera sesión tras actualizar", version=VERSION)
-        app.decir(f"Juego actualizado a la versión {VERSION}. Las novedades están en el manual.")
+        servidores = A.texto_relanzados(A.leer_registro_instalador())
+        app.decir(f"Juego actualizado a la versión {VERSION}. Las novedades están en el manual." + (" " + servidores if servidores else ""))
     elif "--actualizacion-fallida" in sys.argv:
         A.limpiar()
         motivo = A.motivo_del_fallo()
         registro.aviso("actualizar", "La actualización anterior falló y se restauró la versión que había", dicho=motivo, **{k: v for k, v in A.leer_registro_instalador().items() if v and k != "existe"})
         app.act_fallo = motivo
         app.son("error")
+        servidores = A.texto_relanzados(A.leer_registro_instalador())
         app.decir(f"La actualización no se pudo instalar y se ha dejado la versión que tenías, la {VERSION}. {motivo} "
-                  "Lo tienes otra vez en Opciones, Actualizaciones, y el detalle está en la carpeta de registros, en el archivo actualizacion punto log.")
+                  "Lo tienes otra vez en Opciones, Actualizaciones, y el detalle está en la carpeta de registros, en el archivo actualizacion punto log."
+                  + (" " + servidores if servidores else ""))
     app.act_aviso = None
+    if not app.pruebas:
+        # Si el juego se actualizó porque un servidor pedía una versión más nueva, se ofrece volver a ese servidor.
+        from . import reconexion
+        nota = reconexion.leer_vuelta()
+        if nota and A.ARG_TRAS_ACTUALIZAR in sys.argv:
+            reconexion.ofrecer_vuelta(app, nota)
     if app.pruebas or not app.cfg["act_auto"]:
         return
 

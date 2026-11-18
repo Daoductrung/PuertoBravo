@@ -12,8 +12,8 @@ import os
 import threading
 import time
 
-from servidor import copias, opciones
-from servidor.nucleo import Servidor
+from servidor import copias, enmarcha, opciones
+from servidor.nucleo import ARCHIVO_ORDEN, Servidor
 
 PARADO, ARRANCANDO, EN_MARCHA, PARANDO = "parado", "arrancando", "en_marcha", "parando"
 TEXTO_ESTADO = {PARADO: "Parado", ARRANCANDO: "Arrancando", EN_MARCHA: "En marcha", PARANDO: "Parando"}
@@ -36,6 +36,33 @@ class Motor:
         self._parado = threading.Event()
         self._parado.set()
         self.ultimo_error = ""
+        self.causa_parada = None                 # por qué se paró la última vez: «apagado», «actualizacion» o «reinicio»
+
+    # ------------------------------------------------- la ficha y las órdenes de fuera
+    def anotar(self):
+        """Deja (o pone al día) la ficha de «programa en marcha»: con ella, la actualización del juego sabe que el panel
+        está abierto, si su servidor estaba en marcha, y cómo volver a abrirlo igual. Solo en el juego compilado."""
+        try:
+            return enmarcha.anotar("panel", self.carpeta_datos(), conf=self.ruta_conf, activo=self.estado in (ARRANCANDO, EN_MARCHA))
+        except Exception:
+            return None
+
+    def orden_pendiente(self):
+        """Con el servidor parado, nadie mira el archivo de órdenes de la carpeta de datos: lo mira el panel. Devuelve
+        «actualizar» si alguien ha pedido que el panel se cierre para actualizar el juego; cualquier otra orden se borra
+        sin más, porque no hay nada que parar."""
+        if self.estado != PARADO:
+            return ""
+        try:
+            ruta = os.path.join(self.carpeta_datos(), ARCHIVO_ORDEN)
+            if not os.path.exists(ruta):
+                return ""
+            with open(ruta, encoding="utf-8", errors="replace") as f:
+                palabra = (f.read(200).split() or ["parar"])[0].lower()
+            os.remove(ruta)
+        except Exception:
+            return ""
+        return "actualizar" if palabra in ("actualizar", "actualizacion") else ""
 
     # ----------------------------------------------------------- configuración
     def leer_config(self):
@@ -89,6 +116,7 @@ class Motor:
         with self._candado:
             if self.estado != PARADO:
                 return False
+            self.causa_parada = None
             self._poner_estado(ARRANCANDO)
         cfg, avisos = self.leer_config()
         self.hilo = threading.Thread(target=self._correr, args=(cfg, avisos), name="servidor", daemon=True)
@@ -160,20 +188,22 @@ class Motor:
             except Exception:
                 pass
             loop.close()
+            self.causa_parada = getattr(srv, "causa_parada", None)
             self.srv, self.loop, self.foto = None, None, None
             self._linea("Servidor parado. Todo guardado.")
             self._poner_estado(PARADO)
 
     # ------------------------------------------------------------------- parar
-    def parar(self, motivo="Quien administra el servidor lo ha parado."):
-        """Para el servidor con orden: avisa a los jugadores y lo guarda todo. Vuelve enseguida."""
+    def parar(self, motivo="Quien administra el servidor lo ha parado.", causa="apagado"):
+        """Para el servidor con orden: avisa a los jugadores y lo guarda todo. Vuelve enseguida. Con ``causa`` «reinicio»,
+        los juegos esperan y vuelven a entrar solos cuando el servidor arranque otra vez."""
         with self._candado:
             if self.estado != EN_MARCHA or self.loop is None:
                 return False
             self._poner_estado(PARANDO)
         srv, loop = self.srv, self.loop
         try:
-            loop.call_soon_threadsafe(lambda: loop.create_task(srv.detener(motivo)))
+            loop.call_soon_threadsafe(lambda: loop.create_task(srv.detener(motivo if causa == "apagado" else None, causa=causa)))
         except RuntimeError:
             return False
         return True

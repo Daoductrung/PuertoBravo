@@ -601,6 +601,15 @@ def opciones(app):
         Opcion("Teclado: cambiar las teclas", lambda: opciones_teclado(app),
                ayuda="Elige con qué tecla se hace cada cosa mientras juegas. Sirve si tu teclado es distinto, si juegas con una mano o si alguna tecla choca con tu lector de pantalla."),
         Opcion("Mando", mando, ayuda="Mandos de Xbox y PlayStation: ver qué hace cada botón, reasignarlos y activar la vibración."),
+        seccion("Jugar en línea", [
+            si_no("reconectar", "En un servidor, esperar y volver a entrar solo si se corta o se reinicia",
+                  "Con sí, cuando el servidor en el que juegas se reinicia para actualizarse, o se corta la conexión, el juego no te devuelve al menú: se queda esperando, "
+                  "con tu partida tal cual, prueba a entrar cada pocos segundos y, cuando el servidor vuelve, sigues donde estabas: mismo sitio, mismo vehículo, "
+                  "misma salud, mismas armas y misma misión. Entra con tu identidad de siempre, sin pedirte nada. Escape deja de esperar. "
+                  "Con no, como antes: vuelves al menú principal y entras tú a mano."),
+            numero("reconectar_minutos", "Minutos que se espera como mucho a que vuelva el servidor", 1, 120, 1,
+                   "De 1 a 120. Pasado ese tiempo sin que el servidor vuelva, el juego deja de intentarlo, lo dice y sale al menú principal. De serie, 10."),
+        ], "Qué hace el juego cuando el servidor en el que juegas se reinicia o se corta la conexión."),
         seccion("Voz", [
             si_no("voz_sapi", "Usar la voz de Windows en lugar del lector de pantalla", al_cambiar=lambda: app.voz.cambiar(cfg["voz_sapi"])),
             numero("voz_velocidad", "Velocidad de la voz de Windows", -10, 10, 1, "De menos diez a diez. Solo afecta a la voz de Windows; si usas un lector de pantalla, la velocidad se cambia en el lector."),

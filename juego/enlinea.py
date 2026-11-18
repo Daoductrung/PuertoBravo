@@ -30,7 +30,9 @@ PUERTO = 47820
 MAX_LINEA = 700 * 1024
 # Lo nuevo que este juego entiende, dicho al saludar: un servidor anterior no lo mira, y uno nuevo le habla a cada juego
 # según lo que sabe. Lo que sabe hacer el servidor viene de vuelta en «funciones».
-SABE = ("rol", "radio", "pasajeros", "mis_vehiculos", "topes", "encargos")
+SABE = ("rol", "radio", "pasajeros", "mis_vehiculos", "topes", "encargos",
+        # sabe esperar a un servidor que se reinicia y volver a entrar solo: el servidor le avisa con cifras, no con un texto
+        "reconexion")
 CANALES_ROL = {"ic": ("en personaje", "chat_personaje"), "ooc": ("fuera de personaje", "chat_fuera"), "yo": ("acción", "chat_accion")}
 ORDENES_ROL = {"yo": "yo", "me": "yo", "ep": "ic", "ic": "ic", "fp": "ooc", "ooc": "ooc"}
 MAX_FICHA = 200
@@ -213,6 +215,19 @@ def firma_del_mundo(huella):
 
 
 # -------------------------------------------------------------------- conexión
+class Motivo(str):
+    """Por qué no se ha podido entrar en un servidor: el texto que se le dice al jugador y, además, una palabra que el
+    juego entiende sin leerlo. «red»: no contesta. «reiniciando», «lleno», «version»: lo dice el propio servidor.
+    «certificado»: no presenta el de la otra vez. Vacío: cualquier otro rechazo."""
+    codigo = ""
+    minima = ""
+
+    def __new__(cls, texto, codigo="", minima=""):
+        m = super().__new__(cls, texto)
+        m.codigo, m.minima = str(codigo or ""), str(minima or "")
+        return m
+
+
 class _Lineas:
     def __init__(self, sock):
         self.sock = sock
@@ -289,15 +304,15 @@ class ClienteServidor(red.Cliente):
                 s, fp = self._abrir(host, puerto, timeout, tls)
             except (OSError, ValueError) as e:
                 if isinstance(e, (socket.gaierror, ConnectionRefusedError)) or ultimo:
-                    return False, ("No se pudo conectar con el servidor. Comprueba la dirección y que el servidor esté encendido. " + red.AVISO_FILTROS)
+                    return False, Motivo("No se pudo conectar con el servidor. Comprueba la dirección y que el servidor esté encendido. " + red.AVISO_FILTROS, "red")
                 continue                         # el servidor no cifra, o se ha cortado: se prueba de la otra forma
             except Exception:
                 if ultimo:
-                    return False, "No se pudo conectar con el servidor."
+                    return False, Motivo("No se pudo conectar con el servidor.", "red")
                 continue
             if tls and huella_cert and fp != huella_cert:
                 s.close()
-                return False, "certificado: " + fp
+                return False, Motivo("certificado: " + fp, "certificado")
             self.cifrado, self.huella_cert = tls, fp
             try:
                 s.settimeout(timeout if intento >= 2 else min(timeout, 5))
@@ -311,8 +326,8 @@ class ClienteServidor(red.Cliente):
                 r = self._respuesta(lineas, ("reto", "rechazo", "ok"), tope=3)
                 if not tls and huella_cert and r and r.get("t") in ("reto", "rechazo", "ok"):
                     s.close()
-                    return False, ("Este servidor cifraba la conexión y ahora no lo hace. Por seguridad no entro. "
-                                   "Si lo ha cambiado quien lo lleva, bórralo de tu lista y añádelo otra vez.")
+                    return False, Motivo("Este servidor cifraba la conexión y ahora no lo hace. Por seguridad no entro. "
+                                         "Si lo ha cambiado quien lo lleva, bórralo de tu lista y añádelo otra vez.", "certificado")
                 if r and r.get("t") == "reto":
                     try:
                         minimo = int(r.get("vmin") or 0)
@@ -320,7 +335,7 @@ class ClienteServidor(red.Cliente):
                         minimo = 0
                     if minimo > VERSION_RED:                     # el servidor ya no habla con juegos como este
                         s.close()
-                        return False, "Este servidor necesita una versión más nueva del juego. Actualiza el juego para entrar."
+                        return False, Motivo("Este servidor necesita una versión más nueva del juego. Actualiza el juego para entrar.", "version")
                     s.settimeout(timeout)
                     f = ed25519.firmar(semilla, ("puertobravo-entrada|" + str(r.get("n", ""))).encode("ascii"))
                     red._enviar(s, self.lock, {"t": "firma", "f": binascii.hexlify(f).decode("ascii")})
@@ -344,10 +359,11 @@ class ClienteServidor(red.Cliente):
                     return False, "El servidor no ha aceptado los datos de tu versión del juego, o ha cortado la conexión al recibirlos. Prueba otra vez dentro de un momento."
                 if not ultimo:
                     continue
-                return False, "Lo que hay en esa dirección no es un servidor de Puerto Bravo, o no contesta. " + red.AVISO_FILTROS
+                return False, Motivo("Lo que hay en esa dirección no es un servidor de Puerto Bravo, o no contesta. " + red.AVISO_FILTROS, "red")
             if r["t"] == "rechazo":
                 s.close()
-                return False, str(r.get("motivo", "El servidor no te deja entrar."))
+                return False, Motivo(str(r.get("motivo", "El servidor no te deja entrar.")), r.get("codigo") if isinstance(r.get("codigo"), str) else "",
+                                     r.get("minima") if isinstance(r.get("minima"), str) else "")
             s.settimeout(None)
             self.sock, self.conectado, self.id, self.nombre = s, True, r.get("id"), r.get("nombre", nombre)
             self.host, self.puerto = host, puerto
@@ -357,7 +373,7 @@ class ClienteServidor(red.Cliente):
                 self.protocolo = VERSION_RED
             threading.Thread(target=self._leer, args=(lineas,), daemon=True).start()
             return True, r
-        return False, aviso or "No se pudo conectar con el servidor."
+        return False, Motivo(aviso or "No se pudo conectar con el servidor.", "red")
 
 
 class Enlace:
@@ -399,11 +415,20 @@ class EnLinea:
     """Mixin de Partida: lo que cambia cuando la partida es de un servidor."""
 
     en_servidor = False
+    sv_espera = None                 # mientras se espera a que vuelva el servidor: por qué se fue y lo que habrá que recomponer
+    _sv_servidor = None              # el servidor de la lista en el que se está, para volver a entrar solo
 
-    def sv_entrar(self, enlace):
+    def sv_entrar(self, enlace, vuelta=False):
+        """Entra en la partida de un servidor. Con ``vuelta``, es una reconexión tras un corte o un reinicio del servidor:
+        la partida que hay en memoria sigue tal cual, y es ella la que se manda al servidor, no al revés. Devuelve
+        entonces lo que hay que decirle al jugador."""
         ok = enlace.ok
+        antes = self.sv if vuelta else {}
+        espera = getattr(self, "sv_espera", None) or {}
+        self.sv_espera = None
         self.red = enlace.cli
         self.en_servidor = True
+        self._sv_servidor = enlace.servidor              # el de la lista: para volver a entrar solo si se corta
         self.sv = {"info": ok.get("servidor") or {}, "admin": bool(ok.get("admin")), "pasivo": False, "banda": ok.get("banda"), "rango": None,
                    "territorios": ok.get("territorios") or {"barrios": [], "guerras": []}, "grupo": None, "miembros": [], "vehs": {},
                    "recompensa": int(ok.get("recompensa") or 0), "agresor": None, "t_agresor": -999.0, "t_guardar": 20.0, "inv_banda": None,
@@ -418,11 +443,15 @@ class EnLinea:
                    # lo de la 1.7.1; con un servidor anterior, todo esto se queda vacío y el juego lo dice cuando hace falta
                    "ficha": str(ok.get("ficha") or "")[:MAX_FICHA], "fichas": {}, "historial": [], "pasajeros": set(), "radio_ajena": None,
                    "economia": (ok.get("servidor") or {}).get("economia") if isinstance((ok.get("servidor") or {}).get("economia"), dict) else None,
-                   "veh_pend": {}, "dinero_visto": None, "t_gasto": None}
+                   "veh_pend": {}, "dinero_visto": None, "t_gasto": None, "t_guardado_real": None, "reenganche": None, "regrupo": None}
+        for clave in ("historial", "radio_ajena_dicha"):                     # al volver, lo dicho por los canales de rol sigue ahí
+            if clave in antes:
+                self.sv[clave] = antes[clave]
         if self.sv["info"].get("policia") and self.cfg["sin_policia"]:      # aquí la policía es de todos: la asistencia no vale
             self._sv_sin_policia = True
             self.cfg.v["sin_policia"] = False
-        self.j.puntos_busqueda, self.j.estrellas = 0.0, 0                    # si te buscaban al salir, el servidor te lo dirá
+        if not vuelta:
+            self.j.puntos_busqueda, self.j.estrellas = 0.0, 0                # si te buscaban al salir, el servidor te lo dirá
         if self.sv["banda"]:
             yo = next((m for m in self.sv["banda"]["miembros"] if m["cuenta"] == ok.get("cuenta")), None)
             self.sv["rango"] = yo["rango"] if yo else None
@@ -448,12 +477,16 @@ class EnLinea:
             self.cfg.temporales["adultos"] = True
             self.cfg.v["adultos"] = False            # solo mientras dura la sesión: no se guarda
             self.app.aplicar_adultos()
+        elif vuelta and getattr(self, "_sv_adultos", False):
+            self.cfg.temporales["adultos"] = True    # ya estaba quitado desde antes del corte: sigue sin guardarse
         for v in ok.get("vehiculos", []):
             self.sv["vehs"][v["id"]] = v
         # Los vehículos de la calle que el servidor reconoce como tuyos. Un servidor anterior no lo dice: entonces solo se
         # sabe de los que dejes en esta sesión.
         self.sv["mios"] = {i for i in (ok.get("mis_vehiculos") or []) if isinstance(i, int)}
         self.mis_al_servidor()
+        if vuelta:
+            self._sv_vehiculos_de_vuelta()
         self.sv_poner_vehiculos()
         self.sv_al_dia(int(ok.get("dias_fuera") or 0))
         for cosa in ok.get("pendientes", []):                    # lo que pasó con tus propiedades mientras no estabas
@@ -466,8 +499,10 @@ class EnLinea:
                 nombre = l.nombre if l is not None else "una propiedad"
                 self.decir(f"{cosa.get('por', 'Alguien')} te ha comprado {nombre} por {n} euros." if cosa["que"] == "venta" else
                            f"Llevabas tanto sin entrar que {nombre} ha vuelto al mercado. Te quedan {n} euros de su valor.")
-        if ok.get("saldo") is not None:                          # el dinero lo lleva el servidor: manda lo que él tiene apuntado
+        if ok.get("saldo") is not None and not vuelta:           # el dinero lo lleva el servidor: manda lo que él tiene apuntado
             self._sv_ajustar_saldo(self.j.dinero + self.j.banco - int(ok["saldo"]), callar=True)
+        # Al volver no se corta aquí: tu juego manda lo que tiene y el servidor lo juzga con sus reglas de siempre (lo que
+        # te dio él, tu margen por hora), como cualquier dinero que aparece. Lo que no reconozca, lo retira y lo dice.
         self._sv_cuadrar_propiedades()
         self._sv_descontar_robos(int(ok.get("robos") or 0))
         for cosa in ok.get("pendientes", []):
@@ -480,6 +515,8 @@ class EnLinea:
         info = self.sv["info"]
         quienes = ", ".join(x.nombre for x in self.remotos.values())
         self.son("amigo_entra", cat="interfaz")
+        if vuelta:
+            return self._sv_de_vuelta(espera, quienes)
         self.decir(f"Estás en {self.sv['nombre_servidor']} como {self.red.nombre}. " + (str(info.get("bienvenida", "")) + " " if info.get("bienvenida") else "")
                    + (f"Están: {quienes}. " if quienes else "De momento no hay nadie más. ")
                    + ("La conexión va cifrada. " if self.sv["cifrado"] else "Este servidor no cifra la conexión. ")
@@ -487,6 +524,166 @@ class EnLinea:
                    + self.sv_aviso_version()
                    + "Abre el móvil con M y entra en En línea para verlo todo.")
         self.sv_guardar()
+
+    # ------------------------------------------------- cuando el servidor se va y vuelve
+    def sv_guardado_txt(self):
+        """Cómo está tu personaje en el servidor, dicho al dejar de esperarle."""
+        e = getattr(self, "sv_espera", None) or {}
+        if e.get("avisado"):
+            return "Tu personaje quedó guardado en el servidor justo antes de que se cerrara."
+        seg = e.get("sin_guardar")
+        if seg is None:
+            return "Tu personaje está guardado en el servidor como estaba en su último guardado."
+        from .reconexion import tiempo_txt
+        return f"Tu personaje está guardado en el servidor como estaba {tiempo_txt(seg)} antes del corte: lo que hicieras después no se ha guardado."
+
+    def sv_cortado(self, causa, motivo="", vuelve=0):
+        """El servidor se ha ido: se cierra para actualizarse o reiniciarse («actualizacion», «reinicio»), se ha cerrado sin
+        decir por qué («cierre», un servidor anterior) o la conexión se ha cortado («corte»). La partida no se deja: se
+        queda como está, con el mundo parado, y se abre la pantalla de espera, que vuelve a entrar sola. True si se espera."""
+        if not self.en_servidor or getattr(self, "sv_espera", None) is not None:
+            return False
+        if not self.cfg["reconectar"] or getattr(self, "_sv_servidor", None) is None:
+            return False
+        avisado = False
+        if self.red is not None and self.red.conectado:          # aún hay línea: el servidor espera este último guardado
+            avisado = self.sv_guardar(ya=True)
+            time.sleep(0.15)
+        guardado = self.sv.get("t_guardado_real")
+        self.sv_espera = {"causa": causa, "avisado": bool(avisado), "sin_guardar": None if guardado is None or avisado else max(0.0, time.time() - guardado),
+                          "grupo": None, "pasajero": None}
+        if self.sv.get("grupo") is not None:                     # el grupo de misión: se intentará rehacer al volver, por los nombres
+            yo = getattr(self.red, "id", None)
+            miembros = [q for q in self.sv.get("miembros") or [] if isinstance(q, dict)]
+            lider = next((str(q.get("nombre", "")) for q in miembros if q.get("id") == self.sv["grupo"]), "")
+            self.sv_espera["grupo"] = {"lidero": self.sv["grupo"] == yo, "lider": lider,
+                                       "otros": [str(q.get("nombre", "")) for q in miembros if q.get("id") != yo]}
+        if self.pasajero is not None:                            # ibas en el vehículo de otro: te quedas a pie donde estabais
+            r = self.remotos.get(self.pasajero)
+            self.sv_espera["pasajero"] = r.nombre if r is not None else "otro jugador"
+            self.pasajero = None
+            self.j.x, self.j.y = self.mundo.punto_libre(self.j.x + 2, self.j.y + 2)
+        self._sv_limpiar_mundo()
+        for r in self.remotos.values():
+            r.id = None              # un menú que se quedara abierto con este jugador elegido ya no puede mandar nada a nadie
+        self.desconectar_online()
+        registro.aviso("red", "El servidor se ha ido: se espera a que vuelva", causa=causa)
+        from . import reconexion
+        self.app.abrir(reconexion.Espera(self.app, self, causa, motivo, vuelve))
+        return True
+
+    def _sv_vehiculos_de_vuelta(self):
+        """Al volver al servidor: de las copias de vehículos aparcados que había en tu calle, se quitan las que el
+        servidor ya no tiene. El que conduces no se toca: se vuelve a enganchar aparte."""
+        mio = self.j.veh
+        for v in list(self.vehiculos):
+            ident = getattr(v, "id_red", None)
+            if ident is None or v is mio or v.muerto:
+                continue
+            d = self.sv["vehs"].get(ident)
+            if d is None or d.get("por") is not None or d.get("m") != self.mundo.id:
+                v.red_mio = v.red_dueno = False
+                self.quitar_vehiculo(v)
+        if mio is not None and not getattr(mio, "tag", None):
+            # El vehículo en el que ibas. Para el servidor quedó aparcado al cerrarse: se le pide otra vez, por su número,
+            # cuando ya sepa dónde estás. Si no lo tenía apuntado todavía, se da de alta como la primera vez.
+            if getattr(mio, "id_red", None) is not None:
+                self.sv["reenganche"] = {"id": mio.id_red, "pedido": False}
+            else:
+                mio.red_ref = None
+                self.sv["reenganche"] = {"id": None, "pedido": False}
+
+    def _sv_reenganche_paso(self):
+        """Tras volver, y con tu posición ya enviada: pide al servidor el vehículo en el que ibas."""
+        re = self.sv.get("reenganche")
+        if not re:
+            return
+        if re["pedido"]:
+            if time.time() - re.get("t", 0) > 8:                 # el servidor no ha dicho ni que sí ni que no: no se espera más
+                self.sv["reenganche"] = None
+            return
+        re["pedido"], re["t"] = True, time.time()
+        v = self.j.veh
+        if v is None:
+            self.sv["reenganche"] = None
+        elif re["id"] is None:
+            self.sv["reenganche"] = None
+            v.id_red, v.red_mio = None, False
+            self.sv_subido(v)
+        else:
+            self.red.enviar({"t": "veh_subir", "id": re["id"]})
+
+    def _sv_reenganche_no(self, m):
+        """El servidor no devuelve el vehículo en el que ibas. Si ya no lo tiene, o lo tiene apuntado lejos (se cayó sin
+        guardar lo último), se da de alta otra vez; si se lo ha llevado otro mientras tanto, te quedas a pie."""
+        self.sv["reenganche"] = None
+        v = self.j.veh
+        if v is None:
+            return
+        por = m.get("por")
+        if not por:                                              # un servidor anterior solo lo dice con palabras
+            texto = str(m.get("motivo") or "").lower()
+            por = "ocupado" if "adelantado" in texto else ("lejos" if "lejos" in texto else "no_esta")
+        if por == "ocupado":
+            v.red_mio = v.red_dueno = False
+            self.salir_vehiculo(forzado=True)
+            v.red_dueno = False
+            self.quitar_vehiculo(v)
+            self.son("puerta_coche")
+            self.decir("Mientras el servidor volvía, otro jugador se ha llevado el vehículo en el que ibas: te quedas a pie.", True)
+            return
+        if por == "lejos":
+            self.red.enviar({"t": "veh_fin", "id": v.id_red})    # el que el servidor tenía apuntado en otro sitio, fuera: es este
+        v.id_red, v.red_mio, v.red_ref = None, False, None
+        self.sv_subido(v)
+
+    def _sv_de_vuelta(self, espera, quienes):
+        """Lo que se hace y se dice nada más volver: mandar tu personaje tal como está, y contar lo que haya cambiado."""
+        self.t_red = 1.0                                         # tu posición, ya: el servidor te pone donde estás
+        self._aspecto_enviado = None                             # y cómo vas vestido, otra vez: el servidor no se acuerda
+        self.sv["t_guardar"] = 0.4                               # y enseguida tu personaje, tal como está
+        partes = [f"Reconectado a {self.sv['nombre_servidor']}. Sigues donde estabas"
+                  + (f", al volante de tu {self.j.veh.nombre}" if self.j.veh is not None else "") + "."]
+        if espera.get("pasajero"):
+            partes.append(f"Ibas de pasajero con {espera['pasajero']}: te has quedado a pie donde estabais.")
+        g = espera.get("grupo")
+        if g and g.get("otros"):
+            self.sv["regrupo"] = dict(g, hasta=self.t + 180.0, invitados=set())
+            partes.append("Ibas en un grupo de misión: " + ("lo rehago yo en cuanto vuelvan los demás." if g["lidero"]
+                          else f"vuelves a él en cuanto {g['lider'] or 'quien lo llevaba'} entre y lo rehaga."))
+        if self.sv["info"].get("policia") and (self.j.estrellas or self.j.puntos_busqueda):
+            partes.append("Tu nivel de búsqueda es el que diga ahora la policía del servidor.")
+        aviso = self.sv_aviso_version()
+        if aviso:
+            partes.append(aviso.strip())
+        if quienes:
+            partes.append(f"Están: {quienes}.")
+        registro.info("red", "De vuelta en el servidor con la partida que había en memoria")
+        return " ".join(partes)
+
+    def _sv_regrupo_paso(self):
+        """Rehacer el grupo de misión tras volver: quien lo llevaba invita otra vez, por su nombre, a quienes iban con él
+        según van entrando; los demás aceptan solos. Si en tres minutos no se ha podido, se dice quién falta."""
+        g = self.sv.get("regrupo")
+        if not g:
+            return
+        presentes = {q.get("nombre") for q in self.sv.get("miembros") or [] if isinstance(q, dict)} if self.sv.get("grupo") is not None else set()
+        faltan = [n for n in g["otros"] if n not in presentes]
+        if not faltan:
+            self.sv["regrupo"] = None
+            self.decir("El grupo de misión está otra vez completo.")
+            return
+        if self.t >= g["hasta"]:
+            self.sv["regrupo"] = None
+            lista = faltan[0] if len(faltan) == 1 else ", ".join(faltan[:-1]) + " y " + faltan[-1]
+            self.decir(f"No se ha podido rehacer del todo el grupo de misión: {lista} no {'ha' if len(faltan) == 1 else 'han'} vuelto al servidor a tiempo. "
+                       "Cuando entre, se le invita otra vez desde el móvil, En línea, Quién hay.")
+            return
+        if g["lidero"]:
+            for r in self.remotos.values():
+                if r.nombre in faltan and r.nombre not in g["invitados"] and r.id is not None:
+                    g["invitados"].add(r.nombre)
+                    self.red.enviar({"t": "grupo_invitar", "a": r.id, "mision": self.mision["def"]["titulo"] if self.mision else ""})
 
     def sv_aviso_version(self):
         """Lo que hay que saber cuando el servidor trabaja con los datos de otra versión del juego que la tuya.
@@ -532,6 +729,16 @@ class EnLinea:
             self.cfg.v["adultos"] = True
             self.app.aplicar_adultos()
         self.cfg.temporales = {}
+        self.sv_espera = None
+        self._sv_limpiar_mundo()
+        self.desconectar_online(motivo)
+        if al_menu:
+            texto = motivo or "Has salido del servidor."
+            self.app.volver_al_menu()
+            self.app.decir(texto, True)
+
+    def _sv_limpiar_mundo(self):
+        """Quita de tu mundo lo que ponía el servidor: sus agentes, su tráfico, su gente, los ecos del grupo y la radio ajena."""
         for p in list(self.sv.get("agentes", {}).values()):
             if p in self.personas:
                 self.personas.remove(p)
@@ -555,11 +762,7 @@ class EnLinea:
             if p in self.personas:
                 self.personas.remove(p)
         self.sv["peatones"] = {}
-        self.desconectar_online(motivo)
-        if al_menu:
-            texto = motivo or "Has salido del servidor."
-            self.app.volver_al_menu()
-            self.app.decir(texto, True)
+        self.sv["ecos"] = {}
 
     def sv_guardar(self, ya=False):
         if self.en_servidor and self.red is not None and self.red.conectado:
@@ -570,6 +773,7 @@ class EnLinea:
             self.sv["t_guardar"] = 45.0
             self.sv["t_gasto"] = None
             self.sv["dinero_visto"] = int(self.j.dinero + self.j.banco)
+            self.sv["t_guardado_real"] = time.time()
             return True
         return False
 
@@ -689,6 +893,10 @@ class EnLinea:
         if not self.en_servidor:
             return
         sv = self.sv
+        if sv.get("reenganche"):
+            self._sv_reenganche_paso()
+        if sv.get("regrupo"):
+            self._sv_regrupo_paso()
         sv["t_guardar"] -= dt
         if sv["t_guardar"] <= 0 and not self.transicion:
             self.sv_guardar()
@@ -1411,11 +1619,35 @@ class EnLinea:
     def _svm_expulsado(self, m):
         self.sv_salir(str(m.get("motivo") or "Te han sacado del servidor."), al_menu=True)
 
+    def _svm_parada(self, m):
+        """El servidor avisa de que se va a reiniciar, con su cuenta atrás."""
+        try:
+            en = max(0, int(m.get("en") or 0))
+        except (TypeError, ValueError):
+            en = 0
+        que = "para actualizarse" if m.get("causa") == "actualizacion" else "por mantenimiento"
+        self.son("notificacion", cat="interfaz", vol=0.7)
+        if not self.sv.get("parada_dicha"):
+            self.sv["parada_dicha"] = True
+            vuelta = ("No tienes que hacer nada: tu personaje se guarda solo y, en cuanto el servidor vuelva, te reconecto y sigues donde estabas."
+                      if self.cfg["reconectar"] else "Tu personaje se guarda solo. Cuando el servidor vuelva, entra otra vez desde Jugar en un servidor.")
+            self.decir(f"Aviso del servidor: dentro de {en} segundos se reinicia {que}. {vuelta}", True)
+        else:
+            self.decir(f"El servidor se reinicia dentro de {en} segundos.")
+
     def _svm_cerrado(self, m):
-        self.sv_salir(str(m.get("motivo") or "El servidor se ha cerrado.") + " Tu personaje está guardado.", al_menu=True)
+        # Un servidor nuevo dice por qué se cierra: si es para actualizarse o por mantenimiento, se le espera; si lo han
+        # apagado, no. Uno anterior no lo dice: no se sabe si va a volver, así que se le espera igual, por si acaso.
+        causa = m.get("causa")
+        motivo = str(m.get("motivo") or "El servidor se ha cerrado.")
+        if causa != "apagado" and self.sv_cortado(causa if causa in ("actualizacion", "reinicio") else "cierre", motivo, m.get("vuelve")):
+            return
+        self.sv_salir(motivo + " Tu personaje está guardado.", al_menu=True)
 
     def _svm_desconectado(self, m):
         registro.aviso("red", "Se ha cortado la conexión con el servidor")
+        if self.sv_cortado("corte"):
+            return
         self.sv_salir("Se ha perdido la conexión con el servidor. Tu personaje se guardó hace menos de un minuto: vuelve a entrar para seguir.", al_menu=True)
 
     # ----------------------------------------------------------------- economía
@@ -1987,6 +2219,19 @@ class EnLinea:
                     self.son("grito", xy=(c.x, c.y), tono=c.tono)
                     self.delito(2, "robo de vehículo con violencia")
         v = self._sv_copia(m.get("id"))
+        re = self.sv.get("reenganche")
+        if re and re.get("id") == m.get("id") and v is not None and v is self.j.veh:
+            # Es el vehículo en el que ibas cuando el servidor se fue: vuelve a ser tuyo, sin subirte otra vez ni contar
+            # como robo. Si el servidor ha dado ese número a otro vehículo mientras tanto, no es este: se suelta y se da de alta.
+            self.sv["reenganche"] = None
+            if d.get("modelo") not in (None, v.modelo["id"]):
+                self.red.enviar({"t": "veh_dejar", "id": m.get("id")})
+                v.id_red, v.red_mio, v.red_ref = None, False, None
+                self.sv_subido(v)
+                return
+            v.red_mio = True
+            self.sv["vehs"].pop(v.id_red, None)
+            return
         x, y = self.pos()
         if v is None:
             d = dict(d, x=x, y=y)
@@ -2005,6 +2250,9 @@ class EnLinea:
         self._subir(v, bool(m.get("robado")))
 
     def _svm_veh_no(self, m):
+        re = self.sv.get("reenganche")
+        if re and re.get("pedido") and re.get("id") == m.get("id"):
+            return self._sv_reenganche_no(m)
         if m.get("motivo"):
             self.app.son("error")
             self.decir(str(m["motivo"]), True)
@@ -2108,6 +2356,13 @@ class EnLinea:
                 self.sv_mision_enemigos()
 
     def _svm_grupo_invita(self, m):
+        g = self.sv.get("regrupo")
+        if g and not g["lidero"] and g["lider"] and str(m.get("nombre", "")) == g["lider"] and self.sv.get("grupo") is None:
+            # Es quien llevaba tu grupo antes de que el servidor se fuera, que lo está rehaciendo: se acepta sin preguntar.
+            self.sv["regrupo"] = None
+            self.red.enviar({"t": "grupo_resp", "si": True})
+            self.decir(f"{g['lider']} rehace el grupo de misión y vuelves a él.")
+            return
         self.sv["inv_grupo"] = {"de": m.get("de"), "nombre": str(m.get("nombre", "")), "mision": str(m.get("mision", ""))}
         self.son("notificacion", cat="interfaz")
         self.decir(f"{m.get('nombre', 'Alguien')} te invita a su grupo" + (f" para la misión {m['mision']}" if m.get("mision") else "")

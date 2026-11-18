@@ -10,7 +10,7 @@ def main():
     situarse()                                   # servidor.conf y los datos, en la carpeta del servidor
     from panel_servidor.ventana import ejecutar
     ruta = next((a for a in sys.argv[1:] if not a.startswith("--")), None)
-    ejecutar(ruta)
+    ejecutar(ruta, arrancar="--arrancar" in sys.argv[1:])
 
 
 if __name__ == "__main__":

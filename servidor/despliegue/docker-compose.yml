@@ -5,6 +5,8 @@
 # Para ver qué dice:    docker compose logs -f
 # Para pararlo:         docker compose down        (avisa a los jugadores y lo guarda todo)
 # Para darle una orden: docker attach puertobravo   (escribe la orden; para salir sin pararlo, Control+P y Control+Q)
+# Para reiniciarlo avisando a los jugadores: la orden reiniciar o actualizar. Sale solo y Docker lo vuelve a arrancar;
+# los juegos esperan y vuelven a entrar solos.
 #
 # La configuración (servidor.conf) y los datos quedan en la carpeta datos, que se crea aquí al lado.
 services:

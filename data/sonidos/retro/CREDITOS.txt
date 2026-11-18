@@ -309,3 +309,6 @@ SONIDOS AÑADIDOS DESPUÉS
   chat_personaje.flac: sonido original del juego.
   chat_fuera.flac: sonido original del juego.
   chat_accion.flac: sonido original del juego.
+
+SONIDOS AÑADIDOS DESPUÉS
+  espera_servidor.flac: sonido original del juego.

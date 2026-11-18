@@ -79,6 +79,13 @@ OPCIONES = (
        "Los personajes que lleva el servidor no cuentan.", ENTERO, 32, 0, 100000),
     _o("adultos", "general", "Contenido para adultos",
        "Con no, quien entra juega sin el contenido para adultos aunque lo tenga activado en su juego.", SINO, "no"),
+    _o("parada_aviso", "general", "Segundos de aviso antes de reiniciar por actualización o mantenimiento",
+       "Cuando el servidor se va a parar para actualizarlo o por mantenimiento (las órdenes actualizar y reiniciar, o la "
+       "actualización del juego en Windows), avisa a los jugadores con esta cuenta atrás antes de cerrarse. Con 0 se cierra "
+       "enseguida. Los juegos esperan y vuelven a entrar solos cuando el servidor vuelve.", ENTERO, 20, 0, 120),
+    _o("parada_espera", "general", "Guardado final: segundos que se espera al parar",
+       "Al pararse, el servidor pide a cada juego que guarde su personaje y espera hasta estos segundos a que llegue. "
+       "Si todos guardan antes, no espera más.", ENTERO, 6, 0, 30),
     # ---------------------------------------------------------------------- red
     _o("puerto", "red", "Puerto",
        "El puerto en el que escucha el servidor. Es el que hay que abrir en el router para que entren desde fuera de casa. "

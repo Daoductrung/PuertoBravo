@@ -21,6 +21,11 @@ Cuando arranques el servidor por primera vez aparecerán aquí servidor.conf, co
 datos_servidor, con los personajes, el certificado y las copias de seguridad. Si mueves el juego a otra carpeta o a
 otro ordenador, llévate esas dos cosas y el servidor seguirá como estaba.
 
+Actualizar el juego con el servidor abierto: ya no hace falta pararlo antes. El juego lo dice, pide permiso, avisa
+a los jugadores, para el servidor con orden, se actualiza y, al terminar, el servidor vuelve a arrancar solo, igual
+que estaba. Los juegos de los jugadores esperan y vuelven a entrar solos, cada uno donde estaba. Lo explica el
+apartado 20 de la guía.
+
 Lo nuevo de la versión 1.7.1, que la guía explica en sus apartados 18 y 19:
 
 - El tope de dinero se dice a los jugadores con cifras, el margen que no gastan se les acumula y los encargos que se

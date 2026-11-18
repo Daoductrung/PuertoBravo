@@ -6,6 +6,8 @@
     python -m servidor --comprobar          revisa servidor.conf, dice lo que no vale y sale
     python -m servidor --opciones           dice todas las opciones, con su explicación, y sale
     python -m servidor --parar              para con orden el servidor que está en marcha con esa configuración
+    python -m servidor --actualizar         lo para avisando de que se reinicia para actualizarse: los juegos esperan y vuelven solos
+    python -m servidor --reiniciar          lo mismo, diciendo que es por mantenimiento
     python -m servidor --puerto=47821       cualquier opción se puede dar también así, sin tocar el archivo
 
 Mientras funciona, se le pueden escribir órdenes: ayuda las dice todas.
@@ -17,34 +19,38 @@ import sys
 import threading
 import time
 
-from . import opciones
-from .nucleo import CONFIG, Servidor, leer_config
+from . import enmarcha, opciones
+from .nucleo import ARCHIVO_ORDEN, CONFIG, Servidor, leer_config
 
 # El ejemplo de servidor.conf sale de la descripción de las opciones: no se escribe a mano, y así no se queda atrás.
 EJEMPLO = opciones.texto_conf()
 
 
 # Para parar con orden un servidor que no tiene consola delante (una tarea programada, un servicio): basta con dejar
-# este archivo en su carpeta de datos. El servidor lo ve, lo borra, avisa a los jugadores, lo guarda todo y sale.
-ARCHIVO_PARAR = "parar.txt"
+# este archivo en su carpeta de datos. El servidor lo ve, lo borra, avisa a los jugadores, lo guarda todo y sale. Según
+# lo que lleve escrito, para sin más (parar), o avisa de que vuelve enseguida (actualizar, reiniciar).
+ARCHIVO_PARAR = ARCHIVO_ORDEN
 
 
 def _hora():
     return time.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def pedir_parada(cfg, espera=20.0):
-    """Pide a un servidor en marcha que pare, dejándole el archivo de parada. Devuelve si lo ha recogido."""
+def pedir_parada(cfg, espera=20.0, orden="parar"):
+    """Pide a un servidor en marcha que pare, dejándole el archivo de parada. Devuelve si lo ha recogido.
+    Con ``orden`` «actualizar» o «reiniciar», el servidor avisa antes a los jugadores de que vuelve enseguida."""
     ruta = os.path.join(cfg["datos"], ARCHIVO_PARAR)
     if not os.path.isdir(cfg["datos"]):
         print("No existe la carpeta de datos «%s»: ahí no hay ningún servidor que parar." % cfg["datos"])
         return False
     with open(ruta, "w", encoding="utf-8") as f:
-        f.write("parar\n")
+        f.write(orden + "\n")
     fin = time.time() + espera
     while time.time() < fin:
         if not os.path.exists(ruta):
-            print("El servidor ha recogido la orden: avisa a los jugadores, lo guarda todo y se para.")
+            print("El servidor ha recogido la orden: avisa a los jugadores, lo guarda todo y se para." if orden == "parar" else
+                  "El servidor ha recogido la orden: avisa a los jugadores con una cuenta atrás, lo guarda todo y se para. "
+                  "Los juegos esperarán y volverán a entrar solos cuando lo arranques otra vez.")
             return True
         time.sleep(0.5)
     try:
@@ -66,7 +72,7 @@ def _vigilar_cierre_de_consola(parar, parado):
         @ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_uint)
         def manejador(tipo):
             if tipo in (2, 5, 6):                # cerrar la ventana, cerrar la sesión, apagar el equipo
-                parar()
+                parar(tipo)
                 parado.wait(4.5)                 # Windows da unos cinco segundos antes de cortar
                 return 1
             return 0
@@ -106,6 +112,9 @@ def main(args=None):
                 avisos.append("--%s: no existe ninguna opción con ese nombre." % k)
     if "--parar" in args:
         return 0 if pedir_parada(cfg) else 1
+    for bandera, orden in (("--actualizar", "actualizar"), ("--reiniciar", "reiniciar")):
+        if bandera in args:
+            return 0 if pedir_parada(cfg, orden=orden) else 1
     if "--comprobar" in args:
         if not os.path.exists(ruta):
             print("No hay ningún archivo %s. Con --ejemplo se escribe uno." % ruta)
@@ -152,8 +161,17 @@ def main(args=None):
             pass
     threading.Thread(target=consola, daemon=True).start()
 
-    def parar(*_):
-        loop.call_soon_threadsafe(lambda: loop.create_task(srv.detener()))
+    # La ficha de servidor en marcha: con ella, la actualización del juego en Windows sabe que está abierto y cómo volver a
+    # arrancarlo. Solo se escribe en el juego compilado.
+    enmarcha.anotar("consola", srv.cfg["datos"], conf=srv.ruta_conf, args=args)
+
+    def parar(senal=None, *_):
+        # Control+C y cerrar la ventana son de quien lo lleva: se apaga sin más. Si lo para el sistema (la señal de
+        # terminar de systemd o de Docker, cerrar la sesión o apagar el equipo), lo normal es que vuelva: se dice a los
+        # juegos que esperen. En los dos casos hay poco tiempo antes de que el sistema corte: no se espera más de tres segundos.
+        vuelve = senal in (getattr(signal, "SIGTERM", None), 5, 6) and senal is not None
+        loop.call_soon_threadsafe(lambda: loop.create_task(
+            srv.detener(causa="reinicio" if vuelve else "apagado", espera=min(3.0, float(srv.cfg.get("parada_espera", 6) or 0)))))
     parado = threading.Event()
     _vigilancia = _vigilar_cierre_de_consola(parar, parado)      # hay que conservar la referencia mientras funcione
     for s in (signal.SIGINT, getattr(signal, "SIGTERM", None), getattr(signal, "SIGBREAK", None)):
@@ -163,22 +181,10 @@ def main(args=None):
             except (ValueError, OSError):
                 pass
 
-    archivo_parar = os.path.join(srv.cfg["datos"], ARCHIVO_PARAR)
-    try:
-        os.remove(archivo_parar)                             # una orden de parar que quedó de otra vez no cuenta
-    except OSError:
-        pass
-
     async def esperar():
+        # El archivo de órdenes (--parar, --actualizar, --reiniciar) lo mira el propio servidor, cada segundo.
         while srv.activo:
             await asyncio.sleep(0.5)
-            if os.path.exists(archivo_parar):                # alguien ha pedido parar con --parar
-                try:
-                    os.remove(archivo_parar)
-                except OSError:
-                    pass
-                srv.log("Se ha pedido parar el servidor.")
-                await srv.detener()
         for _ in range(100):                                 # hasta que termine de guardar
             if srv.detenido:
                 break
@@ -187,7 +193,10 @@ def main(args=None):
         loop.run_until_complete(esperar())
     except KeyboardInterrupt:
         loop.run_until_complete(srv.detener())
+    enmarcha.quitar()
     print("%s  Servidor parado. Todo guardado." % _hora(), flush=True)
+    if srv.codigo_salida:
+        print("%s  Se ha parado para volver: el programa termina con el código %d." % (_hora(), srv.codigo_salida), flush=True)
     parado.set()
     if _vigilancia is not None:                              # ya no hay nada que vigilar: se retira
         try:
@@ -195,7 +204,7 @@ def main(args=None):
             ctypes.windll.kernel32.SetConsoleCtrlHandler(_vigilancia, 0)
         except Exception:
             pass
-    return 0
+    return int(srv.codigo_salida or 0)
 
 
 if __name__ == "__main__":

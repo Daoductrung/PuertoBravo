@@ -125,6 +125,7 @@ SONIDOS = [
     ("chat_personaje", "Mensaje en personaje", "En un servidor: alguien que está cerca habla como su personaje. Se lee a continuación."),
     ("chat_fuera", "Mensaje fuera de personaje", "En un servidor: alguien habla como jugador, no como su personaje. Lo oye todo el servidor."),
     ("chat_accion", "Acción de un personaje", "En un servidor: alguien que está cerca cuenta lo que hace su personaje, por ejemplo que abre una puerta."),
+    ("espera_servidor", "Espera al servidor", "En un servidor: se ha cortado la conexión, o el servidor se está actualizando, y el juego espera para volver a entrar solo. Se repite cada pocos segundos."),
     ("cruce", "Cruce", "Entras en un cruce de calles, o te acercas a uno al volante."),
     ("radar", "Radar", "Suena desde la posición de lo que acaba de anunciar el radar."),
     ("tono_pared", "Pared", "El escáner direccional ha encontrado una pared. Suena más agudo cuanto más cerca está."),
