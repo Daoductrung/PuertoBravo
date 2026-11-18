@@ -180,7 +180,7 @@ class Extras2:
                 self._fin_evento({"atraco": "El atracador ha huido con el botín.", "banda": "Los pandilleros se han marchado.",
                                   "maletin": "Alguien ha encontrado el maletín antes que tú."}[ev["tipo"]])
             return
-        if self.mision or self.trabajo or j.estrellas or self.mundo.tipo in ("mar", "isla") or self.transicion or not self.cfg["sucesos"]:
+        if self.mision or self.trabajo or self.guerra or j.estrellas or self.mundo.tipo in ("mar", "isla") or self.transicion or not self.cfg["sucesos"]:
             return
         self.t_evento -= dt
         if self.t_evento > 0:
@@ -217,6 +217,7 @@ class Extras2:
             e.estado = "ataca"
             e.activo = False
             e.tag = "evento"
+            e.agresor = True                                     # están atracando o amenazando a alguien: pararles los pies no es delito
             personas.append(e)
         self.personas += personas
         self.evento = {"tipo": tipo, "t": 110.0, "personas": personas, "premio": random.randint(150, 400) * n}

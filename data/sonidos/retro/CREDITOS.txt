@@ -284,3 +284,11 @@ SONIDOS AÑADIDOS DESPUÉS
   disparo_semiautomatico.flac: Pew__009.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,30 segundos.
   hacha.flac: Punch__006.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,30 segundos.
   lanzagranadas.flac: Explosion3__001.wav, de SFX: The Ultimate 2017 16 bit Mini pack. Dura 0,50 segundos.
+
+SONIDOS AÑADIDOS DESPUÉS
+  grito_hombre.flac: 2yell3.wav, de Male grunt and yelling sounds. Dura 0,93 segundos.
+  grito_mujer.flac: wscream_2_0.wav, de girly scream. Dura 0,64 segundos.
+  dolor_mujer.flac: female_hurt_grunts_groans_1.ogg, de female hurt grunts groans. Dura 0,61 segundos.
+  recoger_municion.flac: clipload1.wav, de gun reload sound effects. Dura 0,18 segundos.
+  helicoptero_policia.flac: helicopter_0.mp3, de helicopter sounds. Dura 4,00 segundos.
+  megafono.flac: sonido original del juego.

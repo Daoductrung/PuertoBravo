@@ -142,6 +142,19 @@ Las mejoras del taller (`juego/sistemas.py`) también salen de los datos: cada u
 
 `mundo_servidor()` le cuenta además al servidor los nombres de sus personajes (`gente`) y las armas de sus agentes por nivel (`policia`). Son dos claves de más: un servidor anterior no las mira, y uno nuevo usa lo suyo si no vienen. La huella del mundo no depende de ellas, pero sí de las armas y los vehículos: al añadir unas u otros hay que regenerar `servidor/mundo.json` con `herramientas/exportar_mundo_servidor.py`.
 
+### La calle: defensa propia, patrullas, rendición, helicóptero y guerra de barrios
+
+- `juego/calle.py` (mixin `Calle` de la partida) reúne lo que pasa en la calle sin que el jugador lo busque. Los números y las frases salen de `vida.json`, sección `calle`; las opciones del jugador, de `config.py` (`defensa_propia`, `frases_reacciones`, `charla_peatones`, `soltar_municion`, `soltar_armas`, `patrullas_calle`, `ambulancias`, `helicoptero_policia`).
+- Defensa propia: un enemigo que ataca sin haber sido tocado queda marcado (`p.agresor`, en `marcar_agresor`, que se llama desde `actualizar_personas` en el momento del ataque). Mientras haya un agresor vivo cerca, `_ruido_disparo` no apunta delito, y tumbarlo tampoco. `agente_auxilia` hace que un agente vaya a por él; `herir_por_otro` es la baja que no cuenta para el jugador. No vale para `tag` de misión ni de guerra.
+- Voces por género: `calle.genero_de(p)` (la ficha si la hay; si no, el tono de voz) y `Calle.voz_persona`. `charla.ficha` da el género según ese mismo tono. `Calle.asustar` es el único sitio por el que un peatón pasa a huir.
+- Las patrullas de ronda son vehículos con `ia == "policia"` y `ronda = True`; con cero estrellas los mueve `patrulla_sin_busqueda`, y con búsqueda, lo de siempre. Las que acuden a una pelea llevan `auxilio` (el momento en que desisten).
+- La ambulancia es un vehículo con `ia == "ambulancia"` y `tag == "ambulancia"`; su estado está en `Partida.ambulancia`.
+- Rendirse: `Calle.rendirse` pone `Partida.rendido`; `actualizar_personas` manda a los agentes a `agente_detiene`, y `detener(rendicion=True)` aplica la pena de `_pena_rendicion`.
+- El helicóptero es un vehículo con `ia == "heli_policia"` y `volando = True`, que `actualizar_vehiculos` no mueve: lo lleva `Calle._helicoptero`. Todo lo que recorre vehículos para chocar, frenar o subir se salta los que llevan `volando`. `danar_vehiculo` lo desvía a `heli_danado`.
+- `juego/guerra.py` (mixin `Guerra`) es el modo de guerra de barrios en la calle (`guerra_calle`, apagado de serie; sección `guerra_barrios`). `banda_guerra` da a cada barrio de ciudad una banda estable con la semilla de la partida; `miembro_de_barrio` decide quién sale a la calle en `_poblar`; el estado de la guerra en curso está en `Partida.guerra` y no se guarda.
+- En un servidor: con policía común (`sv_policia_comun()`) no hay patrullas de ronda, ni helicóptero, ni rendición; en cualquier servidor no hay ambulancias, ni armas soltadas, ni guerra de barrios. No se ha tocado `servidor/`.
+- Al reintentar una misión, `Misiones._rebobinar_jugador` devuelve al jugador a como estaba pero deja los garajes como están: los vehículos no vuelven atrás.
+
 ### Pruebas
 
 `probar.bat` ejecuta toda la batería. Las pruebas manejan el juego como una persona, con teclas y fotogramas: juegan todas las misiones, recorren los mapas con el GPS, entran en todos los menús y lugares, juegan veinte días con el tiempo acelerado, conectan dos juegos entre sí, manejan un mando simulado y revisan la accesibilidad del editor. También fallan si se añade un sonido sin describir o una tecla sin documentar. No usan la red ni la tarjeta de sonido.

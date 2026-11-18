@@ -770,7 +770,8 @@ def sucesos_territorio(p, azar=None):
             return
         j.amenaza = {"territorio": t, "banda": banda, "dia": p.dia}
         p.son("notificacion", cat="interfaz")
-        p.decir(f"{banda} está atacando {nombre}. Tienes hasta la próxima medianoche para defenderlo: en el móvil, Territorios. Si no vas, lo pierdes.")
+        p.decir(f"{banda} está atacando {nombre}. Tienes hasta la próxima medianoche para defenderlo: "
+                + ("ve allí en persona, la defensa empieza al entrar en el barrio; el móvil, en Territorios, te marca el camino." if p.guerra_activa() else "en el móvil, Territorios.") + " Si no vas, lo pierdes.")
     elif tipo == "pacto":
         j.oferta_pacto = {"banda": banda, "precio": p.precio("pacto_territorio", 500) * n, "dia": p.dia}
         p.son("notificacion", cat="interfaz")
@@ -836,9 +837,18 @@ def opciones_sucesos(p, Menu, Opcion):
                 return
             while app.pila and app.pila[-1] is not p:
                 app.cerrar(app.pila[-1])
+            if p.guerra_activa():                                # con la guerra en la calle se defiende en persona: basta con entrar en el barrio
+                nombre, mapa = _nombre_barrio(p, a["territorio"])
+                b = next((x for x in mapa.barrios if x["id"] == a["territorio"]), None) if mapa else None
+                l = p.lugar_de_barrio(b, mapa) if b else None
+                if l is not None:
+                    p.gps_a_lugar(l)
+                app.decir(f"{a['banda']} está en {nombre}" + (f", en {mapa.nombre}" if mapa and mapa.id != p.mundo.id else "") + ". Ve allí: la defensa empieza en cuanto entres en el barrio.", True)
+                return
             defender(p)
         ops.append(Opcion(f"Defender {_nombre_barrio(p, a['territorio'])[0]}: lo ataca {a['banda']}", ir,
-                          ayuda="Dos grupos de pandilleros. Si los echas, el barrio sigue siendo tuyo. Si llega la medianoche sin haber ido, lo pierdes. Tu banda pelea a tu lado."))
+                          ayuda="Dos grupos de pandilleros. Si los echas, el barrio sigue siendo tuyo. Si llega la medianoche sin haber ido, lo pierdes. Tu banda pelea a tu lado. "
+                                "Con el modo de guerra de barrios en la calle, se defiende yendo allí: el GPS te lleva y la pelea empieza al entrar en el barrio."))
     if j.oferta_pacto:
         o = j.oferta_pacto
 

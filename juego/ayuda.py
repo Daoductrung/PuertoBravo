@@ -28,6 +28,8 @@ TECLAS = {
         ("I", "abre la lista de tus armas para elegir una"),
         ("P", "en el mar, lanza la caña para pescar; cuando oigas que pican, pulsa Espacio. En vehículos de emergencias, enciende la sirena"),
         ("Z", "usa un botiquín"),
+        ("Mayúsculas H", "rendirte: con la policía buscándote y un agente cerca, levantas las manos. Los agentes dejan de disparar y vienen a detenerte; no te muevas ni ataques. "
+                         "Cuanto más nivel de búsqueda, más multa y más horas de calabozo, y con el nivel más alto pierdes todas las armas. Otra pulsación baja las manos"),
         ("Re Pág y Av Pág", "repasan los mensajes anteriores. El punto repite el último"),
         ("F1", "esta ayuda"),
         ("F2", "cambia entre conducción asistida y libre"),

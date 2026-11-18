@@ -375,7 +375,8 @@ def opciones(app):
                "completa": "completa, apunta sola al enemigo más cercano", "manual": "manual, hay que encararse al enemigo",
                "facil": "fácil", "normal": "normal", "dificil": "difícil",
                "cardinal": "puntos cardinales", "reloj": "horas del reloj", "relativa": "delante, derecha, detrás, izquierda",
-               "todos": "todo el mundo", "mujeres": "las mujeres", "hombres": "los hombres", "x": "prefiero no decirlo", "h": "hombre", "m": "mujer"}
+               "todos": "todo el mundo", "mujeres": "las mujeres", "hombres": "los hombres", "x": "prefiero no decirlo", "h": "hombre", "m": "mujer",
+               "nada": "nunca", "pocas": "pocas veces", "algunas": "de vez en cuando", "muchas": "a menudo"}
     OPCIONES.setdefault("detalle_voz", ["poco", "normal", "mucho"])
     nombres.update({"poco": "poco, sin recordar las teclas", "mucho": "mucho, con la explicación de cada opción"})
 
@@ -549,6 +550,39 @@ def opciones(app):
                   "Se reposta en las gasolineras sin bajarte del vehículo, con un bidón comprado en ellas o llamando a la asistencia en carretera desde el móvil, en Servicios. "
                   "La tecla V te dice cuánto queda. No cuenta en los barcos, en lo que vuela, en las bicicletas ni en los vehículos de las misiones."),
         ], "Dificultad, puntería y asistencias."),
+        seccion("La calle: gente, policía y bandas", [
+            si_no("defensa_propia", "Defensa propia: defenderte de quien te ataca primero no es delito",
+                  "Con sí, si un atracador, un pandillero o cualquiera te ataca sin que tú le hayas tocado antes, dispararle o tumbarle no cuenta como delito, ni tampoco parar a los de un suceso callejero. "
+                  "Además, si hay agentes cerca o llega una patrulla, van también a por él y no solo a por ti. No vale para los enemigos de las misiones ni para quien has atacado tú primero, "
+                  "y los explosivos siguen siendo delito. Con no, todo es como antes: cualquier disparo y cualquier baja cuentan."),
+            si_no("frases_reacciones", "Decir cuándo la gente huye o se aparta",
+                  "Los gritos y las quejas de la gente, con voz de hombre o de mujer, se oyen siempre. Con sí, además el juego dice con palabras quién sale corriendo o se aparta y hacia dónde, "
+                  "como mucho una vez cada pocos segundos; si son varios, lo dice de una vez. Con no, solo se oyen."),
+            lista("charla_peatones", "Gente que habla al pasar",
+                  "Al pasar a pie o despacio junto a dos personas, a veces se oye lo que van diciendo: una frase suelta y, a veces, la respuesta. Nunca en mitad de una persecución, de una pelea o de una escena. "
+                  "Elige cuánto: nunca, pocas veces, que es una cada dos o tres minutos como mucho, de vez en cuando, o a menudo."),
+            si_no("soltar_municion", "Los enemigos caídos sueltan munición",
+                  "Con sí, un enemigo que llevaba un arma de fuego igual que una de las tuyas deja a veces en el suelo munición de esa arma. Se recoge sola al pasar a pie por encima, como el dinero, "
+                  "y se oye un cargador. Con no, solo sueltan dinero, como antes."),
+            si_no("soltar_armas", "Dificultad: los enemigos caídos sueltan a veces su arma",
+                  "Con sí, un enemigo caído deja a veces en el suelo el arma que llevaba, si tú no la tienes: te la quedas al pasar por encima. Hace el juego más fácil y la armería menos necesaria, "
+                  "por eso viene apagada. En un servidor en línea no cuenta."),
+            si_no("patrullas_calle", "Patrullas de policía circulando por la calle",
+                  "Con sí, algún coche patrulla hace su ronda por las calles aunque nadie te busque, como en los servidores en línea. Ven los delitos que cometas cerca, y con las normas de tráfico activadas "
+                  "son quienes ponen las multas. Si te atacan y hay una cerca, acude. Con no, la policía solo aparece cuando te busca. En un servidor con policía común las lleva el servidor."),
+            si_no("ambulancias", "Ambulancias que acuden cuando hay heridos",
+                  "Con sí, un rato después de un tiroteo o de un atropello llega una ambulancia con la sirena, se arrima a la acera, los sanitarios atienden y se va. Es ambiente: no te persigue, no te atropella y no cambia nada. "
+                  "Solo jugando en solitario."),
+            si_no("helicoptero_policia", "Helicóptero de la policía con el nivel de búsqueda más alto",
+                  "Con sí, al llegar al nivel 5 acude un helicóptero: se le oye llegar y dar vueltas por encima de ti, y te habla por el altavoz. Mientras te tenga localizado no puedes despistar a la policía. "
+                  "Te pierde si te pegas a una fachada unos segundos o entras en un edificio, y no te reconoce si cambias de vehículo sin que te vea. Se le puede derribar con un rifle o un explosivo, "
+                  "pero entonces la policía tarda el doble en olvidarte y el helicóptero se paga al ser detenido. Hace el nivel 5 bastante más difícil: por eso viene apagado. "
+                  "En un servidor con policía común no sale."),
+            si_no("guerra_calle", "Modo: guerra de barrios en la calle",
+                  "Con no, que es lo de siempre, los barrios se conquistan y se defienden desde el móvil, en Territorios. Con sí, cada barrio de las ciudades es de una banda y los suyos andan por sus calles. "
+                  "Un barrio se conquista yendo allí: al tumbar a dos de los suyos, o plantándoles cara desde el móvil cuando ya estás dentro, la banda viene a por ti en tres oleadas. Tu propia banda acude a ayudarte. "
+                  "No hay que salir del barrio hasta acabar. Y cuando ataquen un barrio tuyo, lo defiendes entrando en él. En un servidor en línea no cuenta: allí los barrios son de las bandas de los jugadores."),
+        ], "Cómo reacciona la gente, qué hace la policía cuando no te busca, y cómo se pelea por los barrios."),
         Opcion("Personas e inteligencia artificial", lambda: __import__("juego.menus_charla", fromlist=["x"]).opciones_ia(app),
                ayuda="Cómo contestan las personas de la calle cuando les escribes lo que quieres: con el motor del juego o con una inteligencia artificial."),
         Opcion("Teclado: cambiar las teclas", lambda: opciones_teclado(app),
@@ -940,6 +974,7 @@ def lugar(p, l):
     if en_coche and abs(j.veh.vel) > 3:
         app.decir("Detén el vehículo primero.", True)
         return
+    p.entrar_bajo_techo(l)                                       # si te sigue el helicóptero de la policía, al entrar deja de verte
     from . import menus_lugares as ml
     f = {"casa": _casa, "armeria": _armeria, "tienda": _tienda, "farmacia": _farmacia, "comida": _comida,
          "pizzeria": _comida, "hospital": _hospital, "comisaria": _comisaria, "taller": _taller,

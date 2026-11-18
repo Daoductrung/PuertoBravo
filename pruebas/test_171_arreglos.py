@@ -256,7 +256,7 @@ def test_la_primera_vez_que_te_disparan_en_un_vehiculo_se_recuerda_como_responde
         return " | ".join(robot.app.voz.registro[antes:])
     dicho = tiroteo()
     assert "Control para disparar desde el vehículo" in dicho and "Q para fijar" in dicho
-    assert p.j.recordado == ["disparo_veh"]
+    assert p.j.recordado.count("disparo_veh") == 1                               # (desde la tanda 4 se recuerda también la defensa propia)
     assert "Control para disparar desde el vehículo" not in tiroteo()            # solo la primera vez
     assert "disparo_veh" in p.j.a_dict()["recordado"]                            # y se guarda con la partida
 

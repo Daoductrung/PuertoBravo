@@ -494,10 +494,33 @@ def territorios(p):
             else:
                 p.empezar_conquista(b)
         return f
+
+    def en_la_calle(b):
+        """Con la guerra de barrios en la calle: aquí no se conquista nada. Si ya estás en el barrio, plantas cara; si no, el GPS te lleva."""
+        def f():
+            if p.mundo.barrio(*p.pos())["id"] == b["id"]:
+                if p.mision or p.trabajo:
+                    app.son("error")
+                    return app.decir("Termina antes lo que tienes entre manos.", True)
+                while app.pila and app.pila[-1] is not p:
+                    app.cerrar(app.pila[-1])
+                p.empezar_guerra(b)
+                return
+            l = p.lugar_de_barrio(b)
+            if l is not None:
+                p.gps_a_lugar(l)
+            app.decir(f"{b['nombre']} es de {p.banda_de_barrio(b)}. Ve allí: el GPS te lleva a {l.nombre if l else 'ese barrio'}. "
+                      "Cuando estés dentro, tumba a dos de los suyos o vuelve a este menú para plantarles cara, y empezará la guerra.", True)
+        return f
     ops = []
+    guerra = p.guerra_activa()
     for b in p.mundo.barrios if p.mundo.tipo == "ciudad" else []:
         if b["id"] in j.territorios:
             ops.append(Opcion(f"{b['nombre']}: es tuyo. Te da {p.precio('tributo_territorio', 300)} euros al día"))
+        elif guerra:
+            ops.append(Opcion(lambda b=b: f"{b['nombre']}: de {p.banda_de_barrio(b)}. " + ("Estás aquí: plantarles cara" if p.mundo.barrio(*p.pos())["id"] == b["id"] else "Se conquista en la calle: marcar en el GPS"),
+                              en_la_calle(b), ayuda="Tienes activado el modo de guerra de barrios en la calle: los barrios no se conquistan desde el móvil. Ve al barrio y planta cara a la banda allí: "
+                              f"vienen a por ti en oleadas, cada una más dura, y tu banda acude a ayudarte. Si ganas, el barrio te paga {p.precio('tributo_territorio', 300)} euros cada medianoche."))
         else:
             ops.append(Opcion(f"Conquistar {b['nombre']}", conquistar(b), ayuda=f"Tres oleadas de pandilleros, cada una más dura. Si ganas, el barrio te paga {p.precio('tributo_territorio', 300)} euros cada medianoche."))
     if not ops:

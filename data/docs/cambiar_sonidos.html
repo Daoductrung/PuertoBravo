@@ -19,7 +19,7 @@ li { margin-bottom: .3em; }
 <h2>1. Dónde está cada cosa</h2>
 <ul>
 <li><code>data\sonidos</code>: todos los efectos de sonido, repartidos en subcarpetas.</li>
-<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 249 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
+<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 255 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
 <li><code>data\radio</code>: la música de las emisoras, un archivo por emisora.</li>
 <li><code>data\radio\mi_musica</code>: tu propia emisora. Copia aquí las canciones que quieras.</li>
 <li><code>data\musica</code>: la música de ambiente, con una carpeta por situación y varias piezas en cada una.</li>
@@ -60,7 +60,7 @@ li { margin-bottom: .3em; }
 <ul>
 <li>Un pack tuyo no tiene que traerlos todos: los sonidos que no traiga siguen sonando con el original.</li>
 <li>El volumen de cada sonido del pack se iguala al del original, como se explica arriba.</li>
-<li>De serie vienen instalados los packs «Alternativo», con 249 sonidos, «Envolvente», con 249 sonidos, «Realista», con 249 sonidos, «Retro», con 249 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
+<li>De serie vienen instalados los packs «Alternativo», con 255 sonidos, «Envolvente», con 255 sonidos, «Realista», con 255 sonidos, «Retro», con 255 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
 </ul>
 <h3>Hacer tu propio pack</h3>
 <ol>
@@ -191,14 +191,17 @@ li { margin-bottom: .3em; }
 <p>Voces sin palabras, golpes y animales.</p>
 <ul>
 <li><code>dolor</code>: Te hieren. Dura 0,30 segundos.</li>
-<li><code>dolor_npc</code>: Hieres a alguien. Dura 0,28 segundos.</li>
+<li><code>dolor_mujer</code>: Hieres a alguien: la queja de una mujer. Dura 0,30 segundos.</li>
+<li><code>dolor_npc</code>: Hieres a alguien: la queja de un hombre. Dura 0,28 segundos.</li>
 <li><code>golpe</code>: Un puñetazo o un golpe que acierta. Dura 0,10 segundos.</li>
 <li><code>golpe_aire</code>: Un golpe al aire. Dura 0,15 segundos.</li>
-<li><code>grito</code>: Un grito de susto. Dura 0,75 segundos.</li>
+<li><code>grito</code>: Un grito: el tuyo para espantar a la gente, y el de aviso de un enemigo que te ha visto. Dura 0,75 segundos.</li>
+<li><code>grito_hombre</code>: Un hombre grita de susto al salir corriendo. Dura 0,63 segundos.</li>
+<li><code>grito_mujer</code>: Una mujer grita de susto al salir corriendo. Dura 0,72 segundos.</li>
 <li><code>ladrido</code>: Ladrido de perro. Dura 1,00 segundos.</li>
 <li><code>latido</code>: Tu corazón cuando te queda poca salud. En bucle. Dura 1,00 segundos.</li>
 <li><code>muerte_npc</code>: Alguien cae abatido. Dura 0,70 segundos.</li>
-<li><code>murmullo</code>: Un peatón murmura al hablarte. Dura 0,35 segundos.</li>
+<li><code>murmullo</code>: Un peatón murmura al hablarte, o dos que pasan hablando entre ellos. Dura 0,35 segundos.</li>
 </ul>
 <h3>Armas</h3>
 <p>Disparos, recargas, impactos y explosiones.</p>
@@ -224,6 +227,7 @@ li { margin-bottom: .3em; }
 <li><code>lanzar</code>: Lanzas una granada o disparas la ballesta. Dura 0,30 segundos.</li>
 <li><code>navaja</code>: Tajo de navaja, machete o katana. Dura 0,12 segundos.</li>
 <li><code>recarga</code>: Recargas el arma. Dura 0,70 segundos.</li>
+<li><code>recoger_municion</code>: Recoges munición o un arma que ha soltado un enemigo caído: un cargador que entra y el cerrojo. Dura 0,50 segundos.</li>
 <li><code>sin_balas</code>: Aprietas el gatillo sin balas. Dura 0,04 segundos.</li>
 </ul>
 <h3>Motores</h3>
@@ -281,17 +285,19 @@ li { margin-bottom: .3em; }
 <li><code>repostar</code>: El surtidor llenando el depósito. Dura 1,60 segundos.</li>
 <li><code>reserva</code>: Aviso de que queda poco combustible. Dura 0,62 segundos.</li>
 <li><code>sirena</code>: Sirena de policía y de bomberos. En bucle. Dura 2,00 segundos.</li>
-<li><code>sirena_ambulancia</code>: Sirena de ambulancia. En bucle. Dura 1,60 segundos.</li>
+<li><code>sirena_ambulancia</code>: Sirena de ambulancia: la tuya, o la de la que acude tras un tiroteo o un atropello. En bucle. Dura 1,60 segundos.</li>
 <li><code>sirena_barco</code>: Sirena de barco al zarpar. Dura 1,80 segundos.</li>
 <li><code>sirena_lejana</code>: Una sirena a lo lejos, de ambiente. Dura 2,00 segundos.</li>
 </ul>
 <h3>Policía y búsqueda</h3>
-<p>Avisos del nivel de búsqueda.</p>
+<p>Avisos del nivel de búsqueda, y el helicóptero de la policía.</p>
 <ul>
-<li><code>buscando</code>: Te buscan pero no te ven: se repite cada segundo. Dura 0,12 segundos.</li>
+<li><code>buscando</code>: Te buscan pero no te ven: se repite cada segundo. Más agudo, es el helicóptero de la policía el que no te ve. Dura 0,12 segundos.</li>
 <li><code>esposas</code>: Te detienen. Dura 0,45 segundos.</li>
 <li><code>estrella_baja</code>: Baja el nivel de búsqueda. Dura 0,70 segundos.</li>
 <li><code>estrella_sube</code>: Sube el nivel de búsqueda. Dura 0,40 segundos.</li>
+<li><code>helicoptero_policia</code>: El helicóptero de la policía, con el nivel de búsqueda más alto: se le oye llegar y dar vueltas por encima. En bucle. Dura 2,00 segundos.</li>
+<li><code>megafono</code>: El altavoz del helicóptero de la policía: un acople y una voz metálica. Lo que dice lo lee el lector a continuación. Dura 1,10 segundos.</li>
 <li><code>policia_perdida</code>: Has despistado a la policía. Dura 1,38 segundos.</li>
 </ul>
 <h3>Localizadores</h3>

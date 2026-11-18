@@ -81,6 +81,15 @@ POR_DEFECTO = {
     "combustible": False,          # los vehículos gastan combustible y hay que repostar
     "averias": False,              # pinchazos y revisiones: los vehículos se desgastan con los kilómetros
     "normas_trafico": False,       # multas y carné por puntos por saltarte semáforos o correr delante de la policía
+    "defensa_propia": True,        # defenderte de quien te ataca primero no es delito, y los agentes van también a por él
+    "frases_reacciones": True,     # el lector dice cuándo alguien huye o se aparta (sin saturar)
+    "charla_peatones": "pocas",    # frases que se oyen al pasar junto a dos personas: nada | pocas | algunas | muchas
+    "soltar_municion": True,       # los enemigos caídos sueltan munición del arma que llevaban, si tú llevas una igual
+    "soltar_armas": False,         # dificultad: a veces sueltan el arma entera
+    "patrullas_calle": True,       # coches patrulla que circulan aunque no te busquen
+    "ambulancias": True,           # tras un tiroteo o un atropello acude una ambulancia
+    "helicoptero_policia": False,  # con el nivel de búsqueda más alto, un helicóptero te localiza desde el aire
+    "guerra_calle": False,         # modo: las bandas se ven por la calle y los barrios se conquistan peleando allí
     "red_nombre": "",              # cómo te ven tus amigos; vacío = el nombre de tu personaje
     "red_puerto": 47810,
     "red_ultima": "",              # última dirección a la que te uniste
@@ -98,6 +107,7 @@ OPCIONES = {
     "radar_filtro": ["todo", "lugares", "vehiculos", "personas", "objetos"],
     "atraccion": ["todos", "mujeres", "hombres"],
     "mi_genero": ["x", "h", "m"],
+    "charla_peatones": ["nada", "pocas", "algunas", "muchas"],
     "act_fuente": ["servidor", "github", "ambas", "personalizada"],
     "motor_sonido": ["clasico", "envolvente"],
     "ia_servicio": ["auto", "local", "gemini", "otro", "openai", "anthropic"],

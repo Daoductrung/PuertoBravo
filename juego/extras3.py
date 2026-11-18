@@ -273,7 +273,7 @@ class Extras3:
 
     def banda_de_barrio(self, b):
         """La banda que manda en un barrio que no es tuyo: la que te lo quitó, o la que dicen los datos del mapa. Puede no haber ninguna."""
-        return self.j.barrios_banda.get(b["id"]) or b.get("banda") or ""
+        return self.j.barrios_banda.get(b["id"]) or b.get("banda") or self.banda_guerra(b)     # con la guerra en la calle, todos tienen una
 
     def barrio_dueno_txt(self, b, mapa=None):
         """De quién es un barrio ahora mismo, en una frase: tuyo, de una banda o en guerra. Vacío si no es de nadie."""

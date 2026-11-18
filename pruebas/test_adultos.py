@@ -53,7 +53,7 @@ def test_opciones_por_secciones_con_volver(robot):
     menus_juego.opciones(app)
     raiz = app.pila[-1]
     textos = [o.texto for o in raiz.opciones]
-    assert textos[-1] == "Volver" and len(textos) == 12 and "Teclado: cambiar las teclas" in textos and "Registro para informar de fallos" in textos and "Personas e inteligencia artificial" in textos and "Actualizaciones" in textos
+    assert textos[-1] == "Volver" and len(textos) == 13 and "Teclado: cambiar las teclas" in textos and "Registro para informar de fallos" in textos and "Personas e inteligencia artificial" in textos and "Actualizaciones" in textos
     for k in range(len(textos) - 1):
         raiz.i = k
         robot.tecla(pygame.K_RETURN)

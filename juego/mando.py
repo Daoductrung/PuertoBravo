@@ -84,6 +84,7 @@ ACCIONES = {
     "mirar_jugador": ("cómo va vestido el jugador de al lado", K.K_j, S, False),
     "quitar_gps": ("cancelar el GPS", K.K_g, S, False),
     "walkman": ("reproductor con auriculares: encender y emisora siguiente", K.K_r, S, False),
+    "rendirse": ("rendirte ante la policía: levantar las manos", K.K_h, S, False),
 }
 # El botón que, mantenido, convierte a los demás en una segunda función: Vista en Xbox, Crear o Share en PlayStation.
 # Pulsado y soltado solo, hace lo suyo (de serie, abrir el móvil).
@@ -97,10 +98,10 @@ POR_DEFECTO = {
               "lt": "frenar", "rt": "acelerar", "l3": "media_vuelta", "r3": "trabajo", "arriba": "donde", "abajo": "estado",
               "izquierda": "radar_ant", "derecha": "radar_sig", "back": "movil", "start": "pausa", "touchpad": "mapa", "misc": "objetivo"},
     # segundas funciones: manteniendo el botón de combinar y pulsando otro
-    "pie_combo": {"a": "paseo", "b": "hablar", "x": "baliza_radar", "y": "mi_vehiculo", "lb": "rumbo", "rb": "hora", "l3": "quitar_gps", "r3": "armas",
+    "pie_combo": {"a": "paseo", "b": "hablar", "x": "baliza_radar", "y": "mi_vehiculo", "lb": "rumbo", "rb": "hora", "lt": "rendirse", "l3": "quitar_gps", "r3": "armas",
                   "arriba": "cruce", "abajo": "necesidades", "izquierda": "lugares", "derecha": "walkman", "start": "ayuda", "misc": "mirar_jugador",
                   "touchpad": "mirar_jugador"},
-    "coche_combo": {"a": "piloto", "b": "velocidad", "x": "gps", "y": "objetivo", "lb": "baliza_radar", "rb": "rumbo", "l3": "quitar_gps", "r3": "hora",
+    "coche_combo": {"a": "piloto", "b": "velocidad", "x": "gps", "y": "objetivo", "lb": "baliza_radar", "rb": "rumbo", "lt": "rendirse", "l3": "quitar_gps", "r3": "hora",
                     "arriba": "cruce", "abajo": "necesidades", "izquierda": "radio_off", "derecha": "radio", "start": "ayuda", "misc": "lugares",
                     "touchpad": "lugares"},
 }

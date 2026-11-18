@@ -56,6 +56,7 @@ class Jugador:
         self.sed = 0.0
         self.suciedad = 0.0          # de 0, recién duchado, a 100
         self.carne_puntos = 12       # puntos del carné de conducir; con 0, retirado
+        self.cargos_helicoptero = 0  # helicópteros de la policía que has derribado y aún no has pagado
         self.pareja = ""
         self.sustancias = {}
         self.efectos = []

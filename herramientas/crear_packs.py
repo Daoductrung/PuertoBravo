@@ -14,6 +14,7 @@ Formas de recortar:
     ("carpeta", "archivo", {"dur": 0.3})      como mucho esa duración, con fundido al final
     ("carpeta", "archivo", {"golpe": 0.6})    desde el primer golpe fuerte (grabaciones con varios disparos)
     ("carpeta", "archivo", {"bucle": 6.0, "desde": 2.0})   tramo que se repite sin corte
+    ("carpeta", "archivo", {"desde": 2.0, "dur": 0.6})     una toma de una grabación que trae varias seguidas
 """
 import json
 import os
@@ -69,6 +70,7 @@ COL = {
     "UO": ("ui_ogg/ui_ogg", "UI sound effects: button clicks, user feedback, notifications", "https://opengameart.org/content/ui-sound-effects-button-clicks-user-feedback-notifications"),
     "BSB": ("bigsoundbank", "BigSoundBank.com y LaSonotheque.org", "https://bigsoundbank.com"),
     "ARM": ("Prepared_SFX_Library/Prepared SFX Library", "The Free Firearm Sound Library", "https://opengameart.org/content/the-free-firearm-sound-library"),
+    "YELL": ("yelling_sounds/yelling sounds", "Male grunt and yelling sounds", "https://opengameart.org/content/male-gruntyelling-sounds"),
 }
 
 PACKS = {
@@ -314,6 +316,20 @@ EXTRA = {
     "amigo_entra": ("IF", "maximize_004"), "amigo_sale": ("IF", "minimize_004"), "chat": ("IF", "confirmation_002"),
     "gallo": ("BSB", "gallo_0283"), "frenazo": ("BSB", "frenazo_2370", {"dur": 1.2}),
 }
+# La calle (1.7.1): gritos y quejas con voz de hombre y de mujer, la munición que se recoge y el helicóptero de la policía.
+# El megáfono se queda en todos los packs con el sonido del juego: lo que dice lo lee el lector, y una grabación con palabras estorbaría.
+CALLE = {
+    "realista": {"grito_hombre": ("YELL", "2yell3"), "grito_mujer": ("@girly-scream", "wscream_2_0"),
+                 "dolor_mujer": ("@female-hurt-grunts-groans", "female_hurt_grunts_groans_1", {"desde": 2.05, "dur": 0.65}),
+                 "recoger_municion": ("@gun-reload-sound-effects", "clipload1"),
+                 "helicoptero_policia": ("@helicopter-sounds", "helicopter_0", {"bucle": 4.0, "desde": 22.0})},
+    "alternativo": {"grito_hombre": ("YELL", "3yell4"), "grito_mujer": ("@girly-scream", "wscream_2_0"),
+                    "dolor_mujer": ("@female-hurt-grunts-groans", "female_hurt_grunts_groans_1", {"desde": 7.3, "dur": 0.75}),
+                    "recoger_municion": ("SND", "Interface/cartriges"),
+                    "helicoptero_policia": ("@helicopter-sfx", "heli_0", {"bucle": 4.0, "desde": 14.0})},
+}
+for _clave, _tabla in CALLE.items():
+    PACKS[_clave]["sonidos"].update(_tabla)
 for _clave in ("realista", "alternativo"):
     for _sonido, _origen in EXTRA.items():
         PACKS[_clave]["sonidos"].setdefault(_sonido, _origen)
@@ -391,6 +407,11 @@ def preparar(d, op):
         ini = max(0, int(fuerte[0]) - int(0.004 * SR)) if len(fuerte) else 0
         d = _fundir(d[ini:ini + int(op["golpe"] * SR)], 0.001, 0.06)
     else:
+        if "desde" in op:                                        # una grabación con varias tomas seguidas: se empieza en la que se quiere
+            d = d[int(op["desde"] * SR):]
+            if "dur" in op:
+                d = d[:int(op["dur"] * SR) + int(0.1 * SR)]
+            pico = float(np.max(np.abs(d))) or 1.0
         oye = np.nonzero(np.abs(d) > 0.02 * pico)[0]
         if len(oye):
             d = d[max(0, int(oye[0]) - int(0.002 * SR)):int(oye[-1]) + int(0.02 * SR)]
@@ -481,8 +502,7 @@ def anadir(sonidos):
                 meta = json.load(f)
             meta["grabaciones"] = int(meta.get("grabaciones", 0)) + grab
             meta["originales_del_juego"] = int(meta.get("originales_del_juego", 0)) + orig
-            with open(os.path.join(dest, "pack.json"), "w", encoding="utf-8", newline="
-") as f:
+            with open(os.path.join(dest, "pack.json"), "w", encoding="utf-8", newline="\n") as f:
                 json.dump(meta, f, ensure_ascii=False, indent=2)
             with open(os.path.join(dest, "CREDITOS.txt"), "a", encoding="utf-8", newline="\r\n") as f:
                 f.write("\n".join(["", "SONIDOS AÑADIDOS DESPUÉS"] + lineas) + "\n")
@@ -502,8 +522,7 @@ def anadir(sonidos):
             with open(os.path.join(env, "pack.json"), encoding="utf-8") as f:
                 meta = json.load(f)
             meta["sonidos"] = int(meta.get("sonidos", 0)) + nuevos
-            with open(os.path.join(env, "pack.json"), "w", encoding="utf-8", newline="
-") as f:
+            with open(os.path.join(env, "pack.json"), "w", encoding="utf-8", newline="\n") as f:
                 json.dump(meta, f, ensure_ascii=False, indent=2)
         except (OSError, ValueError):
             pass

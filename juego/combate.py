@@ -170,6 +170,8 @@ class Combate:
         j = self.j
         if j.t_ataque > 0 or self.transicion:
             return
+        if self.rendido:
+            self._romper_rendicion("Atacas con las manos arriba: se acabó la rendición.")
         a = self.arma()
         x, y = self.pos()
         fuego = a["tipo"] == "fuego"
@@ -282,12 +284,20 @@ class Combate:
             tx, ty = x + math.sin(rad) * a["alcance"] * 0.6, y + math.cos(rad) * a["alcance"] * 0.6
         self.son(a["sonido"], vol=0.7)
         d = math.hypot(tx - x, ty - y)
-        self.explosiones.append({"t": 0.35 + d / 45.0, "x": tx, "y": ty, "radio": a.get("radio", 8), "dano": a["dano"], "arma": a["id"]})
+        self.explosiones.append({"t": 0.35 + d / 45.0, "x": tx, "y": ty, "radio": a.get("radio", 8), "dano": a["dano"], "arma": a["id"],
+                                 "sigue": o if getattr(o, "volando", False) else None})
         self.decir(f"Quedan {m['cargador'] + m['reserva']}.")
 
     def _estallar(self, e):
         j = self.j
         x, y, r = e["x"], e["y"], e["radio"]
+        blanco = e.get("sigue")
+        if blanco is not None and not blanco.muerto:             # iba contra algo que vuela: estalla arriba, junto a él, y abajo no hace nada
+            c = self.son("explosion", xy=(blanco.x, blanco.y), ref=30, maxd=400)
+            c.alto = 35.0
+            self.delito(3, "uso de explosivos", siempre=self.mundo.policia and random.random() < 0.5)
+            self.danar_vehiculo(blanco, e["dano"] * 1.3)
+            return
         self.son("explosion", xy=(x, y), ref=30, maxd=400)
         self.sv_explosion(x, y, e.get("arma"))
         self.delito(3, "uso de explosivos", siempre=self.mundo.policia and random.random() < 0.5)
@@ -297,11 +307,10 @@ class Combate:
                 if d < r:
                     self.danar_persona(p, e["dano"] * (1 - 0.6 * d / r))
                 elif p.tipo == "civil" and d < 50:
-                    p.estado = "huye"
-                    p.t_estado = 12
+                    self.asustar(p, 12)
         for v in list(self.vehiculos):
             d = v.dist(x, y)
-            if not v.muerto and d < r + 2:
+            if not v.muerto and d < r + 2 and not getattr(v, "volando", False):
                 self.danar_vehiculo(v, e["dano"] * 1.3 * (1 - 0.5 * d / (r + 2)))
         px, py = self.pos()
         d = math.hypot(px - x, py - y)
@@ -354,13 +363,11 @@ class Combate:
         app.abrir(menu)
 
     def _ruido_disparo(self, x, y):
-        self.delito(0.4, "disparos en la vía pública")
+        if not self.en_defensa_propia():                         # disparar a quien te ha atacado primero no es delito
+            self.delito(0.4, "disparos en la vía pública")
         for p in self.personas:
             if p.tipo == "civil" and not p.muerto and p.estado == "pasea" and p.dist(x, y) < 40:
-                p.estado = "huye"
-                p.t_estado = 10
-                if random.random() < 0.4:
-                    self.son("grito", xy=(p.x, p.y), vol=0.6, tono=p.tono)
+                self.asustar(p, 10)
 
     # ------------------------------------------------------------------ daños
     def danar_persona(self, p, dano, atropello=False):
@@ -379,6 +386,8 @@ class Combate:
             p.muerto = True
             p.t_estado = self.t
             self.son("muerte_npc", xy=(p.x, p.y), ref=6, tono=p.tono)
+            if not getattr(p, "inofensivo", False) and not getattr(p, "deportivo", False):
+                self.aviso_ambulancia(p.x, p.y)                  # al rato acude una ambulancia
             if p.tipo == "civil":
                 self.delito(3 if atropello else 4, "atropello" if atropello else "homicidio")
                 self.decir("Has atropellado a un peatón." if atropello else f"{p.nombre} cae al suelo.")
@@ -398,23 +407,25 @@ class Combate:
                 banda = getattr(p, "banda", None) or ("Los Calaveras" if p.tipo == "banda" else G.banda_en(p.nombre))
                 if banda:
                     self.cambiar_rep_banda(banda, -4)            # matar a los suyos no se olvida
-                if p.tag != "evento":
+                if p.tag != "evento" and not self.es_agresor(p):  # tumbar a quien te ha atacado primero es defensa propia
                     self.delito(0.6, None)
                 self.decir(f"{p.nombre} abatido.")
+                self.guerra_baja(p)
             if p.tipo != "civil" and random.random() < 0.6 or random.random() < 0.2:
                 o = Objeto("dinero", "Dinero en el suelo", p.x, p.y)
                 o.valor = random.randint(20, 120) if p.tipo != "civil" else random.randint(5, 50)
                 self.objetos.append(o)
+            self.soltar_botin(p)                                 # y la munición de su arma o, con la opción, el arma
             if self.objetivo is p:
                 self.objetivo = None
                 if self.cfg["punteria"] == "completa":
                     self.fijar(callar=True)
         else:
-            self.son("dolor_npc", xy=(p.x, p.y), ref=6, tono=p.tono)
-            p.provocado = True
+            self.voz_persona(p, "dolor")                         # se queja con su voz, de hombre o de mujer
+            if not getattr(p, "agresor", False):                 # le has dado tú primero: ya no vale decir que fue defensa propia
+                p.provocado = True
             if p.tipo == "civil":
-                p.estado = "huye"
-                p.t_estado = 12
+                self.asustar(p, 12, grito=0.0)
                 self.delito(2, "agresión")
             elif not p.hostil:
                 p.hostil = True
@@ -454,6 +465,8 @@ class Combate:
             return
         if v.muerto or v.ardiendo >= 0:
             return
+        if getattr(v, "volando", False):                         # el helicóptero de la policía: solo le hacen daño las armas pesadas
+            return self.heli_danado(v, dano)
         antes = v.salud / v.salud_max
         if v is self.j.veh:                                      # el tuyo aguanta más en fácil y en normal: de un par de golpes no arde
             dano *= {"facil": 0.5, "normal": 0.75}.get(self.cfg["dificultad"], 1.0)
@@ -582,6 +595,7 @@ class Combate:
             r_p, r_v = r_p * sistemas.factor_oido_policia(j.veh), r_v * sistemas.factor_oido_policia(j.veh)
         cerca = any(p.tipo == "policia" and not p.muerto and p.dist(x, y) < r_p for p in self.personas) or \
             any(v.ia == "policia" and not v.muerto and v.dist(x, y) < r_v for v in self.vehiculos)
+        cerca = cerca or self.heli_te_tiene()                    # con el helicóptero encima no hay quien despiste a nadie
         if cerca:
             self.t_evasion = 0.0
         else:
@@ -591,7 +605,7 @@ class Combate:
             if self.t_buscando <= 0:
                 self.t_buscando = 1.0
                 self.son("buscando", vol=0.6, cat="interfaz")
-            if self.t_evasion >= (9 + 4 * n if j.veh else 7 + 3 * n):
+            if self.t_evasion >= (9 + 4 * n if j.veh else 7 + 3 * n) * (2.0 if self.t < self.t_represalia else 1.0):
                 self.limpiar_busqueda()
                 return
         self.t_policia -= dt
@@ -681,6 +695,10 @@ class Combate:
             if getattr(p, "po_id", None) is not None:            # un agente del servidor: lo mueve él
                 self.sv_agente_paso(p, d, dt)
                 continue
+            if p.tipo == "policia" and self.agente_auxilia(p, dt):      # hay cerca alguien que te ha atacado: va a por él
+                continue
+            if p.tipo == "policia" and j.estrellas > 0 and not p.hostil:   # un agente que estaba a otra cosa: ahora te buscan a ti
+                p.hostil, p.estado = True, "ataca"
             if p.tipo == "policia" and j.estrellas == 0:
                 p.hostil = False
                 if d > 45:
@@ -745,6 +763,10 @@ class Combate:
                     self.t_frase_enemigo = self.t
                     self.son("grito", xy=(p.x, p.y), vol=0.4, tono=p.tono)
                     self.decir(f"{p.nombre}: {random.choice(p.frases)}")
+            if p.tipo == "policia" and self.rendido:              # te has rendido: no dispara, viene a esposarte
+                if self.agente_detiene(p, d, dt):
+                    return
+                continue
             a = self.armas_d.get(p.arma or "punos", self.armas_d["punos"])
             cuerpo = a["tipo"] == "cuerpo"
             alcance = a["alcance"] if cuerpo else min(a["alcance"], 30.0)
@@ -775,6 +797,7 @@ class Combate:
             if p.t_disparo > 0:
                 continue
             p.amartillado = False
+            self.marcar_agresor(p)                               # te ataca sin que tú le hayas tocado: lo tuyo ya es defensa propia
             p.t_disparo = (0.45 if a.get("automatica") else max(1.2, a["cadencia"] * 2.5)) + random.uniform(0, 0.6)
             if cuerpo:
                 self.son(a["sonido"], xy=(p.x, p.y), ref=4)
@@ -837,6 +860,7 @@ class Combate:
 
     # ------------------------------------------------------- muerte y arresto
     def _fin_persecucion(self):
+        self.rendido = None
         self.sv_busqueda(0, fin=True)                            # en un servidor, los que iban a por ti se retiran ya
         self.limpiar_busqueda(False)
         for p in [p for p in self.personas if p.tipo == "policia"]:
@@ -851,6 +875,7 @@ class Combate:
         self.transicion = True
         j = self.j
         self.sv_al_morir()
+        self.guerra_retirada("Caes en mitad de la pelea.")       # si había una guerra de barrio en marcha, se acaba
         j.stats["muertes"] += 1
         self.son("mision_fallo", cat="interfaz")
         if j.veh:
@@ -903,14 +928,19 @@ class Combate:
         j = self.j
         return self.precio("multa_estrella", 150) * max(1, j.estrellas) + j.dinero // 20
 
-    def detener(self, sin_trato=False):
+    def detener(self, sin_trato=False, rendicion=False):
+        """Te detienen. Con «rendicion», te has entregado tú con las manos arriba: con mucha búsqueda, la multa, el calabozo
+        y lo que te quitan van con el nivel que llevabas."""
         if self.transicion:
             return
         j = self.j
+        self.rendido = None
+        nivel = j.estrellas
         if not sin_trato and self.cfg["multas"] and 1 <= j.estrellas <= 2 and j.dinero >= self.coste_multa() and not self.mision:
             self._trato_policia()                                # con poca búsqueda y dinero en el bolsillo, se puede arreglar
             return
         self.transicion = True
+        self.guerra_retirada("Te detienen en mitad de la pelea.")
         j.stats["detenciones"] += 1
         self.son("esposas", cat="interfaz")
         if j.veh:
@@ -919,9 +949,16 @@ class Combate:
         if self.trabajo:
             self.terminar_trabajo(None)
         multa = min(j.dinero, max(self.precio("multa_minima", 100), j.dinero // 10))
+        horas, todas = 8, False
+        dura = rendicion and nivel >= 3
+        if dura:                                                 # rendirse con mucha búsqueda: más caro cuanto más nivel
+            multa, horas, todas = self._pena_rendicion(nivel)
+            j.stats["rendiciones"] = j.stats.get("rendiciones", 0) + 1
         j.dinero -= multa
-        for ident in [a for a in j.armas if a in self.armas_d and self.armas_d[a]["tipo"] in ("fuego", "explosivo")]:
+        for ident in [a for a in j.armas if a in self.armas_d and (self.armas_d[a]["tipo"] in ("fuego", "explosivo") or (todas and a != "punos"))]:
             del j.armas[ident]
+        if todas:
+            j.blindaje = 0.0
         j.arma = "punos"
         j.animo = max(0.0, j.animo - 15)
         j.reputacion = max(0.0, j.reputacion - 3)
@@ -931,9 +968,16 @@ class Combate:
             multa_extra = min(j.dinero, requisado * self.precio("multa_mercancia", 20))
             j.dinero -= multa_extra
             multa += multa_extra
+        cargos = int(getattr(j, "cargos_helicoptero", 0) or 0)
+        if cargos:                                               # los helicópteros derribados se pagan al caer
+            from . import calle
+            extra = min(j.dinero, int(cargos * calle.aj("helicoptero_multa")))
+            j.dinero -= extra
+            multa += extra
+            j.cargos_helicoptero = 0
         c = self._reaparecer("comisaria")
         j.agachado = False
-        self.pasar_horas(8)
+        self.pasar_horas(horas)
         self.cancelar_gps()
 
         def fin():
@@ -942,4 +986,11 @@ class Combate:
                 self.fallar_mision("Te han detenido.")
         self.son("celda", cat="interfaz")
         j.ciudadania = max(0.0, j.ciudadania - 5)
-        self.app.abrir(Dialogo(self.app, [("Narrador", f"Te esposan y te llevan a {c.nombre}. Tras una noche en el calabozo sales con {multa} euros menos de multa y sin tus armas de fuego. Son las {self.hora_txt()}.")], fin))
+        if dura:
+            texto = (f"Te entregas con las manos arriba y nadie dispara. Te esposan y te llevan a {c.nombre}. Con nivel de búsqueda {nivel} no hay trato que valga: "
+                     f"sales {horas} horas después, con {multa} euros menos y sin tus armas de fuego" + (", ni las demás armas, ni el chaleco" if todas else "") + f". Son las {self.hora_txt()}.")
+        else:
+            texto = f"Te esposan y te llevan a {c.nombre}. Tras una noche en el calabozo sales con {multa} euros menos de multa y sin tus armas de fuego. Son las {self.hora_txt()}."
+        if cargos:
+            texto += f" En la multa van {'el helicóptero' if cargos == 1 else f'los {cargos} helicópteros'} que derribaste."
+        self.app.abrir(Dialogo(self.app, [("Narrador", texto)], fin))

@@ -46,6 +46,8 @@ def ficha(persona, rng=random):
     if getattr(persona, "ficha", None):
         return persona.ficha
     g = rng.choice("hm")
+    if hasattr(persona, "tono"):                                 # su voz ya se ha oído: que el nombre vaya con ella
+        g = "m" if persona.tono > 1.1 else "h"
     edad = rng.randint(19, 74)
     f = {"nombre": rng.choice(G.nombres(g)), "apellido": rng.choice(G.lista("apellidos")), "genero": g, "edad": edad, "oficio": oficio_para(edad, rng, g),
          "caracter": rng.choice(list(CARACTERES)), "confianza": 0, "frases": 0, "disponible": rng.random() < 0.55,

@@ -22,6 +22,8 @@ from .necesidades import Necesidades
 from .combustible import Combustible
 from .realismo import Realismo
 from .misvehiculos import MisVehiculos
+from .calle import Calle
+from .guerra import Guerra
 from .online import Online
 from .enlinea import EnLinea
 from .trabajos import Trabajos
@@ -68,7 +70,7 @@ def migrar(d):
     return d
 
 
-class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos):
+class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos, Calle, Guerra):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -169,6 +171,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.veh_fuera = None
         self.ultimo_veh = None           # el vehículo del que te acabas de bajar: no desaparece aunque te alejes
         self.mis_iniciar()               # tus vehículos: no desaparecen nunca (misvehiculos.py)
+        self.calle_iniciar()             # patrullas, ambulancias, rendición y helicóptero (calle.py)
+        self.guerra_iniciar()            # la guerra de barrios en la calle, si el modo está encendido (guerra.py)
         if guardado:
             self.cargar_dict(guardado)
         else:
@@ -611,7 +615,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.forzando["canal"].parar()
             self.forzando = None
         self.gps = None
+        self.guerra_retirada(callar=True)                       # una guerra de barrio no sigue desde otra localidad
         self._fin_persecucion()
+        self.calle_cambio_mapa()
         self.mundo = self.mapas[mapa_id]
         j.mapa = mapa_id
         if v:
@@ -819,6 +825,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 self.entrar_salir()
         elif k in (pygame.K_RETURN, pygame.K_KP_ENTER):
             self.interactuar()
+        elif k == pygame.K_h and mayus:
+            self.rendirse()
         elif j.veh:
             self.tecla_coche(ev, mayus)
         else:
@@ -1043,8 +1051,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.sv_ruido("grito")
             for p in self.personas:
                 if p.tipo == "civil" and not p.muerto and p.dist(j.x, j.y) < 15:
-                    p.estado = "huye"
-                    p.t_estado = 6
+                    self.asustar(p, 6, grito=0.25)
 
     # ------------------------------------------------------------- información
     def rumbo_txt(self):
@@ -1604,6 +1611,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             o.canal.parar()
         if o in self.objetos:
             self.objetos.remove(o)
+        if o.tipo in ("municion", "arma"):                       # lo que suelta un enemigo caído
+            self.recoger_botin(o)
+            return
         self.son("recoger", cat="interfaz")
         if o.tipo == "dinero":
             self.dar_dinero(o.valor, "Recoges dinero")
@@ -1701,6 +1711,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.actualizar_trabajo(dt)
         self.actualizar_extras(dt)
         self.actualizar_adultos(dt)
+        self.actualizar_calle(dt)
+        self.actualizar_guerra(dt)
         self.t_poblar -= dt
         if self.t_poblar <= 0:
             self.t_poblar = 0.6
@@ -1895,7 +1907,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             elif d > 60 and o.canal is not None:
                 o.canal.parar()
                 o.canal = None
-            if o.tipo == "dinero" and d < 1.8 and not j.veh:
+            if o.tipo in ("dinero", "municion", "arma") and d < 1.8 and not j.veh:
                 self.recoger(o)
 
     def _ambiente(self, dt):
@@ -1949,7 +1961,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 continue
             d = v.dist(x, y)
             if (v.ia == "trafico" and d > 240) or (v.ia in ("aparcado", None) and d > 170) or \
-               (v.ia == "policia" and (d > 330 or (j.estrellas == 0 and d > 110))) or (v.ia == "trafico" and v.t_parado > 15 and d > 50) or (v.ia == "trafico" and v.t_parado > 40):   # un atasco eterno se disuelve
+               (v.ia == "policia" and (d > 330 or (j.estrellas == 0 and d > (260 if getattr(v, "ronda", False) or getattr(v, "auxilio", None) else 110)))) or (v.ia == "trafico" and v.t_parado > 15 and d > 50) or (v.ia == "trafico" and v.t_parado > 40):   # un atasco eterno se disuelve
                 self.quitar_vehiculo(v)
         for p in list(self.personas):
             if p.tag and not p.muerto:
@@ -2044,18 +2056,19 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self._pos_perimetro(p)
             if 28 < p.dist(x, y) < 95:
                 # Por los barrios de una banda con gente en la calle andan los suyos. Los del puerto, solo mientras dura su parte de la historia.
-                b = m.barrio(p.x, p.y)
-                bd = gente.banda(self.banda_de_barrio(b)) if b["id"] not in self.j.territorios else None
-                calle = (bd or {}).get("callejero")
-                historia = ("m05" in self.completadas and "e05" not in self.completadas) if b["id"] == "puerto" else calle in gente.TIPOS
-                if bd and historia and (calle in gente.TIPOS or bd["nombre"] == "Los Calaveras") and random.random() < 0.3:
+                # Con la guerra de barrios en la calle encendida, los de cualquier barrio con banda.
+                mb = self.miembro_de_barrio(m.barrio(p.x, p.y))
+                if mb and random.random() < mb[2]:
+                    bd, calle = mb[0], mb[1]
                     f = gente.enemigo(gente.grupo(calle, tipo="Calavera", arma=random.choice(["pistola", "navaja", "punos"]), salud=60))
                     p.tipo = "banda"
-                    p.nombre = f["nombre"]
+                    p.nombre = f["nombre"] if bd["nombre"] in f["nombre"] or calle == bd.get("callejero") else f"{f['nombre']} de {bd['nombre']}"
                     gente.vestir(p, f)
                     p.banda = bd["nombre"]
                     p.hostil = True
                 self.personas.append(p)
+                if p.tipo == "civil":
+                    self.pareja_de_paseo(p)                      # a veces la gente pasea de dos en dos
 
     def _pos_perimetro(self, p):
         lado = M.B - 15

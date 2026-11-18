@@ -208,7 +208,7 @@ class Conduccion:
             self.forzando = None
             self.decir("Dejas de forzar la cerradura.", True)
             return
-        cerca = [v for v in self.vehiculos if not v.muerto and v.dist(j.x, j.y) <= 5.5]
+        cerca = [v for v in self.vehiculos if not v.muerto and v.dist(j.x, j.y) <= 5.5 and not getattr(v, "volando", False)]
         if not cerca:
             self.decir("No hay ningún vehículo a tu lado. Usa el radar con Tabulador para encontrar uno.", True)
             return
@@ -224,6 +224,9 @@ class Conduccion:
         if v.ia == "enemigos" and v.ocupado:
             self.decir("Ese vehículo está lleno de enemigos.", True)
             return
+        if v.ia == "ambulancia":
+            self.decir("Los sanitarios están trabajando y no te dejan subir.", True)
+            return
         if v.ia == "chofer":                                     # tu chófer, que todavía está llegando: para y te recoge
             self._chofer_llega(v)
         if v.ia in ("trafico", "huida") and v.ocupado:
@@ -235,7 +238,7 @@ class Conduccion:
             p.estado = "huye"
             p.t_estado = 12
             self.personas.append(p)
-            self.son("grito", xy=(p.x, p.y), tono=p.tono)
+            self.voz_persona(p, "grito", vol=1.0)
             self.delito(2, "robo de vehículo con violencia")
             v.ocupado = False
             self._subir(v, True)
@@ -487,8 +490,7 @@ class Conduccion:
             self.enviar_evento("claxon")
             for p in self.personas:
                 if p.tipo == "civil" and not p.muerto and p.dist(v.x, v.y) < 18 and p.estado == "pasea":
-                    p.estado = "huye"
-                    p.t_estado = 4
+                    self.asustar(p, 4, "aparta", grito=0.15)
         elif k == pygame.K_r:
             self.son("radio_cambio", vol=0.5, cat="musica")
             if mayus:
@@ -658,7 +660,8 @@ class Conduccion:
         dx, dy = M.DIRS[v.dir]
         mejor = None
         for o in self.vehiculos:
-            if o is v or o.muerto or o.tag == "objetivo" or o.ia in ("policia", "huida"):
+            # las patrullas que te persiguen no cuentan; las que van de ronda son un coche más, y se frena tras ellas
+            if o is v or o.muerto or o.tag == "objetivo" or o.ia == "huida" or (o.ia == "policia" and self.j.estrellas > 0) or getattr(o, "volando", False):
                 continue
             a = (o.x - v.x) * dx + (o.y - v.y) * dy
             lat = abs((o.x - v.x) * dy - (o.y - v.y) * dx)
@@ -788,7 +791,7 @@ class Conduccion:
         sx, sy = math.sin(rad), math.cos(rad)
         mejor = None
         for o in self.vehiculos:
-            if o is v or o.muerto:
+            if o is v or o.muerto or getattr(o, "volando", False):
                 continue
             a = (o.x - v.x) * sx + (o.y - v.y) * sy
             lat = (o.x - v.x) * sy - (o.y - v.y) * sx
@@ -804,7 +807,7 @@ class Conduccion:
         if v.t_choque > self.t or v.modelo.get("vuela"):
             return
         for o in self.vehiculos:
-            if o is v or o.muerto:
+            if o is v or o.muerto or getattr(o, "volando", False):
                 continue
             if abs(o.x - v.x) < 4 and abs(o.y - v.y) < 4 and o.dist(v.x, v.y) < 3.4:
                 rad = math.radians(v.rumbo)
@@ -845,7 +848,7 @@ class Conduccion:
         px, py = self.pos()
         cand = [(px, py)] if (j.veh or self.mundo.superficie(px, py) == "calzada") else []
         for o in self.vehiculos:
-            if o is not v and o is not j.veh and o.ia != "aparcado" and not o.muerto:
+            if o is not v and o is not j.veh and o.ia != "aparcado" and not o.muerto and not getattr(o, "volando", False):
                 cand.append((o.x, o.y))
         for cx, cy in cand:
             a = (cx - v.x) * dx + (cy - v.y) * dy
@@ -892,6 +895,8 @@ class Conduccion:
             if v.ia in ("aparcado", None):
                 if v.sirena:
                     v.sirena.mover(v.x, v.y)
+                continue
+            if v.ia == "heli_policia":                           # el helicóptero de la policía: lo mueve calle.py
                 continue
             if v.ia == "servidor":                               # tráfico común: lo mueve el servidor
                 self.sv_trafico_paso(v, d, dt)
@@ -945,9 +950,11 @@ class Conduccion:
                 obj, decidir = self._ia_chofer(v, d, dt)
                 if v.ia != "chofer":                             # acaba de llegar: ya está parado a tu lado
                     continue
+            elif v.ia == "ambulancia":
+                obj, decidir = self._ia_ambulancia(v, d, dt)
             v.vel += max(-v.modelo["freno"] * dt, min(v.modelo["acel"] * dt, obj - v.vel))
             if v.vel > 0.05:
-                self._mover_via(v, dt, 0.0, decidir)
+                self._mover_via(v, dt, getattr(v, "lat_obj", 0.0), decidir)
             if d < 100:
                 self._motor(v, False)
                 v.canal.mover(v.x, v.y)
@@ -958,7 +965,7 @@ class Conduccion:
             if v.sirena:
                 v.sirena.mover(v.x, v.y)
             # atropello del jugador a pie
-            if not j.veh and v.vel > 3 and d < 2.4 and self.t > v.t_choque:
+            if not j.veh and v.vel > 3 and d < 2.4 and self.t > v.t_choque and v.ia != "ambulancia":
                 v.t_choque = self.t + 1.5
                 self.son("golpe")
                 self.danar_jugador(v.vel * 2.2, (v.x, v.y))
@@ -967,13 +974,9 @@ class Conduccion:
 
     def _ia_patrulla(self, v, d, dt):
         j = self.j
-        if j.estrellas == 0:
-            if v.sirena:
-                v.sirena.parar()
-                v.sirena = None
-            if v.desplegado:
-                return 0.0, self._decidir_trafico
-            return 11.0, self._decidir_trafico
+        if j.estrellas == 0:                                     # no te buscan: hace su ronda, o acude a una pelea (calle.py)
+            return self.patrulla_sin_busqueda(v, d, dt)
+        v.auxilio = None
         if v.sirena is None:
             # Con varias patrullas, cada sirena suena más floja: juntas no deben tapar ni saturar todo lo demás.
             otras = sum(1 for o in self.vehiculos if o is not v and o.sirena is not None)

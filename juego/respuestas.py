@@ -136,6 +136,36 @@ def _elegir(opciones, dichas, rng):
     return rng.choice(nuevas or list(opciones))
 
 
+def _poner_datos(frase, ficha, ctx):
+    datos = {"yo": ficha.get("nombre", ""), "oficio": ficha.get("oficio", ""), "o": "a" if ficha.get("genero") == "m" else "o",
+             "barrio": ctx.get("barrio", "el barrio"), "ciudad": ctx.get("ciudad", "la ciudad"), "hora": ctx.get("hora", ""), "tu": ctx.get("tu", "")}
+    for k, v in datos.items():
+        frase = frase.replace("{" + k + "}", v)
+    return frase[0].upper() + frase[1:]
+
+
+def suelta(ficha, ctx, temas=None, rng=random):
+    """Una frase suelta de una persona sin que nadie le pregunte: lo que se le oye a alguien que pasa hablando con otro.
+    «temas» son los temas que valen para eso; vacío, cualquiera de los que no piden confianza."""
+    _cargar()
+    from . import gente
+    caracter = gente.habla_de(ficha.get("caracter", "amable"))
+    cand = [t for t in TEMAS if t["id"] in temas] if temas else []
+    tema = rng.choice(cand or [t for t in TEMAS if t["confianza"] == 1 and not t["flojo"]] or TEMAS)
+    ops = [f for f in list(tema["r"]) + list(tema[caracter]) * 2 if "{tu}" not in f and "{yo}" not in f and "[" not in f]      # nada que vaya dirigido a ti
+    cuerpo = rng.choice(ops or list(tema["r"]))
+    if len(cuerpo) < 110:
+        cuerpo = _unir(rng.choice([e for e in ENTRADAS[caracter] if "[" not in e]), cuerpo)
+    return _poner_datos(cuerpo, ficha, ctx)
+
+
+def comentario(ficha, rng=random):
+    """Lo que contesta quien va al lado: un comentario corto, con el aire de su carácter."""
+    from . import gente
+    caracter = gente.habla_de(ficha.get("caracter", "amable"))
+    return _poner_datos(rng.choice(NO_SE_COMENTARIO[""] + NO_SE_COMENTARIO[caracter] * 2), ficha, {})
+
+
 def responder(texto, ficha, ctx, rng=random):
     """Lo que contesta la persona a un texto libre. Devuelve (frase, cambio de confianza, id del tema o None).
 

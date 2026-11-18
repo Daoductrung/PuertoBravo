@@ -287,3 +287,11 @@ SONIDOS AÑADIDOS DESPUÉS
   disparo_semiautomatico.flac: U_19P.wav, de The Free Firearm Sound Library. Dura 0,45 segundos.
   hacha.flac: impactPlank_medium_002.ogg, de Impact Sounds, de Kenney. Dura 0,17 segundos.
   lanzagranadas.flac: shot_02.ogg, de 25 CC0 bang, firework SFX. Dura 0,15 segundos.
+
+SONIDOS AÑADIDOS DESPUÉS
+  grito_hombre.flac: 3yell4.wav, de Male grunt and yelling sounds. Dura 0,46 segundos.
+  grito_mujer.flac: wscream_2_0.wav, de girly scream. Dura 0,64 segundos.
+  dolor_mujer.flac: female_hurt_grunts_groans_1.ogg, de female hurt grunts groans. Dura 0,75 segundos.
+  recoger_municion.flac: cartriges.ogg, de War on Water sound effects. Dura 0,50 segundos.
+  helicoptero_policia.flac: heli_0.ogg, de helicopter sfx. Dura 4,00 segundos.
+  megafono.flac: sonido original del juego.

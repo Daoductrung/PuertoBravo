@@ -87,9 +87,8 @@ class Extras:
             return
         p.atracado = True
         self.sv_peaton_atracado(p)
-        p.estado = "huye"
-        p.t_estado = 14
-        self.son("grito", xy=(p.x, p.y), vol=0.6, tono=p.tono)
+        p.provocado = True                                       # has empezado tú: si se revuelve, lo suyo no es una agresión
+        self.asustar(p, 14, grito=1.0, callar=True)
         if random.random() < 0.12:
             p.hostil = True
             p.estado = "ataca"

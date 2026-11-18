@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 17
+VERSION_CACHE = 18
 PI2 = 2 * np.pi
 
 
@@ -747,12 +747,31 @@ def generar(semilla=7):
     _poner(lg, (_barrido(280, 80, 0.22) + 0.6 * _filtro(ruido(0.22), 150, 1500)) * _decae(0.22, 0.05, 0.002), 0.0)
     _poner(lg, _filtro(ruido(0.4), 1500, 6000) * _decae(0.4, 0.12, 0.03), 0.08, 0.25)
     S["lanzagranadas"] = _norm(np.tanh(lg * 2.0), 0.9)
+    # ----------------------------------------------- la calle (versión 1.7.1): voces de hombre y de mujer, botín y helicóptero
+    S["grito_hombre"] = _norm(np.concatenate([vocal(210, 330, 0.18, (700, 1300), 0.4), vocal(330, 170, 0.45, (700, 1300), 0.28)]), 0.55)      # un grito grave, de susto
+    S["grito_mujer"] = _norm(np.concatenate([vocal(520, 900, 0.22, (1000, 2300), 0.4), vocal(900, 560, 0.5, (1000, 2300), 0.3)]), 0.55)      # el mismo susto, agudo
+    S["dolor_mujer"] = _norm(vocal(330, 230, 0.3, (950, 1900), 0.15), 0.6)                                                               # la queja de una mujer al recibir un golpe
+    rm = np.zeros(int(SR * 0.5))                                 # recoger munición: el cargador que entra y el cerrojo, dos golpes de metal
+    _poner(rm, _filtro(ruido(0.07), 900, 4500) * _decae(0.07, 0.02), 0.0, 0.8)
+    _poner(rm, (_seno(1900, 0.05) + _filtro(ruido(0.05), 2500, 8000)) * _decae(0.05, 0.012), 0.16)
+    _poner(rm, _filtro(ruido(0.09), 500, 3000) * _decae(0.09, 0.025), 0.3, 0.9)
+    S["recoger_municion"] = _norm(rm, 0.5)
+    tp = _t(2.0)                                                 # helicóptero de la policía: más grande que el civil; palas lentas y graves, y la turbina silbando encima
+    pala = (0.5 + 0.5 * np.sign(np.sin(PI2 * 9 * tp))) * np.exp(-((tp * 9) % 1.0) * 3.2)
+    helip = _filtro(ruido(2.0), 40, 600) * pala * 3.0 + 0.35 * sum(np.sin(PI2 * 117 * k * tp + rng.uniform(0, PI2)) / k for k in range(1, 6)) \
+        + 0.12 * _filtro(ruido(2.0), 2600, 5200)
+    S["helicoptero_policia"] = _norm(np.tanh(helip), 0.6)
+    mg = np.zeros(int(SR * 1.1))                                 # megáfono: el acople al abrirse y dos sílabas de voz metálica, sin palabras: lo que dice lo dice el lector
+    _poner(mg, _barrido(2400, 3100, 0.16) * _decae(0.16, 0.07, 0.02), 0.0, 0.5)
+    for t0, f0, f1 in ((0.24, 190, 150), (0.62, 170, 120)):
+        _poner(mg, _filtro(np.tanh(3.0 * vocal(f0, f1, 0.32, (800, 1700), 0.2)), 500, 2800), t0)
+    S["megafono"] = _norm(mg, 0.55)
     return S
 
 
 # Sonidos que el juego reproduce en bucle: si los sustituyes, el final debe empalmar con el principio.
 PREFIJOS_BUCLE = ("amb_", "motor_", "lugar_", "loc_")
-BUCLES = {"avion", "tren", "tranvia", "bajo_agua", "rodadura", "alarma", "sirena", "sirena_ambulancia", "fuego", "ganzua", "intermitente", "lluvia", "latido", "multitud"}
+BUCLES = {"avion", "tren", "tranvia", "bajo_agua", "rodadura", "alarma", "sirena", "sirena_ambulancia", "fuego", "ganzua", "intermitente", "lluvia", "latido", "multitud", "helicoptero_policia"}
 
 
 def es_bucle(nombre):

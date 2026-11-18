@@ -115,6 +115,8 @@ class Misiones:
         return None
 
     def objetivo_txt(self):
+        if self.guerra:
+            return self.guerra_txt()
         if self.mision:
             p = self.mision["def"]["pasos"][self.mision["paso"]]
             t = f"Misión {self.mision['def']['titulo']}. {p.get('texto', '')}"
@@ -158,6 +160,7 @@ class Misiones:
     def iniciar_mision(self, m, reintento=False, repeticion=False):
         if self.trabajo:
             self.terminar_trabajo("Dejas el trabajo para empezar la misión.")
+        self.guerra_retirada("Dejas la pelea para empezar la misión.")
         self.cancelar_gps()
         from . import vozgen
         vozgen.al_jugar(self, m.get("id"))                       # con un personaje propio: las voces de esta misión, lo primero
@@ -1159,6 +1162,24 @@ class Misiones:
         from . import menus_juego
         menus_juego.autoguardar(self)
 
+    def _rebobinar_jugador(self, copia):
+        """Devuelve al jugador a como estaba al empezar la misión (o en el punto de control), menos sus garajes. Los vehículos
+        no vuelven atrás: los de la calle nunca lo han hecho, así que los garajes tampoco. Si no, el que sacaste del garaje
+        durante la misión quedaba duplicado (en el garaje y en la calle), y el que guardaste se perdía."""
+        j = self.j
+        stats = dict(j.stats)
+        garajes = j.garajes
+        j.de_dict(copy.deepcopy(copia))
+        j.stats.update({k: stats[k] for k in ("muertes", "detenciones", "tiempo")})
+        j.garajes = garajes
+        for pid in [k for k, fichas in garajes.items() if fichas and k not in j.propiedades]:
+            for ficha in list(garajes[pid]):                     # la casa la compraste durante la misión y vuelve a no ser tuya
+                casa = self.garaje_con_sitio()
+                if casa is None:
+                    break
+                garajes[pid].remove(ficha)
+                garajes.setdefault(casa.id, []).append(ficha)
+
     def fallar_mision(self, motivo):
         ms = self.mision
         if not ms:
@@ -1189,9 +1210,7 @@ class Misiones:
 
         def desde_control():
             self.app.cerrar(menu)
-            stats = dict(self.j.stats)
-            self.j.de_dict(copy.deepcopy(control["copia"]))
-            self.j.stats.update({k: stats[k] for k in ("muertes", "detenciones", "tiempo")})
+            self._rebobinar_jugador(control["copia"])
             self.reloj, self.dia = control["reloj"], control["dia"]
             self._fin_persecucion()
             self.dejar_o_quitar(self.j.veh)                      # el tuyo se queda aparcado donde estaba
@@ -1210,9 +1229,7 @@ class Misiones:
 
         def reintentar():
             self.app.cerrar(menu)
-            stats = dict(self.j.stats)
-            self.j.de_dict(copy.deepcopy(copia))
-            self.j.stats.update({k: stats[k] for k in ("muertes", "detenciones", "tiempo")})
+            self._rebobinar_jugador(copia)
             self.reloj, self.dia = reloj, dia
             self._fin_persecucion()
             l = self.lugares[m["lugar"]]
