@@ -23,7 +23,7 @@ import random
 import secrets
 import time
 
-from . import copias, firma, opciones
+from . import compat, copias, firma, opciones
 from .almacen import Almacen
 from .bots import Bots
 from .trafico import Trafico
@@ -39,8 +39,12 @@ FUNCIONES = ("vehiculos", "combate", "bandas", "barrios", "grupos", "propiedades
              "rol", "radio", "mis_vehiculos", "pasajeros", "topes", "encargos",
              # avisa antes de pararse para una actualización o un mantenimiento, espera a que los juegos guarden y dice
              # por qué se cierra, para que el juego espere y vuelva a entrar solo
-             "reconexion")
-CANALES = ("todos", "cerca", "banda", "priv", "grupo")
+             "reconexion",
+             # a cada juego se le habla con lo que su versión conoce (un arma o un vehículo nuevos le llegan como el más
+             # parecido), el personaje no pierde nada al pasar por una versión anterior, y los contratos fijos cobran
+             # una nómina que paga el servidor
+             "equivalencias", "nominas")
+CANALES =("todos", "cerca", "banda", "priv", "grupo")
 CANALES_ROL = ("ic", "ooc", "yo")                 # en personaje, fuera de personaje y una acción
 # Órdenes que cualquiera puede escribir en el chat con una barra delante, también con un juego anterior a los canales de rol.
 ORDENES_ROL = {"yo": "yo", "me": "yo", "ep": "ic", "ic": "ic", "fp": "ooc", "ooc": "ooc", "ficha": "ficha"}
@@ -63,6 +67,8 @@ VUELVE = {"actualizacion": 120, "reinicio": 60}      # segundos que se calcula q
 AVISOS_PARADA = (60, 30, 10)                          # se repite la cuenta atrás cuando queda esto
 CODIGO_VUELVE = 75                                    # código con el que termina el programa cuando se ha parado para volver
 MUNDO_VACIO = {"version": "0", "huella": "", "mapas": {}, "armas": {}, "modelos": {}, "misiones": {}}
+# Mensajes que nombran un arma o un vehículo: a quien juega con un mundo que no los tiene se le cambian por el más parecido.
+TRADUCIBLES = frozenset(("tiro", "herido", "evento", "po_disparo", "veh_ocupado", "veh_libre", "veh_ok", "veh_mio", "ok", "grupo_msg"))
 
 
 def version_tupla(t):
@@ -194,6 +200,9 @@ class Jugador:
         self.t_aviso_encargo = 0.0
         self.avisado = set()       # avisos de compatibilidad que ya se le han dado: no se repiten
         self.raros = set()         # tipos de mensaje suyos que no se han podido atender: se apuntan una vez
+        self.cat = None            # qué armas y vehículos conoce su juego, si lo ha dicho él al entrar (un mundo sin firma)
+        self.suyo = None           # los nombres de lo que trae su mundo, para decirle qué no coincide
+        self.contrato = {}         # su contrato fijo, como lo lleva el servidor: empleo, puesto, turnos y cuándo cobra
 
     def dist(self, otro):
         return math.hypot(self.x - otro.x, self.y - otro.y)
@@ -221,14 +230,30 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self.mundos_conocidos = {str(k): str(v) for k, v in dict(self.alm.meta("mundos", {})).items()}
         except (TypeError, ValueError):
             self.mundos_conocidos = {}
+        # Qué conoce el juego de cada mundo: los de las versiones publicadas, que vienen con el servidor, y los que ha
+        # ido comprobando. Con esto se le habla a cada juego de lo que entiende.
+        self.catalogos = {h: compat.en_uso(c) for h, c in compat.CATALOGOS.items()}
+        try:
+            self._catalogos_guardados = {str(h): c for h, c in dict(self.alm.meta("catalogos", {})).items() if compat.en_uso(c) is not None}
+        except (TypeError, ValueError):
+            self._catalogos_guardados = {}
+        for h, c in self._catalogos_guardados.items():
+            self.catalogos.setdefault(h, compat.en_uso(c))
+        self.empleos = None                                   # los contratos fijos y sus nóminas, si el mundo los trae
         if mundo is None:                                     # el último que trajo un jugador; si no, el que venga con el servidor; si no, ninguno
+            leidos = []
             for ruta in (os.path.join(carpeta, "mundo_actual.json"), os.path.join(os.path.dirname(os.path.abspath(__file__)), "mundo.json")):
                 try:
                     with open(ruta, encoding="utf-8") as f:
-                        mundo = json.load(f)
-                    break
+                        leidos.append(json.load(f))
                 except (OSError, ValueError):
                     continue
+            if leidos:
+                mundo = leidos[0]
+                # Si el guardado y el que trae el servidor son el mismo mundo (la misma huella), vale el del servidor: puede
+                # contar más cosas de ese mismo mundo (las nóminas, por ejemplo) que cuando se guardó el otro.
+                if len(leidos) > 1 and isinstance(mundo, dict) and isinstance(leidos[1], dict) and mundo.get("huella") and mundo.get("huella") == leidos[1].get("huella"):
+                    mundo = leidos[1]
         self._poner_mundo(mundo or dict(MUNDO_VACIO), guardar=False)
         self.robos = {}                                       # atracos a negocios en marcha: id de sesión -> datos
         self.encargos = {}                                    # encargos repetibles cobrados: cuenta -> {tipo: [momentos]}. Solo en memoria
@@ -310,6 +335,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                     self.lugares[l["id"]] = dict(l, mapa=mid)
         if mundo.get("huella") and mundo["mapas"]:
             self._recordar_mundo(mundo["huella"], mundo.get("version"))
+            if not mundo.get("provisional"):
+                self._recordar_catalogo(mundo["huella"], mundo)
+        self.empleos = compat.empleos_validos(mundo)
+        for c in self.catalogos.values():                     # lo más parecido a cada cosa se calcula con el mundo que hay: otra vez
+            c["eq"].clear()
+        for j in getattr(self, "jugadores", {}).values():
+            if j.cat:
+                j.cat["eq"].clear()
         # Si el mundo cambia con gente dentro, nada de lo que estaba en marcha puede apuntar a algo que ya no existe.
         for j in getattr(self, "jugadores", {}).values():
             if j.mapa is not None and j.mapa not in mundo["mapas"]:
@@ -339,6 +372,77 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         while len(self.mundos_conocidos) > 200:               # con el tiempo, los más antiguos dejan sitio
             self.mundos_conocidos.pop(next(iter(self.mundos_conocidos)))
         self.alm.poner_meta("mundos", self.mundos_conocidos)
+
+    def _recordar_catalogo(self, huella, mundo):
+        """Apunta qué armas y vehículos conoce el juego de un mundo comprobado (el del servidor, o uno firmado)."""
+        huella = str(huella or "")
+        if not huella or huella in compat.CATALOGOS:
+            return
+        c = compat.catalogo_de(mundo)
+        if self._catalogos_guardados.get(huella) == c:
+            return
+        self._catalogos_guardados[huella] = c
+        while len(self._catalogos_guardados) > 40:
+            self._catalogos_guardados.pop(next(iter(self._catalogos_guardados)))
+        self.catalogos[huella] = compat.en_uso(c)
+        self.alm.poner_meta("catalogos", self._catalogos_guardados)
+
+    def _cat(self, j):
+        """Lo que conoce el juego de un jugador, si no es lo mismo que el mundo del servidor. None si es el mismo mundo, o
+        si no se sabe: entonces se le habla sin cambiar nada."""
+        if j.bot or not j.huella or j.huella == self.mundo.get("huella"):
+            return None
+        return j.cat or self.catalogos.get(j.huella)
+
+    def _arma_eq(self, cat, arma):
+        eq = cat["eq"].get("a:" + arma)
+        if eq is None:
+            eq = cat["eq"]["a:" + arma] = compat.arma_equivalente(arma, self.mundo["armas"], cat["armas"])
+        return eq
+
+    def _modelo_eq(self, cat, modelo):
+        eq = cat["eq"].get("m:" + modelo)
+        if eq is None:
+            eq = cat["eq"]["m:" + modelo] = compat.modelo_equivalente(modelo, self.mundo["modelos"], cat["modelos"])
+        return eq
+
+    def _traducir(self, j, obj):
+        """Un mensaje que nombra un arma o un vehículo, puesto para el juego de este jugador: si su versión no los
+        conoce, lleva el más parecido de los que sí. None si no hay nada que cambiar. Solo cambia lo que oye y ve: el
+        daño ya lo ha decidido el servidor con sus cifras."""
+        cat = self._cat(j)
+        if cat is None:
+            return None
+        t = obj.get("t")
+        armas, modelos = self.mundo["armas"], self.mundo["modelos"]
+        if t in ("tiro", "herido", "po_disparo"):
+            a = obj.get("arma")
+            if isinstance(a, str) and a in armas and a not in cat["armas"]:
+                return dict(obj, arma=self._arma_eq(cat, a))
+        elif t == "evento":
+            q = obj.get("que")
+            if isinstance(q, str) and q.startswith("d:") and q[2:] in armas and q[2:] not in cat["armas"]:
+                return dict(obj, que=("d:" + self._arma_eq(cat, q[2:]))[:20])
+        elif t == "grupo_msg":
+            # los enemigos de la misión de un compañero: cada uno con un arma que su juego conozca
+            d = obj.get("d")
+            lista = d.get("e") if isinstance(d, dict) and d.get("que") == "enemigos" else None
+
+            def fuera(e):
+                a = e.get("arma") if isinstance(e, dict) else None
+                return isinstance(a, str) and a in armas and a not in cat["armas"]
+            if isinstance(lista, list) and any(fuera(e) for e in lista):
+                return dict(obj, d=dict(d, e=[dict(e, arma=self._arma_eq(cat, e["arma"])) if fuera(e) else e for e in lista]))
+        elif t == "ok":
+            vs = [v for v in obj.get("vehiculos") or [] if isinstance(v, dict)]
+            if any(v.get("modelo") in modelos and v.get("modelo") not in cat["modelos"] for v in vs):
+                return dict(obj, vehiculos=[dict(v, modelo=self._modelo_eq(cat, v["modelo"])) if v.get("modelo") in modelos and v.get("modelo") not in cat["modelos"] else v
+                                            for v in vs])
+        else:
+            v = obj.get("v")
+            if isinstance(v, dict) and v.get("modelo") in modelos and v.get("modelo") not in cat["modelos"]:
+                return dict(obj, v=dict(v, modelo=self._modelo_eq(cat, v["modelo"])))
+        return None
 
     async def _recibir_mundo(self, j, lector, m):
         """Pide al juego de quien entra el mundo de su versión. Devuelve (texto, firmado), o (None, False) si no llega bien.
@@ -389,31 +493,57 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         huella, juego = str(m.get("huella") or ""), m.get("juego")
         modo = str(self.cfg["actualizar_mundo"]).lower()
         estricto = str(self.cfg["versiones"]).lower() == "iguales"
+        # Con «admitir», que es lo de serie, quien trae unos datos que el servidor no puede comprobar (mods, o una versión
+        # sin firma) entra igual: juega en lo común, y el servidor arbitra con su mundo y le dice qué no coincide.
+        admitir = str(self.cfg.get("mundo_distinto", "admitir")).lower() != "rechazar" and not estricto
         vacio = not self.mundo["mapas"]
+        provisional = bool(self.mundo.get("provisional")) and not vacio      # el que hay lo trajo alguien sin firma, a falta de otro
+        dice_firma = bool(m.get("firmado"))
         mas_nuevo = version_tupla(juego) > version_tupla(self.mundo.get("version")) or vacio
         por_admin = modo == "admin" and es_admin
-        puede_adoptar = modo != "no" and ((mas_nuevo and bool(m.get("firmado"))) or por_admin)
-        conocido = huella in self.mundos_conocidos and not vacio
+        puede_adoptar = modo != "no" and ((mas_nuevo and dice_firma) or por_admin or (provisional and dice_firma))
+        # Conocido: un mundo que este servidor ya tuvo o comprobó, o el de una versión publicada de las que trae apuntadas.
+        conocido = (huella in self.mundos_conocidos or huella in compat.CATALOGOS) and not vacio
         texto, firmado = None, False
-        if puede_adoptar or (not conocido and not estricto and not vacio and m.get("firmado")):
+        if (puede_adoptar or (vacio and admitir and modo != "no")
+                or (not vacio and not estricto and ((dice_firma and not conocido) or (admitir and huella not in self.catalogos)))):
             texto, firmado = await self._recibir_mundo(j, lector, m)
         nuevo = self._mundo_de_texto(texto, huella) if texto else None
-        if nuevo is not None and puede_adoptar and ((firmado and mas_nuevo) or por_admin):
+        if nuevo is not None:
+            nuevo.pop("provisional", None)                    # eso lo dice el servidor, no quien lo trae
+            # Lo que conoce su juego, dicho por él: sirve para hablarle de lo que entiende y para decirle qué no coincide.
+            # Solo para esta sesión; lo que se guarda para otras veces es lo firmado.
+            j.cat = compat.en_uso(compat.catalogo_de(nuevo))
+            j.suyo = {c: {k: {"nombre": str((v or {}).get("nombre") or k)[:60]} for k, v in list(nuevo[c].items())[:compat.MAX_IDS] if isinstance(v, dict)}
+                      for c in ("armas", "modelos")}
+            if firmado:
+                self._recordar_catalogo(huella, nuevo)
+        if nuevo is not None and puede_adoptar and ((firmado and (mas_nuevo or provisional)) or por_admin):
             antes = self.mundo.get("version")
             self._poner_mundo(nuevo)
             self.log("El mundo pasa de la versión %s a la %s%s." % (antes, nuevo.get("version"), ", firmado por quien publica el juego" if firmado else ", traído por un administrador, sin firma"))
             self._a_todos({"t": "aviso", "texto": ("El servidor pasa a los datos de la versión %s del juego. " % nuevo.get("version"))
                            + ("Quien tenga otra versión tendrá que ponerse esta para volver a entrar." if estricto else
-                              "Quien tenga una versión anterior puede seguir jugando, pero lo nuevo solo lo verá quien actualice."),
+                              "Quien tenga una versión anterior puede seguir jugando: lo nuevo lo oirá y lo verá como lo más parecido de lo que su juego conoce."),
                            "son": "notificacion"})
+            return True, ""
+        if nuevo is not None and vacio and admitir and modo != "no":
+            # El servidor no tenía mundo y el primero que entra trae uno sin firma (lleva mods, o juega desde el código):
+            # se usa mientras no llegue otro mejor. Lo sustituye el primero firmado que entre, o el de un administrador.
+            self._poner_mundo(dict(nuevo, provisional=True))
+            self.log("El servidor no tenía mundo: toma, de momento, el que trae %s, de la versión %s, que no viene firmado por quien publica el juego. "
+                     "Lo cambiará por el primero firmado que llegue." % (limpiar_nombre(m.get("nombre")) or "quien entra", nuevo.get("version")))
             return True, ""
         if not vacio and not estricto:
             if nuevo is not None and firmado:                 # es de una versión de verdad: desde ahora, conocido
                 self._recordar_mundo(huella, nuevo.get("version"))
                 self.alm.guardar()
                 conocido = True
-            if conocido:
+            if conocido or admitir:
                 return True, ""
+        if vacio:
+            return False, ("Este servidor acaba de estrenarse y todavía no tiene los datos del juego: se los da el primero que entra, y los tuyos no le han "
+                           "llegado bien o no los puede aceptar. Prueba otra vez; si sigue igual, que entre primero quien lleva el servidor.")
         if version_tupla(juego) < version_tupla(self.mundo.get("version")) and (estricto or vacio or not m.get("firmado")):
             return False, "Este servidor va con la versión %s del juego y la tuya es anterior. Actualiza el juego para entrar." % self.mundo.get("version", "?")
         return False, ("Los datos de tu juego no son los de este servidor, que va con la versión %s: llevas mods que cambian el mundo, "
@@ -660,7 +790,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
     def _enviar(self, j, obj, hecho=None):
         """Pone un mensaje en la cola de un jugador. ``hecho`` es el mismo mensaje ya escrito, cuando va a muchos."""
         t = obj.get("t")
-        if t in ("dinero", "paga_mision") and not j.bot:      # lo que da el servidor queda apuntado: es dinero justificado
+        if t in ("dinero", "paga_mision", "nomina") and not j.bot:      # lo que da el servidor queda apuntado: es dinero justificado
             j.credito += max(0, int(obj.get("n", 0)))
         elif t in ("baja", "atraco_ok", "robo_fin") and not j.bot:
             j.credito += max(0, int(obj.get("botin", 0)))
@@ -669,6 +799,10 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         elif t == "robos_dia" and not j.bot:
             j.descuento += max(0, int(obj.get("total", 0)))
         if j.conectado:
+            if t in TRADUCIBLES and j.huella != self.mundo.get("huella"):      # su juego es de otra versión: lo que no conoce, por lo más parecido
+                otro = self._traducir(j, obj)
+                if otro is not None:
+                    obj, hecho = otro, None
             j.cola.put_nowait(obj if hecho is None else hecho)
             if j.cola.qsize() > 600:                         # no lee: fuera, sin frenar a nadie
                 self._cortar(j)
@@ -886,7 +1020,10 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                                  "version", minima=minima)
         admins = self._nombres("admins")
         es_admin = (fila is not None and (bool(fila["admin"]) or fila["nombre"].lower() in admins)) or (fila is None and si(self.cfg["primer_admin"]) and not self.alm.hay_cuentas())
-        if j.huella != self.mundo["huella"] and (si(self.cfg["comprobar_datos"]) or not self.mundo["mapas"]):
+        # Se mira el mundo de quien entra si no es el del servidor. Y también si el del servidor es provisional (lo trajo
+        # alguien sin firma a un servidor vacío) y este viene firmado, aunque diga la misma huella: el firmado es el que vale.
+        distinto = j.huella != self.mundo["huella"] or (bool(self.mundo.get("provisional")) and bool(m.get("firmado")))
+        if distinto and (si(self.cfg["comprobar_datos"]) or not self.mundo["mapas"]):
             vale, motivo = await self._admitir_mundo(j, lector, m, es_admin)
             if not vale:
                 return self._rechazo(j, motivo)
@@ -920,8 +1057,11 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                     self.jugadores.pop(o.id, None)
                     self._a_todos({"t": "sale", "id": o.id})
                     continue
+                estaba = o.dentro
                 self._salida(o, callar=True)
                 self._echar(o, "Has entrado con tu personaje desde otro sitio.")
+                if estaba:                                    # que a los demás no les queden dos con su nombre: el de antes se va
+                    self._a_todos({"t": "sale", "id": o.id}, menos=o)
         j.cuenta, j.nombre = fila["id"], fila["nombre"]
         j.admin = bool(fila["admin"]) or j.nombre.lower() in admins
         mi = self.alm.miembro(j.cuenta)
@@ -966,13 +1106,30 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 self.alm.poner(j.cuenta, saldo=int(j.saldo))
         partida_de = (fila["juego"] if "juego" in fila.keys() else "") or ""      # con qué versión se guardó el personaje la última vez
         self.alm.poner(j.cuenta, visto=self.ahora(), juego=j.juego)
+        if fila["partida"] and not (fila["partida_juego"] if "partida_juego" in fila.keys() else ""):
+            # Un personaje de antes de que el servidor apuntara con qué versión se guardó: fue con la de su última entrada.
+            self.alm.poner(j.cuenta, partida_juego=partida_de)
         self.alm.guardar()
+        # Si su juego no es de la versión del mundo del servidor: qué no coincide, y el personaje sin lo que su juego no
+        # conoce (un juego anterior puede fallar con un arma que no tiene). Lo apartado sigue guardado aquí.
+        cat = self._cat(j)
+        le_falta, sobra = compat.diferencias(self.mundo, cat, j.suyo)
+        j.suyo = None
+        para_el = compat.adaptar_partida(partida, cat)
+        try:
+            j.contrato = json.loads((fila["contrato"] if "contrato" in fila.keys() else "") or "{}")
+            assert isinstance(j.contrato, dict)
+        except (ValueError, TypeError, AssertionError):
+            j.contrato = {}
+        mundo_ok = {"version": self.mundo.get("version"), "huella": self.mundo.get("huella"), "igual": j.huella == self.mundo.get("huella")}
+        if not mundo_ok["igual"] and cat is not None:         # un juego anterior no mira esta clave
+            mundo_ok["distinto"] = {"faltan": le_falta, "sobran": sobra}
         self._enviar(j, {
             "t": "ok", "id": j.id, "nombre": j.nombre, "cuenta": j.cuenta, "admin": j.admin, "protegido": False,
             "protocolo": j.proto, "funciones": list(FUNCIONES),
             # Con qué mundo trabaja el servidor, y si es el mismo que trae este juego. Si no lo es, juegan juntos igual:
             # cada uno con lo que su versión conoce.
-            "mundo": {"version": self.mundo.get("version"), "huella": self.mundo.get("huella"), "igual": j.huella == self.mundo.get("huella")},
+            "mundo": mundo_ok,
             "partida_de": partida_de,
             "jugadores": [o.publico() for o in self.jugadores.values() if o.dentro and o is not j],
             "servidor": {"nombre": self.cfg["nombre"], "bienvenida": self.cfg["bienvenida"], "pvp": si(self.cfg["pvp"]), "pasivo": si(self.cfg["modo_pasivo"]),
@@ -980,11 +1137,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                          "max_jugadores": tope,
                          # lo de la 1.7.1: un juego anterior no mira estas claves
                          "rol": si(self.cfg["rol"]), "rol_metros": int(self.cfg["rol_metros"]), "radio_coches": si(self.cfg["radio_coches"]),
+                         # la vida honrada, conectado: si hay nóminas de contrato fijo y si las tiendas tratan según el prestigio
+                         "nominas": self._nominas() is not None, "trato_prestigio": si(self.cfg["trato_prestigio"]),
                          "economia": self._economia_datos(j),
                          "precios": {k: int(self.cfg[k]) for k in ("precio_banda", "precio_barrio", "renta_barrio", "precio_guerra", "guerra_espera", "guerra_dura")}},
             "ficha": j.ficha,
             "saldo": j.saldo if si(self.cfg["economia"]) else None,
-            "partida": partida, "dias_fuera": dias_fuera, "hora": self._hora(), "semilla": self.semilla,
+            "partida": para_el, "dias_fuera": dias_fuera, "hora": self._hora(), "semilla": self.semilla,
+            "contrato": self._contrato_publico(j),
             "banda": self._banda_datos(j.banda), "territorios": self._territorios(), "recompensa": int(fila["recompensa"] or 0),
             "pendientes": pendientes,
             "props": self._props(), "robos": self._robos_de_entrada(j),
@@ -994,6 +1154,12 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         dia = str(self.cfg.get("mensaje_dia", "")).strip()
         if dia:
             self._aviso(j, "Mensaje del día: " + dia[:300], "notificacion")
+        difiere = compat.texto_diferencias(le_falta, sobra)
+        if difiere:                                           # qué no coincide entre su juego y este servidor, y qué va a notar
+            self._aviso(j, difiere, "notificacion")
+        if para_el is not partida:
+            self._aviso(j, "Tu personaje tiene armas o vehículos de una versión más nueva del juego. Con esta no los verás, pero no los pierdes: "
+                           "se quedan guardados en el servidor y los tendrás otra vez cuando entres con esa versión.", "notificacion")
         self._a_todos({"t": "entra", "id": j.id, "nombre": j.nombre, "banda": j.banda}, menos=j)
         self.po_entra(j)
         if self.parando and self.parando != "apagado" and self._parada_fin > time.monotonic():      # entra en plena cuenta atrás: que lo sepa
@@ -1341,14 +1507,117 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         self._guardar_saldo(j)
         p = m.get("p")
         if isinstance(p, dict):
+            # El personaje se guarda entero, con todo lo que traiga, también lo que este servidor no conoce. Y si lo guarda
+            # un juego anterior al que lo guardó la última vez, lo que ese juego no sabe guardar (los campos, las armas y
+            # los vehículos de la versión más nueva) se conserva de lo que había: pasar por una versión anterior no borra nada.
+            de = j.juego
+            fila = self.alm.cuenta(j.cuenta)
+            antes_de = ((fila["partida_juego"] if fila is not None and "partida_juego" in fila.keys() else "") or "") if fila is not None else ""
+            if fila is not None and fila["partida"] and antes_de and version_tupla(j.juego) < version_tupla(antes_de):
+                try:
+                    p = compat.fundir_partida(p, json.loads(fila["partida"]), self._cat(j) or self.catalogos.get(j.huella))
+                    de = antes_de
+                except (ValueError, TypeError):
+                    pass
             texto = json.dumps(p, ensure_ascii=False, separators=(",", ":"))
-            if len(texto) <= MAX_LINEA:
-                self.alm.poner(j.cuenta, partida=texto, dia_salida=self.dia)
+            if len(texto) > MAX_LINEA:
+                if "guardar" not in j.raros:                  # una vez por sesión: no se guarda, y que se sepa
+                    j.raros.add("guardar")
+                    self.log("El personaje de %s ocupa demasiado (%d KB) y no se guarda: queda el anterior." % (j.nombre, len(texto) // 1024))
+                    self._aviso(j, "Tu personaje ocupa demasiado para este servidor y no se ha podido guardar: queda como estaba en el guardado anterior.", "error")
+            else:
+                self.alm.poner(j.cuenta, partida=texto, dia_salida=self.dia, partida_juego=de)
                 j.gasto_pend, j.total_guardado = 0, self._dinero_de_partida(p)      # lo comprado hasta aquí ya está en el personaje
-                if m.get("ya"):
-                    self.alm.guardar()
-                    self._enviar(j, {"t": "guardado"})
-                    self._guardan.discard(j.id)                # si el servidor se está parando, de este ya no hay que esperar nada
+            if m.get("ya"):
+                self.alm.guardar()
+                self._enviar(j, {"t": "guardado"})
+                self._guardan.discard(j.id)                    # si el servidor se está parando, de este ya no hay que esperar nada
+
+    # ------------------------------------------------------------- contratos fijos y nóminas
+    # El contrato lo vive el juego de cada uno (el jefe, la evaluación, los avisos), pero el dinero lo pone el servidor:
+    # él cuenta los turnos, él sabe cuándo acaba el periodo y él paga la nómina, con las cifras del mundo y sus topes.
+    # Lo que diga el juego sobre cuánto cobra no cuenta para nada.
+    def _nominas(self):
+        """Los contratos fijos del mundo, si aquí se pagan nóminas. None si el dueño las ha quitado o si el mundo del servidor
+        no los trae (el de una versión anterior a la 1.7.1)."""
+        return self.empleos if self.empleos and si(self.cfg.get("nominas", "si")) else None
+
+    def _contrato_publico(self, j):
+        """Lo que el juego necesita saber de su contrato en este servidor. None si aquí no hay nóminas."""
+        e = self._nominas()
+        if e is None:
+            return None
+        c = j.contrato if isinstance(j.contrato, dict) and j.contrato.get("e") in e["puestos"] else {}
+        out = {"periodo": e["periodo"], "tope": int(self.cfg.get("nomina_max", 0)), "turnos_dia": int(self.cfg.get("nomina_turnos_dia", 0))}
+        if c:
+            out.update(empleo=c["e"], puesto=int(c.get("p", 0)), turnos=int(c.get("t", 0)), fin=int(c.get("fin", self.dia)))
+        return out
+
+    def _guardar_contrato(self, j):
+        if j.cuenta is not None and not j.bot:
+            self.alm.poner(j.cuenta, contrato=json.dumps(j.contrato, separators=(",", ":")) if j.contrato else "")
+
+    def _m_contrato(self, j, m):
+        e = self._nominas()
+        que = m.get("que")
+        if e is None:
+            return self._enviar(j, {"t": "contrato", "que": "no", "motivo": "En este servidor no hay nóminas de contratos fijos."})
+        c = j.contrato if isinstance(j.contrato, dict) else {}
+        if que == "firmar":
+            empleo = m.get("empleo")
+            if not isinstance(empleo, str) or empleo not in e["puestos"]:
+                return self._enviar(j, {"t": "contrato", "que": "no", "motivo": "Ese empleo no existe en la versión del juego con la que va este servidor."})
+            # Se entra por abajo; con una carta de recomendación, un escalón más arriba, que es lo más que da el juego.
+            puesto = 1 if m.get("puesto") == 1 and len(e["puestos"][empleo]) > 1 else 0
+            if c.get("e") == empleo:                           # ya lo tenía firmado aquí: sigue como iba, no empieza otro periodo
+                return self._enviar(j, {"t": "contrato", "que": "firmado", "c": self._contrato_publico(j)})
+            j.contrato = {"e": empleo, "p": puesto, "t": 0, "fin": self.dia + e["periodo"], "dia": self.dia, "hoy": 0, "sube": 0}
+            self._guardar_contrato(j)
+            return self._enviar(j, {"t": "contrato", "que": "firmado", "c": self._contrato_publico(j)})
+        if not c or c.get("e") not in e["puestos"]:
+            if que != "dejar":
+                self._enviar(j, {"t": "contrato", "que": "no", "motivo": "Este servidor no tiene apuntado ningún contrato tuyo."})
+            j.contrato = {}
+            return self._guardar_contrato(j)
+        puestos = e["puestos"][c["e"]]
+        k = max(0, min(len(puestos) - 1, int(c.get("p", 0))))
+        cupo, sueldo = puestos[k]
+        if que == "dejar":
+            j.contrato = {}
+            self._guardar_contrato(j)
+        elif que == "turno":
+            if c.get("dia") != self.dia:
+                c["dia"], c["hoy"] = self.dia, 0
+            if int(c.get("hoy", 0)) < int(self.cfg["nomina_turnos_dia"]):      # no más turnos al día de los que caben en un día
+                c["hoy"] = int(c.get("hoy", 0)) + 1
+                c["t"] = min(cupo * 3, int(c.get("t", 0)) + 1)
+                self._guardar_contrato(j)
+            self._enviar(j, {"t": "contrato", "que": "turno", "c": self._contrato_publico(j)})
+        elif que == "ascenso":
+            # Sube un puesto, y solo uno, tras un periodo cobrado con el cupo cumplido: el juego decide si lo merece; el
+            # servidor, que no vaya más deprisa de lo que se puede.
+            if int(c.get("sube", 0)) > 0 and k + 1 < len(puestos):
+                c["p"], c["sube"] = k + 1, 0
+                self._guardar_contrato(j)
+            self._enviar(j, {"t": "contrato", "que": "puesto", "c": self._contrato_publico(j)})
+        elif que == "cobrar":
+            falta = int(c.get("fin", self.dia)) - self.dia
+            if falta > 0:                                      # aún no toca: ni se paga ni cambia nada, se pida las veces que se pida
+                return self._enviar(j, {"t": "nomina", "n": 0, "faltan": falta, "c": self._contrato_publico(j)})
+            turnos = int(c.get("t", 0))
+            parte = min(1.0, turnos / float(cupo))
+            paga = int(sueldo * parte)
+            if turnos >= cupo and m.get("buena"):              # la prima por una buena evaluación, la del mundo y no más
+                paga += int(sueldo * e["prima"] / 100.0)
+            paga = max(0, min(paga, int(self.cfg["nomina_max"])))
+            if m.get("mala"):                                  # su jefe no le paga este periodo: el juego lo dice, y el servidor no insiste
+                paga = 0
+            c.update(t=0, fin=self.dia + e["periodo"], sube=1 if turnos >= cupo else 0)
+            self._guardar_contrato(j)
+            self._guardar_saldo(j)
+            if paga > 0:
+                self.log("Nómina de %s: %d euros por %d de %d turnos." % (j.nombre, paga, turnos, cupo))
+            self._enviar(j, {"t": "nomina", "n": paga, "turnos": turnos, "cupo": cupo, "c": self._contrato_publico(j)})
 
     def _m_aspecto(self, j, m):
         """Lo que lleva puesto un jugador, como lo cuenta su juego: se reparte tal cual a los demás. El servidor no sabe de
@@ -1500,6 +1769,12 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         ident = str(m.get("id", ""))[:40]
         if clase is None or not ident:
             return
+        cat = self._cat(o)
+        if clase in ("arma", "balas") and cat is not None and ident not in cat["armas"]:
+            # El juego del otro es de una versión que no tiene esa arma: no la puede recibir. A quien la daba, su juego ya se
+            # la había quitado: se le devuelve, para que no se pierda por el camino.
+            self._enviar(j, {"t": "recibe", "de": j.id, "nombre": "El servidor, de vuelta", "clase": clase, "id": ident, "n": n})
+            return self._aviso(j, "%s juega con una versión del juego que no tiene esa arma: no la puede recibir, y te la quedas." % o.nombre, "error")
         self._enviar(o, {"t": "recibe", "de": j.id, "nombre": j.nombre, "clase": clase, "id": ident, "n": n})
         self._enviar(j, {"t": "dado", "a": o.id, "nombre": o.nombre, "clase": clase, "id": ident, "n": n})
 
@@ -1557,6 +1832,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         zonas, cuantos = {}, {}                                # (localidad, zona) -> fichas al detalle, y cuántas son
         cortas = {}                                            # localidad -> fichas cortas
         mia, mia_corta = {}, {}                                # la de cada uno, para quitarla de lo que se le manda
+        huella_mundo = self.mundo.get("huella")
+        conducidos = {o.veh for o in todos if o.veh and o.veh in self.mundo["modelos"]}      # los modelos que hay ahora mismo en marcha
         for o in todos:
             if o.mapa is None:
                 if lejos and o.dentro and o.mapa_fuera:        # en una localidad que este servidor no conoce
@@ -1621,6 +1898,12 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 if j.mapa is None and j.id in mia_corta:
                     fuera = fuera.replace(mia_corta[j.id], "", 1)
                 partes = fuera + partes
+            if partes and j.huella != huella_mundo:            # su juego es de otra versión: los vehículos que no conoce, por el más parecido
+                cat = self._cat(j)
+                if cat is not None:
+                    for modelo in conducidos:
+                        if modelo not in cat["modelos"]:
+                            partes = partes.replace('"v":%s,' % escribir(modelo), '"v":%s,' % escribir(self._modelo_eq(cat, modelo)))
             mas = {}
             if j.mapa is not None and n % 2 == 0:
                 if po_activo:
@@ -2110,7 +2393,11 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         o = self.jugadores.get(m.get("a"))
         if o is None or o is j or (not o.dentro and not o.fantasma):
             return
-        arma = self.mundo["armas"].get(m.get("arma") if m.get("arma") in self.mundo["armas"] else j.arma)
+        # El arma con la que cuenta el servidor: la que dice el mensaje si su mundo la tiene; si no, la que lleva (que, si
+        # tampoco la conoce, son las manos). De ahí salen el daño, el alcance y la cadencia, iguales para todos, sea cual
+        # sea la versión de quien dispara y de quien recibe. A los demás se les nombra esa, no la que diga el mensaje.
+        cual = m.get("arma") if m.get("arma") in self.mundo["armas"] else j.arma
+        arma = self.mundo["armas"].get(cual)
         if arma is None:
             return
         ahora = time.monotonic()
@@ -2121,7 +2408,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         j.t_ataque = ahora
         d = j.dist(o)
         alcance = float(arma["alcance"])
-        self._a_todos({"t": "tiro", "de": j.id, "arma": m.get("arma") or j.arma, "x": round(j.x, 1), "y": round(j.y, 1)}, menos=j, mapa=j.mapa)
+        self._a_todos({"t": "tiro", "de": j.id, "arma": cual, "x": round(j.x, 1), "y": round(j.y, 1)}, menos=j, mapa=j.mapa)
         self._marcar_agresion(j, o)
         if d > alcance * 1.15 + 3.0:
             return self._enviar(j, {"t": "fallo", "a": o.id, "motivo": "", "lejos": True})
@@ -2146,7 +2433,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if o.bot:
             return self.bot_golpeado(o, j)
         if o.dentro:
-            self._enviar(o, {"t": "herido", "de": j.id, "nombre": j.nombre, "arma": m.get("arma") or j.arma, "dano": dano, "x": round(j.x, 1), "y": round(j.y, 1)})
+            self._enviar(o, {"t": "herido", "de": j.id, "nombre": j.nombre, "arma": cual, "dano": dano, "x": round(j.x, 1), "y": round(j.y, 1)})
         elif o.salud <= 0:                                     # se fue en pleno combate y ha caído igual
             self._caida(o, j, ausente=True)
 

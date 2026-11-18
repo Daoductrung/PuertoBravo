@@ -35,7 +35,7 @@ a { color: #9fd0ff; }
 <li><a href="#cifrado">Cifrado y certificado</a></li>
 <li><a href="#entrada">Quién puede entrar</a></li>
 <li><a href="#administrar">Administrar el servidor</a></li>
-<li><a href="#versiones">Jugar juntos con versiones distintas del juego</a></li>
+<li><a href="#versiones">Jugar con versiones distintas del juego</a></li>
 <li><a href="#dinero">El dinero de los jugadores: el tope por hora y los encargos</a></li>
 <li><a href="#rol">Rol por texto, la voz y la radio de los vehículos</a></li>
 <li><a href="#copias">Copias de seguridad, mover el servidor y actualizarlo</a></li>
@@ -399,27 +399,49 @@ a { color: #9fd0ff; }
 <!-- ORDENES:FIN -->
 <p>Los nombres de jugador se escriben tal cual, con sus espacios. Por ejemplo, <code>expulsar Ana la Rápida</code> o <code>decir Ana la Rápida: baja la música</code>.</p>
 
-<h2 id="versiones">17. Jugar juntos con versiones distintas del juego</h2>
-<p>El servidor gestiona, pero el contenido lo pone el juego. El mundo, con sus lugares, sus armas, sus vehículos y sus misiones, no va atado al servidor: se lo trae el juego de quien entra.</p>
+<h2 id="versiones">17. Jugar con versiones distintas del juego</h2>
+<p>En tu servidor pueden jugar juntas personas con versiones distintas del juego. No se echa a nadie por ir por detrás ni por ir por delante: solo se rechaza por versión si tú lo pides, con la versión mínima. Y a partir de ahí, todos lo más igualados posible.</p>
+<h3>El mundo lo trae el primero que entra</h3>
+<p>El servidor gestiona, pero el contenido lo pone el juego. El mundo, con sus lugares, sus armas, sus vehículos y sus misiones, no va atado al servidor: se lo da el juego de quien entra.</p>
 <ul>
-<li>Cuando sale una versión nueva del juego, el primero que entra con ella le trae su mundo al servidor, que lo adopta sin reiniciarse. Solo lo acepta si lo firma quien publica el juego, así que nadie puede colarle un mundo cambiado.</li>
-<li>Quien sigue con una versión anterior puede seguir entrando. No se echa a nadie por ir por detrás ni por ir por delante.</li>
-<li>Cada uno juega con lo que su versión conoce. Quien va con una versión anterior no ve los lugares, vehículos o armas que solo tiene la nueva. Quien va con una más nueva que el mundo del servidor puede estar en una localidad nueva, pero allí los demás no le ven, y el juego se lo dice.</li>
-<li>Al entrar, el juego dice si el servidor va con los datos de otra versión que la tuya. También está en el móvil del juego, En línea, Datos y reglas de este servidor.</li>
-<li>En el panel, la lista de jugadores dice con qué versión ha entrado cada uno.</li>
-<li>El servidor no hace falta actualizarlo cada vez que sale una versión del juego. Solo hay que hacerlo cuando una versión del juego lo pida expresamente, o para tener opciones nuevas del propio servidor.</li>
+<li>El servidor que se reparte con el juego ya trae el mundo de su versión. Si lo montas sin él, o lo borras, arranca vacío y toma el mundo del primero que entra.</li>
+<li>Si el primero que entra tiene una versión anterior y después llega alguien con una más nueva, el servidor pasa al mundo de la versión más nueva, sin reiniciarse y sin echar a nadie. Lo anuncia a quien esté dentro. Solo lo hace si ese mundo lo firma quien publica el juego, así que nadie puede colarle un mundo cambiado.</li>
+<li>Si es al revés, y llega alguien con una versión anterior a la del servidor, el servidor conserva su mundo, que es el más nuevo, y esa persona entra igual.</li>
+<li>El servidor conoce de fábrica el mundo de las versiones ya publicadas, y recuerda los que va comprobando: a quien llega con uno de ellos no le pide nada.</li>
+<li>Si el servidor está vacío y el primero que entra lleva mods, o juega con una copia sin firmar, su mundo se toma de momento, se avisa en el registro, y se cambia por el primero firmado que llegue.</li>
 </ul>
-<h3>Las opciones que lo gobiernan</h3>
+<h3>Qué pasa cuando no todos tienen lo mismo</h3>
 <ul>
-<li><code>versiones = compatibles</code>, lo de serie: pueden jugar juntas versiones distintas. Con <code>iguales</code>, solo entra quien tenga exactamente los mismos datos que el servidor.</li>
-<li><code>version_minima</code>: la versión más antigua con la que se puede entrar. Vacía, cualquiera.</li>
-<li><code>actualizar_mundo</code>: quién puede traer un mundo nuevo. Con <code>firmado</code>, cualquiera, si es de una versión de verdad. Con <code>admin</code>, además, un administrador sin firma: es lo que hace falta en un servidor con mods. Con <code>no</code>, el servidor se queda con el mundo que tiene.</li>
-<li><code>comprobar_datos = no</code> deja entrar a cualquiera con lo que traiga, sin comprobar nada.</li>
+<li><strong>El daño, el alcance, la cadencia y el dinero los decide el servidor</strong>, con las cifras de su mundo, las mismas para quien dispara con una versión y para quien recibe con otra. Tener la versión nueva no da ventaja.</li>
+<li><strong>Un arma que el juego de alguien no tiene</strong> le llega como lo más parecido de lo que su juego conoce: oye el disparo de un arma suya de la misma clase y recibe el daño que marca el servidor. Por ejemplo, a quien juega con la 1.7.0 la escopeta de corredera de la 1.7.1 le suena como una de sus escopetas.</li>
+<li><strong>Un vehículo que no tiene</strong> lo oye pasar y lo ve aparcado como el más parecido de los suyos, con el nombre que le puso su dueño. En el servidor sigue siendo lo que es.</li>
+<li><strong>Dar un arma</strong> a quien no la tiene en su versión no se puede: el servidor se la devuelve a quien la daba, y se lo dice.</li>
+<li><strong>Los canales de rol</strong> le llegan a un juego anterior por el chat de siempre, con unas palabras delante que dicen qué son.</li>
+<li><strong>Los avisos de reinicio</strong> le llegan como un aviso normal, y el cierre, con un texto que su juego dice tal cual. Su personaje se guarda igual.</li>
+<li><strong>Si el mundo del servidor es el de una versión anterior</strong> (porque no quieres mundos nuevos, o porque aún no ha entrado nadie con la nueva), las armas nuevas de quien las tenga cuentan contra otros jugadores como ir con las manos, sus vehículos nuevos se ven como un utilitario, y en una localidad nueva no le ve nadie. A esa persona se le dice.</li>
+<li><strong>Al entrar</strong>, a quien no tiene los mismos datos que el servidor se le dice con nombres qué armas y qué vehículos no coinciden y qué va a notar. También está en el móvil del juego, En línea, Datos y reglas de este servidor.</li>
+</ul>
+<h3>El personaje, de una versión a otra</h3>
+<p>El personaje se guarda en el servidor entero, también con lo que el servidor no conoce. Si alguien juega con una versión nueva y un día entra con una anterior, no pierde nada:</p>
+<ul>
+<li>Su juego antiguo recibe el personaje sin las armas ni los vehículos que no conoce. Siguen guardados en el servidor, y se le avisa.</li>
+<li>Cuando ese juego guarda, el servidor vuelve a poner todo lo que la versión antigua no sabe guardar. Lo que haya ganado, gastado o conseguido jugando con la antigua, vale.</li>
+<li>Al volver a entrar con la versión nueva, lo tiene todo otra vez.</li>
+</ul>
+<h3>Lo que decides tú</h3>
+<ul>
+<li><code>version_minima</code>: la versión más antigua con la que se puede entrar. Vacía, que es lo de serie, cualquiera. Es la única manera de rechazar a alguien por su versión.</li>
+<li><code>mundo_distinto</code>: qué hacer con quien trae datos que no se pueden comprobar, que casi siempre es alguien con mods que cambian el mundo. Con <code>admitir</code>, lo de serie, entra y juega en lo común: se le dice qué no coincide, y lo que su mod cambia o añade no cuenta contra los demás. Con <code>rechazar</code>, no entra.</li>
+<li><code>actualizar_mundo</code>: quién puede traer un mundo nuevo. Con <code>firmado</code>, lo de serie, cualquiera, si es de una versión de verdad. Con <code>admin</code>, además, un administrador sin firma: es lo que hace falta para que todo tu servidor juegue con un mod. Con <code>no</code>, el servidor se queda con el mundo que tiene.</li>
+<li><code>versiones</code>: con <code>compatibles</code>, lo de serie, todo lo de este apartado. Con <code>iguales</code>, solo entra quien tenga exactamente los mismos datos que el servidor.</li>
+<li><code>comprobar_datos = no</code> deja entrar a cualquiera sin mirar nada, y el servidor no se pone al día con los mundos nuevos. No hace falta para jugar con versiones distintas.</li>
 </ul>
 <h3>Lo que conviene saber</h3>
 <ul>
-<li>Los mods que cambian el mundo no van firmados. En un servidor de serie, quien los lleve activados no entra; tiene que desactivarlos en su juego. Para jugar con mods, pon <code>actualizar_mundo = admin</code> y que entre primero un administrador con ellos activados.</li>
-<li>El personaje se guarda en el servidor tal como lo deja el juego. Si alguien juega con una versión nueva y luego vuelve a entrar con una anterior, su juego antiguo puede no entender algo de lo guardado. Lo recomendable es no volver atrás de versión.</li>
+<li>En el panel, la lista de jugadores dice con qué versión ha entrado cada uno.</li>
+<li>El servidor no hace falta actualizarlo cada vez que sale una versión del juego. Uno de la 1.7.0 admite juegos de la 1.7.1, pero no sabe dar a cada juego lo más parecido ni reponer el personaje: quien entre en él con una versión anterior a la suya no oirá las armas nuevas de los demás. Actualízalo cuando puedas.</li>
+<li>Para que todo el servidor juegue con un mod, pon <code>actualizar_mundo = admin</code> y que entre primero un administrador con el mod activado. Quien entre sin el mod jugará igual, con lo que tenga en común.</li>
+<li>Lo que solo existe en la versión nueva y no pasa por el servidor (una misión nueva, una tienda nueva, un oficio nuevo) lo tiene quien tiene esa versión, como cualquier otra novedad del juego. Lo que da dinero pasa por los topes del servidor, sea cual sea la versión.</li>
 <li>Si una versión nueva cambia de sitio las calles de una localidad que ya existía, quien siga con la anterior verá el tráfico del servidor moverse por donde ya no hay calle, hasta que actualice.</li>
 </ul>
 
@@ -447,12 +469,24 @@ a { color: #9fd0ff; }
 <li>Quien entra por primera vez empieza con el margen de un cuarto de hora. Salir y volver a entrar no lo rellena.</li>
 <li>El jugador puede mirar cómo va en su móvil: En línea, Datos y reglas de este servidor.</li>
 </ul>
+<h3>Los contratos fijos y sus nóminas</h3>
+<p>Desde la versión 1.7.1 el juego tiene contratos fijos: se firman en la oficina de empleo, piden un número de turnos cada siete días del juego y pagan una nómina al acabar cada periodo. En un servidor, la nómina la paga el servidor, para que nadie se la invente:</p>
+<ul>
+<li>El servidor cuenta los turnos, lleva el calendario y pone la cifra, que sale de los datos del juego. Lo que diga el juego de cada uno sobre cuánto cobra no cuenta.</li>
+<li>La nómina no gasta la ganancia por hora. Lo que se cobra por cada turno sí, como cualquier trabajo.</li>
+<li><code>nominas</code>: con <code>no</code>, en tu servidor no hay contratos fijos. De serie, sí.</li>
+<li><code>nomina_max</code>: lo más que pagas por una nómina. De serie, 1.500 euros, que no recorta ninguna de las del juego; está para que un mod no las dispare.</li>
+<li><code>nomina_turnos_dia</code>: cuántos turnos cuentas a cada jugador en un día del juego. De serie, 3.</li>
+<li>Pedir el cobro antes de tiempo, repetirlo, o salir y volver a entrar no da nada: el contrato y su fecha de cobro se guardan en el servidor.</li>
+<li>Hace falta que el mundo del servidor sea el de la 1.7.1 o posterior. Quien juega con la 1.7.0 no tiene contratos fijos, ni aquí ni jugando solo.</li>
+</ul>
+<p>Del resto de la vida honrada del juego, en un servidor existen los títulos de las academias, que solo cuestan dinero; los antecedentes, que cuentan para los empleos de confianza; y, si dejas <code>trato_prestigio</code> en <code>si</code>, una rebaja pequeña en las tiendas para quien tiene buen nombre y un recargo para quien lo tiene muy malo, igual para todos. No existen los créditos, las hipotecas, los impuestos ni la dirección de negocios: crean o mueven dinero que el servidor no puede comprobar. El juego se lo dice al jugador.</p>
 <h3>Qué poner en tu servidor</h3>
 <ul>
 <li>Entre amigos de confianza: sube <code>ganancia_hora</code> sin miedo, a 100.000 o más, o quita la cuenta del dinero con <code>economia = no</code>. El tope está para los servidores abiertos a desconocidos, no para amargar a tu gente.</li>
 <li>En un servidor abierto: deja el tope de serie y, si tu gente vive de los contratos o de los atracos y se queja, sube antes <code>encargos_hora</code> que <code>ganancia_hora</code>.</li>
 <li>Si alguien te dice que el servidor le quita dinero, pregúntale qué le ha dicho el juego: desde la 1.7.1 le da las cifras. En el registro del servidor sale una línea cada vez, con lo que se le retira y el tope.</li>
-<li>Las seis opciones se cambian con el servidor en marcha.</li>
+<li>Todas estas opciones se cambian con el servidor en marcha.</li>
 </ul>
 <h3>Si se corta la conexión nada más comprar</h3>
 <p>El personaje se guarda en el servidor cada tres cuartos de minuto y, desde la 1.7.1, a los pocos segundos de una compra: a los dos o tres segundos de la primera y, si el jugador sigue gastando, cada doce como mucho. Si aun así a alguien se le corta la conexión antes de que su juego guarde, el servidor le devuelve al saldo lo que gastó desde el último guardado: lo comprado no está en su personaje, pero el dinero tampoco se ha perdido. Sale una línea en el registro. No vale para fabricar dinero: lo que se le dio a otro jugador, lo que cobró el servidor y las casas compradas no vuelven.</p>
@@ -578,7 +612,8 @@ a { color: #9fd0ff; }
 <li>«El servidor está lleno»: sube <code>max_jugadores</code> o ponlo a 0.</li>
 <li>«La contraseña de entrada no es correcta» o «ese código de invitación no vale»: la entrada es con clave o por invitación. Dale la contraseña, o un código nuevo.</li>
 <li>«No puedes entrar en este servidor»: esa cuenta está vetada. Se levanta con Perdonar el veto.</li>
-<li>«Los datos de tu juego no son los de este servidor»: lleva mods que cambian el mundo, o un juego sin firmar. Apartado 17.</li>
+<li>«Los datos de tu juego no son los de este servidor»: lleva mods que cambian el mundo, o un juego sin firmar, y tú tienes <code>mundo_distinto</code> en <code>rechazar</code> o <code>versiones</code> en <code>iguales</code>. De serie, esa persona entra. Apartado 17.</li>
+<li>«Este servidor acaba de estrenarse y todavía no tiene los datos del juego»: el servidor está vacío y no ha podido tomar el mundo de quien entra, casi siempre porque tienes <code>actualizar_mundo</code> en <code>no</code>. Apartado 17.</li>
 <li>«Este servidor pide la versión tal del juego o una posterior»: tienes puesta la opción <code>version_minima</code>.</li>
 <li>«El servidor no presenta el mismo certificado que la otra vez»: has cambiado el certificado, por ejemplo al reinstalar sin llevarte los datos. Apartado 14.</li>
 <li>«Hay demasiadas conexiones desde tu dirección»: tienes puesta la opción <code>conexiones_por_ip</code> y varios jugadores comparten dirección. Súbela o ponla a 0.</li>
@@ -772,14 +807,24 @@ a { color: #9fd0ff; }
 <h3>Versiones del juego</h3>
 <p>Qué versiones del juego pueden jugar juntas en este servidor.</p>
 <h4>Comprobar los datos del juego de quien entra: <code>comprobar_datos</code></h4>
-<p>Con si, el servidor comprueba que el mundo que trae el juego de quien entra es de una versión de verdad y sin mods que lo cambien. Con no, entra cualquiera con lo que traiga.</p>
+<p>Con si, el servidor mira si el mundo que trae el juego de quien entra es el suyo, el de otra versión de verdad o uno cambiado con mods, y actúa según las opciones siguientes. Con no, no mira nada: entra cualquiera con lo que traiga, y el servidor no se pone al día con el mundo de las versiones nuevas.</p>
 <ul>
 <li>Valores: si o no.</li>
 <li>De serie: <code>si</code>.</li>
 <li>Se aplica sin reiniciar el servidor.</li>
 </ul>
+<h4>Qué hacer con quien trae datos que no se pueden comprobar: <code>mundo_distinto</code></h4>
+<p>Quien juega con mods que cambian el mundo, o con una versión cuyos datos el servidor no puede comprobar. Con una versión de verdad distinta de la del servidor se entra siempre, pongas lo que pongas aquí.</p>
+<ul>
+<li>Valores:<ul>
+<li><code>admitir</code>: entra y juega en lo que tiene en común con el servidor; se le dice qué no coincide, y lo que afecta a los demás lo decide el servidor con su mundo.</li>
+<li><code>rechazar</code>: no entra: solo se juega con los datos de una versión de verdad.</li>
+</ul></li>
+<li>De serie: <code>admitir</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
 <h4>Versiones que pueden jugar juntas: <code>versiones</code></h4>
-<p>El servidor trabaja con el mundo de la versión más nueva que ha visto.</p>
+<p>El servidor trabaja con el mundo de la versión más nueva que ha visto, y a cada juego le habla de lo que su versión conoce: un arma o un vehículo que no tiene le llegan como el más parecido de los suyos.</p>
 <ul>
 <li>Valores:<ul>
 <li><code>compatibles</code>: pueden jugar juntos quienes tengan versiones distintas del juego, cada uno con lo que su versión conoce.</li>
@@ -796,7 +841,7 @@ a { color: #9fd0ff; }
 <li>Se aplica sin reiniciar el servidor.</li>
 </ul>
 <h4>Quién puede traer un mundo nuevo: <code>actualizar_mundo</code></h4>
-<p>El mundo del juego (lugares, armas, misiones) no va atado al servidor: se lo trae el juego de quien entra.</p>
+<p>El mundo del juego (lugares, armas, misiones) no va atado al servidor: se lo trae el juego de quien entra. Un servidor sin mundo toma el del primero que entra; si ese no viene firmado, lo cambia por el primero firmado que llegue.</p>
 <ul>
 <li>Valores:<ul>
 <li><code>firmado</code>: el de una versión más nueva se acepta de cualquiera si lo firma quien publica el juego.</li>
@@ -1121,6 +1166,36 @@ a { color: #9fd0ff; }
 </ul>
 <h4>Radio de los coches de otros jugadores: <code>radio_coches</code></h4>
 <p>Con si, quien está cerca del vehículo de otro jugador oye, floja, la emisora del juego que lleva puesta. Solo se cuenta qué emisora del juego es: nunca viaja música ni nada personal. Con no, no se oye la radio de nadie.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Vida honrada</h3>
+<p>Los contratos fijos con su nómina y el trato de las tiendas según el prestigio de cada jugador.</p>
+<h4>Nóminas de los contratos fijos: <code>nominas</code></h4>
+<p>Con si, quien firma un contrato fijo en la oficina de empleo cobra su nómina al acabar cada periodo. La paga el servidor: él cuenta los turnos y pone la cifra, que sale de los datos del juego y no gasta la ganancia por hora. Con no, en este servidor no hay contratos fijos. Hace falta que el mundo del servidor sea el de la versión 1.7.1 o posterior.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Paga máxima por nómina: <code>nomina_max</code></h4>
+<p>Lo más que paga el servidor por la nómina de un periodo, en euros, diga lo que diga el mundo del juego o un mod.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>1500</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Turnos de contrato que cuentan cada día: <code>nomina_turnos_dia</code></h4>
+<p>Cuántos turnos de un contrato fijo cuenta el servidor a un jugador en un mismo día del juego.</p>
+<ul>
+<li>Un número entero entre 1 y 50.</li>
+<li>De serie: <code>3</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Rebajas por prestigio en las tiendas: <code>trato_prestigio</code></h4>
+<p>Con si, a quien tiene buen nombre entre los vecinos las tiendas le rebajan un poco, y a quien lo tiene muy malo le recargan, como al jugar sin conexión con el nivel suave. Solo lo nota quien juega con la versión 1.7.1 o posterior. Con no, todos pagan lo mismo.</p>
 <ul>
 <li>Valores: si o no.</li>
 <li>De serie: <code>si</code>.</li>

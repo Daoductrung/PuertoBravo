@@ -226,6 +226,9 @@ def test_entrar_con_identidad_y_retomar_el_personaje(banco):
 
 def test_no_entra_quien_no_debe(banco):
     assert "demasiado antiguo" in Cli(banco, "Viejo", v=1).rechazo
+    # Con otros datos (mods, o un juego sin firmar): desde la 1.7.1 entra de serie y juega en lo común (test_171_versiones.py).
+    # No entra si quien lleva el servidor lo pide así.
+    banco.hacer(banco.srv.aplicar_config, {"mundo_distinto": "rechazar"})
     assert "datos de tu juego" in Cli(banco, "Mods", huella="otra").rechazo
     # una identidad que no se puede demostrar: firma con otra clave
     otra = hashlib.sha256(b"otra").digest()
@@ -789,7 +792,12 @@ def test_el_servidor_vale_para_las_versiones_del_juego_que_vayan_saliendo(tmp_pa
         falsa = binascii.hexlify(ed25519.firmar(hashlib.sha256(b"otro").digest(), texto.encode())).decode()
         banco.mundo_cliente = (texto, falsa)
         tramposo = Cli(banco, "Tramposo", huella=huella, juego="9.0.0", firmado=True)
-        assert tramposo.pidio_mundo and "no puede comprobar" in tramposo.rechazo and banco.srv.mundo["huella"] == viejo
+        # Desde la 1.7.1, de serie, a esa persona se la deja entrar a jugar en lo común; lo que no cuela es su mundo.
+        assert tramposo.pidio_mundo and tramposo.ok and tramposo.ok["mundo"]["igual"] is False and banco.srv.mundo["huella"] == viejo
+        assert huella not in banco.srv.mundos_conocidos and "nuevo_9.0.0" not in banco.srv.lugares
+        banco.hacer(banco.srv.aplicar_config, {"mundo_distinto": "rechazar"})      # y si quien lleva el servidor no quiere, ni entra
+        assert "no puede comprobar" in Cli(banco, "Tramposo 2", huella=huella, juego="9.0.0", firmado=True).rechazo and banco.srv.mundo["huella"] == viejo
+        banco.hacer(banco.srv.aplicar_config, {"mundo_distinto": "admitir"})
         # la de verdad: firmada. El servidor la adopta sin reiniciarse, y lo avisa a los que están
         texto, huella, firma_m = _mundo_nuevo("9.0.0", editor)
         banco.mundo_cliente = (texto, firma_m)
@@ -802,20 +810,23 @@ def test_el_servidor_vale_para_las_versiones_del_juego_que_vayan_saliendo(tmp_pa
         # retroceder al servidor. (Lo de jugar juntos con versiones distintas se prueba a fondo en test_servidor_versiones.py.)
         banco.mundo_cliente = (enlinea_texto_viejo(), "")
         d = Cli(banco, "Dora", juego="1.6.3", firmado=True)
-        assert d.ok and not d.pidio_mundo and banco.srv.mundo["version"] == "9.0.0" and d.ok["mundo"] == {"version": "9.0.0", "huella": huella, "igual": False}
+        assert d.ok and not d.pidio_mundo and banco.srv.mundo["version"] == "9.0.0" and {k: d.ok["mundo"][k] for k in ("version", "huella", "igual")} == {"version": "9.0.0", "huella": huella, "igual": False}
         # salvo que quien lleva el servidor pida a todos los mismos datos: entonces sí tiene que actualizar
         banco.hacer(lambda: banco.srv.cfg.__setitem__("versiones", "iguales"))
         e = Cli(banco, "Eva", juego="1.6.3", firmado=True)
         assert "Actualiza el juego" in e.rechazo and not e.pidio_mundo and banco.srv.mundo["version"] == "9.0.0"
         banco.hacer(lambda: banco.srv.cfg.__setitem__("versiones", "compatibles"))
-        # un mundo con mods no va firmado: de un jugador cualquiera no se acepta
+        # un mundo con mods no va firmado: de un jugador cualquiera no se acepta como mundo del servidor. Él entra, de serie;
+        # con la opción de rechazar los datos que no se pueden comprobar, no.
         texto, huella_mod, _ = _mundo_nuevo("9.5.0")
         banco.mundo_cliente = (texto, "")
         try:
             mods = Cli(banco, "Con mods", huella=huella_mod, juego="9.5.0")
         except AssertionError:
             raise AssertionError(banco.lineas[-4:])
-        assert "no puede comprobar" in mods.rechazo
+        assert mods.ok and banco.srv.mundo["version"] == "9.0.0" and banco.srv.mundo["huella"] == huella
+        banco.hacer(banco.srv.aplicar_config, {"mundo_distinto": "rechazar"})
+        assert "no puede comprobar" in Cli(banco, "Con mods 2", huella=huella_mod, juego="9.5.0").rechazo
     finally:
         banco.parar()
     # se apaga y vuelve: sigue con el mundo nuevo

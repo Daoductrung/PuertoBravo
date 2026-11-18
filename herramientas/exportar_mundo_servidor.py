@@ -2,9 +2,12 @@
 
 De cada localidad: sus lugares con coordenadas (para las zonas seguras) y sus barrios (para los territorios).
 De las armas: daño, alcance, cadencia y precisión (para decidir los disparos entre jugadores).
-Y una huella de los datos: el juego y el servidor tienen que coincidir para poder jugar juntos.
+Y una huella de los datos: dice si el juego de quien entra y el servidor tienen el mismo mundo. Si no, juegan igual en lo común.
 
     .venv\\Scripts\\python.exe herramientas\\exportar_mundo_servidor.py
+
+Con --catalogo no escribe nada: enseña la entrada de este mundo para servidor/compat.py (qué armas y vehículos conoce
+esta versión), que se apunta allí al publicar la siguiente.
 """
 import hashlib
 import json
@@ -42,7 +45,20 @@ def exportar(destino=None):
     return out
 
 
+def catalogo():
+    """La entrada de este mundo para servidor/compat.py (CATALOGOS): qué armas y qué vehículos conoce el juego de esta
+    versión. Se apunta al publicar la siguiente, para que los servidores nuevos conozcan esta sin tener que pedírsela."""
+    from servidor import compat
+    d = mundo_servidor()
+    c = compat.catalogo_de(d)
+    return '    "%s": {\n        "version": "%s",\n        "armas": %s,\n        "modelos": %s,\n    },' % (
+        d["huella"], c["version"], json.dumps(c["armas"]), json.dumps(c["modelos"]))
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "--catalogo":
+        print(catalogo())
+        sys.exit(0)
     if len(sys.argv) > 2 and sys.argv[1] == "--firmar":
         print("Mundo firmado para los servidores." if firmar(sys.argv[2]) else "No hay clave de publicar en este equipo: el mundo va sin firmar.")
         sys.exit(0)

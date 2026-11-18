@@ -12,11 +12,23 @@ def _abrir(p, titulo, ops, intro=None):
     return m
 
 
-def _bloqueado(p):
-    """En un servidor en línea no hay nada de lo que mueve dinero: lo dice y devuelve verdadero."""
-    if p.hon_bloqueo():
+def _en_servidor_txt(p):
+    """Qué de todo esto existe en el servidor en el que estás: lo decide él, igual para todos."""
+    if not p.en_servidor:
+        return ""
+    hay = [t for clave, t in (("nominas", "los contratos fijos, con la nómina que paga el servidor, y los antecedentes"),
+                              ("trato_prestigio", "el trato de las tiendas según tu prestigio")) if p.sv_honrado(clave)]
+    if not hay:
+        return ". En un servidor en línea no cuentan"
+    return ". En este servidor no cuenta tu nivel: lo decide el servidor, igual para todos. Aquí hay " + " y ".join(hay)
+
+
+def _bloqueado(p, que=""):
+    """En un servidor en línea no hay casi nada de lo que mueve dinero: lo dice y devuelve verdadero. Los contratos fijos
+    («contrato») sí, donde el servidor paga las nóminas."""
+    if p.hon_bloqueo(que):
         p.app.son("error")
-        p.app.decir(p.hon_bloqueo(), True)
+        p.app.decir(p.hon_bloqueo(que), True)
         return True
     return False
 
@@ -50,7 +62,7 @@ def menu_vida(p):
         if p.hon_nivel():
             lista.append(Opcion(lambda: ("Tu abogado: lo tienes contratado" if p.hon_abogado() else f"Contratar a un abogado: {AJ.entero('abogado_semana')} euros a la semana"), p.hon_contratar_abogado,
                                 ayuda="Mientras le pagues, lo que se sepa de tu otra vida hace la mitad de daño, frena a la prensa y puede recurrir las sanciones de una inspección. Se renueva solo cada semana; Intro otra vez lo despide."))
-        lista.append(Opcion(lambda: f"Nivel de consecuencias: {NIVEL_TXT.get(p.cfg['consecuencias'], 'suave')}" + (". En un servidor en línea no cuentan" if p.en_servidor else ""),
+        lista.append(Opcion(lambda: f"Nivel de consecuencias: {NIVEL_TXT.get(p.cfg['consecuencias'], 'suave')}" + _en_servidor_txt(p),
                             ayuda="Se cambia en Opciones, en Vida, reputación y consecuencias. Apagado deja el juego como en versiones anteriores; suave es lo de serie."))
         return lista
     _abrir(p, "Vida, reputación y consecuencias", ops, "Cómo te ve la ciudad, cómo te ve la calle y qué estás ganando o perdiendo por ello")
@@ -150,7 +162,7 @@ def cuenta_txt(p, c):
 
 def menu_empleos(p, l):
     """En la oficina de empleo: los contratos fijos."""
-    if _bloqueado(p):
+    if _bloqueado(p, "contrato"):
         return
     j = p.j
 
@@ -175,7 +187,8 @@ def menu_empleos(p, l):
             lista.append(Opcion(f"{c['nombre']}, en {c['empresa']}: empiezas de {pu['nombre']}, con {int(_n(pu, 'sueldo'))} euros de nómina por periodo" + (". Empleo de confianza" if c.get("confianza") else ""),
                                 (lambda c=c: ficha(c)), ayuda=c.get("desc")))
         return lista
-    m = _abrir(p, "Contratos fijos", ops, "Con un contrato tienes jefe, turnos que cumplir, nómina, evaluaciones y ascensos. Sin contrato, todo sigue como siempre")
+    m = _abrir(p, "Contratos fijos", ops, "Con un contrato tienes jefe, turnos que cumplir, nómina, evaluaciones y ascensos. Sin contrato, todo sigue como siempre"
+               + (". En este servidor los turnos los cuenta el servidor y la nómina la paga él, con su calendario" if p.en_servidor else ""))
 
 
 # ====================================================================== estudios

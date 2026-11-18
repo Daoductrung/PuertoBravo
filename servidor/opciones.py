@@ -26,6 +26,7 @@ SECCIONES = (
     ("economia", "Economía y propiedades", "El dinero que reconoce el servidor, las casas, los negocios y los vehículos."),
     ("bandas", "Bandas y territorios", "Lo que cuesta fundar una banda, reclamar un barrio y declarar una guerra."),
     ("rol", "Rol y convivencia", "Los canales de chat para interpretar a tu personaje y lo que se oye de los demás jugadores."),
+    ("vida", "Vida honrada", "Los contratos fijos con su nómina y el trato de las tiendas según el prestigio de cada jugador."),
 )
 
 SI_NO = (("si", "sí"), ("no", "no"))
@@ -132,17 +133,26 @@ OPCIONES = (
        "Solo para pruebas. De serie, no: si alguien entra con su personaje desde otro sitio, la sesión anterior se cierra.", SINO, "no"),
     # ---------------------------------------------------------------- versiones
     _o("comprobar_datos", "versiones", "Comprobar los datos del juego de quien entra",
-       "Con si, el servidor comprueba que el mundo que trae el juego de quien entra es de una versión de verdad y sin mods "
-       "que lo cambien. Con no, entra cualquiera con lo que traiga.", SINO, "si"),
+       "Con si, el servidor mira si el mundo que trae el juego de quien entra es el suyo, el de otra versión de verdad o uno "
+       "cambiado con mods, y actúa según las opciones siguientes. Con no, no mira nada: entra cualquiera con lo que traiga, "
+       "y el servidor no se pone al día con el mundo de las versiones nuevas.", SINO, "si"),
+    _o("mundo_distinto", "versiones", "Qué hacer con quien trae datos que no se pueden comprobar",
+       "Quien juega con mods que cambian el mundo, o con una versión cuyos datos el servidor no puede comprobar. Con una versión "
+       "de verdad distinta de la del servidor se entra siempre, pongas lo que pongas aquí.",
+       ELECCION, "admitir", valores=(("admitir", "entra y juega en lo que tiene en común con el servidor; se le dice qué no coincide, y lo "
+                                                  "que afecta a los demás lo decide el servidor con su mundo"),
+                                     ("rechazar", "no entra: solo se juega con los datos de una versión de verdad"))),
     _o("versiones", "versiones", "Versiones que pueden jugar juntas",
-       "El servidor trabaja con el mundo de la versión más nueva que ha visto.",
+       "El servidor trabaja con el mundo de la versión más nueva que ha visto, y a cada juego le habla de lo que su versión "
+       "conoce: un arma o un vehículo que no tiene le llegan como el más parecido de los suyos.",
        ELECCION, "compatibles", valores=(("compatibles", "pueden jugar juntos quienes tengan versiones distintas del juego, cada uno "
                                                          "con lo que su versión conoce"),
                                          ("iguales", "solo entra quien tenga exactamente los mismos datos que el servidor"))),
     _o("version_minima", "versiones", "Versión mínima del juego",
        "La versión más antigua del juego con la que se puede entrar, por ejemplo 1.7.0. Vacío, cualquiera.", TEXTO, "", largo=20),
     _o("actualizar_mundo", "versiones", "Quién puede traer un mundo nuevo",
-       "El mundo del juego (lugares, armas, misiones) no va atado al servidor: se lo trae el juego de quien entra.",
+       "El mundo del juego (lugares, armas, misiones) no va atado al servidor: se lo trae el juego de quien entra. Un servidor "
+       "sin mundo toma el del primero que entra; si ese no viene firmado, lo cambia por el primero firmado que llegue.",
        ELECCION, "firmado", valores=(("firmado", "el de una versión más nueva se acepta de cualquiera si lo firma quien publica el juego"),
                                      ("admin", "además, sin firma, de un administrador: para servidores con mods"),
                                      ("no", "nunca: el servidor se queda con el mundo que tiene"))),
@@ -260,6 +270,20 @@ OPCIONES = (
     _o("radio_coches", "rol", "Radio de los coches de otros jugadores",
        "Con si, quien está cerca del vehículo de otro jugador oye, floja, la emisora del juego que lleva puesta. Solo se cuenta "
        "qué emisora del juego es: nunca viaja música ni nada personal. Con no, no se oye la radio de nadie.", SINO, "si"),
+    # --------------------------------------------------------------------- vida
+    _o("nominas", "vida", "Nóminas de los contratos fijos",
+       "Con si, quien firma un contrato fijo en la oficina de empleo cobra su nómina al acabar cada periodo. La paga el servidor: "
+       "él cuenta los turnos y pone la cifra, que sale de los datos del juego y no gasta la ganancia por hora. Con no, en este "
+       "servidor no hay contratos fijos. Hace falta que el mundo del servidor sea el de la versión 1.7.1 o posterior.", SINO, "si"),
+    _o("nomina_max", "vida", "Paga máxima por nómina",
+       "Lo más que paga el servidor por la nómina de un periodo, en euros, diga lo que diga el mundo del juego o un mod.",
+       ENTERO, 1500, 0, 1000000000),
+    _o("nomina_turnos_dia", "vida", "Turnos de contrato que cuentan cada día",
+       "Cuántos turnos de un contrato fijo cuenta el servidor a un jugador en un mismo día del juego.", ENTERO, 3, 1, 50),
+    _o("trato_prestigio", "vida", "Rebajas por prestigio en las tiendas",
+       "Con si, a quien tiene buen nombre entre los vecinos las tiendas le rebajan un poco, y a quien lo tiene muy malo le "
+       "recargan, como al jugar sin conexión con el nivel suave. Solo lo nota quien juega con la versión 1.7.1 o posterior. "
+       "Con no, todos pagan lo mismo.", SINO, "si"),
 )
 
 POR_CLAVE = {o.clave: o for o in OPCIONES}

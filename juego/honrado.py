@@ -172,15 +172,28 @@ class Honrado:
         """Cuánto aprietan las penalizaciones con el nivel elegido: 1 es lo normal."""
         return {0: 0.0, 1: AJ("factor_suave") / 100.0, 3: AJ("factor_exigente") / 100.0}.get(self.hon_nivel(), 1.0)
 
-    def hon_bloqueo(self):
-        """Por qué no se puede usar lo que mueve dinero (contratos, créditos, empresa): en un servidor lo arbitra él."""
-        return "En un servidor en línea no hay contratos fijos, créditos, impuestos ni dirección de negocios: el dinero lo arbitra el servidor." if self.en_servidor else ""
+    def sv_honrado(self, que):
+        """En un servidor: ¿lleva él esa parte de la vida honrada? «nominas» (los contratos fijos, que paga el servidor) o
+        «trato_prestigio» (las rebajas de las tiendas). Un servidor anterior a la 1.7.1 no lleva ninguna."""
+        return bool(self.en_servidor and ((getattr(self, "sv", None) or {}).get("info") or {}).get(que))
+
+    def hon_bloqueo(self, que=""):
+        """Por qué no se puede usar lo que mueve dinero (contratos, créditos, empresa): en un servidor lo arbitra él.
+        Los contratos fijos sí se pueden donde el servidor paga las nóminas; lo demás, en ninguno."""
+        if not self.en_servidor:
+            return ""
+        if not self.sv_honrado("nominas"):
+            return "En un servidor en línea no hay contratos fijos, créditos, impuestos ni dirección de negocios: el dinero lo arbitra el servidor."
+        if que == "contrato":
+            return ""
+        return "En un servidor en línea no hay créditos, impuestos ni dirección de negocios: el dinero lo arbitra el servidor. Sí hay contratos fijos, con la nómina que paga el servidor."
 
     def hon_impuestos(self):
         return bool(self.cfg["impuestos_facturas"]) and not self.en_servidor
 
     def hon_con_antecedentes(self):
-        return bool(self.cfg["antecedentes"]) and not self.en_servidor
+        """En un servidor solo se llevan donde hay contratos fijos, que es para lo único que cuentan allí: son del personaje."""
+        return bool(self.cfg["antecedentes"]) and (not self.en_servidor or self.sv_honrado("nominas"))
 
     def hon_abs(self):
         return self.dia * 1440.0 + self.reloj
@@ -202,11 +215,18 @@ class Honrado:
 
     # ------------------------------------------------------------------ cómo te ven: comercios, testigos y policía
     def hon_trato(self, categoria=""):
-        """Multiplicador de precio en los comercios según cómo te ven los vecinos."""
-        if not self.hon_nivel():
+        """Multiplicador de precio en los comercios según cómo te ven los vecinos. En un servidor que lo tenga puesto vale
+        para todos por igual, como con el nivel suave, tengas la opción que tengas: lo decide el servidor, no cada juego."""
+        if self.en_servidor:
+            if not self.sv_honrado("trato_prestigio"):
+                return 1.0
+            f = AJ("factor_suave") / 100.0
+        elif not self.hon_nivel():
             return 1.0
+        else:
+            f = self.hon_f()
         t = self.hon_tramo()
-        pct = AJ("recargo_evitan") * self.hon_f() if t == 0 else -AJ("rebaja_aprecian") if t == 2 else -AJ("rebaja_ejemplar") if t == 3 else 0.0
+        pct = AJ("recargo_evitan") * f if t == 0 else -AJ("rebaja_aprecian") if t == 2 else -AJ("rebaja_ejemplar") if t == 3 else 0.0
         return round(1.0 + pct / 100.0, 3)
 
     def hon_fama_factor(self):
@@ -483,8 +503,8 @@ class Honrado:
 
     def hon_firma_motivo(self, c):
         j, h = self.j, self.hon()
-        if self.hon_bloqueo():
-            return self.hon_bloqueo()
+        if self.hon_bloqueo("contrato"):
+            return self.hon_bloqueo("contrato")
         if j.contrato:
             return "Ya tienes un contrato fijo. Para firmar otro, deja antes el que tienes."
         if j.estrellas:
@@ -519,6 +539,7 @@ class Honrado:
         j.contrato = {"empleo": c["id"], "puesto": k, "jefe": jefe, "caracter": caracter, "desde": self.dia, "fin": self.dia + AJ.entero("periodo_dias"),
                       "turnos": 0, "calidad": [], "avisos": 0, "meritos": 0, "periodos": 0}
         p = c["puestos"][k]
+        self._hon_sv_contrato("firmar", empleo=c["id"], puesto=k)       # en un servidor, la nómina la paga él: que lo sepa
         self.son("mision_ok", cat="interfaz")
         self.decir(AJ.frase("frases_firma", empresa=c["empresa"], jefe=jefe, caracter=caracter, puesto=p["nombre"], cupo=int(_n(p, "cupo", 3)),
                             dias=AJ.entero("periodo_dias"), sueldo=int(_n(p, "sueldo"))) + (" Tu carta de recomendación te ha ahorrado el primer escalón." if k else ""), True)
@@ -532,7 +553,7 @@ class Honrado:
     def hon_turno(self, clave):
         """Has hecho un turno o un servicio: si es de tu contrato, se apunta, con su calidad."""
         j = self.j
-        if not j.contrato or self.en_servidor or not self.hon_cuenta_turno(clave):
+        if not j.contrato or (self.en_servidor and not self.sv_honrado("nominas")) or not self.hon_cuenta_turno(clave):
             return
         ct = j.contrato
         c, p = self.hon_empleo(), self.hon_puesto()
@@ -545,6 +566,7 @@ class Honrado:
             calidad -= 15
         ct["calidad"].append(max(0.0, min(100.0, calidad)))
         ct["turnos"] += 1
+        self._hon_sv_contrato("turno")                                # en un servidor, los turnos que valen para la nómina los cuenta él
         j.stats["turnos_contrato"] = j.stats.get("turnos_contrato", 0) + 1
         self.decir(AJ.frase("frases_turno", jefe=ct["jefe"], hechos=ct["turnos"], cupo=int(_n(p, "cupo", 3))))
         if p.get("mando") and random.random() * 100 < AJ("incidencia_prob"):
@@ -600,6 +622,61 @@ class Honrado:
             self.decir(texto)
         return n
 
+    # En un servidor el contrato se vive igual (el jefe, la evaluación, los avisos, el ascenso), pero el dinero lo pone el
+    # servidor: él cuenta los turnos, él sabe cuándo acaba el periodo y él paga la nómina con sus cifras y sus topes.
+    def _hon_sv_contrato(self, que, **mas):
+        if self.en_servidor and self.sv_honrado("nominas") and self.red is not None and self.red.conectado:
+            self.red.enviar(dict(mas, t="contrato", que=que))
+
+    def _hon_nomina(self, n, texto=None, buena=False, mala=False):
+        """La nómina de un periodo. Sin conexión, la ingresa el juego; en un servidor, se le pide a él y llega aparte."""
+        if not self.en_servidor:
+            return self.hon_ingresar(n, texto) if n > 0 else 0
+        self._hon_sv_contrato("cobrar", buena=bool(buena), mala=bool(mala))
+        if texto:
+            self.decir(texto)
+        return 0
+
+    def hon_sv_al_entrar(self, c):
+        """Al entrar en un servidor: lo que él tiene apuntado de tu contrato. Si tienes uno y él no lo conoce (o es otro), se
+        le da de alta; si ya lo llevaba, mandan su fecha de cobro y sus turnos. Y si el periodo acabó mientras no estabas,
+        la evaluación llega ahora."""
+        ct = self.j.contrato
+        if not ct or not self.sv_honrado("nominas"):
+            return
+        if isinstance(c, dict) and c.get("empleo") == ct.get("empleo"):
+            self._svm_contrato({"que": "firmado", "c": c})
+            if int(ct.get("fin", 0)) <= self.dia:
+                self._hon_dia_contrato()
+        else:
+            self._hon_sv_contrato("firmar", empleo=ct.get("empleo"), puesto=min(1, int(ct.get("puesto", 0))))
+
+    def _svm_contrato(self, m):
+        """El servidor contesta sobre tu contrato: lo que vale es lo que él tiene apuntado."""
+        ct = self.j.contrato
+        if m.get("que") == "no":
+            if ct and m.get("motivo"):
+                self.decir(str(m["motivo"])[:300])
+            return
+        c = m.get("c")
+        if not ct or not isinstance(c, dict) or c.get("empleo") != ct.get("empleo"):
+            return
+        ct["fin"] = int(c.get("fin", ct.get("fin", self.dia)))
+        if m.get("que") in ("firmado", "puesto"):
+            empleo = self.hon_empleo()
+            if empleo:
+                ct["puesto"] = max(0, min(len(empleo["puestos"]) - 1, int(c.get("puesto", ct.get("puesto", 0)))))
+
+    def _svm_nomina(self, m):
+        """El servidor paga la nómina del periodo: la cifra es la suya."""
+        n = max(0, int(m.get("n", 0) or 0))
+        self._svm_contrato({"que": "cobro", "c": m.get("c")})
+        if n > 0:
+            corto = "turnos" in m and "cupo" in m and int(m["turnos"]) < int(m["cupo"])
+            self.hon_ingresar(n, f"El servidor te ingresa la nómina en el banco: {n} euros" + (f", por {int(m['turnos'])} de {int(m['cupo'])} turnos." if corto else "."))
+        elif m.get("faltan"):
+            self.decir(f"El servidor todavía no paga esta nómina: según su calendario faltan {int(m['faltan'])} días.")
+
     def _hon_embargar(self, n):
         """La parte de un ingreso que se queda el embargo."""
         h = self.hon()
@@ -617,7 +694,7 @@ class Honrado:
     def _hon_dia_contrato(self):
         j = self.j
         ct = j.contrato
-        if not ct or self.en_servidor:
+        if not ct or (self.en_servidor and not self.sv_honrado("nominas")):
             return
         c, p = self.hon_empleo(), self.hon_puesto()
         if not c:
@@ -646,21 +723,22 @@ class Honrado:
             ct["meritos"] += 1
             ct["avisos"] = max(0, ct["avisos"] - 1)
             j.stats["evaluaciones_buenas"] = j.stats.get("evaluaciones_buenas", 0) + 1
-            self.hon_ingresar(sueldo + prima, AJ.frase("frases_eval_buena", sueldo=sueldo, prima=prima, **kw))
+            self._hon_nomina(sueldo + prima, AJ.frase("frases_eval_buena", sueldo=sueldo, prima=prima, **kw), buena=True)
             self.cambiar_ciudadania(AJ("prestigio_periodo"))
         elif nota >= AJ("nota_correcta") + duro:
-            self.hon_ingresar(sueldo, AJ.frase("frases_eval_correcta", sueldo=sueldo, **kw))
+            self._hon_nomina(sueldo, AJ.frase("frases_eval_correcta", sueldo=sueldo, **kw))
             self.cambiar_ciudadania(AJ("prestigio_periodo") / 2.0)
         elif nota >= AJ("nota_floja") + duro:
             ct["avisos"] += 1
             sueldo = int(sueldo * cumplimiento)
             self.son("animo_baja", cat="interfaz")
-            self.hon_ingresar(sueldo)
+            self._hon_nomina(sueldo)
             self.decir(AJ.frase("frases_eval_floja", sueldo=sueldo, avisos=ct["avisos"], **kw))
         else:
             ct["avisos"] += 1 if self.hon_nivel() <= 1 else 2
             ct["meritos"] = max(0, ct["meritos"] - 1)
             self.son("animo_baja", cat="interfaz")
+            self._hon_nomina(0, mala=True)
             self.decir(AJ.frase("frases_eval_mala", avisos=min(tope, ct["avisos"]), **kw))
         ct.update(turnos=0, calidad=[], fin=self.dia + AJ.entero("periodo_dias"))
         if ct["avisos"] >= tope:
@@ -679,6 +757,7 @@ class Honrado:
                 self.decir(AJ.frase("frases_ascenso_falta", jefe=ct["jefe"], puesto=nuevo["nombre"], falta=falta))
             return
         ct["puesto"], ct["meritos"] = k + 1, 0
+        self._hon_sv_contrato("ascenso")
         self.j.stats["ascensos"] = self.j.stats.get("ascensos", 0) + 1
         self.son("ascenso", cat="interfaz")
         self.cambiar_ciudadania(2.0)
@@ -691,6 +770,7 @@ class Honrado:
         if not ct:
             return
         j.contrato = {}
+        self._hon_sv_contrato("dejar")
         if c:
             h["vetos"][c["id"]] = self.dia + AJ.entero("veto_dias")
         j.stats["despidos"] = j.stats.get("despidos", 0) + 1
@@ -705,6 +785,7 @@ class Honrado:
         if not ct:
             return
         j.contrato = {}
+        self._hon_sv_contrato("dejar")
         empresa = c["empresa"] if c else "la empresa"
         self.decir(AJ.frase("frases_dimision", jefe=ct["jefe"], empresa=empresa), True)
         if ct["periodos"] >= AJ("carta_periodos") and not ct["avisos"] and c:
@@ -1652,8 +1733,13 @@ class Honrado:
 
     # ------------------------------------------------------------------ el paso de los días y el tic
     def dia_honrado(self):
-        """Cada medianoche: antecedentes que caducan, evaluación, negocios, cobros, cuotas, rumores, extorsión y asuntos."""
+        """Cada medianoche: antecedentes que caducan, evaluación, negocios, cobros, cuotas, rumores, extorsión y asuntos.
+        En un servidor, solo lo que allí existe: los antecedentes y el contrato fijo, si él paga las nóminas."""
         if self.en_servidor:
+            if self.sv_honrado("nominas"):
+                self.hon()
+                self._hon_dia_antecedentes()
+                self._hon_dia_contrato()
             return
         self.hon()
         self._hon_dia_antecedentes()

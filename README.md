@@ -134,6 +134,50 @@ Lo que viaja:
 - **Policía común**. La fila de cada agente lleva un sexto dato, su salud.
 - **Mundo**. `mundo_servidor()` añade `encargos` y `gente.frases` (lo que dicen los personajes del servidor, por clase). No entran en la huella.
 
+#### Versiones distintas en el mismo servidor (1.7.1)
+
+Principio: dos personas con versiones distintas del juego tienen que poder jugar juntas, y a partir de ahí lo más igualadas posible. Solo se rechaza por versión con la opción `version_minima`. El protocolo sigue en la versión 2; el servidor añade `equivalencias` y `nominas` a `ok.funciones`. La parte del servidor que no depende del resto está en `servidor/compat.py`.
+
+**Qué viaja del juego al servidor y qué no.** El servidor no tiene el juego: lo que sabe del mundo es el texto de `enlinea.mundo_servidor()`, que le da el juego de quien entra (`pide_mundo` y `mundo`, comprimido) o que trae de fábrica en `servidor/mundo.json`.
+
+- Viaja: de cada localidad, sus lugares (identificador, tipo, nombre, coordenadas, precio, ingresos), sus barrios, sus calles y sus coches de tráfico; de cada arma, su tipo, daño, alcance, cadencia, precisión, radio y si es automática; de cada vehículo, su salud, velocidad, aceleración, freno y si vuela; de cada misión, su título, su paga y si se repite; los nombres y las frases de los personajes del servidor, la tabla de la policía, lo más que paga cada encargo repetible (`encargos`) y los contratos fijos con sus nóminas (`empleos`: periodo, prima y, por empleo, turnos y sueldo de cada puesto).
+- No viaja: sonidos, textos de misiones, pasos y enemigos de las misiones, tiendas y precios, objetos, ropa, comida, trabajos, la vida honrada entera salvo las nóminas, las opciones de cada jugador, ni nada de su equipo. Todo eso lo pone el juego de cada uno.
+- La huella (`enlinea.huella_datos`) solo cubre identificadores de localidades, lugares, barrios, vehículos y misiones, y las cifras de las armas. Lo demás que cuenta el mundo (`encargos`, `gente`, `policia`, `empleos`) no entra en ella: por eso, si el mundo guardado por el servidor (`mundo_actual.json`) y el que trae (`mundo.json`) tienen la misma huella, al arrancar vale el que trae.
+
+**Quién pone el mundo** (`Servidor._admitir_mundo`). Se llama cuando la huella de quien entra no es la del servidor, si `comprobar_datos` está en `si` o el servidor no tiene mundo.
+
+| Caso | Qué hace el servidor |
+|---|---|
+| Servidor vacío, mundo firmado | Lo adopta. |
+| Servidor vacío, mundo sin firma | Con `mundo_distinto = admitir` y `actualizar_mundo` distinto de `no`, lo adopta marcado como `provisional`; lo sustituye el primero firmado que llegue, sea de la versión que sea, o el de un administrador con `actualizar_mundo = admin`. Si no, rechaza con un texto claro. |
+| Mundo firmado de una versión más nueva | Lo adopta (`actualizar_mundo` en `firmado` o `admin`), lo anuncia y no echa a nadie. |
+| Mundo conocido (`mundos_conocidos`, o `compat.CATALOGOS`, que son los de las versiones publicadas) | Entra sin pedirle nada. |
+| Mundo firmado que no conocía, igual o más antiguo | Lo comprueba, lo recuerda y entra. |
+| Mundo sin firma (mods) | Con `mundo_distinto = admitir`, de serie, entra: se le pide su mundo solo para saber qué conoce su juego en esa sesión (`Jugador.cat`), y nada de él se guarda. Con `rechazar`, o con `versiones = iguales`, no entra. |
+
+**Equivalencias.** De cada mundo comprobado el servidor guarda un catálogo (`compat.catalogo_de`: identificadores de armas y de vehículos; `meta.catalogos`, y `compat.CATALOGOS` para las versiones publicadas). `Servidor._cat(j)` da el catálogo del juego de un jugador si su huella no es la del servidor. Con él:
+
+- `Servidor._enviar` pasa por `_traducir` los mensajes de `TRADUCIBLES`: `tiro`, `herido` y `po_disparo` (el arma), `evento` con `d:<arma>`, `veh_ocupado`, `veh_libre`, `veh_ok` y `veh_mio` (el modelo), `ok` (los vehículos aparcados) y `grupo_msg` con los enemigos de una misión (su arma). Lo que ese juego no conoce se cambia por lo más parecido que sí conoce (`compat.arma_equivalente`: misma clase, y después cifras, nombre y si es automática; `compat.modelo_equivalente`: que vuele o no, y cifras y nombre). `_repartir_estados` hace lo mismo con el vehículo que conduce cada uno.
+- El daño no se toca: `_m_ataque` y `_m_explosion` lo calculan con las cifras del mundo del servidor antes de traducir nada, y a los demás se les nombra el arma con la que ha contado el servidor, no la que diga el mensaje.
+- `_m_dar` devuelve a quien la daba un arma o una munición que el otro no puede recibir.
+- Si es el servidor el que no conoce algo (su mundo es anterior al del jugador), no hay equivalencia que valga: el arma cuenta como las manos, el vehículo como `utilitario` y la localidad queda fuera, con un aviso al jugador. Es igual para todos.
+- Al entrar, `ok.mundo.distinto` (`faltan` y `sobran`, con nombres de armas y vehículos) y un `aviso` con el mismo contenido en una frase (`compat.texto_diferencias`).
+
+**El personaje.** `cuentas.partida` guarda el JSON entero que manda el juego, con lo que el servidor no conozca (tope: `MAX_LINEA`, 600 KB; si no cabe, no se guarda y se avisa). `cuentas.partida_juego` es la versión más nueva del juego que ha guardado ese personaje.
+
+- Al entrar con un juego que no conoce todo lo que lleva, `compat.adaptar_partida` le da una copia sin las armas ni los vehículos de garaje que no tiene (un juego de la 1.7.0 falla al cambiar de arma si lleva en la mano una que no conoce). La base de datos no se toca.
+- Al guardar con un juego anterior a `partida_juego`, `compat.fundir_partida` repone lo que ese juego no sabe guardar: las claves de la raíz y de `jugador` que falten (el juego de la 1.7.0 descarta las que no conoce al cargar), las armas que no conoce y los vehículos de garaje que no conoce. Lo que sí conoce manda lo que él diga.
+
+**Nóminas** (`_m_contrato`, `cuentas.contrato`). Mensaje `contrato` con `que`: `firmar` (`empleo`, `puesto` 0 o 1), `turno`, `cobrar` (`buena`, `mala`), `ascenso` y `dejar`. El servidor contesta `contrato` (`que`: `firmado`, `turno`, `puesto` o `no`, y `c` con `empleo`, `puesto`, `turnos`, `fin`, `periodo`, `tope`, `turnos_dia`) o `nomina` (`n`, `turnos`, `cupo`, `faltan`). El dinero de `nomina` se apunta como crédito justificado (`_enviar`), igual que `dinero`. Lo que decide el servidor: turnos por día (`nomina_turnos_dia`), el día de cobro (`fin`, en días del servidor), la cifra (el sueldo del puesto en `mundo["empleos"]`, en proporción a los turnos, más la prima si hay cupo y evaluación buena, con el tope `nomina_max`) y que solo se suba un puesto tras un periodo con el cupo cumplido. El juego (`honrado.py`: `_hon_sv_contrato`, `_hon_nomina`, `hon_sv_al_entrar`, `_svm_contrato`, `_svm_nomina`) vive el contrato como sin conexión y solo deja el dinero en manos del servidor. `ok.servidor.nominas` y `ok.servidor.trato_prestigio` dicen si ese servidor lleva nóminas y si las tiendas tratan según el prestigio; `Partida.sv_honrado(que)` lo consulta.
+
+**Opciones nuevas del servidor**: `mundo_distinto` (`admitir`), `nominas` (`si`), `nomina_max` (1500), `nomina_turnos_dia` (3) y `trato_prestigio` (`si`).
+
+**Al publicar una versión que cambie armas o vehículos**, apunta el catálogo de la versión que queda atrás en `compat.CATALOGOS`: `.venv\Scripts\python.exe herramientas\exportar_mundo_servidor.py --catalogo` escribe la entrada del mundo de ahora, lista para pegar. Así los servidores nuevos conocen esa versión sin tener que pedirle nada.
+
+**Pruebas con la versión anterior de verdad**: `pruebas/test_171_versiones.py` saca el código publicado de la 1.7.0 con `git archive` a una carpeta temporal (`pruebas/banco_versiones.py`) y lo ejecuta en procesos aparte (`pruebas/agente_versiones.py`), nunca mezclado con el de ahora. Si no hay git o falta ese commit, esas pruebas se saltan diciendo por qué.
+
+**Límites conocidos.** Un servidor de la 1.7.0 no traduce nada ni repone el personaje: quien entra en él con un juego anterior al mundo que tenga no oye las armas nuevas (su juego las ignora) y no ve aparcados los vehículos nuevos. Las localidades nuevas no tienen equivalente: quien no las tiene no ve a quien está en ellas. Los objetos, la ropa y la comida no están en el mundo del servidor, así que no se comprueba si quien los recibe los conoce (el juego de la 1.7.0 ya dice que no puede recibirlos). El tráfico del servidor usa los modelos de su mundo; un juego anterior pone un utilitario donde no conoce el modelo.
+
 #### Parada ordenada, aviso de actualización y reconexión (1.7.1)
 
 Tampoco cambia la versión del protocolo. El juego añade `reconexion` a `hola.sabe` y el servidor a `ok.funciones`.

@@ -179,8 +179,8 @@ def test_dos_jugadores_con_versiones_distintas_juegan_juntos(tmp_path):
             except AssertionError:
                 pass
         assert golpe and golpe["nombre"] == "Vieja"
-        # Nueva usa lo que solo tiene su versión: un arma nueva. El servidor la conoce (va con su mundo) y Vieja recibe
-        # el golpe con el nombre de un arma que su juego no tiene: su juego lo deja pasar (se prueba más abajo con el juego de verdad).
+        # Nueva usa lo que solo tiene su versión: un arma nueva. El servidor la conoce (va con su mundo) y decide el daño con
+        # sus cifras; a Vieja, cuyo juego no la tiene, le llega el golpe con el arma más parecida de las que sí conoce.
         golpe = None
         for _ in range(12):
             nueva.estado(x=x + 4, y=y, ar="laser")
@@ -191,17 +191,19 @@ def test_dos_jugadores_con_versiones_distintas_juegan_juntos(tmp_path):
                 break
             except AssertionError:
                 pass
-        assert golpe and golpe["arma"] == "laser"
+        assert golpe and golpe["arma"] != "laser" and golpe["arma"] in mundo()["armas"] and mundo()["armas"][golpe["arma"]]["tipo"] == "fuego"
         assert nueva.nada("aviso", 0.3)                           # a Nueva nadie le dice que su arma no existe: aquí sí existe
-        # Nueva coge un vehículo que Vieja no tiene y lo aparca: a Vieja le llega, y su juego no lo pone
+        # Nueva coge un vehículo que Vieja no tiene y lo aparca: a Vieja le llega como el más parecido de los que su juego conoce
         nueva.estado(x=x + 4, y=y, v="aerodeslizador")
         nueva.enviar({"t": "veh_tomar", "modelo": "aerodeslizador", "nombre": "Aero de Nueva", "ref": 1})
         vid = nueva.leer("veh_tuyo")["id"]
-        assert vieja.leer("veh_ocupado")["v"]["modelo"] == "aerodeslizador"
-        assert vieja.leer("estados", filtro=lambda m: m["e"].get(str(nueva.id), {}).get("v") == "aerodeslizador")
+        como = vieja.leer("veh_ocupado")["v"]
+        assert como["modelo"] in mundo()["modelos"] and como["nombre"] == "Aero de Nueva"
+        assert vieja.leer("estados", filtro=lambda m: m["e"].get(str(nueva.id), {}).get("v") == como["modelo"])
         nueva.estado(x=x + 4, y=y)
         nueva.enviar({"t": "veh_dejar", "id": vid, "x": x + 4, "y": y, "r": 0, "salud": 100})
-        assert vieja.leer("veh_libre")["v"]["modelo"] == "aerodeslizador"
+        assert vieja.leer("veh_libre")["v"]["modelo"] == como["modelo"]
+        assert banco.srv.vehiculos[vid]["modelo"] == "aerodeslizador"      # en el servidor sigue siendo lo que es
         # Nueva se va a la localidad nueva: Vieja sabe que anda por otra parte, y no pasa nada más
         nueva.estado(mapa="isla_nueva", x=50.0, y=50.0)
         assert vieja.leer("estados", espera=6, filtro=lambda m: m["e"].get(str(nueva.id), {}).get("m") == "isla_nueva")
@@ -217,8 +219,10 @@ def test_dos_jugadores_con_versiones_distintas_juegan_juntos(tmp_path):
         time.sleep(0.4)
         banco.mundo_cliente = ("", "")
         vuelve = Cli(banco, "Vieja", semilla=vieja.semilla, juego=v_vieja, firmado=True)
-        assert vuelve.ok and not vuelve.pidio_mundo and vuelve.ok["mundo"] == {"version": "9.0.0", "huella": h_nueva, "igual": False}
-        assert vuelve.ok["props"]["local_9.0.0"]["nombre"] == "Nueva" and any(v["modelo"] == "aerodeslizador" for v in vuelve.ok["vehiculos"])
+        assert vuelve.ok and not vuelve.pidio_mundo and {k: vuelve.ok["mundo"][k] for k in ("version", "huella", "igual")} == {"version": "9.0.0", "huella": h_nueva, "igual": False}
+        # se le dice qué tiene el servidor que su juego no tiene, con nombres
+        assert vuelve.ok["mundo"]["distinto"]["faltan"] == {"armas": ["Láser"], "vehiculos": ["Aerodeslizador"]} and "Láser" in vuelve.leer("aviso", filtro=lambda m: "tu versión" in m["texto"])["texto"]
+        assert vuelve.ok["props"]["local_9.0.0"]["nombre"] == "Nueva" and any(v["modelo"] == como["modelo"] and v["nombre"] == "Aero de Nueva" for v in vuelve.ok["vehiculos"])
         assert banco.srv.mundo["version"] == "9.0.0"              # y no ha hecho retroceder al servidor
         # quien administra ve con qué versión va cada uno
         gente = {g["nombre"]: g for g in banco.hacer(banco.srv.resumen)["jugadores"]}
@@ -270,7 +274,9 @@ def test_quien_va_por_delante_y_quien_va_por_detras_del_servidor(tmp_path):
         futura.enviar({"t": "ping"})
         assert futura.leer("pong") and all(banco.srv.jugadores[c.id].dentro for c in (futura, otra, antigua))
         assert not [l for l in banco.lineas if l.startswith("Error")], [l for l in banco.lineas if l.startswith("Error")]
-        # sin firma no hay manera de saber que es una versión de verdad: no entra, vaya por delante o por detrás
+        # sin firma no hay manera de saber que es una versión de verdad. De serie entra igual, y se le dice qué no coincide
+        # (está en test_171_versiones.py); si quien lleva el servidor lo pide, no entra, vaya por delante o por detrás
+        banco.hacer(banco.srv.aplicar_config, {"mundo_distinto": "rechazar"})
         texto, h_mod, _ = mundo_de("9.5.0", firmar=False)
         banco.mundo_cliente = (texto, "")
         assert "no puede comprobar" in Cli(banco, "Con mods", huella=h_mod, juego="9.5.0").rechazo
@@ -402,7 +408,7 @@ def test_el_juego_de_ahora_juega_en_un_servidor_con_el_mundo_de_una_version_post
         time.sleep(0.3)
         # entra el juego de verdad, con la versión de ahora
         p = entrar(robot, banco, "Marina")
-        assert p.sv["mundo"] == {"version": "99.0.0", "huella": h_nueva, "igual": False} and "versiones" in p.sv["funciones"]
+        assert {k: p.sv["mundo"][k] for k in ("version", "huella", "igual")} == {"version": "99.0.0", "huella": h_nueva, "igual": False} and "versiones" in p.sv["funciones"]
         dicho = robot.dicho()
         assert "versión 99.0.0" in dicho and VERSION in dicho and "puedes jugar" in dicho
         # y lo tiene siempre a mano en el móvil: En línea, Datos y reglas de este servidor
@@ -415,6 +421,8 @@ def test_el_juego_de_ahora_juega_en_un_servidor_con_el_mundo_de_una_version_post
         datos = robot.app.pila[-1]
         textos = [o.texto for o in datos.opciones]
         assert any("versión 99.0.0" in t and VERSION in t and "cada uno con lo que su versión conoce" in t for t in textos), textos
+        # y con nombres: qué tiene el servidor que este juego no tiene, y qué se va a notar (desde la 1.7.1)
+        assert any("El servidor tiene y tu juego no, un arma: Láser; un vehículo: Aerodeslizador" in t and "lo más parecido" in t for t in textos), textos
         assert any(t.startswith("Caben 32 jugadores") for t in textos), textos
         robot.app.cerrar(datos)
         robot.app.cerrar(m)
@@ -424,7 +432,7 @@ def test_el_juego_de_ahora_juega_en_un_servidor_con_el_mundo_de_una_version_post
         while time.time() < fin and r.mapa != "isla_nueva":
             robot.frames(3)
             time.sleep(0.05)
-        assert r.nombre == "Nueva" and r.mapa == "isla_nueva" and r.veh == "utilitario"
+        assert r.nombre == "Nueva" and r.mapa == "isla_nueva" and r.veh in p.modelos      # el vehículo que no conoce le llega como uno que sí
         assert "otra localidad" in p.donde_esta(r)
         # el servidor le manda cosas que su versión no conoce: tipos nuevos, y tipos conocidos con otra forma
         def cosas_del_futuro():
@@ -462,12 +470,15 @@ def test_el_juego_de_ahora_juega_en_un_servidor_con_el_mundo_de_una_version_post
             if p.j.salud < salud:
                 break
         assert p.j.salud < salud and p.en_servidor
-        # deja aparcado su vehículo nuevo aquí mismo: el juego de ahora no lo pone, y sigue
+        # deja aparcado su vehículo nuevo aquí mismo: al juego de ahora, que no lo tiene, el servidor se lo da como el más
+        # parecido de los que conoce, con su nombre, y ahí lo pone (antes de la 1.7.1 no lo ponía)
         nueva.estado(mapa=p.mundo.id, x=x + 4, y=y, v="aerodeslizador")
         nueva.enviar({"t": "veh_dejar", "id": vid, "x": x + 4, "y": y, "r": 0, "salud": 100})
         time.sleep(0.3)
         robot.frames(10)
-        assert vid in p.sv["vehs"] and p._sv_copia(vid) is None
+        copia = p._sv_copia(vid)
+        assert vid in p.sv["vehs"] and copia is not None and copia.modelo["id"] in p.modelos and copia.nombre == "Aero de Nueva"
+        assert banco.srv.vehiculos[vid]["modelo"] == "aerodeslizador"
         # el personaje se guarda y el juego sale con normalidad
         assert p.sv_guardar(ya=True)
         p.sv_salir()

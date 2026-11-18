@@ -635,7 +635,7 @@ def menu(p):
             return f"Tu juego es la versión {VERSION}"
         if m.get("igual", True):
             return f"El servidor va con los datos de la versión {m['version']} del juego, los mismos que tienes tú"
-        return f"El servidor va con los datos de la versión {m['version']} del juego y tú tienes la {VERSION}: jugáis juntos, cada uno con lo que su versión conoce"
+        return f"El servidor va con los datos de la versión {m['version']} del juego y tú tienes la {VERSION}: jugáis juntos, cada uno con lo que su versión conoce" + p.sv_distinto_txt()
 
     def info():
         i = sv["info"]

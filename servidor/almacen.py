@@ -39,7 +39,10 @@ class Almacen:
         self.db.row_factory = sqlite3.Row
         self.db.executescript(ESQUEMA)
         # añadidos después: se ponen si faltan. La ficha es la frase de rol del jugador; el margen, lo que aún puede ganar por su cuenta.
-        for columna in ("saldo INTEGER", "misiones TEXT DEFAULT '[]'", "juego TEXT DEFAULT ''", "ficha TEXT DEFAULT ''", "margen REAL", "t_margen REAL"):
+        # partida_juego es la versión más nueva del juego que ha guardado ese personaje: lo que una anterior no sabe guardar se
+        # conserva. contrato es el contrato fijo del jugador como lo lleva el servidor, para pagarle la nómina.
+        for columna in ("saldo INTEGER", "misiones TEXT DEFAULT '[]'", "juego TEXT DEFAULT ''", "ficha TEXT DEFAULT ''", "margen REAL", "t_margen REAL",
+                        "partida_juego TEXT DEFAULT ''", "contrato TEXT DEFAULT ''"):
             try:
                 self.db.execute("ALTER TABLE cuentas ADD COLUMN " + columna)
             except sqlite3.OperationalError:

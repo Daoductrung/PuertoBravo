@@ -161,7 +161,26 @@ def mundo_servidor():
     encargos = encargos_para_servidor(datos)
     if encargos:
         out["encargos"] = encargos
+    empleos = empleos_para_servidor(datos)
+    if empleos:
+        out["empleos"] = empleos
     return out
+
+
+def empleos_para_servidor(datos):
+    """Los contratos fijos, para que un servidor pueda pagar sus nóminas con las cifras del juego y no con las que diga el
+    juego de cada cual: cada cuántos días se cobra, la prima por una buena evaluación y, de cada empleo, los turnos que
+    pide y lo que paga cada puesto. Un servidor anterior no lo mira; uno nuevo, si no viene, no paga nóminas."""
+    from .honrado import AJ
+    puestos = {}
+    try:
+        for c in datos.get("empleos_fijos") or []:
+            lista = [[max(1, int(p.get("cupo", 3))), max(0, int(p.get("sueldo", 0)))] for p in c.get("puestos") or []]
+            if lista and isinstance(c.get("id"), str):
+                puestos[c["id"][:40]] = lista
+        return {"periodo": AJ.entero("periodo_dias"), "prima": AJ.entero("prima_buena"), "puestos": puestos} if puestos else {}
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return {}
 
 
 def encargos_para_servidor(datos):
@@ -490,6 +509,8 @@ class EnLinea:
         if vuelta:
             self._sv_vehiculos_de_vuelta()
         self.sv_poner_vehiculos()
+        if not vuelta:
+            self.hon_sv_al_entrar(ok.get("contrato"))               # tu contrato fijo, como lo tiene apuntado el servidor
         self.sv_al_dia(int(ok.get("dias_fuera") or 0))
         for cosa in ok.get("pendientes", []):                    # lo que pasó con tus propiedades mientras no estabas
             if cosa.get("que") in ("venta", "caducada"):
@@ -696,12 +717,39 @@ class EnLinea:
             return ""
         suya, mia = version_tupla(m.get("version")), version_tupla(VERSION)
         if suya > mia:
+            if self.sv_sabe("equivalencias"):                    # el servidor le pone a tu juego lo más parecido de lo que conoce
+                return (f"Este servidor va con los datos de la versión {m['version']} del juego y tú tienes la {VERSION}: puedes jugar con todos. "
+                        "Las armas y los vehículos que tu versión no tiene los oirás y los verás como lo más parecido de lo que conoces; "
+                        "los lugares nuevos no los verás hasta que actualices. ")
             return (f"Este servidor va con los datos de la versión {m['version']} del juego y tú tienes la {VERSION}: puedes jugar, "
                     "pero no verás los lugares, vehículos y armas nuevos de otros jugadores hasta que actualices. ")
         if suya < mia:
             return (f"Este servidor va con los datos de la versión {m['version']} del juego, anterior a la tuya: puedes jugar, "
-                    "pero lo nuevo de tu versión no lo verán los demás, y en las localidades nuevas no te verán a ti. ")
+                    "pero lo nuevo de tu versión no lo verán los demás, las armas nuevas cuentan contra otros jugadores como ir con las manos, "
+                    "y en las localidades nuevas no te verán a ti. ")
         return "Los datos de tu juego no son exactamente los de este servidor: puedes jugar, pero lo que tengas distinto no lo verán los demás. "
+
+    def sv_distinto_txt(self):
+        """Qué no coincide entre tu juego y el mundo del servidor, con nombres, como lo cuenta el propio servidor (desde la
+        1.7.1). Vacío si no lo dice o si no hay diferencias de armas ni de vehículos."""
+        d = (self.sv.get("mundo") or {}).get("distinto")
+        if not isinstance(d, dict):
+            return ""
+
+        def lista(grupo, clave, uno, varios):
+            nombres = [str(n) for n in ((d.get(grupo) or {}).get(clave) or []) if n][:40]
+            if not nombres:
+                return ""
+            cabeza = uno if len(nombres) == 1 else f"{len(nombres)} {varios}"
+            return f"{cabeza}: " + ", ".join(nombres[:6]) + (f" y {len(nombres) - 6} más" if len(nombres) > 6 else "")
+        out = ""
+        faltan = [t for t in (lista("faltan", "armas", "un arma", "armas"), lista("faltan", "vehiculos", "un vehículo", "vehículos")) if t]
+        if faltan:
+            out += ". El servidor tiene y tu juego no, " + "; ".join(faltan) + ". Los oirás y los verás como lo más parecido de lo que tu juego conoce"
+        sobran = [t for t in (lista("sobran", "armas", "un arma", "armas"), lista("sobran", "vehiculos", "un vehículo", "vehículos")) if t]
+        if sobran:
+            out += ". Tu juego tiene y el servidor no, " + "; ".join(sobran) + ". Contra otros jugadores esas armas cuentan como ir con las manos, y esos vehículos los ven como un utilitario"
+        return out
 
     def sv_al_dia(self, dias):
         """Has estado fuera: pasan las medianoches que te has perdido, con un tope de tres."""

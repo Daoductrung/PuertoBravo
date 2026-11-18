@@ -35,3 +35,8 @@ Lo nuevo de la versión 1.7.1, que la guía explica en sus apartados 18 y 19:
 - Quien está cerca del vehículo de otro jugador oye la emisora del juego que lleva puesta. Se apaga con radio_coches.
 - El juego no lleva voz por micrófono: para hablar de viva voz, usad aparte cualquier programa de voz.
 - Un servidor nuevo sigue valiendo para quien juega con la 1.7.0, y un juego nuevo entra en un servidor de la 1.7.0.
+- Jugar con versiones distintas: no se rechaza a nadie por su versión salvo que pongas una versión mínima. El daño y
+  el dinero los decide el servidor, igual para todos; a cada juego se le da lo más parecido de lo que conoce, y el
+  personaje no pierde nada por pasar por una versión anterior. Quien lleva mods entra y juega en lo común (opción
+  mundo_distinto). Lo explica el apartado 17 de la guía.
+- Los contratos fijos cobran una nómina que paga el servidor (opciones nominas, nomina_max y nomina_turnos_dia).
