@@ -136,9 +136,9 @@ def ofrecer(app, info):
             app.son("error")
             app.decir("Estás jugando desde el código fuente: la versión nueva solo se instala sola en el juego compilado.", True)
             return
-        falta = "" if app.pruebas and not hasattr(app, "act_libre") else A.problema_para_descargar(info, libre=getattr(app, "act_libre", None))
-        if falta:                                                # no va a caber: mejor saberlo antes de descargar nada
-            registro.aviso("actualizar", "No hay sitio en el disco para descargar la versión nueva", version=info.version)
+        falta = "" if app.pruebas and not hasattr(app, "act_libre") else A.problema_para_descargar(info, libre=getattr(app, "act_libre", None), escribible=getattr(app, "act_escribible", None))
+        if falta:                                                # no va a caber, o no se va a poder escribir: mejor saberlo antes de descargar nada
+            registro.aviso("actualizar", "No se puede descargar la versión nueva", version=info.version, motivo=falta[:60])
             app.son("error")
             app.decir(falta, True)
             return
@@ -194,7 +194,8 @@ def descargar(app, info):
             if not isinstance(error, A.Cancelado):
                 app.son("error")
             A.limpiar()
-            app.decir(str(error) if isinstance(error, A.ErrorActualizacion) else "No se pudo preparar la actualización.", True)
+            app.decir(str(error) if isinstance(error, A.ErrorActualizacion) else str(A.error_de_disco(error, "preparar la actualización")) if isinstance(error, OSError)
+                      else "No se pudo preparar la actualización. " + A.A_MANO, True)
             return
         if getattr(estado["tarea"], "en_fondo", False):          # se descargó mientras jugabas: se instala cuando tú digas
             app.act_lista = (bat, info.version)
@@ -346,11 +347,16 @@ def opciones(app):
     def fallo():
         app.decir(app.act_fallo + " El detalle está en la carpeta de registros, en el archivo actualizacion punto log: se llega desde Opciones, Registro para informar de fallos, Abrir la carpeta con todas las sesiones.", True)
 
+    def sin_red():
+        app.decir(f"Al abrir el juego se buscó una versión nueva y no se pudo: {app.act_sin_red} Elige Buscar actualizaciones ahora para probar otra vez.", True)
+
     m = Menu(app, "Actualizaciones", ([
         Opcion(f"Instalar la versión descargada, la {app.act_lista[1]}", instalar_lista,
                ayuda="Ya está descargada y comprobada. El juego guarda la partida, se cierra, se actualiza y vuelve a abrirse solo en unos segundos.")] if getattr(app, "act_lista", None) else []) + ([
         Opcion("Por qué falló la última actualización", fallo,
-               ayuda="Lo que dejó apuntado el instalador: en qué paso falló, con qué archivo y qué hacer para que la próxima vez salga bien.")] if getattr(app, "act_fallo", None) else []) + [
+               ayuda="Lo que dejó apuntado el instalador: en qué paso falló, con qué archivo y qué hacer para que la próxima vez salga bien.")] if getattr(app, "act_fallo", None) else []) + ([
+        Opcion("Aviso: al abrir el juego no se pudo buscar una versión nueva", sin_red,
+               ayuda="Al arrancar no se molesta con errores, pero aquí queda dicho: si no se puede buscar, el juego no puede avisarte de las versiones nuevas. Intro dice el motivo.")] if getattr(app, "act_sin_red", None) else []) + [
         Opcion(f"Versión instalada: {VERSION}", lambda: app.decir(f"Tienes la versión {VERSION}.", True)),
         Opcion("Buscar actualizaciones ahora", lambda: buscar(app)),
         Opcion(lambda: f"Buscar al arrancar el juego: {'sí' if cfg['act_auto'] else 'no'}", ajuste=auto,
@@ -359,8 +365,46 @@ def opciones(app):
                ayuda="Con las flechas izquierda y derecha eliges de dónde se buscan y se descargan las versiones: el servidor del juego, GitHub, las dos o una dirección que escribas tú. "
                      "Con las dos, se usa la versión más nueva y, si una falla, la otra. Venga de donde venga, solo se instala una versión firmada por quien publica el juego."),
         Opcion(lambda: "Dirección personalizada: " + (cfg["act_url"] or "ninguna"), direccion, ayuda="Solo se usa si eliges actualizar desde una dirección personalizada. Intro para escribirla."),
+        Opcion("Actualizar a mano, si desde aquí no hay manera", lambda: a_mano(app),
+               ayuda="Los pasos para poner la versión nueva tú mismo, descargándola con el navegador y descomprimiéndola encima de la carpeta del juego. Tus partidas y tus opciones se conservan."),
         Opcion("Volver", lambda: app.cerrar(m)),
     ], al_cerrar=cfg.guardar)
+    app.abrir(m)
+
+
+PASOS_A_MANO = (
+    "Uno. Abre la página de descargas del juego con la opción de abajo, o desde otro ordenador o con el móvil si en este la red está bloqueada, "
+    "y descarga el archivo ZIP de la última versión: su nombre empieza por PuertoBravo, todo junto, y sigue con el número de versión.",
+    "Dos. Cierra el juego. Cierra también el editor de mods y el servidor en línea, si los tienes abiertos.",
+    "Tres. Abre el ZIP y copia todo lo que trae dentro de la carpeta donde tienes el juego, encima de lo que hay. "
+    "Cuando Windows pregunte, elige reemplazar los archivos. No borres antes la carpeta: dentro están tus partidas, tus opciones y tu música, y la versión nueva no trae nada de eso, así que no se pisa. Tus mods tampoco se borran.",
+    "Cuatro. Abre el juego. En Opciones, Actualizaciones, la primera línea dice la versión instalada: tiene que ser la nueva.",
+    "Si Windows no deja copiar, el juego está en una carpeta protegida: mueve la carpeta entera del juego a otro sitio, por ejemplo dentro de Documentos, y repite el paso tres.",
+)
+
+
+def a_mano(app):
+    """Los pasos para actualizar sin el actualizador: para cuando un antivirus, un filtro de red o los permisos no dejan."""
+    def abrir_pagina():
+        try:
+            os.startfile(A.PAGINA_DESCARGAS)
+            app.decir("Se abre la página de descargas en tu navegador. El juego sigue aquí.", True)
+        except (OSError, AttributeError):
+            app.son("error")
+            app.decir("No se pudo abrir el navegador. La dirección es github punto com, barra, " + A.REPOSITORIO_GITHUB.replace("/", ", barra, ") + ", barra, releases.", True)
+
+    def abrir_carpeta():
+        try:
+            os.startfile(A.carpeta_programa())
+            app.decir("Se abre la carpeta del juego en el explorador de Windows: ahí es donde hay que copiar lo que trae el ZIP.", True)
+        except (OSError, AttributeError):
+            app.son("error")
+            app.decir("No se pudo abrir la carpeta. Es la carpeta desde la que abres el juego.", True)
+    ops = [Opcion(t.rstrip(".")) for t in PASOS_A_MANO]         # el menú pone el punto
+    ops += [Opcion("Abrir la página de descargas en el navegador", abrir_pagina),
+            Opcion("Abrir la carpeta del juego", abrir_carpeta, ayuda="La carpeta donde hay que copiar lo que trae el ZIP."),
+            Opcion("Volver", lambda: app.cerrar(m))]
+    m = Menu(app, "Actualizar a mano. Son cuatro pasos: recórrelos con las flechas", ops)
     app.abrir(m)
 
 
@@ -401,7 +445,8 @@ def al_arrancar(app):
             registro.info("actualizar", "Comprobación al arrancar", fuente=app.cfg["act_fuente"], encontrada=getattr(app.act_aviso, "version", "ninguna"))
         except Exception as e:
             registro.info("actualizar", "Comprobación al arrancar sin resultado", fuente=app.cfg["act_fuente"], motivo=f"{type(e).__name__}: {e}")
-            app.act_aviso = None             # sin conexión o sin fuente: al arrancar no se molesta con errores
+            app.act_aviso = None             # sin conexión o sin fuente: al arrancar no se molesta con errores,
+            app.act_sin_red = str(e) if isinstance(e, A.ErrorActualizacion) else "no se pudo conectar."      # pero queda dicho en Opciones, Actualizaciones
     threading.Thread(target=mirar, daemon=True).start()
 
 

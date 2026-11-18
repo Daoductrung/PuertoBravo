@@ -447,7 +447,7 @@ class Conduccion:
         j.rumbo = v.rumbo
         self.libre_temp = False
         if self.trabajo and self.trabajo.get("veh") is v:
-            self.terminar_trabajo("Dejas el vehículo de trabajo.")
+            self.terminar_trabajo("Dejas el vehículo de trabajo: se acaba el servicio." + (" La carga se queda sin entregar. Para volver a empezar, sube al camión y pulsa J." if self.trabajo.get("tipo") == "camion" else ""))
         if not v.tag and not v.muerto:
             self.ultimo_veh = v
             self.veh_fuera = None                                # el que cuenta es el último del que te bajas

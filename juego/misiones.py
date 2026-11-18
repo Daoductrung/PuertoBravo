@@ -625,8 +625,8 @@ class Misiones:
         ms = self.mision
         ms["generado"] = True
         en_coche = 0
-        for grupo in p["enemigos"]:
-            n = int(grupo.get("n", 1))
+        escolta = self.escolta_ajuste()                          # con la opción: más oposición si vienes con los tuyos
+        for grupo, n in self.escolta_grupos(p["enemigos"], escolta):
             f = G.enemigo(grupo)
             a_pie = None
             # Un grupo cuyo tipo va en vehículo llega en él: viene por la calle, para cerca de ti y se bajan. En un servidor, a pie.
@@ -659,6 +659,7 @@ class Misiones:
                 self.personas.append(e)
                 ms["enemigos"].append(e)
         n = ms["quedan"] = len(ms["enemigos"])
+        self.escolta_endurecer(ms["enemigos"], escolta)
         if all(getattr(e, "inofensivo", False) for e in ms["enemigos"]):         # muñecos y dianas: no son enemigos
             x, y = self.pos()
             cerca = min(ms["enemigos"], key=lambda e: e.dist(x, y))

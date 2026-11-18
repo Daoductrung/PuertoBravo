@@ -26,7 +26,7 @@
     {"id": "sl_universidad", "nombre": "Universidad de San Lucero", "tipo": "monumento", "bloque": [4, 3], "xy": [36, 36], "desc": ""},
     {"id": "sl_catedral", "nombre": "Catedral de San Lucero", "tipo": "monumento", "bloque": [1, 1], "xy": [36, 52], "sonido": "lugar_iglesia", "desc": ""},
     {"id": "sl_fuente", "nombre": "Fuente de los Leones", "tipo": "monumento", "bloque": [1, 1], "xy": [36, 18], "sonido": "lugar_fuente", "desc": ""},
-    {"id": "sl_bingo", "nombre": "Bingo La Suerte", "tipo": "casino", "bloque": [5, 1], "lado": "S", "pos": 36, "desc": "El bingo y casino de San Lucero. Lo controla El Caimán, el jefe de Los Lagartos."},
+    {"id": "sl_bingo", "nombre": "Bingo La Suerte", "tipo": "casino", "bloque": [5, 1], "lado": "S", "pos": 36, "desc": "El bingo y casino de San Lucero. Lo controla El Caimán, el jefe de Los Lagartos.", "desc_conquistado": "El bingo y casino de San Lucero. Fue el negocio de El Caimán, el jefe de Los Lagartos, hasta que el barrio cambió de manos."},
     {"id": "sl_hotel", "nombre": "Gran Hotel San Lucero", "tipo": "hotel", "bloque": [2, 1], "lado": "E", "pos": 36, "precio_noche": 90, "desc": "Un hotel señorial junto a la plaza de la Catedral."},
     {"id": "sl_banco", "nombre": "Caja de Ahorros de San Lucero", "tipo": "banco", "bloque": [3, 1], "lado": "N", "pos": 36, "desc": "Tu cuenta es la misma en todas las oficinas."},
     {"id": "sl_gimnasio", "nombre": "Polideportivo universitario", "tipo": "gimnasio", "bloque": [5, 3], "lado": "S", "pos": 30, "desc": "Pistas, pesas y piscina. Abierto a todo el mundo."},

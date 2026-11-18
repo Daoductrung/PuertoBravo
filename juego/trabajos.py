@@ -156,15 +156,22 @@ class Trabajos:
             self.gps_a_lugar(l, auto=True, callar=True)
         elif tipo == "camion":
             otros = [m for m in self.mapas.values() if m.id != self.mundo.id and m.tipo != "mar"
-                     and any(l.tipo == "salida" for l in m.lugares.values())]
+                     and any(l.tipo == "salida" for l in m.lugares.values()) and self.saltos_por_tierra(self.mundo.id, m.id) is not None]
             if not otros or not any(l.tipo == "salida" for l in self.mundo.lugares.values()):
                 self.terminar_trabajo("Desde aquí no sale ninguna carretera para los camiones.")
                 return
             m = random.choice(otros)
             ops = [l for l in m.lugares.values() if l.tipo in ("tienda", "taller", "negocio", "comida", "desguace", "armeria", "pescaderia")]
             l = random.choice(ops or list(m.lugares.values()))
-            t.update(lugar=l, limite=None, texto=f"Transporte: lleva la carga a {l.nombre}, en {m.nombre}.")
+            saltos = self.saltos_por_tierra(self.mundo.id, m.id) or 1
+            camino = "es la localidad vecina" if saltos == 1 else f"hay que cruzar {saltos - 1} {'localidad' if saltos == 2 else 'localidades'} por el camino"
+            t.update(lugar=l, limite=None, texto=f"Transporte: lleva la carga a {l.nombre}, en {m.nombre}, sin bajarte del camión.")
             self.gps_a_lugar(l, auto=True, callar=True)
+            if not t.get("explicado"):                           # la primera vez de cada turno, cómo va esto de principio a fin
+                t["explicado"] = True
+                self.decir(f"La carga ya va en el camión: no hay que recoger nada. Se lleva por carretera a {m.nombre}: {camino}. "
+                           "El GPS te guía hasta la salida de la localidad; allí, sin bajarte, pulsa Intro para tomar la carretera, y al llegar te sigue guiando. "
+                           "Se entrega sola al parar delante del destino. No cojas el autobús ni te bajes: si dejas el camión, se acaba el trabajo.")
         self.decir(t["texto"])
         if self.trabajo and self.gps:
             self.repetir_gps_suave()
@@ -246,7 +253,7 @@ class Trabajos:
         tipo = t["tipo"]
         if "veh" in t:
             if j.veh is not t["veh"]:
-                self.terminar_trabajo("Has dejado el vehículo de trabajo.")
+                self.terminar_trabajo("Has dejado el vehículo de trabajo: se acaba el servicio." + (" La carga se queda sin entregar. Para volver a empezar, sube al camión y pulsa J." if tipo == "camion" else ""))
                 return
             if j.estrellas >= 2:
                 self.terminar_trabajo("Con la policía detrás se acabó el trabajo.")
@@ -323,7 +330,7 @@ class Trabajos:
             l = t["lugar"]
             if self._parado_en(l):
                 self.son("puerta_coche")
-                self._cobrar(random.randint(350, 600), "Carga entregada")
+                self._cobrar(random.randint(350, 600), f"Carga entregada en {l.nombre}")
                 self._servicio_nuevo()
         elif tipo == "bomberos":
             l = t["lugar"]

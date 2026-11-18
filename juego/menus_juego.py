@@ -256,6 +256,27 @@ def abrir_mi_musica(app):
         app.decir(f"No he podido abrir la carpeta. Está en {ruta}", True)
 
 
+def mi_musica(app):
+    """Cómo poner tu propia música, paso a paso y sin nombrar carpetas internas: la carpeta la abre el juego."""
+    md = getattr(app, "mando", None)
+    con_mando = md is not None and md.conectado
+    pasos = [
+        "Uno. Elige más abajo Abrir la carpeta de mi música. Se abre una ventana de Windows con una carpeta: es la de tus canciones. El juego sigue abierto detrás.",
+        "Dos. Copia ahí tus canciones, como en cualquier carpeta: búscalas en tu ordenador, cópialas con Control C y pégalas en esa ventana con Control V. "
+        "Valen archivos mp3, ogg, flac y wav. También puedes pegar carpetas enteras.",
+        "Tres. Vuelve al juego con Alt y Tabulador. No hace falta cerrarlo ni reiniciarlo.",
+        "Cuatro. Sube a cualquier vehículo y cambia de emisora, " + ("con la combinación del mando que dice la ayuda, " if con_mando else "con la R, ")
+        + "hasta oír Mi música. Dentro de Mi música, la misma tecla pasa a la canción siguiente. Si tienes el reproductor con auriculares, también suena a pie.",
+        "Tus canciones no salen de tu ordenador: en un servidor en línea nadie las oye, y las actualizaciones del juego no las tocan.",
+    ]
+    ops = [Opcion(t.rstrip(".")) for t in pasos]               # el menú pone el punto
+    ops.append(Opcion(lambda: f"Abrir la carpeta de mi música: {_canciones_txt(app)}", lambda: abrir_mi_musica(app),
+                      ayuda="Abre la carpeta en el Explorador de Windows, y la crea si no existe. Al volver a este menú dice cuántas canciones hay."))
+    ops.append(Opcion("Volver", lambda: app.cerrar(m)))
+    m = Menu(app, "Mi música: cómo poner tus canciones en la radio. Son cuatro pasos: recórrelos con las flechas", ops)
+    app.abrir(m)
+
+
 def abrir_manual(app):
     ruta = rutas.data("docs", "manual.html")
     try:
@@ -377,7 +398,9 @@ def opciones(app):
                "cardinal": "puntos cardinales", "reloj": "horas del reloj", "relativa": "delante, derecha, detrás, izquierda",
                "todos": "todo el mundo", "mujeres": "las mujeres", "hombres": "los hombres", "x": "prefiero no decirlo", "h": "hombre", "m": "mujer",
                "nada": "nunca", "pocas": "pocas veces", "algunas": "de vez en cuando", "muchas": "a menudo",
-               "apagado": "apagado, nadie intenta quitártelos", "tranquilo": "tranquilo, pocos asaltos y con mucho plazo", "duro": "duro, asaltos seguidos y con poco plazo"}
+               "apagado": "apagado, nadie intenta quitártelos", "tranquilo": "tranquilo, pocos asaltos y con mucho plazo", "duro": "duro, asaltos seguidos y con poco plazo",
+               "no": "no, te esperan los mismos vayas con quien vayas", "moderado": "moderado, algo más de oposición si vas acompañado",
+               "fuerte": "fuerte, bastante más oposición si vas acompañado"}
     from .reconquista import AJ as REC
     OPCIONES.setdefault("detalle_voz", ["poco", "normal", "mucho"])
     nombres.update({"poco": "poco, sin recordar las teclas", "mucho": "mucho, con la explicación de cada opción"})
@@ -462,6 +485,8 @@ def opciones(app):
                   "Con sí, cuando tienes cerca el vehículo de otro jugador que lleva puesta una emisora del juego, la oyes floja y apagada, desde donde está su vehículo, "
                   "y se pierde al alejarte. Solo suena si tú no llevas tu propia radio puesta, y solo una a la vez. Nunca se oye la música propia de nadie: de «Mi música» "
                   "no sale nada de tu ordenador, solo se cuenta qué emisora del juego llevas. Con no, no oyes la radio de nadie; los demás siguen oyendo la tuya."),
+            Opcion("Mi música: cómo poner tus canciones en la radio, paso a paso", lambda: mi_musica(app),
+                   ayuda="Los cuatro pasos para oír tu propia música en la radio de los vehículos, y la opción que abre la carpeta donde se copian las canciones."),
             Opcion(lambda: f"Abrir la carpeta de mi música: {_canciones_txt(app)}", lambda: abrir_mi_musica(app),
                    ayuda="Abre en el Explorador de Windows la carpeta donde se copian tus canciones, y la crea si no existe. Lo que copies ahí, en mp3, ogg, flac o wav, "
                          "suena en la emisora Mi música, que está en la radio de cualquier vehículo: se cambia de emisora con la R. No hace falta cerrar el juego: "
@@ -533,6 +558,11 @@ def opciones(app):
                   "Con no, no se les puede apuntar ni herir, ni por accidente."),
             si_no("aviso_acierto", "Aviso al dar en el blanco", "Cada vez que aciertas a un enemigo o a un vehículo suena un toque agudo y el mando da un golpe corto. Al fijar un objetivo con la Q, el mando también avisa.",
                   al_cambiar=lambda: cfg["aviso_acierto"] and app.mez.sonar("tono_objetivo", cat="interfaz", vol=0.45, tono=2.0)),
+            lista("escolta_misiones", "Las misiones se ajustan a tu escolta",
+                  "Con toda tu banda y dos guardaespaldas, las misiones se hacían solas. Con esta opción, cuando llegas a una misión con gente a tu lado, te esperan algunos enemigos más, "
+                  "que aguantan más y apuntan mejor, según cuántos lleves. El primero de los tuyos no cuenta, y hay un tope para que ninguna misión se vuelva imposible. "
+                  "Moderado, que es lo de serie: como mucho la mitad más de enemigos. Fuerte: como mucho el doble. No: te esperan siempre los mismos. "
+                  "No cuenta en los tutoriales ni en un servidor en línea. El juego te avisa cuando la oposición sube por tu escolta."),
             si_no("mod_enemigos", "Modificador: enemigos más duros", "Los enemigos de las misiones aguantan la mitad más. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
             si_no("mod_policia", "Modificador: policía más severa", "Cada delito cuenta la mitad más, así que la búsqueda sube antes. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
             si_no("mod_dinero", "Modificador: misiones peor pagadas", "Las misiones pagan la mitad. Cada modificador activo te hace ganar experiencia un veinticinco por ciento más deprisa."),
@@ -696,6 +726,7 @@ def pausa(p):
         Opcion("Opciones", lambda: opciones(app)),
         Opcion("Ayuda de teclas", lambda: ayuda_teclas(app, "todo")),
         Opcion("Aprender los sonidos", lambda: sonidos(app)),
+        Opcion("Mi música: poner tus canciones en la radio", lambda: mi_musica(app)),
         Opcion("Abrir el manual", lambda: abrir_manual(app)),
         Opcion("Salir al menú principal", salir),
     ]
@@ -720,7 +751,7 @@ def lista_lugares(p, al_elegir=None, titulo=None, mapa=None, otras=True):
     titulo = titulo or f"Lugares de {mundo.nombre}"
 
     def otras_localidades():
-        ops = [Opcion(f"{m.nombre}. {m.barrios[0].get('descripcion', '')}", (lambda m=m: lista_lugares(p, al_elegir, None, m, False)))
+        ops = [Opcion(f"{m.nombre}. {p.desc_localidad(m)}", (lambda m=m: lista_lugares(p, al_elegir, None, m, False)))
                for m in p.mapas.values() if m.id != p.mundo.id]
         app.abrir(Menu(app, "Otras localidades", ops, intro="El GPS te guiará hasta la carretera, la estación o el embarcadero que lleva allí"))
 

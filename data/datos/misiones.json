@@ -343,6 +343,7 @@
   {
    "id": "m06",
    "titulo": "Entrega urgente",
+   "vehiculo_libre": true,
    "capitulo": 2,
    "contacto": "Chispas",
    "lugar": "taller_chispas",

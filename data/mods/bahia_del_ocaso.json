@@ -2574,7 +2574,8 @@
       "furgoneta",
       "camion"
      ],
-     "descripcion": "Muelles del Cobre: grúas oxidadas, montañas de chatarra y olor a gasóleo. Aquí manda la Peña del Cobre, que compra y vende cualquier cosa que pese."
+     "descripcion": "Muelles del Cobre: grúas oxidadas, montañas de chatarra y olor a gasóleo. Aquí manda la Peña del Cobre, que compra y vende cualquier cosa que pese.",
+     "descripcion_conquistado": "Muelles del Cobre: grúas oxidadas, montañas de chatarra y olor a gasóleo. Aquí mandaba la Peña del Cobre, que compraba y vendía cualquier cosa que pesara."
     },
     {
      "id": "oc_paseo",
@@ -2616,7 +2617,8 @@
       "furgoneta",
       "bici"
      ],
-     "descripcion": "El Cauce Seco: casas bajas a los dos lados de un río que lleva tres años sin agua. Dos horas de grifo al día y colas con garrafas. Es el barrio de Los Aljibes."
+     "descripcion": "El Cauce Seco: casas bajas a los dos lados de un río que lleva tres años sin agua. Dos horas de grifo al día y colas con garrafas. Es el barrio de Los Aljibes.",
+     "descripcion_conquistado": "El Cauce Seco: casas bajas a los dos lados de un río que lleva tres años sin agua. Dos horas de grifo al día y colas con garrafas. Fue el barrio de Los Aljibes."
     },
     {
      "id": "oc_centro",
@@ -2677,7 +2679,8 @@
       "todoterreno",
       "oc_vigia"
      ],
-     "descripcion": "Los Miradores: chalés en la colina, setos regados y piscinas llenas. Por las cuestas suben y bajan las motos de Los Vigías, que lo ven todo."
+     "descripcion": "Los Miradores: chalés en la colina, setos regados y piscinas llenas. Por las cuestas suben y bajan las motos de Los Vigías, que lo ven todo.",
+     "descripcion_conquistado": "Los Miradores: chalés en la colina, setos regados y piscinas llenas. Por las cuestas ya casi no se ven las motos de Los Vigías, que antes lo veían todo."
     }
    ],
    "bloques": {
@@ -2872,7 +2875,8 @@
      ],
      "lado": "S",
      "pos": 36,
-     "desc": "El desguace de la Peña del Cobre. Pagan por cualquier vehículo y no miran la matrícula."
+     "desc": "El desguace de la Peña del Cobre. Pagan por cualquier vehículo y no miran la matrícula.",
+     "desc_conquistado": "El desguace que fue de la Peña del Cobre. Pagan por cualquier vehículo y no miran la matrícula."
     },
     {
      "id": "oc_deposito_chatarra",
@@ -3491,6 +3495,7 @@
      "lado": "S",
      "pos": 36,
      "desc": "Una torre de vigilancia antigua. A sus pies se juntan las motos de Los Vigías.",
+     "desc_conquistado": "Una torre de vigilancia antigua. A sus pies se juntaban las motos de Los Vigías, cuando el barrio era suyo.",
      "sonido": "lugar_iglesia"
     },
     {

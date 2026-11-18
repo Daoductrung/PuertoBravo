@@ -163,6 +163,31 @@ def abrir_red(url, tiempo=TIEMPO, desde=0):
 
 
 REINTENTOS = 5          # veces que se retoma una descarga cortada, por cada dirección
+PAGINA_DESCARGAS = f"https://github.com/{REPOSITORIO_GITHUB}/releases/latest"       # de donde se baja el ZIP para actualizar a mano
+BLOQUEO_RED = ("Si tu conexión funciona para lo demás, puede que un filtro de red como AdGuard, un antivirus o un cortafuegos esté bloqueando al juego: "
+               "añade Puerto Bravo a sus excepciones, o prueba la otra fuente en Actualizar desde.")
+A_MANO = "Si no hay manera, se puede actualizar a mano: lo explica Opciones, Actualizaciones, Actualizar a mano."
+
+
+class ErrorDisco(ErrorActualizacion):
+    """No se ha podido escribir en el disco: no es cosa de la conexión."""
+
+
+def error_de_disco(e, que="guardar la descarga"):
+    """Un fallo de Windows al escribir, dicho para quien juega: carpeta protegida, disco lleno, antivirus u otro programa."""
+    cod = getattr(e, "winerror", None)
+    if cod in _SIN_SITIO or getattr(e, "errno", None) == 28:
+        return ErrorDisco(f"El disco se ha llenado y no se ha podido {que}. Libera espacio y vuelve a intentarlo.")
+    if cod in _ANTIVIRUS:
+        return ErrorDisco(f"El antivirus ha bloqueado un archivo y no se ha podido {que}. Añade la carpeta del juego a las excepciones del antivirus y vuelve a intentarlo. " + A_MANO)
+    if cod in _EN_USO:
+        return ErrorDisco(f"No se ha podido {que} porque otro programa estaba usando el archivo. Suele ser el antivirus, que lo está examinando, o el juego abierto dos veces. "
+                          "Cierra las demás ventanas de Puerto Bravo, espera un momento y vuelve a intentarlo.")
+    if isinstance(e, PermissionError) or cod in _DENEGADO:
+        return ErrorDisco(f"Windows no deja escribir en la carpeta del juego y no se ha podido {que}. Suele pasar si el juego está en una carpeta protegida, como Archivos de programa, "
+                          "o si un antivirus o el acceso controlado a carpetas lo impiden. Mueve el juego a otra carpeta, por ejemplo dentro de Documentos, "
+                          "o añade una excepción en el antivirus. " + A_MANO)
+    return ErrorDisco(f"No se ha podido {que}: Windows dio el error {cod or getattr(e, 'errno', None) or type(e).__name__}. Puede ser el antivirus. " + A_MANO)
 
 
 def _abrir_desde(abrir, url, desde):
@@ -290,8 +315,13 @@ def descargar(info, carpeta=None, progreso=None, cancelado=None, abrir=None):
     """Descarga el ZIP probando las direcciones en orden y comprueba tamaño y SHA-256. Devuelve su ruta."""
     abrir = abrir or abrir_red
     carpeta = carpeta or carpeta_trabajo()
-    os.makedirs(carpeta, exist_ok=True)
     destino = os.path.join(carpeta, info.archivo)
+    try:                                                   # antes de pedir nada a la red: ¿se puede escribir ahí?
+        os.makedirs(carpeta, exist_ok=True)
+        with open(destino + ".parcial", "ab"):
+            pass
+    except OSError as e:
+        raise error_de_disco(e) from e
     ultimo = None
     for url in info.urls:
         try:
@@ -301,7 +331,12 @@ def descargar(info, carpeta=None, progreso=None, cancelado=None, abrir=None):
                 antes = hecho
                 try:
                     r, hecho = _abrir_desde(abrir, url, hecho)
-                    with r, open(destino + ".parcial", "ab" if hecho else "wb") as f:
+                    try:
+                        f = open(destino + ".parcial", "ab" if hecho else "wb")
+                    except OSError as e:
+                        r.close()
+                        raise error_de_disco(e) from e
+                    with r, f:
                         while True:
                             if cancelado and cancelado():
                                 raise Cancelado("Descarga cancelada.")
@@ -311,7 +346,10 @@ def descargar(info, carpeta=None, progreso=None, cancelado=None, abrir=None):
                             hecho += len(bloque)
                             if hecho > info.tamano:
                                 raise ErrorFirma("El archivo descargado es más grande de lo que debería.")
-                            f.write(bloque)
+                            try:
+                                f.write(bloque)
+                            except OSError as e:           # el disco, no la red: no tiene sentido reintentar ni culpar a la conexión
+                                raise error_de_disco(e) from e
                             if progreso:
                                 progreso(hecho, info.tamano)
                 except (OSError, ValueError):
@@ -322,18 +360,29 @@ def descargar(info, carpeta=None, progreso=None, cancelado=None, abrir=None):
                 if hecho >= info.tamano or (hecho <= antes and intento >= 2):
                     break
             if hecho != info.tamano:
-                raise ErrorRed("La descarga se ha cortado antes de terminar, y no se ha podido retomar. Prueba otra vez dentro de un rato.")
-            if not hmac.compare_digest(sha256_de(destino + ".parcial"), info.sha256):
+                raise ErrorRed("La descarga se ha cortado antes de terminar, y no se ha podido retomar. Prueba otra vez dentro de un rato. " + BLOQUEO_RED)
+            try:
+                suma = sha256_de(destino + ".parcial")
+            except OSError as e:                           # estaba entero y ya no se puede leer: lo ha retirado o lo retiene otro programa
+                raise ErrorDisco("La descarga terminó, pero el archivo ha desaparecido o no se deja leer: casi siempre es el antivirus, que lo ha apartado. "
+                                 "Añade la carpeta del juego a sus excepciones y vuelve a intentarlo. " + A_MANO) from e
+            if not hmac.compare_digest(suma, info.sha256):
                 raise ErrorFirma("El archivo descargado no coincide con el que se publicó. No se instala.")
-            os.replace(destino + ".parcial", destino)
+            try:
+                os.replace(destino + ".parcial", destino)
+            except OSError as e:
+                raise error_de_disco(e) from e
             return destino
         except Cancelado:
+            _quitar(destino + ".parcial")
+            raise
+        except ErrorDisco:                                 # con otra dirección pasaría lo mismo
             _quitar(destino + ".parcial")
             raise
         except ErrorActualizacion as e:
             ultimo = e
         except (OSError, ValueError) as e:
-            ultimo = ErrorRed("No se pudo descargar la versión nueva. Comprueba la conexión a internet.")
+            ultimo = ErrorRed("No se pudo descargar la versión nueva. Comprueba la conexión a internet. " + BLOQUEO_RED)
             ultimo.__cause__ = e
         _quitar(destino + ".parcial")
     raise ultimo or ErrorRed("No se pudo descargar la versión nueva.")
@@ -350,11 +399,16 @@ def extraer(ruta_zip, carpeta):
     """Extrae el ZIP en una carpeta vacía, rechazando cualquier ruta que intente salirse de ella."""
     if os.path.isdir(carpeta):
         shutil.rmtree(carpeta, ignore_errors=True)
-    os.makedirs(carpeta)
+    try:
+        os.makedirs(carpeta, exist_ok=True)
+    except OSError as e:
+        raise error_de_disco(e, "preparar la versión nueva") from e
     raiz = os.path.realpath(carpeta)
+    traia_el_juego = False
     try:
         with zipfile.ZipFile(ruta_zip) as z:
             miembros = z.infolist()
+            traia_el_juego = any(m.filename.replace("\\", "/").strip("/") == EJECUTABLE for m in miembros)
             if len(miembros) > MAX_MIEMBROS or sum(m.file_size for m in miembros) > MAX_EXPANDIDO:
                 raise ErrorFirma("El paquete de la versión es demasiado grande.")
             for m in miembros:
@@ -373,7 +427,14 @@ def extraer(ruta_zip, carpeta):
                     shutil.copyfileobj(origen, f, 1024 * 1024)
     except zipfile.BadZipFile:
         raise ErrorFirma("El paquete de la versión está dañado.") from None
+    except ErrorActualizacion:
+        raise
+    except OSError as e:
+        raise error_de_disco(e, "preparar la versión nueva") from e
     if not os.path.isfile(os.path.join(raiz, EJECUTABLE)):
+        if traia_el_juego:                                 # venía en el paquete y, recién sacado, ya no está: alguien lo ha quitado
+            raise ErrorDisco("El programa del juego venía en la descarga, pero ha desaparecido nada más sacarlo: casi siempre es el antivirus, que lo ha puesto en cuarentena. "
+                             "Añade la carpeta del juego a las excepciones del antivirus y vuelve a intentarlo. " + A_MANO)
         raise ErrorFirma("El paquete de la versión no contiene el juego.")
     for base, dirs, _ in os.walk(raiz):               # por si acaso: lo personal no viaja en una versión
         for d in list(dirs):
@@ -760,13 +821,32 @@ def _falta_sitio(hace_falta, programa, libre=None):
             f"Libera al menos {megas_txt(hace_falta - libre)} y vuelve a intentarlo.")
 
 
-def problema_para_descargar(info, programa=None, libre=None):
-    """Antes de descargar: si no va a caber, se dice ya. Cadena vacía si hay sitio."""
+SIN_PERMISO = ("Windows no deja escribir en la carpeta del juego. Suele pasar si está en una carpeta protegida, como Archivos de programa, "
+               "o si un antivirus o el acceso controlado a carpetas lo impiden. Mueve el juego a otra carpeta, por ejemplo dentro de Documentos, "
+               "o añade una excepción en el antivirus.")
+
+
+def copias_del_juego(tareas=None):
+    """Cuántas veces está abierto el juego ahora mismo, contando esta. Uno si no se puede saber."""
+    if tareas is None:
+        try:
+            sin_ventana = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+            salida = subprocess.run(["tasklist", "/fo", "csv", "/nh"], capture_output=True, timeout=10, creationflags=sin_ventana).stdout.decode("utf-8", "replace").lower()
+        except (OSError, subprocess.SubprocessError):
+            return 1
+        tareas = [linea.split('","')[0].strip('"') for linea in salida.splitlines() if linea.startswith('"')]
+    return max(1, sum(1 for t in tareas if str(t).lower() == EJECUTABLE.lower()))
+
+
+def problema_para_descargar(info, programa=None, libre=None, escribible=None):
+    """Antes de descargar: si no se va a poder escribir o no va a caber, se dice ya. Cadena vacía si todo está bien."""
     programa = programa or carpeta_programa()
+    if not (carpeta_escribible(programa) if escribible is None else escribible):
+        return SIN_PERMISO + " " + A_MANO
     return _falta_sitio(espacio_para_descargar(info, programa), programa, libre)
 
 
-def problemas_para_instalar(nueva, programa=None, libre=None, tareas=None, servidores=None):
+def problemas_para_instalar(nueva, programa=None, libre=None, tareas=None, servidores=None, copias=None):
     """Antes de cerrar el juego para actualizar: lo que haría fallar la instalación, dicho con claridad. Lista vacía si todo está bien.
     Un servidor en línea abierto ya no es un problema si ha dejado su ficha: se le pide que se cierre solo y se vuelve a
     arrancar al terminar (``servidores`` son esas fichas; si no se dan, se buscan)."""
@@ -774,10 +854,10 @@ def problemas_para_instalar(nueva, programa=None, libre=None, tareas=None, servi
     servidores = servidores_en_marcha(programa) if servidores is None else servidores
     controlados = {os.path.basename(f["exe"]) for f in servidores}
     problemas = []
+    if (copias_del_juego() if copias is None else copias) > 1:
+        problemas.append("El juego está abierto dos veces. Windows no deja sustituir un programa en marcha: cierra la otra ventana de Puerto Bravo antes de actualizar.")
     if not carpeta_escribible(programa):
-        problemas.append("Windows no deja escribir en la carpeta del juego. Suele pasar si está en una carpeta protegida, como Archivos de programa, "
-                         "o si un antivirus o el acceso controlado a carpetas lo impiden. Mueve el juego a otra carpeta, por ejemplo dentro de Documentos, "
-                         "o añade una excepción en el antivirus.")
+        problemas.append(SIN_PERMISO)
     else:
         abiertos = programas_abiertos(programa, tareas, salvo=controlados)
         if abiertos:

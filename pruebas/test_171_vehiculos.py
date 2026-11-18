@@ -343,19 +343,20 @@ def test_el_nombre_se_dice_al_subir_y_se_pone_en_el_garaje_y_en_el_taller(robot)
 def test_el_resumen_de_la_mision_dice_lo_del_vehiculo(robot):
     p = robot.nueva_partida()
     por_id = {m["id"]: m for m in p.datos["misiones"]}
-    assert p.mision_vehiculo_txt(por_id["m06"]).startswith("Te dan vehículo: Furgoneta de reparto")
+    assert p.mision_vehiculo_txt(por_id["m11"]).startswith("Te dan vehículo: Platino GT de Belmonte")
+    assert p.mision_vehiculo_txt(por_id["m06"]).startswith("Te dejan un vehículo, Furgoneta de reparto, pero puedes hacerla con el tuyo")
     assert p.mision_vehiculo_txt(por_id["m03"]).startswith("Hay que llevarse un vehículo concreto: Sedán del moroso")
     assert "puedes hacerla con el tuyo" in p.mision_vehiculo_txt(por_id["v02"]) and "puedes hacerla con el tuyo" in p.mision_vehiculo_txt(por_id["x05"])
     assert p.mision_vehiculo_txt(por_id["eo6"]) == "Tienes que ir con un vehículo: vale el tuyo."
     assert p.mision_vehiculo_txt(por_id["m01"]) == ""
-    # las que ya había exigen su vehículo, salvo las dos en las que da igual con qué se lleve la carga
-    assert sorted(m["id"] for m in p.datos["misiones"] if m.get("vehiculo_libre")) == ["v02", "x05"]
+    # las que ya había exigen su vehículo, salvo aquellas en las que da igual con qué se lleve la carga (tres más desde la tanda 11)
+    assert sorted(m["id"] for m in p.datos["misiones"] if m.get("vehiculo_libre")) == ["cd02", "m06", "of01", "v02", "x05"]
     # y se dice en la lista de misiones del móvil, antes de aceptarla
     p.completadas = [m["id"] for m in p.datos["misiones"] if m["id"] not in ("m06",) and m["id"] in por_id["m06"].get("requiere", [])]
     if por_id["m06"] in p.misiones_disponibles():
         robot.tecla(pygame.K_m)
         _elegir(robot, "Misiones disponibles")
-        assert any("Te dan vehículo: Furgoneta de reparto" in o.texto for o in robot.app.pila[-1].opciones)
+        assert any("Te dejan un vehículo, Furgoneta de reparto" in o.texto for o in robot.app.pila[-1].opciones)
 
 
 def _mision_reparto(p, libre):

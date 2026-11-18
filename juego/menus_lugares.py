@@ -36,7 +36,17 @@ def salida(p, l):
     mapa = p.mapas[dest.mapa]
     horas = float(l.get("horas", 1))
     if not j.veh:
-        app.decir(f"{l.nombre}. Por aquí se va a {mapa.nombre}, pero andando no llegas: ven con un vehículo o toma el autobús en la estación.", True)
+        final = p.lug(p.gps["final"]) if p.gps and p.gps.get("final") else None
+        estacion_aqui = next((e for e in p.mundo.lugares.values() if e.tipo == "estacion"), None)
+        texto = (f"{l.nombre}. Por aquí se va a {mapa.nombre}, pero solo en un vehículo: llega hasta aquí al volante, de cualquier coche o moto, "
+                 "y pulsa Intro sin bajarte.")
+        if estacion_aqui is None:
+            app.decir(texto + " Aquí no hay estación de autobuses.", True)
+        elif final is not None and p.conexion_hacia(final.mapa) is not l:        # ibas de viaje: a pie, el GPS te lleva al autobús
+            app.decir(texto + " A pie se viaja en autobús.", True)
+            p.gps_a_lugar(final, callar=True)
+        else:
+            app.decir(texto + f" A pie se viaja en autobús, desde {estacion_aqui.nombre}: márcala con la tecla L, en Viajes.", True)
         return
     if j.estrellas and _policia_cerca(p):
         app.son("error")
@@ -51,12 +61,16 @@ def salida(p, l):
         p.son("lugar_salida", cat="interfaz")
         p.cambiar_mapa(mapa.id, x, y, d * 90.0,
                        f"Tras {l.get('km', 20)} kilómetros de carretera llegas a {mapa.nombre}. Son las {p.hora_txt()}. Vas hacia el {M.NOMBRE_DIR[d]} por {mapa.describir(x, y)}.")
-    m = _menu(p, l, [Opcion(f"Tomar la carretera hasta {mapa.nombre}, {l.get('km', 20)} kilómetros", ir, ayuda=mapa.barrios[0].get("descripcion", ""))])
+    m = _menu(p, l, [Opcion(f"Tomar la carretera hasta {mapa.nombre}, {l.get('km', 20)} kilómetros", ir, ayuda=p.desc_localidad(mapa))])
 
 
 def estacion(p, l):
     app = p.app
     if p.j.veh:
+        if p.trabajo and p.trabajo.get("tipo") == "camion" and p.trabajo.get("veh") is p.j.veh:
+            app.decir(f"{l.nombre}. La carga no viaja en autobús: se lleva con el camión, por carretera. Pulsa G y el GPS te guía hasta la salida.", True)
+            p.gps_a_lugar(p.trabajo["lugar"], auto=True, callar=True)
+            return
         app.decir(f"{l.nombre}. Bájate del vehículo para coger el autobús.", True)
         return
     if p.j.estrellas:
@@ -79,7 +93,7 @@ def estacion(p, l):
             from .pantallas import viajar as trayecto
             trayecto(app, 50.0, llegar, autobus=True, destino=p.mapas[dest.mapa].nombre)
         return f
-    ops = [Opcion(f"Autobús a {p.mapas[e.mapa].nombre}: {int(e.get('precio', p.precio('autobus', 20)))} euros", viajar(e), ayuda=p.mapas[e.mapa].barrios[0].get("descripcion", ""))
+    ops = [Opcion(f"Autobús a {p.mapas[e.mapa].nombre}: {int(e.get('precio', p.precio('autobus', 20)))} euros", viajar(e), ayuda=p.desc_localidad(p.mapas[e.mapa]))
            for e in p.lugares.values() if e.tipo == "estacion" and e.mapa != p.mundo.id]
     m = _menu(p, l, ops or [Opcion("Hoy no sale ningún autobús")])
 
@@ -178,7 +192,7 @@ def tren(p, l):
         saltos = p.saltos_por_tierra(p.mundo.id, e.mapa)
         if saltos:
             ops.append(Opcion(f"Tren a {p.mapas[e.mapa].nombre}: {precio(saltos)} euros", ir(e, saltos),
-                              ayuda=("Es la localidad vecina. " if saltos == 1 else f"Está a {saltos} localidades de aquí. ") + p.mapas[e.mapa].barrios[0].get("descripcion", "")))
+                              ayuda=("Es la localidad vecina. " if saltos == 1 else f"Está a {saltos} localidades de aquí. ") + p.desc_localidad(p.mapas[e.mapa])))
     intro = "El tren llega a todas las localidades a las que se puede ir por tierra"
     if p.mundo.tren_donde():
         intro += f". La vía cruza {p.mundo.nombre} por {p.mundo.tren_donde()}: cada minuto y medio, más o menos, pasa un tren, y se le oye venir"
@@ -250,11 +264,11 @@ def aeropuerto(p, l):
         medio = "avioneta" if pequeno or a.get("aerodromo") else "avion"
         ops.append(Opcion(f"{'Vuelo' if medio == 'avion' else 'Avioneta de línea'} a {p.mapas[a.mapa].nombre}: {precio_de(a, medio)} euros", volar(a, medio),
                           ayuda=("Avión de pasajeros, para los trayectos largos entre ciudades. " if medio == "avion"
-                                 else "Una avioneta de ocho plazas con piloto, que aterriza en las pistas cortas de los pueblos. ") + p.mapas[a.mapa].barrios[0].get("descripcion", "")))
+                                 else "Una avioneta de ocho plazas con piloto, que aterriza en las pistas cortas de los pueblos. ") + p.desc_localidad(p.mapas[a.mapa])))
     # a las islas, donde no cabe una pista, se llega en helicóptero de línea
     for h in sorted((x for x in p.lugares.values() if x.tipo == "helipuerto" and x.mapa != p.mundo.id and x.mapa not in con_pista), key=lambda x: x.mapa):
         ops.append(Opcion(f"Helicóptero de línea a {h.nombre}, en {p.mapas[h.mapa].nombre}: {precio_de(h, 'helicoptero')} euros", volar(h, "helicoptero"),
-                          ayuda="Allí no hay pista: se llega en helicóptero con piloto. " + p.mapas[h.mapa].barrios[0].get("descripcion", "")))
+                          ayuda="Allí no hay pista: se llega en helicóptero con piloto. " + p.desc_localidad(p.mapas[h.mapa])))
     ops.append(Opcion(f"Alquilar una avioneta: {p.precio('alquiler_avioneta', ALQUILER['avioneta'])} euros", alquilar("avioneta"),
                       ayuda="Te la dejan en la pista y la pilotas tú. Más rápida que el helicóptero. Con ella puedes ir a cualquier aeropuerto, aeródromo o helipuerto pulsando Intro al llegar."))
     if not pequeno:
@@ -414,7 +428,8 @@ def concesionario(p, l):
         app.cerrar(m)
         p.jornada_vendedor(l)
 
-    def llevarse():
+    def elegir_para_llevarse():
+        """Antes te llevabas siempre el mismo, el de precio medio: ahora eliges cuál pides para «probarlo»."""
         caros = sorted((mo for mo in p.datos["vehiculos"] if mo.get("precio") and not mo.get("barco") and (not marcas or mo["id"] in marcas)), key=lambda mo: mo["precio"])
         if not caros:
             return
@@ -422,14 +437,27 @@ def concesionario(p, l):
             app.son("error")
             app.decir("Durante una misión no te la juegas con esto.", True)
             return
-        mo = caros[len(caros) // 2]
+        if len(caros) == 1:
+            return llevarse(caros[0], caros)
+
+        def con(mo):
+            def f():
+                app.cerrar(sub)
+                llevarse(mo, caros)
+            return f
+        sub = Menu(app, "¿De cuál pides las llaves? Cuanto más caro, con más ganas te busca la policía",
+                   [Opcion(f"{mo['nombre']}, que vale {mo['precio']} euros", con(mo), ayuda=mo.get("desc", "")) for mo in caros] + [Opcion("Dejarlo", lambda: app.cerrar(sub))])
+        app.abrir(sub)
+
+    def llevarse(mo, caros):
         x, y, d = p.mundo.plaza_junto_a(l)
         v = p.crear_vehiculo(mo["id"], x, y, d, None)
         app.cerrar(m)
         p.salir_interior()
         p.j.x, p.j.y = p.mundo.punto_libre(x + 3, y)
         p.son("cristal", xy=(x, y))
-        p.delito(3, f"Pides las llaves de un {mo['nombre']} para probarlo y sales con él sin pagar. Salta la alarma del concesionario.", siempre=True)
+        puntos = 3 if caros.index(mo) <= len(caros) // 2 else 4          # los de la mitad cara del escaparate, un nivel más de búsqueda
+        p.delito(puntos, f"Pides las llaves de un {mo['nombre']} para probarlo y sales con él sin pagar. Salta la alarma del concesionario.", siempre=True)
         p.j.stats["vehiculos_robados"] = p.j.stats.get("vehiculos_robados", 0) + 1
         p.cambiar_ciudadania(-2.0)
         app.decir(f"{p.situar(v.x, v.y, 'El coche está')}. Sube con F y sal de aquí.")
@@ -438,8 +466,8 @@ def concesionario(p, l):
            for mo in p.datos["vehiculos"] if mo.get("precio") and not mo.get("barco") and (not marcas or mo["id"] in marcas)]
     ops.append(Opcion(lambda: f"Trabajar aquí de vendedor[|a]: ocho horas, sueldo y comisión. Llevas {p.j.stats.get('coches_vendidos', 0)} coches vendidos", vender,
                       ayuda="Una jornada atendiendo clientes. Cobras un sueldo fijo y una comisión por cada coche que vendas: vendes más cuanto mejor sea tu labia y tu prestigio entre los vecinos. Una jornada al día."))
-    ops.append(Opcion("Pedir las llaves para una prueba y no volver", llevarse,
-                      ayuda="Te llevas un coche de exposición sin pagarlo. Es un robo a la vista de todos: salta la alarma y la policía sale a por ti con fuerza."))
+    ops.append(Opcion("Pedir las llaves para una prueba y no volver", elegir_para_llevarse,
+                      ayuda="Te llevas un coche de exposición sin pagarlo: eliges cuál. Es un robo a la vista de todos: salta la alarma y la policía sale a por ti con fuerza, más cuanto más caro sea."))
     m = _menu(p, l, ops, "F1 describe cada vehículo")
 
 

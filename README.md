@@ -199,6 +199,12 @@ Las mejoras del taller (`juego/sistemas.py`) también salen de los datos: cada u
 - `juego/guerra.py` (mixin `Guerra`) es el modo de guerra de barrios en la calle (`guerra_calle`, apagado de serie; sección `guerra_barrios`). `banda_guerra` da a cada barrio de ciudad una banda estable con la semilla de la partida; `miembro_de_barrio` decide quién sale a la calle en `_poblar`; el estado de la guerra en curso está en `Partida.guerra` y no se guarda.
 - En un servidor: con policía común (`sv_policia_comun()`) no hay patrullas de ronda, ni helicóptero, ni rendición; en cualquier servidor no hay ambulancias, ni armas soltadas, ni guerra de barrios. No se ha tocado `servidor/`.
 - Al reintentar una misión, `Misiones._rebobinar_jugador` devuelve al jugador a como estaba pero deja los garajes como están: los vehículos no vuelven atrás.
+- Viajes: `Partida.conexion_hacia` busca primero un camino solo por carretera cuando se va al volante (antes ganaba el autobús si era más corto en saltos); `lugar_al_alcance` es el lugar que abre Intro (al volante, el destino del GPS o una salida antes que otro lugar más cercano) y `pista_de_llegada` la frase de qué hacer en una salida, estación o embarcadero.
+- `mundo.Lugar.nombre` y `.desc` son propiedades: con `nombre_conquistado` o `desc_conquistado` en los datos, devuelven ese texto cuando `Partida.barrio_cambiado(barrio)` dice que el barrio ya no es de la banda de serie. La partida se apunta en `Lugar.cambiado` al crearse. `Mundo._separar` impide que dos lugares compartan punto.
+- `juego/escolta.py` (mixin `Escolta`, opción `escolta_misiones`: no, moderado o fuerte; sección `escolta_misiones`): `Misiones._generar_enemigos` pide `escolta_ajuste`, reparte los enemigos de más con `escolta_grupos` y sube salud y puntería con `escolta_endurecer`.
+- `Guerra.buscar_pelea(banda, larga)` reutiliza `Partida.guerra` con `tipo == "pelea"`: una o dos tandas, sin barrio en juego y sin exigir el modo `guerra_calle`.
+- Defensa propia: `actualizar_personas` marca como agresor a quien viene a por ti a menos de 32 metros, sin esperar al primer golpe (`Calle.marcar_agresor`).
+- Actualizador: `actualizador.error_de_disco` traduce un fallo de escritura de Windows a una frase (`ErrorDisco`), `copias_del_juego` cuenta las veces que está abierto, y `menus_actualizar.a_mano` son los pasos para actualizar sin él.
 
 ### Domicilio, atracos, pactos, contratos, gente que actúa, convivencia y oficio de policía
 

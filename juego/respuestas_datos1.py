@@ -190,7 +190,7 @@ T("delincuencia", "los robos|han robado|un robo|los ladrones|los atracos|un atra
   amable=["Es una pena. Ten cuidado por las noches, ¿eh?"], poca=["Tú sabrás más que yo de eso."])
 
 T("bandas", "las bandas|los calaveras|los lagartos|una banda|pandilla|pandilleros|las guerras de barrio|el territorio|quien manda aqui|quien manda en", [
-    "De esos, cuanto menos se hable, mejor.", "Los Calaveras tienen medio barrio atemorizado.", "Aquí manda el que más miedo da. Hoy unos, mañana otros.",
+    "De esos, cuanto menos se hable, mejor.", "Hay barrios enteros atemorizados por cuatro con pistola.", "Aquí manda el que más miedo da. Hoy unos, mañana otros.",
     "Antes eran cuatro críos con una moto. Ahora llevan pistola.", "Yo pago, callo y cierro pronto.", "Cuando se pelean entre ellos, lo pagamos los vecinos.",
     "Dicen que detrás hay gente con corbata.", "Si cambia de manos el barrio, que sea para bien."],
   hablador=["A mi primo le pidieron dinero por dejarle abrir la tienda. Les dijo que no. Ahora tiene la tienda en otro barrio."],

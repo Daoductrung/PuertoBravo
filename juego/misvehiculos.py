@@ -404,6 +404,8 @@ class MisVehiculos:
                 return ("da" if q.get("abierto") else "roba"), nombre
             if q.get("tipo") == "carrera":
                 return "trae", None
+            if q.get("tipo") == "perseguir":                      # hay que alcanzar a un vehículo: sin uno no hay nada que hacer
+                return "persigue", q.get("nombre") or _modelo_nombre(self, q.get("modelo"))
         return None, None
 
     def mision_vehiculo_txt(self, m):
@@ -414,9 +416,11 @@ class MisVehiculos:
         if que == "roba":
             return f"Hay que llevarse un vehículo concreto: {nombre}. El tuyo se queda aparcado y a salvo."
         if que == "tuyo":
-            return f"Te dejan un vehículo, {nombre}, pero puedes hacerla con el tuyo."
+            return f"Te dejan un vehículo, {nombre}, pero puedes hacerla con el tuyo: tú eliges."
         if que == "trae":
             return "Tienes que ir con un vehículo: vale el tuyo."
+        if que == "persigue":
+            return "Hay una persecución en vehículo: ve con uno rápido, el que tú quieras."
         return ""
 
     def vale_para_mision(self, v, paso):
@@ -430,10 +434,13 @@ class MisVehiculos:
         queda a tu nombre para que no se pierda al coger el de la misión."""
         x, y = self.pos()
         v = self.j.veh or self.tu_vehiculo(150) or min((o for o in self.mis_vivos() if o.dist(x, y) < 150), key=lambda o: o.dist(x, y), default=None)
-        if v is None or v.tag:
+        if m.get("vehiculo_libre") and v is not None and not v.tag and self.vale_para_mision(v, paso):
+            self.decir(f"Esta misión se puede hacer con tu vehículo: tú eliges. {'Sigue en' if self.j.veh is v else 'Sube a'} {v.nombre} y detente junto al que te dejan, o coge el que te dejan. "
+                       "También vale otro de los tuyos: pídelo en el móvil, en Mis vehículos.")
             return
-        if m.get("vehiculo_libre") and self.vale_para_mision(v, paso):
-            self.decir(f"Esta misión se puede hacer con tu vehículo: {'sigue en' if self.j.veh is v else 'sube a'} {v.nombre}, o coge el que te dejan.")
+        if m.get("vehiculo_libre") and not getattr(self, "en_servidor", False) and (self.mis_vivos() or self.mis_en_garajes()):
+            self.decir("Esta misión se puede hacer con el vehículo que te dejan o con uno de los tuyos: tú eliges. Para ir con uno tuyo, pídelo en el móvil, en Mis vehículos, y detente con él junto al que te dejan.")
+        if v is None or v.tag:
             return
         if getattr(self, "en_servidor", False):
             return
@@ -452,8 +459,13 @@ class MisVehiculos:
         c = self.chofer
         self.decir(f"{c['nombre']}: {random.choice(LISTAS[cual])}" + (" " + despues if despues else ""))
 
-    def pedir_chofer(self, garaje=None, ficha=None):
-        """Pides que alguien de la banda venga a recogerte: con un vehículo de tu garaje (garaje y ficha) o con uno de la banda."""
+    def chofer_modelos(self):
+        """Los vehículos de la banda con los que puede venir tu chófer, los que digan los datos."""
+        return [x for x in LISTAS["chofer_modelos"] if x in self.modelos and not self.modelos[x].get("barco") and not self.modelos[x].get("vuela")] or ["utilitario"]
+
+    def pedir_chofer(self, garaje=None, ficha=None, modelo=None):
+        """Pides que alguien de la banda venga a recogerte: con un vehículo de tu garaje (garaje y ficha) o con uno de la
+        banda, el que elijas (modelo) o el que tengan a mano."""
         from . import gente
         j = self.j
         motivo = ""
@@ -477,9 +489,9 @@ class MisVehiculos:
             return False
         a, b = sorted((AJUSTES["chofer_espera_min"], AJUSTES["chofer_espera_max"]))
         espera = random.uniform(a, b) * (1.25 if self.lluvia else 1.0) * (0.85 if self.es_noche() else 1.0)      # con lluvia tarda más; de noche hay menos tráfico
-        modelos = [x for x in LISTAS["chofer_modelos"] if x in self.modelos and not self.modelos[x].get("barco") and not self.modelos[x].get("vuela")] or ["utilitario"]
+        modelos = self.chofer_modelos()
         genero = random.choice("hm")
-        self.chofer = {"estado": "espera", "t": espera, "garaje": garaje, "ficha": ficha, "modelo": random.choice(modelos), "veh": None, "propio": False,
+        self.chofer = {"estado": "espera", "t": espera, "garaje": garaje, "ficha": ficha, "modelo": modelo if modelo in modelos else random.choice(modelos), "veh": None, "propio": False,
                        "nombre": f"{random.choice(gente.nombres(genero))}, de {j.banda_nombre or 'tu banda'}", "intentos": 0, "sin_destino": 0.0}
         cuanto = "menos de un minuto" if espera < 45 else "cosa de un minuto" if espera < 80 else "un par de minutos"
         self.son("movil", cat="interfaz", vol=0.5)
@@ -915,9 +927,9 @@ def menu_chofer(p):
     """Pedir un chófer de la banda, o despedirlo."""
     app, j = p.app, p.j
 
-    def pedir(garaje=None, ficha=None):
+    def pedir(garaje=None, ficha=None, modelo=None):
         def f():
-            if p.pedir_chofer(garaje, ficha):
+            if p.pedir_chofer(garaje, ficha, modelo):
                 _volver_al_juego(p)
         return f
 
@@ -932,7 +944,11 @@ def menu_chofer(p):
             return [Opcion(f"{c['nombre']} {estado}"), Opcion("Despedir al chófer", despedir,
                                                              ayuda="Si el vehículo es tuyo, se queda contigo. Si es de la banda, se lo lleva, y si ibas dentro te deja en la acera.")]
         lista = [Opcion(f"Que venga con un vehículo de la banda: {p.precio('chofer', 80)} euros", pedir(),
-                        ayuda="Viene con un coche de la banda. Cuando lo despidas, se lo lleva.")]
+                        ayuda="Viene con un coche de la banda, el que tengan a mano. Cuando lo despidas, se lo lleva. Más abajo puedes elegir cuál.")]
+        if len(p.chofer_modelos()) > 1:                          # y si quieres uno en concreto de los de la banda, lo eliges
+            for mid in p.chofer_modelos():
+                lista.append(Opcion(f"Que venga con el {p.modelos[mid]['nombre']} de la banda: {p.precio('chofer', 80)} euros", pedir(modelo=mid),
+                                    ayuda=(p.modelos[mid].get("desc", "") + " Cuando despidas al chófer, se lo lleva.").strip()))
         for pid, fichas in j.garajes.items():
             l = p.lug(pid)
             for d in fichas:

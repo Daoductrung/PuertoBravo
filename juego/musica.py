@@ -665,8 +665,8 @@ class Radio:
         if e["id"] == "usuario":
             self._buscar_usuario()
             if not self.pistas_usuario:
-                return ("Mi música: todavía no hay canciones. Esta emisora pone las tuyas: copia tus canciones, en mp3, ogg, flac o wav, en la carpeta de mi música "
-                        "y vuelve a sintonizarla. Para abrir esa carpeta sin buscarla: Escape, Opciones, Sonido y música, Abrir la carpeta de mi música.")
+                return ("Mi música: todavía no hay canciones. Esta emisora pone las tuyas. Para ponerlas, pulsa Escape y elige Mi música: "
+                        "ahí están los pasos y la opción Abrir la carpeta de mi música, que abre la carpeta donde se copian. También está en Opciones, Sonido y música. Valen mp3, ogg, flac y wav.")
             ruta = self.pistas_usuario[self.pista_idx % len(self.pistas_usuario)]
             self._pedir(ruta, desde=self._desde_recuerdo(ruta))     # sigue por donde iría, como una emisora de verdad
             return "Mi música: " + os.path.splitext(os.path.basename(ruta))[0].replace("_", " ")

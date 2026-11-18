@@ -53,7 +53,7 @@ def helipuerto(p, l):
                 trayecto(app, 35.0, llegar, destino=p.mapas[h.mapa].nombre, vuelo=True)
         return f
     ops = [Opcion(f"Volar a {h.nombre}, en {p.mapas[h.mapa].nombre}" + ("" if volando else f": {int(h.get('precio', p.precio('vuelo_helicoptero', 150)))} euros"), volar(h),
-                  ayuda=p.mapas[h.mapa].barrios[0].get("descripcion", "")) for h in destinos]
+                  ayuda=p.desc_localidad(p.mapas[h.mapa])) for h in destinos]
     intro = "Vas en tu helicóptero: el vuelo es gratis" if volando else "Vuelos en helicóptero con piloto"
     app.abrir(Menu(app, lambda: f"{l.nombre}. Tienes {j.dinero} euros", ops, intro=intro))
 
@@ -479,6 +479,83 @@ def bolsa(p):
 
 
 # ================================================================== territorios
+def como_funcionan_territorios(p):
+    """«Cómo funciona esto»: qué son los territorios, para qué sirven y cómo se ganan, se defienden y se pierden. Con las
+    cifras de verdad de esta partida, que salen de los datos y de las opciones."""
+    from . import guerra as GU, sistemas
+    app, j = p.app, p.j
+    tributo = p.precio("tributo_territorio", 300)
+    ciudades = [m.nombre for m in p.mapas.values() if m.tipo == "ciudad" and m.barrios]
+    en_ciudades = ", ".join(ciudades[:-1]) + " y " + ciudades[-1] if len(ciudades) > 1 else (ciudades[0] if ciudades else "las ciudades")
+    oleadas = int(GU.aj("oleadas"))
+    lineas = [
+        f"Qué es. Cada barrio de las ciudades, que son {en_ciudades}, puede ser tuyo. Un barrio tuyo es un territorio. Los pueblos y las islas no tienen barrios que conquistar. "
+        "No hace falta para seguir la historia: es otra manera de ganar dinero y de hacerte fuerte.",
+        f"Para qué sirve, uno: dinero. Cada territorio te paga {tributo} euros cada medianoche, sin hacer nada. Con {max(2, len(j.territorios))} serían {tributo * max(2, len(j.territorios))} euros al día.",
+        f"Para qué sirve, dos: tu banda. Sin territorios no hay banda. Con el primero puedes reclutar a dos personas, y cada territorio más te deja mantener a una más, hasta {sistemas.TOPE_BANDA}. "
+        "Los tuyos te siguen, suben a tu vehículo, pelean a tu lado, y uno puede hacerte de chófer. Se reclutan aquí mismo, en Tu banda.",
+        "Para qué sirve, tres: fama y calle. Conquistar sube tu reputación, en tus barrios no andan los pandilleros de la banda que echaste, y la tecla N, el mapa y los tablones dicen que el barrio es tuyo.",
+        ("Cómo se conquista. Tienes activada la guerra de barrios en la calle: ve al barrio, con el GPS desde este menú, y planta cara a la banda allí, tumbando a dos de los suyos o eligiendo el barrio en este menú cuando ya estés dentro. "
+         if p.guerra_activa() else
+         "Cómo se conquista. En este menú, elige Conquistar y el nombre del barrio, estando en esa ciudad. Empieza en el acto, estés donde estés. ")
+        + f"Vienen a por ti {oleadas} oleadas de pandilleros, cada una más dura. Si tienes banda, acude a ayudarte. Si caes o te vas, no pierdes nada más que la ocasión: puedes volver a intentarlo. "
+        "Lleva un arma de fuego, munición de sobra y botiquines. La tecla O dice cómo va la pelea.",
+        "Otra manera, sin pegar un tiro: en Negociar con las bandas puedes comprarles un barrio, devolverles uno tuyo a cambio de dinero o cobrarles un tributo por dejarles estar. Depende de tu fuerza y de cómo te lleves con ellos.",
+        "Cómo se defiende. De vez en cuando una banda ataca un barrio tuyo: suena un aviso de tambores y te lo dice el juego. Tienes hasta la medianoche: arriba del todo en este menú aparece la opción de defenderlo, "
+        "en persona o enviando a tu banda. Si no haces nada, lo pierdes y deja de pagarte.",
+        ("Reconquista. La tienes activada: cuando tienes muchos barrios, o una ciudad entera, las bandas vencidas se rehacen e intentan recuperarlos, con aviso y con plazo. "
+         "En Defensa de tus barrios ves la amenaza, la lealtad y la defensa de cada uno, y pones guardias, refuerzos, informantes y treguas. Dentro, la primera opción lo explica con detalle."
+         if p.rec_nivel() else
+         "Reconquista. Es una opción, en Opciones, La calle: Las bandas intentan reconquistar tus barrios. Con ella, las bandas vencidas se rehacen e intentan recuperar lo suyo, y tú preparas la defensa con guardias, refuerzos y treguas. "
+         "Ahora la tienes apagada o estás en un servidor: solo hay los ataques sueltos de siempre."),
+        "Si pierdes un barrio. Deja de pagarte, pasa a ser de la banda que te lo quitó, y si te quedas sin ninguno, tu banda se queda sin sitio. Se puede volver a conquistar igual que la primera vez.",
+        "Pelear por pelear. Si lo que quieres es una pelea con una banda sin conquistar nada, en este menú está Buscar pelea con una banda: vienen a por ti donde estés y no hay barrio en juego."
+        if not p.en_servidor else
+        "En un servidor en línea es distinto: los barrios son de las bandas de los jugadores, y se disputan entre bandas desde el menú del servidor. Lo de este menú es para jugar sin conexión.",
+    ]
+    ops = [Opcion(t.rstrip(".")) for t in lineas]              # el menú pone el punto
+    ops.append(Opcion("Volver", lambda: app.cerrar(m)))
+    m = Menu(app, "Territorios: cómo funciona. Recorre la explicación con las flechas", ops)
+    app.abrir(m)
+
+
+def buscar_pelea(p):
+    """Retar a una banda, sin conquistar nada: eliges cuál y cuánta pelea quieres."""
+    app = p.app
+
+    def empezar(banda, larga):
+        def f():
+            motivo = p.pelea_motivo()
+            if motivo:
+                app.son("error")
+                app.decir(motivo, True)
+                return
+            while app.pila and app.pila[-1] is not p:
+                app.cerrar(app.pila[-1])
+            p.buscar_pelea(banda, larga)
+        return f
+
+    def elegir(banda):
+        def f():
+            corta, larga = p.pelea_tamano(False), p.pelea_tamano(True)
+            app.abrir(Menu(app, f"Pelea con {banda}. Con ellos, {p.rep_banda_txt(p.rep_banda(banda))}", [
+                Opcion(f"Una pelea corta: vienen {corta[0]} de una vez", empezar(banda, False)),
+                Opcion(f"Una pelea larga: {len(larga)} tandas, de {' y '.join(str(n) for n in larga)}", empezar(banda, True),
+                       ayuda="Entre una tanda y otra hay unos segundos para recargar y curarte."),
+                Opcion("Dejarlo", lambda: app.cerrar())]))
+        return f
+    motivo = p.pelea_motivo()
+    if motivo:
+        app.son("error")
+        app.decir(motivo, True)
+        return
+    ayuda = ("Vienen a por ti donde estás ahora, a pie, y hay que quedarse en el barrio hasta acabar. No se gana ningún barrio ni dinero, salvo lo que suelten al caer. "
+             "Tu banda acude a ayudarte. La relación con esa banda empeora, y si hay disparos, la policía puede presentarse, como en cualquier pelea.")
+    ops = [Opcion(lambda b=b: f"{b}: {p.rep_banda_txt(p.rep_banda(b))}", elegir(b), ayuda=ayuda) for b in p.bandas_para_pelea()]
+    ops.append(Opcion("Dejarlo", lambda: app.cerrar()))
+    app.abrir(Menu(app, "Buscar pelea con una banda, sin conquistar nada. ¿Con cuál?", ops, intro="F1 explica las consecuencias"))
+
+
 def territorios(p):
     app = p.app
     j = p.j
@@ -533,7 +610,8 @@ def territorios(p):
         ops = [Opcion("Aquí no hay barrios que conquistar. Las guerras de territorio son cosa de las ciudades: Puerto Bravo, San Lucero y Monteferro")]
     ops.append(Opcion(lambda: f"Territorios en tu poder: {len(j.territorios)}"))
     from . import sistemas
-    ops[0:0] = sistemas.opciones_sucesos(p, Menu, Opcion)
+    urgente = sistemas.opciones_sucesos(p, Menu, Opcion)
+    ops[0:0] = urgente
     from . import reconquista
     arriba, abajo = reconquista.opciones_territorios(p, Opcion)
     ops[0:0] = arriba
@@ -547,6 +625,12 @@ def territorios(p):
     ops.append(Opcion(lambda: f"Tu banda: {j.banda_nombre or 'sin nombre'}, {j.banda} de {sistemas.cupo(j)}" if j.territorios else "Tu banda: necesitas un territorio para tenerla",
                       lambda: sistemas.menu_banda(p, Menu, Opcion, EntradaTexto),
                       ayuda="Con un territorio puedes reclutar gente. Te siguen, suben a tu vehículo y pelean a tu lado. Cada territorio te deja mantener a uno más."))
+    if not p.en_servidor:
+        ops.append(Opcion("Buscar pelea con una banda, sin conquistar nada", lambda: buscar_pelea(p),
+                          ayuda="Para pelear por pelear: eliges una banda y vienen a por ti donde estés. No hay barrio en juego ni premio, y esa banda te cogerá más manía."))
+    # la explicación va la primera, salvo que haya algo que atender ya (un ataque, un asalto, un pacto): eso sigue arriba del todo
+    ops.insert(len(arriba) + len(urgente), Opcion("Cómo funciona esto: para qué sirven los territorios y cómo se ganan y se defienden", lambda: como_funcionan_territorios(p),
+                         ayuda="Una explicación corta, con las cifras de tu partida: lo que paga cada barrio, la banda, cómo se conquista, cómo se defiende y qué pasa si lo pierdes."))
     app.abrir(Menu(app, f"Territorios de {p.mundo.nombre}", ops))
 
 

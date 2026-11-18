@@ -301,9 +301,31 @@ class Extras3:
             return f"En guerra: se lo estás disputando a {ms['def'].get('banda') or banda or 'una banda'}."
         return f"Territorio de la banda de {banda}." if banda else ""
 
+    def barrio_cambiado(self, bid):
+        """¿Ha dejado ese barrio de ser de quien era al empezar la partida? Es tuyo, o de una banda de jugadores, o de otra
+        banda que se lo ha quedado. Lo consultan los textos fijos que nombran a la banda de siempre (descripciones del
+        barrio y de sus lugares) para no seguir diciendo que manda quien ya no manda."""
+        j = self.j
+        if self.en_servidor:
+            return any(t.get("barrio") == bid for t in self.sv["territorios"].get("barrios", []))
+        if bid in j.territorios:
+            return True
+        ahora = j.barrios_banda.get(bid)
+        if not ahora:
+            return False
+        if not hasattr(self, "_banda_de_serie"):
+            self._banda_de_serie = {b["id"]: b.get("banda") for m in self.mapas.values() for b in m.barrios}
+        return ahora != self._banda_de_serie.get(bid)
+
+    def desc_localidad(self, mapa):
+        """Cómo es una localidad, en una frase: la descripción de su primer barrio, la que toque según quién mande en él ahora."""
+        b = mapa.barrios[0]
+        return str(b.get("descripcion_conquistado") if b.get("descripcion_conquistado") and self.barrio_cambiado(b["id"]) else b.get("descripcion", ""))
+
     def barrio_desc(self, b, mapa=None):
         """La descripción de un barrio, con la frase de quién es ahora."""
-        return " ".join(t for t in (str(b.get("descripcion", "")).strip(), self.barrio_dueno_txt(b, mapa)) if t)
+        desc = b.get("descripcion_conquistado") if b.get("descripcion_conquistado") and self.barrio_cambiado(b["id"]) else b.get("descripcion", "")
+        return " ".join(t for t in (str(desc).strip(), self.barrio_dueno_txt(b, mapa)) if t)
 
     def empezar_conquista(self, b):
         banda = self.banda_de_barrio(b) or random.choice(G.nombres_bandas())

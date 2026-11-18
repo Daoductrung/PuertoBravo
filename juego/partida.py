@@ -29,6 +29,7 @@ from .compra import Compra
 from .atracos import Atracos
 from .pactos import Pactos
 from .reconquista import Reconquista
+from .escolta import Escolta
 from .contratos import Contratos
 from .reacciones import Reacciones
 from .convivencia import Convivencia
@@ -80,7 +81,7 @@ def migrar(d):
 
 
 class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos, Calle, Guerra,
-              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra, Reconquista):
+              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra, Reconquista, Escolta):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -91,6 +92,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.datos = app.datos
         self.mapas = app.mapas
         self.lugares = {l.id: l for m in self.mapas.values() for l in m.lugares.values()}
+        M.Lugar.cambiado = self.barrio_cambiado                 # los lugares que nombran a la banda del barrio preguntan si sigue mandando
         self.mundo = app.mundo
         self.pesca = None
         self.interior = None
@@ -397,6 +399,51 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 mejor = (d, l)
         return mejor[1] if mejor else None
 
+    def lugar_al_alcance(self):
+        """El lugar con el que se trata al pulsar Intro. Al volante manda el destino del GPS si está a mano y, si no, una
+        salida por carretera: que otro lugar quede un par de metros más cerca no debe impedir salir de la localidad."""
+        j = self.j
+        mar = self.mundo.tipo == "mar"
+        radio = 26 if mar else 16 if j.veh else 7
+        l = self.lugar_cercano(radio)
+        if l is None or not j.veh or mar:
+            return l
+        px, py = self.pos()
+        cerca = sorted((q for q in self.mundo.lugares.values() if math.hypot(q.x - px, q.y - py) <= radio), key=lambda q: math.hypot(q.x - px, q.y - py))
+        g = self.gps
+        if g:
+            for q in cerca:
+                if abs(q.x - g["dest"][0]) < 0.5 and abs(q.y - g["dest"][1]) < 0.5:
+                    return q
+        if not self.mision and self.mision_en_lugar(l.id):       # sin destino marcado, una misión que te espera en la puerta más cercana manda
+            return l
+        return next((q for q in cerca if q.tipo == "salida"), l)
+
+    def pista_de_llegada(self, l):
+        """Qué hay que hacer al llegar a un lugar desde el que se viaja: con qué tecla, y si hace falta vehículo o bajarse de él."""
+        if l is None:
+            return ""
+        v = self.j.veh
+        dest = self.lug(l.get("a_lugar")) if l.get("a_lugar") else None
+        a = f" a {self.mapas[dest.mapa].nombre}" if dest is not None and dest.mapa in self.mapas else ""
+        if l.tipo == "salida":
+            if v:
+                return f"Ya estás en el sitio: no hace falta acercarse más. Sin bajarte del vehículo, pulsa Intro para tomar la carretera{a}."
+            return f"Por esta carretera solo se sale en un vehículo: llega hasta aquí al volante y pulsa Intro sin bajarte. A pie se viaja en autobús, desde la estación."
+        if l.tipo in ("estacion", "tren", "tranvia", "aeropuerto"):
+            return "Bájate del vehículo con F y pulsa Intro para sacar el billete." if v else "Pulsa Intro para sacar el billete."
+        if l.tipo == "embarcadero":
+            return "Bájate del vehículo con F y pulsa Intro para elegir barco." if v else "Pulsa Intro para elegir barco y zarpar."
+        if l.tipo == "muelle":
+            return f"Pulsa Intro para atracar{' en' + a[2:] if a else ''}."
+        return ""
+
+    def _lugar_del_gps(self):
+        g = self.gps
+        if not g:
+            return None
+        return next((q for q in self.mundo.lugares.values() if abs(q.x - g["dest"][0]) < 0.5 and abs(q.y - g["dest"][1]) < 0.5), None)
+
     def dar_dinero(self, n, motivo=None):
         self.j.dinero += n
         if n > 0:
@@ -575,19 +622,24 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             # al volante se prefieren las carreteras; a pie, el autobús; volando, los helipuertos
             out.sort(key=lambda e: (e[0].tipo != preferido, e[0].tipo == "embarcadero"))
             return out
-        visto = {origen}
-        cola = [(origen, None)]
-        while cola:
-            mid, primero = cola.pop(0)
-            for l, dest in aristas(mid):
-                if dest in visto:
-                    continue
-                p = primero or l
-                if dest == mapa_dest:
-                    return p
-                visto.add(dest)
-                cola.append((dest, p))
-        return None
+
+        def buscar(solo=None):
+            visto = {origen}
+            cola = [(origen, None)]
+            while cola:
+                mid, primero = cola.pop(0)
+                for l, dest in aristas(mid):
+                    if dest in visto or (solo and l.tipo != solo):
+                        continue
+                    p = primero or l
+                    if dest == mapa_dest:
+                        return p
+                    visto.add(dest)
+                    cola.append((dest, p))
+            return None
+        # Al volante se va por carretera siempre que se pueda llegar así, aunque haya que cruzar más localidades: el
+        # autobús parecía más corto, pero obliga a dejar el vehículo (y con el camión del trabajo, a perder la carga).
+        return (buscar("salida") if en_coche and not volando else None) or buscar()
 
     def cambiar_mapa(self, mapa_id, x, y, rumbo=None, texto=None):
         j = self.j
@@ -755,6 +807,11 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             elif not self.gps and self.mision and self.gps_mision(hablar=False):
                 self.app.son("notificacion")
                 self.repetir_gps()
+            elif not self.gps and self.trabajo and self.trabajo.get("lugar") is not None:      # el destino del trabajo, si se había quitado
+                self.gps_a_lugar(self.trabajo["lugar"], auto=True, callar=True)
+                self.app.son("notificacion")
+                self.decir(self.trabajo.get("texto", ""))
+                self.repetir_gps_suave()
             else:
                 self.repetir_gps()
         elif k == pygame.K_TAB:
@@ -1339,6 +1396,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         x, y = self.pos()
         v = self.j.veh
         relativo = bool(v) or self.cfg["movimiento"] == "giro"
+        d0 = math.hypot(g["dest"][0] - x, g["dest"][1] - y)
+        if v and d0 <= (g["radio"] or 16) and (g.get("final") or not g["auto"]) and g["sigue"] is None:
+            # al volante y ya en el sitio: nada de «queda al este», que con el coche no se puede acercar más
+            return ("fin", f"Estás en {g['nombre']}. {self.pista_de_llegada(self._lugar_del_gps()) or ('Pulsa Intro para continuar el viaje.' if g.get('final') else '')}".strip())
         if not ruta:
             return ("fin", f"{g['nombre']}: estás en el destino.")
         if len(ruta) == 1:
@@ -1420,15 +1481,17 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             # a pie no se da por llegado en mitad de la calzada: el aviso llega al pisar la acera, delante de la puerta
             llegado = d <= radio and (self.j.veh is not None or d < 1.5 or self.mundo.tipo == "mar" or self.mundo.superficie(x, y) != "calzada")
             if llegado and g.get("final"):
-                if not g.get("avisado"):
-                    g["avisado"] = True
+                if g.get("avisado") != bool(self.j.veh):          # se repite si llegas de otra manera: lo que hay que hacer cambia
+                    g["avisado"] = bool(self.j.veh)
                     self.app.son("llegada")
-                    self.decir(f"{g['nombre']}. Pulsa Intro para continuar el viaje.")
+                    self.decir(f"Has llegado a {g['nombre']}. {self.pista_de_llegada(self._lugar_del_gps()) or 'Pulsa Intro para continuar el viaje.'}")
+                    g["clave"] = "fin"
+                return
             elif llegado and not g["auto"] and g["sigue"] is None:
                 self.app.son("llegada")
                 self.app.vibrar(0.2, 0.6, 150)
                 if not self._volver_del_desvio(f"Has llegado a {g['nombre']}."):
-                    self.decir(f"Has llegado a {g['nombre']}.")
+                    self.decir(f"Has llegado a {g['nombre']}. {self.pista_de_llegada(self._lugar_del_gps())}".strip())
                     self.gps = None
                 return
             if self.cfg["gps_voz"]:
@@ -1597,7 +1660,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 if o.dist(x, y) <= (10.0 if mar else 3.0):
                     self.recoger(o)
                     return
-        l = self.lugar_cercano(26 if mar else 16 if j.veh else 7)
+        l = self.lugar_al_alcance()
         if l:
             m = self.mision_en_lugar(l.id)
             if m and not self.mision:
@@ -1869,6 +1932,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.t_lugares <= 0:
             self.t_lugares = 0.3
             self._lugares_cercanos(x, y)
+            self.recordar_disparo_veh()
         # semáforo acústico del cruce más cercano
         if self.cfg["semaforos"] and not j.veh and self.mundo.tipo != "mar":
             self.t_semaforo -= dt
@@ -1912,7 +1976,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                     self.canales_lugar[clave] = self.son("loc_mision", xy=(l.x, l.y), bucle=True, ref=6, maxd=80, vol=0.9, cat="ambiente")
         for k in [k for k in self.canales_lugar if k not in activos]:
             self.canales_lugar.pop(k).parar()
-        nuevo = mejor[1] if mejor else None
+        nuevo = self.lugar_al_alcance() if mejor else None
         if nuevo is not self.lugar_act:
             self.lugar_act = nuevo
             if nuevo:
@@ -1922,10 +1986,13 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                     extra = ""
                     if nuevo.id in marcas:
                         m = self.mision_en_lugar(nuevo.id)
-                        extra = f" Misión disponible: {m['titulo']}. Pulsa Intro para empezarla."
+                        aviso = self.mision_vehiculo_txt(m)      # antes de aceptarla: si te dan vehículo, si hay que traerlo o si puedes elegir
+                        extra = f" Misión disponible: {m['titulo']}. {aviso + ' ' if aviso else ''}Pulsa Intro para empezarla."
                     elif j.veh and nuevo.tipo not in ("taller", "desguace", "casa", "carrera", "salida", "muelle"):
                         extra = ""
-                    elif nuevo.tipo in ("muelle", "salida", "embarcadero", "estacion", "pesca"):
+                    elif nuevo.tipo == "salida":
+                        extra = " " + self.pista_de_llegada(nuevo)
+                    elif nuevo.tipo in ("muelle", "embarcadero", "estacion", "pesca"):
                         extra = " Pulsa Intro."
                     elif nuevo.tipo != "monumento":
                         extra = " Pulsa Intro para entrar."

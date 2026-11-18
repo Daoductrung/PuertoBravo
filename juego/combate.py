@@ -148,6 +148,25 @@ class Combate:
         lista.sort(key=lambda e: e.dist(x, y))
         return lista
 
+    DISPARO_VEH = ("Puedes responder sin bajarte: pulsa Q para fijar a quien tengas cerca y Control para disparar desde el vehículo, con un arma de fuego en la mano. "
+                   "La tecla I cambia de arma.")
+
+    def recordar_disparo_veh(self):
+        """Una vez por partida, cuando viene a cuento: vas en un vehículo, llevas un arma de fuego y tienes enemigos cerca
+        (los de una misión, una banda que te ha visto, quien te persigue). Antes solo se decía si llegaban a dispararte."""
+        j = self.j
+        if not j.veh or "disparo_veh" in j.recordado or self.mundo.tipo == "mar" or self.de_servicio():
+            return
+        if not any(self.armas_d.get(i, {}).get("tipo") == "fuego" for i in j.armas):
+            return
+        x, y = self.pos()
+        cerca = any(not e.muerto and e.hostil and e.activo and e.tipo != "policia" and e.dist(x, y) < 45 for e in self.personas) or \
+            any(not o.muerto and (o.hostil or o.tag == "objetivo") and o is not j.veh and not self.es_patrulla(o) and o.dist(x, y) < 60 for o in self.vehiculos)
+        if cerca:
+            j.recordado.append("disparo_veh")
+            self.son("notificacion", cat="interfaz")
+            self.decir("Tienes enemigos cerca y vas al volante. " + self.DISPARO_VEH)
+
     def fijar(self, any_=False, callar=False):
         lista = self._objetivos(any_)
         if not lista:
@@ -179,7 +198,7 @@ class Combate:
             self._lanzar_explosivo(a, x, y)
             return
         if j.veh and not fuego:
-            self.decir("Desde el vehículo solo puedes usar armas de fuego.", True)
+            self.decir("Desde el vehículo solo puedes usar armas de fuego: pulsa I para elegir una, Q para fijar a quien tengas cerca y Control para disparar.", True)
             j.t_ataque = 0.5
             return
         if fuego:
@@ -774,6 +793,10 @@ class Combate:
                 if self.agente_detiene(p, d, dt):
                     return
                 continue
+            if d < 32 and not getattr(p, "agresor", False):
+                # Viene a por ti sin que le hayas tocado: no hay que esperar al primer navajazo para que defenderse sea
+                # defensa propia. Antes, si disparabas tú primero a quien se te echaba encima, el delito era tuyo.
+                self.marcar_agresor(p)
             a = self.armas_d.get(p.arma or "punos", self.armas_d["punos"])
             cuerpo = a["tipo"] == "cuerpo"
             alcance = a["alcance"] if cuerpo else min(a["alcance"], 30.0)
@@ -816,8 +839,7 @@ class Combate:
             if j.veh and "disparo_veh" not in j.recordado:       # la primera vez que te disparan yendo en un vehículo
                 j.recordado.append("disparo_veh")
                 self.son("notificacion", cat="interfaz")
-                self.decir("¡Te disparan! Puedes responder sin bajarte: pulsa Q para fijar a quien te dispara y Control para disparar desde el vehículo, con un arma de fuego en la mano. "
-                           "La tecla I cambia de arma.")
+                self.decir("¡Te disparan! " + self.DISPARO_VEH)
             prob = getattr(p, "punteria", G.PUNTERIA) * (1.0 - 0.6 * d / alcance)
             if j.agachado:
                 prob *= 0.45

@@ -117,6 +117,7 @@
   {
    "id": "cd02",
    "titulo": "La furgoneta del pescado",
+   "vehiculo_libre": true,
    "capitulo": 20,
    "contacto": "Amparo",
    "lugar": "cd_taberna",

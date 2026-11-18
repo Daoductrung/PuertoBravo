@@ -72,6 +72,7 @@
   {
    "id": "of01",
    "titulo": "Cajas para el banco de alimentos",
+   "vehiculo_libre": true,
    "capitulo": 23,
    "contacto": "Reme",
    "lugar": "of_alimentos",

@@ -81,7 +81,7 @@ def _es_dato(nombre):
 
 SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas", "vehiculos_propios", "calle", "guerra_barrios",
                   "carta_domicilio", "domicilio", "atracos", "pactos", "reconquista", "contratos", "reacciones", "planes_pareja", "convivencia", "policia_oficio", "avisos_policia",
-                  "pasillos", "productos", "tipos_tienda", "recetas", "cocina")
+                  "pasillos", "productos", "tipos_tienda", "recetas", "cocina", "escolta_misiones")
 
 
 def cargar_datos(con_mods=True):
@@ -197,19 +197,50 @@ def cargar_datos(con_mods=True):
     misvehiculos.configurar(d)
     calle.configurar(d)
     guerra.configurar(d)
-    from . import agente, ajustes, atracos, compra, contratos, convivencia, domicilio, pactos, reacciones, reconquista      # noqa: F401  (cada uno apunta sus ajustes al cargarse)
+    from . import agente, ajustes, atracos, compra, contratos, convivencia, domicilio, escolta, pactos, reacciones, reconquista      # noqa: F401  (cada uno apunta sus ajustes al cargarse)
     ajustes.configurar_todos(d)
     return d
 
 
 class Lugar:
+    cambiado = None            # función(id de barrio): ¿ha dejado el barrio de ser de la banda de siempre? La pone la partida
+
     def __init__(self, d, mundo):
         self.d = d
         self.id = d["id"]
-        self.nombre = d["nombre"]
+        self._nombre = d["nombre"]
         self.tipo = d["tipo"]
-        self.desc = d.get("desc", "")
+        self._desc = d.get("desc", "")
         self.mapa = mundo.id
+        self.barrio_id = None
+        self._situar(d, mundo)
+        if d.get("nombre_conquistado") or d.get("desc_conquistado"):
+            try:
+                self.barrio_id = mundo.barrio(self.x, self.y)["id"]
+            except (AttributeError, KeyError, IndexError, TypeError):
+                pass
+
+    def _de_otros(self):
+        return self.barrio_id is not None and Lugar.cambiado is not None and bool(Lugar.cambiado(self.barrio_id))
+
+    @property
+    def nombre(self):
+        """El nombre del lugar. Si nombra a la banda del barrio y el barrio ya es de otro, el que digan los datos para entonces."""
+        return self.d["nombre_conquistado"] if self.d.get("nombre_conquistado") and self._de_otros() else self._nombre
+
+    @nombre.setter
+    def nombre(self, v):
+        self._nombre = v
+
+    @property
+    def desc(self):
+        return self.d["desc_conquistado"] if self.d.get("desc_conquistado") and self._de_otros() else self._desc
+
+    @desc.setter
+    def desc(self, v):
+        self._desc = v
+
+    def _situar(self, d, mundo):
         bi, bj = d.get("bloque", (0, 0))
         if "bloque" not in d:
             self.x, self.y = float(d["xy"][0]), float(d["xy"][1])
@@ -363,6 +394,7 @@ class Mundo:
         for d in c["lugares"]:
             try:
                 l = Lugar(d, self)
+                self._separar(l)
                 self.lugares[l.id] = l
             except (KeyError, ValueError, TypeError):
                 pass
@@ -371,6 +403,18 @@ class Mundo:
         self._tender_tren(c)
         self.casetes = [self.punto_libre(x, y) for x, y in c.get("casetes", [])]
         self.aparcados = self._generar_aparcados() if c.get("aparcados", True) else []
+
+    def _separar(self, l):
+        """Dos lugares no pueden estar en el mismo punto: Intro solo abriría uno de los dos (pasaba con lugares que un
+        mod añadía a una fachada ya ocupada). El que llega después se corre a un hueco libre de esa fachada."""
+        d = l.d
+        if "bloque" not in d or "xy" in d or all(math.hypot(o.x - l.x, o.y - l.y) >= 3.0 for o in self.lugares.values()):
+            return
+        for pos in (62, 18, 76, 48, 30, 8, 36):
+            l._situar(dict(d, pos=pos), self)
+            if all(math.hypot(o.x - l.x, o.y - l.y) >= 13.0 for o in self.lugares.values()):
+                return
+        l._situar(d, self)
 
     # ------------------------------------------------------------------ vías del tranvía
     def linea_tranvia(self):
