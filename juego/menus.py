@@ -241,11 +241,20 @@ class EntradaTexto:
 
     Intro acepta, Escape cancela, Retroceso borra, flecha arriba o F1 leen lo escrito y Control V pega.
     Con secreto=True (contraseñas) no se dicen las letras.
+
+    Con «propuestas» (una lista de textos, o una función que la da), Tabulador pasa de una a otra y la deja escrita:
+    frases hechas, nombres al azar. Sirve para no tener que escribir.
+
+    Con mando se escribe con una rueda de letras: cruceta arriba y abajo recorren las letras, derecha escribe la elegida
+    e izquierda borra la última; LB o L1 pone un espacio, RB o R1 cambia de grupo (minúsculas, mayúsculas, números y
+    signos), X o Cuadrado pasa por las propuestas, Y o Triángulo lee lo escrito, A o Equis acepta y B o Círculo cancela.
     """
     pausa_mundo = True
     cerrado_al_final = True
+    GRUPOS = (("minúsculas", "abcdefghijklmnñopqrstuvwxyzáéíóúü"), ("mayúsculas", "ABCDEFGHIJKLMNÑOPQRSTUVWXYZÁÉÍÓÚÜ"), ("números", "0123456789"),
+              ("signos", ".,?!¿¡/-:;@_'\"()+="))
 
-    def __init__(self, app, titulo, al_aceptar, inicial="", secreto=False, maximo=120, ayuda=None):
+    def __init__(self, app, titulo, al_aceptar, inicial="", secreto=False, maximo=120, ayuda=None, propuestas=None):
         self.app = app
         self.titulo = titulo
         self.al_aceptar = al_aceptar
@@ -254,26 +263,119 @@ class EntradaTexto:
         self.maximo = maximo
         self.ayuda = ayuda
         self.aceptado = False
+        self._propuestas = propuestas
+        self.i_prop = -1
+        self.grupo = 0               # la rueda de letras del mando: en qué grupo y en qué letra está
+        self.letra = 0
 
     def _leer(self):
         if not self.texto:
             return "Vacío"
         return f"{len(self.texto)} caracteres escritos" if self.secreto else self.texto
 
+    def propuestas(self):
+        try:
+            p = self._propuestas() if callable(self._propuestas) else self._propuestas
+        except Exception:
+            p = None
+        return [str(t)[:self.maximo] for t in (p or []) if str(t).strip()]
+
+    def _con_mando(self):
+        md = getattr(self.app, "mando", None)
+        return md if md is not None and md.conectado else None
+
+    def ayuda_mando(self):
+        """Cómo se escribe con el mando, con los nombres de sus botones."""
+        md = self._con_mando()
+        n = md.nombre_boton if md else (lambda b: {"a": "A o Equis", "b": "B o Círculo", "x": "X o Cuadrado", "y": "Y o Triángulo", "lb": "LB o L1", "rb": "RB o R1"}[b])
+        return ("Con el mando: cruceta arriba y abajo recorren las letras, cruceta derecha escribe la letra elegida y cruceta izquierda borra la última. "
+                f"{n('lb')} pone un espacio. {n('rb')} cambia entre minúsculas, mayúsculas, números y signos. "
+                + (f"{n('x')} pasa por las propuestas. " if self.propuestas() else "")
+                + f"{n('y')} lee lo escrito. {n('a')} acepta y {n('b')} cancela.")
+
     def al_entrar(self):
         with registro.privado():
             self._al_entrar()
 
     def _al_entrar(self):
-        self.app.decir(f"{self.titulo}. Escribe y pulsa Intro. Escape cancela. {self._leer()}", True)
+        hay = len(self.propuestas())
+        md = self._con_mando()
+        if md is not None and md.habla_botones():
+            n = md.nombre_boton
+            como = (f"Elige cada letra con la cruceta arriba y abajo y escríbela con cruceta derecha. {n('a')} acepta y {n('b')} cancela. "
+                    + (f"{n('x')} pasa por {hay} propuestas ya escritas. " if hay else "") + f"El {n('back')} dice todos los botones.")
+        else:
+            como = "Escribe y pulsa Intro. Escape cancela." + (f" Tabulador pasa por {hay} propuestas ya escritas." if hay else "")
+        self.app.decir(f"{self.titulo}. {como} {self._leer()}", True)
 
     def tecla(self, ev):
         with registro.privado():               # lo que se escribe y lo que se lee al escribir no se registra
             self._tecla(ev)
 
+    def _proponer(self, paso=1):
+        lista = self.propuestas()
+        if not lista:
+            self.app.son("menu_borde")
+            self.app.decir("Aquí no hay propuestas: hay que escribirlo.", True)
+            return
+        self.i_prop = (self.i_prop + paso) % len(lista)
+        self.texto = lista[self.i_prop]
+        self.app.son("menu_ajuste")
+        self.app.decir(f"{self.texto}. {self.i_prop + 1} de {len(lista)}", True)
+
+    def _poner(self, letra):
+        if len(self.texto) >= self.maximo:
+            self.app.son("menu_borde")
+            self.app.decir("No cabe más.", True)
+            return
+        self.texto += letra
+        self.app.son("menu_mover")
+        self.app.decir("asterisco" if self.secreto else self._nombre(letra), True)
+
+    def _borrar(self):
+        if self.texto:
+            quitada = self.texto[-1]
+            self.texto = self.texto[:-1]
+            self.app.son("menu_ajuste")
+            self.app.decir("Borrado" if self.secreto else f"Borrado {self._nombre(quitada)}", True)
+        else:
+            self.app.son("menu_borde")
+            self.app.decir("Vacío", True)
+
+    def _rueda(self, k):
+        """Las teclas que llegan del mando: la rueda de letras. Devuelve False si esa no es de la rueda."""
+        letras = self.GRUPOS[self.grupo][1]
+        if k in (pygame.K_UP, pygame.K_DOWN):
+            self.letra = (self.letra + (1 if k == pygame.K_DOWN else -1)) % len(letras)
+            self.app.son("menu_mover")
+            self.app.decir(self._nombre(letras[self.letra]), True)
+        elif k == pygame.K_RIGHT:
+            self._poner(letras[self.letra])
+        elif k == pygame.K_LEFT:
+            self._borrar()
+        elif k == pygame.K_HOME:                                 # LB o L1
+            self._poner(" ")
+        elif k == pygame.K_d:                                    # RB o R1
+            self.grupo = (self.grupo + 1) % len(self.GRUPOS)
+            self.letra = 0
+            self.app.son("menu_ajuste")
+            self.app.decir(f"{self.GRUPOS[self.grupo][0].capitalize()}. {self._nombre(self.GRUPOS[self.grupo][1][0])}", True)
+        elif k == pygame.K_n:                                    # Y o Triángulo
+            self.app.decir(self._leer(), True)
+        elif k == pygame.K_F1:                                   # Vista, Crear o Share
+            self.app.decir((self.ayuda + " " if self.ayuda else "") + self.ayuda_mando() + " " + self._leer(), True)
+        else:
+            return False
+        return True
+
     def _tecla(self, ev):
         k = ev.key
         mod = getattr(ev, "mod", 0)
+        if getattr(ev, "mando", False) and self._rueda(k):
+            return
+        if k == pygame.K_TAB:
+            self._proponer(-1 if mod & pygame.KMOD_SHIFT else 1)
+            return
         if k in (pygame.K_RETURN, pygame.K_KP_ENTER):
             self.aceptado = True
             self.app.son("menu_ok")
@@ -318,7 +420,8 @@ class EntradaTexto:
     @staticmethod
     def _nombre(c):
         return {" ": "espacio", ".": "punto", ":": "dos puntos", "/": "barra", ",": "coma", "-": "guion", "_": "guion bajo", "@": "arroba",
-                "?": "interrogación", "!": "exclamación"}.get(c, f"{c} mayúscula" if c.isupper() else c)
+                "?": "interrogación", "!": "exclamación", "¿": "abre interrogación", "¡": "abre exclamación", ";": "punto y coma", "'": "apóstrofo",
+                '"': "comillas", "(": "abre paréntesis", ")": "cierra paréntesis", "+": "más", "=": "igual"}.get(c, f"{c} mayúscula" if c.isupper() else c)
 
     def actualizar(self, dt):
         pass

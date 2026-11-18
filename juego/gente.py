@@ -18,7 +18,9 @@ import random
 SECCIONES = ("gente", "caracteres", "bandas", "tipos_enemigo", "policia_niveles", "cajas_locales")
 LISTAS = ("nombres_h", "nombres_m", "apellidos", "frases", "apodos", "perros", "bandas_propias", "rivales_carrera", "nombres_servidor",
           # lo que dicen los personajes de un servidor en línea, según su clase; sin ellas, el servidor usa las suyas
-          "frases_servidor_paseante", "frases_servidor_ratero", "frases_servidor_pistolero", "frases_servidor_ladron", "frases_servidor_atracador")
+          "frases_servidor_paseante", "frases_servidor_ratero", "frases_servidor_pistolero", "frases_servidor_ladron", "frases_servidor_atracador",
+          # frases ya escritas para el chat y los canales de rol: para quien juega con mando, o no quiere escribir
+          "frases_chat", "rol_frases_ic", "rol_frases_yo", "rol_frases_ooc")
 PUNTERIA = 0.42                   # la de un enemigo corriente: lo que acierta a quemarropa
 HABLAS = ("amable", "hablador", "seco", "timido", "chulo")      # los caracteres para los que el juego trae frases escritas
 
@@ -28,6 +30,10 @@ _SERIE = {
     "apodos": ["el Chato", "la Culebra", "el Rubio", "la Tuerta"], "perros": ["Canela", "Trufa", "Rayo", "Luna"],
     "bandas_propias": ["Los del Puerto", "La Cuadrilla"], "rivales_carrera": ["el coche rojo", "el coche negro", "la furgoneta blanca", "el deportivo amarillo"],
     "nombres_servidor": [],
+    "frases_chat": ["Hola a todos.", "¿Dónde estáis?", "Voy para allá.", "Gracias.", "Hasta luego."],
+    "rol_frases_ic": ["Buenas.", "¿Qué tal todo?", "Sígueme.", "Espera un momento.", "Gracias.", "Hasta luego."],
+    "rol_frases_yo": ["saluda con la mano", "asiente", "niega con la cabeza", "mira alrededor", "se encoge de hombros"],
+    "rol_frases_ooc": ["Hola.", "Vuelvo en un momento.", "Ya estoy de vuelta.", "Juego con mando: escribo despacio.", "Me tengo que ir. Hasta otra."],
 }
 SIN_SERIE = ("nombres_servidor",) + tuple(l for l in LISTAS if l.startswith("frases_servidor_"))      # las que pueden venir vacías: el servidor trae las suyas
 _SERIE.update({l: [] for l in SIN_SERIE})
@@ -135,7 +141,7 @@ def configurar(datos):
 # ------------------------------------------------------------------ gente de la calle
 def lista(cual):
     """Una de las listas de la gente de la calle: nombres_h, nombres_m, apellidos, frases, apodos, perros, bandas_propias,
-    rivales_carrera, nombres_servidor o frases_servidor_ y una clase. Nunca viene vacía, salvo las del servidor (SIN_SERIE)."""
+    rivales_carrera, nombres_servidor, frases_servidor_ y una clase, o las frases ya escritas del chat y del rol. Nunca viene vacía, salvo las del servidor (SIN_SERIE)."""
     return G.get(cual) or list(_SERIE.get(cual, []))
 
 

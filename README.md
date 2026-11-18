@@ -238,6 +238,13 @@ Ocho módulos de la 1.7.1, cada uno un mixin de `Partida` salvo `ajustes.py`:
 - Tres campos nuevos del jugador (`despensa`, `encima`, `cocina_practica`), todos con valor de serie: el formato de las partidas no sube. No hay opciones nuevas. Depende solo del jugador, así que en un servidor funciona igual (el reloj no se adelanta al cocinar) y no se ha tocado `servidor/`; la huella del mundo no cambia.
 - Sonidos nuevos: `cesta`, `nevera`, `cocina_cortar`, `cocina_freir`, `cocina_hervir` y `plato_servido` (`VERSION_CACHE` 20). En los packs llevan el sonido del juego.
 
+### El mando: nada solo con teclado (1.7.1)
+
+- `juego/mando.py` traduce el mando a teclas. Lo que no cabe en un botón ni en una combinación va en `MENU_ACCIONES` (frase, tecla, modificador, dónde vale, condición, explicación, si el menú se queda abierto): es el menú que abre la acción `menu_acciones`, de serie en combinar más gatillo derecho, a pie y al volante. `acciones_de(p)` da las que valen en ese momento.
+- Regla: una tecla nueva en `ayuda.TECLAS` necesita un botón o combinación en `POR_DEFECTO`, una entrada en `MENU_ACCIONES`, o una línea en `SIN_BOTON` con su razón (`SOLO_A_PIE` para las generales que al volante no tienen sentido). En las pantallas que no son menús (`PANTALLA`), una tecla propia necesita un alias de una de las que el mando manda allí: la C de la cesta es Tabulador (`ALIAS_PANTALLA`). Lo vigila `pruebas/test_171_mando.py`.
+- Los eventos del mando llevan `mando = True` (`_Ev`): no pasan por el cambio de teclas del teclado (`App.evento_tecla`) y en `menus.EntradaTexto` mueven la rueda de letras. `EntradaTexto(..., propuestas=lista o función)` ofrece textos ya escritos con Tabulador (X o Cuadrado): las listas `frases_chat`, `rol_frases_ic`, `rol_frases_yo` y `rol_frases_ooc` de `gente.json`, y `nombres_propuestos` de `vehiculos_propios` en `vida.json`.
+- Frases habladas: `textos_mando` cambia las teclas por botones también cuando la función está en una combinación. Para pantallas que hablan con `app.decir`, `Mando.boton_pantalla(tecla, nombre)` da el nombre de la tecla o el del botón.
+
 ### Pruebas
 
 `probar.bat` ejecuta toda la batería. Las pruebas manejan el juego como una persona, con teclas y fotogramas: juegan todas las misiones, recorren los mapas con el GPS, entran en todos los menús y lugares, juegan veinte días con el tiempo acelerado, conectan dos juegos entre sí, manejan un mando simulado y revisan la accesibilidad del editor. También fallan si se añade un sonido sin describir o una tecla sin documentar. No usan la red ni la tarjeta de sonido.

@@ -606,7 +606,7 @@ def opciones_mando(app):
         Opcion(lambda: f"Decir los botones del mando en lugar de las teclas: {'sí' if cfg['mando_textos'] else 'no'}",
                ajuste=lambda d: cfg.__setitem__("mando_textos", not cfg["mando_textos"]),
                ayuda="Con un mando conectado, lo que el juego cuenta mientras juegas y lo que explican los tutoriales y las escenas nombra el botón que hace cada cosa: "
-                     "pulsa el gatillo izquierdo, en vez de pulsa Q. Lo que no tiene botón se sigue diciendo con su tecla. Sin mando conectado no cambia nada. "
+                     "pulsa el gatillo izquierdo, en vez de pulsa Q. Lo que va en una combinación se dice con ella. Lo que no tiene botón se sigue diciendo con su tecla, y está en el menú de acciones. Sin mando conectado no cambia nada. "
                      "Las frases que cambian las lee tu lector de pantalla, no la voz grabada."),
         Opcion(lambda: f"Vibración: {'sí' if cfg['mando_vibracion'] else 'no'}", ajuste=vib, ayuda="El mando vibra con los golpes, los disparos que recibes, las explosiones y cuando pica un pez."),
         Opcion("Probar la vibración", probar),
@@ -615,7 +615,8 @@ def opciones_mando(app):
         Opcion("Reasignar los botones al volante", lambda: reasignar("coche", "Botones al volante")),
         Opcion("Reasignar las combinaciones a pie", lambda: reasignar("pie_combo", "Combinaciones a pie: " + md.nombre_boton("back") + " mantenido, más otro botón"),
                ayuda="Las segundas funciones: mantienes pulsado el botón Vista, Crear o Share y pulsas otro. De serie: siguiente cruce, dónde está tu vehículo, "
-                     "hambre y sueño, caminar solo, hablar, hora, rumbo y más."),
+                     "hambre y sueño, caminar solo, hablar, hora, rumbo, rendirte con el gatillo izquierdo y, con el gatillo derecho, el menú de acciones, que tiene todo lo que no cabe en un botón."),
         Opcion("Reasignar las combinaciones al volante", lambda: reasignar("coche_combo", "Combinaciones al volante: " + md.nombre_boton("back") + " mantenido, más otro botón"),
-               ayuda="De serie: piloto del GPS, repetir la indicación del GPS con la distancia que falta, objetivo, velocidad, siguiente cruce, emisora y más."),
+               ayuda="De serie: piloto del GPS, repetir la indicación del GPS con la distancia que falta, objetivo, velocidad, siguiente cruce, emisora, rendirte con el gatillo izquierdo "
+                     "y, con el gatillo derecho, el menú de acciones, que tiene todo lo que no cabe en un botón."),
         Opcion("Restablecer los botones originales", restablecer)], al_cerrar=cfg.guardar))

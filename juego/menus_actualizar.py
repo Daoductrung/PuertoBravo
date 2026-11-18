@@ -33,7 +33,12 @@ class Tarea:
 
     def al_entrar(self):
         self.app.decir(self.titulo + ". Espera. Cualquier tecla dice cuánto lleva. Escape cancela."
-                       + (" Con la B se queda en segundo plano y sigues con lo que estabas." if self.fondo else ""), True)
+                       + (f" Con {self._tecla_fondo()} se queda en segundo plano y sigues con lo que estabas." if self.fondo else ""), True)
+
+    def _tecla_fondo(self):
+        """Con qué se deja en segundo plano: la B o, con mando, X o Cuadrado (que aquí llega como Tabulador)."""
+        md = getattr(self.app, "mando", None)
+        return md.boton_pantalla(pygame.K_TAB, "la B") if md is not None else "la B"
 
     def decir(self, texto):
         self.avisos.append(texto)
@@ -49,7 +54,7 @@ class Tarea:
         if ev.key == pygame.K_ESCAPE:
             self.cancelada = True
             self.app.decir("Cancelando.", True)
-        elif ev.key == pygame.K_b and self.fondo and not self.hecho and self.hilo is not None and not self.app.pruebas:
+        elif ev.key in (pygame.K_b, pygame.K_TAB) and self.fondo and not self.hecho and self.hilo is not None and not self.app.pruebas:
             self.en_fondo = True
             self.app.cerrar(self)
             if not hasattr(self.app, "tareas_fondo"):

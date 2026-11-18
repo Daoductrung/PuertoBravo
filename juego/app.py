@@ -230,7 +230,7 @@ class App:
         return type(self.pila[-1]).__name__ not in ("EntradaTexto", "Captura")
 
     def evento_tecla(self, ev):
-        if self.cfg["teclas"] and self._teclas_propias():
+        if self.cfg["teclas"] and not getattr(ev, "mando", False) and self._teclas_propias():      # lo del mando ya viene como función, no como tecla física
             # cada tecla hace la función que el jugador le haya puesto
             from . import teclado
             k = teclado.traducir(self.cfg, ev.key)

@@ -291,7 +291,9 @@ class Cocinando:
         if ev.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE, pygame.K_ESCAPE):
             self.t = self.dura                                   # quien no quiera esperar lo oye de corrido
         else:
-            self.app.decir(f"Estás cocinando {self.r['nombre'].lower()}. Intro, para no esperar.", True)
+            md = getattr(self.app, "mando", None)                # con mando se dice su botón: A o Equis
+            intro = md.boton_pantalla(pygame.K_RETURN, "Intro") if md is not None else "Intro"
+            self.app.decir(f"Estás cocinando {self.r['nombre'].lower()}. {intro[0].upper() + intro[1:]}, para no esperar.", True)
 
     def actualizar(self, dt):
         if self.hecho:

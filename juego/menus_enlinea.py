@@ -204,7 +204,9 @@ def chat(p, canal="todos", a=None, titulo="Mensaje para todo el servidor"):
     if p.sv_rol():
         ayuda = ("Escribe y pulsa Intro. En cualquier mensaje, si empiezas por barra yo y un espacio, cuentas lo que hace tu personaje; con barra ep hablas en personaje, "
                  "para los que están cerca; y con barra fp, fuera de personaje, para todo el servidor.")
-    app.abrir(EntradaTexto(app, titulo, lambda t: p.sv_enviar_chat(t, canal, a), maximo=300, ayuda=ayuda))
+    from . import gente                                      # frases ya escritas: con Tabulador, o con X o Cuadrado en el mando
+    frases = gente.lista("rol_frases_" + canal) if canal in TITULOS_ROL else gente.lista("frases_chat") if canal == "todos" else None
+    app.abrir(EntradaTexto(app, titulo, lambda t: p.sv_enviar_chat(t, canal, a), maximo=300, ayuda=ayuda, propuestas=frases))
 
 
 def ficha_propia(p):
@@ -233,9 +235,9 @@ def rol(p):
             return [Opcion(p.sv_rol_motivo())]
         metros = sv["info"].get("rol_metros", 30)
         return [Opcion("Hablar en personaje", lambda: chat(p, "ic"),
-                       ayuda=f"Lo que dice tu personaje. Lo oye quien esté a menos de {metros} metros. También con Mayúsculas F10 durante el juego."),
+                       ayuda=f"Lo que dice tu personaje. Lo oye quien esté a menos de {metros} metros. También con Mayúsculas F10 durante el juego y, con mando, en el menú de acciones. Hay frases ya escritas: Tabulador, o el botón X o Cuadrado, pasa por ellas."),
                 Opcion("Describir lo que hace tu personaje", lambda: chat(p, "yo"),
-                       ayuda=f"Escribes, por ejemplo, abre la puerta, y los que están a menos de {metros} metros oyen tu nombre y abre la puerta. También con Control F10."),
+                       ayuda=f"Escribes, por ejemplo, abre la puerta, y los que están a menos de {metros} metros oyen tu nombre y abre la puerta. También con Control F10 y, con mando, en el menú de acciones. Hay acciones ya escritas: Tabulador, o el botón X o Cuadrado, pasa por ellas."),
                 Opcion("Hablar fuera de personaje", lambda: chat(p, "ooc"),
                        ayuda="Para hablar como jugador y no como tu personaje: dudas, avisos, quedar. Lo oye todo el servidor."),
                 Opcion(lambda: "Tu ficha: " + (sv.get("ficha") or "sin escribir"), lambda: ficha_propia(p),

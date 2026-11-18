@@ -43,7 +43,8 @@ def escribir_mensaje(p, canal=None):
         app.son("error")
         app.decir("Los canales de rol son de los servidores en línea. Jugando con amigos, el mensaje es para todos: pulsa F10.", True)
         return
-    app.abrir(EntradaTexto(app, "Mensaje para tus amigos", p.enviar_chat, maximo=300))
+    from . import gente
+    app.abrir(EntradaTexto(app, "Mensaje para tus amigos", p.enviar_chat, maximo=300, propuestas=gente.lista("frases_chat")))
 
 
 def amigos(p):

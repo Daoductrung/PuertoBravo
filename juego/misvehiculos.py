@@ -27,6 +27,7 @@ _LISTAS = {
     "chofer_frases_llegada": ["Hemos llegado.", "Ya estamos.", "Aquí es."],
     "chofer_frases_espera": ["Te espero aquí.", "Aquí me quedo, con el motor a punto.", "No me muevo de aquí."],
     "chofer_frases_adios": ["Hasta luego, jef[e|a].", "Cuando me necesites, llama.", "Me vuelvo con los demás."],
+    "nombres_propuestos": ["La Gaviota", "El Rayo", "La Tormenta", "El Tiburón", "La Centella", "El Viejo", "La Fiera", "El Fantasma"],
 }
 LISTAS = {k: list(v) for k, v in _LISTAS.items()}
 NOMBRE_MAX = 30
@@ -47,6 +48,12 @@ def configurar(datos):
 
 def tope():
     return AJUSTES["tope_calle"]
+
+
+def nombres_propuestos(n=6, rng=random):
+    """Unos cuantos nombres al azar para un vehículo: para quien no quiere, o no puede, escribirlo (con mando, por ejemplo)."""
+    lista = list(dict.fromkeys(LISTAS["nombres_propuestos"]))
+    return rng.sample(lista, min(n, len(lista)))
 
 
 def _modelo_nombre(p, ident):
@@ -307,7 +314,7 @@ class MisVehiculos:
                 al_terminar()
         app.abrir(EntradaTexto(app, f"Nombre para {actual}", hecho, inicial="" if actual == _modelo_nombre(self, modelo) else actual, maximo=NOMBRE_MAX,
                                ayuda=f"Hasta {NOMBRE_MAX} letras. El juego lo dirá al subir, al localizarlo y en las listas. Si lo dejas vacío, vuelve a llamarse como el modelo. "
-                                     "Lo que escribas aquí no se anota en el registro del juego."))
+                                     "Tabulador propone nombres al azar. Lo que escribas aquí no se anota en el registro del juego.", propuestas=nombres_propuestos()))
 
     # ------------------------------------------------------------------ que te lo traigan, o al garaje
     def traer_mi_vehiculo(self, cosa, garaje=None):
@@ -850,7 +857,8 @@ def menu_mis_vehiculos(p):
                         app.cerrar(mm)
                         m.refrescar(False)
                 app.abrir(EntradaTexto(app, f"Nombre para {f['nombre']}", hecho, inicial="" if f["nombre"] == _modelo_nombre(p, dd["modelo"]) else f["nombre"], maximo=NOMBRE_MAX,
-                                       ayuda=f"Hasta {NOMBRE_MAX} letras. Lo guarda el servidor y lo ven también los demás jugadores. Si lo dejas vacío, vuelve a llamarse como el modelo."))
+                                       ayuda=f"Hasta {NOMBRE_MAX} letras. Lo guarda el servidor y lo ven también los demás jugadores. Si lo dejas vacío, vuelve a llamarse como el modelo. "
+                                             "Tabulador propone nombres al azar.", propuestas=nombres_propuestos()))
             ops = []
             if tipo in ("calle", "ultimo") or (tipo == "servidor" and v is not None):
                 ops.append(Opcion("Marcarlo en el GPS", gps, ayuda="El GPS te lleva hasta él. Sin abrir el móvil, Mayúsculas L hace lo mismo con el último que has usado."))

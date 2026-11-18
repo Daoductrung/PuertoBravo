@@ -202,7 +202,8 @@ TITULOS_TECLAS = {"general": "En cualquier momento", "pie": "A pie", "coche": "A
 MENUS = [("Flecha arriba y flecha abajo", "moverte por las opciones"), ("Intro", "elegir"), ("Flecha izquierda y flecha derecha", "cambiar el valor de una opción"),
          ("Escape", "volver atrás. Todos los menús tienen además una opción Volver"), ("Inicio y Fin", "primera y última opción"),
          ("Una letra", "salta a la siguiente opción que empieza por ella"), ("F1", "explicación de la opción actual"),
-         ("Re Pág y Av Pág", "repasar los mensajes anteriores")]
+         ("Re Pág y Av Pág", "repasar los mensajes anteriores"),
+         ("Tabulador, al escribir un texto", "pasa por las frases o los nombres propuestos, si los hay, y deja escrito el elegido. Mayúsculas Tabulador vuelve al anterior")]
 
 
 def _lista(pares):
@@ -238,6 +239,12 @@ def html_mando(nivel=3):
             continue
         partes.append(f"<{h}>{titulo}</{h}>")
         partes.append("<ul>\n" + "\n".join(f"<li>{html.escape(l)}</li>" for l in lineas) + "\n</ul>")
+    # el menú de acciones: lo que no tiene botón propio
+    donde = {"pie": " Solo a pie.", "coche": " Solo al volante.", "ambos": ""}
+    partes.append(f"<{h}>Mando, el menú de acciones</{h}>")
+    partes.append("<p>Se abre manteniendo el botón Vista, o Crear o Share en PlayStation, y pulsando el gatillo derecho, o R2. Es una lista con todo lo que en el teclado "
+                  "es una tecla y en el mando no tiene botón propio. Solo salen las acciones que valen en ese momento.</p>")
+    partes.append("<ul>\n" + "\n".join(f"<li>{html.escape(e[0])}.{donde[e[3]]}</li>" for e in mando.MENU_ACCIONES) + "\n</ul>")
     return "\n".join(partes)
 
 

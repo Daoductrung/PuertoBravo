@@ -244,6 +244,8 @@ def test_combinaciones_del_mando_a_pie(robot):
     assert pygame.K_SPACE not in robot.app.teclas
     md.boton("rt", False)
     md.boton("back", False)
+    assert robot.app.pila[-1].titulo == "Acciones"               # desde la 1.7.1, esa combinación abre el menú de acciones
+    robot.app.cerrar(robot.app.pila[-1])
     md.boton("rt", True)
     md.actualizar(0.02)
     assert pygame.K_SPACE in robot.app.teclas                    # sin Vista, sí

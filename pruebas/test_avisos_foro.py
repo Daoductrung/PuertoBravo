@@ -187,7 +187,8 @@ def test_con_mando_las_teclas_se_dicen_como_botones():
     assert f("La tecla M abre el móvil.") == "El botón Vista abre el móvil."
     # lo que no tiene botón se queda con su tecla, y una Y que no es una tecla no se toca
     assert f("Pulsa Mayúsculas Y para el menú del perro.") == "Pulsa Mayúsculas Y para el menú del perro."
-    assert f("Con la tecla J hablas con la gente. Y si te aburres, vuelve.") == "Con la tecla J hablas con la gente. Y si te aburres, vuelve."
+    # lo que va en una combinación se dice con ella (desde la 1.7.1); la Y suelta de después sigue sin tocarse
+    assert f("Con la tecla J hablas con la gente. Y si te aburres, vuelve.") == "Con el botón Vista mantenido más el botón B hablas con la gente. Y si te aburres, vuelve."
     # si cambias la asignación, el texto la sigue
     mapa = {c: dict(m) for c, m in mando.POR_DEFECTO.items()}
     mapa["pie"]["lt"], mapa["pie"]["rb"] = "nada", "fijar"

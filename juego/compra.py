@@ -667,7 +667,7 @@ class Tienda(sistemas.Local):
                 "pagas la cesta, o te atienden de lo demás si no llevas nada" if que == "caja" else "sales de la tienda" if que == "salir" else
                 "te acercas a hablar" if isinstance(que, tuple) else sistemas.QUE_HACE.get(que, "te lo describe"))
         return (f"Estás recorriendo {self.l.nombre} por dentro. Flechas izquierda y derecha para ir de un pasillo a otro, Intro para usar el sitio donde estás, "
-                f"C para saber qué llevas en la cesta y Escape para salir. Ahora estás en {nombre}: con Intro, {aqui}. "
+                f"{self._tecla_cesta()} para saber qué llevas en la cesta y Escape para salir. Ahora estás en {nombre}: con Intro, {aqui}. "
                 "En cada pasillo, Intro o flecha derecha sobre un producto lo echa a la cesta, flecha izquierda lo devuelve y F1 te dice para qué sirve y cuánto aguanta. "
                 "Se paga en la caja. Si sales con la cesta llena, te preguntan qué haces con ella.")
 
@@ -683,7 +683,7 @@ class Tienda(sistemas.Local):
         nombres = _junta(pa["nombre"] for pa, _ in self.surtido)
         self.app.decir(f"{self.l.nombre}, por dentro. Coges una cesta. Estás en {nombre}. {desc} Hay {_cuantos(len(self.surtido), 'pasillo', 'pasillos')}: {nombres}. "
                        + (f"Hoy, de oferta: {of['nombre'].lower()}. " if of else "")
-                       + "Flechas izquierda y derecha para moverte, Intro para mirar un pasillo o pagar en la caja, C para la cesta, Escape para salir.", True)
+                       + f"Flechas izquierda y derecha para moverte, Intro para mirar un pasillo o pagar en la caja, {self._tecla_cesta()} para la cesta, Escape para salir.", True)
 
     def _decir(self):
         nombre, desc, que = self.habitaciones[self.i]
@@ -695,8 +695,13 @@ class Tienda(sistemas.Local):
             extra = f" Llevas {_cuantos(self.n_cesta(), 'producto', 'productos')}: {_euros(self.total())}."
         self.app.decir(f"{nombre.capitalize()}. {desc}{extra} {self.i + 1} de {len(self.habitaciones)}.", True)
 
+    def _tecla_cesta(self):
+        """Con qué se oye la cesta: la C o, jugando con mando, su botón (X o Cuadrado, que aquí llega como Tabulador)."""
+        md = getattr(self.app, "mando", None)
+        return md.boton_pantalla(pygame.K_TAB, "C") if md is not None else "C"
+
     def tecla(self, ev):
-        if ev.key == pygame.K_c:
+        if ev.key in (pygame.K_c, pygame.K_TAB):
             self.app.son("cesta", vol=0.5)
             self.app.decir(self.cesta_txt(), True)
         elif ev.key == pygame.K_ESCAPE:

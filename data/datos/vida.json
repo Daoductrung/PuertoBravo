@@ -185,7 +185,9 @@
      "chofer_frases_marcha": ["Marchando.", "Vamos para allá.", "Agárrate, que salimos.", "Eso está hecho."],
      "chofer_frases_llegada": ["Hemos llegado.", "Ya estamos.", "Aquí es."],
      "chofer_frases_espera": ["Te espero aquí.", "Aquí me quedo, con el motor a punto.", "No me muevo de aquí."],
-     "chofer_frases_adios": ["Hasta luego, jef[e|a].", "Cuando me necesites, llama.", "Me vuelvo con los demás."]}
+     "chofer_frases_adios": ["Hasta luego, jef[e|a].", "Cuando me necesites, llama.", "Me vuelvo con los demás."],
+     "nombres_propuestos": ["La Gaviota", "El Rayo", "La Tormenta", "El Tiburón", "La Centella", "El Viejo", "La Fiera", "El Fantasma", "La Marea", "El Relámpago", "La Sirena", "El Lobo de Mar",
+                            "La Chata", "El Trueno", "La Brisa", "El Cangrejo", "La Negra", "El Levante", "La Farola", "El Espigón", "La Sardina", "El Noray", "La Salina", "El Vendaval"]}
   ],
   "calle": [
     {"id": "general",

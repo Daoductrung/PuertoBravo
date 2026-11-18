@@ -47,7 +47,15 @@
     "frases_servidor_ratero": ["¿Tienes fuego?", "Bonito reloj.", "No te había visto por aquí."],
     "frases_servidor_pistolero": ["Tú y yo tenemos algo pendiente.", "Hay quien paga bien por algunos."],
     "frases_servidor_ladron": ["Buen coche el de ahí.", "Yo no he visto nada."],
-    "frases_servidor_atracador": ["Hoy va a ser un buen día.", "¿Ese negocio de quién es?"]
+    "frases_servidor_atracador": ["Hoy va a ser un buen día.", "¿Ese negocio de quién es?"],
+    "frases_chat": ["Hola a todos.", "¿Dónde estáis?", "Voy para allá.", "Esperadme.", "Estoy en el puerto.", "Necesito ayuda.", "¿Alguien se apunta a una misión?",
+                    "De acuerdo.", "No puedo ahora.", "Gracias.", "Buena partida.", "Hasta luego."],
+    "rol_frases_ic": ["Buenas.", "¿Qué tal todo?", "¿Nos conocemos?", "Sígueme.", "Espera un momento.", "Tranquilo, no quiero líos.", "¿Tienes un minuto? Hay un negocio.",
+                      "De acuerdo, trato hecho.", "Eso no me interesa.", "Ten cuidado por aquí.", "Gracias.", "Ya nos veremos.", "Hasta luego."],
+    "rol_frases_yo": ["saluda con la mano", "asiente", "niega con la cabeza", "mira alrededor", "se encoge de hombros", "se ríe", "tiende la mano",
+                      "levanta las manos despacio", "saca el móvil y lo mira", "se apoya en la pared", "señala al otro lado de la calle", "se marcha sin decir nada"],
+    "rol_frases_ooc": ["Hola.", "Vuelvo en un momento.", "Ya estoy de vuelta.", "Juego con mando: escribo despacio.", "¿Alguien quiere rolear?", "Perdón, ha sido sin querer.",
+                       "Gracias por la escena.", "Me tengo que ir. Hasta otra."]
   }],
   "caracteres": [
     {"id": "amable", "desc": "amable", "desc_ia": "amable y cordial", "saludo": 6, "cumplido": 8, "chiste": 5, "insulto": -30, "valor": 0.2},
