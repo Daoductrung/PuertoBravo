@@ -115,6 +115,8 @@ class Agente:
             return "Con la policía buscándote, lo de ingresar en el cuerpo va a ser que no."
         if j.ciudadania < AJ("ciudadania_minima"):
             return "No te admiten: los vecinos no hablan lo bastante bien de ti. Sube tu prestigio con trabajo honrado, cursos, donativos o ayudando en los sucesos."
+        if self.hon_antecedentes():
+            return "No te admiten: tienes antecedentes penales en vigor. Espera a que caduquen, o atenúalos con servicios a la comunidad o con un abogado; lo tienes en el móvil, en Vida, reputación y consecuencias."
         return ""
 
     def ingresar_policia(self):

@@ -431,7 +431,9 @@ def opciones(app):
                "nada": "nunca", "pocas": "pocas veces", "algunas": "de vez en cuando", "muchas": "a menudo",
                "apagado": "apagado, nadie intenta quitártelos", "tranquilo": "tranquilo, pocos asaltos y con mucho plazo", "duro": "duro, asaltos seguidos y con poco plazo",
                "no": "no, te esperan los mismos vayas con quien vayas", "moderado": "moderado, algo más de oposición si vas acompañado",
-               "fuerte": "fuerte, bastante más oposición si vas acompañado"}
+               "fuerte": "fuerte, bastante más oposición si vas acompañado",
+               "suave": "suave, se nota sin agobiar", "exigente": "exigente, todo pesa más"}
+    from .honrado import AJ as HON
     from .reconquista import AJ as REC
     OPCIONES.setdefault("detalle_voz", ["poco", "normal", "mucho"])
     nombres.update({"poco": "poco, sin recordar las teclas", "mucho": "mucho, con la explicación de cada opción"})
@@ -457,6 +459,14 @@ def opciones(app):
             ops = OPCIONES[clave]
             cfg[clave] = ops[(ops.index(cfg[clave]) + d) % len(ops)]
         return Opcion(lambda: f"{nombre}: {nombres[cfg[clave]]}", ajuste=aj, ayuda=ayuda_)
+
+    def lista_c(clave, nombre, ayuda_=None):
+        propios = {"apagado": "apagado, todo como en versiones anteriores", "suave": "suave, se nota sin agobiar", "normal": "normal", "exigente": "exigente, todo pesa más"}
+
+        def aj(d):
+            ops = OPCIONES[clave]
+            cfg[clave] = ops[(ops.index(cfg[clave]) + d) % len(ops)]
+        return Opcion(lambda: f"{nombre}: {propios[cfg[clave]]}", ajuste=aj, ayuda=ayuda_)
 
     def si_no(clave, nombre, ayuda_=None, al_cambiar=None):
         def aj(d):
@@ -670,6 +680,28 @@ def opciones(app):
                   "conductores temerarios y persecuciones. Los resuelves dando el alto, reduciendo, deteniendo o multando, cobras por cada uno y asciendes. De servicio, la fuerza contra los sospechosos no es delito; "
                   "cualquier otro delito te cuesta un apercibimiento o la placa. Con no, que es lo de siempre, nada de esto aparece. Solo jugando en solitario."),
         ], "Cómo reacciona la gente, qué hace la policía cuando no te busca, cómo se pelea por los barrios y el oficio de policía."),
+        seccion("Vida, reputación y consecuencias", [
+            lista_c("consecuencias", "Nivel de consecuencias",
+                    "Cuánto pesa en el mundo cómo te ven los vecinos y la calle. Apagado: todo como en versiones anteriores; el prestigio solo cuenta en la paga, el banco y la policía. "
+                    f"Suave, que es lo de serie: en las tiendas te rebajan si te aprecian, hasta un {HON.entero('rebaja_ejemplar')} por ciento, y te fían; donde te evitan te cobran algo más; "
+                    "los vecinos a veces encubren una falta pequeña; un negocio atendido rinde más y uno abandonado, algo menos; sin fama ni escolta, alguna banda puede pedir dinero a tu negocio; "
+                    "y si llevas doble vida, lo que se va sabiendo puede acabar en el periódico. Normal: lo mismo con toda su fuerza, y con mala fama o antecedentes la policía te para de vez en cuando. "
+                    "Exigente: todo pesa la mitad más y, donde te evitan, hay comercios que no te atienden. Lo que eliges tú, como un contrato fijo, un título, un crédito o mejorar un negocio, "
+                    "está siempre, con cualquier nivel. En un servidor en línea no cuenta."),
+            si_no("impuestos_facturas", "Impuestos y facturas",
+                  f"Con sí, cada {HON.entero('cobro_dias')} días te cobran la luz y el agua de tus casas, su contribución y un impuesto sobre lo que han dado tus negocios, y de vez en cuando pasa una inspección por alguno. "
+                  f"Son cantidades pequeñas, se avisan {HON.entero('aviso_dias')} días antes, se cobran solas y se pueden consultar en el móvil. Si no llega el dinero, queda a deber con recargo; "
+                  f"a los {HON.entero('impagos_embargo')} impagos te embargan parte de lo que ganes hasta saldarlo, pero nunca te quitan nada de golpe. "
+                  f"Una partida ya empezada tiene {HON.entero('gracia_dias')} días de gracia. Con no, no hay facturas, impuestos ni inspecciones, como antes."),
+            si_no("antecedentes", "Antecedentes penales",
+                  "Con sí, cada detención y cada multa que pagas a un agente queda en tu ficha, más grave cuanto más te buscaban. Los antecedentes cierran los empleos de confianza, "
+                  "el ingreso en la policía y, si son graves, los créditos; y cada delito cuenta algo más mientras estés fichado. "
+                  f"Caducan solos: a los {HON.entero('caduca_leve')} días los leves, a los {HON.entero('caduca_media')} los medios y a los {HON.entero('caduca_grave')} los graves, "
+                  "y se atenúan con servicios a la comunidad o con un abogado. Lo que hiciste antes de esta versión no cuenta. Con no, no se apunta nada, como antes."),
+            si_no("pareja_familiar", "Vida sentimental apta para todos",
+                  "Con sí, aunque el contenido para adultos esté desactivado, en el móvil aparece Vida sentimental: personas a las que conocer, citas, regalos, ser pareja, prometeros, "
+                  "vivir juntos y una boda sencilla. Sin nada de contenido para adultos. Con no, las relaciones solo existen con el contenido para adultos activado, como antes."),
+        ], "Ser buena persona, delincuente o las dos cosas: cuánto pesan el prestigio y la fama, los impuestos, los antecedentes y las relaciones."),
         Opcion("Personas e inteligencia artificial", lambda: __import__("juego.menus_charla", fromlist=["x"]).opciones_ia(app),
                ayuda="Cómo contestan las personas de la calle cuando les escribes lo que quieres: con el motor del juego o con una inteligencia artificial."),
         Opcion("Teclado: cambiar las teclas", lambda: opciones_teclado(app),
@@ -1028,12 +1060,19 @@ def movil(p):
                   Opcion(lambda: f"Tus conocidos: {len(j.conocidos)}", lambda: __import__("juego.menus_charla", fromlist=["x"]).conocidos(p),
                          ayuda="La gente de la calle que te ha dado su número. Hablas con cualquiera con la tecla J."),
                   Opcion("Tu carrera: vida honrada y vida delictiva", lambda: __import__("juego.menus_vida", fromlist=["x"]).carrera(p)),
+                  Opcion(lambda: "Vida, reputación y consecuencias" + (f": {len(j.honra.get('asuntos') or [])} asuntos pendientes" if j.honra.get("asuntos") else ""),
+                         lambda: __import__("juego.menus_honrado", fromlist=["x"]).menu_vida(p),
+                         ayuda="Cómo te ve la ciudad y cómo te ve la calle, y qué ganas o pierdes por ello. Aquí están también tus antecedentes, tu contrato, tus estudios, tus negocios, "
+                               "los créditos, las facturas y los impuestos que vienen, los asuntos que esperan una decisión tuya y por dónde vas en el buen camino."),
                   Opcion("Habilidades y logros", lambda: mx.progreso(p)),
                   Opcion("Territorios: guerras de barrio", lambda: mx.territorios(p)),
                   Opcion(lambda: "Lotería. " + __import__("juego.loteria", fromlist=["x"]).estado_txt(p), lambda: __import__("juego.loteria", fromlist=["x"]).menu_movil(p),
                          ayuda="El próximo sorteo, tus boletos, comprobar si te ha tocado y los últimos números premiados. El sorteo es cada día a las nueve de la noche."),
                   ] + ([Opcion("Vida social: relaciones", lambda: __import__("juego.menus_adultos", fromlist=["x"]).vida_social(p)),
-                        Opcion("Sustancias y mercancía", lambda: __import__("juego.menus_adultos", fromlist=["x"]).menu_sustancias(p))] if p.modo_adulto() else []) + [
+                        Opcion("Sustancias y mercancía", lambda: __import__("juego.menus_adultos", fromlist=["x"]).menu_sustancias(p))] if p.modo_adulto() else
+                       [Opcion("Vida sentimental: conocer a alguien, citas, compromiso y boda", lambda: __import__("juego.menus_adultos", fromlist=["x"]).vida_social(p),
+                               ayuda="Personas a las que puedes conocer, con las que quedar y, si la cosa va bien, ser pareja, prometeros, vivir juntos y casaros. Sin contenido para adultos.")]
+                       if p.vida_sentimental() and not p.en_servidor else []) + [
                   Opcion("Inventario", inventario),
                   Opcion("Propiedades", propiedades),
                   Opcion("Barrios", barrios),
@@ -1097,6 +1136,8 @@ def lugar(p, l):
         app.decir(f"{l.nombre}. Está cerrado: aquí todavía no te conocen.", True)
         return
     if p.entrada_vetada(l):                                      # lo atracaste hace poco: no te abren, o llaman a la policía
+        return
+    if p.hon_negativa(l):                                        # con el nivel exigente, donde te evitan hay comercios que no te atienden
         return
     en_coche = j.veh is not None
     from .combustible import tiene_surtidor
@@ -1230,7 +1271,8 @@ def _casa(p, l):
                 app.cerrar(m)
                 app.son("mision_ok")
                 app.decir(f"¡{l.nombre} es tuya! Aquí puedes guardar la partida, descansar y dejar {l.get('garaje', 0)} vehículos.", True)
-        m = _menu_lugar(p, l, [Opcion(f"Comprar por {precio} euros", comprar, ayuda=l.desc), Opcion("Descripción", lambda: app.decir(l.desc, True))], "Esta vivienda está en venta")
+        m = _menu_lugar(p, l, [Opcion(f"Comprar por {precio} euros", comprar, ayuda=l.desc)] + __import__("juego.menus_honrado", fromlist=["x"]).opcion_hipoteca(p, l, lambda: app.cerrar(m))
+                        + [Opcion("Descripción", lambda: app.decir(l.desc, True))], "Esta vivienda está en venta")
         return
     garaje = j.garajes.setdefault(l.id, [])
 
@@ -1601,7 +1643,9 @@ def _comisaria(p, l):
             p.app.decir("Un sobre cambia de manos y tu expediente desaparece. Ya no te buscan.", True)
     from . import agente
     m = _menu_lugar(p, l, lambda: [Opcion(lambda: f"Pagar un soborno para que dejen de buscarte: {p.precio('soborno_estrella', 400) * j.estrellas} euros", sobornar),
-                                   Opcion(lambda: f"Tu historial: {j.stats['detenciones']} detenciones")] + agente.opciones_comisaria(p, l, Menu, Opcion, lambda: m.refrescar(False)))
+                                   Opcion(lambda: f"Tu historial: {j.stats['detenciones']} detenciones"),
+                                   Opcion(lambda: "Antecedentes penales. " + p.hon_antecedentes_txt(), lambda: __import__("juego.menus_honrado", fromlist=["x"]).menu_antecedentes(p, l),
+                                          ayuda="Lo que consta en tu ficha, cuándo caduca y cómo atenuarlo: servicios a la comunidad o un abogado.")] + agente.opciones_comisaria(p, l, Menu, Opcion, lambda: m.refrescar(False)))
 
 
 def _taller(p, l):
@@ -1723,11 +1767,12 @@ def _negocio(p, l):
     ingresos = int(l.get("ingresos", 0))
     if l.id in j.propiedades:
         mm = _menu_lugar(p, l, lambda: [
-            Opcion(f"Es tuyo. Da {ingresos} euros cada día, a medianoche"),
+            Opcion(lambda: f"Es tuyo. Da {p.ingreso_negocio(l)} euros cada día, a medianoche"),
             Opcion(lambda: f"Forma de cobro de todos tus negocios: {p.cobro_txt()}", lambda: (p.cambiar_cobro(), mm.refrescar(False)),
                    ayuda="Intro cambia entre las tres formas: que te lo traigan en mano cada medianoche, que te lo ingresen en el banco, o venir tú a recogerlo, con un diez por ciento más."),
         ] + ([Opcion(lambda: f"Recoger la caja: {int(j.cajas.get(l.id, 0))} euros", lambda: (p.recoger_caja(l), mm.refrescar(False)),
                      ayuda="Te llevas lo que hay en la caja, con un diez por ciento más por venir en persona. En la caja caben siete días.")] if j.cobro_negocios == "recoger" else [])
+            + __import__("juego.menus_honrado", fromlist=["x"]).opciones_negocio(p, l, lambda: mm.refrescar(False))
             + __import__("juego.menus_enlinea", fromlist=["x"]).opciones_propiedad(p, l))
         return
 
@@ -1750,7 +1795,8 @@ def _negocio(p, l):
             app.cerrar(m)
             app.son("mision_ok")
             app.decir(f"¡{l.nombre} es tuyo! Ganarás {ingresos} euros cada día.", True)
-    m = _menu_lugar(p, l, [Opcion(f"Comprar el negocio por {precio} euros. Da {ingresos} euros al día", comprar, ayuda=l.desc)])
+    m = _menu_lugar(p, l, [Opcion(f"Comprar el negocio por {precio} euros. Da {ingresos} euros al día", comprar, ayuda=l.desc)]
+                    + __import__("juego.menus_honrado", fromlist=["x"]).opcion_hipoteca(p, l, lambda: app.cerrar(m)))
 
 
 def _taxi(p, l):

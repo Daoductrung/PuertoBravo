@@ -356,6 +356,7 @@ class Combate:
         def pagar():
             j.dinero -= multa
             self.son("dinero", cat="interfaz")
+            self.hon_antecedente(1, "Multa pagada a un agente")
             fuera(f"Pagas {multa} euros de multa. El agente te deja ir y ya no te buscan. Conservas tus armas.")
 
         def sobornar():
@@ -558,6 +559,10 @@ class Combate:
             if not testigo:
                 return
         if self.delito_de_servicio(puntos, texto):               # de servicio como policía: fuerza justificada, o un apercibimiento
+            return
+        agente = siempre or any(p.tipo == "policia" and not p.muerto and p.dist(x, y) < 80 for p in self.personas) or any(self.es_patrulla(v) and v.dist(x, y) < 80 for v in self.vehiculos)
+        puntos = self.hon_delito(puntos, agente, forzado=siempre)      # los vecinos encubren o delatan según cómo te ven (honrado.py)
+        if puntos <= 0:
             return
         self.cambiar_ciudadania(-0.6 * puntos)
         if j.ciudadania >= 50:
@@ -1016,6 +1021,7 @@ class Combate:
                 self.fallar_mision("Te han detenido.")
         self.son("celda", cat="interfaz")
         j.ciudadania = max(0.0, j.ciudadania - 5)
+        self.hon_antecedente(1 if nivel <= 2 else 2 if nivel == 3 else 3, f"Detención con búsqueda de nivel {max(1, nivel)}" + (", con ingreso en prisión" if nivel >= 4 else ""))
         if dura:
             texto = (f"Te entregas con las manos arriba y nadie dispara. Te esposan y te llevan a {c.nombre}. Con nivel de búsqueda {nivel} no hay trato que valga: "
                      f"sales {horas} horas después, con {multa} euros menos y sin tus armas de fuego" + (", ni las demás armas, ni el chaleco" if todas else "") + f". Son las {self.hora_txt()}.")

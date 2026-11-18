@@ -48,6 +48,16 @@ LOGROS = [
     ("buzo", "Cazatesoros", "Encuentra cinco tesoros buceando o con el detector.", lambda p: p.j.stats.get("tesoros", 0) >= 5),
     ("memoria", "Memoria de elefante", "Aguanta ocho rondas en la máquina de memoria de sonidos.", lambda p: p.j.stats.get("simon", 0) >= 8),
     ("inversor", "Lobo de la bolsa", "Ten acciones por valor de 20000 euros.", lambda p: sum(n * p.precio_accion(i) for i, n in p.j.acciones.items()) >= 20000),
+    # la vida honrada, la doble vida y sus consecuencias (versión 1.7.1)
+    ("ficha_limpia", "Ficha limpia", "Llega al día treinta sin una sola condena en toda la partida.", lambda p: p.dia >= 30 and not p.en_servidor and p.cfg["antecedentes"] and not p.j.stats.get("antecedentes") and not p.j.stats["detenciones"]),
+    ("ejemplar", "Ciudadan[o|a] ejemplar", "Alcanza los 90 de prestigio entre los vecinos sin antecedentes en vigor.", lambda p: p.j.ciudadania >= 90 and not p.hon_antecedentes()),
+    ("doble_vida", "Dos caras", "Ten a la vez 60 de prestigio y 50 de fama en la calle, sin antecedentes en vigor y sin que te hayan descubierto nunca.",
+     lambda p: p.j.ciudadania >= 60 and p.j.reputacion >= 50 and not p.hon_antecedentes() and not p.j.stats.get("descubierto") and p.hon_nivel() > 0),
+    ("gran_empresa", "Casa con nombre", "Lleva un negocio tuyo al nivel más alto.", lambda p: any(int(e.get("nivel", 1)) >= 1 + len(p.hon_mejoras()) for e in p.j.empresa.values()) and len(p.hon_mejoras()) > 0),
+    ("carrera", "Carrera completa", "Llega al puesto más alto de un empleo fijo.", lambda p: bool(p.j.contrato) and p.hon_empleo() is not None and int(p.j.contrato.get("puesto", 0)) >= len(p.hon_empleo()["puestos"]) - 1),
+    ("titulado", "Con todas las letras", "Consigue tres títulos.", lambda p: len(p.hon_titulos()) >= 3),
+    ("buen_camino", "El buen camino", "Termina la historia del buen camino con el final honrado.", lambda p: (p.decisiones.get("_final_honrado") or {}).get("clase") == "honrado"),
+    ("samaritano", "Buen[|a] samaritan[o|a]", "Haz diez buenas acciones por la calle.", lambda p: p.j.stats.get("buenas_acciones", 0) >= 10),
 ]
 
 

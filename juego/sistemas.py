@@ -714,7 +714,9 @@ def con_recorrido(p, lugar, menu, Opcion):
         for pers in personas_aqui(p, lugar):
             if not (p.acompanante and p.acompanante["pid"] == pers["id"]):
                 from . import menus_adultos
-                lista.insert(0, Opcion(f"{pers['nombre']} está aquí: acercarte a hablar", lambda pid=pers["id"]: menus_adultos.vida_social(p, directo=pid),
+                # con el contenido para adultos va la primera, como siempre; sin él, al final, para no descolocar el menú de nadie
+                pos = 0 if p.modo_adulto() else (len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista))
+                lista.insert(pos, Opcion(f"{pers['nombre']} está aquí: acercarte a hablar", lambda pid=pers["id"]: menus_adultos.vida_social(p, directo=pid),
                                        ayuda="Lo mismo que desde el móvil, pero en persona: charlar, quedar, hacerle un regalo o proponerle salir a dar una vuelta contigo."))
         if p.surtido(lugar):                                     # una tienda de comida: se recorre pasillo a pasillo, con cesta y caja
             from . import compra
@@ -928,7 +930,7 @@ def opciones_sucesos(p, Menu, Opcion):
 # ============================================================ salir a dar una vuelta con alguien de tu vida social
 def personas_aqui(p, lugar):
     """La gente de tu vida social que suele estar en este lugar (solo con el contenido para adultos)."""
-    if not p.modo_adulto():
+    if not p.vida_sentimental():
         return []
     return [x for x in p.dato_adulto("personas") if x.get("lugar") == lugar.id]
 

@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 23
+VERSION_CACHE = 24
 PI2 = 2 * np.pi
 
 
@@ -850,6 +850,33 @@ def generar(semilla=7):
         _poner(bd, _nota(f0, 0.3, 0.14, (1, 0.5, 0.25)), 0.26 + 0.14 * k, 0.8)
     _poner(bd, _nota(784.0, 0.6, 0.28, (1, 0.5, 0.25)) + 0.6 * _nota(587.3, 0.6, 0.28, (1, 0.4, 0.2)), 0.66)
     S["barrio_defendido"] = _norm(bd, 0.5)
+    # ----------------------------------------------- la vida honrada y sus consecuencias (versión 1.7.1): despido, inspección, factura y título
+    de = np.zeros(int(SR * 1.2))                                 # despido: un portazo seco y tres notas que bajan, la última más larga
+    _poner(de, _barrido(160, 55, 0.16) * _decae(0.16, 0.045), 0.0)
+    _poner(de, _filtro(ruido(0.09), 150, 2200) * _decae(0.09, 0.02), 0.0, 0.7)
+    for k, f0 in enumerate((440.0, 370.0, 277.2)):
+        _poner(de, _nota(f0, 0.5 if k == 2 else 0.24, 0.22 if k == 2 else 0.1, (1, 0.3, 0.12)), 0.26 + 0.2 * k, 0.75)
+    S["despido"] = _norm(de, 0.5)
+    ins = np.zeros(int(SR * 1.15))                               # inspección: tres golpes de nudillos en la puerta, un roce de papeles y el sello
+    for t0 in (0.0, 0.16, 0.32):
+        _poner(ins, _barrido(420, 260, 0.05) * _decae(0.05, 0.014), t0, 0.9)
+        _poner(ins, _filtro(ruido(0.03), 800, 3000) * _decae(0.03, 0.008), t0, 0.3)
+    tp = _t(0.28)
+    _poner(ins, _filtro(ruido(0.28), 2500, 7000) * np.sin(np.pi * tp / 0.28) ** 2, 0.5, 0.35)
+    _poner(ins, _barrido(140, 70, 0.14) * _decae(0.14, 0.04), 0.86)
+    _poner(ins, _filtro(ruido(0.05), 300, 1500) * _decae(0.05, 0.015), 0.86, 0.5)
+    S["inspeccion"] = _norm(ins, 0.5)
+    fa = np.zeros(int(SR * 0.95))                                # factura: la impresora de tiques, seis rayas cortas, el papel que se corta y una nota grave
+    for k in range(6):
+        _poner(fa, _filtro(ruido(0.045), 1800, 5200) * _decae(0.045, 0.02, 0.004), 0.06 * k, 0.5)
+    _poner(fa, _filtro(ruido(0.08), 3000, 8000) * _decae(0.08, 0.02), 0.42, 0.6)
+    _poner(fa, _nota(196.0, 0.42, 0.18, (1, 0.45, 0.2)), 0.52, 0.8)
+    S["factura"] = _norm(fa, 0.45)
+    ti = np.zeros(int(SR * 1.5))                                 # título: cuatro notas de fanfarria y un acorde largo con su octava
+    for k, f0 in enumerate((392.0, 392.0, 523.3, 659.3)):
+        _poner(ti, _nota(f0, 0.2, 0.09, (1, 0.6, 0.35, 0.15)), (0.0, 0.14, 0.24, 0.4)[k], 0.8)
+    _poner(ti, (_nota(523.3, 0.9, 0.42, (1, 0.5, 0.25)) + _nota(659.3, 0.9, 0.42, (1, 0.4, 0.2)) + _nota(784.0, 0.9, 0.42, (1, 0.4, 0.2)) + 0.5 * _nota(1046.5, 0.9, 0.35, (1, 0.2))) * 0.4, 0.58)
+    S["titulo"] = _norm(ti, 0.5)
     return S
 
 

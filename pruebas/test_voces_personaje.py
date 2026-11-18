@@ -84,6 +84,8 @@ def test_las_voces_que_trae_el_juego_cubren_a_los_cuatro_personajes():
     from juego import mundo
     faltan, total = [], 0
     for m in mundo.cargar_datos()["misiones"]:
+        if m.get("sin_voz"):                 # el buen camino (1.7.1) viene sin grabar a propósito: lo dice el lector
+            continue
         for k, paso in enumerate(m.get("pasos", [])):
             if paso.get("tipo") != "dialogo":
                 continue

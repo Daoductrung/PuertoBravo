@@ -176,6 +176,7 @@ def vida_social(p, directo=None):
             r = p.relacion(pid)
             r["estado"] = "ex"
             r["afinidad"] = max(0, r["afinidad"] - 40)
+            r.pop("compromiso", None)
             if j.pareja == pid:
                 j.pareja = ""
             if j.convive == pid:                                 # y si vivía contigo, se va de casa
@@ -231,6 +232,8 @@ def vida_social(p, directo=None):
             if r is None:
                 return lista + [Opcion("Aún no os conocéis. Ve a ese lugar y preséntate desde este mismo menú"), Opcion("Volver", lambda: app.cerrar())]
             estado = {"pareja": "Sois pareja", "ex": "Lo dejasteis"}.get(r["estado"], "Os estáis conociendo")
+            if r["estado"] == "pareja" and r.get("compromiso"):
+                estado = "Estáis " + r["compromiso"]
             lista.append(Opcion(lambda: f"{estado}. {p.afinidad_txt(p.relacion(pid)).capitalize()}. Habéis tenido {p.relacion(pid).get('citas', 0)} citas"))
             from .intimidad import GESTOS
             lista += [Opcion("Charlar un rato", charlar),
@@ -244,8 +247,11 @@ def vida_social(p, directo=None):
                 lista.append(Opcion("Proponerle salir contigo a dar una vuelta", lambda: sistemas.empezar_paseo(p, pers) and [app.cerrar(x) for x in list(app.pila) if x is not p],
                                     ayuda="Se viene contigo de verdad: te sigue a pie y sube al vehículo que lleves. Pasear, llevarle a comer, a un bar, al cine o a la feria le gusta y os acerca. "
                                           "Si te metes en líos con la policía, no. Una vez al día; dura como mucho tres horas del juego."))
-            lista += [Opcion(GESTOS[g][0], (lambda g=g: p.gesto(pid, pers, g)) if True else None, ayuda="Un gesto de cariño. Hace falta cierta confianza, y cada uno se puede repetir una vez al día.") for g in GESTOS]
-            lista += [
+            adulto = p.modo_adulto()                             # sin el contenido para adultos: un beso, un baile, y nada de noches
+            lista += [Opcion(GESTOS[g][0], (lambda g=g: p.gesto(pid, pers, g)) if True else None, ayuda="Un gesto de cariño. Hace falta cierta confianza, y cada uno se puede repetir una vez al día.")
+                      for g in GESTOS if adulto or g in ("beso", "baile")]
+            if adulto:
+                lista += [
                       Opcion("Pasar la noche juntos", noche, ayuda=f"Necesitáis mucha confianza. Vais a una de tus casas en esta localidad o, si no tienes, a un hotel por {p.precio('hotel_cita', 70)} euros.")]
             if j.pareja == pid:
                 from . import convivencia
@@ -264,6 +270,16 @@ def vida_social(p, directo=None):
                     lista.append(Opcion("Pedirle que se venga a vivir contigo", mudarse,
                                         ayuda="Cada persona decide. Hace falta que la relación vaya muy bien y haber tenido varias citas, y hay quien no deja su casa por nadie. "
                                               "Si acepta, vive en una de tus casas: la de esta localidad, si tienes una aquí."))
+                from .honrado import AJ as HON
+                comp = p.relacion(pid).get("compromiso", "")
+                if not comp:
+                    lista.append(Opcion("Pedirle que os prometáis", lambda: (p.hon_comprometerse(pers), mf.refrescar(False)),
+                                        ayuda="Hace falta que estéis muy unidos y haber tenido bastantes citas. Prometidos, podéis vivir juntos y preparar la boda."))
+                elif comp == "prometidos":
+                    lista.append(Opcion(f"Casaros: una boda sencilla, {HON.entero('boda_precio')} euros", lambda: (p.hon_casarse(pers), mf.refrescar(False)),
+                                        ayuda=f"Unos días después de prometeros. Una ceremonia sencilla con la familia y los amigos. Los vecinos lo ven con buenos ojos."))
+                else:
+                    lista.append(Opcion(f"Estáis casados desde el día {p.relacion(pid).get('boda_dia', p.dia)}"))
                 lista.append(Opcion("Romper la relación", romper))
             else:
                 lista.append(Opcion("Pedirle que sea tu pareja", pedir, ayuda="Hace falta mucha química. Tener pareja sube tu ánimo cada día, pero hay que cuidarla."))
@@ -273,7 +289,8 @@ def vida_social(p, directo=None):
             p.relacion(pid)
             j.stats["conocidos"] = j.stats.get("conocidos", 0) + 1
             app.decir(f"Te presentas a {pers['nombre']}. {pers['desc']}", True)
-        app.abrir(Menu(app, pers["nombre"], ops))
+        mf = Menu(app, pers["nombre"], ops)
+        app.abrir(mf)
 
     def ops():
         lista = []
@@ -298,7 +315,7 @@ def vida_social(p, directo=None):
         if pers is not None:
             ficha(pers)
         return
-    app.abrir(Menu(app, "Vida social", ops, intro="Aquí están las personas con las que puedes tener una relación"))
+    app.abrir(Menu(app, "Vida social" if p.modo_adulto() else "Vida sentimental", ops, intro="Aquí están las personas con las que puedes tener una relación"))
 
 
 # =================================================================== sustancias

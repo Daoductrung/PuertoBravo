@@ -371,6 +371,13 @@ class Extras3:
         j = self.j
         if total <= 0:
             return
+        embargado = 0
+        if not self.en_servidor:                                 # lo que dan cuenta para el impuesto del periodo, y un embargo se queda su parte
+            self.hon()["caja"] = self.hon().get("caja", 0) + total
+            embargado = self._hon_embargar(total)
+            total -= embargado
+            if total <= 0:
+                return
         modo = j.cobro_negocios
         if modo == "banco":
             j.banco += total
@@ -380,8 +387,10 @@ class Extras3:
         elif modo == "recoger":
             llenas = 0
             for l in self.negocios_tuyos():
-                tope = int(l.get("ingresos", 0)) * DIAS_CAJA
-                j.cajas[l.id] = min(tope, int(j.cajas.get(l.id, 0)) + int(l.get("ingresos", 0)))
+                tope = max(int(l.get("ingresos", 0)), self.ingreso_negocio(l)) * DIAS_CAJA
+                quita = min(embargado, self.ingreso_negocio(l))  # lo embargado no llega a la caja
+                embargado -= quita
+                j.cajas[l.id] = min(tope, int(j.cajas.get(l.id, 0)) + self.ingreso_negocio(l) - quita)
                 llenas += j.cajas[l.id] >= tope
             en_caja = sum(int(v) for v in j.cajas.values())
             self.decir(f"Tus negocios han hecho {total} euros de caja. Te esperan {en_caja} euros por recoger."
@@ -421,6 +430,7 @@ class Extras3:
     def ingresos_territorios(self):
         n = len(self.j.territorios)
         if n:
+            self.hon_negro(self.precio("tributo_territorio", 300) * n)
             self.dar_dinero(self.precio("tributo_territorio", 300) * n, f"Tus {n} territorios te pagan tributo" if n > 1 else "Tu territorio te paga tributo")
 
     # -------------------------------------------------------------------- bolsa

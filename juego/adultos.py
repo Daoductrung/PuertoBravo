@@ -172,10 +172,10 @@ class Adultos:
         j = self.j
         # el ánimo tiende a 55, con ayuda de la pareja y del perro
         j.animo += (55 - j.animo) * 0.12 + (2 if j.perro else 0)
-        if not self.modo_adulto():
+        if not self.vida_sentimental():
             j.animo = max(0.0, min(100.0, j.animo))
             return
-        for ident in list(j.adiccion):
+        for ident in list(j.adiccion) if self.modo_adulto() else ():
             if self.dia - j.ultima_dosis.get(ident, self.dia) >= 1:
                 if j.adiccion[ident] >= 40:
                     self.son("abstinencia", cat="interfaz")
@@ -200,6 +200,7 @@ class Adultos:
                         self.dar_dinero(random.randint(20, 80), f"{p['nombre']} te ha dejado un detalle en casa")
                 if r["afinidad"] < 30:
                     r["estado"] = "ex"
+                    r.pop("compromiso", None)
                     j.pareja = ""
                     self.son("ruptura", cat="interfaz")
                     self.cambiar_animo(-25, f"{p['nombre']} te ha dejado")

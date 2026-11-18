@@ -19,7 +19,7 @@ li { margin-bottom: .3em; }
 <h2>1. Dónde está cada cosa</h2>
 <ul>
 <li><code>data\sonidos</code>: todos los efectos de sonido, repartidos en subcarpetas.</li>
-<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 270 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
+<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 274 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
 <li><code>data\radio</code>: la música de las emisoras, un archivo por emisora.</li>
 <li><code>data\radio\mi_musica</code>: tu propia emisora. Copia aquí las canciones que quieras.</li>
 <li><code>data\musica</code>: la música de ambiente, con una carpeta por situación y varias piezas en cada una.</li>
@@ -55,7 +55,7 @@ li { margin-bottom: .3em; }
 <p>Cada grabación viene a un volumen distinto. Para que eso no estropee el equilibrio del juego, al cargar un sonido que has cambiado el juego lo lleva al mismo nivel que tenía el original: mide el tramo más fuerte de tu archivo, lo compara con el del sonido original y lo sube o lo baja lo que haga falta, sin dejar que sature. Así unos pasos no pueden quedar más fuertes que un disparo, ni una baliza inaudible. Se puede desactivar en Opciones, Sonido y música, Igualar el volumen de los sonidos cambiados.</p>
 <p>Si aun así un sonido concreto te parece fuerte o flojo, ve a Opciones, Sonido y música, Ajustar el volumen de cada sonido. Están todos, por grupos: Intro lo hace sonar y las flechas izquierda y derecha lo bajan o lo suben, del 30 al 200 por ciento. El ajuste se guarda con tus opciones.</p>
 <h3>Escuchar cualquier sonido dentro del juego</h3>
-<p>En el menú principal y en el de pausa, Aprender los sonidos tiene los 270 sonidos del juego: primero el grupo Los más importantes y después todos, por los mismos grupos que la lista del final de este documento. Entra en un grupo y pulsa Intro sobre un sonido: el juego dice qué es y lo hace sonar a él solo, con el pack que tengas puesto. Sirve para comprobar cómo ha quedado una grabación tuya sin tener que provocar el sonido jugando.</p>
+<p>En el menú principal y en el de pausa, Aprender los sonidos tiene los 274 sonidos del juego: primero el grupo Los más importantes y después todos, por los mismos grupos que la lista del final de este documento. Entra en un grupo y pulsa Intro sobre un sonido: el juego dice qué es y lo hace sonar a él solo, con el pack que tengas puesto. Sirve para comprobar cómo ha quedado una grabación tuya sin tener que provocar el sonido jugando.</p>
 
 <h2>3. Packs de sonidos</h2>
 <p>Un pack es una carpeta con archivos que se llaman igual que los sonidos del juego. Los packs van dentro de <code>data\sonidos</code>, cada uno en su subcarpeta, al lado de <code>por_defecto</code>, y se eligen dentro del juego en Opciones, Sonido y música, Pack de sonidos, con las flechas izquierda y derecha. El cambio se oye al momento y no toca tus archivos de <code>data\sonidos\por_defecto</code>: para volver atrás, elige «por defecto».</p>
@@ -64,7 +64,7 @@ li { margin-bottom: .3em; }
 <li>El volumen de cada sonido del pack se iguala al del original, como se explica arriba.</li>
 <li>Los packs que vienen con el juego traen exactamente los mismos archivos que <code>por_defecto</code>, con los mismos nombres: ni uno más ni uno menos. Sus grabaciones son de dominio público (licencia CC0) y salen de kenney.nl, opengameart.org, freesound.org y bigsoundbank.com.</li>
 <li>Los tonos de los canales de rol (<code>chat_personaje</code>, <code>chat_fuera</code> y <code>chat_accion</code>) y el de la espera al servidor (<code>espera_servidor</code>) son en todos los packs los de serie, a propósito: son un código de tonos y conviene que suenen siempre igual.</li>
-<li>De serie vienen instalados los packs «Alternativo», con 270 sonidos, «Envolvente», con 270 sonidos, «Realista», con 270 sonidos, «Retro», con 270 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
+<li>De serie vienen instalados los packs «Alternativo», con 274 sonidos, «Envolvente», con 274 sonidos, «Realista», con 274 sonidos, «Retro», con 274 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
 </ul>
 <h3>Hacer tu propio pack</h3>
 <ol>
@@ -415,20 +415,24 @@ li { margin-bottom: .3em; }
 <p>Lo que se oye al entrar en un local, al cambiar la hora y en los trabajos.</p>
 <ul>
 <li><code>agacharse</code>: Te agachas. Dura 0,25 segundos.</li>
-<li><code>ascenso</code>: Asciendes en un oficio. Dura 1,40 segundos.</li>
+<li><code>ascenso</code>: Asciendes en un oficio, o de puesto en tu contrato fijo. Dura 1,40 segundos.</li>
 <li><code>buho</code>: Anochece, a las nueve de la noche. Dura 1,60 segundos.</li>
 <li><code>campanadas</code>: Medianoche: empieza un día nuevo. Dura 4,20 segundos.</li>
 <li><code>celda</code>: La puerta del calabozo: te han detenido. Dura 0,90 segundos.</li>
+<li><code>despido</code>: Te despiden de tu empleo fijo: un portazo seco y tres notas que bajan. Dura 1,20 segundos.</li>
 <li><code>diploma</code>: Terminas un curso. Dura 1,38 segundos.</li>
 <li><code>donativo</code>: Haces un donativo: monedas. Dura 0,90 segundos.</li>
+<li><code>factura</code>: Te cobran una factura, un impuesto o la cuota de un crédito: la impresora de tiques, el papel que se corta y una nota grave. Dura 0,95 segundos.</li>
 <li><code>gallo</code>: Amanece, a las siete de la mañana. Dura 1,10 segundos.</li>
 <li><code>hospital_despertar</code>: Despiertas en el hospital. Dura 2,60 segundos.</li>
+<li><code>inspeccion</code>: Una inspección pasa por uno de tus negocios: tres golpes de nudillos en la puerta, un roce de papeles y un sello. Dura 1,15 segundos.</li>
 <li><code>jornada</code>: Una jornada de trabajo: la sirena de la fábrica y pasan las horas. Dura 2,50 segundos.</li>
 <li><code>levantarse</code>: Te levantas. Dura 0,25 segundos.</li>
 <li><code>prestigio</code>: Mejora tu prestigio entre los vecinos. Dura 0,83 segundos.</li>
 <li><code>puerta_entrar</code>: Entras en un local: la puerta y su campanilla. Mientras estás dentro suena de fondo el sonido del lugar. Dura 1,10 segundos.</li>
 <li><code>puerta_salir</code>: Sales de un local: la campanilla y la puerta que se cierra. Dura 0,70 segundos.</li>
 <li><code>timbre</code>: Llaman al timbre de tu casa: llega la comida que has pedido a domicilio. Dos notas, din, don. Dura 1,30 segundos.</li>
+<li><code>titulo</code>: Consigues un título en una academia: cuatro notas de fanfarria y un acorde largo. Dura 1,50 segundos.</li>
 </ul>
 <h3>La compra y la cocina</h3>
 <p>Recorrer una tienda de comida con la cesta, y cocinar en casa.</p>

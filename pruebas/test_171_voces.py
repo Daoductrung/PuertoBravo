@@ -18,6 +18,8 @@ SERIE = ("historia_principal", "bahia_del_ocaso", "costa_dorada", "isla_de_los_v
 def _frases():
     """Cada frase de escena con sus formas: (archivo sin extensión, quién, texto para Dani en masculino)."""
     for m in mundo.cargar_datos()["misiones"]:
+        if m.get("sin_voz"):                 # misiones que el juego trae sin grabar a propósito (el buen camino): las dice el lector
+            continue
         for k, paso in enumerate(m.get("pasos", [])):
             if paso.get("tipo") != "dialogo":
                 continue

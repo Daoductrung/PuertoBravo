@@ -509,6 +509,11 @@ def banco(p, l):
            Opcion("Retirar 1000 euros", mover(1000, False)), Opcion("Retirar todo", mover(None, False)),
            Opcion("Bolsa: comprar y vender acciones", lambda: __import__("juego.menus_extra", fromlist=["x"]).bolsa(p), ayuda="Cinco empresas de la comarca. Los precios cambian cada medianoche."),
            Opcion("Atracar el banco", atracar, ayuda="Necesitas un arma de fuego. Cinco vigilantes, un botín enorme y cuatro niveles de búsqueda. Una vez al día por banco.")]
+    if not p.en_servidor:
+        from . import menus_honrado as mh
+        ops.insert(6, Opcion(lambda: "Créditos, hipotecas y obligaciones. " + mh.banco_txt(p), lambda: mh.menu_banco(p, l),
+                             ayuda="Pedir un crédito personal, ver tus cuotas y liquidarlas, y consultar lo que te van a cobrar de facturas e impuestos. "
+                                   "Lo que te prestan depende de tu prestigio, de tus ingresos estables y de tus antecedentes."))
     _menu(p, l, ops)
 
 
@@ -704,7 +709,7 @@ def taberna(p, l):
         n = sum(1 for e in p.personas if e.tipo == "aliado" and not e.muerto)
         if n >= 2:
             app.decir("Ya llevas dos guardaespaldas. Más sería un desfile.", True)
-        elif p.pagar(p.precio("guardaespaldas_taberna", 300)):
+        elif p.pagar(int(p.precio("guardaespaldas_taberna", 300) * p.hon_fama_factor())):
             p.crear_aliado()
             app.decir(f"Un tipo enorme deja la cerveza y se levanta. Desde ahora te sigue y dispara a quien te ataque. Cobra {p.precio('guardaespaldas_sueldo', 200)} euros cada medianoche.", True)
 
@@ -722,7 +727,7 @@ def taberna(p, l):
         app.decir("Despides a tus guardaespaldas." if n else "No tienes guardaespaldas.", True)
     ops = ([Opcion(f"Tomar una copa: {p.precio('copa_bar', 6)} euros", lambda: p.consumir("alcohol", de_inventario=False) if p.pagar(p.precio("copa_bar", 6)) else None, ayuda="Alcohol: sube el ánimo, pero caminas torcido y apuntas peor.")] if p.modo_adulto() else []) + \
           [Opcion(f"Tomar una caña con tapa: {p.precio('cana_tapa', 4)} euros", beber), Opcion("Jugar a los dados: 20 euros", dados(20)), Opcion("Jugar a los dados: 200 euros", dados(200)),
-           Opcion(f"Contratar un guardaespaldas: {p.precio('guardaespaldas_taberna', 300)} euros", contratar, ayuda="Te sigue a pie, sube contigo a los vehículos y dispara a tus enemigos. Máximo dos."),
+           Opcion(lambda: f"Contratar un guardaespaldas: {int(p.precio('guardaespaldas_taberna', 300) * p.hon_fama_factor())} euros", contratar, ayuda="Te sigue a pie, sube contigo a los vehículos y dispara a tus enemigos. Máximo dos."),
            Opcion("Despedir a los guardaespaldas", despedir),
            Opcion("Tablón de encargos: ver los contratos de hoy", contrato, ayuda="Tres encargos para elegir, cada uno de una manera: quitar de en medio a alguien con sus guardaespaldas, cazar a uno que huye en coche, "
                   "entrar a buscarle a un local, seguir a su recadero hasta la guarida, dar un escarmiento sin matar, recuperar algo robado o proteger a alguien. Cada contrato cumplido hace los siguientes más difíciles y mejor pagados.")]

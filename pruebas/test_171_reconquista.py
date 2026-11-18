@@ -1590,7 +1590,7 @@ def test_los_sonidos_nuevos_estan_en_todos_los_packs_y_en_la_guia():
     from juego import catalogo_sonidos
     assert sintesis.VERSION_CACHE >= 23
     S = sintesis.generar()
-    assert len(S) == 270
+    assert len(S) >= 270
     for n in ("amenaza_barrio", "barrio_perdido", "barrio_defendido"):
         assert n in S and 0.6 < len(S[n]) / sintesis.SR < 2.0 and not sintesis.es_bucle(n)
         assert catalogo_sonidos.describir(n) != "Sonido del juego."

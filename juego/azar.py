@@ -59,10 +59,11 @@ class Azar:
 
     def mercado(self, categoria, lugar_id=""):
         """Multiplicador de precio de hoy en un comercio: el del día por el vaivén propio de esa tienda."""
+        trato = self.hon_trato(categoria)                        # donde te aprecian te rebajan; donde te evitan, te recargan (honrado.py)
         if not self.azar_activo():
-            return 1.0
+            return trato
         propio = random.Random(f"{self.j.semilla}-{self.dia}-{categoria}-{lugar_id}").uniform(0.92, 1.1)
-        return round(float(self.dia_azar["efectos"].get(categoria, 1.0)) * propio, 3)
+        return round(float(self.dia_azar["efectos"].get(categoria, 1.0)) * propio * trato, 3)
 
     def dia_txt(self):
         return self.dia_azar["texto"] if self.azar_activo() else ""

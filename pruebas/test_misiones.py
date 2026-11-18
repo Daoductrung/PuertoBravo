@@ -210,14 +210,37 @@ def _jugar_mision(robot, m):
     assert m["id"] in p.completadas, f"{m['id']} no se completó: {robot.dicho()}"
 
 
+def _cumplir_vida(p, m):
+    """El buen camino (1.7.1) pide cosas de la vida del jugador antes de algunas misiones: aquí se le dan, sin jugarlas
+    (cómo se ganan jugando lo prueba test_171_honrado.py)."""
+    req = m.get("requiere_vida") or {}
+    j = p.j
+    if req.get("contrato") and not j.contrato:
+        assert p.hon_firmar(p.hon_empleos()[0])
+    if req.get("turnos"):
+        j.stats["turnos_contrato"] = int(req["turnos"])
+    if req.get("titulos"):
+        for t in p.datos["titulos"][:int(req["titulos"])]:
+            j.titulos[t["id"]] = {"s": int(t["sesiones"]), "ok": p.dia}
+    if req.get("negocios"):
+        l = next(l for l in p.lugares.values() if l.tipo == "negocio" and l.id not in j.propiedades)
+        j.propiedades.append(l.id)
+    j.ciudadania = max(j.ciudadania, float(req.get("prestigio", 0)))
+    assert not p.falta_vida(m), p.falta_vida(m)
+
+
 def test_todas_las_misiones(robot):
     p = robot.nueva_partida()
     total = sum(1 for m in p.datos["misiones"] if not m.get("adultos"))
     assert total >= 50 and not p.modo_adulto()
-    for _ in range(total + 2):
+    for _ in range(total + 12):
         disp = p.misiones_disponibles()
         if not disp:
-            break
+            siguiente, faltas, _, _ = p.hon_trama()              # ¿espera el buen camino a que el jugador tenga algo en su vida?
+            if siguiente is None or not faltas:
+                break
+            _cumplir_vida(p, siguiente)
+            continue
         _jugar_mision(robot, disp[0])
         assert robot.app.pila[-1] is p or isinstance(robot.app.pila[-1], (Dialogo, Menu))
         robot.saltar_dialogos()
@@ -225,8 +248,9 @@ def test_todas_las_misiones(robot):
     otras_ramas = [m["id"] for m in p.datos["misiones"] if (m.get("si_clave") or m.get("si_cruce")) and not p.cumple_decision(m)]
     faltan = [m["id"] for m in p.datos["misiones"] if m["id"] not in p.completadas and not m.get("adultos") and m["id"] not in otras_ramas]
     assert not faltan, f"faltan: {faltan}"
-    assert len(p.completadas) == total - len(otras_ramas) and len(otras_ramas) == 8          # seis de las encrucijadas y dos de los tres finales cruzados
+    assert len(p.completadas) == total - len(otras_ramas) and len(otras_ramas) == 9          # seis de las encrucijadas, dos de los tres finales cruzados y una de las dos ramas del buen camino
     assert set(p.decisiones) >= {"concejal", "cooperativa", "trono", "oc_nombre", "_final"}          # ha pasado por las cuatro encrucijadas
+    assert set(p.decisiones) >= {"cartera", "proteccion", "mordida", "_final_honrado"}               # y por el buen camino, hasta uno de sus finales
     assert p.j.dinero > 100000
     assert any(b["modelo"] == "lancha_rapida" for b in p.j.barcos)
 

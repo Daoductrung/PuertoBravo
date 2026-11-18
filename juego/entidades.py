@@ -110,6 +110,12 @@ class Jugador:
         self.encima = []             # la comida y la compra que llevas encima, con el mismo formato
         self.cocina_practica = 0.0   # tu mano en la cocina, de 0 a 100: sube con cada plato
         self.reconquista = {}        # las bandas que intentan recuperar tus barrios: fuerzas, lealtades, guardias, treguas y el asalto en curso (reconquista.py)
+        self.antecedentes = []       # antecedentes penales: [{"d": día, "g": gravedad de 1 a 3, "t": texto, "c": día en que caduca}] (honrado.py)
+        self.contrato = {}           # tu contrato fijo: empleo, puesto, jefe, turnos del periodo, avisos y méritos
+        self.titulos = {}            # estudios: {título: {"s": sesiones hechas, "ok": día en que lo conseguiste o 0}}
+        self.empresa = {}            # cómo llevas cada negocio tuyo: {lugar: {"nivel", "emp", "rep", "precios", "horario", "tapadera", "visto"}}
+        self.creditos = []           # créditos e hipotecas: [{"tipo", "lugar", "cuota", "quedan", "prox", "impagos", "atraso"}]
+        self.honra = {}              # lo demás de la vida y sus consecuencias: cobros, deudas, fiado, rumores, asuntos pendientes, abogado
         self.policia = {}            # el oficio de policía: {"alta": día, "expulsado": día, "detenciones", "multas", "avisos", "bajas"}
         self.stats = {"muertes": 0, "detenciones": 0, "enemigos": 0, "vehiculos_robados": 0,
                       "metros_pie": 0.0, "metros_coche": 0.0, "dinero_ganado": 0, "misiones": 0,

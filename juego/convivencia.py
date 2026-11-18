@@ -91,12 +91,14 @@ class Convivencia:
     """Mixin de Partida."""
 
     def convivencia_activa(self):
-        return self.modo_adulto() and bool(self.cfg["pareja_convive"]) and not self.en_servidor
+        if self.en_servidor or not self.vida_sentimental():
+            return False
+        return (self.modo_adulto() and bool(self.cfg["pareja_convive"])) or bool(self.hon_estado_pareja())      # prometidos o casados, siempre
 
     def conviviente(self):
         """Los datos de quien vive contigo, o None."""
         j = self.j
-        return self.persona_social(j.convive) if j.convive and self.modo_adulto() else None
+        return self.persona_social(j.convive) if j.convive and self.vida_sentimental() else None
 
     def casa_comun(self):
         return self.lug(self.j.convive_casa) if self.j.convive else None
@@ -115,7 +117,8 @@ class Convivencia:
         pid, n = pers["id"], pers["nombre"]
         r = self.relacion(pid)
         if not self.convivencia_activa():
-            return False, "Vivir en pareja está desactivado. Se activa en Opciones, Contenido para adultos."
+            return False, ("Vivir en pareja está desactivado. Se activa en Opciones, Contenido para adultos." if self.modo_adulto()
+                           else "Para vivir juntos, primero tenéis que estar prometidos.")
         if j.pareja != pid:
             return False, f"{n} y tú no sois pareja."
         if j.convive == pid:
@@ -336,7 +339,7 @@ class Convivencia:
         if not j.convive:
             return
         pers = self.persona_social(j.convive)
-        if pers is None or not self.modo_adulto():
+        if pers is None or not self.vida_sentimental():
             return
         n = pers["nombre"]
         if j.pareja != j.convive:                                # lo habéis dejado: no se queda

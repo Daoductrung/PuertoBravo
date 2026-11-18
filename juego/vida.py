@@ -147,6 +147,8 @@ class Vida:
         antes = self.rango(tipo)
         self.j.stats["serv_" + tipo] = self.servicios_de(tipo) + 1
         self.cambiar_ciudadania(0.5)
+        if tipo != "jornada":
+            self.hon_turno("oficio:" + str(tipo))
         if self.rango(tipo) > antes:
             self.son("ascenso", cat="interfaz")
             self.decir(f"¡Ascenso! Ya eres {nombre} {RANGOS[self.rango(tipo)]}: cobras un {12 * self.rango(tipo)} por ciento más.")
@@ -171,6 +173,7 @@ class Vida:
         self.cambiar_ciudadania(1.0)
         self.cambiar_animo(-2)
         self.decir(f"{nombre}: ocho horas de trabajo y {cobro} euros. Son las {self.hora_txt()}.", True)
+        self.hon_turno("jornada:" + str(clave))                  # si es de tu contrato fijo, cuenta como turno
 
     def jornada_vendedor(self, l):
         """Una jornada vendiendo coches en un concesionario: sueldo fijo y comisión por cada venta."""
@@ -264,11 +267,13 @@ class Vida:
     def entrar_interior(self, l):
         """Al entrar en un local: la puerta y su ambiente de fondo mientras estés dentro."""
         self.salir_interior(silencio=True)
+        self._local = l                                          # el comercio donde estás: si te aprecian, te fían
         self.son("puerta_entrar", cat="interfaz", vol=0.7)
         self.interior = self.mez.sonar(l.sonido, bucle=True, cat="interfaz", vol=0.22)
         self.hilo_musical(l)
 
     def salir_interior(self, silencio=False):
+        self._local = None
         c = getattr(self, "interior", None)
         if c is not None:
             c.parar()

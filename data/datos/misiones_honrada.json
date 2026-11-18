@@ -1,0 +1,999 @@
+{
+ "capitulos": {
+  "16": "El buen camino"
+ },
+ "misiones": [
+  {
+   "id": "h01",
+   "titulo": "Otra manera de volver",
+   "capitulo": 16,
+   "contacto": "Aurora",
+   "lugar": "empleo_pb",
+   "requiere": [
+    "m01"
+   ],
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 1,
+   "resumen": "En la oficina de empleo hay alguien que no te pregunta de dónde vienes, sino adónde quieres ir.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Aurora",
+       "Tú eres Dani, [el sobrino|la sobrina] de Encarna. Me dijo que a lo mejor venías. Soy Aurora, la orientadora."
+      ],
+      [
+       "Aurora",
+       "No te voy a preguntar por lo de antes. Aquí se viene a hablar de lo de después."
+      ],
+      [
+       "Aurora",
+       "En esta ciudad se puede vivir de dos maneras, y las dos pagan. Una paga deprisa y te la cobra entera. La otra tarda, pero lo que ganas es tuyo y nadie viene a quitártelo."
+      ],
+      [
+       "Aurora",
+       "Yo solo sé enseñarte la segunda. Trabajo hay: por días, cuando quieras, o con contrato, con su jefe, su nómina y sus ascensos. Y si estudias, mejor puesto."
+      ],
+      [
+       "Aurora",
+       "Antes de firmar nada, date una vuelta. En el centro cívico del Barrio Viejo pregunta por Paulino: da las clases. Y pásate por el comedor social, que allí se conoce al barrio de verdad."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "centro_civico",
+     "texto": "Ve al centro cívico del Barrio Viejo y pregunta por Paulino."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Paulino",
+       "¿De parte de Aurora? Pasa, pasa. Aquí damos cursos sueltos y títulos. Los títulos llevan varias tardes, una al día, y cuestan lo suyo."
+      ],
+      [
+       "Paulino",
+       "Pero un título no te lo quita nadie. Con uno entras de jefe de sala o de oficial; con el de administración, de encargado. Y sin él, ya puedes ser un genio, que no pasas del primer escalón."
+      ],
+      [
+       "Paulino",
+       "Cuando quieras empezar, en cualquier academia de la comarca te matriculan. Y ahora ve al comedor, que Casilda te estará esperando con el cucharón."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "comedor_social",
+     "texto": "Ve al comedor social San Telmo."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Casilda",
+       "¡Así que tú eres [el|la] de Encarna! Yo soy Casilda. Llevo veinte años dando de comer aquí, y conozco a todo el mundo."
+      ],
+      [
+       "Casilda",
+       "Te voy a decir una cosa que no viene en ningún curso: en este barrio todo se sabe. Lo bueno y lo malo. Al que ayuda, se le fía en la tienda. Al otro, se le cruza de acera."
+      ],
+      [
+       "Casilda",
+       "Ven cuando quieras a echar una mano. No se cobra, pero se gana."
+      ],
+      [
+       "Narrador",
+       "Vuelves a la calle con tres direcciones en la cabeza: la oficina de empleo, la academia y el comedor. Ninguna pide un arma."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 150
+   }
+  },
+  {
+   "id": "h02",
+   "titulo": "La primera nómina",
+   "capitulo": 16,
+   "contacto": "Aurora",
+   "lugar": "empleo_pb",
+   "requiere": [
+    "h01"
+   ],
+   "requiere_vida": {
+    "contrato": 1,
+    "turnos": 2
+   },
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 2,
+   "resumen": "Tienes contrato y ya has cumplido tus primeros turnos. Aurora quiere verte.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Aurora",
+       "Mírate. Con contrato y sin faltar un día. Me han llamado de tu empresa: están contentos."
+      ],
+      [
+       "Aurora",
+       "Ahora te toca aprender cómo funciona esto. Cada periodo te evalúan: si cumples los turnos y los haces bien, nómina entera y, a la tercera buena, hablamos de ascenso. Si faltas, avisos. Con tres, a la calle."
+      ],
+      [
+       "Aurora",
+       "Y otra cosa: una nómina no es solo dinero. Es un papel que dice que eres de fiar. Acércate al Banco Mercantil y pregunta qué puedes hacer con él."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "banco",
+     "texto": "Ve al Banco Mercantil."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El director del banco",
+       "Una nómina, buen nombre en el barrio y ni un papel pendiente con la justicia. Con eso, aquí le prestamos."
+      ],
+      [
+       "El director del banco",
+       "Un crédito pequeño ahora; una hipoteca cuando gane un poco más. Se paga en cuotas, se avisa antes de cada una, y quien paga a tiempo, la próxima vez encuentra la puerta más abierta."
+      ],
+      [
+       "El director del banco",
+       "Lo contrario también es verdad. Tres cuotas sin pagar y le embargamos media nómina. No se lo tome a mal: es lo mismo para todos."
+      ],
+      [
+       "Narrador",
+       "Sales con un folleto en la mano. Por primera vez en mucho tiempo, alguien con corbata te ha tratado de usted sin que fuera una amenaza."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 200
+   }
+  },
+  {
+   "id": "h03",
+   "titulo": "La cartera de Casilda",
+   "capitulo": 16,
+   "contacto": "Casilda",
+   "lugar": "comedor_social",
+   "requiere": [
+    "h02"
+   ],
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 3,
+   "resumen": "Casilda ha perdido la cartera con la pensión del mes. Cree que fue en el Mercado Central.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Casilda",
+       "Ay, Dani, qué disgusto. La cartera. Con la pensión entera, que la saqué esta mañana para pagar al del gas."
+      ],
+      [
+       "Casilda",
+       "He estado en el Mercado Central, en el puesto de la fruta. Tiene que estar por allí. Yo con estas piernas no llego. ¿Vas tú?"
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mercado_pb",
+     "texto": "Ve al Mercado Central."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "mercado_pb",
+     "objeto": "Cartera de Casilda",
+     "texto": "La cartera tiene que estar por aquí. Sigue su sonido y pulsa Intro cuando estés encima."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Está detrás de unas cajas de naranjas. Dentro, el carné de Casilda, una estampa de San Telmo y seiscientos euros en billetes doblados."
+      ],
+      [
+       "Narrador",
+       "Nadie te ha visto cogerla."
+      ]
+     ]
+    },
+    {
+     "tipo": "decision",
+     "clave": "cartera",
+     "pregunta": "Tienes la cartera de Casilda, con seiscientos euros dentro. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Devolvérsela tal como está",
+       "ayuda": "Lo honrado. Casilda no lo olvidará, y el barrio tampoco.",
+       "prestigio": 4,
+       "animo": 6,
+       "dice": "Cierras la cartera sin contar los billetes dos veces."
+      },
+      {
+       "texto": "Devolverle la cartera, pero quedarte el dinero",
+       "ayuda": "Seiscientos euros. Le dirás que ya estaba vacía. Quizá te crea.",
+       "dinero": 600,
+       "prestigio": -3,
+       "animo": -6,
+       "dice": "Los billetes van a tu bolsillo. La estampa de San Telmo te mira desde la cartera vacía."
+      }
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "comedor_social",
+     "texto": "Vuelve al comedor social con la cartera."
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "cartera",
+     "si_opcion": 1,
+     "lineas": [
+      [
+       "Casilda",
+       "¡Mi cartera! Y está todo. Todo. Ay, [hijo|hija], que no sabes lo que es esto para mí."
+      ],
+      [
+       "Casilda",
+       "Esto lo va a saber el barrio entero, que para algo hablo yo con todo el mundo."
+      ]
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "cartera",
+     "si_opcion": 2,
+     "lineas": [
+      [
+       "Casilda",
+       "Mi cartera... Vacía. Bueno. Qué se le va a hacer. Al menos el carné."
+      ],
+      [
+       "Casilda",
+       "Gracias por ir, Dani."
+      ],
+      [
+       "Narrador",
+       "No te mira a los ojos al decirlo. No sabes si es por la pena o porque lo sabe."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 100
+   }
+  },
+  {
+   "id": "h04",
+   "titulo": "Volver a clase",
+   "capitulo": 16,
+   "contacto": "Paulino",
+   "lugar": "centro_civico",
+   "requiere": [
+    "h03"
+   ],
+   "requiere_vida": {
+    "titulos": 1
+   },
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 4,
+   "resumen": "Ya tienes un título. Paulino necesita a alguien de confianza para un recado del centro.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Paulino",
+       "¡Con título y todo! Ya te dije que no era tan difícil. Lo difícil es venir cada tarde después de trabajar, y eso lo has hecho."
+      ],
+      [
+       "Paulino",
+       "Oye, ya que estás: la biblioteca nos presta una caja de libros para el curso de adultos y no tengo a quién mandar. ¿Me la traes? Son para gente que está aprendiendo a leer con sesenta años."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "biblioteca",
+     "texto": "Ve a la Biblioteca Municipal."
+    },
+    {
+     "tipo": "recoger",
+     "lugar": "biblioteca",
+     "objeto": "Caja de libros",
+     "texto": "Recoge la caja de libros: sigue su sonido y pulsa Intro cuando estés encima."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "centro_civico",
+     "texto": "Lleva la caja de libros al centro cívico."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Paulino",
+       "Justo a tiempo. Mira, esa del fondo es Remigia: setenta y un años y la semana pasada leyó su primera carta. Era de su hijo."
+      ],
+      [
+       "Paulino",
+       "Tú sigue estudiando. Con el título de administración ya no eres mano de obra: eres quien lleva las cuentas. Y quien lleva las cuentas puede, un día, llevar las suyas."
+      ],
+      [
+       "Narrador",
+       "De camino a la puerta, Remigia te para para preguntarte cómo se lee una palabra. Es «porvenir»."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 250
+   }
+  },
+  {
+   "id": "h05",
+   "titulo": "Treinta años de barra",
+   "capitulo": 16,
+   "contacto": "Salva",
+   "lugar": "lonja",
+   "requiere": [
+    "h04"
+   ],
+   "requiere_vida": {
+    "prestigio": 40
+   },
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 5,
+   "resumen": "En el barrio ya te aprecian. Salva, que ha llevado un bar toda su vida, quiere contarte cómo se tiene algo propio.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Salva",
+       "Tú eres Dani. Me ha hablado de ti Casilda, y Casilda no habla bien de cualquiera. Yo soy Salva. Treinta años detrás de una barra, hasta que las rodillas dijeron basta."
+      ],
+      [
+       "Salva",
+       "Me han dicho que quieres algo tuyo. Bien. Un negocio no es comprar un local y sentarse a cobrar. Hay que estar: el cliente quiere ver al dueño."
+      ],
+      [
+       "Salva",
+       "Si lo atiendes, coge nombre y da más. Si lo abandonas, se muere despacio. Contrata gente cuando puedas, que nadie puede estar en todas partes. Y paga tus impuestos, que el inspector llega cuando menos lo esperas."
+      ],
+      [
+       "Salva",
+       "Y el dinero para empezar no hace falta tenerlo entero. Para eso están las hipotecas. Ve al banco y que te lo cuenten; luego vuelve, que te presento a los proveedores."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "banco",
+     "texto": "Ve al Banco Mercantil a preguntar por las hipotecas."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El director del banco",
+       "Para comprar un negocio o una casa: usted pone la entrada y nosotros, el resto. Lo devuelve en cuotas."
+      ],
+      [
+       "El director del banco",
+       "Se pide en el propio local que quiera comprar: allí mismo le dan a elegir entre pagar al contado o con hipoteca. Cuanto mejor nombre y más ingresos, mejores condiciones."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "lonja",
+     "texto": "Vuelve a la lonja con Salva."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Salva",
+       "Este es el de la lonja, ese el del hielo y aquella, la del reparto. Ya saben quién eres. Cuando tengas tu local, te servirán como me servían a mí."
+      ],
+      [
+       "Salva",
+       "Una última cosa, y esta no te la dice el banco. En cuanto abras, vendrá alguien a decirte que tu negocio necesita protección. Tú verás lo que contestas. Yo contesté que no durante treinta años, y aquí sigo."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 300
+   }
+  },
+  {
+   "id": "h06",
+   "titulo": "Abrir la persiana",
+   "capitulo": 16,
+   "contacto": "Matilde",
+   "lugar": "mercado_pb",
+   "requiere": [
+    "h05"
+   ],
+   "requiere_vida": {
+    "negocios": 1
+   },
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 6,
+   "resumen": "Ya tienes un negocio. La presidenta de los comerciantes quiere conocerte.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Matilde",
+       "Así que tú eres [el nuevo|la nueva]. Matilde, presidenta de la Asociación de Comerciantes. Aquí nos conocemos todos, y nos hace falta."
+      ],
+      [
+       "Matilde",
+       "Preséntate a los vecinos, que luego son los que te prestan el cambio, te guardan un paquete o te avisan si ven algo raro. Ultramarinos Paco, la Farmacia Luna y la lonja. Diles que vas de mi parte."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "puntos": [
+      "tienda_paco",
+      "farmacia",
+      "lonja"
+     ],
+     "texto": "Preséntate en Ultramarinos Paco, en la Farmacia Luna y en la lonja, por ese orden."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "mercado_pb",
+     "texto": "Vuelve al Mercado Central con Matilde."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Matilde",
+       "Ya me han llamado los tres. Has caído bien. Paco dice que tienes cara de pagar a los proveedores, que viniendo de él es un piropo."
+      ],
+      [
+       "Matilde",
+       "Bienvenid[o|a] a la asociación. Las reuniones son los jueves. Y si alguien viene a pedirte dinero que no sea Hacienda, me lo cuentas."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 400
+   }
+  },
+  {
+   "id": "h07",
+   "titulo": "La visita",
+   "capitulo": 16,
+   "contacto": "Matilde",
+   "lugar": "mercado_pb",
+   "requiere": [
+    "h06"
+   ],
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 7,
+   "resumen": "Los Calaveras han pasado por tres tiendas del barrio pidiendo dinero. La tuya es la siguiente.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Matilde",
+       "Han pasado por la farmacia, por Paco y por la lavandería. Doscientos a la semana cada uno, «por si pasa algo». Dos han pagado."
+      ],
+      [
+       "Narrador",
+       "No le da tiempo a decir más. En la puerta del mercado hay un hombre delgado, con una calavera tatuada en el cuello y un diente de menos."
+      ],
+      [
+       "El Mellao",
+       "Dani. Cuánto tiempo. Me han dicho que ahora eres gente de bien. Me alegro, de verdad. Los negocios de la gente de bien arden igual que los otros."
+      ],
+      [
+       "El Mellao",
+       "Doscientos a la semana y duermes [tranquilo|tranquila]. O, si te acuerdas de quién eras, hablamos de otra cosa: tu caja nos vendría muy bien para pasar unos billetes. A medias."
+      ]
+     ]
+    },
+    {
+     "tipo": "decision",
+     "clave": "proteccion",
+     "pregunta": "El Mellao espera. Matilde te mira. ¿Qué contestas?",
+     "opciones": [
+      {
+       "texto": "Decirle que no, e ir a denunciarlo a la comisaría",
+       "ayuda": "Lo honrado. Los vecinos te lo agradecerán y Los Calaveras te la guardarán.",
+       "prestigio": 5,
+       "animo": 4,
+       "banda": "Los Calaveras",
+       "banda_puntos": -20,
+       "dice": "«No». Lo dices sin levantar la voz. El Mellao sonríe con los dientes que le quedan y se va despacio."
+      },
+      {
+       "texto": "Pagar y callar",
+       "ayuda": "Sesenta euros cada noche, para siempre, y nadie toca tu negocio. Tampoco nadie te mira igual.",
+       "renta": -60,
+       "animo": -5,
+       "dice": "Sacas la cartera. Matilde aparta la vista."
+      },
+      {
+       "texto": "Aceptar el trato: tu caja a medias con ellos",
+       "ayuda": "La doble vida. Ciento cincuenta euros cada noche y el respeto de Los Calaveras. Si se sabe, se acabó el aprecio del barrio.",
+       "renta": 150,
+       "fama": 6,
+       "prestigio": -3,
+       "banda": "Los Calaveras",
+       "banda_puntos": 40,
+       "dice": "«Hablamos luego», dices, lo bastante bajo para que Matilde no lo oiga. El Mellao asiente: ha entendido."
+      }
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "comisaria",
+     "si_clave": "proteccion",
+     "si_opcion": 1,
+     "texto": "Ve a la Comisaría Central a poner la denuncia."
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "proteccion",
+     "si_opcion": 1,
+     "lineas": [
+      [
+       "La inspectora Olalla",
+       "Extorsión. Llevamos meses esperando a que alguien firme una denuncia. Todos pagan o callan."
+      ],
+      [
+       "La inspectora Olalla",
+       "Con su firma puedo poner una patrulla en esa calle. No le prometo que no lo intenten otra vez, pero ya no será gratis para ellos."
+      ],
+      [
+       "Narrador",
+       "Al salir, el agente de la puerta te saluda con la cabeza. Hace un año te habría pedido la documentación."
+      ]
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "proteccion",
+     "si_opcion": 2,
+     "lineas": [
+      [
+       "Narrador",
+       "Esa noche pasa un chaval a recoger el sobre. Ni te mira. Tu persiana amanece intacta, y tú, un poco más pequeñ[o|a]."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "lugar": "guarida",
+     "si_clave": "proteccion",
+     "si_opcion": 3,
+     "texto": "Ve a la guarida de Los Calaveras a cerrar el trato."
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "proteccion",
+     "si_opcion": 3,
+     "lineas": [
+      [
+       "El Mellao",
+       "Así me gusta. De día, [el|la] de la persiana; de noche, [uno|una] de los nuestros. Nadie tiene por qué saberlo."
+      ],
+      [
+       "El Mellao",
+       "Cada noche pasará dinero por tu caja y te quedas tu parte. Pero ojo con los inspectores, y con la prensa. Si te pillan, nosotros no te conocemos."
+      ],
+      [
+       "Narrador",
+       "Sales con las manos en los bolsillos. En el móvil, en Vida, reputación y consecuencias, ahora hay una línea que antes no te importaba: lo que se sabe de ti."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 300
+   }
+  },
+  {
+   "id": "h08",
+   "titulo": "El sobre de las licencias",
+   "capitulo": 16,
+   "contacto": "Matilde",
+   "lugar": "ayuntamiento",
+   "requiere": [
+    "h07"
+   ],
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 8,
+   "resumen": "Un inspector de licencias pide un sobre a cada comerciante. Matilde necesita pruebas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Matilde",
+       "No son solo Los Calaveras. Baldomero, el inspector de licencias. Si no le das un sobre, tu terraza no cumple la normativa; si se lo das, cumple hasta un andamio."
+      ],
+      [
+       "Matilde",
+       "Todos lo saben y nadie puede probarlo. Cobra en mano y no firma nada. Pero cada tarde, al salir del ayuntamiento, va andando a algún sitio. Síguele sin que te vea y dime dónde deja el dinero."
+      ]
+     ]
+    },
+    {
+     "tipo": "seguir",
+     "lugar": "ayuntamiento",
+     "destino": "casino",
+     "persona": "el inspector Baldomero",
+     "texto": "Espera al inspector Baldomero en el ayuntamiento y síguele a pie sin que te descubra. Guíate por el sonido de sus pasos; la tecla O te dice a cuánto va."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Baldomero entra en el casino por la puerta de servicio. Por la rendija le ves vaciar tres sobres en la mesa de un hombre que apunta en una libreta."
+      ],
+      [
+       "Narrador",
+       "Tienes la hora, el sitio, los sobres y la libreta. Con eso, alguien que sepa buscar lo encuentra todo."
+      ]
+     ]
+    },
+    {
+     "tipo": "decision",
+     "clave": "mordida",
+     "pregunta": "Sabes dónde acaba el dinero de Baldomero. ¿Qué haces con ello?",
+     "opciones": [
+      {
+       "texto": "Contárselo a Matilde y llevar las pruebas a la inspectora",
+       "ayuda": "Lo honrado. Baldomero cae, y el barrio sabe quién lo hizo caer.",
+       "prestigio": 6,
+       "animo": 5,
+       "dice": "Lo apuntas todo en un papel, con la hora. Mañana estará en la mesa de la inspectora Olalla."
+      },
+      {
+       "texto": "Callar y pagarle tú también, para que te deje en paz",
+       "ayuda": "Mil quinientos euros. A cambio, tus licencias saldrán siempre a la primera: cuarenta euros más cada noche.",
+       "dinero": -1500,
+       "renta": 40,
+       "prestigio": -2,
+       "animo": -4,
+       "dice": "Al día siguiente le dejas tu sobre. Baldomero ni lo cuenta: «Un placer hacer las cosas bien»."
+      },
+      {
+       "texto": "Guardarte lo que sabes y cobrarle por tu silencio",
+       "ayuda": "Dos mil euros de Baldomero, ahora. Es un chantaje: en la calle te respetarán más; en el barrio, si se sabe, menos.",
+       "dinero": 2000,
+       "fama": 5,
+       "prestigio": -4,
+       "dice": "Le esperas a la salida y le dices dos palabras: «casino» y «libreta». Paga sin discutir."
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Vuelves a casa por la Calle Mayor. Sea lo que sea lo que has decidido, mañana la persiana se levanta igual."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 500
+   }
+  },
+  {
+   "id": "h09",
+   "titulo": "La noche del pleno",
+   "capitulo": 16,
+   "contacto": "Matilde",
+   "lugar": "ayuntamiento",
+   "requiere": [
+    "h08"
+   ],
+   "requiere_vida": {
+    "prestigio": 55
+   },
+   "si_cruce": "proteccion:3",
+   "si_cruce_max": 0,
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 9,
+   "resumen": "El ayuntamiento vota el plan del puerto, y los comerciantes te han elegido para hablar en su nombre.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Matilde",
+       "Esta noche se vota el plan del puerto. Si sale como lo traen, la mitad de los locales del barrio acaban en manos de dos empresas, y a los demás nos suben la licencia hasta echarnos."
+      ],
+      [
+       "Matilde",
+       "Los comerciantes tenemos un turno de palabra, y hemos votado quién habla. Has salido tú. No pongas esa cara: eres [el único|la única] a quien escuchan igual en la lonja que en La Colina."
+      ],
+      [
+       "Matilde",
+       "Casilda quiere estar, que para eso lleva veinte años dando de comer a medio pleno. Pasa a recogerla al comedor y venid juntos."
+      ]
+     ]
+    },
+    {
+     "tipo": "escoltar",
+     "lugar": "comedor_social",
+     "destino": "ayuntamiento",
+     "persona": "Casilda",
+     "texto": "Recoge a Casilda en el comedor social y acompáñala hasta el ayuntamiento."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El salón de plenos está lleno. En la tercera fila, Paulino con sus alumnos. Al fondo, de pie, Salva. Aurora te hace un gesto con la carpeta."
+      ],
+      [
+       "El alcalde",
+       "Tiene la palabra, por los comerciantes del Barrio Viejo y del Puerto, Dani Roca."
+      ],
+      [
+       "Narrador",
+       "Te levantas. Hace no tanto, la única vez que un juez dijo tu nombre fue para leer una condena."
+      ]
+     ]
+    },
+    {
+     "tipo": "decision",
+     "clave": "pleno",
+     "pregunta": "Todo el pleno te mira. ¿Cómo hablas?",
+     "opciones": [
+      {
+       "texto": "Con nombres: quién cobra, quién paga y quién se va a quedar los locales",
+       "ayuda": "Te juegas mucho. Si sale bien, el barrio no lo olvida nunca.",
+       "prestigio": 10,
+       "animo": 10,
+       "dice": "Hablas diez minutos. Dices nombres, fechas y cantidades. Nadie tose."
+      },
+      {
+       "texto": "Con prudencia: defender a los comerciantes sin señalar a nadie",
+       "ayuda": "No te haces enemigos. Tampoco cambias gran cosa.",
+       "prestigio": 3,
+       "animo": 2,
+       "dice": "Hablas cinco minutos. Pides tiempo, diálogo y sensibilidad. Te aplauden con educación."
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "pleno",
+     "si_opcion": 1,
+     "lineas": [
+      [
+       "Narrador",
+       "Cuando te sientas, el silencio dura tres segundos. Luego Casilda empieza a aplaudir, sola, y detrás va la sala entera."
+      ],
+      [
+       "Matilde",
+       "Han retirado el plan. Dicen que «para estudiarlo mejor». Y mañana El Faro abre con lo que has dicho."
+      ],
+      [
+       "Casilda",
+       "Tu tía tiene que estar reventando de orgullo. Y yo también, qué caramba."
+      ]
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "pleno",
+     "si_opcion": 2,
+     "lineas": [
+      [
+       "Narrador",
+       "El plan se aprueba con dos cambios pequeños. A la salida, un concejal te da la mano y una tarjeta."
+      ],
+      [
+       "Matilde",
+       "Has hablado bien. Has hablado muy bien. Ojalá hubieras dicho algo."
+      ],
+      [
+       "Narrador",
+       "Tu negocio no está en la lista de los que suben. Alguien se ha acordado de quien no señaló a nadie."
+      ]
+     ]
+    }
+   ],
+   "epilogos": [
+    {
+     "si_clave": "pleno",
+     "si_opcion": 1,
+     "clase": "honrado",
+     "titulo": "Final honrado: persiana arriba",
+     "texto": "Dani Roca salió de la cárcel con lo puesto y hoy levanta cada mañana una persiana que es suya. Paga sus impuestos, conoce a sus vecinos por el nombre y no le debe nada a nadie que no sea el banco. En Puerto Bravo se sigue pudiendo vivir de dos maneras. Pero desde aquella noche del pleno, a la segunda ya nadie la llama la de los tontos."
+    },
+    {
+     "si_clave": "pleno",
+     "si_opcion": 2,
+     "clase": "prudente",
+     "titulo": "Final prudente: cada uno a lo suyo",
+     "texto": "Dani Roca salió de la cárcel con lo puesto y hoy tiene un negocio, un título en la pared y la ficha limpia. El barrio cambia despacio y no siempre a mejor, pero su persiana sigue levantándose cada mañana. No se metió en líos. A veces, al cerrar la caja, se pregunta si eso era todo lo que había que hacer."
+    }
+   ],
+   "recompensa": {
+    "dinero": 1500
+   }
+  },
+  {
+   "id": "h09d",
+   "titulo": "Socios en la sombra",
+   "capitulo": 16,
+   "contacto": "El Mellao",
+   "lugar": "guarida",
+   "requiere": [
+    "h08"
+   ],
+   "requiere_vida": {
+    "prestigio": 40
+   },
+   "si_clave": "proteccion",
+   "si_opcion": 3,
+   "honrada": true,
+   "sin_voz": true,
+   "orden": 9,
+   "resumen": "Los Calaveras quieren pasar mucho más dinero por tu caja. De día sigues siendo quien eres; de noche, ya veremos.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Mellao",
+       "Ha ido bien. Tan bien que los de arriba quieren más: no unos billetes, sino todo lo del puerto pasando por tus cuentas. Tú pones la cara limpia; nosotros, lo demás."
+      ],
+      [
+       "El Mellao",
+       "Antes hay que hacer la ronda como la gente seria. El banco, para abrir la cuenta nueva. La lonja, que es por donde entra. Y el casino, que es por donde sale. Que te vean entrar con traje y saludar."
+      ]
+     ]
+    },
+    {
+     "tipo": "ruta",
+     "puntos": [
+      "banco",
+      "lonja",
+      "casino"
+     ],
+     "texto": "Haz la ronda: el Banco Mercantil, la lonja y el Casino Belmonte, por ese orden. Solo tienes que dejarte ver."
+    },
+    {
+     "tipo": "ir",
+     "lugar": "guarida",
+     "texto": "Vuelve a la guarida de Los Calaveras."
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "En el banco te han dado la mano. En la lonja te han preguntado por el negocio. En el casino te han invitado a una copa. Nadie ha visto nada raro, porque no había nada que ver."
+      ],
+      [
+       "El Mellao",
+       "¿Ves qué fácil? Ahora firma aquí, y de esta noche en adelante eres [socio|socia]. O no firmes, y hacemos como que este mes no ha existido. Pero entonces ya sabes lo que somos cuando no somos amigos."
+      ]
+     ]
+    },
+    {
+     "tipo": "decision",
+     "clave": "socios",
+     "pregunta": "El Mellao te alarga un bolígrafo. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Firmar: la fachada limpia y el dinero por detrás",
+       "ayuda": "Trescientos euros cada noche y la calle a tus pies. Vivirás siempre con un ojo en la puerta.",
+       "renta": 300,
+       "fama": 10,
+       "banda": "Los Calaveras",
+       "banda_puntos": 30,
+       "dice": "Firmas. El bolígrafo es bueno; la tinta, no tanto."
+      },
+      {
+       "texto": "Romper con ellos ahora, cueste lo que cueste",
+       "ayuda": "Pierdes lo que te daban y te ganas un enemigo. A cambio, vuelves a dormir.",
+       "renta": -150,
+       "prestigio": 6,
+       "animo": 8,
+       "banda": "Los Calaveras",
+       "banda_puntos": -70,
+       "dice": "Dejas el bolígrafo en la mesa. «Hasta aquí». El Mellao no sonríe."
+      }
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "socios",
+     "si_opcion": 1,
+     "lineas": [
+      [
+       "Narrador",
+       "Por la mañana levantas la persiana y saludas a Casilda, que pasa con el carro de la compra. Por la noche cuentas billetes que no han entrado por la puerta."
+      ],
+      [
+       "Narrador",
+       "Las dos cosas se te dan bien. Eso es lo que más miedo te da."
+      ]
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "socios",
+     "si_opcion": 2,
+     "lineas": [
+      [
+       "Narrador",
+       "Sales de la guarida esperando un golpe por la espalda que no llega. Todavía."
+      ],
+      [
+       "Narrador",
+       "A la mañana siguiente vas a ver a la inspectora Olalla y se lo cuentas todo, empezando por lo que hiciste tú. Te escucha sin apuntar nada hasta el final."
+      ],
+      [
+       "La inspectora Olalla",
+       "Con esto que me trae, a usted le cae una multa y a ellos, diez años. Yo que usted, dormiría esta noche. Ya era hora."
+      ]
+     ]
+    }
+   ],
+   "epilogos": [
+    {
+     "si_clave": "socios",
+     "si_opcion": 1,
+     "clase": "doble",
+     "titulo": "Final de las dos caras",
+     "texto": "Dani Roca tiene un negocio con las cuentas en regla, un sitio en la asociación de comerciantes y el saludo de los vecinos. También tiene una libreta que no enseña a nadie y un socio con una calavera en el cuello. En Puerto Bravo se puede vivir de dos maneras. Dani ha decidido vivir de las dos, y cada mañana, antes de abrir, mira primero quién espera en la acera."
+    },
+    {
+     "si_clave": "socios",
+     "si_opcion": 2,
+     "clase": "redimido",
+     "titulo": "Final de la segunda oportunidad",
+     "texto": "Dani Roca estuvo a una firma de volver a ser quien era. Le costó el dinero fácil, una multa y unas cuantas noches mirando a la puerta. Su negocio sigue abierto y Los Calaveras ya no pasan por su calle. Cuando Aurora se enteró de todo, solo dijo: «La segunda vez también cuenta»."
+    }
+   ],
+   "recompensa": {
+    "dinero": 2500
+   }
+  }
+ ]
+}

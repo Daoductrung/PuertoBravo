@@ -106,7 +106,7 @@ def huella_datos(datos):
     for a in sorted(datos.get("armas", []), key=lambda a: str(a.get("id"))):
         partes.append(["arma", a.get("id"), a.get("dano"), a.get("alcance"), a.get("cadencia"), a.get("precision")])
     partes.append(["vehiculos", sorted(str(v.get("id")) for v in datos.get("vehiculos", []))])
-    partes.append(["misiones", sorted(str(m.get("id")) for m in datos.get("misiones", []) if not callable(m.get("al_completar")) and not m.get("generada"))])
+    partes.append(["misiones", sorted(str(m.get("id")) for m in datos.get("misiones", []) if not callable(m.get("al_completar")) and not m.get("generada") and not m.get("honrada"))])
     return hashlib.sha256(json.dumps(partes, ensure_ascii=False, sort_keys=True, default=str).encode("utf-8")).hexdigest()[:16]
 
 
@@ -142,6 +142,8 @@ def mundo_servidor():
         out["modelos"][v["id"]] = {"nombre": v["nombre"], "salud": v.get("salud", 100), "vel_max": v.get("vel_max", 25), "acel": v.get("acel", 6.0),
                                    "freno": v.get("freno", 12), "vuela": bool(v.get("vuela"))}
     for mi in datos["misiones"]:
+        if mi.get("honrada"):                # el buen camino se juega sin conexión: pide contrato, estudios y negocio, que en un servidor no hay
+            continue
         r = mi.get("recompensa") or {}
         out["misiones"][mi["id"]] = {"titulo": mi["titulo"], "dinero": int(r.get("dinero", 0) or 0), "repetible": bool(mi.get("repetible"))}
     # La gente que lleva el servidor y sus agentes salen también de los datos del juego. Un servidor anterior no mira

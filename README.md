@@ -237,6 +237,22 @@ Ocho módulos de la 1.7.1, cada uno un mixin de `Partida` salvo `ajustes.py`:
 - Sonidos: `amenaza_barrio`, `barrio_perdido`, `barrio_defendido`.
 - Pruebas: `pruebas/test_171_reconquista.py`, que incluye simulaciones de sesenta días con cada intensidad.
 
+### Vida, reputación y consecuencias (1.7.1)
+
+`juego/honrado.py` (mixin `Honrado` de `Partida`) y `juego/menus_honrado.py`. Se apoya en los dos medidores que ya había, `Jugador.ciudadania` (prestigio) y `Jugador.reputacion` (fama), que son independientes; no hay un tercero.
+
+- Nivel: `hon_nivel()` da 0 a 3 según la opción `consecuencias` (`apagado`, `suave`, `normal`, `exigente`; de serie `suave`) y siempre 0 en un servidor (`en_servidor`). `hon_f()` es el factor de las penalizaciones (`factor_suave`, `factor_exigente`). Las ventajas no se escalan. Las otras opciones: `impuestos_facturas`, `antecedentes`, `pareja_familiar`.
+- Estado, todo en el jugador y con la partida: `antecedentes` (lista), `contrato`, `titulos`, `empresa` (por negocio), `creditos` (lista) y `honra` (cobros, deuda, fiado, embargo, rumor `sospecha`, dinero sin justificar `negro`, `asuntos` pendientes, abogado, cartas, vetos). `hon()` lo crea la primera vez con el periodo de gracia; una partida anterior lleva `_hon_cargada` y recibe un aviso único.
+- Ganchos: `azar.mercado` (trato en comercios, `hon_trato`), `partida.pagar` (fiado, `hon_fiar`, con `_local` puesto en `entrar_interior`), `combate.delito` (`hon_delito`: encubrir, beneficio de la duda, delatar, fichado, rumor), `combate.detener` y `_trato_policia` (`hon_antecedente`), `vida.jornada` y `vida.servicio_hecho` (`hon_turno`), `partida._cobrar_negocios` (`ingreso_negocio`, `dia_honrado`), `extras3.repartir_ingresos_negocios` (caja del periodo y embargo), `misiones` (`cumple_vida`, `hon_mision_completada`, `prestigio` en las decisiones), `partida.interactuar` (`hon_ofrecer_mision`: la misión del buen camino va como última opción del menú del lugar), `agente.ingreso_motivo`, y `hon_negro` en atracos, tributos y encargos repetibles.
+- Cada medianoche (`dia_honrado`): antecedentes que caducan, evaluación del contrato, negocios (nombre, tapadera, inspección), cobro de facturas e impuestos, cuotas, rumor y prensa, extorsión y asuntos sin contestar. Cada veinte segundos (`actualizar_honrado`): el aviso de partida antigua, el de los dos caminos, los controles y las situaciones de la calle.
+- Los asuntos pendientes (`honra["asuntos"]`: inspección, prensa, extorsión) se resuelven con `hon_resolver(asunto, clave)`; pasado el plazo se resuelven solos.
+- La trama: `data/datos/misiones_honrada.json` (capítulo 16), misiones con `honrada`, `requiere_vida`, `epilogos` y `sin_voz`. El final queda en `decisiones["_final_honrado"]`, aparte del de la historia principal.
+- Pareja apta para todos: `vida_sentimental()` sustituye a `modo_adulto()` en las relaciones (`adultos.dia_adultos`, `convivencia`, `sistemas.personas_aqui`, `menus_adultos.vida_social`); el compromiso y la boda van en la relación (`compromiso`).
+- Números y frases: `data/datos/vida.json`, secciones `vida_honrada` (`honrado.AJ`), `titulos`, `empleos_fijos`, `mejoras_negocio`, `incidencias_trabajo` y `buenas_acciones`; esquema del editor en `editor/esquema_honrado.py`.
+- Sonidos: `despido`, `inspeccion`, `factura` y `titulo` (`VERSION_CACHE` 24).
+- Pruebas: `pruebas/test_171_honrado.py`, con la campaña entera sin delitos y tres simulaciones de sesenta días (honrado, delincuente y doble vida).
+- Servidor: nada de esto llega al servidor todavía; los campos nuevos del jugador y los ingresos y gastos nuevos están descritos en las notas de la versión para cuando se lleve.
+
 ### La compra, la despensa y la cocina
 
 - `juego/compra.py` (mixin `Compra`, y la pantalla `Tienda`) y `juego/menus_cocina.py` (los menús y la pantalla `Cocinando`). Cinco secciones de `vida.json`: `pasillos`, `productos`, `tipos_tienda` y `recetas` (listas) y `cocina` (los `Ajustes`). Lo de serie está también en el módulo (`PASILLOS`, `PRODUCTOS`, `TIPOS_TIENDA`, `RECETAS`), por si faltan en unos datos antiguos; hay una prueba que comprueba que coinciden.

@@ -178,6 +178,10 @@ def empleo(p, l):
         ops.append(Opcion(f"Oficio de {nombre}: eres {RANGOS[p.rango(tipo)]}, con {p.servicios_de(tipo)} servicios. Se hace con {DONDE.get(tipo, 'su vehículo')}", buscar(tipo),
                           ayuda="Intro marca en el GPS dónde hay un vehículo de ese oficio. Cada ocho servicios asciendes y cobras un doce por ciento más."))
     ops.append(Opcion(lambda: f"En el barrio, {p.ciudadania_txt()}", ayuda="El prestigio sube con el trabajo honrado, los cursos, los donativos y ayudando en los sucesos. Baja con los delitos. Con buen prestigio cobras más y la policía es más comprensiva."))
+    from . import menus_honrado as mh
+    ops.append(Opcion(lambda: "Contratos fijos: carrera con jefe, nómina y ascensos. " + p.hon_contrato_txt(), lambda: mh.menu_empleos(p, l),
+                      ayuda="Opcional. Firmas con una empresa: te pide unos turnos cada periodo, te evalúa, te paga una nómina además de cada turno y te asciende si cumples. "
+                            "Si faltas o lo haces mal, avisos y despido. Sin contrato, todo sigue como siempre."))
     _menu(p, l, ops, "Aquí están todos los trabajos honrados del juego")
 
 
@@ -189,6 +193,10 @@ def academia(p, l):
         from . import realismo as R
         ops.append(Opcion(lambda: f"Curso de recuperación de puntos del carné: {int(R.aj('precio_carne'))} euros y cuatro horas." + p.carne_txt(), p.recuperar_carne,
                           ayuda=f"Devuelve {int(R.aj('puntos_curso'))} puntos, hasta el tope de {int(R.aj('puntos_carne'))}. Si te lo han retirado, con el curso vuelves a tenerlo."))
+    if p.datos.get("titulos"):
+        from . import menus_honrado as mh
+        ops.append(Opcion(lambda: "Estudios con título. " + mh.estudios_txt(p), lambda: mh.menu_estudios(p, l),
+                          ayuda="Títulos que llevan varias sesiones, una al día, y dinero. Abren puestos mejores en los contratos fijos y mejoras para tus negocios. Se puede estudiar y trabajar el mismo día."))
     _menu(p, l, ops)
 
 
@@ -196,6 +204,10 @@ def ong(p, l):
     ops = [Opcion("Donar 50 euros", lambda: p.donar(50)), Opcion("Donar 500 euros", lambda: p.donar(500)),
            Opcion("Hacer voluntariado cuatro horas", p.voluntariado, ayuda="No cobras nada, pero sube mucho tu ánimo y tu prestigio entre los vecinos. Una vez al día."),
            Opcion(lambda: f"En el barrio, {p.ciudadania_txt()}")]
+    if p.hon_antecedentes():
+        from .honrado import AJ as HON
+        ops.insert(3, Opcion(f"Hacer servicios a la comunidad: {HON.entero('servicio_horas')} horas", p.hon_servicio_comunidad,
+                             ayuda=f"Sin cobrar. Le quita {HON.entero('servicio_quita')} días a tu antecedente penal más grave. Una vez al día."))
     _menu(p, l, ops)
 
 
@@ -215,6 +227,10 @@ def carrera(p):
         lineas.append(("Vida honrada. Policía: eres " + p.rango_policia_txt() if pol.get("alta") else "Vida honrada. Fuiste policía")
                       + f". Avisos resueltos: {s.get('serv_policia', 0)}. Detenciones hechas: {s.get('detenidos', 0)}" + (f". Te quitaron la placa {s['expulsiones_policia']} veces" if s.get("expulsiones_policia") else ""))
     lineas.append(f"Vida honrada. Jornadas trabajadas: {p.servicios_de('jornada')}. Voluntariado: {s.get('voluntariado', 0)} veces. Donado: {s.get('donado', 0)} euros. Sucesos resueltos: {s.get('eventos', 0)}")
+    if not p.en_servidor:
+        lineas.append("Vida honrada. " + p.hon_contrato_txt().rstrip(".") + f". Títulos: {len(p.hon_titulos())}. Evaluaciones buenas: {s.get('evaluaciones_buenas', 0)} de {s.get('evaluaciones', 0)}. "
+                      f"Ascensos: {s.get('ascensos', 0)}. Buenas acciones: {s.get('buenas_acciones', 0)}")
+        lineas.append("Tu ficha. " + p.hon_antecedentes_txt() + f" Condenas en total: {s.get('antecedentes', 0)}")
     lineas.append(f"Vida delictiva. Vehículos robados: {s['vehiculos_robados']}. Contratos: {s.get('contratos', 0)}. Atracos a bancos: {s.get('atracos', 0)}. Territorios: {len(j.territorios)}. Detenciones: {s['detenciones']}")
     if p.modo_adulto():
         lineas.append(f"Vida delictiva. Mercancía vendida por valor de {s.get('vendido', 0)} euros")

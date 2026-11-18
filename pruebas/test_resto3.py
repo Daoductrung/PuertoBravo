@@ -145,10 +145,18 @@ def test_gente_de_la_vida_social_en_su_sitio(robot):
     j = p.j
     chiri = p.lugares["chiringuito"]
     p.teletransportar(chiri.x, chiri.y)
-    assert sistemas.personas_aqui(p, chiri) == []                             # sin el contenido para adultos, nada cambia
+    # sin el contenido para adultos y con la vida sentimental apta para todos (1.7.1), que viene puesta: la persona está, al final del menú
+    assert app.cfg["pareja_familiar"] and [x["id"] for x in sistemas.personas_aqui(p, chiri)] == ["lucia"]
+    menus_juego.lugar(p, chiri)
+    textos = [o.texto for o in app.pila[-1].opciones]
+    assert not textos[0].startswith("Lucía") and any(t.startswith("Lucía está aquí") for t in textos[-4:])
+    _a_la_partida(app, p)
+    app.cfg["pareja_familiar"] = False
+    assert sistemas.personas_aqui(p, chiri) == []                             # sin el contenido para adultos y con esa opción quitada, nada cambia
     menus_juego.lugar(p, chiri)
     assert not any("está aquí" in o.texto for o in app.pila[-1].opciones)
     _a_la_partida(app, p)
+    app.cfg["pareja_familiar"] = True
     app.cfg["adultos"] = True
     try:
         assert [x["id"] for x in sistemas.personas_aqui(p, chiri)] == ["lucia"]

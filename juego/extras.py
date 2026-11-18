@@ -98,6 +98,7 @@ class Extras:
             self.decir("¡Este no se deja! Saca una navaja.", True)
             return
         botin = random.randint(5, 70)
+        self.hon_negro(botin)
         self.dar_dinero(botin)
         self.decir(f"El peatón te da la cartera: {botin} euros, y sale corriendo.", True)
         self.delito(2, "atraco", siempre=random.random() < 0.3)

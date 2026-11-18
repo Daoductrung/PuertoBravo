@@ -81,7 +81,8 @@ def _es_dato(nombre):
 
 SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas", "vehiculos_propios", "calle", "guerra_barrios",
                   "carta_domicilio", "domicilio", "atracos", "pactos", "reconquista", "contratos", "reacciones", "planes_pareja", "convivencia", "policia_oficio", "avisos_policia",
-                  "pasillos", "productos", "tipos_tienda", "recetas", "cocina", "escolta_misiones", "persecuciones")
+                  "pasillos", "productos", "tipos_tienda", "recetas", "cocina", "escolta_misiones", "persecuciones",
+                  "vida_honrada", "titulos", "empleos_fijos", "mejoras_negocio", "incidencias_trabajo", "buenas_acciones")
 
 
 def cargar_datos(con_mods=True):
@@ -197,7 +198,7 @@ def cargar_datos(con_mods=True):
     misvehiculos.configurar(d)
     calle.configurar(d)
     guerra.configurar(d)
-    from . import agente, ajustes, atracos, compra, contratos, convivencia, domicilio, escolta, pactos, reacciones, reconquista      # noqa: F401  (cada uno apunta sus ajustes al cargarse)
+    from . import agente, ajustes, atracos, compra, contratos, convivencia, domicilio, escolta, honrado, pactos, reacciones, reconquista      # noqa: F401  (cada uno apunta sus ajustes al cargarse)
     ajustes.configurar_todos(d)
     return d
 

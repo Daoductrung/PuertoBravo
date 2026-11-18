@@ -1126,6 +1126,9 @@ SECCIONES = [
 ]
 
 
+from . import esquema_honrado      # noqa: E402  (la vida honrada y sus consecuencias: sus formularios, y lo que añade a la misión y a la decisión)
+esquema_honrado.aplicar(ESQUEMAS, SECCIONES)
+
 # Pestañas del formulario de lugar: así cada página tiene pocas letras de acceso y ninguna se repite.
 for _cp in ESQUEMAS["lugar"]["campos"]:
     if _cp["k"] in ("bloque", "lado", "pos", "xy"):

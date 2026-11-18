@@ -30,6 +30,7 @@ from .atracos import Atracos
 from .pactos import Pactos
 from .reconquista import Reconquista
 from .escolta import Escolta
+from .honrado import Honrado
 from .destinos import Destinos
 from .contratos import Contratos
 from .reacciones import Reacciones
@@ -82,7 +83,7 @@ def migrar(d):
 
 
 class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos, Calle, Guerra,
-              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra, Reconquista, Escolta, Destinos):
+              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra, Reconquista, Escolta, Destinos, Honrado):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -189,6 +190,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.reconquista_iniciar()       # las bandas vencidas intentan recuperar tus barrios (reconquista.py)
         self.agente_iniciar()            # el oficio de policía, si el modo está encendido (agente.py)
         self.reacciones_iniciar()        # gente que te sigue o te la guarda (reacciones.py)
+        self.honrado_iniciar()           # la vida y sus consecuencias: prestigio, antecedentes, carrera, empresa y banco (honrado.py)
         if guardado:
             self.cargar_dict(guardado)
         else:
@@ -452,6 +454,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
 
     def pagar(self, n):
         if self.j.dinero < n:
+            if self.hon_fiar(n):                                 # en un comercio donde te aprecian, te lo apuntan
+                return True
             self.app.son("error")
             self.decir(f"No tienes suficiente dinero. Cuesta {n} euros y tienes {self.j.dinero}.", True)
             return False
@@ -527,6 +531,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.j.arma = "punos"
         # una partida anterior a la reconquista que ya tiene barrios bastantes: calma inicial y su aviso, una vez
         self._rec_cargada = not self.j.reconquista.get("v") and bool(self.rec_fase())
+        # una partida anterior a la vida con consecuencias: empieza en neutro, con su periodo de gracia y su aviso, una vez
+        self._hon_cargada = not self.j.honra.get("v") and (len(self.j.propiedades) > 1 or self.dia > 2)
 
     def saltos_por_tierra(self, origen, destino):
         """Cuántas localidades hay que cruzar por carretera para ir de una a otra: 1 si son vecinas. None si hay mar por medio."""
@@ -1738,6 +1744,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 if j.veh and abs(j.veh.vel) > 2:
                     self.decir("Detén el vehículo primero.", True)
                     return
+                if m.get("honrada"):                             # el buen camino se ofrece: nadie está obligado a seguirlo para entrar en el sitio
+                    self.hon_ofrecer_mision(m, l)
+                    return
                 self.iniciar_mision(m)
                 return
             mj.lugar(self, l)
@@ -1875,6 +1884,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.actualizar_reacciones(dt)
         self.actualizar_convivencia(dt)
         self.actualizar_agente(dt)
+        self.actualizar_honrado(dt)
         self.t_poblar -= dt
         if self.t_poblar <= 0:
             self.t_poblar = 0.6
@@ -1932,7 +1942,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         for pid in self.j.propiedades:
             l = self.lugares.get(pid)
             if l and l.tipo == "negocio":
-                total += int(l.get("ingresos", 0))
+                total += self.ingreso_negocio(l)
         self.repartir_ingresos_negocios(total)
         self.cobrar_banco()
         self.ingresos_territorios()
@@ -1946,6 +1956,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.dia_convivencia()
         self.dia_pactos()
         self.dia_reconquista()
+        self.dia_honrado()
         n = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto and not getattr(p, "de_banda", False))      # la banda cobra aparte
         if n:
             coste = self.precio("guardaespaldas_sueldo", 200) * n

@@ -96,6 +96,10 @@ POR_DEFECTO = {
     "escolta_misiones": "moderado",  # las misiones se ajustan a tu escolta: no | moderado | fuerte
     "ayuda_persecucion": True,     # persecuciones: avisos más seguidos de por dónde va quien huye, cada giro, y afloja antes si te quedas atrás
     "reconquista": "normal",       # sin conexión, las bandas vencidas intentan recuperar tus barrios: apagado | tranquilo | normal | duro
+    "consecuencias": "suave",      # vida, reputación y consecuencias: apagado | suave | normal | exigente
+    "impuestos_facturas": True,    # facturas de tus casas e impuestos de tus propiedades y negocios, cada cierto tiempo y con aviso
+    "antecedentes": True,          # las detenciones y las multas dejan antecedentes penales, que caducan
+    "pareja_familiar": True,       # relaciones sentimentales aptas para todos: conocerse, citas, compromiso, convivir y boda
     "oficio_policia": False,       # modo: poder ingresar en la policía y trabajar de agente
     "radio_coches": True,          # en un servidor, oír floja la emisora del juego que lleva el vehículo de otro jugador que está cerca
     "reconectar": True,            # en un servidor: si se corta o se reinicia, esperar y volver a entrar solo, con la partida tal cual
@@ -119,6 +123,7 @@ OPCIONES = {
     "mi_genero": ["x", "h", "m"],
     "charla_peatones": ["nada", "pocas", "algunas", "muchas"],
     "reconquista": ["apagado", "tranquilo", "normal", "duro"],
+    "consecuencias": ["apagado", "suave", "normal", "exigente"],
     "escolta_misiones": ["no", "moderado", "fuerte"],
     "act_fuente": ["servidor", "github", "ambas", "personalizada"],
     "motor_sonido": ["clasico", "envolvente"],

@@ -55,7 +55,7 @@ class Misiones:
         return [m for m in self.datos["misiones"]
                 if m["id"] not in hechas and (self.cfg["adultos"] or not m.get("adultos")) and all(r in hechas for r in m.get("requiere", []))
                 and all(any(r in hechas for r in grupo) for grupo in grupos_alguna(m.get("requiere_alguna")))
-                and m.get("lugar") in self.lugares and self.cumple_decision(m)]
+                and m.get("lugar") in self.lugares and self.cumple_decision(m) and self.cumple_vida(m)]
 
     def cumple_decision(self, cosa):
         """¿Vale esta misión o este paso con lo que has decidido? Sin condición, siempre.
@@ -1000,6 +1000,8 @@ class Misiones:
                         self.cambiar_reputacion(o["fama"])
                     if o.get("animo"):
                         self.cambiar_animo(o["animo"])
+                    if o.get("prestigio"):
+                        self.cambiar_ciudadania(o["prestigio"])
                     if o.get("banda"):
                         self.cambiar_rep_banda(o["banda"], o.get("banda_puntos", 0))
                     if o.get("renta"):                           # una consecuencia que dura: dinero cada medianoche, para siempre
@@ -1262,6 +1264,8 @@ class Misiones:
         if m.get("repetible"):
             if m.get("contador"):
                 self.j.stats[m["contador"]] = self.j.stats.get(m["contador"], 0) + 1
+                if m["contador"] in ("contratos", "atracos", "conquistas", "encargos"):
+                    self.hon_negro(int((m.get("recompensa") or {}).get("dinero", 0)))      # dinero que no podrías justificar
         else:
             self.completadas.append(m["id"])
             self.j.stats["misiones"] += 1
@@ -1277,7 +1281,10 @@ class Misiones:
         if r.get("arma"):
             self.dar_arma(r["arma"], r.get("balas", 0))
         self.cambiar_animo(4 if m.get("repetible") else 8)
-        self.cambiar_reputacion(1 if m.get("repetible") else 2)
+        if m.get("honrada"):                                     # el buen camino da prestigio entre los vecinos, no fama en la calle
+            self.hon_mision_completada(m)
+        else:
+            self.cambiar_reputacion(1 if m.get("repetible") else 2)
         for pid, n in (r.get("afinidad") or {}).items():
             if self.persona_social(pid):
                 self.sumar_afinidad(pid, n)
@@ -1313,8 +1320,10 @@ class Misiones:
         j = self.j
         stats = dict(j.stats)
         garajes, barcos, barco_actual = j.garajes, j.barcos, j.barco_actual
+        antecedentes = j.antecedentes                            # una detención es una detención: lo que consta en tu ficha no se borra al reintentar
         j.de_dict(copy.deepcopy(copia))
-        j.stats.update({k: stats[k] for k in ("muertes", "detenciones", "tiempo")})
+        j.stats.update({k: stats[k] for k in ("muertes", "detenciones", "tiempo", "antecedentes") if k in stats})
+        j.antecedentes = antecedentes
         j.garajes, j.barcos, j.barco_actual = garajes, barcos, barco_actual
         for pid in [k for k, fichas in garajes.items() if fichas and k not in j.propiedades]:
             casa_perdida = self.lug(pid)
