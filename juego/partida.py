@@ -24,6 +24,13 @@ from .realismo import Realismo
 from .misvehiculos import MisVehiculos
 from .calle import Calle
 from .guerra import Guerra
+from .domicilio import Domicilio
+from .atracos import Atracos
+from .pactos import Pactos
+from .contratos import Contratos
+from .reacciones import Reacciones
+from .convivencia import Convivencia
+from .agente import Agente
 from .online import Online
 from .enlinea import EnLinea
 from .trabajos import Trabajos
@@ -70,7 +77,8 @@ def migrar(d):
     return d
 
 
-class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos, Calle, Guerra):
+class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos, Calle, Guerra,
+              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -173,6 +181,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.mis_iniciar()               # tus vehículos: no desaparecen nunca (misvehiculos.py)
         self.calle_iniciar()             # patrullas, ambulancias, rendición y helicóptero (calle.py)
         self.guerra_iniciar()            # la guerra de barrios en la calle, si el modo está encendido (guerra.py)
+        self.agente_iniciar()            # el oficio de policía, si el modo está encendido (agente.py)
+        self.reacciones_iniciar()        # gente que te sigue o te la guarda (reacciones.py)
         if guardado:
             self.cargar_dict(guardado)
         else:
@@ -1049,6 +1059,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         elif k == pygame.K_h:
             self.son("grito", vol=0.5)
             self.sv_ruido("grito")
+            if self.dar_alto():                                  # de servicio como policía, la H da el alto
+                return
             for p in self.personas:
                 if p.tipo == "civil" and not p.muerto and p.dist(j.x, j.y) < 15:
                     self.asustar(p, 6, grito=0.25)
@@ -1185,6 +1197,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
 
     def radar(self, delta):
         x, y = self.pos()
+        if self.mision:
+            self.mision["radar_usado"] = True                    # hay ejercicios de tutorial que piden haberlo usado
         actual = self.radar_lista[self.radar_idx][3] if 0 <= self.radar_idx < len(self.radar_lista) else None
         self.radar_lista = self._radar_construir()
         if not self.radar_lista:
@@ -1570,6 +1584,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         from . import menus_juego as mj
         j = self.j
         x, y = self.pos()
+        if self.agente_intro():                                  # de servicio: detener a quien se ha rendido, o tratar con el conductor que ha parado
+            return
         mar = self.mundo.tipo == "mar"
         if not j.veh or mar:
             for o in sorted(self.objetos, key=lambda o: o.dist(x, y)):
@@ -1713,6 +1729,11 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.actualizar_adultos(dt)
         self.actualizar_calle(dt)
         self.actualizar_guerra(dt)
+        self.actualizar_domicilio(dt)
+        self.actualizar_atracos(dt)
+        self.actualizar_reacciones(dt)
+        self.actualizar_convivencia(dt)
+        self.actualizar_agente(dt)
         self.t_poblar -= dt
         if self.t_poblar <= 0:
             self.t_poblar = 0.6
@@ -1781,6 +1802,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.mover_bolsa()
         self.dia_adultos()
         self.dia_intimidad()
+        self.dia_convivencia()
+        self.dia_pactos()
         n = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto and not getattr(p, "de_banda", False))      # la banda cobra aparte
         if n:
             coste = self.precio("guardaespaldas_sueldo", 200) * n

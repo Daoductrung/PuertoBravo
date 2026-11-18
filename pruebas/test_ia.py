@@ -217,7 +217,7 @@ def test_menu_de_opciones_y_prueba(robot, red):
     app.cfg["ia_activa"] = False
     menus_charla.opciones_ia(app)
     m = app.pila[-1]
-    assert isinstance(m, Menu) and len(m.opciones) == 14
+    assert isinstance(m, Menu) and len(m.opciones) == 15                             # una más desde la 1.7.1: la IA puede proponer acciones
     textos = [o.texto for o in m.opciones]
     assert "Automático" in textos[1] and "Modelo local: sin instalar" in textos[2] and "sin poner" in textos[3]
     m.opciones[0].ajuste(1)                                   # sin nada preparado, no se activa

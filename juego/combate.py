@@ -381,6 +381,8 @@ class Combate:
         self.sv_golpe_policia(p, dano)                           # y si es un agente que persigue a otro jugador, le llega a su juego
         self.sv_golpe_peaton(p, dano)                            # y si es alguien de la calle, que es de todos, también
         self.sv_golpe_agente(p, dano)                            # o un agente de los que lleva el servidor
+        if self.se_rinde_con(p, dano):                           # uno al que hay que asustar o detener: se rinde en vez de caer
+            return
         p.salud -= dano
         if p.salud <= 0:
             p.muerto = True
@@ -536,6 +538,8 @@ class Combate:
             testigo = testigo or any(self.es_patrulla(v) and v.dist(x, y) < 80 for v in self.vehiculos)
             if not testigo:
                 return
+        if self.delito_de_servicio(puntos, texto):               # de servicio como policía: fuerza justificada, o un apercibimiento
+            return
         self.cambiar_ciudadania(-0.6 * puntos)
         if j.ciudadania >= 50:
             puntos *= 0.7            # a un buen vecino se le pasan por alto las faltas pequeñas
@@ -691,6 +695,9 @@ class Combate:
             if p.tipo == "perro":
                 self.actualizar_perro(p, dt)
                 continue
+            if p.estado == "sigue" and p.tipo == "civil":            # alguien que se ha venido contigo un rato
+                self.paso_seguidor(p, dt)
+                continue
             d = p.dist(px, py)
             if getattr(p, "po_id", None) is not None:            # un agente del servidor: lo mueve él
                 self.sv_agente_paso(p, d, dt)
@@ -798,6 +805,7 @@ class Combate:
                 continue
             p.amartillado = False
             self.marcar_agresor(p)                               # te ataca sin que tú le hayas tocado: lo tuyo ya es defensa propia
+            p.ha_resistido = True
             p.t_disparo = (0.45 if a.get("automatica") else max(1.2, a["cadencia"] * 2.5)) + random.uniform(0, 0.6)
             if cuerpo:
                 self.son(a["sonido"], xy=(p.x, p.y), ref=4)

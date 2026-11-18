@@ -1476,7 +1476,8 @@
      "tipo": "ir",
      "lugar": "tienda_paco",
      "radio": 12,
-     "texto": "Segundo ejercicio: llega a Ultramarinos Paco. Búscalo con el Tabulador y márcalo con la B."
+     "texto": "Segundo ejercicio: llega a Ultramarinos Paco. Búscalo con el Tabulador y márcalo con la B.",
+     "exige": "radar"
     },
     {
      "tipo": "dialogo",
@@ -1669,7 +1670,7 @@
    "lugar": "empleo_pb",
    "requiere": [],
    "tutorial": true,
-   "resumen": "Tutorial jugable de trabajos: cómo se empieza un trabajo con vehículo y un primer servicio de taxi de prueba. No se puede fallar.",
+   "resumen": "Tutorial jugable de trabajos: subes a un taxi, empiezas a trabajar con la J y haces un servicio de verdad, recogiendo a un cliente y llevándole a su destino. No se puede fallar.",
    "pasos": [
     {
      "tipo": "dialogo",
@@ -1701,23 +1702,14 @@
      "texto": "Sube al taxi de prácticas que hay junto a la oficina de empleo. Acércate y pulsa F."
     },
     {
-     "tipo": "dialogo",
-     "lineas": [
-      [
-       "Narrador",
-       "Estás en el taxi. En un servicio de verdad pulsarías la J y el juego te mandaría a recoger a un cliente."
-      ],
-      [
-       "Narrador",
-       "Ahora haz el recorrido de un servicio: lleva el taxi a la Parada de taxis del Centro. Conduce tú, o pulsa la Y para que el coche vaya solo."
-      ]
-     ]
+     "tipo": "practica",
+     "que": "trabajar",
+     "texto": "Estás en el taxi. Ahora, lo que has venido a aprender: pulsa la J para empezar a trabajar. El juego te mandará a recoger a un cliente."
     },
     {
-     "tipo": "entregar",
-     "lugar": "parada_taxi",
-     "salud_min": 0,
-     "texto": "Lleva el taxi a la Parada de taxis del Centro. Con la Y, el coche va solo."
+     "tipo": "practica",
+     "que": "servicio",
+     "texto": "Ya estás trabajando. Haz un servicio completo: ve a donde te marca el GPS, detente para que suba el cliente y llévale a su destino. Conduce tú, o pulsa la Y para que el coche vaya solo. La O repite qué toca."
     },
     {
      "tipo": "dialogo",
@@ -1753,7 +1745,7 @@
    "lugar": "emb_puerto",
    "requiere": [],
    "tutorial": true,
-   "resumen": "Tutorial sobre el mar: cómo se zarpa, cómo se gobierna un barco, cómo se atraca y qué se puede hacer mar adentro.",
+   "resumen": "Tutorial jugable del mar: zarpas con una lancha de prácticas, llevas el timón un trecho y atracas en un muelle. Después, qué se puede hacer mar adentro. No se puede fallar.",
    "pasos": [
     {
      "tipo": "dialogo",
@@ -1781,29 +1773,36 @@
       [
        "Narrador",
        "Mar adentro puedes pescar con la P, hacer mensajería con la J, correr la regata de la boya y bucear en el pecio en busca de tesoros."
-      ],
-      [
-       "Narrador",
-       "Ejercicio: camina hasta la Lonja de pescado, que es donde se vende lo que pesques. Así sabrás dónde está cuando vuelvas con la bodega llena."
       ]
      ]
     },
     {
-     "tipo": "ir",
-     "lugar": "lonja",
-     "radio": 12,
-     "texto": "Ve a la Lonja de pescado. Pulsa L para marcarla en el GPS, o U para caminar sol[o|a]."
+     "tipo": "practica",
+     "que": "zarpar",
+     "texto": "Primer ejercicio: zarpar. Pulsa Intro aquí, en el embarcadero, y elige la lancha de prácticas del tutorial, que es gratis."
+    },
+    {
+     "tipo": "practica",
+     "que": "timon",
+     "metros": 200,
+     "giro": 90,
+     "texto": "Segundo ejercicio: llevar el timón. Acelera con la flecha arriba y navega unos doscientos metros, girando con las flechas izquierda y derecha hasta cambiar de rumbo. La C te dice hacia dónde vas."
+    },
+    {
+     "tipo": "practica",
+     "que": "atracar",
+     "texto": "Tercer ejercicio: atracar. Pulsa L, elige un muelle y sigue la baliza hasta él. Cuando llegues, frena con la flecha abajo y pulsa Intro para atracar."
     },
     {
      "tipo": "dialogo",
      "lineas": [
       [
        "Narrador",
-       "Esta es la lonja. Aquí y en las pescaderías te compran el pescado."
+       "Hecho: has zarpado, has llevado el timón y has atracado. Eso es todo lo que hace falta para moverse por mar."
       ],
       [
        "Narrador",
-       "Cuando quieras hacerte a la mar, vuelve al embarcadero y elige Alquilar una lancha. Buena travesía."
+       "Lo que pesques mar adentro se vende en la lonja y en las pescaderías. Para volver a hacerte a la mar, cualquier embarcadero alquila lanchas. Buena travesía."
       ]
      ]
     }
@@ -1822,14 +1821,14 @@
     "tut01"
    ],
    "tutorial": true,
-   "resumen": "Tutorial sobre la partida con amigos: cómo abrir tu partida, cómo unirte a la de otro y qué se puede hacer juntos.",
+   "resumen": "Explicación de la partida con amigos: cómo abrir tu partida, cómo unirte a la de otro y qué se puede hacer juntos. Se lee aquí mismo.",
    "pasos": [
     {
      "tipo": "dialogo",
      "lineas": [
       [
        "Narrador",
-       "Tutorial de la partida con amigos. No hace falta ningún servidor: tu propio juego hace de servidor."
+       "Cómo se juega con amigos. No hace falta ningún servidor: tu propio juego hace de servidor."
       ],
       [
        "Narrador",
@@ -1861,21 +1860,6 @@
       ],
       [
        "Narrador",
-       "Ejercicio: abre el móvil con la M y busca Jugar con amigos, para saber dónde está. Después, ve andando al Bar La Gaviota, que es donde quedaría yo con un amigo."
-      ]
-     ]
-    },
-    {
-     "tipo": "ir",
-     "lugar": "bar_gaviota",
-     "radio": 12,
-     "texto": "Ve al Bar La Gaviota. Por el camino, abre el móvil con la M y localiza Jugar con amigos."
-    },
-    {
-     "tipo": "dialogo",
-     "lineas": [
-      [
-       "Narrador",
        "Eso es todo. La conexión no va cifrada: no escribas nada que no dirías en voz alta. Que lo paséis bien."
       ]
      ]
@@ -1883,7 +1867,8 @@
    ],
    "recompensa": {
     "dinero": 50
-   }
+   },
+   "explicacion": true
   }
  ]
 }

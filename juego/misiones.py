@@ -110,7 +110,7 @@ class Misiones:
 
     def mision_en_lugar(self, lugar_id):
         for m in self.misiones_disponibles():
-            if m["lugar"] == lugar_id and (not m.get("tutorial") or m["id"] == "tut01"):
+            if m["lugar"] == lugar_id and (not m.get("tutorial") or m["id"] == "tut01") and not m.get("explicacion"):
                 return m                    # los demás tutoriales se empiezan desde el móvil: no deben estorbar en la oficina de empleo o en el embarcadero
         return None
 
@@ -145,11 +145,11 @@ class Misiones:
             if p["tipo"] == "ruta":
                 t += f" Vas por el punto {self.mision.get('ruta_i', 0) + 1} de {len(p.get('puntos', []))}."
             if p["tipo"] == "eliminar" and self.mision.get("generado"):
-                t += f" Quedan {sum(1 for e in self.mision['enemigos'] if not e.muerto)} enemigos."
+                t += f" Quedan {sum(1 for e in self.mision['enemigos'] if not e.muerto and not getattr(e, 'rendido', False))} enemigos."
             return t
         if self.trabajo:
             return self.trabajo.get("texto", "Estás trabajando.")
-        disp = self.misiones_disponibles()
+        disp = [m for m in self.misiones_disponibles() if not m.get("explicacion")]
         if disp:
             m = disp[0]
             l = self.lugares[m["lugar"]]
@@ -200,6 +200,107 @@ class Misiones:
 
     def _lugar_paso(self, p):
         return self.lugares.get(p.get("lugar", ""))
+
+    # ------------------------------------------------- explicaciones y prácticas de los tutoriales
+    def explicacion(self, m):
+        """Una explicación: una misión de los datos marcada como tal, que no se juega; se lee entera, con sus voces si las
+        tiene. La primera vez que se llega al final cuenta como hecha y da su recompensa."""
+        from . import voces
+        if isinstance(m, str):
+            m = next((x for x in self.datos["misiones"] if x["id"] == m), None)
+        if m is None:
+            return False
+        lineas, grabadas = [], []
+        for k, paso in enumerate(m.get("pasos", [])):
+            if paso.get("tipo") != "dialogo":
+                continue
+            lineas += [(self.txt(q), self.txt(tx)) for q, tx in paso["lineas"]]
+            grabadas += (voces.de_dialogo(m["id"], k, paso["lineas"], self.j) if self.voces_activas() else None) or [None] * len(paso["lineas"])
+
+        def fin():
+            if m["id"] in self.completadas:
+                return
+            self.completadas.append(m["id"])
+            paga = int((m.get("recompensa") or {}).get("dinero", 0))
+            if paga:
+                self.dar_dinero(paga, "Por leerla entera")
+        if not lineas:
+            return False
+        self.app.abrir(Dialogo(self.app, lineas, fin, voces=grabadas if any(grabadas) else None))
+        return True
+
+    def practica_de(self, *cuales):
+        """¿El paso actual de la misión es una práctica de un tutorial de esas? (zarpar, timon, atracar, trabajar, servicio)"""
+        ms = self.mision
+        if not ms or not (0 <= ms["paso"] < len(ms["def"]["pasos"])):
+            return False
+        p = ms["def"]["pasos"][ms["paso"]]
+        return p["tipo"] == "practica" and p.get("que") in cuales
+
+    def practica_evento(self, que):
+        """El jugador acaba de hacer algo que una práctica comprueba (atracar en un muelle, por ejemplo)."""
+        if self.practica_de(que) and self.mision.get("practica") is not None:
+            self.mision["practica"]["evento"] = que
+
+    def _practica_hecha(self):
+        """Como _paso_hecho, pero sin tocar el GPS: en una práctica, el destino lo ha puesto el jugador o su trabajo."""
+        self.app.son("llegada")
+        self._siguiente_paso()
+
+    def _paso_practica(self, ms, p, x, y, dt):
+        """Un tutorial que comprueba lo que haces: no vale llegar a un sitio, hay que hacer lo que se enseña."""
+        pr = ms.get("practica")
+        if pr is None:
+            return
+        j, v, que = self.j, self.j.veh, p.get("que")
+        en_mar = self.mundo.tipo == "mar"
+        pr["t"] += dt
+        if que == "zarpar":
+            if en_mar and v is not None:
+                self._practica_hecha()
+        elif que == "timon":
+            if not en_mar or v is None:
+                if pr["t"] > pr["t_aviso"]:
+                    pr["t_aviso"] = pr["t"] + 25.0
+                    self.decir("Para este ejercicio tienes que estar en el mar, al timón de un barco. Vuelve al embarcadero y zarpa.")
+                pr["x"] = None
+                return
+            if pr["x"] is not None:
+                paso = math.hypot(x - pr["x"], y - pr["y"])
+                if paso < 30:
+                    pr["metros"] += paso
+                pr["giro"] += abs(M.norm180(v.rumbo - pr["rumbo"]))
+            pr["x"], pr["y"], pr["rumbo"] = x, y, v.rumbo
+            metros, giro = float(p.get("metros", 200)), float(p.get("giro", 90))
+            if pr["giro"] >= giro and "giro" not in pr["dicho"]:
+                pr["dicho"].add("giro")
+                if pr["metros"] < metros:
+                    self.decir(f"Bien: el barco gira como tú quieres. Sigue navegando, te faltan unos {int(metros - pr['metros'])} metros.")
+            if pr["metros"] >= metros and "metros" not in pr["dicho"]:
+                pr["dicho"].add("metros")
+                if pr["giro"] < giro:
+                    self.decir("Ya has navegado bastante en línea recta. Ahora lleva el timón: gira con las flechas izquierda y derecha hasta cambiar de rumbo.")
+            if pr["metros"] >= metros and pr["giro"] >= giro:
+                self._practica_hecha()
+        elif que == "atracar":
+            if pr.get("evento") == "atracar" and not en_mar:
+                self._practica_hecha()
+            elif not en_mar and pr["t"] > pr["t_aviso"]:           # ha llegado a tierra de otra manera: nadando, o porque se ha hundido
+                pr["t_aviso"] = pr["t"] + 30.0
+                self.decir("Para terminar este ejercicio hay que atracar: zarpa de un embarcadero, llega con el barco hasta un muelle, frena y pulsa Intro.")
+        elif que == "trabajar":
+            if self.trabajo and "veh" in self.trabajo:
+                self._practica_hecha()
+        elif que == "servicio":
+            if j.stats.get("servicios", 0) > pr["servicios"]:
+                veh = ms.get("veh")
+                if veh is not None:                              # el vehículo de prácticas deja de ser de la misión: puedes seguir trabajando con él
+                    veh.tag = None
+                    ms["veh"] = None
+                self._practica_hecha()
+            elif not self.trabajo and pr["t"] > pr["t_aviso"]:
+                pr["t_aviso"] = pr["t"] + 25.0
+                self.decir("Has dejado de trabajar. Sube al vehículo de prácticas y pulsa la J para empezar otra vez: hay que completar un servicio.")
 
     def nombre_lugar(self, l):
         """Nombre del lugar, añadiendo la localidad si está en otro mapa."""
@@ -259,6 +360,7 @@ class Misiones:
         ms["avisos"] = set()
         ms["generado"] = False
         ms["recogido"] = False
+        ms["radar_usado"] = False
         tipo = p["tipo"]
         l = self._lugar_paso(p)
         if (tipo not in ("dialogo", "dar", "decision") and not ms.get("reanudando") and paso_seguro(pasos, ms["paso"])
@@ -383,6 +485,13 @@ class Misiones:
             self.poner_busqueda(p.get("nivel", 2))
             self.cancelar_gps()
             return
+        if tipo == "practica":                                   # una práctica de un tutorial: no crea nada, solo vigila lo que haces
+            ms["pendiente"] = False
+            if ms.get("practica_paso") != ms["paso"]:
+                ms["practica_paso"] = ms["paso"]
+                ms["practica"] = {"metros": 0.0, "giro": 0.0, "x": None, "y": None, "rumbo": 0.0, "t": 0.0, "t_aviso": 20.0, "dicho": set(), "evento": None,
+                                  "servicios": self.j.stats.get("servicios", 0)}
+            return
         if tipo == "entregar" and ms.get("veh") is not None and self.j.veh is not ms["veh"] and not ms["veh"].muerto:
             ms["pendiente"] = False
             return
@@ -504,6 +613,8 @@ class Misiones:
         e.estado = "ataca"
         e.inofensivo = bool(grupo.get("inofensivo"))          # un muñeco de prácticas: se le puede fijar, pero no ataca
         e.deportivo = bool(grupo.get("deportivo"))            # un rival del gimnasio: tumbarlo no es delito
+        e.intimidar = bool(grupo.get("intimidar"))            # a este no hay que matarle: se rinde cuando ha recibido bastante
+        e.salud_entera = e.salud
         e.tag = "mision"
         e.t_disparo = random.uniform(1.5, 3.0)
         return e
@@ -617,6 +728,8 @@ class Misiones:
             self._paso_vigilar(ms, p, l, x, y, dt)
         elif tipo == "carrera":
             self._paso_carrera(ms, p, l, x, y, dt)
+        elif tipo == "practica":
+            self._paso_practica(ms, p, x, y, dt)
         elif tipo == "ruta":
             punto = self.lugares.get(p.get("puntos", [""])[min(ms.get("ruta_i", 0), len(p.get("puntos", [""])) - 1)])
             if punto and punto.mapa == self.mundo.id and math.hypot(punto.x - x, punto.y - y) <= (20 if j.veh else 10):
@@ -629,7 +742,13 @@ class Misiones:
         elif tipo == "ir":
             radio = 28 if self.mundo.tipo == "mar" else 17 if j.veh else p.get("radio", 8)
             if l and math.hypot(l.x - x, l.y - y) <= radio and (not j.veh or abs(j.veh.vel) < 3):
-                self._paso_hecho()
+                if p.get("exige") == "radar" and not ms.get("radar_usado"):      # el ejercicio era usar el radar: haber llegado de otra manera no lo cumple
+                    if "exige" not in ms["avisos"]:
+                        ms["avisos"].add("exige")
+                        self.app.son("notificacion")
+                        self.decir("Has llegado, pero este ejercicio es para aprender el radar. Pulsa Tabulador para oír lo que tienes cerca: con eso queda hecho.")
+                else:
+                    self._paso_hecho()
         elif tipo == "robar":
             if j.veh is v:
                 if p.get("busqueda"):
@@ -671,7 +790,10 @@ class Misiones:
                 if l and math.hypot(l.x - x, l.y - y) < 45:
                     self._generar_enemigos(p, l)
             else:
-                vivos = sum(1 for e in ms["enemigos"] if not e.muerto)
+                if any(e.muerto and getattr(e, "intimidar", False) for e in ms["enemigos"]):
+                    self.fallar_mision("Te has pasado: le querían asustado, no muerto.")
+                    return
+                vivos = sum(1 for e in ms["enemigos"] if not e.muerto and not getattr(e, "rendido", False))
                 if vivos != ms["quedan"]:
                     ms["quedan"] = vivos
                     if vivos > 0:
@@ -1099,7 +1221,7 @@ class Misiones:
         m = ms["def"]
         antes = {x["id"] for x in self.misiones_disponibles()}
         self.mision = None
-        if self.gps and self.gps.get("auto"):
+        if self.gps and self.gps.get("auto") and not self.trabajo:      # si sigues trabajando (el tutorial de los trabajos), el destino es el del trabajo
             self.cancelar_gps()
         if ms.get("repeticion"):                               # repetir una misión ya hecha es por gusto: no cambia nada
             self.app.son("mision_ok")

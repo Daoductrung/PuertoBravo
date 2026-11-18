@@ -529,6 +529,11 @@ def territorios(p):
     from . import sistemas
     ops[0:0] = sistemas.opciones_sucesos(p, Menu, Opcion)
     from .menus import EntradaTexto
+    if not p.en_servidor:
+        ops.append(Opcion(lambda: "Negociar con las bandas" + (f": {len(j.tributos)} te {'paga' if len(j.tributos) == 1 else 'pagan'} tributo" if j.tributos else ""),
+                          lambda: __import__("juego.pactos", fromlist=["x"]).menu_pactos(p),
+                          ayuda="Tres tratos que propones tú: devolverles un barrio tuyo a cambio de dinero, comprarles uno sin pegar un tiro, o cobrarles un tributo diario por dejarles estar. "
+                                "Lo que contestan depende de tu fuerza y de cómo te lleves con ellos, y no es igual cada día."))
     ops.append(Opcion(lambda: f"Tu banda: {j.banda_nombre or 'sin nombre'}, {j.banda} de {sistemas.cupo(j)}" if j.territorios else "Tu banda: necesitas un territorio para tenerla",
                       lambda: sistemas.menu_banda(p, Menu, Opcion, EntradaTexto),
                       ayuda="Con un territorio puedes reclutar gente. Te siguen, suben a tu vehículo y pelean a tu lado. Cada territorio te deja mantener a uno más."))

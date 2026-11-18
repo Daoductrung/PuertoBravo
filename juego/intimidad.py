@@ -114,6 +114,8 @@ class Intimidad:
             donde = "un hotel"
         else:
             donde = casa.nombre
+            if self.aventura_en_casa(casa):                      # tu pareja vive ahí, y estaba en casa
+                return False
         j.stats["aventuras"] = j.stats.get("aventuras", 0) + 1
         self.personas = [x for x in self.personas if x is not q]
         self.encuentro(n, random.choice(["apasionado", "jugueton", "romantico"]), donde, desconocido=True)

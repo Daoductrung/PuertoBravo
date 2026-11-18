@@ -582,7 +582,15 @@ def opciones(app):
                   "Con no, que es lo de siempre, los barrios se conquistan y se defienden desde el móvil, en Territorios. Con sí, cada barrio de las ciudades es de una banda y los suyos andan por sus calles. "
                   "Un barrio se conquista yendo allí: al tumbar a dos de los suyos, o plantándoles cara desde el móvil cuando ya estás dentro, la banda viene a por ti en tres oleadas. Tu propia banda acude a ayudarte. "
                   "No hay que salir del barrio hasta acabar. Y cuando ataquen un barrio tuyo, lo defiendes entrando en él. En un servidor en línea no cuenta: allí los barrios son de las bandas de los jugadores."),
-        ], "Cómo reacciona la gente, qué hace la policía cuando no te busca, y cómo se pelea por los barrios."),
+            si_no("gente_actua", "La gente con la que hablas también actúa",
+                  "Con sí, después de hablar contigo una persona puede hacer algo por su cuenta, según su carácter y la confianza que te tenga: acompañarte un rato si le has caído bien, "
+                  "darte un puñetazo si insistes después de haberla ofendido, o denunciarte si la insultas. Lo decide el juego, sin inteligencia artificial. "
+                  "Con no, la gente solo habla, como antes. Pedir un favor y proponer a alguien que se una a tu banda están siempre en la conversación, porque eso lo eliges tú."),
+            si_no("oficio_policia", "Modo: poder trabajar de policía",
+                  "Con sí, en las comisarías puedes ingresar en la policía y, ya de agente, empezar un turno: te dan un coche patrulla y la emisora te pasa avisos de robos, peleas, "
+                  "conductores temerarios y persecuciones. Los resuelves dando el alto, reduciendo, deteniendo o multando, cobras por cada uno y asciendes. De servicio, la fuerza contra los sospechosos no es delito; "
+                  "cualquier otro delito te cuesta un apercibimiento o la placa. Con no, que es lo de siempre, nada de esto aparece. Solo jugando en solitario."),
+        ], "Cómo reacciona la gente, qué hace la policía cuando no te busca, cómo se pelea por los barrios y el oficio de policía."),
         Opcion("Personas e inteligencia artificial", lambda: __import__("juego.menus_charla", fromlist=["x"]).opciones_ia(app),
                ayuda="Cómo contestan las personas de la calle cuando les escribes lo que quieres: con el motor del juego o con una inteligencia artificial."),
         Opcion("Teclado: cambiar las teclas", lambda: opciones_teclado(app),
@@ -617,6 +625,10 @@ def opciones(app):
             si_no("noche_por_pasos", "La noche con alguien, paso a paso",
                   "Con sí, cuando pasas la noche con alguien decides tú qué haces en cada momento y la otra persona responde. Fijarte en lo que quiere, y parar si te lo pide, es lo que hace que salga bien. "
                   "Se sigue contando de forma sensual, sin escenas explícitas. Con no, la noche se cuenta en un par de frases, como antes."),
+            si_no("pareja_convive", "Vida en pareja: poder pedirle a tu pareja que se venga a vivir contigo",
+                  "Con sí, en la ficha de tu pareja aparece la opción de pedirle que se mude a una de tus casas. Cada persona decide: unas aceptan cuando la relación va bien, y otras no dejan su casa por nadie. "
+                  "Si acepta, te la encuentras en casa, cocina para los dos o te pide que cocines tú, te pide cosas de vez en cuando y nota si no apareces. Puedes pedirle que se vaya. "
+                  "Con no, que es como viene, cada uno sigue en su casa. Los planes nuevos en pareja no dependen de esta opción. Solo jugando en solitario."),
         ], "Activa o desactiva los temas para mayores de 18 años."),
     ]
     principal_ = Menu(app, "Opciones", secciones + [Opcion("Volver", lambda: app.cerrar(principal_), ayuda="Cierra las opciones. También sirve Escape.")],
@@ -737,6 +749,10 @@ def movil(p):
                     app.cerrar(menu)
                     p.gps_a_lugar(l)
                 donde = p.situar(l.x, l.y, l.nombre) if l.mapa == p.mundo.id else p.nombre_lugar(l)
+                if m.get("explicacion"):                         # no es una misión: se lee aquí mismo
+                    lista.append(Opcion(f"Explicación: {m['titulo']}. {p.txt(m['resumen'])}", (lambda m=m: p.explicacion(m)),
+                                        ayuda="Pulsa Intro para leerla ahora. No es una misión: no hay que ir a ningún sitio ni hacer nada. Al llegar al final cuenta como hecha."))
+                    continue
                 if m.get("tutorial") and m["id"] != "tut01":
                     def empezar(m=m):
                         if p.mision:
@@ -889,7 +905,11 @@ def movil(p):
                                "lo mandas a un garaje o le cambias el nombre. Son tuyos los que compras, los que mejoras en un taller, los que sacas de un garaje y los que bautizas: "
                                "esos no desaparecen aunque te alejes o cojas otro."),
                   Opcion("Servicios: vehículo, chófer, guardaespaldas, ambulancia y taxi", lambda: mx.servicios(p)),
-                  ] + ([Opcion(lambda: "Tu perro. " + p.perro_txt(), lambda: mx.menu_perro(p), ayuda="Acariciarlo, darle de comer, mandarlo a casa o llamarlo. A pie también se abre con Mayúsculas Y.")] if j.perro else []) + [
+                  ] + ([Opcion(lambda: "Pedir comida a domicilio" + (": " + p.pedido_txt() if j.pedido else ""),
+                               lambda: __import__("juego.domicilio", fromlist=["x"]).menu_domicilio(p),
+                               ayuda="Solo desde una casa tuya, o en su puerta. Eliges de la carta, pagas el pedido y el envío, y al rato llaman al timbre. "
+                                     "Lo que pidas quita el hambre y la sed de la vida realista y da algo de salud. Si no estás en casa cuando llegue, el repartidor espera un rato y se va.")]
+                       if (p.casa_aqui() is not None or j.pedido) else []) + ([Opcion(lambda: "Tu perro. " + p.perro_txt(), lambda: mx.menu_perro(p), ayuda="Acariciarlo, darle de comer, mandarlo a casa o llamarlo. A pie también se abre con Mayúsculas Y.")] if j.perro else []) + [
                   Opcion(lambda: "Jugar con amigos" + (f": conectado, {len(p.remotos) + 1} jugadores" if p.online_activo() else ""),
                          lambda: __import__("juego.menus_online", fromlist=["x"]).amigos(p),
                          ayuda="Abre tu partida para que entren tus amigos, o únete a la de uno. Tu propio juego hace de servidor: no hace falta nada más."),
@@ -964,6 +984,8 @@ def lugar(p, l):
         app.son("error")
         app.decir(f"{l.nombre}. Está cerrado: aquí todavía no te conocen.", True)
         return
+    if p.entrada_vetada(l):                                      # lo atracaste hace poco: no te abren, o llaman a la policía
+        return
     en_coche = j.veh is not None
     from .combustible import tiene_surtidor
     if en_coche and tiene_surtidor(l) and p.gasta(j.veh):
@@ -1002,8 +1024,9 @@ def lugar(p, l):
     if app.pila and app.pila[-1] is p:
         p.salir_interior(silencio=True)
     elif not en_coche and app.pila and isinstance(app.pila[-1], Menu):
-        from . import sistemas
+        from . import atracos, sistemas
         sistemas.con_recorrido(p, l, app.pila[-1], Opcion)
+        atracos.con_atraco(p, l, app.pila[-1], Opcion)           # todo local con caja en los datos se puede atracar
     if p.acompanante:
         from . import sistemas
         sistemas.visita_con_acompanante(p, l)
@@ -1109,6 +1132,9 @@ def _casa(p, l):
         p.son("pasan_horas", cat="interfaz")
         from . import sistemas
         app.decir(f"Duermes ocho horas. Salud al máximo.{sistemas.al_dormir_en_casa(p, l)} Son las {p.hora_txt()} del día {p.dia}.", True)
+        if l.id == j.convive_casa and j.convive:                 # has dormido en casa, con quien vive contigo
+            j.convive_hoy["visto"] = p.dia
+            p.peticion_cumplida("dormir")
 
     def esconderse():
         p.pasar_horas(3)
@@ -1190,7 +1216,12 @@ def _casa(p, l):
             lista.append(Opcion(f"{j.perro} te espera en casa: llévatelo contigo", lambda: (p.llamar_perro(), m.refrescar(False))))
         elif j.perro and p.perro() is not None:
             lista.append(Opcion(f"Dejar a {j.perro} en casa", lambda: (p.mandar_perro_a_casa(l), m.refrescar(False)), ayuda="Se queda aquí, con comida y agua, hasta que vuelvas a por él o lo llames desde el móvil."))
-        from . import laboratorio, sistemas
+        from . import convivencia, domicilio, laboratorio, sistemas
+        lista += convivencia.opciones_casa(p, l, Menu, Opcion)
+        if not p.domicilio_motivo() or j.pedido:
+            lista.append(Opcion(lambda: "Pedir comida a domicilio" + (": " + p.pedido_txt() if j.pedido else ""), lambda: domicilio.menu_domicilio(p),
+                                ayuda="Eliges de la carta, pagas el pedido y el envío, y al rato llaman al timbre. Quita el hambre y la sed de la vida realista y da algo de salud. "
+                                      "Mientras estás en este menú el tiempo no corre: sal a la puerta y espera cerca."))
         puestos = len(sistemas.muebles_de(j, l))
         cuantos = sum(1 for mu in sistemas.MUEBLES if mu[1] != "garaje" or int(l.get("garaje", 0)))
         lista.append(Opcion(f"Amueblar la casa: {puestos} de {cuantos} cosas puestas", lambda: sistemas.menu_muebles(p, l, Menu, Opcion),
@@ -1209,7 +1240,7 @@ def _casa(p, l):
         app.abrir(sistemas.Interior(p, l, {"descansar": descansar, "garaje": lambda: app.decir(
             f"Garaje: {len(garaje)} de {l.get('garaje', 0)} plazas ocupadas" + ("." if not garaje else ": " + ", ".join(d.get("nombre", d["modelo"]) for d in garaje) + ".") +
             " Para sacar un vehículo, usa el menú de la casa.", True)}))
-    m = _menu_lugar(p, l, ops)
+    m = _menu_lugar(p, l, ops, p.saludo_de_casa(l) or None)
 
 
 SIN_SILENCIADOR = ("escopeta", "escopeta_combate", "ametralladora", "minigun", "lanzacohetes", "ballesta")
@@ -1363,25 +1394,9 @@ def _surtidor(p, l):
 def _tienda(p, l):
     app = p.app
     j = p.j
-    atracadas = p.atracadas
 
     def atracar():
-        if p.arma()["tipo"] != "fuego":
-            app.son("error")
-            app.decir("Para atracar la tienda tienes que empuñar un arma de fuego.", True)
-            return
-        if atracadas.get(l.id) == p.dia:
-            app.son("error")
-            app.decir("La caja está vacía: ya la atracaste hoy.", True)
-            return
-        atracadas[l.id] = p.dia
-        caja = p.caja_de_local(l) or {"dinero": random.randint(150, 500), "busqueda": 2}      # lo que hay en la caja lo dicen los datos
-        app.cerrar(m)
-        p.son("grito", vol=0.5)
-        botin = int(caja["dinero"])
-        p.dar_dinero(botin)
-        p.decir(f"¡Manos arriba! El dependiente vacía la caja: {botin} euros. ¡Ha pulsado la alarma, lárgate!")
-        p.poner_busqueda(max(1, int(caja["busqueda"])))
+        p.atracar_local(l)                                       # el mismo atraco que el de cualquier local con caja (atracos.py)
     factor = p.mercado("comida", l.id)
     ops = _surtidor(p, l) + _agua(p)
     if tiene_surtidor_rueda(p, l):
@@ -1395,7 +1410,7 @@ def _tienda(p, l):
         ops.append(Opcion(lambda: f"Rueda de repuesto: {int(R.aj('precio_rueda'))} euros. Llevas {j.objetos.get('rueda', 0)}", repuesto,
                           ayuda="Si pinchas, la cambias tú desde el móvil, en Servicios, con el vehículo parado."))
     ops += [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {int(c['precio'] * factor)} euros", _comprar_comida(p, c, factor)) for c in p.datos["comidas"][:3:2]]
-    ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua"), _comprar_walkman(p)] + armas_en_venta(p, l) + ([_comprar_objeto(p, "pienso")] if p.j.perro else []) + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará.")]
+    ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua"), _comprar_walkman(p)] + armas_en_venta(p, l) + ([_comprar_objeto(p, "pienso")] if p.j.perro else []) + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará, y la tienda te recuerda: durante unos días no te dejan entrar.")]
     m = _menu_lugar(p, l, ops)
 
 
@@ -1467,15 +1482,19 @@ def _comisaria(p, l):
         if p.pagar(p.precio("soborno_estrella", 400) * j.estrellas):
             p._fin_persecucion()
             p.app.decir("Un sobre cambia de manos y tu expediente desaparece. Ya no te buscan.", True)
-    _menu_lugar(p, l, [Opcion(lambda: f"Pagar un soborno para que dejen de buscarte: {p.precio('soborno_estrella', 400) * j.estrellas} euros", sobornar),
-                       Opcion(lambda: f"Tu historial: {j.stats['detenciones']} detenciones")])
+    from . import agente
+    m = _menu_lugar(p, l, lambda: [Opcion(lambda: f"Pagar un soborno para que dejen de buscarte: {p.precio('soborno_estrella', 400) * j.estrellas} euros", sobornar),
+                                   Opcion(lambda: f"Tu historial: {j.stats['detenciones']} detenciones")] + agente.opciones_comisaria(p, l, Menu, Opcion, lambda: m.refrescar(False)))
 
 
 def _taller(p, l):
     app = p.app
     j = p.j
     if not j.veh:
-        app.decir(f"{l.nombre}. Ven con un vehículo para repararlo o pintarlo.", True)
+        if p.local_atracable(l):                                 # a pie no hay nada que reparar, pero la caja está ahí
+            _menu_lugar(p, l, [Opcion("Ven con un vehículo para repararlo, pintarlo o mejorarlo")])
+        else:
+            app.decir(f"{l.nombre}. Ven con un vehículo para repararlo o pintarlo.", True)
         return
     v = j.veh
 

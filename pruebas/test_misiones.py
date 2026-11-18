@@ -67,6 +67,10 @@ def _jugar_mision(robot, m):
         j.salud = j.salud_max
         if tipo == "ir":
             _ir_a(robot, l)
+            if paso.get("exige") == "radar":                     # el ejercicio del radar del primer tutorial: hay que usarlo
+                robot.frames(3)
+                assert p.mision and p.mision["paso"] == ms["paso"], f"{m['id']}: el paso del radar se cumple sin usar el radar"
+                robot.tecla(pygame.K_TAB)
         elif tipo == "robar":
             if ms.get("pendiente"):
                 _ir_a(robot, l)
@@ -165,6 +169,33 @@ def _jugar_mision(robot, m):
             robot.frames(3)
             assert j.estrellas >= 1
             p.limpiar_busqueda()
+        elif tipo == "practica":                                 # los tutoriales que comprueban lo que haces (1.7.1)
+            que = paso["que"]
+            if que == "zarpar":
+                _ir_a(robot, p.lugares["mar_puerto"])            # al mar, a bordo de una lancha
+            elif que == "timon":
+                for _ in range(1200):
+                    robot.frames(1, mantener=(pygame.K_UP, pygame.K_RIGHT))
+                    if not p.practica_de("timon"):
+                        break
+            elif que == "atracar":
+                _ir_a(robot, p.lugares["mar_puerto"])
+                robot.frames(5)
+                robot.tecla(pygame.K_RETURN)
+                menu = robot.app.pila[-1]
+                assert isinstance(menu, Menu), f"{m['id']}: el muelle no abre su menú"
+                menu.i = next(k for k, o in enumerate(menu.opciones) if o.texto.startswith("Atracar"))
+                robot.tecla(pygame.K_RETURN)
+            elif que == "trabajar":
+                robot.tecla(pygame.K_j)
+            elif que == "servicio":
+                for _ in range(2):                               # recoger y llevar
+                    q = p.trabajo["lugar"]
+                    j.veh.x, j.veh.y = p.mundo.punto_libre(q.x + 4, q.y)
+                    j.veh.vel = 0
+                    robot.frames(5)
+                    if not p.practica_de("servicio"):
+                        break
         elif tipo == "perseguir":
             if ms.get("pendiente"):
                 _ir_a(robot, l)

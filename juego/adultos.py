@@ -268,6 +268,7 @@ class Adultos:
             f *= 1.9
             nota = "escasez"
         f *= 1.0 - min(0.15, self.j.reputacion / 600.0)
+        f *= self.factor_proveedor(lugar)                        # si le has asaltado, puede que te cobre más una temporada
         return max(1, int(round(s["precio"] * f))), nota
 
     def precio_calle(self, ident):

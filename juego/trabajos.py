@@ -41,6 +41,8 @@ class Trabajos:
             return
         t = self.trabajo
         self.trabajo = None
+        if t.get("tipo") == "policia":                           # fin del turno: se retira lo del aviso y se devuelve el coche patrulla
+            self.fin_turno_limpieza(t)
         if self.gps and self.gps.get("auto"):
             self.cancelar_gps()
         o = t.get("objetivo")
@@ -58,6 +60,9 @@ class Trabajos:
     def alternar_trabajo(self):
         j = self.j
         v = j.veh
+        if self.de_servicio():                                   # de policía: la J termina el turno
+            self.terminar_turno()
+            return
         if self.trabajo and self.trabajo.get("veh") is v:
             self.terminar_trabajo("Fin del servicio.")
             return
@@ -65,7 +70,10 @@ class Trabajos:
         if not tipo:
             self.decir("Este vehículo no sirve para trabajar. Prueba con un taxi, una ambulancia, un autobús, un coche patrulla o un camión.", True)
             return
-        if self.mision:
+        if tipo == "vigilante" and self.es_agente():             # con placa, el coche patrulla es para el turno de policía
+            self.empezar_turno(veh=v)
+            return
+        if self.mision and not self.practica_de("trabajar", "servicio"):
             self.decir("No puedes trabajar durante una misión.", True)
             return
         if j.estrellas:

@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 18
+VERSION_CACHE = 19
 PI2 = 2 * np.pi
 
 
@@ -766,6 +766,18 @@ def generar(semilla=7):
     for t0, f0, f1 in ((0.24, 190, 150), (0.62, 170, 120)):
         _poner(mg, _filtro(np.tanh(3.0 * vocal(f0, f1, 0.32, (800, 1700), 0.2)), 500, 2800), t0)
     S["megafono"] = _norm(mg, 0.55)
+    # ----------------------------------------------- en casa y de servicio (versión 1.7.1): el timbre y la emisora de la policía
+    tb = np.zeros(int(SR * 1.3))                                 # timbre de casa: «din, don», dos notas con su cola
+    for t0, f in ((0.0, 659.3), (0.42, 523.3)):
+        tt = _t(0.85)
+        _poner(tb, (np.sin(PI2 * f * tt) + 0.35 * np.sin(PI2 * 2 * f * tt) + 0.12 * np.sin(PI2 * 3.01 * f * tt)) * _decae(0.85, 0.28), t0)
+    S["timbre"] = _norm(tb, 0.5)
+    em = np.zeros(int(SR * 0.75))                                # emisora de la policía: el chasquido al abrirse el canal, dos pitidos y el soplido de fondo
+    _poner(em, _filtro(ruido(0.09), 400, 3200) * _decae(0.09, 0.03), 0.0, 0.9)
+    _poner(em, _seno(1250, 0.09) * np.sin(np.pi * _t(0.09) / 0.09), 0.14, 0.7)
+    _poner(em, _seno(930, 0.11) * np.sin(np.pi * _t(0.11) / 0.11), 0.27, 0.7)
+    _poner(em, _filtro(ruido(0.3), 600, 2600) * _decae(0.3, 0.12, 0.02), 0.4, 0.3)
+    S["emisora"] = _norm(em, 0.45)
     return S
 
 

@@ -79,7 +79,8 @@ def _es_dato(nombre):
     return nombre.lower().endswith((".json", rutas.EXT_DATOS))
 
 
-SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas", "vehiculos_propios", "calle", "guerra_barrios")
+SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas", "vehiculos_propios", "calle", "guerra_barrios",
+                  "carta_domicilio", "domicilio", "atracos", "pactos", "contratos", "reacciones", "planes_pareja", "convivencia", "policia_oficio", "avisos_policia")
 
 
 def cargar_datos(con_mods=True):
@@ -195,6 +196,8 @@ def cargar_datos(con_mods=True):
     misvehiculos.configurar(d)
     calle.configurar(d)
     guerra.configurar(d)
+    from . import agente, ajustes, atracos, contratos, convivencia, domicilio, pactos, reacciones      # noqa: F401  (cada uno apunta sus ajustes al cargarse)
+    ajustes.configurar_todos(d)
     return d
 
 

@@ -194,6 +194,8 @@ def amigos(p):
                 Opcion("Qué se comparte", ayuda="",
                        accion=lambda: app.decir("Oyes a tus amigos donde están: el motor de lo que conducen, sus pasos y su claxon. El radar los anuncia y el GPS te lleva hasta ellos. "
                                                 "Podéis escribiros mensajes, que se leen en voz alta, con la tecla F10, y enviaros dinero. Cada uno conserva su propia partida, sus misiones y su progreso.", True)),
+                Opcion("Cómo se juega con amigos: explicación paso a paso", lambda: p.explicacion("tut05") or app.decir("La explicación no está en estos datos. El manual lo cuenta en Jugar con amigos.", True),
+                       ayuda="Cómo abrir tu partida, cómo unirte a la de otro y qué se puede hacer juntos. Se lee aquí mismo: no es una misión."),
                 Opcion("Volver", cerrar_menu),
             ]
         lista = [Opcion(lambda: ("Tu partida está abierta" + (", con contraseña" if p.servidor.protegido else ", sin contraseña") if p.es_anfitrion() else "Estás en la partida de un amigo")

@@ -760,6 +760,8 @@ def sucesos_territorio(p, azar=None):
         return                                                    # esa banda te respeta: no toca lo tuyo
     if tipo == "ataque" and p.dia <= j.pacto_hasta:
         return                                                    # hay un pacto en vigor: nadie ataca
+    if tipo == "ataque" and banda in j.tributos:
+        return                                                    # esa banda te paga por estar tranquila: no va a atacarte
     if tipo == "ataque":
         t = azar.choice(j.territorios)
         nombre = _nombre_barrio(p, t)[0]

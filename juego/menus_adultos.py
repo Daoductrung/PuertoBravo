@@ -110,6 +110,8 @@ def vida_social(p, directo=None):
                 favorito = pers.get("regalo") == g["id"]
                 p.son("regalo", cat="interfaz")
                 p.sumar_afinidad(pid, g["afinidad"] * (2 if favorito else 1))
+                if j.convive == pid:
+                    p.peticion_cumplida("regalo")
                 app.decir(f"Le regalas {g['nombre'].lower()}. {'¡Le encanta! Has acertado de lleno.' if favorito else 'Lo agradece con una sonrisa.'} Ahora {p.afinidad_txt(r)}.", True)
             return f
 
@@ -176,6 +178,8 @@ def vida_social(p, directo=None):
             r["afinidad"] = max(0, r["afinidad"] - 40)
             if j.pareja == pid:
                 j.pareja = ""
+            if j.convive == pid:                                 # y si vivía contigo, se va de casa
+                p.fin_convivencia("sola", callar=True)
             p.son("ruptura", cat="interfaz")
             p.cambiar_animo(-10)
             app.cerrar()
@@ -244,6 +248,22 @@ def vida_social(p, directo=None):
             lista += [
                       Opcion("Pasar la noche juntos", noche, ayuda=f"Necesitáis mucha confianza. Vais a una de tus casas en esta localidad o, si no tienes, a un hotel por {p.precio('hotel_cita', 70)} euros.")]
             if j.pareja == pid:
+                from . import convivencia
+                lista.append(Opcion("Hacer un plan juntos", lambda: convivencia.menu_planes(p, pers),
+                                    ayuda="Planes para parejas: un paseo sin rumbo, el cine, una cena, una travesía en barco, una tarde de playa... Cada uno se cuenta con una escena distinta cada vez. Uno al día."))
+                if j.convive == pid:
+                    casa = p.casa_comun()
+                    lista.append(Opcion(f"Vive contigo, en {p.nombre_lugar(casa) if casa else 'tu casa'}" + (". " + p.peticion_txt() if p.peticion_txt() else ""),
+                                        ayuda="Te la encuentras en esa casa: en su menú puedes hablar, comer en compañía, hacer planes o pedirle que se vaya."))
+                elif p.convivencia_activa():
+                    def mudarse():
+                        casas = [c for c in (p.lug(i) for i in j.propiedades) if c is not None and c.tipo == "casa"]
+                        aqui_ = [c for c in casas if c.mapa == p.mundo.id]
+                        ok, frase = p.pedir_convivir(pers, (aqui_ or casas or [None])[0])
+                        app.decir(frase, True)
+                    lista.append(Opcion("Pedirle que se venga a vivir contigo", mudarse,
+                                        ayuda="Cada persona decide. Hace falta que la relación vaya muy bien y haber tenido varias citas, y hay quien no deja su casa por nadie. "
+                                              "Si acepta, vive en una de tus casas: la de esta localidad, si tienes una aquí."))
                 lista.append(Opcion("Romper la relación", romper))
             else:
                 lista.append(Opcion("Pedirle que sea tu pareja", pedir, ayuda="Hace falta mucha química. Tener pareja sube tu ánimo cada día, pero hay que cuidarla."))
@@ -452,12 +472,21 @@ def proveedor(p, l):
 
     def ops():
         lista = []
-        for s in ilegales:
+        veto = p.proveedor_vetado(l)
+        if veto:                                                 # le asaltaste: no te vende nada hasta que se le pase
+            lista.append(Opcion(f"Aquí no te venden nada: no han olvidado el asalto. Vuelve dentro de {veto} {'día' if veto == 1 else 'días'}"))
+        elif p.factor_proveedor(l) > 1.0:
+            lista.append(Opcion("Te siguen vendiendo, pero más caro: es lo que tiene haberles asaltado"))
+        for s in ilegales if not veto else []:
             precio, nota = p.precio_sustancia(s["id"], l)
             marca = {"ganga": ", ganga", "escasez": ", escasez"}.get(nota, "")
             lista.append(Opcion(f"{s['nombre']}: {precio} euros{marca}. Llevas {j.sustancias.get(s['id'], 0)}", (lambda s=s: tratar(s)), ayuda=s["desc"]))
         from . import laboratorio
-        lista.append(laboratorio.opcion_proveedor(p, Opcion))
+        if not veto:
+            lista.append(laboratorio.opcion_proveedor(p, Opcion))
+        lista.append(Opcion("Asaltar a este proveedor", lambda: p.asaltar_proveedor(l),
+                            ayuda="Necesitas un arma de fuego en la mano. Tienen guardia, y a veces refuerzos que llegan en un vehículo. Si acabas con ellos te llevas la mercancía que te quepa y el dinero de la caja. "
+                                  "Pero no se les olvida: ese proveedor deja de venderte unos días, o te sube los precios, o manda gente a por ti."))
         lista.append(Opcion(f"Mochila: {p.carga()} de 100 unidades. En la calle, {p.reputacion_txt()}",
                             ayuda="Los precios cambian cada día y en cada localidad: compra donde esté barato y vende donde esté caro, o al menudeo en la calle, que se paga mejor pero es más arriesgado."))
         lista.append(Opcion("Volver", lambda: app.cerrar()))

@@ -295,3 +295,7 @@ SONIDOS AÑADIDOS DESPUÉS
   recoger_municion.flac: cartriges.ogg, de War on Water sound effects. Dura 0,50 segundos.
   helicoptero_policia.flac: heli_0.ogg, de helicopter sfx. Dura 4,00 segundos.
   megafono.flac: sonido original del juego.
+
+SONIDOS AÑADIDOS DESPUÉS
+  timbre.flac: sonido original del juego.
+  emisora.flac: sonido original del juego.

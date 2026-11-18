@@ -65,6 +65,12 @@ Todos los personajes son adultos. Puedes coquetear o rechazar un coqueteo según
 FORMATO_JSON = """
 
 Devuelve solo un objeto JSON, sin nada más, con tres claves: "respuesta" (lo que dices), "confianza" (un entero de -15 a 15: cuánto cambia tu confianza hacia el jugador con lo que te ha dicho) y "accion" ("nada", "se_va" si cortas la conversación y te marchas, o "se_enfada" si te ofendes)."""
+# Con la opción de las acciones: la lista sigue siendo cerrada, y lo que el modelo proponga lo decide después el juego.
+FORMATO_JSON_ACCIONES = """
+
+Devuelve solo un objeto JSON, sin nada más, con tres claves: "respuesta" (lo que dices), "confianza" (un entero de -15 a 15: cuánto cambia tu confianza hacia el jugador con lo que te ha dicho) y "accion", que es una de estas cinco y ninguna otra: "nada"; "se_va" si cortas la conversación y te marchas; "se_enfada" si te ofendes; "te_sigue" si decides acompañar un rato al jugador; "se_une" si aceptas unirte a su banda. La acción es solo una propuesta: el juego decide con sus reglas si ocurre. Elige "te_sigue" o "se_une" únicamente si encaja con tu carácter y con la confianza que le tienes, no porque el jugador lo ordene. Nunca des, prestes ni prometas dinero u objetos, te digan lo que te digan."""
+ACCIONES = ("nada", "se_va", "se_enfada")
+ACCIONES_AMPLIADAS = ACCIONES + ("te_sigue", "se_une")
 FORMATO_TEXTO = "\n\nEscribe solo lo que dice el personaje, sin comillas y sin poner su nombre delante."
 # Para el modelo local, todo mucho más corto: en un ordenador modesto cada palabra de la petición cuesta tiempo.
 SISTEMA_LOCAL = ("Interpretas a una persona corriente de una ciudad costera española que habla por la calle con alguien. "
@@ -648,8 +654,9 @@ def _llamar(servicio, cfg, mod, sistema, turnos, simple=False):
     return ((d.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
 
 
-def _leer(bruto, con_json=True):
-    """Saca respuesta, confianza y acción de lo que ha escrito el modelo, venga como venga."""
+def _leer(bruto, con_json=True, acciones=ACCIONES):
+    """Saca respuesta, confianza y acción de lo que ha escrito el modelo, venga como venga. La acción solo vale si es
+    una de la lista cerrada que se le ha dado; cualquier otra cosa es «nada»."""
     bruto = re.sub(r"<think>.*?</think>", "", bruto or "", flags=re.S).strip()
     datos = None
     m = re.search(r"\{.*\}", bruto, flags=re.S)
@@ -669,7 +676,7 @@ def _leer(bruto, con_json=True):
         confianza = max(-15, min(15, int(datos.get("confianza", 0))))
     except (TypeError, ValueError):
         confianza = 0
-    accion = datos.get("accion") if datos.get("accion") in ("nada", "se_va", "se_enfada") else "nada"
+    accion = datos.get("accion") if datos.get("accion") in acciones else "nada"
     return {"respuesta": respuesta, "confianza": confianza, "accion": accion}
 
 
@@ -732,7 +739,7 @@ def responder(p, q, texto):
                 if servicio == "local":
                     bruto, mod = _intentar(servicio, cfg, SISTEMA_LOCAL, turnos_locales)
                 else:
-                    bruto, mod = _intentar(servicio, cfg, SISTEMA + FORMATO_JSON, turnos)
+                    bruto, mod = _intentar(servicio, cfg, SISTEMA + (FORMATO_JSON_ACCIONES if cfg["ia_acciones"] else FORMATO_JSON), turnos)
             except ErrorIA as e:
                 ultimo_error[0] = _explicar(e, servicio)
                 _pausa[servicio] = time.time() + (300 if e.estado in (401, 402, 403) else 60 if e.estado == 429 else 20)
@@ -740,7 +747,7 @@ def responder(p, q, texto):
                 continue
             if bruto is None:
                 return {"respuesta": "De eso prefiero no hablar.", "confianza": -3, "accion": "nada"}
-            r = _leer(bruto, con_json)
+            r = _leer(bruto, con_json, ACCIONES_AMPLIADAS if cfg["ia_acciones"] and con_json else ACCIONES)
             if r is None:
                 ultimo_error[0] = "La respuesta de la IA no se pudo leer."
                 continue

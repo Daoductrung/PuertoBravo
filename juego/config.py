@@ -90,6 +90,10 @@ POR_DEFECTO = {
     "ambulancias": True,           # tras un tiroteo o un atropello acude una ambulancia
     "helicoptero_policia": False,  # con el nivel de búsqueda más alto, un helicóptero te localiza desde el aire
     "guerra_calle": False,         # modo: las bandas se ven por la calle y los barrios se conquistan peleando allí
+    "gente_actua": True,           # la gente con la que hablas puede seguirte un rato, pegarte tras una discusión, denunciarte o hacerte un favor
+    "ia_acciones": False,          # con el modo IA: el modelo puede proponer una acción de una lista cerrada, y el juego decide si pasa
+    "pareja_convive": False,       # contenido para adultos: poder pedirle a tu pareja que se venga a vivir contigo
+    "oficio_policia": False,       # modo: poder ingresar en la policía y trabajar de agente
     "red_nombre": "",              # cómo te ven tus amigos; vacío = el nombre de tu personaje
     "red_puerto": 47810,
     "red_ultima": "",              # última dirección a la que te uniste

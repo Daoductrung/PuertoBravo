@@ -210,6 +210,10 @@ def carrera(p):
     hechos = [(t, n) for t, n in NOMBRE_TRABAJO.items() if p.servicios_de(t)]
     for t, n in hechos:
         lineas.append(f"Vida honrada. {n.capitalize()} {RANGOS[p.rango(t)]}: {p.servicios_de(t)} servicios")
+    if j.policia.get("alta") or s.get("serv_policia"):
+        pol = j.policia
+        lineas.append(("Vida honrada. Policía: eres " + p.rango_policia_txt() if pol.get("alta") else "Vida honrada. Fuiste policía")
+                      + f". Avisos resueltos: {s.get('serv_policia', 0)}. Detenciones hechas: {s.get('detenidos', 0)}" + (f". Te quitaron la placa {s['expulsiones_policia']} veces" if s.get("expulsiones_policia") else ""))
     lineas.append(f"Vida honrada. Jornadas trabajadas: {p.servicios_de('jornada')}. Voluntariado: {s.get('voluntariado', 0)} veces. Donado: {s.get('donado', 0)} euros. Sucesos resueltos: {s.get('eventos', 0)}")
     lineas.append(f"Vida delictiva. Vehículos robados: {s['vehiculos_robados']}. Contratos: {s.get('contratos', 0)}. Atracos a bancos: {s.get('atracos', 0)}. Territorios: {len(j.territorios)}. Detenciones: {s['detenciones']}")
     if p.modo_adulto():

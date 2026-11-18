@@ -11,11 +11,24 @@ def conversar(p, q):
 
     def decir(intencion, dato=None):
         def hacer():
+            antes = f["confianza"]
             texto = p.responder(q, intencion, dato)
-            app.decir(texto, True)
-            if q.estado in ("huye", "ataca") or q.hostil:
+            extra = p.reaccion_tras(q, intencion, antes)         # a veces, además de contestar, hace algo
+            app.decir(texto + (" " + extra if extra else ""), True)
+            if q.estado in ("huye", "ataca", "sigue") or q.hostil:
                 app.cerrar(menu)
         return hacer
+
+    def favor():
+        app.decir(p.pedir_favor(q), True)
+
+    def reclutar():
+        ok, frase = p.reclutar_persona(q)
+        if not ok:
+            app.son("error")
+        app.decir(frase, True)
+        if ok:
+            app.cerrar(menu)
 
     def sitios():
         ops = [Opcion(f"Dónde puedo {c}" if c in ("comer", "curarme", "dormir", "comprar") else f"Dónde hay {c}" if c != "policía" else "Dónde está la policía",
@@ -31,7 +44,7 @@ def conversar(p, q):
                 app.decir("Espera un momento.", True)
             r = p.responder_libre(q, texto)
             app.decir(r, True)
-            if q.estado in ("huye", "ataca") or q.hostil or q not in p.personas:
+            if q.estado in ("huye", "ataca", "sigue") or q.hostil or q not in p.personas or q.tipo != "civil":
                 app.cerrar(menu)
         app.abrir(EntradaTexto(app, f"Qué le dices a {f['nombre']}", hecho, maximo=200,
                                ayuda="Escribe con tus palabras: saludar, preguntar por un sitio, contar algo, hacer un cumplido. " +
@@ -57,7 +70,13 @@ def conversar(p, q):
                  Opcion(f"Invitar a un café: {p.precio('cafe_invitar', 4)} euros", decir("invitar"), ayuda="Sube mucho la confianza. Una vez por persona."),
                  Opcion(f"Darle {p.precio('limosna', 10)} euros", decir("limosna"), ayuda="Sube la confianza y, la primera vez, tu prestigio entre los vecinos."),
                  Opcion("Pedirle el número y ser amigos", decir("amistad"), ayuda="Hace falta que le caigas bien. Tus conocidos están en el móvil y te cuentan cosas."),
+                 Opcion("Pedirle un favor", favor, ayuda="Hace falta confianza, y uno al día por persona. Lo que haga depende de cómo estés: si te busca la policía con poco nivel, te esconde; "
+                                                         "si vienes con poca salud, te apaña; si no, te da una pista de algo que hay cerca o habla bien de ti en el barrio."),
                  Opcion("Escribir lo que quieras decirle", libre, ayuda="Con el modo IA activado en Opciones, la persona contesta con total libertad a lo que escribas.")]
+        if not p.en_servidor:
+            lista.append(Opcion(lambda: f"Proponerle que se una a tu banda: prima de {p.prima_recluta()} euros", reclutar,
+                                ayuda="Necesitas un territorio y hueco en la banda. Además, que te tenga confianza, que tu nombre suene en la calle y que tenga carácter para ello: "
+                                      "los muy tímidos y la gente mayor dicen que no. Si acepta, cobra la prima, se queda contigo con su nombre y pelea a tu lado como los demás de tu banda."))
         if p.modo_adulto():
             lista.append(Opcion("Coquetear", ligar, ayuda="Puede salir bien o mal, según la confianza, tu ánimo y lo que busque la otra persona. Un no es un no."))
             if p.puede_proponer(q):
@@ -173,6 +192,10 @@ def opciones_ia(app):
             Opcion(lambda: f"Modelo del otro servicio: {cfg['ia_modelo_otro'] or 'lo elige el juego'}",
                    texto("ia_modelo_otro", "Nombre del modelo. Vacío, lo elige el juego", "Si lo dejas vacío, el juego busca un modelo gratuito y, si no hay, usa el primero de la lista."),
                    ayuda="Solo para el otro servicio. En los demás, el modelo lo elige siempre el juego."),
+            Opcion(lambda: f"La IA puede proponer acciones, y el juego decide: {'sí' if cfg['ia_acciones'] else 'no'}", ajuste=lambda d: cfg.__setitem__("ia_acciones", not cfg["ia_acciones"]),
+                   ayuda="Solo cuenta con el modo IA activado. Con sí, además de contestar, el modelo puede proponer que el personaje te acompañe un rato, se vaya, se enfade o se una a tu banda. "
+                         "Es una lista cerrada y el modelo no decide nada: lo decide el juego, con las mismas reglas que sin IA, así que no sirve de nada escribirle que te obedezca. "
+                         "En esa lista no hay dinero ni objetos: ningún personaje te da nada por lo que escribas. Con no, que es como viene, la IA solo puede irse o enfadarse, como antes. No funciona con el modelo local."),
             Opcion("Probar ahora", probar, ayuda="Hace una pregunta de prueba y te dice qué servicio y qué modelo han contestado y cuánto han tardado."),
             Opcion(cual),
             Opcion("Volver a buscar el modelo más barato", lambda: (ia.olvidar_modelos(), app.decir("Hecho. En la próxima conversación se vuelve a preguntar a cada servicio.", True)),

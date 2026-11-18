@@ -168,39 +168,57 @@ def test_el_tutorial_de_trabajos_desde_otra_localidad(robot):
     assert p.j.veh is taxi, robot.dicho()
     robot.saltar_dialogos()
     robot.frames(5)
-    assert p.mision["def"]["pasos"][p.mision["paso"]]["tipo"] == "entregar" and p.gps is not None
-    # el piloto del GPS, con la Y, lo lleva a la parada
+    assert p.practica_de("trabajar"), robot.dicho()                              # desde la 1.7.1 no basta con llevar el taxi a un sitio: hay que trabajar
+    robot.tecla(pygame.K_j)
+    robot.frames(5)
+    assert p.trabajo and p.trabajo["tipo"] == "taxi" and p.practica_de("servicio") and p.gps is not None, robot.dicho()
+    # el piloto del GPS, con la Y, hace el servicio entero: va a por el cliente y le lleva a su destino
     robot.tecla(pygame.K_y)
     hecho = False
-    for _ in range(1500):
+    for _ in range(4000):
         robot.frames(10)
-        if not (p.mision and p.mision["def"]["pasos"][p.mision["paso"]]["tipo"] == "entregar"):
+        if not p.practica_de("servicio"):
             hecho = True
             break
     assert hecho, robot.dicho()
     robot.saltar_dialogos()
     robot.frames(5)
-    assert "tut03" in p.completadas and p.j.estrellas == 0
+    assert "tut03" in p.completadas and p.j.estrellas == 0 and p.j.stats.get("servicios", 0) >= 1
 
 
 def test_los_tutoriales_del_mar_y_de_los_amigos_desde_lejos(robot):
     p = robot.nueva_partida()
     p.completadas.append("tut01")
-    for titulo, ident, destino in (("Aprende a navegar", "tut04", "lonja"), ("Aprende a jugar con amigos", "tut05", "bar_gaviota")):
-        _lejos(robot)
-        m = next(x for x in p.datos["misiones"] if x["id"] == ident)
-        salida, meta = p.lugares[m["lugar"]], p.lugares[destino]
-        _empezar_desde_el_movil(robot, titulo)
-        assert p.mundo.id == salida.mapa and math.hypot(salida.x - p.j.x, salida.y - p.j.y) < 30, (ident, robot.dicho())
-        robot.saltar_dialogos()
-        robot.frames(5)
-        assert p.gps is not None and p.mision["def"]["pasos"][p.mision["paso"]]["tipo"] == "ir", (ident, robot.dicho())
-        robot.tecla(pygame.K_u)                                                   # caminar solo hasta el destino
-        assert _hasta(robot, lambda: p.mision is None or p.mision["def"]["pasos"][p.mision["paso"]]["tipo"] != "ir" or robot.app.pila[-1] is not p, 1500,
-                      mantener=(pygame.K_LSHIFT,)), (ident, robot.dicho(), math.hypot(meta.x - p.j.x, meta.y - p.j.y))
-        robot.saltar_dialogos()
-        robot.frames(5)
-        assert ident in p.completadas, (ident, robot.dicho())
+    # el del mar te lleva al embarcadero. Desde la 1.7.1 no se completa andando hasta la lonja: hay que zarpar, llevar el
+    # timón y atracar (se juega entero en test_171_tanda5)
+    _lejos(robot)
+    m = next(x for x in p.datos["misiones"] if x["id"] == "tut04")
+    salida = p.lugares[m["lugar"]]
+    _empezar_desde_el_movil(robot, "Aprende a navegar")
+    assert p.mundo.id == salida.mapa and math.hypot(salida.x - p.j.x, salida.y - p.j.y) < 30, robot.dicho()
+    robot.saltar_dialogos()
+    robot.frames(5)
+    assert p.practica_de("zarpar"), robot.dicho()
+    lonja = p.lugares["lonja"]
+    p.teletransportar(lonja.x + 2, lonja.y)
+    robot.frames(40)
+    assert p.practica_de("zarpar") and "tut04" not in p.completadas
+    p.abandonar_mision()
+    # el de los amigos ya no es una misión que se completa yendo a un bar: es una explicación que se lee en el móvil,
+    # estés donde estés, y no te mueve de sitio
+    _lejos(robot)
+    antes = (p.mundo.id, p.j.x, p.j.y)
+    robot.tecla(pygame.K_m)
+    mv = robot.app.pila[-1]
+    mv.i = next(k for k, o in enumerate(mv.opciones) if o.texto.startswith("Misiones"))
+    robot.tecla(pygame.K_RETURN)
+    mm = robot.app.pila[-1]
+    assert not any(o.texto.startswith("Tutorial: Aprende a jugar con amigos") for o in mm.opciones)
+    mm.i = next(k for k, o in enumerate(mm.opciones) if o.texto.startswith("Explicación: Aprende a jugar con amigos"))
+    robot.tecla(pygame.K_RETURN)
+    assert not isinstance(robot.app.pila[-1], Menu) and p.mision is None, robot.dicho()
+    robot.saltar_dialogos()
+    assert "tut05" in p.completadas and (p.mundo.id, p.j.x, p.j.y) == antes
 
 
 def test_un_tutorial_empezado_cerca_no_te_mueve(robot):

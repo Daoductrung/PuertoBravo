@@ -183,27 +183,12 @@ def test_tutoriales_nuevos(robot):
     robot.frames(5)
     robot.saltar_dialogos()
     assert "tut02" in p.completadas and p.j.estrellas == 0
-    # los otros tres se completan sin más que llegar
-    for ident in ("tut03", "tut04", "tut05"):
-        if ident == "tut05":
-            p.completadas.append("tut01") if "tut01" not in p.completadas else None
-        p, m = _empezar(robot, ident)
-        for _ in range(12):
-            if p.mision is None:
-                break
-            paso = m["pasos"][p.mision["paso"]]
-            l = p.lugares.get(paso.get("lugar", ""))
-            if paso["tipo"] == "robar":
-                p._subir(p.mision["veh"], False, callar=True)
-            elif paso["tipo"] == "entregar":
-                v = p.j.veh
-                v.x, v.y = p.mundo.punto_libre(l.x + 4, l.y)
-                v.vel = 0.0
-            elif l is not None:
-                p.teletransportar(*p.mundo.punto_libre(l.x + 3, l.y))
-            robot.frames(4)
-            robot.saltar_dialogos()
-        assert ident in p.completadas, ident
+    # desde la 1.7.1, el de los trabajos y el del mar no se completan con llegar a un sitio: comprueban lo que haces
+    # (se juegan enteros en test_171_tanda5). Y el de los amigos ya no es una misión: es una explicación del móvil
+    assert [x["que"] for x in por_id["tut03"]["pasos"] if x["tipo"] == "practica"] == ["trabajar", "servicio"]
+    assert [x["que"] for x in por_id["tut04"]["pasos"] if x["tipo"] == "practica"] == ["zarpar", "timon", "atracar"]
+    assert not any(x["tipo"] in ("ir", "entregar") for ident in ("tut03", "tut04") for x in por_id[ident]["pasos"])
+    assert por_id["tut05"].get("explicacion") and all(x["tipo"] == "dialogo" for x in por_id["tut05"]["pasos"])
 
 
 def test_recorrer_un_local(robot):

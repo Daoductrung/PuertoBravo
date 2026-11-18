@@ -296,3 +296,7 @@ SONIDOS AÑADIDOS DESPUÉS
   recoger_municion.flac: clipload1.wav, de gun reload sound effects. Dura 0,18 segundos.
   helicoptero_policia.flac: helicopter_0.mp3, de helicopter sounds. Dura 4,00 segundos.
   megafono.flac: sonido original del juego.
+
+SONIDOS AÑADIDOS DESPUÉS
+  timbre.flac: sonido original del juego.
+  emisora.flac: sonido original del juego.

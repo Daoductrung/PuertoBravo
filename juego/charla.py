@@ -96,7 +96,8 @@ class Charla:
         f = ficha(q)
         if f["ofendido"]:
             self.son("rechazo", cat="interfaz")
-            self.decir(f"{f['nombre'] if f['presentado'] else 'Esa persona'} no quiere saber nada de ti.", True)
+            extra = self.insistir(q)                             # si insistes, según su carácter, puede acabar mal
+            self.decir(f"{f['nombre'] if f['presentado'] else 'Esa persona'} no quiere saber nada de ti." + (" " + extra if extra else ""), True)
             return
         if q.estado == "huye":
             self.decir("Está huyendo y no se para a hablar.", True)
@@ -274,13 +275,10 @@ class Charla:
             if r is not None:
                 self.son("murmullo", xy=(q.x, q.y), vol=0.5)
                 self._trato(f, max(-15, min(15, int(r.get("confianza", 0)))))
-                if r.get("accion") == "se_va":
-                    q.estado, q.t_estado = "huye", 6
-                elif r.get("accion") == "se_enfada":
-                    f["ofendido"] = True
+                hecho = self.decidir_accion_ia(q, r.get("accion"))      # el modelo propone; lo que pasa lo decide el juego
                 f.setdefault("memoria", []).append((texto, r["respuesta"]))
                 del f["memoria"][:-6]
-                return f"{f['nombre']}: {r['respuesta']}"
+                return f"{f['nombre']}: {r['respuesta']}" + (" " + hecho if hecho else "")
         intencion, dato = interpretar(texto)
         if intencion == "nada":
             return "No has dicho nada."

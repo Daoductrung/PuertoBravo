@@ -318,8 +318,14 @@ def embarcadero(p, l):
         app.cerrar(m)
         p.empezar_pesca(desde_muelle=True)
 
+    def practicas():
+        app.cerrar(m)
+        _zarpar(p, l, "lancha", nombre="Lancha de prácticas")
+
     def ops():
         lista = []
+        if p.practica_de("zarpar", "timon", "atracar"):          # el tutorial de navegar presta una lancha
+            lista.append(Opcion("Zarpar con la lancha de prácticas del tutorial: gratis", practicas, ayuda="Para los ejercicios del tutorial de navegar. Se devuelve sola al atracar en cualquier muelle."))
         for k, b in enumerate(j.barcos):
             if b.get("en") == l.id:
                 lista.append(Opcion(f"Zarpar con tu barco: {b.get('nombre', b['modelo'])}", con_propio(k)))
@@ -357,6 +363,7 @@ def muelle(p, l):
         p.quitar_vehiculo(v)
         p.son("lugar_embarcadero", cat="interfaz")
         p.cambiar_mapa(dest.mapa, dest.x, dest.y, None, f"Atracas y saltas a tierra en {dest.nombre}, {p.mapas[dest.mapa].nombre}.{extra}")
+        p.practica_evento("atracar")                             # el tutorial de navegar comprueba que has atracado de verdad
     m = _menu(p, l, [Opcion(f"Atracar y desembarcar en {p.mapas[dest.mapa].nombre}", atracar, ayuda=l.desc)])
 
 
@@ -678,7 +685,8 @@ def taberna(p, l):
             app.son("error")
             app.decir("Termina antes lo que tienes entre manos.", True)
         else:
-            p.empezar_contrato(l)
+            from . import contratos
+            contratos.menu_contratos(p, l)
 
     def despedir():
         n = sum(1 for e in p.personas if e.tipo == "aliado")
@@ -688,7 +696,8 @@ def taberna(p, l):
           [Opcion(f"Tomar una caña con tapa: {p.precio('cana_tapa', 4)} euros", beber), Opcion("Jugar a los dados: 20 euros", dados(20)), Opcion("Jugar a los dados: 200 euros", dados(200)),
            Opcion(f"Contratar un guardaespaldas: {p.precio('guardaespaldas_taberna', 300)} euros", contratar, ayuda="Te sigue a pie, sube contigo a los vehículos y dispara a tus enemigos. Máximo dos."),
            Opcion("Despedir a los guardaespaldas", despedir),
-           Opcion("Tablón de encargos: aceptar un contrato", contrato, ayuda="Alguien paga por quitar de en medio a un maleante protegido por guardaespaldas. Cada contrato es más difícil y mejor pagado.")]
+           Opcion("Tablón de encargos: ver los contratos de hoy", contrato, ayuda="Tres encargos para elegir, cada uno de una manera: quitar de en medio a alguien con sus guardaespaldas, cazar a uno que huye en coche, "
+                  "entrar a buscarle a un local, seguir a su recadero hasta la guarida, dar un escarmiento sin matar, recuperar algo robado o proteger a alguien. Cada contrato cumplido hace los siguientes más difíciles y mejor pagados.")]
     from . import loteria as lot
     ops.append(lot.opcion_en_local(p, l))
     _menu(p, l, ops)
