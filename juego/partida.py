@@ -25,6 +25,7 @@ from .misvehiculos import MisVehiculos
 from .calle import Calle
 from .guerra import Guerra
 from .domicilio import Domicilio
+from .compra import Compra
 from .atracos import Atracos
 from .pactos import Pactos
 from .contratos import Contratos
@@ -78,7 +79,7 @@ def migrar(d):
 
 
 class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos, Calle, Guerra,
-              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente):
+              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):

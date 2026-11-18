@@ -536,7 +536,8 @@ def opciones(app):
             si_no("invulnerable", "Asistencia: no recibir daño", "Para explorar sin preocuparte de nada."),
             si_no("sin_policia", "Asistencia: sin policía", "Los delitos no cuentan y nadie te persigue."),
             si_no("vida_realista", "Vida realista: hambre, sed, sueño e higiene", "Hay que comer, beber, dormir y lavarse. Con hambre, con sed o con sueño vas más despacio y apuntas peor, y si los ignoras pierdes salud. "
-                  "Se bebe en bares, tiendas y en tu cocina; la ducha, en tu casa o en un hotel. Ir sucio baja el ánimo. La tecla V te dice cómo estás, y Mayúsculas V, solo eso."),
+                  "Se bebe en bares, tiendas y en tu cocina; la ducha, en tu casa o en un hotel. Ir sucio baja el ánimo. La tecla V te dice cómo estás, y Mayúsculas V, solo eso. "
+                  "Además de comer fuera o pedir a domicilio, puedes hacer la compra en las tiendas de comida, guardarla en la cocina de tu casa y cocinar: es lo que más alimenta y lo más barato."),
             si_no("averias", "Averías: pinchazos y revisiones",
                   "Cada vehículo cuenta los kilómetros que rueda. De tarde en tarde pincha una rueda: se oye, y el coche no pasa de media velocidad hasta que la cambias, "
                   "con una de repuesto desde el móvil, en un taller o llamando a la asistencia. Cada cierto número de kilómetros toca revisión en un taller; si no la pasas, los frenos van a peor. "
@@ -839,6 +840,7 @@ def movil(p):
         if j.perro:
             ops.append(Opcion(f"Raciones de pienso para {j.perro}: {j.objetos.get('pienso', 0)}"))
         ops.append(Opcion(f"Blindaje: {int(j.blindaje)}"))
+        ops += __import__("juego.menus_cocina", fromlist=["x"]).opciones_movil(p)
         app.abrir(Menu(app, "Inventario", ops))
 
     def diario():
@@ -1222,6 +1224,8 @@ def _casa(p, l):
             lista.append(Opcion(lambda: "Pedir comida a domicilio" + (": " + p.pedido_txt() if j.pedido else ""), lambda: domicilio.menu_domicilio(p),
                                 ayuda="Eliges de la carta, pagas el pedido y el envío, y al rato llaman al timbre. Quita el hambre y la sed de la vida realista y da algo de salud. "
                                       "Mientras estás en este menú el tiempo no corre: sal a la puerta y espera cerca."))
+        from . import menus_cocina
+        lista += menus_cocina.opcion_casa(p, l)
         puestos = len(sistemas.muebles_de(j, l))
         cuantos = sum(1 for mu in sistemas.MUEBLES if mu[1] != "garaje" or int(l.get("garaje", 0)))
         lista.append(Opcion(f"Amueblar la casa: {puestos} de {cuantos} cosas puestas", lambda: sistemas.menu_muebles(p, l, Menu, Opcion),
@@ -1231,7 +1235,8 @@ def _casa(p, l):
         lista += __import__("juego.menus_enlinea", fromlist=["x"]).opciones_propiedad(p, l)
         if not j.veh:
             lista.append(Opcion("Recorrer la casa por dentro", recorrer,
-                                ayuda="Entras y vas de una habitación a otra con las flechas: salón, cocina, baño, dormitorio y garaje. En cada una, Intro hace lo suyo."))
+                                ayuda="Entras y vas de una habitación a otra con las flechas: salón, cocina, baño, dormitorio y garaje. En cada una, Intro hace lo suyo. "
+                                      "En la cocina se guarda la compra, se abre la nevera y la despensa, y se cocina."))
         return lista
 
     def recorrer():
@@ -1410,6 +1415,8 @@ def _tienda(p, l):
         ops.append(Opcion(lambda: f"Rueda de repuesto: {int(R.aj('precio_rueda'))} euros. Llevas {j.objetos.get('rueda', 0)}", repuesto,
                           ayuda="Si pinchas, la cambias tú desde el móvil, en Servicios, con el vehículo parado."))
     ops += [Opcion(lambda c=c: f"{c['nombre']}, recupera {c['salud']} de salud: {int(c['precio'] * factor)} euros", _comprar_comida(p, c, factor)) for c in p.datos["comidas"][:3:2]]
+    from . import menus_cocina
+    ops += menus_cocina.opcion_rapida(p, l)                      # la comida para casa: lo mismo que en los pasillos, sin pasear
     ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua"), _comprar_walkman(p)] + armas_en_venta(p, l) + ([_comprar_objeto(p, "pienso")] if p.j.perro else []) + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion("Atracar la tienda", atracar, ayuda="Necesitas un arma de fuego en la mano. La policía te buscará, y la tienda te recuerda: durante unos días no te dejan entrar.")]
     m = _menu_lugar(p, l, ops)
 

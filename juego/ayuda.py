@@ -97,6 +97,16 @@ TUTORIAL = [
     ("Narrador", "Eso es todo. Explora a tu ritmo: nadie te obliga a seguir la historia. Bienvenid[o|a] a Puerto Bravo."),
 ]
 
+# Las teclas de cuando se recorre por dentro una casa, un local o una tienda. No se pueden cambiar: van aparte de las del juego.
+TECLAS_RECORRIDO = [
+    ("Flecha izquierda y flecha derecha", "ir a la habitación, la sala o el pasillo de al lado. Se oyen tus pasos hacia ese lado y el juego dice adónde llegas"),
+    ("Intro", "usar el sitio donde estás. En la cocina de casa, guardar la compra, abrir la nevera o la despensa y cocinar. En un pasillo de una tienda de comida, ver sus productos: "
+              "Intro o flecha derecha echa uno a la cesta y flecha izquierda lo devuelve. En la caja, pagar la cesta"),
+    ("C", "en una tienda de comida, qué llevas en la cesta y cuánto suma"),
+    ("F1", "dónde estás, qué hace Intro ahí y adónde hay que ir para que te atiendan"),
+    ("Escape", "salir. En una tienda de comida, con algo en la cesta, pregunta antes qué haces con ella: pagar, dejarla, llevártela sin pagar o seguir comprando"),
+]
+
 INTRO = [
     ("Narrador", "Puerto Bravo. Una ciudad de mar, con un puerto que nunca duerme y una playa que nunca descansa."),
     ("Narrador", "Te llamas Dani Roca. Hace tres años te condenaron por un robo que no cometiste. Esta mañana se han abierto las puertas de la prisión de Monteferro."),

@@ -319,7 +319,7 @@ MUEBLES = [
     ("sofa", "salon", "Un sofá grande y una tele nueva", 600, "Un sofá en el que caben cuatro y una tele enorme.",
      "Ver la tele te sube el ánimo el doble."),
     ("cocina", "cocina", "Cocina equipada y nevera grande", 700, "Cocina nueva, con horno, y una nevera grande y llena.",
-     "Lo que te preparas en casa te da el doble de salud."),
+     "Lo que te preparas en casa te da el doble de salud, se te quema menos y en la nevera cabe más."),
     ("banera", "bano", "Baño reformado, con bañera", 500, "Azulejos nuevos y una bañera en la que te puedes estirar.",
      "Un baño largo te sube más el ánimo y te quita algún golpe."),
     ("cama", "dormitorio", "Una cama de las buenas", 800, "Una cama ancha, con un colchón de los caros.",
@@ -409,6 +409,10 @@ class Interior:
     def al_entrar(self):
         self.app.mez.entorno = "interior"
         nombre, desc, _ = self.habitaciones[self.i]
+        if getattr(self, "ya_dentro", False):                    # al volver del menú de la cocina: solo dónde estás
+            self.app.decir(f"{nombre.capitalize()}.", True)
+            return
+        self.ya_dentro = True
         self.app.decir(f"{self.l.nombre}, por dentro. Estás en {nombre}. {desc} Flechas izquierda y derecha para moverte por la casa, Intro para usar la habitación, Escape para salir.", True)
 
     def _decir(self):
@@ -450,14 +454,8 @@ class Interior:
             app.son("pasan_horas")
             app.decir(f"Te {'hundes en el sofá' if 'sofa' in self.muebles else 'sientas un rato'} a ver la tele. Te sube el ánimo. Son las {p.hora_txt()}.", True)
         elif que == "cocina":
-            if getattr(j, "dia_nevera", -1) == p.dia:
-                app.decir("Hoy ya te has comido lo que había en la nevera. Mañana habrá más.", True)
-            else:
-                j.dia_nevera = p.dia
-                j.salud = min(j.salud_max, j.salud + (50 if "cocina" in self.muebles else 25))
-                p.son("comer", cat="interfaz")
-                p.ha_bebido(100)                                 # en casa, el agua del grifo no falta
-                app.decir(f"Te preparas {'una buena comida en tu cocina nueva' if 'cocina' in self.muebles else 'algo con lo que hay en la nevera'}. Salud {int(j.salud)}.{p.necesidades_txt()}", True)
+            from . import menus_cocina                           # con algo en la despensa o comida encima, el menú de la cocina; sin nada, lo de siempre
+            menus_cocina.usar_cocina(p, self.l, self._picar_algo)
         elif que == "bano":
             app.son("salpicadura", vol=0.5)
             p.ha_duchado()
@@ -473,6 +471,18 @@ class Interior:
             self.acciones["descansar"]()
         elif que == "garaje":
             self.acciones["garaje"]()
+
+    def _picar_algo(self, extra=""):
+        """Lo de siempre en la cocina: una vez al día, comer algo de lo que haya por casa. No gasta nada de la despensa."""
+        p, j, app = self.p, self.p.j, self.app
+        if getattr(j, "dia_nevera", -1) == p.dia:
+            app.decir("Hoy ya te has comido lo que había por casa. Mañana habrá más." + extra, True)
+        else:
+            j.dia_nevera = p.dia
+            j.salud = min(j.salud_max, j.salud + (50 if "cocina" in self.muebles else 25))
+            p.son("comer", cat="interfaz")
+            p.ha_bebido(100)                                 # en casa, el agua del grifo no falta
+            app.decir(f"Te preparas {'una buena comida en tu cocina nueva' if 'cocina' in self.muebles else 'algo con lo que hay en la nevera'}. Salud {int(j.salud)}.{p.necesidades_txt()}{extra}", True)
 
     def actualizar(self, dt):
         pass
@@ -705,8 +715,14 @@ def con_recorrido(p, lugar, menu, Opcion):
                 from . import menus_adultos
                 lista.insert(0, Opcion(f"{pers['nombre']} está aquí: acercarte a hablar", lambda pid=pers["id"]: menus_adultos.vida_social(p, directo=pid),
                                        ayuda="Lo mismo que desde el móvil, pero en persona: charlar, quedar, hacerle un regalo o proponerle salir a dar una vuelta contigo."))
-        o = Opcion("Recorrer el local por dentro", lambda: p.app.abrir(Local(p, lugar)),
-                   ayuda="Entras y vas de una sala a otra con las flechas izquierda y derecha. En el mostrador te atienden: vuelves a este menú, que es donde se compra o se pide. Dentro, F1 te explica dónde estás.")
+        if p.surtido(lugar):                                     # una tienda de comida: se recorre pasillo a pasillo, con cesta y caja
+            from . import compra
+            o = Opcion("Recorrer el local por dentro: los pasillos, con una cesta", lambda: p.app.abrir(compra.Tienda(p, lugar)),
+                       ayuda="Entras, coges una cesta y vas de un pasillo a otro con las flechas izquierda y derecha. Cada pasillo tiene lo suyo: Intro lo abre y echas a la cesta lo que quieras. "
+                             "Se paga en la caja. Lo comprado te lo llevas encima, para guardarlo y cocinarlo en una casa tuya. Dentro, F1 te explica dónde estás y C te dice qué llevas en la cesta.")
+        else:
+            o = Opcion("Recorrer el local por dentro", lambda: p.app.abrir(Local(p, lugar)),
+                       ayuda="Entras y vas de una sala a otra con las flechas izquierda y derecha. En el mostrador te atienden: vuelves a este menú, que es donde se compra o se pide. Dentro, F1 te explica dónde estás.")
         lista.insert(len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista), o)
         return lista
     menu._fuente = ops

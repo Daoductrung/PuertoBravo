@@ -41,6 +41,9 @@ class Necesidades:
         else:
             j.sueno = min(100.0, j.sueno + minutos * SUENO_POR_MINUTO)
         self._aviso_necesidad(h0, j.hambre, ((60, "Empiezas a tener hambre."), (82, "Tienes mucha hambre. Te cuesta moverte."), (100, "Llevas demasiado sin comer. Estás perdiendo salud.")))
+        if h0 < 60 <= j.hambre and "comer_en_casa" not in j.recordado:      # la primera vez que aprieta el hambre, una sola vez por partida
+            j.recordado.append("comer_en_casa")
+            self.decir("Puedes comer en un bar, pedir comida a domicilio desde una casa tuya, o hacer la compra en una tienda de comida y cocinar en casa, que es lo que más alimenta.")
         if not durmiendo:
             self._aviso_necesidad(s0, j.sueno, ((65, "Empiezas a tener sueño."), (85, "Se te cierran los ojos. Apuntas peor y vas más despacio."), (100, "No te tienes en pie. Necesitas dormir ya.")))
         if j.hambre >= 100.0 or j.sueno >= 100.0:

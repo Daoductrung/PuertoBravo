@@ -1641,7 +1641,7 @@ def test_el_editor_edita_todo_lo_nuevo():
 
 def test_los_sonidos_nuevos_estan_en_todos_los_packs_y_en_la_guia():
     from juego import catalogo_sonidos
-    assert sintesis.VERSION_CACHE == 19
+    assert sintesis.VERSION_CACHE >= 19
     S = sintesis.generar()
     for n in ("timbre", "emisora"):
         assert n in S and 0.4 < len(S[n]) / sintesis.SR < 2.0 and not sintesis.es_bucle(n)

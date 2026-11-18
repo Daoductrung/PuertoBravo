@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 19
+VERSION_CACHE = 20
 PI2 = 2 * np.pi
 
 
@@ -778,6 +778,44 @@ def generar(semilla=7):
     _poner(em, _seno(930, 0.11) * np.sin(np.pi * _t(0.11) / 0.11), 0.27, 0.7)
     _poner(em, _filtro(ruido(0.3), 600, 2600) * _decae(0.3, 0.12, 0.02), 0.4, 0.3)
     S["emisora"] = _norm(em, 0.45)
+    # ----------------------------------------------- la compra y la cocina (versión 1.7.1): la cesta, la nevera, picar, freír, hervir y el plato en la mesa
+    ce = np.zeros(int(SR * 0.4))                                 # un producto que cae en la cesta: el golpe sordo y el alambre que tiembla
+    _poner(ce, _filtro(ruido(0.09), 120, 900) * _decae(0.09, 0.03), 0.0)
+    for t0, f0 in ((0.03, 2300), (0.07, 3100), (0.12, 2700)):
+        _poner(ce, _seno(f0, 0.14) * _decae(0.14, 0.035), t0, 0.22)
+    S["cesta"] = _norm(ce, 0.45)
+    nv = np.zeros(int(SR * 1.0))                                 # la nevera: la goma de la puerta que se despega, y el zumbido del motor mientras está abierta
+    _poner(nv, _filtro(ruido(0.07), 200, 1800) * _decae(0.07, 0.02), 0.0, 0.9)
+    _poner(nv, _filtro(ruido(0.12), 60, 400) * _decae(0.12, 0.05), 0.05, 0.7)
+    tn = _t(0.8)
+    _poner(nv, (np.sin(PI2 * 100 * tn) + 0.5 * np.sin(PI2 * 200 * tn) + 0.2 * np.sin(PI2 * 300 * tn)) * np.minimum(1.0, tn / 0.1) * np.minimum(1.0, (0.8 - tn) / 0.3), 0.15, 0.35)
+    S["nevera"] = _norm(nv, 0.45)
+    ct = np.zeros(int(SR * 1.5))                                 # picar en la tabla: seis golpes de cuchillo, cada vez más seguidos
+    for k, t0 in enumerate((0.0, 0.3, 0.56, 0.78, 0.97, 1.14)):
+        _poner(ct, _filtro(ruido(0.05), 900, 6000) * _decae(0.05, 0.008), t0, 0.7)             # el filo
+        _poner(ct, _seno(190 + 12 * (k % 2), 0.12) * _decae(0.12, 0.03), t0 + 0.004)           # la madera
+    S["cocina_cortar"] = _norm(ct, 0.5)
+    fr = _filtro(ruido(2.4), 2500, 9000) * 0.5                   # freír: el aceite chisporroteando, con sus saltos
+    tf = _t(2.4)
+    fr = fr * (0.55 + 0.45 * np.abs(_filtro(ruido(2.4), hi=14))) * np.minimum(1.0, tf / 0.15) * np.minimum(1.0, (2.4 - tf) / 0.5)
+    for _ in range(26):
+        _poner(fr, _filtro(ruido(0.012), 3000, 10000) * _decae(0.012, 0.003), float(rng.uniform(0.1, 2.1)), float(rng.uniform(0.6, 1.6)))
+    S["cocina_freir"] = _norm(fr, 0.45)
+    hv = np.zeros(int(SR * 2.4))                                 # hervir: la olla borboteando, burbujas graves que suben y revientan
+    for _ in range(34):
+        f0 = float(rng.uniform(140, 420))
+        d = float(rng.uniform(0.05, 0.11))
+        _poner(hv, _barrido(f0, f0 * 1.9, d) * np.sin(np.pi * _t(d) / d), float(rng.uniform(0.0, 2.2)), float(rng.uniform(0.5, 1.0)))
+    th = _t(2.4)
+    hv = (hv + 0.12 * _filtro(ruido(2.4), 500, 3000)) * np.minimum(1.0, th / 0.2) * np.minimum(1.0, (2.4 - th) / 0.5)
+    S["cocina_hervir"] = _norm(hv, 0.45)
+    pl = np.zeros(int(SR * 0.9))                                 # el plato en la mesa: la loza que se posa y el tintineo de los cubiertos
+    _poner(pl, _filtro(ruido(0.05), 150, 1200) * _decae(0.05, 0.015), 0.0, 0.8)
+    for f0, a in ((1650, 1.0), (2480, 0.5), (3900, 0.25)):
+        _poner(pl, _seno(f0, 0.5) * _decae(0.5, 0.11), 0.01, 0.35 * a)
+    for t0, f0 in ((0.34, 4200), (0.43, 5100)):
+        _poner(pl, (_seno(f0, 0.3) + 0.4 * _seno(f0 * 1.51, 0.3)) * _decae(0.3, 0.07), t0, 0.3)
+    S["plato_servido"] = _norm(pl, 0.5)
     return S
 
 

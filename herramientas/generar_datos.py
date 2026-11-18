@@ -215,6 +215,10 @@ def html_teclas(nivel=3):
     for clave, titulo in TITULOS_TECLAS.items():
         partes.append(f"<{h}>{titulo}</{h}>")
         partes.append(_lista(ayuda.TECLAS[clave]))
+    recorrido = getattr(ayuda, "TECLAS_RECORRIDO", None)
+    if recorrido:
+        partes.append(f"<{h}>Recorriendo una casa, un local o una tienda por dentro</{h}>")
+        partes.append(_lista(recorrido))
     extra = getattr(ayuda, "TECLAS_ADULTOS", None)
     if extra:
         partes.append(f"<{h}>Con el contenido para adultos activado</{h}>")

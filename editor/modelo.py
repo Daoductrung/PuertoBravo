@@ -210,6 +210,7 @@ class Catalogo:
             return sorted(out.items(), key=lambda e: e[1].lower())
         tabla = {"modelo": ("vehiculos", b["vehiculos"]), "arma": ("armas", b["armas"]), "mision": ("misiones", b["misiones"]),
                  "tipo_enemigo": ("tipos_enemigo", b.get("tipos_enemigo", [])),
+                 "producto": ("productos", b.get("productos", [])), "pasillo": ("pasillos", b.get("pasillos", [])), "tipo_tienda": ("tipos_tienda", b.get("tipos_tienda", [])),
                  "sustancia": ("sustancias", b["adultos"].get("sustancias", [])), "persona": ("personas", b["adultos"].get("personas", [])),
                  "actividad": ("actividades", b["adultos"].get("actividades", [])), "regalo": ("regalos", b["adultos"].get("regalos", []))}
         if ref in tabla:

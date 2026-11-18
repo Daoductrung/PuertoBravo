@@ -56,7 +56,7 @@
   "muebles": [
     {"id": "recibidor", "habitacion": "salir", "nombre": "Plantas, cuadros y una alfombra", "precio": 300, "desc": "Hay plantas, cuadros en las paredes y una alfombra que da gusto pisar.", "efecto": "La casa es más acogedora: al dormir aquí te levantas con algo más de ánimo."},
     {"id": "sofa", "habitacion": "salon", "nombre": "Un sofá grande y una tele nueva", "precio": 600, "desc": "Un sofá en el que caben cuatro y una tele enorme.", "efecto": "Ver la tele te sube el ánimo el doble."},
-    {"id": "cocina", "habitacion": "cocina", "nombre": "Cocina equipada y nevera grande", "precio": 700, "desc": "Cocina nueva, con horno, y una nevera grande y llena.", "efecto": "Lo que te preparas en casa te da el doble de salud."},
+    {"id": "cocina", "habitacion": "cocina", "nombre": "Cocina equipada y nevera grande", "precio": 700, "desc": "Cocina nueva, con horno, y una nevera grande y llena.", "efecto": "Lo que te preparas en casa te da el doble de salud, se te quema menos y en la nevera cabe más."},
     {"id": "banera", "habitacion": "bano", "nombre": "Baño reformado, con bañera", "precio": 500, "desc": "Azulejos nuevos y una bañera en la que te puedes estirar.", "efecto": "Un baño largo te sube más el ánimo y te quita algún golpe."},
     {"id": "cama", "habitacion": "dormitorio", "nombre": "Una cama de las buenas", "precio": 800, "desc": "Una cama ancha, con un colchón de los caros.", "efecto": "Dormir aquí te sube bastante el ánimo."},
     {"id": "taller", "habitacion": "garaje", "nombre": "Un banco de herramientas", "precio": 900, "desc": "En la pared, un banco de herramientas bien surtido.", "efecto": "Mientras duermes, los vehículos guardados en este garaje se quedan reparados."}
@@ -478,5 +478,75 @@
     {"id": "pelea_calle", "tipo": "pelea", "nombre": "Pelea en la calle", "peso": 3, "paga": 110, "sospechoso": "maton", "frases": ["Central a patrulla: pelea en la vía pública junto a {lugar}.", "Central: dos individuos a golpes delante de {lugar}. Vaya a poner orden."]},
     {"id": "temerario", "tipo": "temerario", "nombre": "Conductor temerario", "peso": 3, "paga": 130, "modelos": ["sedan", "utilitario", "deportivo", "furgoneta", "pickup"], "frases": ["Central a patrulla: un {modelo} circulando de forma temeraria cerca de {lugar}. Dele el alto: póngase detrás con la sirena.", "Central: varios avisos de un {modelo} saltándose semáforos por {lugar}. Párelo."]},
     {"id": "persecucion", "tipo": "persecucion", "nombre": "Persecución", "peso": 2, "paga": 240, "sospechoso": "atracador", "modelos": ["deportivo", "sedan", "todoterreno"], "frases": ["Central a todas las unidades: {modelo} a la fuga tras un atraco, visto junto a {lugar}. Intercéptelo.", "Central: vehículo robado, un {modelo}, huyendo desde {lugar}. No lo pierda."]}
+  ],
+  "pasillos": [
+    {"id": "fruteria", "nombre": "la frutería", "desc": "Cajas de fruta y de verdura. Huele a tierra mojada y a naranja."},
+    {"id": "carniceria", "nombre": "la carnicería", "desc": "Un mostrador frío con bandejas. De fondo, la cortadora de fiambre."},
+    {"id": "pescaderia", "nombre": "la pescadería", "desc": "Hielo picado y olor a mar."},
+    {"id": "lacteos", "nombre": "los lácteos y los huevos", "desc": "Una nevera larga que zumba, con la puerta de cristal."},
+    {"id": "panaderia", "nombre": "la panadería", "desc": "Cestos de pan. Todavía está caliente."},
+    {"id": "despensa", "nombre": "las conservas y la despensa", "desc": "Latas, pasta, arroz y legumbres en estantes hasta el techo."},
+    {"id": "bebidas", "nombre": "las bebidas", "desc": "Botellas y latas. Las de abajo, en una nevera."},
+    {"id": "preparados", "nombre": "lo listo para comer", "desc": "Sándwiches, ensaladas envasadas y cosas de picar, para comer sin cocinar."}
+  ],
+  "productos": [
+    {"id": "tomates", "nombre": "Tomates, un kilo", "pasillo": "fruteria", "precio": 2, "sitio": "nevera", "caduca": 5},
+    {"id": "patatas", "nombre": "Patatas, una malla", "pasillo": "fruteria", "precio": 2, "sitio": "despensa", "caduca": 12},
+    {"id": "cebollas", "nombre": "Cebollas, una ristra", "pasillo": "fruteria", "precio": 1, "sitio": "despensa", "caduca": 14},
+    {"id": "pimientos", "nombre": "Pimientos", "pasillo": "fruteria", "precio": 2, "sitio": "nevera", "caduca": 6},
+    {"id": "ajos", "nombre": "Ajos, una cabeza", "pasillo": "fruteria", "precio": 1, "sitio": "despensa", "caduca": 20},
+    {"id": "lechuga", "nombre": "Lechuga", "pasillo": "fruteria", "precio": 1, "sitio": "nevera", "caduca": 4},
+    {"id": "limones", "nombre": "Limones", "pasillo": "fruteria", "precio": 1, "sitio": "nevera", "caduca": 10},
+    {"id": "manzanas", "nombre": "Manzanas", "pasillo": "fruteria", "precio": 2, "sitio": "despensa", "caduca": 8, "hambre": 14, "sed": 8, "salud": 5, "desc": "Se comen tal cual, en casa o por la calle."},
+    {"id": "platanos", "nombre": "Plátanos", "pasillo": "fruteria", "precio": 2, "sitio": "despensa", "caduca": 5, "hambre": 18, "salud": 5, "desc": "Se comen tal cual, en casa o por la calle."},
+    {"id": "pollo", "nombre": "Pollo troceado", "pasillo": "carniceria", "precio": 5, "sitio": "nevera", "caduca": 3},
+    {"id": "carne_picada", "nombre": "Carne picada", "pasillo": "carniceria", "precio": 4, "sitio": "nevera", "caduca": 3},
+    {"id": "chorizo", "nombre": "Chorizo", "pasillo": "carniceria", "precio": 3, "sitio": "nevera", "caduca": 15},
+    {"id": "merluza", "nombre": "Merluza en rodajas", "pasillo": "pescaderia", "precio": 6, "sitio": "nevera", "caduca": 2},
+    {"id": "gambas", "nombre": "Gambas", "pasillo": "pescaderia", "precio": 7, "sitio": "nevera", "caduca": 2},
+    {"id": "mejillones", "nombre": "Mejillones", "pasillo": "pescaderia", "precio": 4, "sitio": "nevera", "caduca": 2},
+    {"id": "huevos", "nombre": "Huevos, media docena", "pasillo": "lacteos", "precio": 2, "sitio": "nevera", "caduca": 10},
+    {"id": "leche", "nombre": "Leche, un litro", "pasillo": "lacteos", "precio": 1, "sitio": "nevera", "caduca": 6, "hambre": 8, "sed": 35, "salud": 3, "bebida": true, "desc": "Se bebe tal cual."},
+    {"id": "queso", "nombre": "Queso, una cuña", "pasillo": "lacteos", "precio": 3, "sitio": "nevera", "caduca": 12, "hambre": 18, "salud": 4, "desc": "Se come tal cual, y entra en alguna receta."},
+    {"id": "yogur", "nombre": "Yogures", "pasillo": "lacteos", "precio": 1, "sitio": "nevera", "caduca": 8, "hambre": 12, "sed": 5, "salud": 4, "desc": "Se comen tal cual."},
+    {"id": "pan", "nombre": "Barra de pan", "pasillo": "panaderia", "precio": 1, "sitio": "despensa", "caduca": 2, "hambre": 15, "desc": "Se come tal cual, y entra en alguna receta. Mañana estará duro."},
+    {"id": "arroz", "nombre": "Arroz, un paquete", "pasillo": "despensa", "precio": 1, "sitio": "despensa"},
+    {"id": "macarrones", "nombre": "Macarrones, un paquete", "pasillo": "despensa", "precio": 1, "sitio": "despensa"},
+    {"id": "garbanzos", "nombre": "Garbanzos, un bote", "pasillo": "despensa", "precio": 2, "sitio": "despensa"},
+    {"id": "lentejas", "nombre": "Lentejas, un paquete", "pasillo": "despensa", "precio": 2, "sitio": "despensa"},
+    {"id": "tomate_frito", "nombre": "Tomate frito, un bote", "pasillo": "despensa", "precio": 1, "sitio": "despensa"},
+    {"id": "atun", "nombre": "Atún, tres latas", "pasillo": "despensa", "precio": 2, "sitio": "despensa", "hambre": 18, "salud": 5, "desc": "Se come tal cual, y entra en alguna receta. No caduca."},
+    {"id": "caldo", "nombre": "Caldo, un brik", "pasillo": "despensa", "precio": 2, "sitio": "despensa"},
+    {"id": "agua_botella", "nombre": "Botella de agua", "pasillo": "bebidas", "precio": 1, "sitio": "despensa", "sed": 70, "bebida": true, "desc": "Para llevar encima y beber cuando haga falta."},
+    {"id": "refresco_lata", "nombre": "Refresco de naranja", "pasillo": "bebidas", "precio": 2, "sitio": "despensa", "hambre": 4, "sed": 50, "animo": 1, "bebida": true, "desc": "Quita la sed y anima un poco."},
+    {"id": "zumo", "nombre": "Zumo, un brik", "pasillo": "bebidas", "precio": 2, "sitio": "nevera", "caduca": 10, "hambre": 6, "sed": 45, "salud": 4, "bebida": true, "desc": "Quita la sed y da algo de salud."},
+    {"id": "sandwich", "nombre": "Sándwich envasado", "pasillo": "preparados", "precio": 3, "sitio": "nevera", "caduca": 3, "hambre": 28, "salud": 6, "desc": "Para comer sin cocinar, en casa o por la calle."},
+    {"id": "ensalada_envasada", "nombre": "Ensalada envasada", "pasillo": "preparados", "precio": 4, "sitio": "nevera", "caduca": 2, "hambre": 24, "sed": 10, "salud": 8, "desc": "Para comer sin cocinar, en casa o por la calle."},
+    {"id": "patatas_fritas", "nombre": "Bolsa de patatas fritas", "pasillo": "preparados", "precio": 2, "sitio": "despensa", "hambre": 14, "animo": 1, "desc": "Para picar. Llena poco."},
+    {"id": "chocolatina", "nombre": "Chocolatina", "pasillo": "preparados", "precio": 1, "sitio": "despensa", "hambre": 10, "animo": 2, "desc": "Un capricho: llena poco y anima."}
+  ],
+  "tipos_tienda": [
+    {"id": "supermercado", "nombre": "Supermercado", "pasillos": ["fruteria", "carniceria", "pescaderia", "lacteos", "panaderia", "despensa", "bebidas", "preparados"], "palabras": ["súper", "super", "hipermercado"], "recargo": 100},
+    {"id": "mercado", "nombre": "Mercado de abastos", "pasillos": ["fruteria", "carniceria", "pescaderia", "lacteos", "panaderia"], "palabras": ["mercado"], "recargo": 90},
+    {"id": "gasolinera", "nombre": "Tienda de gasolinera", "pasillos": ["bebidas", "preparados"], "palabras": ["gasolinera"], "recargo": 130},
+    {"id": "bazar", "nombre": "Bazar", "pasillos": ["bebidas", "preparados"], "palabras": ["bazar"], "recargo": 115},
+    {"id": "sin_comida", "nombre": "Tienda que no vende comida para casa", "pasillos": [], "palabras": ["ferretería", "efectos navales"], "recargo": 100},
+    {"id": "ultramarinos", "nombre": "Ultramarinos o tienda de barrio", "pasillos": ["fruteria", "lacteos", "panaderia", "despensa", "bebidas", "preparados"], "palabras": ["ultramarinos", "colmado", "economato"], "resto": true, "recargo": 110}
+  ],
+  "recetas": [
+    {"id": "bocadillo_atun", "nombre": "Bocadillo de atún con tomate", "ingredientes": ["pan", "atun", "tomates"], "minutos": 5, "raciones": 2, "hambre": 45, "sed": 5, "salud": 14, "animo": 1, "caduca": 1, "fuego": "no", "desc": "Lo más rápido que hay. No lleva fuego, así que no se quema."},
+    {"id": "ensalada_mixta", "nombre": "Ensalada mixta", "ingredientes": ["lechuga", "tomates", "cebollas", "atun"], "minutos": 10, "raciones": 2, "hambre": 45, "sed": 20, "salud": 22, "animo": 2, "caduca": 2, "fuego": "no", "desc": "Fresca y ligera. No lleva fuego, así que no se quema."},
+    {"id": "huevos_patatas", "nombre": "Huevos fritos con patatas", "ingredientes": ["huevos", "patatas"], "minutos": 15, "raciones": 2, "hambre": 62, "sed": 0, "salud": 20, "animo": 3, "caduca": 1, "fuego": "freir", "desc": "Dos ingredientes y una sartén."},
+    {"id": "merluza_plancha", "nombre": "Merluza a la plancha con limón", "ingredientes": ["merluza", "limones", "ajos"], "minutos": 15, "raciones": 2, "hambre": 65, "sed": 5, "salud": 40, "animo": 3, "caduca": 1, "fuego": "freir", "desc": "Poco tiempo y mucha salud. El pescado no espera: cocínalo pronto."},
+    {"id": "macarrones", "nombre": "Macarrones con chorizo", "ingredientes": ["macarrones", "tomate_frito", "chorizo"], "minutos": 20, "raciones": 3, "hambre": 75, "sed": 5, "salud": 28, "animo": 2, "caduca": 3, "fuego": "hervir", "desc": "Cunde mucho y aguanta bien en la nevera."},
+    {"id": "hamburguesas", "nombre": "Hamburguesas caseras", "ingredientes": ["carne_picada", "pan", "cebollas", "queso"], "minutos": 20, "raciones": 3, "hambre": 80, "sed": 0, "salud": 30, "animo": 5, "caduca": 2, "fuego": "freir", "desc": "Las de casa, con su queso fundido."},
+    {"id": "tortilla", "nombre": "Tortilla de patatas", "ingredientes": ["huevos", "patatas", "cebollas"], "minutos": 30, "raciones": 4, "hambre": 70, "sed": 5, "salud": 30, "animo": 3, "caduca": 3, "fuego": "freir", "desc": "Con cebolla. Cuatro raciones, y fría está igual de buena."},
+    {"id": "arroz_pollo", "nombre": "Arroz con pollo", "ingredientes": ["arroz", "pollo", "pimientos", "tomates"], "minutos": 40, "raciones": 4, "hambre": 85, "sed": 10, "salud": 38, "animo": 4, "caduca": 3, "fuego": "hervir", "desc": "Un plato completo para varios días."},
+    {"id": "paella", "nombre": "Paella marinera", "ingredientes": ["arroz", "gambas", "mejillones", "pimientos", "tomates"], "minutos": 50, "raciones": 5, "hambre": 95, "sed": 10, "salud": 45, "animo": 6, "caduca": 2, "fuego": "hervir", "desc": "El plato de los domingos. Lleva marisco fresco, que hay que comprar en un mercado o en un supermercado."},
+    {"id": "potaje", "nombre": "Potaje de garbanzos", "ingredientes": ["garbanzos", "caldo", "patatas", "ajos"], "minutos": 55, "raciones": 4, "hambre": 88, "sed": 15, "salud": 36, "animo": 3, "caduca": 4, "fuego": "hervir", "desc": "Todo sale de la despensa: nada de esto caduca pronto."},
+    {"id": "lentejas", "nombre": "Lentejas con chorizo", "ingredientes": ["lentejas", "chorizo", "patatas", "cebollas"], "minutos": 60, "raciones": 5, "hambre": 90, "sed": 15, "salud": 40, "animo": 4, "caduca": 4, "fuego": "hervir", "desc": "Una hora de olla, cinco raciones y cuatro días de nevera."}
+  ],
+  "cocina": [
+    {"id": "general", "capacidad_despensa": 30, "capacidad_nevera": 14, "nevera_grande": 10, "capacidad_encima": 20, "falta_prob": 10, "oferta_descuento": 25, "prob_especial": 12, "prob_quemado": 14, "practica_plato": 5, "practica_especial": 15, "practica_quemado": 75, "bono_especial": 30, "merma_quemado": 40, "equipada_salud": 100, "equipada_quemado": 50, "animo_especial": 4, "animo_quemado": 3, "robo_visto": 50, "robo_visto_cosa": 4, "robo_puntos": 2, "robo_recuerdo": 2, "pareja_afinidad": 2, "aviso_caduca": 1, "frases_caja": ["Son {total}. Aquí tiene su compra. Hasta otra.", "{total}, justos. ¿Le hace falta bolsa? Buen día.", "A ver... {total}. Gracias, y que aproveche.", "Pues {total}. Vuelva cuando quiera."], "frases_no_llega": ["El tendero repasa la cuenta: son {total} y llevas {dinero}. Te faltan {falta}. Devuelve algo de la cesta.", "No te llega: la cesta sube a {total} y tienes {dinero}. Quita algo, que te faltan {falta}."], "frases_dejar": ["Dejas la cesta junto a la puerta, con todo dentro.", "Devuelves la cesta a su montón sin comprar nada.", "Lo piensas mejor y dejas la cesta en el suelo, llena."], "frases_robo_limpio": ["Te metes la compra bajo la ropa y sales silbando. Nadie se ha fijado.", "Aprovechas que el tendero atiende el teléfono y sales con todo. No te ha visto.", "Sales despacio, como quien no ha encontrado lo que buscaba. Cuela."], "frases_robo_visto": ["¡Eh, que eso no lo has pagado! El tendero sale detrás de ti gritando y alguien llama a la policía.", "Suena el pitido de la puerta. ¡Al ladrón! Sales corriendo con la compra, y aquí ya te conocen.", "El tendero te ha visto por el espejo del techo. ¡Policía! Sales por piernas con todo."], "frases_normal": ["Te ha quedado bien.", "Huele a comida de casa.", "Sale como tenía que salir.", "Nada del otro mundo, pero está bueno."], "frases_especial": ["Te ha salido de categoría: mejor que en un restaurante.", "Hoy tenías la mano fina: está para chuparse los dedos.", "Te ha quedado redondo. Esto no se olvida.", "En su punto exacto. Te sientes orgullos[o|a]."], "frases_quemado": ["Se te ha pegado un poco al fondo. Se puede comer, pero no es lo mismo.", "Te has despistado y se ha quemado por un lado. Alimenta menos.", "Huele a chamusquina: se te ha pasado. Lo salvas como puedes."], "frases_pareja": ["{n} prueba un poco: «Oye, pues te ha quedado muy bien».", "Pones dos platos. {n} repite.", "{n} se sienta contigo a la mesa y no deja ni las migas.", "«¿Has cocinado tú?», dice {n}, y te da un beso."], "frases_caducado": ["Tiras a la basura {cosas}: se ha echado a perder.", "{cosas}: caducado. Va a la basura.", "Huele raro: tiras {cosas}."]}
   ]
 }

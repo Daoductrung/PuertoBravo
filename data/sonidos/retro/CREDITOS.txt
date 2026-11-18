@@ -296,3 +296,11 @@ SONIDOS AÑADIDOS DESPUÉS
 SONIDOS AÑADIDOS DESPUÉS
   timbre.flac: sonido original del juego.
   emisora.flac: sonido original del juego.
+
+SONIDOS AÑADIDOS DESPUÉS
+  cesta.flac: sonido original del juego.
+  nevera.flac: sonido original del juego.
+  cocina_cortar.flac: sonido original del juego.
+  cocina_freir.flac: sonido original del juego.
+  cocina_hervir.flac: sonido original del juego.
+  plato_servido.flac: sonido original del juego.
