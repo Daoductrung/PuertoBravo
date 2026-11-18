@@ -15,3 +15,17 @@ amb_playa: WAVES HIGH TIDE ST 1m 96k, de clif_creates. Licencia CC0 1.0 (Creativ
 amb_puerto: Baltimore Harbor with Distant Industrial Ambience, de flood-mix. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/flood-mix/sounds/413334/
 amb_residencial: Nõmme_Morning_June.wav, de Islabonita. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/Islabonita/sounds/471070/
 lluvia: RainAndWaterRunning.wav, de derjuli. Licencia CC0 1.0 (Creative Commons 0). https://freesound.org/people/derjuli/sounds/824122/
+
+SONIDOS DE LA VERSIÓN 1.7.1, LOS MISMOS DEL PACK REALISTA
+amenaza_barrio: timbal_2338.wav, «Bass Tom, #1», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/bass-tom-1-s2338.html. Dura 1,07 segundos.
+barrio_defendido: redoble_2406.flac, «Drum roll 3 S», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/drum-roll-3-s-s2406.html. Dura 1,44 segundos.
+barrio_perdido: campana_0135.wav, «Church Bell», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/church-bell-s0135.html. Dura 1,90 segundos.
+cesta: bolsa_patatas_1434.wav, «Pack of chips, manipulation #2», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/pack-of-chips-manipulation-2-s1434.html. Dura 0,50 segundos.
+cocina_cortar: tabla_calabacin_2069.wav, «Cutting board, zucchini #2», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/cutting-board-zucchini-2-s2069.html. Dura 1,50 segundos.
+cocina_freir: sarten_0145.wav, «Frying pan #3», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/frying-pan-3-s0145.html. Dura 2,40 segundos.
+cocina_hervir: agua_hirviendo_0149.wav, «Boiling water», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/boiling-water-s0149.html. Dura 2,40 segundos.
+emisora: walkie_inicio_0589.wav, «Walkie talkie: Start», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/walkie-talkie-start-s0589.html. Dura 0,47 segundos.
+megafono: megafono_3147.flac, «Megaphone, larsen #9», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/megaphone-larsen-9-s3147.html. Dura 0,90 segundos.
+nevera: nevera_puerta_1158.wav, «Fridge door», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/fridge-door-s1158.html. Dura 1,10 segundos.
+plato_servido: plato_grande_1189.wav, «Large Plate, set on Table», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/large-plate-set-on-table-s1189.html. Dura 0,46 segundos.
+timbre: timbre_casa_0159.wav, «Doorbell house #1», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/doorbell-house-1-s0159.html. Dura 2,60 segundos.

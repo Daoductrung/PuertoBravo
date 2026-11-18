@@ -86,12 +86,16 @@ __ESTILO__
 <h3>El volumen se iguala solo</h3>
 <p>Cada grabación viene a un volumen distinto. Para que eso no estropee el equilibrio del juego, al cargar un sonido que has cambiado el juego lo lleva al mismo nivel que tenía el original: mide el tramo más fuerte de tu archivo, lo compara con el del sonido original y lo sube o lo baja lo que haga falta, sin dejar que sature. Así unos pasos no pueden quedar más fuertes que un disparo, ni una baliza inaudible. Se puede desactivar en Opciones, Sonido y música, Igualar el volumen de los sonidos cambiados.</p>
 <p>Si aun así un sonido concreto te parece fuerte o flojo, ve a Opciones, Sonido y música, Ajustar el volumen de cada sonido. Están todos, por grupos: Intro lo hace sonar y las flechas izquierda y derecha lo bajan o lo suben, del 30 al 200 por ciento. El ajuste se guarda con tus opciones.</p>
+<h3>Escuchar cualquier sonido dentro del juego</h3>
+<p>En el menú principal y en el de pausa, Aprender los sonidos tiene los __N_SONIDOS__ sonidos del juego: primero el grupo Los más importantes y después todos, por los mismos grupos que la lista del final de este documento. Entra en un grupo y pulsa Intro sobre un sonido: el juego dice qué es y lo hace sonar a él solo, con el pack que tengas puesto. Sirve para comprobar cómo ha quedado una grabación tuya sin tener que provocar el sonido jugando.</p>
 
 <h2>3. Packs de sonidos</h2>
 <p>Un pack es una carpeta con archivos que se llaman igual que los sonidos del juego. Los packs van dentro de <code>data\\sonidos</code>, cada uno en su subcarpeta, al lado de <code>por_defecto</code>, y se eligen dentro del juego en Opciones, Sonido y música, Pack de sonidos, con las flechas izquierda y derecha. El cambio se oye al momento y no toca tus archivos de <code>data\\sonidos\\por_defecto</code>: para volver atrás, elige «por defecto».</p>
 <ul>
 <li>Un pack tuyo no tiene que traerlos todos: los sonidos que no traiga siguen sonando con el original.</li>
 <li>El volumen de cada sonido del pack se iguala al del original, como se explica arriba.</li>
+<li>Los packs que vienen con el juego traen exactamente los mismos archivos que <code>por_defecto</code>, con los mismos nombres: ni uno más ni uno menos. Sus grabaciones son de dominio público (licencia CC0) y salen de kenney.nl, opengameart.org, freesound.org y bigsoundbank.com.</li>
+<li>Los tonos de los canales de rol (<code>chat_personaje</code>, <code>chat_fuera</code> y <code>chat_accion</code>) y el de la espera al servidor (<code>espera_servidor</code>) son en todos los packs los de serie, a propósito: son un código de tonos y conviene que suenen siempre igual.</li>
 <li>De serie vienen instalados los packs __PACKS__. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
 </ul>
 <h3>Hacer tu propio pack</h3>

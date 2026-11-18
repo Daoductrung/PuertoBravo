@@ -287,11 +287,46 @@ def abrir_manual(app):
         app.decir("No se encontró el manual. Está en la carpeta data, docs.", True)
 
 
+def grupos_de_sonidos(nombres):
+    """Los sonidos, repartidos en los grupos de la guía de sonidos: [(título, [sonido, ...]), ...]. Ninguno se queda fuera:
+    el que no tenga grupo va a «Otros sonidos». Los de la radio y la música no son sonidos del juego y no entran."""
+    from . import catalogo_sonidos as cat
+    grupos = {}
+    for s in sorted(nombres):
+        k = cat.grupo_de(s)
+        if k < len(cat.GRUPOS) or not s.startswith(("radio_", "musica_")):      # radio_cambio sí es un sonido del juego
+            grupos.setdefault(k, []).append(s)
+    return [(cat.GRUPOS[k][0] if k < len(cat.GRUPOS) else "Otros sonidos", v) for k, v in sorted(grupos.items())]
+
+
+def sonidos_aprender(nombres):
+    """Lo que enseña Aprender los sonidos: [(título del grupo, [(sonido, texto), ...]), ...]. Primero los más importantes,
+    en el orden en que conviene aprenderlos, y después todos, por grupos, cada uno con su nombre y su explicación."""
+    from . import catalogo_sonidos as cat
+    glosario = {s: f"{nom}. {exp}" for s, nom, exp in ayuda.SONIDOS}
+    salida = [("Los más importantes", [(s, glosario[s]) for s, _, _ in ayuda.SONIDOS if s in nombres])]
+    return salida + [(titulo, [(s, glosario.get(s) or cat.describir(s)) for s in lista]) for titulo, lista in grupos_de_sonidos(nombres)]
+
+
 def sonidos(app):
+    """Aprender los sonidos: todos los del juego. Primero los más importantes y después todos, por grupos."""
     def tocar(s):
         return lambda: app.mez.sonar(s, cat="interfaz", vol=0.9)
-    ops = [Opcion(f"{nom}. {exp}", tocar(s), callado=True) for s, nom, exp in ayuda.SONIDOS if s in app.mez.sonidos]      # solo suena el sonido que se está aprendiendo
-    app.abrir(Menu(app, "Aprender los sonidos", ops, intro="Pulsa Intro sobre cada elemento para escuchar su sonido"))
+
+    def grupo(titulo, lista):
+        def abrir():
+            m = Menu(app, titulo, [Opcion(texto, tocar(s), callado=True) for s, texto in lista] + [Opcion("Volver", lambda: app.cerrar(m))],      # solo suena el sonido que se está aprendiendo
+                     intro="Pulsa Intro sobre cada elemento para escuchar su sonido")
+            app.abrir(m)
+        return abrir
+    partes = sonidos_aprender(app.mez.sonidos)
+    total = sum(len(lista) for _, lista in partes[1:])
+    ops = [Opcion(f"{titulo}: {len(lista)} sonidos", grupo(titulo, lista),
+                  ayuda="Los que más se oyen y más ayudan a orientarse, en el orden en que conviene aprenderlos." if k == 0 else None)
+           for k, (titulo, lista) in enumerate(partes)]
+    principal_ = Menu(app, "Aprender los sonidos", ops + [Opcion("Volver", lambda: app.cerrar(principal_))],
+                      intro=f"El juego tiene {total} sonidos. Primero están los más importantes y después todos, por grupos. Pulsa Intro para entrar en un grupo")
+    app.abrir(principal_)
 
 
 def opciones_teclado(app):
@@ -365,22 +400,18 @@ def volumen_sonidos(app):
                     app.mez.sonar(s, cat="interfaz", vol=0.9)
                 return Opcion(lambda: f"{cat.describir(s)} {int(round(float(cfg['vol_sonidos'].get(s, 1.0)) * 100))} por ciento", (lambda: app.mez.sonar(s, cat="interfaz", vol=0.9)), ajuste=aj,
                               ayuda=f"Archivo {s}. Intro lo hace sonar. Izquierda y derecha lo bajan o lo suben, del 30 al 200 por ciento.")
-            m = Menu(app, cat.GRUPOS[k][0] if k < len(cat.GRUPOS) else "Otros sonidos", [op(s) for s in nombres] + [Opcion("Volver", lambda: app.cerrar(m))],
+            m = Menu(app, k, [op(s) for s in nombres] + [Opcion("Volver", lambda: app.cerrar(m))],
                      al_cerrar=cfg.guardar, intro="Intro para escuchar. Izquierda y derecha para ajustar")
             app.abrir(m)
         return abrir
-    grupos = {}
-    for s in sorted(app.mez.sonidos):
-        if s.startswith(("radio_", "musica_")):
-            continue
-        grupos.setdefault(cat.grupo_de(s), []).append(s)
+    grupos = grupos_de_sonidos(app.mez.sonidos)
 
     def restablecer():
         cfg["vol_sonidos"].clear()
         cfg.guardar()
         app.recargar_sonidos()
         app.decir("Todos los sonidos vuelven a su volumen normal.", True)
-    ops = [Opcion(f"{cat.GRUPOS[k][0] if k < len(cat.GRUPOS) else 'Otros sonidos'}: {len(v)} sonidos", grupo(k, v)) for k, v in sorted(grupos.items())]
+    ops = [Opcion(f"{titulo}: {len(v)} sonidos", grupo(titulo, v)) for titulo, v in grupos]
     ops.append(Opcion(lambda: f"Restablecer todos. Tienes {len(cfg['vol_sonidos'])} sonidos ajustados", restablecer))
     principal_ = Menu(app, "Ajustar el volumen de cada sonido", ops + [Opcion("Volver", lambda: app.cerrar(principal_))], al_cerrar=cfg.guardar,
                       intro="Los sonidos están por grupos. Pulsa Intro para entrar en uno")

@@ -220,7 +220,7 @@ Ocho módulos de la 1.7.1, cada uno un mixin de `Partida` salvo `ajustes.py`:
 - `juego/agente.py` (`Agente`): el turno es un trabajo (`Partida.trabajo` con `tipo == "policia"`), así que todo lo que ya miraba `trabajo` lo respeta. `empezar_turno`, `_aviso_nuevo`, `actualizar_agente`, `dar_alto`, `agente_intro`. `delito_de_servicio(puntos, texto)`, llamado desde `Combate.delito` después de comprobar que hay testigos, decide si es fuerza justificada, un apercibimiento o la expulsión. Estado del puesto en `Jugador.policia`; avisos resueltos en `stats["serv_policia"]`. Opción `oficio_policia`. Secciones `policia_oficio` y `avisos_policia` (lista; `tipo` es uno de `agente.TIPOS`); tarifa `academia_policia`.
 - Tutoriales: el tipo de paso `practica` (`que`: `zarpar`, `timon`, `atracar`, `trabajar` o `servicio`; `metros` y `giro` para el timón) lo lleva `Misiones._paso_practica`. Un paso `ir` con `"exige": "radar"` no se cumple al llegar si no se ha usado el radar en ese paso (`ms["radar_usado"]`). Una misión con `"explicacion": true` no se juega: `Misiones.explicacion(m)` lee seguidos sus pasos de diálogo. Las voces grabadas se siguen buscando por misión, paso y frase, así que al tocar un tutorial hay que cuidar que cada grabación siga cayendo en su frase (hay una prueba que lo vigila).
 - En un servidor en línea no existen el asalto a proveedores, la negociación con las bandas, el reclutamiento en la calle, la convivencia ni el oficio de policía; lo demás funciona igual. No se ha tocado `servidor/`, y la huella del mundo no cambia.
-- Sonidos nuevos: `timbre` y `emisora` (`VERSION_CACHE` 19). En los packs llevan el sonido del juego.
+- Sonidos nuevos: `timbre` y `emisora` (`VERSION_CACHE` 19). En los packs son grabaciones CC0 de bigsoundbank.com (véase «Sonidos de terceros»).
 
 ### La reconquista de barrios
 
@@ -242,7 +242,7 @@ Ocho módulos de la 1.7.1, cada uno un mixin de `Partida` salvo `ajustes.py`:
 - Lo comprado va a `Jugador.encima` y, al guardarlo (`guardar_compra(casa)`), a `Jugador.despensa[casa.id]`. Las dos son listas de lotes: `{"id": producto, "n": cantidad, "cad": día en que caduca, o 0}`; un plato cocinado es `{"plato": receta, "nombre", "n", "cad", "hambre", "sed", "salud", "animo"}`, con sus efectos ya calculados, para que siga valiendo aunque el mod de la receta se quite. Nevera o despensa lo decide el `sitio` del producto (`lote_info`); la capacidad, `sitio_capacidad(casa, sitio)`. `tirar_caducado(lotes)` se llama al abrir; un lote vale hasta el día `cad` incluido.
 - Cocinar: `receta_falta(casa, r)` y `cocinar(casa, r, rng)`, que gasta, pasa el tiempo, sortea la calidad (`Jugador.cocina_practica`, de 0 a 100, y el mueble `cocina`), sirve una ración y guarda las demás. `sistemas.Interior` llama a `menus_cocina.usar_cocina`, que sin nada guardado ni comida encima hace lo de antes (`Interior._picar_algo`).
 - Tres campos nuevos del jugador (`despensa`, `encima`, `cocina_practica`), todos con valor de serie: el formato de las partidas no sube. No hay opciones nuevas. Depende solo del jugador, así que en un servidor funciona igual (el reloj no se adelanta al cocinar) y no se ha tocado `servidor/`; la huella del mundo no cambia.
-- Sonidos nuevos: `cesta`, `nevera`, `cocina_cortar`, `cocina_freir`, `cocina_hervir` y `plato_servido` (`VERSION_CACHE` 20). En los packs llevan el sonido del juego.
+- Sonidos nuevos: `cesta`, `nevera`, `cocina_cortar`, `cocina_freir`, `cocina_hervir` y `plato_servido` (`VERSION_CACHE` 20). En los packs son grabaciones CC0 de bigsoundbank.com (véase «Sonidos de terceros»).
 
 ### El mando: nada solo con teclado (1.7.1)
 
@@ -372,7 +372,17 @@ La guía completa, con la descripción y la duración de cada uno de los 237 son
 
 ### Sonidos de terceros
 
-Los packs Realista y Alternativo se montan con grabaciones de dominio público (licencia CC0) de kenney.nl, opengameart.org y bigsoundbank.com. Cada pack lleva un archivo `CREDITOS.txt` con el origen de cada sonido.
+Los packs Realista y Alternativo se montan con grabaciones de dominio público (licencia CC0) de kenney.nl, opengameart.org, freesound.org y bigsoundbank.com. Cada pack lleva un archivo `CREDITOS.txt` con el origen de cada sonido.
+
+Reglas de los packs, con sus pruebas vigilantes en `pruebas/test_171_sonidos.py`:
+
+- Las cinco carpetas de `data/sonidos` (`por_defecto`, `realista`, `alternativo`, `retro` y `envolvente`) tienen exactamente los mismos sonidos, con los mismos nombres y sin ninguno en dos formatos. Un sonido nuevo se añade a `sintesis.generar()` (al final, subiendo `VERSION_CACHE`), a `catalogo_sonidos` (grupo y descripción) y a los packs con `herramientas/crear_packs.py anadir <nombres>`.
+- `crear_packs.py anadir` sirve también para cambiar un sonido ya instalado: pone la grabación que diga la tabla del pack (`PACKS`, `EXTRA`, `CALLE`, `V171`, `PROPIAS`) o, si no hay, el sonido de serie; el pack Retro hereda del Realista lo que no tiene sonido de consola y el Envolvente copia del Realista lo que no es orientación ni un ambiente suyo. Después reescribe `CREDITOS.txt` (una línea por grabación, la lista de los que son el sonido de serie y la cuenta de la cabecera) y las cuentas de `pack.json`, de modo que siempre cuadran con los archivos.
+- Las grabaciones sueltas llevan en `DETALLE` su título, su autor y su página, y así salen en `CREDITOS.txt`. Las de la 1.7.1 son de bigsoundbank.com, todas CC0 y de Joseph SARDIN salvo las que se indican: megáfono («Megaphone, larsen» 9 y 4), emisora («Walkie talkie: Start» y «Keypad tones»), timbre («Doorbell house #1»; «Doorbell #6», de Dorian CLAIR), nevera («Fridge door»), cocina («Cutting board, zucchini» 2 y 1, «Frying pan» 3 y 2, «Boiling water», «Small Broth in a Pot»), plato («Large Plate, set on Table», «Small plate, set on table»), cesta («Pack of chips, manipulation #2»; «Tin can #1», de DenisChardonnet) y barrios («Bass Tom, #1», repetido tres veces; «Church Bell»; «Drum roll 3 S» y «Drum Roll 1 L»). Los originales descargados se guardan fuera del repositorio, en `adjuntos/fuentes/bigsoundbank_171`, con su `LEEME.txt`.
+- Recortes de `crear_packs.py`: además de `dur`, `golpe`, `bucle` y `desde`, admite `entrada` y `fundido` (segundos de fundido al principio y al final, para ruidos continuos que se cortan) y `veces` (la misma toma repetida en esos instantes).
+- `chat_personaje`, `chat_fuera`, `chat_accion` y `espera_servidor` son en todos los packs el sonido de serie: son un código de tonos, no el ruido de una cosa.
+- Los sonidos de orientación de los packs son los de `por_defecto`, byte a byte en lo que importa: la prueba compara las muestras.
+- Todos los sonidos tienen grupo y descripción en `juego/catalogo_sonidos.py`; de ahí salen la guía de sonidos, Aprender los sonidos (`menus_juego.sonidos`, con `sonidos_aprender`) y Opciones, Ajustar el volumen de cada sonido (`menus_juego.volumen_sonidos`), que comparten `menus_juego.grupos_de_sonidos`. Ninguno puede caer en «Otros sonidos».
 
 ---
 

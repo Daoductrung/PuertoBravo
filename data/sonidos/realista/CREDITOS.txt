@@ -2,7 +2,7 @@
 
 Grabaciones reales para pasos, puertas, armas, golpes, cristales, coche, lluvia, agua y monedas.
 
-Trae los 243 sonidos del juego: 192 son grabaciones reales descargadas y 51 son el sonido
+Trae los 270 sonidos del juego: 215 son grabaciones reales descargadas y 55 son el sonido
 original del juego, para los que no hay una grabación libre que encaje o que conviene no tocar
 (balizas, tonos, semáforos, radar y firmas de los lugares: de ellos depende orientarse sin ver).
 Todos proceden de colecciones con licencia CC0 (dominio público): se pueden usar, modificar y
@@ -82,6 +82,7 @@ COLECCIONES USADAS
   58 random sound effects: https://opengameart.org/content/58-random-sound-effects
   fantasy accessory sfx library: https://opengameart.org/content/fantasy-accessory-sfx-library
   Wind: https://opengameart.org/content/wind
+  BigSoundBank.com, grabaciones CC0 bajadas para la versión 1.7.1: https://bigsoundbank.com
 
 QUÉ SONIDO SALE DE DÓNDE
   abstinencia.flac: old-man-cough.flac, de old man cough. Dura 1,20 segundos.
@@ -100,6 +101,7 @@ QUÉ SONIDO SALE DE DÓNDE
   amb_playa.flac: wave_01_cc0-18363__jasinski__alkaibeach.flac, de beach ocean waves. Dura 3,50 segundos.
   amb_puerto.flac: puerto_2571.wav, de BigSoundBank.com y LaSonotheque.org. Dura 9,00 segundos.
   amb_residencial.flac: pueblo_1347.wav, de BigSoundBank.com y LaSonotheque.org. Dura 8,00 segundos.
+  amenaza_barrio.flac: timbal_2338.wav, «Bass Tom, #1», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/bass-tom-1-s2338.html. Dura 1,07 segundos.
   amigo_entra.flac: maximize_004.ogg, de Interface Sounds, de Kenney. Dura 0,39 segundos.
   amigo_sale.flac: minimize_004.ogg, de Interface Sounds, de Kenney. Dura 0,41 segundos.
   animo_baja.flac: dum.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,31 segundos.
@@ -112,6 +114,8 @@ QUÉ SONIDO SALE DE DÓNDE
   bajon.flac: ghostbreath.flac, de ghost breath. Dura 1,60 segundos.
   bala_impacto.flac: impactMetal_medium_001.ogg, de Impact Sounds, de Kenney. Dura 0,09 segundos.
   bala_silbido.flac: tin-whistle-whoosh-01.wav, de fantasy sound effects tinysized sfx. Dura 0,11 segundos.
+  barrio_defendido.flac: redoble_2406.flac, «Drum roll 3 S», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/drum-roll-3-s-s2406.html. Dura 1,44 segundos.
+  barrio_perdido.flac: campana_0135.wav, «Church Bell», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/church-bell-s0135.html. Dura 1,90 segundos.
   beber.flac: bubble_01.ogg, de 40 CC0 water, splash, slime SFX. Dura 0,53 segundos.
   bolsa.flac: paper_01.ogg, de 100 CC0 SFX. Dura 0,41 segundos.
   brazada.flac: brazada.ogg, de Freesound, grabaciones CC0 de gecop, Bidone, ccovi, 16HPanskaWillheimova_Sara, TRP, Fission9, swordofkings128, TicAshfield y freemaster2. Dura 0,90 segundos.
@@ -122,6 +126,7 @@ QUÉ SONIDO SALE DE DÓNDE
   campanadas.flac: bell_ding4.wav, de bell dingschimes. Dura 1,20 segundos.
   carrete.flac: reel.wav, de fisheefects. Dura 0,90 segundos.
   celda.flac: metal_close_01.ogg, de 100 cc0 metal and wood sfx. Dura 0,30 segundos.
+  cesta.flac: bolsa_patatas_1434.wav, «Pack of chips, manipulation #2», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/pack-of-chips-manipulation-2-s1434.html. Dura 0,50 segundos.
   chat.flac: confirmation_002.ogg, de Interface Sounds, de Kenney. Dura 0,49 segundos.
   choque.flac: bfh1_metal_falling_01.ogg, de 75 CC0 breaking, falling, hit SFX. Dura 0,74 segundos.
   choque_leve.flac: bfh1_metal_hit_02.ogg, de 75 CC0 breaking, falling, hit SFX. Dura 0,22 segundos.
@@ -132,6 +137,9 @@ QUÉ SONIDO SALE DE DÓNDE
   claxon_camion.flac: claxon_camion_2721.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,90 segundos.
   claxon_helados.flac: 24.wav, de bell arpeggio 24. Dura 1,60 segundos.
   claxon_lejano.flac: Car_Horn.ogg, de Car Sound Effects Pack. Dura 0,41 segundos.
+  cocina_cortar.flac: tabla_calabacin_2069.wav, «Cutting board, zucchini #2», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/cutting-board-zucchini-2-s2069.html. Dura 1,50 segundos.
+  cocina_freir.flac: sarten_0145.wav, «Frying pan #3», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/frying-pan-3-s0145.html. Dura 2,40 segundos.
+  cocina_hervir.flac: agua_hirviendo_0149.wav, «Boiling water», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/boiling-water-s0149.html. Dura 2,40 segundos.
   cohete.flac: rocket_01.ogg, de 50 cc0 sci fi sfx. Dura 1,00 segundos.
   comer.flac: crunch.4.ogg, de 7 eating crunches. Dura 0,44 segundos.
   cristal.flac: bfh1_glass_breaking_01.ogg, de 75 CC0 breaking, falling, hit SFX. Dura 0,43 segundos.
@@ -142,16 +150,22 @@ QUÉ SONIDO SALE DE DÓNDE
   diana_ok.flac: pleasing-bell.wav, de pleasing bell sound effect. Dura 0,62 segundos.
   dinero.flac: coin.wav, de RPG Sound Pack. Dura 0,56 segundos.
   diploma.flac: Ability Learn.mp3, de 7 assorted sound effects, menu and level up. Dura 1,50 segundos.
+  disparo_corredera.flac: K_17P.wav, de The Free Firearm Sound Library. Dura 0,90 segundos.
   disparo_escopeta.flac: N_26P.wav, de The Free Firearm Sound Library. Dura 0,90 segundos.
   disparo_fusil.flac: C_27P.wav, de The Free Firearm Sound Library. Dura 0,35 segundos.
+  disparo_palanca.flac: I_17P.wav, de The Free Firearm Sound Library. Dura 0,90 segundos.
   disparo_pistola.flac: X_31P.wav, de The Free Firearm Sound Library. Dura 0,60 segundos.
+  disparo_rafaga.flac: F_41P.wav, de The Free Firearm Sound Library. Dura 0,20 segundos.
   disparo_revolver.flac: V_22P.wav, de The Free Firearm Sound Library. Dura 0,70 segundos.
   disparo_rifle.flac: W_24P.wav, de The Free Firearm Sound Library. Dura 1,00 segundos.
+  disparo_semiautomatico.flac: U_14P.wav, de The Free Firearm Sound Library. Dura 0,45 segundos.
   disparo_silenciado.flac: T_17P.wav, de The Free Firearm Sound Library. Dura 0,30 segundos.
   disparo_subfusil.flac: G_24P.wav, de The Free Firearm Sound Library. Dura 0,22 segundos.
   dolor.flac: slightscream-01.flac, de 15 vocal male strain, hurt, pain, jump sounds. Dura 0,34 segundos.
+  dolor_mujer.flac: female_hurt_grunts_groans_1.ogg, de female hurt grunts groans. Dura 0,61 segundos.
   dolor_npc.flac: slightscream-03.flac, de 15 vocal male strain, hurt, pain, jump sounds. Dura 0,43 segundos.
   donativo.flac: handleCoins.ogg, de 50 RPG sound effects, de Kenney. Dura 0,71 segundos.
+  emisora.flac: walkie_inicio_0589.wav, «Walkie talkie: Start», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/walkie-talkie-start-s0589.html. Dura 0,47 segundos.
   error.flac: error_004.ogg, de Interface Sounds, de Kenney. Dura 0,10 segundos.
   esposas.flac: handcuffs-metal-lock-01.wav, de fantasy sound effects tinysized sfx. Dura 0,35 segundos.
   estrella_baja.flac: Chime_Cancel.mp3, de Chimey UI sounds. Dura 0,80 segundos.
@@ -167,11 +181,16 @@ QUÉ SONIDO SALE DE DÓNDE
   golpe.flac: impactPunch_medium_000.ogg, de Impact Sounds, de Kenney. Dura 0,22 segundos.
   golpe_aire.flac: swing.wav, de RPG Sound Pack. Dura 0,11 segundos.
   grito.flac: scream1.ogg, de War on Water sound effects. Dura 0,81 segundos.
+  grito_hombre.flac: 2yell3.wav, de Male grunt and yelling sounds. Dura 0,93 segundos.
+  grito_mujer.flac: wscream_2_0.wav, de girly scream. Dura 0,64 segundos.
   guardado.flac: Chime_Save.mp3, de Chimey UI sounds. Dura 1,07 segundos.
+  hacha.flac: impactPlank_medium_000.ogg, de Impact Sounds, de Kenney. Dura 0,14 segundos.
+  helicoptero_policia.flac: helicopter_0.mp3, de helicopter sounds. Dura 4,00 segundos.
   hospital_despertar.flac: monitor_0457.wav, de BigSoundBank.com y LaSonotheque.org. Dura 2,40 segundos.
   intermitente.flac: blinker02.wav, de car blinker sfx. Dura 0,56 segundos.
   jornada.flac: tickloop-amp.wav, de clock wind sounds. Dura 1,22 segundos.
   ladrido.flac: Dog Bark 2.wav, de Dog sounds. Dura 0,33 segundos.
+  lanzagranadas.flac: shot_01.ogg, de 25 CC0 bang, firework SFX. Dura 0,32 segundos.
   lanzar.flac: swing2.wav, de RPG Sound Pack. Dura 0,08 segundos.
   latido.flac: heartbeat_slow_0.wav, de heartbeat sounds. Dura 1,60 segundos.
   levantarse.flac: cloth4.ogg, de 50 RPG sound effects, de Kenney. Dura 0,25 segundos.
@@ -181,6 +200,7 @@ QUÉ SONIDO SALE DE DÓNDE
   lugar_fuente.flac: sfx100v2_loop_water_01.ogg, de 100 CC0 SFX #2. Dura 5,00 segundos.
   lugar_rio.flac: sfx100v2_loop_water_02.ogg, de 100 CC0 SFX #2. Dura 6,00 segundos.
   martillo.flac: impactMining_000.ogg, de Impact Sounds, de Kenney. Dura 0,52 segundos.
+  megafono.flac: megafono_3147.flac, «Megaphone, larsen #9», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/megaphone-larsen-9-s3147.html. Dura 0,90 segundos.
   menu_ajuste.flac: toggle_001.ogg, de Interface Sounds, de Kenney. Dura 0,11 segundos.
   menu_atras.flac: back_001.ogg, de Interface Sounds, de Kenney. Dura 0,06 segundos.
   menu_borde.flac: bong_001.ogg, de Interface Sounds, de Kenney. Dura 0,09 segundos.
@@ -206,6 +226,7 @@ QUÉ SONIDO SALE DE DÓNDE
   multitud.flac: charla_2968.wav, de BigSoundBank.com y LaSonotheque.org. Dura 6,00 segundos.
   murmullo.flac: charla_2968.wav, de BigSoundBank.com y LaSonotheque.org. Dura 0,40 segundos.
   navaja.flac: knifeSlice.ogg, de 50 RPG sound effects, de Kenney. Dura 0,30 segundos.
+  nevera.flac: nevera_puerta_1158.wav, «Fridge door», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/fridge-door-s1158.html. Dura 1,10 segundos.
   nivel.flac: Chime_LevelUp.mp3, de Chimey UI sounds. Dura 1,45 segundos.
   noche_juntos.flac: ding_deep.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,88 segundos.
   notificacion.flac: alert.flac, de alertnotification sound. Dura 0,76 segundos.
@@ -233,6 +254,7 @@ QUÉ SONIDO SALE DE DÓNDE
   pez_pica.flac: splash_09.ogg, de 40 CC0 water, splash, slime SFX. Dura 0,20 segundos.
   pinchazo.flac: bang_03.ogg, de 25 CC0 bang, firework SFX. Dura 0,56 segundos.
   pintura.flac: compressed-air-spray-02.wav, de fantasy sound effects tinysized sfx. Dura 1,20 segundos.
+  plato_servido.flac: plato_grande_1189.wav, «Large Plate, set on Table», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/large-plate-set-on-table-s1189.html. Dura 0,46 segundos.
   policia_perdida.flac: Chime_Exit.mp3, de Chimey UI sounds. Dura 1,23 segundos.
   precio_escasez.flac: error_005.ogg, de Interface Sounds, de Kenney. Dura 0,14 segundos.
   precio_ganga.flac: coin3.wav, de RPG Sound Pack. Dura 0,28 segundos.
@@ -244,6 +266,7 @@ QUÉ SONIDO SALE DE DÓNDE
   recarga.flac: gun_reload.1.ogg, de 2 gun reloads. Dura 0,55 segundos.
   rechazo.flac: error_001.ogg, de Interface Sounds, de Kenney. Dura 0,15 segundos.
   recoger.flac: handleSmallLeather.ogg, de 50 RPG sound effects, de Kenney. Dura 0,20 segundos.
+  recoger_municion.flac: clipload1.wav, de gun reload sound effects. Dura 0,18 segundos.
   regalo.flac: cover-paper-tear-01.wav, de fantasy sound effects tinysized sfx. Dura 0,60 segundos.
   reloj.flac: ticking clock - tick1.wav, de Ticking clock. Dura 0,15 segundos.
   reparar.flac: tools_01.ogg, de 100 CC0 SFX. Dura 0,46 segundos.
@@ -264,6 +287,7 @@ QUÉ SONIDO SALE DE DÓNDE
   sirena_lejana.flac: policia_0886.wav, de BigSoundBank.com y LaSonotheque.org. Dura 1,90 segundos.
   sobredosis.flac: heartbeat_fast_reverb.wav, de heartbeat sounds. Dura 1,11 segundos.
   territorio.flac: gong_01.ogg, de 100 CC0 SFX. Dura 1,09 segundos.
+  timbre.flac: timbre_casa_0159.wav, «Doorbell house #1», de Joseph SARDIN. Licencia CC0 (dominio público). https://bigsoundbank.com/doorbell-house-1-s0159.html. Dura 2,60 segundos.
   tomar_copa.flac: bottle-open-01.flac, de liquid bottle drink set. Dura 0,35 segundos.
   tomar_cristal.flac: Cigarette_Lighter_04.wav, de 58 random sound effects. Dura 0,07 segundos.
   tomar_hierba.flac: lighter-light-01.wav, de fantasy sound effects tinysized sfx. Dura 0,22 segundos.
@@ -279,45 +303,4 @@ QUÉ SONIDO SALE DE DÓNDE
 
 SONIDOS ORIGINALES DEL JUEGO INCLUIDOS PARA QUE EL PACK ESTÉ COMPLETO
   Sustituye cualquiera de ellos por una grabación tuya con el mismo nombre.
-  baliza, baliza_destino, bordillo, cruce, cursor_mapa, loc_casete, loc_lugar, loc_mision, loc_objeto, loc_vehiculo, lugar_academia, lugar_aeropuerto, lugar_armeria, lugar_banco, lugar_bar, lugar_boya, lugar_casa, lugar_casino, lugar_cine, lugar_club, lugar_comida, lugar_comisaria, lugar_contacto, lugar_embarcadero, lugar_empleo, lugar_estacion, lugar_generico, lugar_gimnasio, lugar_helipuerto, lugar_hospital, lugar_iglesia, lugar_mina, lugar_ong, lugar_periodico, lugar_prision, lugar_protectora, lugar_proveedor, lugar_salida, lugar_taller, lugar_taxi, lugar_tienda, lugar_tranvia, lugar_tren, radar, semaforo_pio, semaforo_tic, sonar, tono_apuntado, tono_libre, tono_objetivo, tono_pared
-
-SONIDOS AÑADIDOS DESPUÉS
-  disparo_rafaga.flac: F_41P.wav, de The Free Firearm Sound Library. Dura 0,20 segundos.
-  disparo_corredera.flac: K_17P.wav, de The Free Firearm Sound Library. Dura 0,90 segundos.
-  disparo_palanca.flac: I_17P.wav, de The Free Firearm Sound Library. Dura 0,90 segundos.
-  disparo_semiautomatico.flac: U_14P.wav, de The Free Firearm Sound Library. Dura 0,45 segundos.
-  hacha.flac: impactPlank_medium_000.ogg, de Impact Sounds, de Kenney. Dura 0,14 segundos.
-  lanzagranadas.flac: shot_01.ogg, de 25 CC0 bang, firework SFX. Dura 0,32 segundos.
-
-SONIDOS AÑADIDOS DESPUÉS
-  grito_hombre.flac: 2yell3.wav, de Male grunt and yelling sounds. Dura 0,93 segundos.
-  grito_mujer.flac: wscream_2_0.wav, de girly scream. Dura 0,64 segundos.
-  dolor_mujer.flac: female_hurt_grunts_groans_1.ogg, de female hurt grunts groans. Dura 0,61 segundos.
-  recoger_municion.flac: clipload1.wav, de gun reload sound effects. Dura 0,18 segundos.
-  helicoptero_policia.flac: helicopter_0.mp3, de helicopter sounds. Dura 4,00 segundos.
-  megafono.flac: sonido original del juego.
-
-SONIDOS AÑADIDOS DESPUÉS
-  timbre.flac: sonido original del juego.
-  emisora.flac: sonido original del juego.
-
-SONIDOS AÑADIDOS DESPUÉS
-  cesta.flac: sonido original del juego.
-  nevera.flac: sonido original del juego.
-  cocina_cortar.flac: sonido original del juego.
-  cocina_freir.flac: sonido original del juego.
-  cocina_hervir.flac: sonido original del juego.
-  plato_servido.flac: sonido original del juego.
-
-SONIDOS AÑADIDOS DESPUÉS
-  chat_personaje.flac: sonido original del juego.
-  chat_fuera.flac: sonido original del juego.
-  chat_accion.flac: sonido original del juego.
-
-SONIDOS AÑADIDOS DESPUÉS
-  espera_servidor.flac: sonido original del juego.
-
-SONIDOS AÑADIDOS DESPUÉS
-  amenaza_barrio.flac: sonido original del juego.
-  barrio_perdido.flac: sonido original del juego.
-  barrio_defendido.flac: sonido original del juego.
+  baliza, baliza_destino, bordillo, chat_accion, chat_fuera, chat_personaje, cruce, cursor_mapa, espera_servidor, loc_casete, loc_lugar, loc_mision, loc_objeto, loc_vehiculo, lugar_academia, lugar_aeropuerto, lugar_armeria, lugar_banco, lugar_bar, lugar_boya, lugar_casa, lugar_casino, lugar_cine, lugar_club, lugar_comida, lugar_comisaria, lugar_contacto, lugar_embarcadero, lugar_empleo, lugar_estacion, lugar_generico, lugar_gimnasio, lugar_helipuerto, lugar_hospital, lugar_iglesia, lugar_mina, lugar_ong, lugar_periodico, lugar_prision, lugar_protectora, lugar_proveedor, lugar_salida, lugar_taller, lugar_taxi, lugar_tienda, lugar_tranvia, lugar_tren, radar, semaforo_pio, semaforo_tic, sonar, tono_apuntado, tono_libre, tono_objetivo, tono_pared

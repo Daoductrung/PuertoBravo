@@ -54,12 +54,16 @@ li { margin-bottom: .3em; }
 <h3>El volumen se iguala solo</h3>
 <p>Cada grabación viene a un volumen distinto. Para que eso no estropee el equilibrio del juego, al cargar un sonido que has cambiado el juego lo lleva al mismo nivel que tenía el original: mide el tramo más fuerte de tu archivo, lo compara con el del sonido original y lo sube o lo baja lo que haga falta, sin dejar que sature. Así unos pasos no pueden quedar más fuertes que un disparo, ni una baliza inaudible. Se puede desactivar en Opciones, Sonido y música, Igualar el volumen de los sonidos cambiados.</p>
 <p>Si aun así un sonido concreto te parece fuerte o flojo, ve a Opciones, Sonido y música, Ajustar el volumen de cada sonido. Están todos, por grupos: Intro lo hace sonar y las flechas izquierda y derecha lo bajan o lo suben, del 30 al 200 por ciento. El ajuste se guarda con tus opciones.</p>
+<h3>Escuchar cualquier sonido dentro del juego</h3>
+<p>En el menú principal y en el de pausa, Aprender los sonidos tiene los 270 sonidos del juego: primero el grupo Los más importantes y después todos, por los mismos grupos que la lista del final de este documento. Entra en un grupo y pulsa Intro sobre un sonido: el juego dice qué es y lo hace sonar a él solo, con el pack que tengas puesto. Sirve para comprobar cómo ha quedado una grabación tuya sin tener que provocar el sonido jugando.</p>
 
 <h2>3. Packs de sonidos</h2>
 <p>Un pack es una carpeta con archivos que se llaman igual que los sonidos del juego. Los packs van dentro de <code>data\sonidos</code>, cada uno en su subcarpeta, al lado de <code>por_defecto</code>, y se eligen dentro del juego en Opciones, Sonido y música, Pack de sonidos, con las flechas izquierda y derecha. El cambio se oye al momento y no toca tus archivos de <code>data\sonidos\por_defecto</code>: para volver atrás, elige «por defecto».</p>
 <ul>
 <li>Un pack tuyo no tiene que traerlos todos: los sonidos que no traiga siguen sonando con el original.</li>
 <li>El volumen de cada sonido del pack se iguala al del original, como se explica arriba.</li>
+<li>Los packs que vienen con el juego traen exactamente los mismos archivos que <code>por_defecto</code>, con los mismos nombres: ni uno más ni uno menos. Sus grabaciones son de dominio público (licencia CC0) y salen de kenney.nl, opengameart.org, freesound.org y bigsoundbank.com.</li>
+<li>Los tonos de los canales de rol (<code>chat_personaje</code>, <code>chat_fuera</code> y <code>chat_accion</code>) y el de la espera al servidor (<code>espera_servidor</code>) son en todos los packs los de serie, a propósito: son un código de tonos y conviene que suenen siempre igual.</li>
 <li>De serie vienen instalados los packs «Alternativo», con 270 sonidos, «Envolvente», con 270 sonidos, «Realista», con 270 sonidos, «Retro», con 270 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
 </ul>
 <h3>Hacer tu propio pack</h3>
@@ -126,6 +130,7 @@ li { margin-bottom: .3em; }
 <h3>Menús y avisos generales</h3>
 <p>Sonidos cortos de la interfaz. Conviene que sean breves y discretos.</p>
 <ul>
+<li><code>beber</code>: Unos tragos de agua. Dura 0,33 segundos.</li>
 <li><code>caja</code>: Caja registradora: compras y banco. Dura 0,67 segundos.</li>
 <li><code>comer</code>: Comes o bebes. Dura 0,60 segundos.</li>
 <li><code>curar</code>: Recuperas salud. Dura 0,78 segundos.</li>
@@ -444,6 +449,7 @@ li { margin-bottom: .3em; }
 <li><code>chat_accion</code>: En un servidor, alguien que está cerca describe lo que hace su personaje, o lo haces tú. Un roce corto, como un movimiento, rematado con una nota. Dura 0,45 segundos.</li>
 <li><code>chat_fuera</code>: En un servidor, llega o se envía un mensaje fuera de personaje. Dos toques secos de madera, como abrir y cerrar un paréntesis. Dura 0,30 segundos.</li>
 <li><code>chat_personaje</code>: En un servidor, alguien que está cerca habla en personaje, o lo haces tú. Dos notas graves y cálidas, más lentas que las del mensaje normal. Dura 0,64 segundos.</li>
+<li><code>espera_servidor</code>: En un servidor, el juego está esperando para volver a entrar solo: el servidor se está actualizando o se ha cortado la conexión. Dos notas lentas y flojas, la segunda más grave, como una llamada que da tono. Se repite cada pocos segundos mientras dura la espera. Dura 1,64 segundos.</li>
 </ul>
 <h3>Vida social, solo con el contenido para adultos</h3>
 <p>Relaciones sentimentales.</p>
@@ -472,11 +478,6 @@ li { margin-bottom: .3em; }
 <li><code>tomar_pastillas</code>: Tomas una pastilla: el blíster y un trago. Dura 0,90 segundos.</li>
 <li><code>tomar_polvo</code>: Tomas polvo blanco. Dura 1,00 segundos.</li>
 <li><code>trato</code>: Un trato cerrado: billetes y un paquete que cambia de manos. Dura 0,90 segundos.</li>
-</ul>
-<h3>Otros sonidos</h3>
-<ul>
-<li><code>beber</code>: Unos tragos de agua. Dura 0,33 segundos.</li>
-<li><code>espera_servidor</code>: En un servidor, el juego está esperando para volver a entrar solo: el servidor se está actualizando o se ha cortado la conexión. Dos notas lentas y flojas, la segunda más grave, como una llamada que da tono. Se repite cada pocos segundos mientras dura la espera. Dura 1,64 segundos.</li>
 </ul>
 </body>
 </html>

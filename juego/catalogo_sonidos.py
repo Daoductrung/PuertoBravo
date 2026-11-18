@@ -3,7 +3,7 @@
 GRUPOS = [
     ("Menús y avisos generales", "Sonidos cortos de la interfaz. Conviene que sean breves y discretos.",
      ("menu_",), {"error", "notificacion", "mision_ok", "mision_fallo", "dinero", "guardado", "movil", "dialogo", "pasan_horas", "logro",
-                  "nivel", "evento", "caja", "reloj", "llegada", "recoger", "curar", "comer"}),
+                  "nivel", "evento", "caja", "reloj", "llegada", "recoger", "curar", "comer", "beber"}),
     ("Orientación y GPS", "Son la base de la accesibilidad del juego. Si los cambias, que sigan siendo cortos, claros y fáciles de localizar en el espacio.",
      ("tono_", "semaforo_", "baliza"), {"sonar", "bordillo", "cruce", "radar", "cursor_mapa"}),
     ("Pasos", "Hay dos variantes de cada suelo, que se alternan pie izquierdo y pie derecho. Deben durar menos de un cuarto de segundo.",
@@ -29,7 +29,7 @@ GRUPOS = [
     ("Puertas, horas del día y vida honrada", "Lo que se oye al entrar en un local, al cambiar la hora y en los trabajos.",
      ("puerta_",), {"campanadas", "gallo", "buho", "agacharse", "levantarse", "hospital_despertar", "celda", "ascenso", "diploma", "donativo", "prestigio", "jornada", "timbre"}),
     ("La compra y la cocina", "Recorrer una tienda de comida con la cesta, y cocinar en casa.", ("cocina_",), {"cesta", "nevera", "plato_servido"}),
-    ("Jugar con amigos y en un servidor", "Avisos de la partida compartida y de los canales de rol de los servidores.", ("amigo_", "chat_"), {"chat"}),
+    ("Jugar con amigos y en un servidor", "Avisos de la partida compartida y de los canales de rol de los servidores.", ("amigo_", "chat_"), {"chat", "espera_servidor"}),
     ("Vida social, solo con el contenido para adultos", "Relaciones sentimentales.",
      ("afinidad_",), {"pareja", "ruptura", "noche_juntos", "cita", "regalo"}),
     ("Sustancias y trapicheo, solo con el contenido para adultos", "Cada sustancia tiene su sonido al tomarla, para reconocerla sin mirar.",

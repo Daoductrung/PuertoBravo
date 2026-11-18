@@ -15,6 +15,8 @@ Formas de recortar:
     ("carpeta", "archivo", {"golpe": 0.6})    desde el primer golpe fuerte (grabaciones con varios disparos)
     ("carpeta", "archivo", {"bucle": 6.0, "desde": 2.0})   tramo que se repite sin corte
     ("carpeta", "archivo", {"desde": 2.0, "dur": 0.6})     una toma de una grabación que trae varias seguidas
+    ... {"dur": 2.4, "entrada": 0.1, "fundido": 0.3}       con la entrada y la salida más suaves (ruidos continuos que se cortan)
+    ... {"dur": 0.5, "veces": (0.0, 0.42, 0.72)}           la misma toma repetida en esos instantes (tres golpes de un tambor)
 """
 import json
 import os
@@ -71,6 +73,33 @@ COL = {
     "BSB": ("bigsoundbank", "BigSoundBank.com y LaSonotheque.org", "https://bigsoundbank.com"),
     "ARM": ("Prepared_SFX_Library/Prepared SFX Library", "The Free Firearm Sound Library", "https://opengameart.org/content/the-free-firearm-sound-library"),
     "YELL": ("yelling_sounds/yelling sounds", "Male grunt and yelling sounds", "https://opengameart.org/content/male-gruntyelling-sounds"),
+    "B171": ("bigsoundbank_171", "BigSoundBank.com, grabaciones CC0 bajadas para la versión 1.7.1", "https://bigsoundbank.com"),
+}
+
+# Grabaciones sueltas: de cada archivo, su título, su autor y su página, tal como figuran en ella. Todas CC0 (dominio público).
+# Así los créditos de cada pack dicen de dónde sale cada una, y no solo la colección.
+DETALLE = {
+    "megafono_3147": ("Megaphone, larsen #9", "Joseph SARDIN", "https://bigsoundbank.com/megaphone-larsen-9-s3147.html"),
+    "megafono_3142": ("Megaphone, larsen #4", "Joseph SARDIN", "https://bigsoundbank.com/megaphone-larsen-4-s3142.html"),
+    "walkie_inicio_0589": ("Walkie talkie: Start", "Joseph SARDIN", "https://bigsoundbank.com/walkie-talkie-start-s0589.html"),
+    "walkie_tonos_0590": ("Walkie talkie: Keypad tones", "Joseph SARDIN", "https://bigsoundbank.com/walkie-talkie-keypad-tones-s0590.html"),
+    "timbre_casa_0159": ("Doorbell house #1", "Joseph SARDIN", "https://bigsoundbank.com/doorbell-house-1-s0159.html"),
+    "timbre_2365": ("Doorbell #6", "Dorian CLAIR", "https://bigsoundbank.com/doorbell-6-s2365.html"),
+    "nevera_puerta_1158": ("Fridge door", "Joseph SARDIN", "https://bigsoundbank.com/fridge-door-s1158.html"),
+    "tabla_calabacin_2069": ("Cutting board, zucchini #2", "Joseph SARDIN", "https://bigsoundbank.com/cutting-board-zucchini-2-s2069.html"),
+    "tabla_calabacin_2068": ("Cutting board, zucchini #1", "Joseph SARDIN", "https://bigsoundbank.com/cutting-board-zucchini-1-s2068.html"),
+    "sarten_0145": ("Frying pan #3", "Joseph SARDIN", "https://bigsoundbank.com/frying-pan-3-s0145.html"),
+    "sarten_0144": ("Frying pan #2", "Joseph SARDIN", "https://bigsoundbank.com/frying-pan-2-s0144.html"),
+    "agua_hirviendo_0149": ("Boiling water", "Joseph SARDIN", "https://bigsoundbank.com/boiling-water-s0149.html"),
+    "caldo_0492": ("Small Broth in a Pot", "Joseph SARDIN", "https://bigsoundbank.com/small-broth-in-a-pot-s0492.html"),
+    "plato_grande_1189": ("Large Plate, set on Table", "Joseph SARDIN", "https://bigsoundbank.com/large-plate-set-on-table-s1189.html"),
+    "plato_pequeno_1190": ("Small plate, set on table", "Joseph SARDIN", "https://bigsoundbank.com/small-plate-set-on-table-s1190.html"),
+    "bolsa_patatas_1434": ("Pack of chips, manipulation #2", "Joseph SARDIN", "https://bigsoundbank.com/pack-of-chips-manipulation-2-s1434.html"),
+    "lata_0246": ("Tin can #1", "DenisChardonnet", "https://bigsoundbank.com/tin-1-s0246.html"),
+    "timbal_2338": ("Bass Tom, #1", "Joseph SARDIN", "https://bigsoundbank.com/bass-tom-1-s2338.html"),
+    "campana_0135": ("Church Bell", "Joseph SARDIN", "https://bigsoundbank.com/church-bell-s0135.html"),
+    "redoble_2406": ("Drum roll 3 S", "Joseph SARDIN", "https://bigsoundbank.com/drum-roll-3-s-s2406.html"),
+    "redoble_2402": ("Drum Roll 1 L", "Joseph SARDIN", "https://bigsoundbank.com/drum-roll-1-l-s2402.html"),
 }
 
 PACKS = {
@@ -330,6 +359,40 @@ CALLE = {
 }
 for _clave, _tabla in CALLE.items():
     PACKS[_clave]["sonidos"].update(_tabla)
+# Lo demás de la 1.7.1, con grabaciones CC0 de BigSoundBank hechas de lo que representan: el acople de un megáfono, un
+# walkie-talkie, timbres de casa, la puerta de una nevera, un cuchillo en la tabla, una sartén, una olla, un plato en la mesa,
+# un producto que se echa a la cesta, y para los barrios un timbal (tres golpes), una campana de iglesia y un redoble.
+# El pack retro los hereda del realista, como todo lo que no tiene sonido de consola, y el envolvente también.
+# Los tres canales de rol (chat_personaje, chat_fuera, chat_accion) y espera_servidor se quedan en todos los packs con el
+# sonido del juego: son un código de tonos, no el ruido de una cosa, y lo que los distingue es justo lo que dice la ayuda.
+V171 = {
+    "realista": {"megafono": ("B171", "megafono/megafono_3147", {"dur": 0.9, "fundido": 0.15}),
+                 "emisora": ("B171", "emisora/walkie_inicio_0589", {"desde": 0.6, "dur": 0.6}),
+                 "timbre": ("B171", "timbre/timbre_casa_0159", {"dur": 2.6, "fundido": 0.4}),
+                 "nevera": ("B171", "nevera/nevera_puerta_1158", {"desde": 2.35, "dur": 1.1, "fundido": 0.3}),
+                 "cocina_cortar": ("B171", "cocina_cortar/tabla_calabacin_2069", {"dur": 1.5}),
+                 "cocina_freir": ("B171", "cocina_freir/sarten_0145", {"desde": 1.0, "dur": 2.4, "entrada": 0.08, "fundido": 0.3}),
+                 "cocina_hervir": ("B171", "cocina_hervir/agua_hirviendo_0149", {"desde": 2.0, "dur": 2.4, "entrada": 0.08, "fundido": 0.3}),
+                 "plato_servido": ("B171", "plato_servido/plato_grande_1189", {"desde": 13.1, "dur": 0.7}),
+                 "cesta": ("B171", "cesta/bolsa_patatas_1434", {"desde": 3.6, "dur": 0.5, "fundido": 0.08}),
+                 "amenaza_barrio": ("B171", "amenaza_barrio/timbal_2338", {"dur": 0.5, "fundido": 0.1, "veces": (0.0, 0.42, 0.72)}),
+                 "barrio_perdido": ("B171", "barrio_perdido/campana_0135", {"desde": 1.96, "dur": 1.9, "fundido": 0.4}),
+                 "barrio_defendido": ("B171", "barrio_defendido/redoble_2406", {"desde": 0.9, "dur": 1.5})},
+    "alternativo": {"megafono": ("B171", "megafono/megafono_3142", {"dur": 0.8, "fundido": 0.15}),
+                    "emisora": ("B171", "emisora/walkie_tonos_0590", {"desde": 1.0, "dur": 1.1}),
+                    "timbre": ("B171", "timbre/timbre_2365", {"dur": 1.8, "fundido": 0.3}),
+                    "nevera": ("B171", "nevera/nevera_puerta_1158", {"desde": 18.3, "dur": 1.1, "fundido": 0.3}),
+                    "cocina_cortar": ("B171", "cocina_cortar/tabla_calabacin_2068", {"desde": 1.9, "dur": 1.5}),
+                    "cocina_freir": ("B171", "cocina_freir/sarten_0144", {"desde": 2.0, "dur": 2.4, "entrada": 0.08, "fundido": 0.3}),
+                    "cocina_hervir": ("B171", "cocina_hervir/caldo_0492", {"desde": 2.0, "dur": 2.4, "entrada": 0.08, "fundido": 0.3}),
+                    "plato_servido": ("B171", "plato_servido/plato_pequeno_1190", {"desde": 15.4, "dur": 0.7}),
+                    "cesta": ("B171", "cesta/lata_0246", {"dur": 0.6, "fundido": 0.08}),
+                    "amenaza_barrio": ("B171", "amenaza_barrio/timbal_2338", {"dur": 0.5, "fundido": 0.1, "veces": (0.0, 0.5, 0.82)}),
+                    "barrio_perdido": ("B171", "barrio_perdido/campana_0135", {"desde": 3.96, "dur": 1.9, "fundido": 0.4}),
+                    "barrio_defendido": ("B171", "barrio_defendido/redoble_2402", {"desde": 2.9, "dur": 1.5})},
+}
+for _clave, _tabla in V171.items():
+    PACKS[_clave]["sonidos"].update(_tabla)
 for _clave in ("realista", "alternativo"):
     for _sonido, _origen in EXTRA.items():
         PACKS[_clave]["sonidos"].setdefault(_sonido, _origen)
@@ -366,6 +429,13 @@ for _pack in PACKS.values():
 ORIENTACION = ("baliza", "tono_", "semaforo_", "lugar_", "loc_", "radar", "sonar", "cruce", "bordillo", "cursor_mapa")
 
 
+def credito(sonido, col, archivo, dur):
+    """La línea de CREDITOS.txt de una grabación. Si el archivo está en DETALLE, con su título, autor, licencia y página."""
+    det = DETALLE.get(os.path.splitext(archivo)[0])
+    de = f"«{det[0]}», de {det[1]}. Licencia CC0 (dominio público). {det[2]}" if det else f"de {info(col)[1]}"
+    return f"  {sonido}{sintesis.FORMATO}: {archivo}, {de}. Dura " + f"{dur:.2f}".replace(".", ",") + " segundos."
+
+
 def buscar(col, nombre):
     carpeta = os.path.join(FUENTES, *info(col)[0].split("/"), *nombre.split("/")[:-1])
     base = nombre.split("/")[-1]
@@ -379,6 +449,7 @@ def buscar(col, nombre):
 
 def _fundir(d, entrada=0.003, salida=0.03):
     d = d.copy()
+    entrada, salida = entrada or 0.003, salida or 0.03
     a, b = min(len(d) // 2, int(entrada * SR)), min(len(d) // 2, int(salida * SR))
     if a:
         d[:a] *= np.linspace(0, 1, a)
@@ -417,7 +488,12 @@ def preparar(d, op):
             d = d[max(0, int(oye[0]) - int(0.002 * SR)):int(oye[-1]) + int(0.02 * SR)]
         if "dur" in op:
             d = d[:int(op["dur"] * SR)]
-        d = _fundir(d)
+        d = _fundir(d, op.get("entrada"), op.get("fundido"))
+        if "veces" in op:                                        # la misma toma, repetida en esos instantes
+            largo = np.zeros(int(max(op["veces"]) * SR) + len(d), dtype=np.float32)
+            for t in op["veces"]:
+                largo[int(t * SR):int(t * SR) + len(d)] += d
+            d = largo
     p = float(np.max(np.abs(d))) or 1.0
     return (d * (0.9 / p)).astype(np.float32)
 
@@ -465,7 +541,7 @@ def montar(clave, pack):
               "  Opciones, Sonido y música, Pack de sonidos.", "", "COLECCIONES USADAS"]
     lineas += [f"  {info(c)[1]}: {info(c)[2]}" for c in usadas]
     lineas += ["", "QUÉ SONIDO SALE DE DÓNDE"]
-    lineas += [f"  {s}{sintesis.FORMATO}: {a}, de {info(c)[1]}. Dura " + f"{dur:.2f}".replace(".", ",") + " segundos." for s, c, a, dur in hechos]
+    lineas += [credito(s, c, a, dur) for s, c, a, dur in hechos]
     lineas += ["", "SONIDOS ORIGINALES DEL JUEGO INCLUIDOS PARA QUE EL PACK ESTÉ COMPLETO",
                "  Sustituye cualquiera de ellos por una grabación tuya con el mismo nombre.", "  " + ", ".join(originales)]
     with open(os.path.join(dest, "CREDITOS.txt"), "w", encoding="utf-8-sig", newline="\r\n") as f:
@@ -473,55 +549,117 @@ def montar(clave, pack):
     return hechos, faltan
 
 
+def _linea_cuenta(total, grab, orig):
+    return f"Trae los {total} sonidos del juego: {grab} son grabaciones reales descargadas y {orig} son el sonido"
+
+
+def reescribir_creditos(dest, nuevas=None, colecciones=()):
+    """Deja CREDITOS.txt de un pack ya instalado al día y en orden: una sola línea por sonido (la última manda), las
+    grabaciones juntas y por orden alfabético, la lista de los que son el sonido original del juego y la cuenta de la
+    cabecera. `nuevas` son líneas que sustituyen a las que hubiera de esos sonidos. Devuelve (grabaciones, originales)."""
+    ruta = os.path.join(dest, "CREDITOS.txt")
+    with open(ruta, encoding="utf-8-sig") as f:
+        lineas = f.read().splitlines()
+    marca = sintesis.FORMATO + ": "
+    cabecera, cols, creditos, en = [], [], {}, "cabecera"
+    for linea in lineas:
+        if linea.strip() == "COLECCIONES USADAS":
+            en = "cols"
+        elif linea.strip() == "QUÉ SONIDO SALE DE DÓNDE":
+            en = "resto"
+        elif en == "cabecera":
+            cabecera.append(linea)
+        elif en == "cols" and linea.strip():
+            cols.append(linea)
+        elif linea.startswith("  ") and marca in linea and " " not in linea.strip().split(marca)[0]:
+            creditos[linea.strip().split(marca)[0]] = linea
+    creditos.update(nuevas or {})
+    todos = sorted(n for n in sintesis.archivos_de(dest))
+    grab = {n: creditos[n] for n in todos if n in creditos and "sonido original del juego" not in creditos[n]}
+    orig = [n for n in todos if n not in grab]
+    for col in colecciones:
+        linea = f"  {info(col)[1]}: {info(col)[2]}"
+        if linea not in cols:
+            cols.append(linea)
+    cabecera = [_linea_cuenta(len(todos), len(grab), len(orig)) if c.startswith("Trae los ") else c for c in cabecera]
+    while cabecera and not cabecera[-1].strip():
+        cabecera.pop()
+    salida = cabecera + ["", "COLECCIONES USADAS"] + cols + ["", "QUÉ SONIDO SALE DE DÓNDE"] + [grab[n] for n in sorted(grab)]
+    salida += ["", "SONIDOS ORIGINALES DEL JUEGO INCLUIDOS PARA QUE EL PACK ESTÉ COMPLETO",
+               "  Sustituye cualquiera de ellos por una grabación tuya con el mismo nombre.", "  " + ", ".join(orig)]
+    with open(ruta, "w", encoding="utf-8-sig", newline="\r\n") as f:
+        f.write("\n".join(salida) + "\n")
+    return len(grab), len(orig)
+
+
+MARCA_171 = "SONIDOS DE LA VERSIÓN 1.7.1, LOS MISMOS DEL PACK REALISTA"
+
+
+def creditos_envolvente(env, real):
+    """El pack envolvente dice, de las grabaciones sueltas que toma del realista (las que tienen título y autor), de dónde salen."""
+    marca = sintesis.FORMATO + ": "
+    with open(os.path.join(real, "CREDITOS.txt"), encoding="utf-8-sig") as f:
+        suyas = [linea.strip() for linea in f.read().splitlines() if marca in linea and "Licencia CC0 (dominio público). https://bigsoundbank.com/" in linea]
+    ruta = os.path.join(env, "CREDITOS.txt")
+    with open(ruta, encoding="utf-8-sig") as f:
+        lineas = f.read().splitlines()
+    if MARCA_171 in lineas:
+        lineas = lineas[:lineas.index(MARCA_171)]
+    while lineas and not lineas[-1].strip():
+        lineas.pop()
+    if suyas:
+        lineas += ["", MARCA_171] + [linea.replace(marca, ": ", 1) for linea in suyas]
+    with open(ruta, "w", encoding="utf-8-sig", newline="\r\n") as f:
+        f.write("\n".join(lineas) + "\n")
+    return len(suyas)
+
+
 def anadir(sonidos):
-    """Añade unos sonidos sueltos a los packs que ya están en data/sonidos, sin rehacerlos: la grabación que diga la tabla
-    de cada pack o, si no la hay, el sonido original del juego. El pack envolvente, que parte del realista, los toma de él.
-    Deja al día la cuenta de pack.json y apunta en CREDITOS.txt de dónde sale cada uno. Devuelve lo hecho, pack a pack."""
+    """Añade o cambia unos sonidos sueltos en los packs que ya están en data/sonidos, sin rehacerlos: la grabación que diga
+    la tabla de cada pack o, si no la hay, el sonido original del juego. El pack envolvente, que parte del realista, los toma
+    de él (salvo los de orientación y los suyos en estéreo, que no se tocan).
+    Deja al día la cuenta de pack.json y CREDITOS.txt, con de dónde sale cada uno. Devuelve lo hecho, pack a pack."""
     hecho = {}
     for clave, pack in PACKS.items():
         dest = os.path.join(rutas.PACKS, clave)
         if not os.path.isdir(dest):
             continue
-        lineas, grab, orig = [], 0, 0
+        lineas, usadas = {}, []
         for sonido in sonidos:
-            nuevo = not any(os.path.exists(os.path.join(dest, sonido + e)) for e in rutas.EXT_AUDIO)
             origen = pack["sonidos"].get(sonido)
             ruta = buscar(origen[0], origen[1]) if origen else None
             if ruta is not None:
                 d = preparar(sintesis.leer_audio(ruta), origen[2] if len(origen) > 2 else {})
                 sintesis.escribir_audio(os.path.join(dest, sonido), d)
-                lineas.append(f"  {sonido}{sintesis.FORMATO}: {os.path.basename(ruta)}, de {info(origen[0])[1]}. Dura " + f"{len(d) / SR:.2f}".replace(".", ",") + " segundos.")
-                grab += nuevo
+                lineas[sonido] = credito(sonido, origen[0], os.path.basename(ruta), len(d) / SR)
+                usadas.append(origen[0])
             else:
                 sintesis.escribir_audio(os.path.join(dest, sonido), ORIGINALES[sonido])
-                lineas.append(f"  {sonido}{sintesis.FORMATO}: sonido original del juego.")
-                orig += nuevo
+                lineas[sonido] = f"  {sonido}{sintesis.FORMATO}: sonido original del juego."
             hecho.setdefault(clave, []).append((sonido, ruta is not None))
         try:
+            grab, orig = reescribir_creditos(dest, lineas, usadas)
             with open(os.path.join(dest, "pack.json"), encoding="utf-8") as f:
                 meta = json.load(f)
-            meta["grabaciones"] = int(meta.get("grabaciones", 0)) + grab
-            meta["originales_del_juego"] = int(meta.get("originales_del_juego", 0)) + orig
+            meta["grabaciones"], meta["originales_del_juego"] = grab, orig
             with open(os.path.join(dest, "pack.json"), "w", encoding="utf-8", newline="\n") as f:
                 json.dump(meta, f, ensure_ascii=False, indent=2)
-            with open(os.path.join(dest, "CREDITOS.txt"), "a", encoding="utf-8", newline="\r\n") as f:
-                f.write("\n".join(["", "SONIDOS AÑADIDOS DESPUÉS"] + lineas) + "\n")
         except (OSError, ValueError):
             pass
     env = os.path.join(rutas.PACKS, "envolvente")              # el envolvente lleva los del realista
     real = os.path.join(rutas.PACKS, "realista")
     if os.path.isdir(env) and os.path.isdir(real):
-        nuevos = 0
         for sonido in sonidos:
             origen = os.path.join(real, sonido + sintesis.FORMATO)
-            if os.path.exists(origen):
-                nuevos += not any(os.path.exists(os.path.join(env, sonido + e)) for e in rutas.EXT_AUDIO)
+            suyo = any(os.path.exists(os.path.join(env, sonido + e)) for e in rutas.EXT_AUDIO if e != sintesis.FORMATO)
+            if os.path.exists(origen) and not suyo and not sonido.startswith(ORIENTACION):
                 shutil.copy2(origen, os.path.join(env, sonido + sintesis.FORMATO))
                 hecho.setdefault("envolvente", []).append((sonido, True))
         try:
+            creditos_envolvente(env, real)
             with open(os.path.join(env, "pack.json"), encoding="utf-8") as f:
                 meta = json.load(f)
-            meta["sonidos"] = int(meta.get("sonidos", 0)) + nuevos
+            meta["sonidos"] = len(sintesis.archivos_de(env))
             with open(os.path.join(env, "pack.json"), "w", encoding="utf-8", newline="\n") as f:
                 json.dump(meta, f, ensure_ascii=False, indent=2)
         except (OSError, ValueError):
