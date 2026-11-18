@@ -315,3 +315,8 @@ SONIDOS AÑADIDOS DESPUÉS
 
 SONIDOS AÑADIDOS DESPUÉS
   espera_servidor.flac: sonido original del juego.
+
+SONIDOS AÑADIDOS DESPUÉS
+  amenaza_barrio.flac: sonido original del juego.
+  barrio_perdido.flac: sonido original del juego.
+  barrio_defendido.flac: sonido original del juego.

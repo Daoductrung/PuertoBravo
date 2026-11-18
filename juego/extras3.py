@@ -292,6 +292,9 @@ class Extras3:
         if b["id"] in j.territorios:
             if j.amenaza and j.amenaza.get("territorio") == b["id"]:
                 return f"En guerra: es territorio tuyo, pero {j.amenaza['banda']} lo está atacando."
+            a = j.reconquista.get("asalto")
+            if a and a["barrio"] == b["id"] and a["estado"] == "en_curso":
+                return f"En guerra: es territorio tuyo, pero {a['bandas'][0]} lo está asaltando."
             return f"Territorio tuyo: aquí manda {j.banda_nombre}." if j.banda_nombre else "Territorio tuyo."
         banda = self.banda_de_barrio(b)
         if ms and ms["def"].get("territorio") == b["id"]:

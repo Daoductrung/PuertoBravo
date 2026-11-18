@@ -109,6 +109,7 @@ class Jugador:
         self.despensa = {}           # lo guardado en la cocina de cada casa tuya: {casa: [{"id" o "plato", "n", "cad": día en que caduca o 0}]}
         self.encima = []             # la comida y la compra que llevas encima, con el mismo formato
         self.cocina_practica = 0.0   # tu mano en la cocina, de 0 a 100: sube con cada plato
+        self.reconquista = {}        # las bandas que intentan recuperar tus barrios: fuerzas, lealtades, guardias, treguas y el asalto en curso (reconquista.py)
         self.policia = {}            # el oficio de policía: {"alta": día, "expulsado": día, "detenciones", "multas", "avisos", "bajas"}
         self.stats = {"muertes": 0, "detenciones": 0, "enemigos": 0, "vehiculos_robados": 0,
                       "metros_pie": 0.0, "metros_coche": 0.0, "dinero_ganado": 0, "misiones": 0,

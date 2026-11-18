@@ -28,6 +28,7 @@ from .domicilio import Domicilio
 from .compra import Compra
 from .atracos import Atracos
 from .pactos import Pactos
+from .reconquista import Reconquista
 from .contratos import Contratos
 from .reacciones import Reacciones
 from .convivencia import Convivencia
@@ -79,7 +80,7 @@ def migrar(d):
 
 
 class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos, Calle, Guerra,
-              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra):
+              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra, Reconquista):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -182,6 +183,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.mis_iniciar()               # tus vehículos: no desaparecen nunca (misvehiculos.py)
         self.calle_iniciar()             # patrullas, ambulancias, rendición y helicóptero (calle.py)
         self.guerra_iniciar()            # la guerra de barrios en la calle, si el modo está encendido (guerra.py)
+        self.reconquista_iniciar()       # las bandas vencidas intentan recuperar tus barrios (reconquista.py)
         self.agente_iniciar()            # el oficio de policía, si el modo está encendido (agente.py)
         self.reacciones_iniciar()        # gente que te sigue o te la guarda (reacciones.py)
         if guardado:
@@ -478,6 +480,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.j.x, self.j.y = self.mundo.punto_libre(self.j.x, self.j.y)
         if self.j.arma not in self.j.armas:
             self.j.arma = "punos"
+        # una partida anterior a la reconquista que ya tiene barrios bastantes: calma inicial y su aviso, una vez
+        self._rec_cargada = not self.j.reconquista.get("v") and bool(self.rec_fase())
 
     def saltos_por_tierra(self, origen, destino):
         """Cuántas localidades hay que cruzar por carretera para ir de una a otra: 1 si son vecinas. None si hay mar por medio."""
@@ -1729,6 +1733,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.actualizar_extras(dt)
         self.actualizar_adultos(dt)
         self.actualizar_calle(dt)
+        self.actualizar_reconquista(dt)
         self.actualizar_guerra(dt)
         self.actualizar_domicilio(dt)
         self.actualizar_atracos(dt)
@@ -1805,6 +1810,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.dia_intimidad()
         self.dia_convivencia()
         self.dia_pactos()
+        self.dia_reconquista()
         n = sum(1 for p in self.personas if p.tipo == "aliado" and not p.muerto and not getattr(p, "de_banda", False))      # la banda cobra aparte
         if n:
             coste = self.precio("guardaespaldas_sueldo", 200) * n
@@ -1827,6 +1833,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.plazas_usadas.clear()
             self._cobrar_negocios()
             self.sortear_dia()
+        self.rec_pasar_horas(horas)
 
     def _avisos(self, dt):
         j = self.j

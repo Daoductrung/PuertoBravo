@@ -516,6 +516,12 @@ def territorios(p):
     guerra = p.guerra_activa()
     for b in p.mundo.barrios if p.mundo.tipo == "ciudad" else []:
         if b["id"] in j.territorios:
+            if p.rec_activa():                                   # con la reconquista: cómo está el barrio, que siempre se puede consultar
+                ops.append(Opcion(lambda b=b: f"{b['nombre']}: es tuyo. Te da {p.precio('tributo_territorio', 300)} euros al día. Lealtad {int(p.rec_barrio(b['id'])['lealtad'])} de 100, "
+                                  f"defensa {int(p.rec_defensa(b['id']))} de 100. Amenaza: {p.rec_amenaza_txt(b['id'])}",
+                                  ayuda="Las bandas vencidas intentan recuperar tus barrios. La lealtad baja si pasan días sin que pises el barrio; la defensa sube con guardias, refuerzos, lealtad y tu banda; "
+                                        "y la amenaza dice si se prepara algo contra él. Todo se maneja más abajo, en Defensa de tus barrios."))
+                continue
             ops.append(Opcion(f"{b['nombre']}: es tuyo. Te da {p.precio('tributo_territorio', 300)} euros al día"))
         elif guerra:
             ops.append(Opcion(lambda b=b: f"{b['nombre']}: de {p.banda_de_barrio(b)}. " + ("Estás aquí: plantarles cara" if p.mundo.barrio(*p.pos())["id"] == b["id"] else "Se conquista en la calle: marcar en el GPS"),
@@ -528,6 +534,10 @@ def territorios(p):
     ops.append(Opcion(lambda: f"Territorios en tu poder: {len(j.territorios)}"))
     from . import sistemas
     ops[0:0] = sistemas.opciones_sucesos(p, Menu, Opcion)
+    from . import reconquista
+    arriba, abajo = reconquista.opciones_territorios(p, Opcion)
+    ops[0:0] = arriba
+    ops += abajo
     from .menus import EntradaTexto
     if not p.en_servidor:
         ops.append(Opcion(lambda: "Negociar con las bandas" + (f": {len(j.tributos)} te {'paga' if len(j.tributos) == 1 else 'pagan'} tributo" if j.tributos else ""),

@@ -216,6 +216,19 @@ Ocho módulos de la 1.7.1, cada uno un mixin de `Partida` salvo `ajustes.py`:
 - En un servidor en línea no existen el asalto a proveedores, la negociación con las bandas, el reclutamiento en la calle, la convivencia ni el oficio de policía; lo demás funciona igual. No se ha tocado `servidor/`, y la huella del mundo no cambia.
 - Sonidos nuevos: `timbre` y `emisora` (`VERSION_CACHE` 19). En los packs llevan el sonido del juego.
 
+### La reconquista de barrios
+
+`juego/reconquista.py` (mixin `Reconquista` de `Partida`). Solo sin conexión: `rec_nivel()` da vacío con la opción `reconquista` en `apagado`, en un servidor (`en_servidor`) o con una partida con amigos en marcha (`online_activo()`), y entonces nada avanza.
+
+- Estado: todo en `Jugador.reconquista` (un diccionario liso, que va con la partida): `fase`, `calma`, `descanso`, `informantes`, `bandas` (fuerza, moral, derrotas, `fuera`, `tregua`, `golpe`, `umbral`, `forastera`), `barrios` (lealtad, guardia, refuerzo, `pisado`, `de`), `asalto` y `partes`. Una partida anterior carga con `{}`; `rec()` lo rellena al primer uso y `cargar_dict` marca `_rec_cargada` si ya tenía barrios bastantes (calma inicial y aviso, una vez).
+- Fase (`rec_fase`): `suave` con `suave_barrios` o más, `plena` con una ciudad entera, `mundo` con todas. `reconquista_revisar()` se llama cada dos segundos y cada medianoche.
+- Cada medianoche (`dia_reconquista`, desde `_cobrar_negocios`): cobros de guardias e informantes, lealtad, treguas, crecimiento (`_rec_crecer`), banda forastera, y aviso del asalto pendiente o plan de uno nuevo (`_rec_planear`, `rec_elegir_objetivo`). Con la reconquista activa (`rec_activa()`), `sistemas.sucesos_territorio` no lanza sus ataques sueltos: nunca hay dos a la vez.
+- El asalto (`asalto`): `prepara` hasta su día y su hora; `en_curso` con `quedan` en minutos de juego, que baja en `actualizar_reconquista` salvo en una misión o peleando. `rec_pasar_horas` (desde `pasar_horas`) aplica la gracia una vez. La defensa en persona usa `guerra.empezar_guerra(..., rec=...)`, que no depende de la opción `guerra_calle`; `_guerra_ganada` llama a `rec_defendido("persona")`. `rec_enviar_gente` y `_rec_vence` resuelven con `_rec_calculo`.
+- La tregua está en `juego/pactos.py` (`oferta_tregua`, `pactar_tregua`, `menu_tregua`), con sus números en la sección `pactos`. El golpe preventivo (`empezar_golpe`) es una misión repetible generada, con cuatro variantes.
+- Menús: `menu_reconquista` y `opciones_territorios` (lo que se añade a Territorios). Números y frases: `data/datos/vida.json`, sección `reconquista` (`reconquista.AJ`); esquema del editor, `ajuste_reconquista`.
+- Sonidos: `amenaza_barrio`, `barrio_perdido`, `barrio_defendido`.
+- Pruebas: `pruebas/test_171_reconquista.py`, que incluye simulaciones de sesenta días con cada intensidad.
+
 ### La compra, la despensa y la cocina
 
 - `juego/compra.py` (mixin `Compra`, y la pantalla `Tienda`) y `juego/menus_cocina.py` (los menús y la pantalla `Cocinando`). Cinco secciones de `vida.json`: `pasillos`, `productos`, `tipos_tienda` y `recetas` (listas) y `cocina` (los `Ajustes`). Lo de serie está también en el módulo (`PASILLOS`, `PRODUCTOS`, `TIPOS_TIENDA`, `RECETAS`), por si faltan en unos datos antiguos; hay una prueba que comprueba que coinciden.

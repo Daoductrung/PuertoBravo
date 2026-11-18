@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 22
+VERSION_CACHE = 23
 PI2 = 2 * np.pi
 
 
@@ -830,6 +830,26 @@ def generar(semilla=7):
     S["chat_accion"] = _norm(ac, 0.45)
     # ----------------------------------------------- la espera a que vuelva un servidor: dos notas lentas y flojas, como una llamada que da tono
     S["espera_servidor"] = _norm(_sec([330, 247], 0.42, 0.8, 0.38, (1, 0.3, 0.1)), 0.3)
+    # ----------------------------------------------- la reconquista de barrios (versión 1.7.1): la amenaza, el barrio perdido y el barrio defendido
+    am = np.zeros(int(SR * 1.15))                                # amenaza: tres golpes de tambor grave, cada vez más seguidos, y dos notas tensas, casi juntas
+    for t0 in (0.0, 0.3, 0.52):
+        _poner(am, _barrido(120, 62, 0.22) * _decae(0.22, 0.07), t0)
+        _poner(am, _filtro(ruido(0.04), 300, 1800) * _decae(0.04, 0.012), t0, 0.35)
+    _poner(am, (_nota(311.1, 0.45, 0.2, (1, 0.5, 0.3)) + _nota(329.6, 0.45, 0.2, (1, 0.5, 0.3))) * 0.5, 0.68, 0.7)
+    S["amenaza_barrio"] = _norm(am, 0.5)
+    bp = np.zeros(int(SR * 1.6))                                 # barrio perdido: una campana grave y cuatro notas que bajan, cada una más apagada, y la persiana que cae
+    _poner(bp, (_seno(98, 1.2) + 0.5 * _seno(196.5, 1.2) + 0.3 * _seno(247, 1.2)) * _decae(1.2, 0.45), 0.0, 0.8)
+    for k, f0 in enumerate((392.0, 349.2, 311.1, 261.6)):
+        _poner(bp, _nota(f0, 0.5, 0.2, (1, 0.35, 0.15)), 0.12 + 0.24 * k, 0.75 - 0.12 * k)
+    _poner(bp, _filtro(ruido(0.3), 200, 2400) * _decae(0.3, 0.1, 0.02), 1.15, 0.5)
+    S["barrio_perdido"] = _norm(bp, 0.5)
+    bd = np.zeros(int(SR * 1.25))                                # barrio defendido: redoble corto y tres notas que suben, la última sostenida con su quinta
+    for k in range(5):
+        _poner(bd, _filtro(ruido(0.035), 400, 3000) * _decae(0.035, 0.01), 0.045 * k, 0.4 + 0.1 * k)
+    for k, f0 in enumerate((392.0, 493.9, 587.3)):
+        _poner(bd, _nota(f0, 0.3, 0.14, (1, 0.5, 0.25)), 0.26 + 0.14 * k, 0.8)
+    _poner(bd, _nota(784.0, 0.6, 0.28, (1, 0.5, 0.25)) + 0.6 * _nota(587.3, 0.6, 0.28, (1, 0.4, 0.2)), 0.66)
+    S["barrio_defendido"] = _norm(bd, 0.5)
     return S
 
 

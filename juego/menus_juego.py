@@ -376,7 +376,9 @@ def opciones(app):
                "facil": "fácil", "normal": "normal", "dificil": "difícil",
                "cardinal": "puntos cardinales", "reloj": "horas del reloj", "relativa": "delante, derecha, detrás, izquierda",
                "todos": "todo el mundo", "mujeres": "las mujeres", "hombres": "los hombres", "x": "prefiero no decirlo", "h": "hombre", "m": "mujer",
-               "nada": "nunca", "pocas": "pocas veces", "algunas": "de vez en cuando", "muchas": "a menudo"}
+               "nada": "nunca", "pocas": "pocas veces", "algunas": "de vez en cuando", "muchas": "a menudo",
+               "apagado": "apagado, nadie intenta quitártelos", "tranquilo": "tranquilo, pocos asaltos y con mucho plazo", "duro": "duro, asaltos seguidos y con poco plazo"}
+    from .reconquista import AJ as REC
     OPCIONES.setdefault("detalle_voz", ["poco", "normal", "mucho"])
     nombres.update({"poco": "poco, sin recordar las teclas", "mucho": "mucho, con la explicación de cada opción"})
 
@@ -587,6 +589,12 @@ def opciones(app):
                   "Con no, que es lo de siempre, los barrios se conquistan y se defienden desde el móvil, en Territorios. Con sí, cada barrio de las ciudades es de una banda y los suyos andan por sus calles. "
                   "Un barrio se conquista yendo allí: al tumbar a dos de los suyos, o plantándoles cara desde el móvil cuando ya estás dentro, la banda viene a por ti en tres oleadas. Tu propia banda acude a ayudarte. "
                   "No hay que salir del barrio hasta acabar. Y cuando ataquen un barrio tuyo, lo defiendes entrando en él. En un servidor en línea no cuenta: allí los barrios son de las bandas de los jugadores."),
+            lista("reconquista", "Las bandas intentan reconquistar tus barrios",
+                  "Jugando sin conexión, conquistar no es el final: cuando tienes todos los barrios de una ciudad, o muchos sin tenerlos todos, las bandas vencidas se rehacen y, pasados unos días de calma, "
+                  "intentan recuperarlos. Te avisan del asalto y tienes unas horas para ir a defender el barrio en persona o para enviar a tu gente desde el móvil; si no haces nada, lo pierdes. "
+                  "Te preparas en el móvil, en Territorios, Defensa de tus barrios: guardias, refuerzos, informantes, treguas y golpes a sus escondites. "
+                  f"Elige cuánto aprietan: apagado, y nadie te los disputa de esta manera; tranquilo, con pocos asaltos y {REC.entero('plazo_tranquilo')} horas para responder; normal, que es lo de serie, con {REC.entero('plazo_normal')} horas; "
+                  f"o duro, con asaltos más seguidos, más fuertes y {REC.entero('plazo_duro')} horas. Nunca hay dos asaltos a la vez. En un servidor en línea y jugando con amigos no ocurre."),
             si_no("gente_actua", "La gente con la que hablas también actúa",
                   "Con sí, después de hablar contigo una persona puede hacer algo por su cuenta, según su carácter y la confianza que te tenga: acompañarte un rato si le has caído bien, "
                   "darte un puñetazo si insistes después de haberla ofendido, o denunciarte si la insultas. Lo decide el juego, sin inteligencia artificial. "

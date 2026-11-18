@@ -93,6 +93,7 @@ POR_DEFECTO = {
     "gente_actua": True,           # la gente con la que hablas puede seguirte un rato, pegarte tras una discusión, denunciarte o hacerte un favor
     "ia_acciones": False,          # con el modo IA: el modelo puede proponer una acción de una lista cerrada, y el juego decide si pasa
     "pareja_convive": False,       # contenido para adultos: poder pedirle a tu pareja que se venga a vivir contigo
+    "reconquista": "normal",       # sin conexión, las bandas vencidas intentan recuperar tus barrios: apagado | tranquilo | normal | duro
     "oficio_policia": False,       # modo: poder ingresar en la policía y trabajar de agente
     "radio_coches": True,          # en un servidor, oír floja la emisora del juego que lleva el vehículo de otro jugador que está cerca
     "reconectar": True,            # en un servidor: si se corta o se reinicia, esperar y volver a entrar solo, con la partida tal cual
@@ -115,6 +116,7 @@ OPCIONES = {
     "atraccion": ["todos", "mujeres", "hombres"],
     "mi_genero": ["x", "h", "m"],
     "charla_peatones": ["nada", "pocas", "algunas", "muchas"],
+    "reconquista": ["apagado", "tranquilo", "normal", "duro"],
     "act_fuente": ["servidor", "github", "ambas", "personalizada"],
     "motor_sonido": ["clasico", "envolvente"],
     "ia_servicio": ["auto", "local", "gemini", "otro", "openai", "anthropic"],

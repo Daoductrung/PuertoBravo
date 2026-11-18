@@ -94,8 +94,9 @@ class Guerra:
         return f"{que}. Oleada {g['oleada']} de {g['total']}" + (f": quedan {vivos}." if vivos else ": superada.") + " No salgas del barrio."
 
     # ------------------------------------------------------------------ empezar
-    def puede_guerra(self):
-        return self.guerra_activa() and not self.guerra and not self.mision and not self.trabajo and not self.transicion and self.mundo.tipo == "ciudad"
+    def puede_guerra(self, forzar=False):
+        """forzar: la defensa de un asalto de la reconquista se pelea en la calle aunque el modo esté apagado."""
+        return (forzar or self.guerra_activa()) and not self.guerra and not self.mision and not self.trabajo and not self.transicion and self.mundo.tipo == "ciudad"
 
     def guerra_baja(self, p):
         """Has tumbado a uno de una banda en su barrio. A la segunda (lo dicen los datos), la banda entera sale a por ti."""
@@ -114,13 +115,15 @@ class Guerra:
             self._bajas_guerra.pop(b["id"], None)
             self.empezar_guerra(b)
 
-    def empezar_guerra(self, b, defensa=False, banda=None):
-        if not self.puede_guerra():
+    def empezar_guerra(self, b, defensa=False, banda=None, rec=None):
+        """rec: la defensa en persona de un asalto de la reconquista (reconquista.py), con sus oleadas, su tamaño y sus bandas."""
+        if not self.puede_guerra(bool(rec)):
             return False
         banda = banda or self.banda_de_barrio(b) or random.choice(G.nombres_bandas())
-        n = max(1, int(aj("defensa_oleadas" if defensa else "oleadas")))
+        n = max(1, int(rec["oleadas"] if rec else aj("defensa_oleadas" if defensa else "oleadas")))
         self.guerra = {"tipo": "defensa" if defensa else "conquista", "barrio": b["id"], "nombre": b["nombre"], "banda": banda, "oleada": 0, "total": n,
-                       "vivos": [], "veh": [], "t": random.uniform(3.0, 5.0), "fuera": 0.0, "quedan": None, "limpia": True, "avisado": False}
+                       "vivos": [], "veh": [], "t": random.uniform(3.0, 5.0), "fuera": 0.0, "quedan": None, "limpia": True, "avisado": False,
+                       "rec": bool(rec), "base": int(rec["base"]) if rec else 0, "bandas": list(rec["bandas"]) if rec else [banda]}
         self.son("territorio", cat="interfaz")
         self.decir(random.choice(LISTAS["frases_defensa" if defensa else "frases_empieza"]).format(banda=banda, barrio=b["nombre"])
                    + f" Son {n} oleadas, cada una más dura. No salgas del barrio, o se dará la pelea por perdida. La tecla O te dice cómo va.")
@@ -142,12 +145,13 @@ class Guerra:
         g = self.guerra
         g["oleada"] += 1
         g["limpia"] = False
-        k, banda = g["oleada"], g["banda"]
+        k = g["oleada"]
+        banda = g["bandas"][(k - 1) % len(g["bandas"])]          # en una alianza, cada oleada es de una de las bandas
         tipos, refuerzo = G.tipos_de_banda(banda)
         tr = G.tipo_enemigo(refuerzo) if refuerzo else None
         if tr is None or tr.get("vehiculo") not in self.modelos:
             tr = None
-        n = int(aj("oleada_base")) + k - 1
+        n = int(g["base"] or aj("oleada_base")) + k - 1
         llegan = min(max(0, n - 2), int(tr.get("ocupantes", 3) or 3)) if tr and k == g["total"] and g["total"] > 1 else 0
         x, y = self.pos()
         pos = self._punto_cercano(30, 55) or self.mundo.punto_libre(x + 35, y + 5)
@@ -225,6 +229,10 @@ class Guerra:
     def _guerra_ganada(self):
         g, j = self.guerra, self.j
         self.guerra = None
+        if g["rec"]:                                             # era la defensa de un asalto de la reconquista: lo cuenta ella
+            self.app.son("mision_ok")
+            self.rec_defendido("persona", g=g)
+            return
         paga = 0.5 if self.cfg["mod_dinero"] else 1.0
         frase = random.choice(LISTAS["frases_gana"]).format(banda=g["banda"], barrio=g["nombre"])
         self.son("territorio", cat="interfaz")
@@ -269,7 +277,9 @@ class Guerra:
             return
         self.son("mision_fallo", cat="interfaz")
         base = texto or random.choice(LISTAS["frases_retirada"]).format(banda=g["banda"], barrio=g["nombre"])
-        if g["tipo"] == "defensa":
+        if g["rec"]:
+            self.decir(f"{base} El asalto a {g['nombre']} sigue: vuelve y échalos, o envía a tu gente desde el móvil, en Territorios, antes de que se acabe el plazo.")
+        elif g["tipo"] == "defensa":
             self.decir(f"{base} {g['banda']} sigue atacando {g['nombre']}: si no vuelves y los echas antes de medianoche, lo pierdes.")
         else:
             self.decir(f"{base} {g['nombre']} sigue siendo de {g['banda']}. Puedes volver a intentarlo cuando quieras.")

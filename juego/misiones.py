@@ -117,6 +117,8 @@ class Misiones:
     def objetivo_txt(self):
         if self.guerra:
             return self.guerra_txt()
+        if not self.mision and self.rec_asalto_txt():            # te están asaltando un barrio: es lo urgente
+            return self.rec_asalto_txt()
         if self.mision:
             p = self.mision["def"]["pasos"][self.mision["paso"]]
             t = f"Misión {self.mision['def']['titulo']}. {p.get('texto', '')}"

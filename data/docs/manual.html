@@ -699,6 +699,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <li>Ambulancias que acuden cuando hay heridos (sí).</li>
 <li>Helicóptero de la policía con el nivel de búsqueda más alto (no).</li>
 <li>Modo: guerra de barrios en la calle (no).</li>
+<li>Las bandas intentan reconquistar tus barrios (normal). Se elige entre apagado, tranquilo, normal y duro. Solo jugando sin conexión, y solo se nota cuando tienes una ciudad entera o muchos barrios.</li>
 <li>La gente con la que hablas también actúa (sí). Después de hablar contigo, alguien puede acompañarte un rato, pegarte si insistes tras ofenderle, o denunciarte.</li>
 <li>Modo: poder trabajar de policía (no).</li>
 </ul>
@@ -770,7 +771,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <ul>
 <li>De quién es cada barrio: la tecla <kbd>N</kbd>, el explorador de mapa, la lista de barrios del móvil y la gente a la que preguntas dicen de quién es el barrio en ese momento. De una banda, mientras mande ella; tuyo, cuando lo conquistas; en guerra, mientras lo estás conquistando o mientras te lo atacan; y de la banda que te lo quitó, si no lo defiendes. En un servidor, de la banda de jugadores que lo tenga.</li>
 <li>Fama: quedarte con un barrio se sabe en toda la ciudad. El primero da mucha fama; los siguientes, cada vez menos.</li>
-<li>Ataques: de vez en cuando, a medianoche, otra banda ataca uno de tus barrios. Si tienes banda, puede que lo defienda sola: cuanta más gente, más probable. Si no, tienes hasta la medianoche siguiente para ir: en el móvil, Territorios, Defender. Son dos grupos de pandilleros. Si no vas, pierdes el barrio.</li>
+<li>Ataques: de vez en cuando, a medianoche, otra banda ataca uno de tus barrios. Si tienes banda, puede que lo defienda sola: cuanta más gente, más probable. Si no, tienes hasta la medianoche siguiente para ir: en el móvil, Territorios, Defender. Son dos grupos de pandilleros. Si no vas, pierdes el barrio. Cuando tienes una ciudad entera o muchos barrios, estos ataques sueltos dejan paso a la reconquista, que se cuenta más abajo.</li>
 <li>Pactos: con tres barrios o más, alguna banda puede ofrecerte un pacto. Si aceptas, cobras y durante una semana nadie ataca. Si lo rechazas, ganas algo de fama.</li>
 <li>La policía: un inspector puede hacerte saber que estás en su lista. Si pagas, mira hacia otro lado. Si no, una redada te cuesta el tributo de un día.</li>
 <li>Todo se contesta en el móvil, en Territorios, antes de la medianoche siguiente. Si desactivas los sucesos callejeros en las opciones, nada de esto ocurre.</li>
@@ -785,9 +786,70 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <li>Comprar un barrio: te lo quedas pagando, sin pegar un tiro. Piden más si os lleváis mal y menos si te respetan o si pesas mucho en la calle. A quien se la tiene jurada, y pesa poco, no le venden.</li>
 <li>Cobrar un tributo: le exiges a una banda que te pague cada medianoche por dejarla estar. Hace falta tener algún barrio. Si te temen, pagan durante unos días, entre cinco y diez, y mientras pagan no atacan tus barrios. Si no, se niegan, tu relación empeora y, si pesas poco, puede que manden a alguien a por ti. Alguna, de vez en cuando, se planta y deja de pagar.</li>
 <li>Regatear: en los tratos con cifra puedes apretar una vez. Si sale bien, mejora un cuarto; si no, se levantan de la mesa.</li>
+<li>Pactar una tregua: con la reconquista de barrios en marcha, cada banda tiene además esta opción. Les pagas y durante unos días no asaltan tus barrios. Se cuenta en el apartado siguiente.</li>
 <li>Cuando una banda te ha contestado sobre algo, no vuelve a hablar de eso contigo hasta pasados tres días.</li>
 </ul>
 <p>Con la policía detrás, o fuera de una ciudad, no hay con quién sentarse. En un servidor en línea no existe: allí los barrios son de las bandas de los jugadores. Las cifras y las frases están en los datos del juego.</p>
+<h3>La reconquista: las bandas intentan recuperar tus barrios</h3>
+<p>Conquistar no es el final. Jugando sin conexión, las bandas que has vencido se rehacen con los días y vuelven a por lo suyo: quien manda en una ciudad tiene que estar pendiente de no perderla. Es la opción Las bandas intentan reconquistar tus barrios, en Opciones, La calle, con cuatro valores: apagado, tranquilo, normal, que es como viene, y duro. Todo se maneja con menús, en el móvil, en Territorios, Defensa de tus barrios; con mando, igual que cualquier otro menú.</p>
+<h4>Cuándo empieza</h4>
+<ul>
+<li>Al conquistar el último barrio de una ciudad. Antes hay días de calma, entre tres y cinco, y el juego te avisa una sola vez, con un sonido propio, de que esto existe y de cómo defenderte.</li>
+<li>Con cuatro barrios o más, aunque no tengas ninguna ciudad entera, empieza una versión suave: las bandas se rehacen a la mitad de ritmo.</li>
+<li>Con todas las ciudades conquistadas, se rehacen un poco más deprisa.</li>
+<li>En una partida guardada con una versión anterior que ya tenía los barrios: al cargarla hay tres días de calma y el mismo aviso, una sola vez.</li>
+<li>Con menos barrios no pasa nada de esto, y siguen los ataques sueltos de siempre.</li>
+</ul>
+<h4>Las bandas se rehacen</h4>
+<ul>
+<li>Cada banda tiene una fuerza, de 0 a 100, que crece cada medianoche, unas veces más y otras menos. En tranquilo crece más despacio y en duro más deprisa.</li>
+<li>Cuando una banda se ve con fuerza bastante, prepara un asalto, que tarda dos o tres días en llegar. Elige el barrio con sus reglas: el que fue suyo, el peor defendido, el que tienes más abandonado o el que más dinero te da.</li>
+<li>A veces dos bandas se alían para un golpe grande: llegan con más fuerza, y se anuncia.</li>
+<li>Con un pacto de paz en vigor, de los que a veces te ofrecen ellas, nadie prepara un asalto nuevo.</li>
+<li>La banda que te paga tributo no se rehace ni asalta mientras paga. La que te respeta, o la que tiene una tregua contigo, se rehace a la mitad de ritmo.</li>
+<li>Nunca hay dos asaltos a la vez, y después de cada uno hay días de descanso: al menos siete en tranquilo, cuatro en normal y dos en duro. Con la reconquista en marcha, los ataques sueltos de siempre no salen.</li>
+</ul>
+<h4>Cómo te enteras</h4>
+<ul>
+<li>El estado de amenaza de cada barrio se puede consultar siempre, en Territorios y en Defensa de tus barrios: baja, media o alta. Si se prepara algo contra un barrio, pone alta como poco, aunque no sepas más.</li>
+<li>Lo demás depende de tus informantes, que cobran cada medianoche, 45 euros por nivel. Con el nivel 1 te llega el rumor un día antes, con el barrio. Con el 2, un chivatazo dos días antes, con la banda y el barrio, y ves la fuerza exacta de cada banda. Con el 3, un mensaje al móvil en cuanto lo deciden, con la banda, el barrio, el día, la hora, la fuerza con la que vienen y por qué han elegido ese barrio.</li>
+<li>Un barrio que te es leal te avisa él, sin pagar a nadie: con 50 de lealtad, como el nivel 1; con 75, como el nivel 2.</li>
+<li>Sin informantes y con el barrio descuidado, el aviso llega tarde o no llega: como mucho, un rumor vago el mismo día.</li>
+<li>Cuando el asalto empieza te enteras siempre: suena el aviso de amenaza y el juego dice quién, dónde y cuántas horas tienes. Vuelve a avisar cuando quedan dos horas y cuando queda media. Mientras dura, la tecla <kbd>O</kbd>, la del objetivo, dice quién asalta qué barrio y cuánto te queda.</li>
+<li>En Defensa de tus barrios, Últimos partes repite lo último que ha pasado, por si se te escapó.</li>
+</ul>
+<h4>El asalto</h4>
+<p>Desde que empieza tienes un plazo: 18 horas del juego en tranquilo, 12 en normal y 8 en duro. Puedes hacer tres cosas.</p>
+<ul>
+<li>Defender en persona: ve al barrio. En Defensa de tus barrios, la opción de ir en persona te lo marca en el GPS. La pelea empieza sola al entrar en él, aunque no tengas encendido el modo de guerra de barrios en la calle: vienen por oleadas, cada una con uno más, y tu banda acude a tu lado. Son dos oleadas; tres si llegan con mucha fuerza, y una más si es una alianza. Con buena defensa en el barrio vienen menos en cada una. Mientras peleas, el plazo no corre. Si sales del barrio o caes, la pelea se pierde pero el asalto sigue: puedes volver o enviar a tu gente. Si ganas, te llevas lo que se dejan en la huida.</li>
+<li>Enviar a tu gente: en Defensa de tus barrios, y hace falta tener a alguien en la banda. Antes de enviarla, la opción dice las posibilidades, de cada diez. El resultado se calcula al momento y se cuenta con sus números: la fuerza de ellos contra la defensa del barrio más lo que suma cada uno de los tuyos, y la suerte de cada bando. Puede caer alguno de los tuyos.</li>
+<li>No hacer nada: al acabarse el plazo, si el barrio tiene guardia fija, defiende sola, con algo menos de fuerza. Si no la tiene, el barrio se pierde.</li>
+</ul>
+<p>Reglas para que sea justo: en mitad de una misión, ni empieza un asalto ni corre el plazo. Si duermes, o pasas por el hospital o el calabozo, las horas corren, pero tu gente aguanta: la primera vez, al volver te quedan siempre cuatro horas, y el juego te lo dice. Lo mismo si el asalto empieza mientras no estabas. Los ratos cortos, como un trayecto en autobús o una comida, pasan sin más. Nadie pierde un barrio por dormir una noche; por dormirse dos veces seguidas con el barrio asaltado, sí.</p>
+<h4>Prepararse antes</h4>
+<ul>
+<li>Guardia fija: hasta tres guardias por barrio, a 60 euros cada uno cada medianoche; el primer día se paga al contratar. Suben la defensa, hacen que la lealtad baje la mitad de deprisa y defienden solos si no llegas. Si una medianoche no puedes pagarles, se van.</li>
+<li>Reforzar el barrio: tres niveles que se pagan una sola vez, 1500, 3000 y 4500 euros. Cada nivel sube la defensa para siempre; si pierdes el barrio, baja un nivel.</li>
+<li>Informantes: los del apartado anterior.</li>
+<li>Tregua: con cada banda, en Defensa de tus barrios o en Negociar con las bandas. Les pagas y durante unos días, entre seis y diez, no te asaltan; si estaban preparando un asalto, lo dejan. Piden más cuanto más fuertes están y peor os lleváis, y puedes pedir una rebaja, una vez. Se puede romper: ellos, algún día, y entonces se te avisa y no pueden golpear al día siguiente; o tú, si das un golpe a su escondite.</li>
+<li>Golpe a su escondite: una misión corta, cada vez de una manera, en la ciudad en la que estés. Si la cumples, la banda pierde más de la mitad de su fuerza, cuenta como una derrota y, si era ella quien preparaba un asalto, se suspende. Hace falta que la banda tenga fuerza bastante para tener escondite, y no se puede repetir contra la misma hasta pasados cuatro días.</li>
+<li>La gente de tu banda cuenta en la defensa de todos tus barrios, la envíes o no.</li>
+</ul>
+<h4>La lealtad de cada barrio</h4>
+<ul>
+<li>Va de 0 a 100 y empieza en 70. Un barrio leal se defiende mejor, tienta menos a las bandas y te avisa de lo que se prepara.</li>
+<li>Baja si pasan más de tres días sin que pises el barrio, tres puntos cada día, y también si una medianoche no puedes pagar a los guardias o a tu banda.</li>
+<li>Sube la primera vez que entras en él cada día, al defenderlo, que es lo que más une, y al invertir en el barrio: 500 euros, una vez al día por barrio.</li>
+<li>Antes de que baje demasiado, el juego avisa: una vez al pasar de 45 y otra, más seria, al pasar de 25. Por sí sola, la lealtad nunca te quita un barrio: solo hace más fácil que caiga.</li>
+</ul>
+<h4>Lo que se gana y lo que se pierde</h4>
+<ul>
+<li>Si pierdes un barrio, pierdes lo que te pagaba cada medianoche y algo de fama, y suena el sonido de barrio perdido. Pasa a ser de la banda que te lo quitó, y se reconquista por la vía de siempre, en Territorios.</li>
+<li>La banda que recupera terreno gana moral: se rehace más deprisa y vuelve antes.</li>
+<li>Si la rechazas, suena el sonido de barrio defendido, pierde casi toda su fuerza y anota una derrota. A la tercera, contando los golpes a su escondite, queda desmantelada entre veinte y treinta días.</li>
+<li>Para que el juego no quede terminado sin más, siempre acaba llegando alguien: cuando quedan pocas bandas en pie, o pasado un mes, puede instalarse en la comarca una banda forastera, con su nombre. Se la trata como a las demás; vencida tres veces, se marcha para siempre, y con el tiempo vendrá otra.</li>
+</ul>
+<p>Todo esto se guarda con la partida. En un servidor en línea no ocurre, porque allí los barrios son de las bandas de los jugadores; y tampoco mientras estás jugando con amigos: la reconquista se queda parada, con el plazo detenido, y sigue cuando vuelves a jugar a solas. Todas las cifras están en los datos del juego y se cambian con el editor de mods.</p>
 <h3>Guerra de barrios en la calle, modo opcional</h3>
 <p>De serie, los barrios se conquistan y se defienden desde el móvil, en Territorios, como siempre. Quien prefiera pelearlos en la calle puede encender el modo Guerra de barrios en la calle, en Opciones, La calle. Con el modo encendido cambia esto:</p>
 <ul>
@@ -1198,7 +1260,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <li>Las armas, las mejoras de taller y los vehículos nuevos valen en un servidor que tenga los datos de la 1.7.1: los trae el primer jugador que entra con esa versión. En uno que siga con datos anteriores, un arma nueva cuenta contra otros jugadores como ir con las manos, y el juego te avisa.</li>
 <li>En las misiones en grupo, a quien ayuda en un combate del gimnasio de otro jugador ya no le cuenta como delito tumbar al rival. Los enemigos de tu compañero tienen además en tu juego la puntería y la voz de su tipo.</li>
 <li>Con la policía del servidor, los agentes aguantan lo que diga la tabla de la policía por nivel de búsqueda, no siempre lo mismo. Lo que no hay en un servidor: el furgón de la unidad especial, que allí es siempre un coche patrulla.</li>
-<li>No existen en un servidor: asaltar a un proveedor, negociar con las bandas, reclutar a la gente de la calle, vivir en pareja y trabajar de policía. Allí los barrios y las bandas son de los jugadores, y la policía puede ser del servidor.</li>
+<li>No existen en un servidor: asaltar a un proveedor, negociar con las bandas, reclutar a la gente de la calle, vivir en pareja, trabajar de policía y la reconquista de barrios, que tampoco avanza mientras estás jugando con amigos. Allí los barrios y las bandas son de los jugadores, y la policía puede ser del servidor.</li>
 </ul>
 
 <h2>20. La gente de la calle</h2>
