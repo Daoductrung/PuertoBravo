@@ -89,7 +89,7 @@ class Conduccion:
                 linea = self._linea_cruzada(a0, v.y)
                 if linea is not None and 0 <= linea < m.NY:
                     self._en_cruce(v, i, linea, decidir)
-            if v.y < 0 or v.y > m.alto:
+            if v.dir in (0, 2) and (v.y < 0 or v.y > m.alto):    # el borde del mapa para a quien sigue de frente, no a quien acaba de girar en la última calle
                 v.y = max(0.0, min(m.alto, v.y))
                 v.vel = 0.0
         else:
@@ -102,22 +102,34 @@ class Conduccion:
                 linea = self._linea_cruzada(a0, v.x)
                 if linea is not None and 0 <= linea < m.NX:
                     self._en_cruce(v, linea, jj, decidir)
-            if v.x < 0 or v.x > m.ancho:
+            if v.dir in (1, 3) and (v.x < 0 or v.x > m.ancho):
                 v.x = max(0.0, min(m.ancho, v.x))
                 v.vel = 0.0
         v.rumbo = v.dir * 90.0
 
     def _en_cruce(self, v, i, j, decidir):
+        antes = v.dir
         nd = decidir(v, i, j)
         if nd != v.dir:
             v.dir = nd
             m = self.mundo
+            # El giro se hace en el centro del cruce, y el carril de quien gira a la derecha queda tres metros más atrás:
+            # un coche del tráfico que gira así sale ya dentro de su calle nueva, no de vuelta en el morro del que le seguía.
+            jv = self.j.veh
+            av = 1.0
+            if v is not jv and nd == (antes + 1) % 4:
+                av = M.CARRIL + 4.5                              # a más de un coche de distancia del carril que deja
+                if jv is not None:                               # salvo que justo ahí, en la calle nueva, esté tu vehículo: entonces gira como siempre y frena detrás de ti
+                    ndx, ndy = M.DIRS[nd]
+                    ox, oy = jv.x - i * M.B, jv.y - j * M.B
+                    if abs(ox * ndy - oy * ndx - M.CARRIL) < 2.6 and av - 3.6 < ox * ndx + oy * ndy < av + 8.0:
+                        av = 1.0
             if nd in (0, 2):
                 v.x = m.carril("V", i, nd)
-                v.y = j * M.B + M.DIRS[nd][1] * 1.0
+                v.y = j * M.B + M.DIRS[nd][1] * av
             else:
                 v.y = m.carril("H", j, nd)
-                v.x = i * M.B + M.DIRS[nd][0] * 1.0
+                v.x = i * M.B + M.DIRS[nd][0] * av
             v.rumbo = nd * 90.0
 
     def _validas(self, v, i, j, atras=False):
@@ -126,8 +138,21 @@ class Conduccion:
             ops.append((v.dir + 2) % 4)
         return ops
 
+    def _viene_de_frente(self, v):
+        """¿Viene tu vehículo de frente por esta misma calle, a punto de pasar por el cruce? Quien gira a la izquierda cruza
+        tu carril: como en la calle de verdad, no se gira delante de quien viene."""
+        jv = self.j.veh
+        if jv is None or jv is v or jv.muerto or jv.vel < 1.0 or jv.dir != (v.dir + 2) % 4 or getattr(jv, "volando", False):
+            return False
+        dx, dy = M.DIRS[v.dir]
+        a = (jv.x - v.x) * dx + (jv.y - v.y) * dy
+        lat = abs((jv.x - v.x) * dy - (jv.y - v.y) * dx)
+        return lat < 2 * M.CALZADA and -2.0 < a < 10.0 + jv.vel * 1.5
+
     def _decidir_trafico(self, v, i, j):
         ops = self._validas(v, i, j)
+        if len(ops) > 1 and (v.dir - 1) % 4 in ops and self._viene_de_frente(v):
+            ops.remove((v.dir - 1) % 4)
         if v.dir in ops and random.random() < 0.6:
             return v.dir
         return random.choice(ops)

@@ -466,7 +466,10 @@ def test_diez_y_el_dinero_gastar_ganar_el_tope_por_hora_transferir_y_dar_cosas(t
         for c in (g[8], g[9]):
             c.est(di=c.e["di"] - precio)                         # cada uno paga en su juego...
             c.enviar({"t": "prop_comprar", "lugar": casa["id"]})  # ...y se lo dice al servidor
-        sinc(g[8])
+            # Ninguno de los dos ha leído aún la respuesta: para ellos es a la vez. Pero van por dos conexiones, y el
+            # servidor atiende primero la que antes le llega, que no siempre es la que antes se mandó: se espera a que
+            # haya atendido a Inés para que la primera sea ella, como da por hecho el resto de la prueba.
+            sinc(c)
         assert g[9].leer("prop_no")["nombre"] == "Inés"
         g[9].est(di=g[9].e["di"] + precio)                       # el juego de Juan le devuelve lo pagado
         sinc(*g)
@@ -479,8 +482,9 @@ def test_diez_y_el_dinero_gastar_ganar_el_tope_por_hora_transferir_y_dar_cosas(t
             g[5].enviar({"t": "prop_comprar", "lugar": casa["id"]})
         sinc(g[5])
         assert len(sacar(g[5], "prop_no")) == 3 and banco.hacer(lambda: J(banco, g[5]).credito) == 0
+        sin_margen(g[5])                                         # el margen vuelve a un euro por segundo: con el equipo cargado, desde el último ajuste ya ha pasado alguno
         g[5].est(di=g[5].e["di"] + precio)
-        assert g[5].leer("saldo")["quita"] == precio
+        assert precio - 5 <= g[5].leer("saldo")["quita"] <= precio
         g[5].est(di=g[5].e["di"] - precio)
         # ---- Inés la pone en venta y se va; Juan se la compra; cuando Inés vuelve, el dinero es suyo y el servidor lo reconoce
         g[8].enviar({"t": "prop_oferta", "lugar": casa["id"], "precio": 9000})
@@ -946,7 +950,11 @@ def test_diez_con_casas_negocios_atracos_vehiculos_trafico_y_gente_de_la_calle(t
         # ---- la gente de la calle, también
         banco.hacer(lambda: [srv.peatones_pensar() for _ in range(60)])
         cuantos = len(srv.peatones)
-        assert 3 <= cuantos <= 7
+        # hasta siete por cada zona con jugadores: Ana se ha ido a por un coche del tráfico, que unas veces queda en la
+        # zona de los otros nueve y otras en la de al lado
+        from servidor import peatones as modulo_peatones
+        zonas = banco.hacer(lambda: len({(j.mapa, int(j.x // modulo_peatones.ZONA), int(j.y // modulo_peatones.ZONA)) for j in srv.jugadores.values() if j.dentro and not j.bot}))
+        assert 1 <= zonas <= 2 and 3 <= cuantos <= 7 * zonas
         for c in g[1:]:
             c.cola.clear()
             assert len(c.leer("estados", filtro=lambda m: m.get("pe"))["pe"]) >= 1

@@ -52,6 +52,92 @@ def test_el_piloto_lleva_el_coche_solo_hasta_el_destino(robot):
     assert not p.cfg["piloto_gps"] and not p.piloto_completo()
 
 
+def _cruce_despejado(p, robot):
+    """Un cruce del centro, con las cuatro salidas, sin nadie más: el jugador llega por el oeste, al volante, en su carril."""
+    from juego import mundo as M
+    m = p.mundo
+    for o in list(p.vehiculos):
+        p.quitar_vehiculo(o)
+    p.personas[:] = []
+    i, j = m.NX // 2, m.NY // 2
+    assert all(m.dir_valida(i, j, d) for d in range(4))
+    v = p.crear_vehiculo("utilitario", i * M.B - 30, m.carril("H", j, 1), 1, None)
+    p.j.x, p.j.y = v.x, v.y
+    p._subir(v, False, callar=True)
+    assert v.dir == 1 and p.modo_asistido()
+    return M, m, i, j, v
+
+
+def test_el_trafico_que_gira_no_se_echa_encima_de_quien_va_con_el_piloto(robot):
+    """Los dos golpes que se llevaba el coche con el piloto puesto: el de delante giraba a la derecha y, al colocarse en su
+    carril nuevo, retrocedía tres metros hasta el morro del que le seguía; y el que venía de frente giraba a la izquierda
+    cruzando tu carril. Si era una patrulla de ronda, además te ponía una estrella."""
+    p = robot.nueva_partida()
+    p.cfg["conduccion"] = "asistida"
+    p.cfg["sucesos"] = False
+    M, m, i, j, v = _cruce_despejado(p, robot)
+    cx, cy = i * M.B, j * M.B
+    # ---- el de delante gira a la derecha: sale ya dentro de su calle nueva, lejos de quien le sigue, esté a la distancia que esté
+    for modelo, ia in (("sedan", "trafico"), ("patrulla", "policia")):
+        for hueco in (3.6, 4.5, 5.5, 6.5, 8.0):
+            v.x, v.y, v.vel = cx - hueco, m.carril("H", j, 1), 9.0
+            o = p.crear_vehiculo(modelo, cx + 0.2, v.y, 1, ia)
+            o.vel = 9.0
+            p._en_cruce(o, i, j, lambda *a: 2)
+            assert o.dir == 2 and o.x == m.carril("V", i, 2) and o.y < v.y - 3.4, (hueco, o.x, o.y)
+            assert o.dist(v.x, v.y) > 4.0
+            v.t_choque = 0.0
+            salud, puntos = v.salud, p.j.puntos_busqueda
+            p._choques_jugador(v)
+            assert v.salud == salud and p.j.puntos_busqueda == puntos
+            p.quitar_vehiculo(o)
+    # pero si en esa calle, justo a la vuelta de la esquina, está tu coche, no se le pone encima: gira corto y frena detrás
+    v.x, v.y, v.dir, v.vel = m.carril("V", i, 2), cy - 9.0, 2, 0.0
+    o = p.crear_vehiculo("sedan", cx + 0.2, m.carril("H", j, 1), 1, "trafico")
+    p._en_cruce(o, i, j, lambda *a: 2)
+    assert o.y == cy - 1.0 and o.dist(v.x, v.y) > 6 and p._obstaculo(o)
+    p.quitar_vehiculo(o)
+    # el jugador gira como siempre
+    v.x, v.y, v.dir, v.vel = cx + 0.2, m.carril("H", j, 1), 1, 5.0
+    p._en_cruce(v, i, j, lambda *a: 2)
+    assert (v.x, v.y) == (m.carril("V", i, 2), cy - 1.0)
+    # ---- quien viene de frente no gira a la izquierda delante de ti; cuando ya has pasado, o si estás parado o lejos, sí
+    o = p.crear_vehiculo("sedan", cx - 0.2, m.carril("H", j, 3), 3, "trafico")
+    izquierda = (o.dir - 1) % 4
+
+    def giros(n=300):
+        return {p._decidir_trafico(o, i, j) for _ in range(n)}
+
+    for lejos, vel in ((6.0, 9.0), (15.0, 9.0), (22.0, 14.0), (30.0, 14.0), (4.0, 3.0)):
+        v.x, v.y, v.dir, v.vel = cx - lejos, m.carril("H", j, 1), 1, vel
+        assert p._viene_de_frente(o) and giros() == {o.dir, (o.dir + 1) % 4}, (lejos, vel)
+    for lejos, vel, sentido in ((-8.0, 9.0, 1), (70.0, 14.0, 1), (10.0, 0.0, 1), (10.0, 9.0, 3)):
+        v.x, v.y, v.dir, v.vel = cx - lejos, m.carril("H", j, sentido), sentido, vel
+        assert not p._viene_de_frente(o) and izquierda in giros(), (lejos, vel, sentido)
+    p.salir_vehiculo(forzado=True)                               # a pie no hay a quien ceder el paso
+    assert not p._viene_de_frente(o) and izquierda in giros()
+
+
+def test_quien_gira_en_la_ultima_calle_del_mapa_no_se_queda_clavado(robot):
+    """En la avenida del borde, el carril de fuera cae tres metros más allá del límite: al tráfico que giraba allí se le
+    paraba el coche en seco en plena esquina, y el que venía detrás girando se lo comía."""
+    p = robot.nueva_partida()
+    M, m, i, j, v = _cruce_despejado(p, robot)
+    p.salir_vehiculo(forzado=True)
+    p.j.x, p.j.y = 5.0, 5.0
+    i = m.NX - 1                                                 # la última avenida: solo se puede girar
+    assert not m.dir_valida(i, j, 1) and m.dir_valida(i, j, 0)
+    o = p.crear_vehiculo("sedan", i * M.B - 2.0, m.carril("H", j, 1), 1, "trafico")
+    o.vel = 10.0
+    for _ in range(12):
+        p._mover_via(o, 1 / 30, 0.0, lambda *a: 0)
+    assert o.dir == 0 and o.vel == 10.0 and o.x == m.carril("V", i, 0) and o.y > j * M.B + 1
+    o.dir, o.x, o.y, o.vel = 1, i * M.B - 2.0, m.carril("H", j, 1), 10.0      # y quien sigue de frente contra el borde, se para como siempre
+    for _ in range(12):
+        p._mover_via(o, 1 / 30, 0.0, lambda *a: 1)
+    assert o.vel == 0.0 and o.x == m.ancho
+
+
 def test_con_vida_realista_se_come_por_hambre(robot):
     p = robot.nueva_partida()
     j = p.j
