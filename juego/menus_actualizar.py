@@ -224,7 +224,10 @@ def _confirmar_servidor(app, bat, fichas):
     """Hay un servidor en línea abierto: se explica lo que va a pasar y se pide permiso antes de tocarlo."""
     que = A.texto_servidores(fichas)
     servicio = any(f.get("servicio") for f in fichas)
-    explica = ("Se avisa a los jugadores que haya dentro, con la cuenta atrás que tengas puesta en el servidor, que de serie son 20 segundos, y sus juegos se quedan esperando. "
+    parado = A.sin_servidor_en_marcha(fichas)                    # solo el panel, con el servidor parado: no hay jugadores a los que avisar
+    explica = ("El servidor está parado, así que no hay jugadores a los que avisar. El panel se cierra solo, el juego se actualiza y, al terminar, "
+               "el panel vuelve a abrirse solo, minimizado y con el servidor parado, como estaba. Si la actualización fallara, el panel se vuelve a abrir igualmente, "
+               "con la versión que tenías. Todo queda apuntado en el archivo actualizacion punto log de la carpeta de registros.") if parado else ("Se avisa a los jugadores que haya dentro, con la cuenta atrás que tengas puesta en el servidor, que de serie son 20 segundos, y sus juegos se quedan esperando. "
                "El servidor lo guarda todo y se cierra, el juego se actualiza y, al terminar, el servidor vuelve a arrancar solo, igual que estaba, "
                "y los jugadores vuelven a entrar solos y siguen donde estaban. Si la actualización fallara, el servidor se vuelve a arrancar igualmente, con la versión que tenías. "
                "Todo queda apuntado en el archivo actualizacion punto log de la carpeta de registros."
@@ -242,9 +245,10 @@ def _confirmar_servidor(app, bat, fichas):
         app.cerrar(m)
         app.act_lista = (bat, getattr(app, "act_version", "") or "nueva")
         app.decir("No se toca nada. La versión queda descargada: se instala cuando quieras desde Opciones, Actualizaciones, Instalar la versión descargada.", True)
-    m = Menu(app, f"Tienes abierto {que}. Para actualizar hay que pararlo un momento", [
-        Opcion("Actualizar ahora: avisar a los jugadores, parar el servidor y volver a arrancarlo al terminar", si, ayuda=explica),
-        Opcion("Ahora no", no, ayuda="No se para el servidor ni se instala nada. La descarga no se pierde.")],
+    m = Menu(app, f"Tienes abierto {que}. Para actualizar hay que " + ("cerrarlo un momento" if parado else "pararlo un momento"), [
+        Opcion("Actualizar ahora: cerrar el panel y volver a abrirlo al terminar" if parado else
+               "Actualizar ahora: avisar a los jugadores, parar el servidor y volver a arrancarlo al terminar", si, ayuda=explica),
+        Opcion("Ahora no", no, ayuda=("No se cierra el panel" if parado else "No se para el servidor") + " ni se instala nada. La descarga no se pierde.")],
         intro="F1 explica lo que va a pasar")
     app.son("evento")
     app.abrir(m)
@@ -283,6 +287,7 @@ def _instalar(app, bat, confirmado=False):
             app.decir(str(e) + " La descarga no se pierde.", True)
             return
     if True:
+        parado = A.sin_servidor_en_marcha(fichas)
         p = app.partida
         if p is not None and not p.mision:
             try:
@@ -299,9 +304,9 @@ def _instalar(app, bat, confirmado=False):
             pass
         app.son("guardado")
         app.decir("Todo listo. " + ("La partida que tienes abierta a tus amigos se cierra, y se lo he dicho: ábrela otra vez cuando vuelvas. " if amigos else "")
-                  + ("El servidor en línea avisa a los jugadores y se cierra. " if fichas else "")
-                  + "El juego se cierra, se actualiza y vuelve a abrirse solo en " + ("un minuto más o menos" if fichas else "unos segundos")
-                  + (", y el servidor vuelve a arrancar con él." if fichas else "."), True)
+                  + ("El panel del servidor en línea se cierra. " if parado else "El servidor en línea avisa a los jugadores y se cierra. " if fichas else "")
+                  + "El juego se cierra, se actualiza y vuelve a abrirse solo en " + ("un minuto más o menos" if fichas and not parado else "unos segundos")
+                  + (", y el panel vuelve a abrirse con él." if parado else ", y el servidor vuelve a arrancar con él." if fichas else "."), True)
         try:
             from . import vozgen
             vozgen.parar_prueba()                                # el proceso que prueba el motor de voz es el propio programa: no puede quedarse abierto

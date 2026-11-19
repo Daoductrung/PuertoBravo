@@ -928,7 +928,6 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         except Exception as e:                                # nada de lo que mande un cliente debe tumbar al servidor
             self.log("Error atendiendo a un jugador: %s: %s" % (type(e).__name__, e))
         finally:
-            self.conexiones.discard(yo)
             if j.ip is not None:
                 quedan = self.por_ip.get(j.ip, 1) - 1
                 if quedan > 0:
@@ -942,10 +941,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 await asyncio.wait_for(tarea, 3)
             except Exception:
                 tarea.cancel()
-            try:
-                escritor.close()
-            except Exception:
-                pass
+            finally:
+                # Hasta aquí esta conexión sigue contando: al parar, el servidor espera también a que termine esta despedida.
+                # Si se descontaba antes, el servidor podía darse por parado con ella a medias y quedaban dos tareas sin terminar.
+                self.conexiones.discard(yo)
+                try:
+                    escritor.close()
+                except Exception:
+                    pass
 
     def _ficha(self, j):
         ahora = time.monotonic()

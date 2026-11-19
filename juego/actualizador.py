@@ -17,7 +17,8 @@ Cómo funciona:
    actualizar». El servidor avisa a los jugadores, espera sus guardados, lo guarda todo y se cierra.
 6. Un pequeño .bat espera a que el juego y el servidor se cierren, guarda una copia del programa, copia la versión
    nueva, vuelve a arrancar el servidor que hubiera (tanto si ha ido bien como si no) y vuelve a abrir el juego.
-   Si algo falla, restaura la copia.
+   Si algo falla, restaura la copia. La copia es solo de programa: lo que el servidor guarda mientras funciona (su
+   base de datos, su configuración, sus fichas) ni se copia ni se restaura, para no devolverlo nunca a un momento anterior.
 7. El .bat apunta cada paso en data/logs/actualizacion.log, con el archivo que no se pudo copiar y el error de
    Windows. Si falla, el juego lee ese registro al reabrirse y dice el motivo.
 
@@ -62,6 +63,23 @@ MAX_MIEMBROS = 60000
 TIEMPO = 20
 # Carpetas del jugador: la actualización no las pisa ni las borra jamás.
 INTOCABLES = ("partidas", "config", "mi_musica", "actualizacion", "logs", "ia_local", "propias", "voces_generadas")
+# Lo vivo del servidor en línea, dentro de su carpeta servidor: las fichas de «en marcha», la carpeta de datos de serie (la
+# base de datos, el certificado, el registro, sus copias), la configuración y el archivo de órdenes. Una versión no lo
+# trae, la instalación no lo pisa, y ni se guarda en la copia de seguridad ni se restaura.
+CARPETA_SERVIDOR = "servidor"
+VIVO_SERVIDOR = ("en_marcha", "datos_servidor")
+ARCHIVOS_VIVOS_SERVIDOR = ("servidor.conf", "parar.txt")
+RAROS = '%"!^&'                                 # símbolos que un .bat no lleva bien en una ruta
+
+
+def de_windows(nombre):
+    """Una utilidad de Windows (tasklist.exe, cmd.exe) con su ruta entera, para no depender del PATH: con Git Bash o Cygwin
+    por delante, «find» o «tasklist» pueden ser otros programas."""
+    for raiz in (os.environ.get("SystemRoot"), os.environ.get("windir")):
+        ruta = os.path.join(raiz, "System32", nombre) if raiz else ""
+        if ruta and os.path.isfile(ruta):
+            return ruta
+    return nombre
 
 
 class ErrorActualizacion(Exception):
@@ -441,6 +459,10 @@ def extraer(ruta_zip, carpeta):
             if d in INTOCABLES and os.path.basename(base) in ("data", "radio"):
                 shutil.rmtree(os.path.join(base, d), ignore_errors=True)
                 dirs.remove(d)
+    for d in VIVO_SERVIDOR:                           # ni lo de un servidor: sus datos, su configuración, sus fichas
+        shutil.rmtree(os.path.join(raiz, CARPETA_SERVIDOR, d), ignore_errors=True)
+    for n in ARCHIVOS_VIVOS_SERVIDOR:
+        _quitar(os.path.join(raiz, CARPETA_SERVIDOR, n))
     return raiz
 
 
@@ -470,6 +492,35 @@ def ruta_registro_instalador(programa=None):
     return os.path.join(programa, "data", "logs", REGISTRO_INSTALADOR) if programa else os.path.join(rutas.DATA, "logs", REGISTRO_INSTALADOR)
 
 
+def plan_copia(nueva):
+    """Qué guarda el instalador antes de copiar, que es lo único que devuelve si falla: [(subcarpeta, archivos)], con
+    ``archivos`` None si va la subcarpeta entera. Es justo lo que la versión nueva va a sustituir, nombre a nombre, y nada
+    más: lo que haya en la carpeta del juego que la versión no trae (la configuración y los datos de un servidor en línea,
+    estén donde estén) ni se copia ni se restaura. De la carpeta servidor, solo sus programas y su guía; ``data`` va aparte."""
+    def mirar(sub):
+        base = os.path.join(nueva, sub)
+        try:
+            nombres = sorted(n for n in os.listdir(base) if not any(c in n for c in RAROS))
+        except OSError:
+            return [], []
+        return [n for n in nombres if os.path.isfile(os.path.join(base, n))], [n for n in nombres if os.path.isdir(os.path.join(base, n))]
+
+    archivos, carpetas = mirar("")
+    plan = [("", archivos)] if archivos else []
+    for c in carpetas:
+        if c.lower() == "data":
+            continue
+        if c.lower() != CARPETA_SERVIDOR:
+            plan.append((c, None))
+            continue
+        suyos, dentro = mirar(c)
+        suyos = [n for n in suyos if n.lower() not in ARCHIVOS_VIVOS_SERVIDOR]
+        if suyos:
+            plan.append((c, suyos))
+        plan += [(os.path.join(c, d), None) for d in dentro if d.lower() not in VIVO_SERVIDOR]
+    return plan
+
+
 def escribir_instalador(nueva, programa=None, pid=None, version=""):
     """Escribe el .bat que sustituye el programa cuando el juego se haya cerrado. Devuelve su ruta.
     El .bat apunta cada paso en data\\logs\\actualizacion.log: qué hace, con qué resultado y, si falla, qué archivo y por qué."""
@@ -480,8 +531,10 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
             raise ErrorActualizacion("El juego está en una carpeta con símbolos especiales en el nombre y no se puede actualizar solo. Descarga la versión nueva a mano.")
     trabajo = os.path.dirname(nueva)
     copia = os.path.join(trabajo, "anterior")
-    excluir = " ".join(INTOCABLES)
+    excluir = " ".join(INTOCABLES + VIVO_SERVIDOR)           # lo vivo de un servidor no lo trae una versión; si lo trajera, no se copia
     callado = '/njh /njs /ndl /nfl /np /log+:"%REG%"'        # robocopy no lista lo que va bien: en el registro solo quedan los errores
+    # Las utilidades de Windows, con su ruta entera: con otro «find» por delante en el PATH (Git Bash, Cygwin), las esperas no esperaban.
+    robocopy, tasklist, find, ping = ('"%SYS%\\' + n + '"' for n in ("robocopy.exe", "tasklist.exe", "find.exe", "ping.exe"))
 
     def apunta(texto):
         return f'>>"%REG%" echo {texto}'
@@ -497,7 +550,8 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
         return lineas
 
     lineas = [
-        "@echo off", "chcp 65001 >nul", "setlocal",
+        "@echo off", "setlocal", 'set "SYS=%SystemRoot%\\System32"', 'if not exist "%SYS%\\robocopy.exe" set "SYS=%windir%\\System32"',
+        '"%SYS%\\chcp.com" 65001 >nul',
         f'set "APP={programa}"', f'set "NUEVA={nueva}"', f'set "COPIA={copia}"', f'set "NOTA={os.path.join(trabajo, NOTA_SERVIDORES)}"',
         'set "REG=%APP%\\data\\logs\\' + REGISTRO_INSTALADOR + '"', "set PASO=empezar", "set RC=0",
         'if not exist "%APP%\\data\\logs" mkdir "%APP%\\data\\logs"',
@@ -506,10 +560,10 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
         f"echo Actualizando Puerto Bravo a la version {version}. No cierres esta ventana.",
         "set PASO=esperar_cierre", apunta("PASO esperar_cierre"),
         "set /a N=0", ":espera",
-        f'tasklist /fi "PID eq {pid}" 2>nul | find " {pid} " >nul',
+        f'{tasklist} /fi "PID eq {pid}" 2>nul | {find} " {pid} " >nul',
         "if errorlevel 1 goto programas",
         "set /a N+=1", "if %N% geq 90 goto no_cierra",
-        "ping -n 2 127.0.0.1 >nul", "goto espera",
+        f"{ping} -n 2 127.0.0.1 >nul", "goto espera",
         # Si el editor de mods, el servidor en línea o su panel están en marcha, sus programas no se pueden sustituir: se
         # espera a que se cierren, y si no se cierran, no se actualiza a medias.
         ":programas",
@@ -519,25 +573,40 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
     for exe in OTROS_PROGRAMAS:
         # En CSV (/fo csv): en su tabla de siempre, tasklist recorta el nombre del programa a 25 letras, y con eso el panel
         # del servidor (PuertoBravoServidorPanel.exe, 28) no se encontraba nunca: se copiaba con él todavía abierto.
-        lineas += [f'tasklist /fi "IMAGENAME eq {exe}" /fo csv /nh 2>nul | find /i "{exe}" >nul', "if not errorlevel 1 goto ocupado"]
+        lineas += [f'{tasklist} /fi "IMAGENAME eq {exe}" /fo csv /nh 2>nul | {find} /i "{exe}" >nul', "if not errorlevel 1 goto ocupado"]
     lineas += [
         "goto copiar",
         ":ocupado",
         "if %N%==0 echo Esperando a que se cierren el servidor en linea o el editor de mods de Puerto Bravo. El servidor avisa a los jugadores y se cierra solo.",
         "set /a N+=1", "if %N% geq 180 goto no_cierra",
-        "ping -n 2 127.0.0.1 >nul", "goto mirar",
+        f"{ping} -n 2 127.0.0.1 >nul", "goto mirar",
         ":no_cierra",
         apunta("FALLO paso=%PASO% codigo=0 motivo=sigue_abierto"),
         "goto abrir",
         ":copiar",
         'if exist "%COPIA%" rmdir /s /q "%COPIA%"',
     ]
-    lineas += paso("copia_seguridad", f'robocopy "%APP%" "%COPIA%" /e /xd "%APP%\\data" /r:2 /w:1 {callado}', vital=False)
-    for sub_ in ("datos", "mods", "docs"):
-        lineas.append(f'robocopy "%APP%\\data\\{sub_}" "%COPIA%\\data\\{sub_}" /e /r:2 /w:1 {callado}')
-    lineas += paso("copiar_nueva", f'robocopy "%NUEVA%" "%APP%" /e /xd {excluir} /r:3 /w:1 {callado}')
-    lineas += paso("copiar_lib", f'robocopy "%NUEVA%\\lib" "%APP%\\lib" /mir /r:3 /w:1 {callado}', si="%NUEVA%\\lib")
-    lineas += paso("copiar_datos", f'robocopy "%NUEVA%\\data\\datos" "%APP%\\data\\datos" /mir /r:3 /w:1 {callado}', si="%NUEVA%\\data\\datos")
+    # La copia de seguridad: solo programa, y solo lo que la versión nueva va a sustituir (plan_copia). De data, los datos del
+    # juego, los mods y los manuales. No entran data\sonidos, musica, radio ni phonon, y es a propósito: son cientos de megas,
+    # llevan archivos de quien juega que no se tocan jamás, y son solo audio y modelos de voz, que se cargan por su nombre y
+    # con tolerancia (un sonido de otra versión suena igual, y los originales que falten se vuelven a crear). Si la instalación
+    # falla, la versión anterior funciona con ellos, y la siguiente actualización que salga bien los deja al día.
+    lineas += ["set PASO=copia_seguridad", apunta("PASO copia_seguridad"), "set RC=0"]
+    copias = []
+    for sub_, archivos in plan_copia(nueva):
+        origen, destino = ("%APP%\\" + sub_, "%COPIA%\\" + sub_) if sub_ else ("%APP%", "%COPIA%")
+        if archivos is None:
+            copias.append(f'if exist "{origen}\\" {robocopy} "{origen}" "{destino}" /e /r:2 /w:1 {callado}')
+        for k in range(0, len(archivos or ()), 12):          # por tandas: una línea de .bat no puede ser muy larga
+            nombres = " ".join(f'"{n}"' for n in archivos[k:k + 12])
+            copias.append(f'{robocopy} "{origen}" "{destino}" {nombres} /r:2 /w:1 {callado}')
+    copias += [f'if exist "%APP%\\data\\{sub_}\\" {robocopy} "%APP%\\data\\{sub_}" "%COPIA%\\data\\{sub_}" /e /r:2 /w:1 {callado}' for sub_ in ("datos", "mods", "docs")]
+    for orden in copias:
+        lineas += [orden, "if %errorlevel% gtr %RC% set RC=%errorlevel%"]
+    lineas.append(apunta("RESULTADO copia_seguridad codigo=%RC%"))
+    lineas += paso("copiar_nueva", f'{robocopy} "%NUEVA%" "%APP%" /e /xd {excluir} /xf {" ".join(ARCHIVOS_VIVOS_SERVIDOR)} /r:3 /w:1 {callado}')
+    lineas += paso("copiar_lib", f'{robocopy} "%NUEVA%\\lib" "%APP%\\lib" /mir /r:3 /w:1 {callado}', si="%NUEVA%\\lib")
+    lineas += paso("copiar_datos", f'{robocopy} "%NUEVA%\\data\\datos" "%APP%\\data\\datos" /mir /r:3 /w:1 {callado}', si="%NUEVA%\\data\\datos")
     lineas += [
         'if exist "%APP%\\data\\voces_serie" rmdir /s /q "%APP%\\data\\voces_serie"',     # las voces van ahora en data\voces
         'rmdir /s /q "%NUEVA%"',
@@ -552,7 +621,8 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
         apunta("FALLO paso=%PASO% codigo=%RC% motivo=copia"),
         "echo La actualizacion ha fallado. Se restaura la version anterior.",
     ]
-    lineas += paso("restaurar", f'robocopy "%COPIA%" "%APP%" /e /r:3 /w:1 {callado}', vital=False)
+    # Se devuelve lo que se guardó, que es solo programa: lo que el servidor guardó al cerrarse se queda como lo dejó.
+    lineas += paso("restaurar", f'{robocopy} "%COPIA%" "%APP%" /e /r:3 /w:1 {callado}', vital=False)
     lineas += [
         ":abrir",
         apunta("TERMINADA mal %date% %time%"),
@@ -588,7 +658,27 @@ def _texto_registro(ruta):
     try:
         return crudo.decode("utf-8")
     except UnicodeDecodeError:
-        return crudo.decode("oem" if os.name == "nt" else "latin-1", errors="replace")      # robocopy escribe en la página de códigos de la consola
+        return "\n".join(_linea_de_windows(l) for l in crudo.replace(b"\r\n", b"\n").split(b"\n"))
+
+
+_LETRAS = "áéíóúüñÁÉÍÓÚÜÑ¿¡"
+
+
+def _linea_de_windows(crudo):
+    """Una línea que ha escrito robocopy. No usa siempre la misma página de códigos: el error de Windows («está siendo
+    utilizado») va en la de la consola, y sus propios avisos («se superó el límite de reintentos»), en la de Windows. Se
+    prueba línea a línea y se queda la lectura con más letras nuestras; así ninguna sale con las letras cambiadas."""
+    try:
+        return crudo.decode("utf-8")
+    except UnicodeDecodeError:
+        pass
+    lecturas = []
+    for pagina in (("oem", "mbcs") if os.name == "nt" else ("latin-1",)):
+        try:
+            lecturas.append(crudo.decode(pagina, errors="replace"))
+        except LookupError:
+            pass
+    return max(lecturas, key=lambda t: sum(t.count(c) for c in _LETRAS)) if lecturas else crudo.decode("latin-1")
 
 
 def _archivo_de(resto):
@@ -610,6 +700,8 @@ def limpiar_registro_instalador(ruta=None):
         lineas = _texto_registro(ruta).splitlines()
         limpias = []
         for linea in lineas:
+            if not linea.strip():                              # robocopy deja líneas en blanco entre aviso y aviso
+                continue
             m = re.search(_RE_ERROR_COPIA, linea)
             if m and re.search(_RE_CAMINO, m.group(3)):
                 linea = linea[:m.start(3)] + re.sub(_RE_CAMINO, lambda c: _archivo_de(m.group(3)), m.group(3))
@@ -641,6 +733,8 @@ def leer_registro_instalador(ruta=None):
             m = re.search(r"SERVIDOR (\S+)\s+tipo=(\S+)(?:\s+motivo=(\S+))?", linea)
             if m and m.group(1) == "relanzado":
                 r["relanzados"].append(m.group(2))
+                if "estado=parado" in linea:                   # un panel que estaba con el servidor parado, y así ha vuelto
+                    r["parados"] = r.get("parados", 0) + 1
             elif m:
                 r["sin_relanzar"].append((m.group(2), m.group(3) or ""))
         elif linea.startswith("FALLO "):
@@ -699,7 +793,7 @@ def _tareas():
         sin_ventana = getattr(subprocess, "CREATE_NO_WINDOW", 0)
         # en bytes y descodificando con manga ancha: tasklist escribe en la página de códigos de la consola, y un programa
         # con tilde en el nombre no puede hacer fallar la comprobación
-        salida = subprocess.run(["tasklist", "/fo", "csv", "/nh"], capture_output=True, timeout=10, creationflags=sin_ventana).stdout.decode("utf-8", "replace").lower()
+        salida = subprocess.run([de_windows("tasklist.exe"), "/fo", "csv", "/nh"], capture_output=True, timeout=10, creationflags=sin_ventana).stdout.decode("utf-8", "replace").lower()
     except (OSError, subprocess.SubprocessError):
         return set()
     return {linea.split('","')[0].strip('"') for linea in salida.splitlines() if linea.startswith('"')}
@@ -764,9 +858,28 @@ def tamano(ruta, excluir=()):
     return total
 
 
-def tamano_copia(programa):
-    """Lo que ocupará la copia de seguridad que hace el instalador: el programa sin data, más los datos, los mods y los manuales."""
-    return tamano(programa, excluir=("data",)) + sum(tamano(os.path.join(programa, "data", s)) for s in ("datos", "mods", "docs"))
+def _tamano_archivos(carpeta, nombres=None):
+    """Bytes de los archivos sueltos de una carpeta, sin entrar en las de dentro: todos, o solo los que se nombran."""
+    total = 0
+    try:
+        for n in (os.listdir(carpeta) if nombres is None else nombres):
+            ruta = os.path.join(carpeta, n)
+            if os.path.isfile(ruta):
+                total += os.path.getsize(ruta)
+    except OSError:
+        pass
+    return total
+
+
+def tamano_copia(programa, nueva=None):
+    """Lo que ocupará la copia de seguridad que hace el instalador: el programa sin data, más los datos, los mods y los
+    manuales. Con la versión nueva ya extraída se cuenta justo lo que se va a guardar (plan_copia); antes de descargarla,
+    el programa entero, y de la carpeta servidor solo sus archivos sueltos: los datos de un servidor nunca van en la copia."""
+    de_data = sum(tamano(os.path.join(programa, "data", s)) for s in ("datos", "mods", "docs"))
+    if nueva is None:
+        return tamano(programa, excluir=("data", CARPETA_SERVIDOR)) + _tamano_archivos(os.path.join(programa, CARPETA_SERVIDOR)) + de_data
+    return de_data + sum(tamano(os.path.join(programa, sub)) if archivos is None else _tamano_archivos(os.path.join(programa, sub), archivos)
+                         for sub, archivos in plan_copia(nueva))
 
 
 def espacio_para_instalar(nueva, programa=None):
@@ -789,7 +902,7 @@ def espacio_para_instalar(nueva, programa=None):
                 viejo = 0
             crece += max(0, nuevo - viejo)
             mayor = max(mayor, nuevo)
-    return tamano_copia(programa) + crece + mayor + MARGEN_DISCO
+    return tamano_copia(programa, nueva) + crece + mayor + MARGEN_DISCO
 
 
 def espacio_para_descargar(info, programa=None):
@@ -833,7 +946,7 @@ def copias_del_juego(tareas=None):
     if tareas is None:
         try:
             sin_ventana = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-            salida = subprocess.run(["tasklist", "/fo", "csv", "/nh"], capture_output=True, timeout=10, creationflags=sin_ventana).stdout.decode("utf-8", "replace").lower()
+            salida = subprocess.run([de_windows("tasklist.exe"), "/fo", "csv", "/nh"], capture_output=True, timeout=10, creationflags=sin_ventana).stdout.decode("utf-8", "replace").lower()
         except (OSError, subprocess.SubprocessError):
             return 1
         tareas = [linea.split('","')[0].strip('"') for linea in salida.splitlines() if linea.startswith('"')]
@@ -869,7 +982,29 @@ def problemas_para_instalar(nueva, programa=None, libre=None, tareas=None, servi
     falta = _falta_sitio(espacio_para_instalar(nueva, programa), programa, libre)
     if falta:
         problemas.append(falta)
+    mal = datos_en_zona_de_programa(servidores, nueva, programa)
+    if mal:
+        problemas.append(f"La carpeta de datos del servidor en línea está dentro de la carpeta {mal}, que es del programa y la actualización sustituye: "
+                         "podría borrar lo que hay guardado. Cierra el servidor, mueve su carpeta de datos a otro sitio, por ejemplo dentro de la carpeta servidor, "
+                         "cambia la carpeta de datos en la configuración del servidor y vuelve a arrancarlo.")
     return problemas
+
+
+def datos_en_zona_de_programa(fichas, nueva, programa=None):
+    """Si algún servidor abierto tiene su carpeta de datos dentro de una carpeta que la versión nueva trae (lib, data\\datos,
+    servidor\\otros_sistemas...), devuelve esa carpeta, como se la diría a quien juega; si no, cadena vacía. Lo normal es que
+    los datos estén en servidor\\datos_servidor o donde su dueño haya querido, y ahí la actualización ni copia ni borra."""
+    programa = os.path.normcase(os.path.abspath(programa or carpeta_programa()))
+    for f in fichas or ():
+        datos = os.path.normcase(os.path.abspath(f["datos"])) if f.get("datos") else ""
+        if not datos.startswith(programa + os.sep):
+            continue
+        partes = os.path.relpath(datos, programa).split(os.sep)
+        for k in range(1, len(partes) + 1):
+            sub = os.path.join(*partes[:k])
+            if sub not in ("data", CARPETA_SERVIDOR) and partes[k - 1] not in INTOCABLES + VIVO_SERVIDOR and os.path.isdir(os.path.join(nueva, sub)):
+                return sub
+    return ""
 
 
 # ------------------------------------- los servidores en línea abiertos: pararlos y volver a arrancarlos
@@ -898,7 +1033,7 @@ def proceso_vivo(pid, exe=""):
     """¿Sigue en marcha ese proceso, y es ese programa? Se pregunta a Windows por su número."""
     try:
         sin_ventana = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-        salida = subprocess.run(["tasklist", "/fi", f"PID eq {int(pid)}", "/fo", "csv", "/nh"], capture_output=True, timeout=10,
+        salida = subprocess.run([de_windows("tasklist.exe"), "/fi", f"PID eq {int(pid)}", "/fo", "csv", "/nh"], capture_output=True, timeout=10,
                                 creationflags=sin_ventana).stdout.decode("utf-8", "replace").lower()
     except (OSError, subprocess.SubprocessError, ValueError):
         return False
@@ -960,6 +1095,12 @@ def texto_servidores(fichas):
     return partes[0] if len(partes) == 1 else ", ".join(partes[:-1]) + " y " + partes[-1] if partes else ""
 
 
+def sin_servidor_en_marcha(fichas):
+    """¿Lo único abierto son paneles con el servidor parado? Entonces no hay jugadores a los que avisar ni servidor que parar:
+    solo hay que cerrar el panel y volver a abrirlo."""
+    return bool(fichas) and all(f["tipo"] == "panel" and not f.get("activo", True) for f in fichas)
+
+
 def pedir_parada_servidores(fichas, trabajo=None):
     """Apunta qué servidores había abiertos (para volver a arrancarlos igual) y les deja en su carpeta de datos la orden de
     pararse para actualizar: avisan a los jugadores, esperan sus guardados, lo guardan todo y se cierran solos.
@@ -967,9 +1108,17 @@ def pedir_parada_servidores(fichas, trabajo=None):
     trabajo = trabajo or carpeta_trabajo()
     os.makedirs(trabajo, exist_ok=True)
     for f in fichas:
+        if f.get("datos") and f["tipo"] == "panel" and not os.path.isdir(f["datos"]):
+            # Un panel que no ha arrancado nunca su servidor todavía no tiene carpeta de datos, y es ahí donde mira la orden
+            # de cerrarse: se le crea, vacía. Es la que crearía él mismo al arrancar el servidor por primera vez.
+            try:
+                os.makedirs(f["datos"], exist_ok=True)
+            except OSError:
+                pass
         if not f.get("datos") or not os.path.isdir(f["datos"]):
-            raise ErrorActualizacion("No encuentro la carpeta de datos de " + NOMBRE_TIPO[f["tipo"]] + " para pedirle que se cierre. "
-                                     "Ciérralo tú y vuelve a intentarlo.")
+            que = NOMBRE_TIPO[f["tipo"]]
+            raise ErrorActualizacion("No encuentro la carpeta de datos " + ("del" + que[2:] if que.startswith("el ") else "de " + que)
+                                     + " para pedirle que se cierre. Ciérralo tú y vuelve a intentarlo.")
     nota = os.path.join(trabajo, NOTA_SERVIDORES)
     with open(nota, "w", encoding="utf-8") as fo:
         json.dump({"version": 1, "momento": int(time.time()), "servidores": fichas}, fo, ensure_ascii=False, indent=1)
@@ -1041,7 +1190,7 @@ def relanzar_servidores(nota, programa=None, lanzar=None, vivo=None, registro=No
             try:
                 orden, cwd = orden_de_arranque(dict(f, tipo=tipo))
                 lanzar(orden, cwd, tipo)
-                hecho.append((tipo, True, ""))
+                hecho.append((tipo, True, "" if tipo != "panel" or f.get("activo", True) else "parado"))      # el panel vuelve como estaba
             except (OSError, ValueError) as e:
                 hecho.append((tipo, False, "error_" + type(e).__name__))
     try:
@@ -1049,7 +1198,7 @@ def relanzar_servidores(nota, programa=None, lanzar=None, vivo=None, registro=No
             os.makedirs(os.path.dirname(registro), exist_ok=True)
             with open(registro, "a", encoding="utf-8", newline="\r\n") as f:
                 for tipo, bien, motivo in hecho:
-                    f.write(f"SERVIDOR {'relanzado' if bien else 'sin_relanzar'} tipo={tipo}" + (f" motivo={motivo}" if motivo else "") + "\n")
+                    f.write(f"SERVIDOR {'relanzado' if bien else 'sin_relanzar'} tipo={tipo}" + (f" {'estado' if bien else 'motivo'}={motivo}" if motivo else "") + "\n")
     except OSError:
         pass
     _quitar(nota)
@@ -1067,7 +1216,10 @@ MOTIVO_SIN_RELANZAR = {
 def texto_relanzados(r):
     """Lo que pasó con los servidores tras actualizar, a partir del registro del instalador, dicho para quien juega. Vacío si no había ninguno."""
     partes = []
-    if r.get("relanzados"):
+    if r.get("relanzados") and r.get("parados", 0) >= len(r["relanzados"]):
+        # Solo había paneles con el servidor parado: no hay jugadores esperando ni servidor que haya arrancado.
+        partes.append("El panel del servidor en línea que tenías abierto ha vuelto a abrirse, con el servidor parado, como estaba.")
+    elif r.get("relanzados"):
         tipos = sorted(set(r["relanzados"]))
         que = " y ".join(NOMBRE_TIPO.get(t, "el servidor") for t in tipos)
         partes.append(f"{que[0].upper()}{que[1:]} que tenías {'abierto ha vuelto' if len(tipos) == 1 else 'abiertos han vuelto'} a arrancar solo: los jugadores que estaban esperando volverán a entrar.")
@@ -1085,7 +1237,7 @@ def lanzar_instalador(ruta_bat):
         info = subprocess.STARTUPINFO()
         info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         info.wShowWindow = 0                                      # SW_HIDE
-    subprocess.Popen(["cmd.exe", "/c", ruta_bat], cwd=os.path.dirname(ruta_bat), creationflags=banderas, close_fds=True, startupinfo=info)
+    subprocess.Popen([de_windows("cmd.exe"), "/c", ruta_bat], cwd=os.path.dirname(ruta_bat), creationflags=banderas, close_fds=True, startupinfo=info)
 
 
 def limpiar():

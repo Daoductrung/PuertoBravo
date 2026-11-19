@@ -26,7 +26,7 @@ from editor.accesibilidad.nombres import crear_campo
 from editor.accesibilidad.teclado import vincular_menu_contextual
 from servidor import copias, enmarcha, opciones
 
-from . import CONF, NOMBRE, carpeta_servidor, ruta_documentacion
+from . import CONF, NOMBRE, abierto_sin_activar, carpeta_servidor, ruta_documentacion
 from .configuracion import DialogoConfiguracion
 from .motor import ARRANCANDO, EN_MARCHA, PARADO, PARANDO, Motor
 
@@ -166,9 +166,10 @@ class DialogoCopias(wx.Dialog):
 
 
 class VentanaPanel(wx.Frame):
-    def __init__(self, ruta_conf=None, hablar=True):
+    def __init__(self, ruta_conf=None, hablar=True, sin_foco=False):
         super().__init__(None, title=NOMBRE, size=(860, 640), name=NOMBRE)
         self.hablar = hablar
+        self._foco_pendiente = bool(sin_foco)    # abierta sin activar: el foco inicial se pone cuando su dueño venga a ella
         self.motor = Motor(ruta_conf or os.path.join(carpeta_servidor(), CONF), registrar=lambda t: wx.CallAfter(self._linea, t),
                            avisar=lambda que, dato: wx.CallAfter(self._aviso_motor, que, dato))
         self.cfg, avisos = self.motor.leer_config()
@@ -196,8 +197,25 @@ class VentanaPanel(wx.Frame):
             self._linea("Todavía no hay archivo de configuración: se usan los valores de serie. Se crea al guardar la configuración.")
         self.refrescar(todo=True)
         self.Centre()
-        self.estado.SetFocus()
+        if self._foco_pendiente:
+            # La ha abierto la actualización del juego, minimizada y sin activar: no se toca el foco, que es del juego. Se
+            # pondrá en el estado, como siempre, la primera vez que se venga a esta ventana.
+            self.Bind(wx.EVT_ACTIVATE, self._al_activar)
+            self.Bind(wx.EVT_ICONIZE, self._al_activar)
+        else:
+            self.estado.SetFocus()
         self.motor.anotar()
+
+    def _al_activar(self, evento):
+        evento.Skip()
+        if self._foco_pendiente:
+            wx.CallAfter(self._foco_inicial)
+
+    def _foco_inicial(self):
+        """El foco con el que abre siempre el panel, puesto la primera vez que la ventana está activa y a la vista."""
+        if self and self._foco_pendiente and self.IsActive() and not self.IsIconized():
+            self._foco_pendiente = False
+            self.estado.SetFocus()
 
     # ------------------------------------------------------------------- menús
     def _menus(self):
@@ -1009,7 +1027,11 @@ Alt más la letra subrayada: ir a un control de la pestaña o abrir un menú.
 Tecla Aplicaciones o Mayúsculas+F10 en las listas de jugadores y de cuentas: acciones sobre lo elegido."""
 
 
-def ejecutar(ruta_conf=None, arrancar=False):
+def ejecutar(ruta_conf=None, arrancar=False, sin_foco=None):
+    """Abre el panel. ``sin_foco``: no activar la ventana ni tocar el foco; si no se dice, se hace caso a cómo lo haya
+    arrancado Windows (la actualización del juego lo vuelve a abrir minimizado y sin activar)."""
+    if sin_foco is None:
+        sin_foco = abierto_sin_activar()
     app = wx.App(False)
     wx.HelpProvider.Set(wx.SimpleHelpProvider())
     try:
@@ -1017,8 +1039,13 @@ def ejecutar(ruta_conf=None, arrancar=False):
         app._idioma = idioma.fijar_idioma_espanol()
     except Exception:
         pass
-    ventana = VentanaPanel(ruta_conf)
-    ventana.Show()
+    ventana = VentanaPanel(ruta_conf, sin_foco=sin_foco)
+    if sin_foco:
+        ventana.ShowWithoutActivating()          # a la vista en la barra de tareas, sin quitarle el foco a nadie
+        if not ventana.IsIconized():
+            ventana.Iconize(True)
+    else:
+        ventana.Show()
     if arrancar:                                 # --arrancar: lo pone la actualización del juego si el servidor estaba en marcha
         wx.CallAfter(ventana.arrancar)
     app.MainLoop()

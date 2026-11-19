@@ -216,11 +216,22 @@ def test_instalador(tmp_path):
     texto = crudo.decode("utf-8")
     assert b"\r\n" in crudo and b"\n" not in crudo.replace(b"\r\n", b"")
     assert "PID eq 4321" in texto and str(programa) in texto and A.ARG_TRAS_ACTUALIZAR in texto
-    principal = next(l for l in texto.splitlines() if l.startswith('robocopy "%NUEVA%" "%APP%"'))
-    for intocable in ("partidas", "config", "mi_musica"):
-        assert intocable in principal.split("/xd")[1]                 # nunca se pisan
-    assert "/mir" not in principal and ":fallo" in texto and 'robocopy "%COPIA%" "%APP%"' in texto
-    assert not any("/mir" in l and ("mods" in l or "partidas" in l or "config" in l or "radio" in l) for l in texto.splitlines())
+    principal = next(l for l in texto.splitlines() if l.startswith('"%SYS%\\robocopy.exe" "%NUEVA%" "%APP%"'))
+    for intocable in ("partidas", "config", "mi_musica", "en_marcha", "datos_servidor"):
+        assert intocable in principal.split("/xd")[1].split()         # nunca se pisan: ni lo tuyo ni lo de tu servidor en línea
+    assert "/mir" not in principal and ":fallo" in texto and '"%SYS%\\robocopy.exe" "%COPIA%" "%APP%"' in texto
+    assert not any("/mir" in l and ("mods" in l or "partidas" in l or "config" in l or "radio" in l or "servidor" in l) for l in texto.splitlines())
+    # las utilidades de Windows van con su ruta entera: con otro «find» por delante en el PATH (Git Bash, Cygwin) las esperas no esperaban
+    lineas = texto.splitlines()
+    assert lineas[:4] == ["@echo off", "setlocal", 'set "SYS=%SystemRoot%\\System32"', 'if not exist "%SYS%\\robocopy.exe" set "SYS=%windir%\\System32"']
+    import re
+    for linea in lineas:
+        for palabra in re.findall(r"(?<![\w%\\.])(robocopy|tasklist|find|findstr|ping|timeout|chcp|taskkill|xcopy|where|more|sort)(?:\.exe|\.com)?(?![\w.])", linea, re.I):
+            raise AssertionError("«%s» sin su ruta entera en: %s" % (palabra, linea))
+    for utilidad in ("robocopy.exe", "tasklist.exe", "find.exe", "ping.exe", "chcp.com"):
+        assert '"%SYS%\\' + utilidad + '"' in texto
+    assert A.de_windows("tasklist.exe").lower().endswith("\\system32\\tasklist.exe") and os.path.isfile(A.de_windows("cmd.exe"))
+    assert A.de_windows("no_existe_esta_utilidad.exe") == "no_existe_esta_utilidad.exe"
     with pytest.raises(A.ErrorActualizacion):
         A.escribir_instalador(str(nueva), str(tmp_path / "100% mío"), pid=1)
 

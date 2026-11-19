@@ -34,6 +34,32 @@ def situarse():
     os.chdir(carpeta_servidor())
 
 
+def abierto_sin_activar():
+    """¿Ha pedido quien abre el panel que su ventana no se active? Es lo que hace la actualización del juego cuando lo
+    vuelve a abrir (minimizado y sin activar), y también un acceso directo de Windows puesto en «minimizada». Entonces el
+    panel no debe coger el foco: se lo quitaría al juego, y quien usa lector de pantalla se quedaría en una ventana
+    minimizada. Se le pregunta a Windows cómo se arrancó este programa."""
+    if os.name != "nt":
+        return False
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        class Arranque(ctypes.Structure):                    # STARTUPINFOW
+            _fields_ = [("cb", wintypes.DWORD), ("lpReserved", wintypes.LPWSTR), ("lpDesktop", wintypes.LPWSTR), ("lpTitle", wintypes.LPWSTR),
+                        ("dwX", wintypes.DWORD), ("dwY", wintypes.DWORD), ("dwXSize", wintypes.DWORD), ("dwYSize", wintypes.DWORD),
+                        ("dwXCountChars", wintypes.DWORD), ("dwYCountChars", wintypes.DWORD), ("dwFillAttribute", wintypes.DWORD),
+                        ("dwFlags", wintypes.DWORD), ("wShowWindow", wintypes.WORD), ("cbReserved2", wintypes.WORD),
+                        ("lpReserved2", ctypes.c_void_p), ("hStdInput", wintypes.HANDLE), ("hStdOutput", wintypes.HANDLE), ("hStdError", wintypes.HANDLE)]
+        info = Arranque()
+        info.cb = ctypes.sizeof(info)
+        ctypes.windll.kernel32.GetStartupInfoW(ctypes.byref(info))
+        # STARTF_USESHOWWINDOW, y una de las maneras de mostrarse sin activarse: SW_SHOWNOACTIVATE, SW_SHOWMINNOACTIVE o SW_SHOWNA
+        return bool(info.dwFlags & 1) and info.wShowWindow in (4, 7, 8)
+    except Exception:
+        return False
+
+
 def ruta_documentacion():
     """La guía del servidor, donde esté: junto al servidor o con el resto de la documentación del juego."""
     base = carpeta_programa()
