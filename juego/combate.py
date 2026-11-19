@@ -623,7 +623,9 @@ class Combate:
             r_p, r_v = r_p * sistemas.factor_oido_policia(j.veh), r_v * sistemas.factor_oido_policia(j.veh)
         cerca = any(p.tipo == "policia" and not p.muerto and p.dist(x, y) < r_p for p in self.personas) or \
             any(v.ia == "policia" and not v.muerto and v.dist(x, y) < r_v for v in self.vehiculos)
-        cerca = cerca or self.heli_te_tiene()                    # con el helicóptero encima no hay quien despiste a nadie
+        if self.vuelo_alto():                                    # volando alto, las patrullas de tierra no te siguen
+            cerca = False
+        cerca = cerca or self.heli_te_tiene() or self.radar_te_tiene()      # con el helicóptero encima, o en el radar con un aparato secuestrado, no hay quien despiste a nadie
         if cerca:
             self.t_evasion = 0.0
         else:

@@ -1128,6 +1128,10 @@ SECCIONES = [
 
 from . import esquema_honrado      # noqa: E402  (la vida honrada y sus consecuencias: sus formularios, y lo que añade a la misión y a la decisión)
 esquema_honrado.aplicar(ESQUEMAS, SECCIONES)
+from . import esquema_golpes       # noqa: E402  (los golpes preparados con la banda, y lo que añaden a los pasos de recoger y de policía)
+esquema_golpes.aplicar(ESQUEMAS, SECCIONES)
+from . import esquema_vuelo        # noqa: E402  (volar de verdad: números y frases, aeronaves, mapa del aire y el precio del hangar de un campo)
+esquema_vuelo.aplicar(ESQUEMAS, SECCIONES)
 
 # Pestañas del formulario de lugar: así cada página tiene pocas letras de acceso y ninguna se repite.
 for _cp in ESQUEMAS["lugar"]["campos"]:

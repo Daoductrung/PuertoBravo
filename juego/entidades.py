@@ -99,6 +99,8 @@ class Jugador:
         self.locales_vetados = {}    # locales que has atracado y aún te recuerdan: {lugar: {"hasta": día, "modo": cerrado u hostil}}
         self.proveedores = {}        # lo que te guarda cada proveedor que has asaltado: {lugar: {"asaltado", "veto", "caro"}}
         self.represalias = []        # gente que viene a por ti: [{"cuando", "lugar", "n"}]
+        self.banda_gente = []        # la gente de tu banda, uno por uno: [{"id", "n", "g", "punteria", "conduccion", "nervios", "lealtad", "exp", "baja"}] (golpes.py)
+        self.hangares = {}           # tus plazas de hangar: {campo: {"propia", "naves": [fichas], "pagado": día, "debe": euros}} (vuelo.py)
         self.tributos = {}           # bandas que te pagan por dejarles estar: {banda: {"euros", "hasta"}}
         self.tratos = {}             # último día que negociaste cada cosa con cada banda: {"banda:asunto": día}
         self.convive = ""            # la persona de tu vida social que vive contigo (contenido para adultos)

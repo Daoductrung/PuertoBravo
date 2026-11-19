@@ -104,7 +104,7 @@ class Atracos:
     def local_atracable(self, l):
         return l is not None and l.tipo not in AJ.lista("no_atracables") and G.caja_local(l.tipo) is not None
 
-    def atraco_motivo(self, l):
+    def atraco_motivo(self, l, golpe=None):
         if self.arma()["tipo"] != "fuego":
             return "Para atracar tienes que empuñar un arma de fuego."
         if self.atracadas.get(l.id) == self.dia:
@@ -112,14 +112,15 @@ class Atracos:
         if self.de_servicio():
             return "Estás de servicio. Si atracas esto, se acabó la placa."
         c = G.caja_local(l.tipo)
-        if c and c.get("guardias") and c.get("guardia") and (self.mision or self.trabajo or self.guerra):
-            return "Termina antes lo que tienes entre manos: aquí la caja tiene guardia."
+        if ((c and c.get("guardias") and c.get("guardia")) or golpe) and (self.mision or self.trabajo or self.guerra):
+            return "Termina antes lo que tienes entre manos: " + ("un golpe preparado pide toda tu atención." if golpe else "aquí la caja tiene guardia.")
         return ""
 
-    def atracar_local(self, l):
+    def atracar_local(self, l, golpe=None):
         """Atraca un local. Sin guardia, la caja se vacía en el acto; con guardia, primero hay que acabar con ella.
+        Con un plan de golpe preparado (golpes.py), la caja tarda en abrirse siempre y cada uno de tu banda hace su papel.
         Devuelve True si el atraco ha empezado."""
-        motivo = self.atraco_motivo(l)
+        motivo = self.atraco_motivo(l, golpe)
         if motivo:
             self.app.son("error")
             self.decir(motivo, True)
@@ -137,7 +138,7 @@ class Atracos:
         self.app.teclas.clear()
         self.salir_interior(silencio=True)
         self.j.stats["atracos_locales"] = self.j.stats.get("atracos_locales", 0) + 1
-        if not caja["enemigos"]:
+        if not caja["enemigos"] and not golpe:
             self.son("grito", vol=0.5)
             self.sv_encargo("atraco_local", botin)             # en un servidor: es un cobro de los que se repiten, no cuenta contra el tope por hora
             self.hon_negro(botin)
@@ -145,17 +146,19 @@ class Atracos:
             self.decir(AJ.frase("frases_atraco", quien=quien, botin=botin))
             self.poner_busqueda(nivel)
             return True
-        n = int(caja["guardias"])
+        n = int(caja["guardias"] or 0)
         tipo = G.tipo_enemigo(caja["guardia"]) or {}
         guardia = (f"{n} de guardia" if n > 1 else "el de guardia") if not tipo.get("nombre") else (f"{n} con pinta de {tipo['nombre'].lower()}" if n > 1 else f"un {tipo['nombre'].lower()}")
         self.son("grito", vol=0.5)
-        self._empezar_repetible({
-            "id": "atraco_local", "titulo": f"Atraco a {l.nombre}", "lugar": l.id, "contador": "atracos_con_guardia",
-            "pasos": [
-                {"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": AJ.frase("frases_guardia", quien=quien, guardia=guardia), "enemigos": caja["enemigos"]},
-                {"tipo": "recoger", "lugar": l.id, "objeto": f"La caja de {l.nombre}", "texto": "Ya no la guarda nadie. Coge la caja."},
-                {"tipo": "policia", "nivel": nivel, "texto": "¡Alguien ha avisado a la policía! Despístala para quedarte lo de la caja."}],
-            "recompensa": {"dinero": botin}})
+        pasos = [{"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": AJ.frase("frases_guardia", quien=quien, guardia=guardia), "enemigos": caja["enemigos"]}] if caja["enemigos"] else []
+        pasos += [{"tipo": "recoger", "lugar": l.id, "objeto": f"La caja de {l.nombre}",
+                   "texto": "Ya no la guarda nadie. Coge la caja." if caja["enemigos"] else f"{quien} levanta las manos y se aparta de la caja. Ve a por ella."},
+                  {"tipo": "policia", "nivel": nivel, "texto": "¡Alguien ha avisado a la policía! Despístala para quedarte lo de la caja."}]
+        m = {"id": "atraco_local", "titulo": f"Atraco a {l.nombre}", "lugar": l.id, "contador": "atracos_con_guardia" if caja["enemigos"] else "atracos_preparados",
+             "pasos": pasos, "recompensa": {"dinero": botin}}
+        if golpe:
+            self.golpe_adaptar(m, l, golpe)
+        self._empezar_repetible(m)
         return True
 
     def recordar_atraco(self, l):
@@ -220,7 +223,7 @@ class Atracos:
             return "Después de lo de la otra vez, aquí no han vuelto a traer género: no hay nada que llevarse todavía."
         return ""
 
-    def asaltar_proveedor(self, l):
+    def asaltar_proveedor(self, l, golpe=None):
         motivo = self.asalto_motivo(l)
         if motivo:
             self.app.son("error")
@@ -280,12 +283,14 @@ class Atracos:
         self.app.teclas.clear()
         self.salir_interior(silencio=True)
         self.son("grito", vol=0.5)
-        self._empezar_repetible({
-            "id": "asalto_proveedor", "titulo": f"Asalto a {l.nombre}", "lugar": l.id, "contador": "asaltos_proveedor", "al_completar": hecho,
-            "pasos": [
-                {"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": AJ.frase("frases_asalto", lugar=l.nombre), "enemigos": enemigos},
-                {"tipo": "recoger", "lugar": l.id, "objeto": f"La mercancía y la caja de {l.nombre}", "texto": "Ya no queda nadie en pie. Coge la mercancía y la caja."}],
-            "recompensa": {"dinero": int(caja["dinero"])}})
+        m = {"id": "asalto_proveedor", "titulo": f"Asalto a {l.nombre}", "lugar": l.id, "contador": "asaltos_proveedor", "al_completar": hecho,
+             "pasos": [
+                 {"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": AJ.frase("frases_asalto", lugar=l.nombre), "enemigos": enemigos},
+                 {"tipo": "recoger", "lugar": l.id, "objeto": f"La mercancía y la caja de {l.nombre}", "texto": "Ya no queda nadie en pie. Coge la mercancía y la caja."}],
+             "recompensa": {"dinero": int(caja["dinero"])}}
+        if golpe:
+            self.golpe_adaptar(m, l, golpe)
+        self._empezar_repetible(m)
         return True
 
     def actualizar_atracos(self, dt):
@@ -312,6 +317,11 @@ class Atracos:
         self.decir(AJ.frase("frases_represalia_llega", quienes=quienes, lugar=de, n=len(gente)) + " Pulsa Q para fijarlos cuando los oigas.")
 
 
+TEXTO_GOLPE = "Preparar el golpe con tu banda: repartir los papeles antes de atracar"
+AYUDA_GOLPE = ("Con gente de tu banda al lado, cada uno hace un papel: conductor con el motor en marcha, vigilante que entretiene a la policía, escolta que tiene a raya a la gente, "
+               "el de la caja y tirador para la huida. La caja tarda en abrirse y cada uno se lleva su parte. Dentro, la primera opción lo explica. El atraco de siempre sigue en su opción.")
+
+
 def con_atraco(p, lugar, menu, Opcion):
     """Añade al menú de un local con caja la opción de atracarlo, antes de la de salir."""
     if not p.local_atracable(lugar):
@@ -326,12 +336,19 @@ def con_atraco(p, lugar, menu, Opcion):
         f"La policía te buscará con nivel {max(1, int(caja.get('busqueda') or 1))}. Una vez al día, y el local te recuerda: durante unos días no te dejan entrar, o llaman a la policía en cuanto te ven."
     texto = "Atracar la tienda" if lugar.tipo == "tienda" else f"Atracar este local: {lugar.nombre}"
 
+    def preparar():
+        from . import golpes
+        golpes.preparar(p, lugar, lambda plan: p.atracar_local(lugar, plan), "el golpe")
+
     def ops():
         lista = list(fuente() if callable(fuente) else fuente)
         if any(o.texto == texto for o in lista):
             return lista
-        o = Opcion(texto, lambda: p.atracar_local(lugar), ayuda=ayuda)
-        lista.insert(len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista), o)
+        nuevas = [Opcion(texto, lambda: p.atracar_local(lugar), ayuda=ayuda)]
+        if p.j.banda and not p.en_servidor:                      # con gente en la banda, se puede preparar antes
+            nuevas.append(Opcion(TEXTO_GOLPE, preparar, ayuda=AYUDA_GOLPE))
+        pos = len(lista) - 1 if lista and lista[-1].texto.startswith(SALIDAS) else len(lista)
+        lista[pos:pos] = nuevas
         return lista
     menu._fuente = ops
     menu.refrescar(False)

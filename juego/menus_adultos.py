@@ -504,6 +504,10 @@ def proveedor(p, l):
         lista.append(Opcion("Asaltar a este proveedor", lambda: p.asaltar_proveedor(l),
                             ayuda="Necesitas un arma de fuego en la mano. Tienen guardia, y a veces refuerzos que llegan en un vehículo. Si acabas con ellos te llevas la mercancía que te quepa y el dinero de la caja. "
                                   "Pero no se les olvida: ese proveedor deja de venderte unos días, o te sube los precios, o manda gente a por ti."))
+        if j.banda and not p.en_servidor:
+            from . import golpes
+            from .atracos import AYUDA_GOLPE, TEXTO_GOLPE
+            lista.append(Opcion(TEXTO_GOLPE, lambda: golpes.preparar(p, l, lambda plan: p.asaltar_proveedor(l, plan), "el asalto"), ayuda=AYUDA_GOLPE))
         lista.append(Opcion(f"Mochila: {p.carga()} de 100 unidades. En la calle, {p.reputacion_txt()}",
                             ayuda="Los precios cambian cada día y en cada localidad: compra donde esté barato y vende donde esté caro, o al menudeo en la calle, que se paga mejor pero es más arriesgado."))
         lista.append(Opcion("Volver", lambda: app.cerrar()))

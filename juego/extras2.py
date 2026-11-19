@@ -267,12 +267,12 @@ class Extras2:
                 {"tipo": "ir", "lugar": l.id, "texto": f"Contrato cumplido. Vuelve a {l.nombre} a cobrar."}],
             "recompensa": {"dinero": 600 + 380 * n}})
 
-    def empezar_atraco_banco(self, l):
+    def empezar_atraco_banco(self, l, golpe=None):
         caja = self.caja_de_local(l) or {"dinero": random.randint(7000, 13000), "guardias": 5, "busqueda": 4}
         self.atracadas["banco:" + l.id] = self.dia
         n = max(1, int(caja["guardias"]) or 5)
         armados = n * 2 // 5                                     # de cada cinco vigilantes, dos llevan subfusil
-        self._empezar_repetible({
+        m = {
             "id": "atraco_banco", "titulo": f"Atraco a {l.nombre}", "lugar": l.id, "contador": "atracos",
             "pasos": [
                 {"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": "¡Esto es un atraco! Acaba con los vigilantes de seguridad.",
@@ -280,7 +280,10 @@ class Extras2:
                                           G.grupo("vigilante_armado", armados, tipo="Vigilante de seguridad", arma="subfusil", salud=85)) if g["n"] > 0]},
                 {"tipo": "recoger", "lugar": l.id, "objeto": "Botín de la cámara acorazada", "texto": "La cámara acorazada está abierta. Recoge el botín."},
                 {"tipo": "policia", "nivel": max(1, int(caja["busqueda"]) or 4), "texto": "¡Ha saltado la alarma silenciosa! Despista a la policía para quedarte el botín."}],
-            "recompensa": {"dinero": int(caja["dinero"])}})
+            "recompensa": {"dinero": int(caja["dinero"])}}
+        if golpe:
+            self.golpe_adaptar(m, l, golpe)                      # preparado con la banda: la cámara tarda en abrirse y cada uno hace su papel
+        self._empezar_repetible(m)
 
     def caja_de_local(self, l):
         """Lo que hay hoy en la caja de un local y quién la guarda, según los datos (sección «Caja de los locales»).

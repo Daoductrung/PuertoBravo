@@ -106,6 +106,7 @@ class Extras3:
             self.son("muerte_npc", xy=(p.x, p.y), ref=6, tono=p.tono)
             if de_banda:
                 j.banda = max(0, j.banda - 1)
+                self.banda_quitar_ficha(getattr(p, "bid", None))
                 self.decir(f"Has matado a uno de {j.banda_nombre}, de los tuyos. Quedan {j.banda}.", True)
             else:
                 self.decir("Has matado a tu guardaespaldas.", True)
@@ -121,6 +122,7 @@ class Extras3:
             if de_banda:
                 p.de_banda = False
                 j.banda = max(0, j.banda - 1)
+                self.banda_quitar_ficha(getattr(p, "bid", None))
                 p.nombre = f"Desertor de {j.banda_nombre}"
                 self.decir(f"Se acabó: uno de {j.banda_nombre} se harta de tus balas y se vuelve contra ti. Quedan {j.banda} en la banda.", True)
             else:

@@ -113,11 +113,13 @@ PANTALLA = {"a": K.K_RETURN, "b": K.K_ESCAPE, "start": K.K_ESCAPE, "x": K.K_TAB,
 PALANCAS_AYUDA = {
     "pie": ["Palanca izquierda: caminar; empujada a fondo, correr", "Palanca derecha: escáner direccional, dice qué hay hacia donde la muevas"],
     "coche": ["Palanca izquierda a los lados: intermitente en conducción asistida, o volante en conducción libre, en barcos y en helicópteros",
-              "Palanca derecha a los lados: cambiar de carril para adelantar", "Palanca derecha arriba: emisora siguiente",
+              "Palanca derecha a los lados: cambiar de carril para adelantar. Pilotando un helicóptero o una avioneta, a la derecha sube y a la izquierda baja", "Palanca derecha arriba: emisora siguiente",
               "Palanca derecha abajo: pescar en el mar, o sirena en vehículos de emergencias"],
     "menu": ["En los menús: cruceta o palanca izquierda para moverte", "A o Equis para elegir", "B o Círculo para volver",
              "Y o Triángulo para la ayuda de la opción", "X o Cuadrado para repetir", "LB y RB, o L1 y R1, para repasar los mensajes anteriores",
              "En la pantalla de espera de un servidor: A o Equis repite cómo va, B o Círculo deja de esperar, e Y o Triángulo lo explica",
+             "En una travesía en vuelo: cruceta arriba y abajo, altitud; cruceta izquierda y derecha, rumbo; X o Cuadrado, piloto automático; A o Equis, cómo va el vuelo; Y o Triángulo, acelerar; "
+             "LB o L1, repetir a la torre; RB o R1, o B o Círculo, el menú de vuelo; y el botón Vista, Crear o Share, la ayuda",
              "Recorriendo una tienda de comida por dentro: X o Cuadrado dice lo que llevas en la cesta. En cada pasillo, A o Equis, o cruceta derecha, echa el producto a la cesta, y cruceta izquierda lo devuelve",
              "Para escribir un texto con el mando: cruceta arriba y abajo recorren las letras, cruceta derecha escribe la letra elegida y cruceta izquierda borra la última. "
              "LB o L1 pone un espacio. RB o R1 cambia entre minúsculas, mayúsculas, números y signos. X o Cuadrado pasa por las frases o los nombres propuestos, si los hay. "
@@ -172,7 +174,7 @@ SIN_BOTON = {
     "Números del 1 al 9": "las armas se eligen con arma siguiente y arma anterior, o en la lista de armas",
     "Re Pág y Av Pág": "los mensajes anteriores se repasan con LB y RB, o L1 y R1, dentro de cualquier menú, también en el de acciones",
     "Frenada automática": "no es una tecla: es una ayuda de la conducción asistida",
-    "Helicóptero": "no es una tecla: explica cómo se pilota, con lo mismo que un barco",
+    "Helicóptero": "no es una tecla: explica cómo se pilota. La altura va en la palanca derecha, a los lados, y la travesía tiene sus propios botones",
     "En el mar": "no es una tecla: explica cómo se llevan los barcos",
 }
 # Teclas de la ayuda general que solo valen a pie, con el porqué: no hace falta que estén en el mando al volante.

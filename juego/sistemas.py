@@ -217,8 +217,9 @@ def reclutar(p):
     if not j.banda_nombre:
         from . import gente
         j.banda_nombre = random.choice(gente.lista("bandas_propias"))
+    nuevo = p.banda_alta()
     p.son("pareja", cat="interfaz", vol=0.5)
-    return True, f"Uno más en {j.banda_nombre}. Ya sois {j.banda} además de ti. Cada uno cobra {p.precio('sueldo_banda', SUELDO)} euros cada medianoche."
+    return True, (f"{nuevo['n']} entra en {j.banda_nombre}." if nuevo else f"Uno más en {j.banda_nombre}.") + f" Ya sois {j.banda} además de ti. Cada uno cobra {p.precio('sueldo_banda', SUELDO)} euros cada medianoche."
 
 
 def llamar(p):
@@ -228,15 +229,18 @@ def llamar(p):
         return 0, "No tienes a nadie en la banda todavía."
     if j.veh and p.mundo.tipo == "mar":
         return 0, "En mitad del mar no pueden llegar hasta ti."
-    faltan = j.banda - len(miembros_presentes(p))
+    aqui = {getattr(e, "bid", None) for e in miembros_presentes(p)}
+    de_baja = sum(1 for f in p.banda_fichas() if f.get("baja", 0) >= p.dia and f["id"] not in aqui)      # los heridos en un golpe no acuden hasta curarse
+    faltan = j.banda - len(miembros_presentes(p)) - de_baja
     if faltan <= 0:
-        return 0, "Ya está toda tu gente contigo."
+        return 0, "Ya está toda tu gente contigo." + (f" {'Falta uno, que está' if de_baja == 1 else f'Faltan {de_baja}, que están'} de baja, curándose." if de_baja else "")
     for _ in range(faltan):
         a = p.crear_aliado()
         a.nombre = f"Uno de {j.banda_nombre}"
         a.salud = 95.0
         a.arma = random.choice(["pistola", "pistola", "bate", "navaja"])
         a.de_banda = True
+    p.banda_ligar()                                              # cada uno es alguien de tu gente, con su nombre
     p.son("notificacion", cat="interfaz", vol=0.5)
     return faltan, f"{'Llega' if faltan == 1 else 'Llegan'} {faltan} de {j.banda_nombre} y se {'pone' if faltan == 1 else 'ponen'} a tu lado."
 
@@ -293,6 +297,10 @@ def menu_banda(p, Menu, Opcion, EntradaTexto):
         Opcion(lambda: f"Reclutar a alguien: {p.precio('recluta', PRECIO_RECLUTA)} euros. Tienes {j.dinero}", hacer(reclutar),
                ayuda=f"Cada territorio te deja mantener a uno más, hasta {TOPE_BANDA}. Cada miembro cobra {p.precio('sueldo_banda', SUELDO)} euros cada medianoche; si no puedes pagar, se va uno."),
         Opcion("Llamar a tu banda", hacer(llamar), ayuda="Acuden a donde estés, te siguen a pie, suben contigo al vehículo y pelean a tu lado."),
+        Opcion("Tu gente, uno por uno: lo que vale cada cual", lambda: __import__("juego.golpes", fromlist=["x"]).menu_gente(p),
+               ayuda="El nombre de cada uno y su puntería, su conducción, sus nervios y su lealtad. Es lo que cuenta cuando preparas un golpe."),
+        Opcion("Cómo funcionan los golpes preparados", lambda: __import__("juego.golpes", fromlist=["x"]).como_funciona(p),
+               ayuda="Antes de atracar un banco, un local o un proveedor puedes repartir papeles entre los tuyos: conductor, vigilante, escolta, el de la caja y tirador."),
         Opcion(lambda: "Chófer: " + (f"{p.chofer['nombre']}" if p.chofer else f"que venga uno de los tuyos a recogerte, {p.precio('chofer', 80)} euros"),
                lambda: __import__("juego.misvehiculos", fromlist=["x"]).menu_chofer(p),
                ayuda="Uno de tu banda viene con un vehículo de tu garaje o con uno de la banda y conduce él hasta el destino que marques en el GPS. Tú vas de pasajero y puedes disparar."),

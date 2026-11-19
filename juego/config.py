@@ -95,6 +95,9 @@ POR_DEFECTO = {
     "pareja_convive": False,       # contenido para adultos: poder pedirle a tu pareja que se venga a vivir contigo
     "escolta_misiones": "moderado",  # las misiones se ajustan a tu escolta: no | moderado | fuerte
     "ayuda_persecucion": True,     # persecuciones: avisos más seguidos de por dónde va quien huye, cada giro, y afloja antes si te quedas atrás
+    "vuelo_real": True,            # helicópteros y avionetas con altura, y travesías de verdad entre localidades; con no, como antes: un salto desde el helipuerto
+    "vuelo_asistido": True,        # en una travesía, al acercarte al campo el aparato baja y se encara solo
+    "vuelo_combustible": True,     # con el vuelo real, las aeronaves gastan combustible y hay que repostar
     "reconquista": "normal",       # sin conexión, las bandas vencidas intentan recuperar tus barrios: apagado | tranquilo | normal | duro
     "consecuencias": "suave",      # vida, reputación y consecuencias: apagado | suave | normal | exigente
     "impuestos_facturas": True,    # facturas de tus casas e impuestos de tus propiedades y negocios, cada cierto tiempo y con aviso

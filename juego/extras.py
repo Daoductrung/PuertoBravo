@@ -117,7 +117,11 @@ class Extras:
     def actualizar_aliado(self, a, dt):
         j = self.j
         px, py = self.pos()
-        if j.veh:
+        puesto = getattr(a, "puesto", None)
+        if puesto is not None:          # en un golpe preparado: está en su sitio, no contigo
+            if a.dist(*puesto) > 1.5:
+                self._andar_hacia(a, puesto[0], puesto[1], 5.6, dt)
+        elif j.veh:
             a.x, a.y = px, py           # va de copiloto
         else:
             d = a.dist(px, py)

@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 24
+VERSION_CACHE = 25
 PI2 = 2 * np.pi
 
 
@@ -877,6 +877,32 @@ def generar(semilla=7):
         _poner(ti, _nota(f0, 0.2, 0.09, (1, 0.6, 0.35, 0.15)), (0.0, 0.14, 0.24, 0.4)[k], 0.8)
     _poner(ti, (_nota(523.3, 0.9, 0.42, (1, 0.5, 0.25)) + _nota(659.3, 0.9, 0.42, (1, 0.4, 0.2)) + _nota(784.0, 0.9, 0.42, (1, 0.4, 0.2)) + 0.5 * _nota(1046.5, 0.9, 0.35, (1, 0.2))) * 0.4, 0.58)
     S["titulo"] = _norm(ti, 0.5)
+    # ----------------------------------------------- volar de verdad (versión 1.7.1): tonos de altitud y de alineación, turbulencia, alarma de cabina y aterrizaje
+    S["tono_altitud"] = _norm((_seno(660, 0.13) + 0.25 * _seno(1320, 0.13)) * np.sin(np.pi * _t(0.13) / 0.13) ** 0.6, 0.4)      # una nota limpia: el juego la sube y la baja con la altitud
+    ta = np.zeros(int(SR * 0.11))                                # alineación: dos chasquidos secos muy seguidos, fáciles de situar a un lado o a otro
+    for t0 in (0.0, 0.055):
+        _poner(ta, _seno(1250, 0.04) * _decae(0.04, 0.009), t0)
+        _poner(ta, _filtro(ruido(0.012), 2500, 7000) * _decae(0.012, 0.004), t0, 0.35)
+    S["tono_alineacion"] = _norm(ta, 0.4)
+    tt = _t(1.3)                                                 # turbulencia: un zarandeo grave que tiembla, con golpes de aire
+    tu = _filtro(ruido(1.3), 35, 240) * (0.55 + 0.45 * np.sin(2 * np.pi * 7.5 * tt)) * np.sin(np.pi * tt / 1.3) ** 0.5
+    for t0 in (0.12, 0.47, 0.83):
+        _poner(tu, _barrido(95, 45, 0.14) * _decae(0.14, 0.05), t0, 0.8)
+        _poner(tu, _filtro(ruido(0.1), 300, 1800) * _decae(0.1, 0.03), t0, 0.25)
+    S["turbulencia"] = _norm(np.tanh(1.6 * tu), 0.6)
+    al = np.zeros(int(SR * 0.62))                                # alarma de cabina: cuatro pitidos apremiantes, alto y bajo
+    for k in range(4):
+        f0 = 980.0 if k % 2 == 0 else 740.0
+        _poner(al, (_seno(f0, 0.11) + 0.35 * _seno(f0 * 2, 0.11) + 0.15 * _seno(f0 * 3, 0.11)) * np.sin(np.pi * _t(0.11) / 0.11) ** 0.4, 0.15 * k)
+    S["alarma_cabina"] = _norm(al, 0.5)
+    at = np.zeros(int(SR * 1.25))                                # aterrizaje: el golpe del tren en el suelo, el chirrido de las ruedas y la rodadura que se apaga
+    _poner(at, _barrido(110, 48, 0.2) * _decae(0.2, 0.06), 0.0)
+    _poner(at, _filtro(ruido(0.08), 200, 1500) * _decae(0.08, 0.025), 0.0, 0.6)
+    tc = _t(0.3)
+    _poner(at, (_barrido(1900, 1350, 0.3) * 0.5 + _filtro(ruido(0.3), 1500, 4500) * 0.6) * np.sin(np.pi * tc / 0.3) ** 1.5, 0.05, 0.45)
+    tr2 = _t(0.95)
+    _poner(at, _filtro(ruido(0.95), 60, 700) * np.exp(-tr2 / 0.35) * (0.8 + 0.2 * np.sin(2 * np.pi * 11 * tr2)), 0.28, 0.7)
+    S["aterrizaje"] = _norm(at, 0.55)
     return S
 
 

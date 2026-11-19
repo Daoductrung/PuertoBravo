@@ -211,7 +211,7 @@ class Conduccion:
         j = self.j
         if self.mundo.tipo == "mar" and j.veh:
             if j.veh.modelo.get("vuela"):
-                self.decir("No puedes bajarte de un helicóptero sobre el mar.", True)
+                self.decir("No puedes bajarte de un helicóptero sobre el mar." if not self.vuelo_real() else "No puedes posarte sobre el mar.", True)
                 return
             if abs(j.veh.vel) > 3:
                 self.decir("Frena antes de tirarte al agua.", True)
@@ -220,6 +220,8 @@ class Conduccion:
             self.empezar_a_nadar("Te tiras al agua.")
             return
         if j.veh:
+            if j.veh.modelo.get("vuela") and self.vuelo_real() and self.vuelo_aterrizar(j.veh):
+                return                                           # en el aire: la F aterriza, y al tocar tierra te bajas
             if abs(j.veh.vel) > 3:
                 self.decir("Frena antes de bajarte.", True)
                 return
@@ -336,13 +338,16 @@ class Conduccion:
             j.stats["vehiculos_robados"] += 1
         v.propio = True
         j.veh = v
+        if v.modelo.get("vuela") and self.vuelo_real():
+            self.vuelo_prep(v)                                   # altura, fase y combustible (vuelo.py)
         con_chofer = self.chofer_al_subir(v)                     # si lo trae tu chófer, vas de pasajero
         j.agachado = False
         self.oy_rumbo = v.rumbo
         self.ultimo_veh = None
         self.son_puerta(v)
-        if v.modelo.get("motor") != "motor_bici":
+        if v.modelo.get("motor") != "motor_bici" and not getattr(v, "en_marcha", False):      # en un golpe, el conductor lo tenía arrancado
             self.son("arranque", vol=0.6)
+        v.en_marcha = False
         self._motor(v, True)
         self.rodadura = self.son("rodadura", bucle=True, vol=0.0)
         self.preparar_conduccion()
@@ -367,7 +372,7 @@ class Conduccion:
         if v.modelo.get("sirena"):
             txt += " La tecla P enciende la sirena."
         if v.modelo.get("vuela"):
-            txt += " Vuelas por encima de todo: izquierda y derecha giran, arriba acelera. Para bajarte, detente sobre una calle o un espacio abierto."
+            txt += self.vuelo_texto_subir(v) if self.vuelo_real() else " Vuelas por encima de todo: izquierda y derecha giran, arriba acelera. Para bajarte, detente sobre una calle o un espacio abierto."
         self.decir(txt, True)
         if self.app.radio.id_actual() != "apagada":
             self.decir(r)
@@ -461,6 +466,8 @@ class Conduccion:
             self.sirena_propia = None
         v.vel = 0.0
         v.ia = None
+        if getattr(v, "fase", None) is not None:                 # una aeronave que dejas, la dejas posada
+            v.fase, v.alt = "tierra", 0.0
         rad = math.radians(v.rumbo + 90)
         for lado in (3.0, -3.0, 5.0, -5.0, 0.0):
             x, y = v.x + math.sin(rad) * lado, v.y + math.cos(rad) * lado
@@ -621,6 +628,8 @@ class Conduccion:
         if self.chofer_conduce():                       # conduce tu chófer: los pedales y el volante son suyos
             t = frozenset()
         mo = v.modelo
+        if mo.get("vuela") and self.vuelo_real():       # volar de verdad: despegue, altura, combustible y aterrizaje (vuelo.py)
+            t = self.vuelo_controles(v, dt, t)
         from . import sistemas                          # las mejoras del taller cambian cómo va el vehículo
         freno = mo["freno"] * (sistemas.factor_lluvia(v) if self.lluvia else 1.0) * sistemas.factor_frenada(v) * self.factor_averia_frenos(v)
         con_motor = self.gastar_combustible(v, dt)
@@ -751,6 +760,9 @@ class Conduccion:
         s = self.mundo.superficie(nx, ny)
         if v.modelo.get("vuela"):
             if s == "fuera" or (mar and not (0 <= nx <= self.mundo.ancho and 0 <= ny <= self.mundo.alto)):
+                if self.vuelo_real():                            # el borde de la localidad: de aquí sale la travesía a otra
+                    self.vuelo_borde(v)
+                    return
                 v.vel = 0.0
                 self.decir("Fin del mapa. Da la vuelta, o usa un helipuerto para volar a otra localidad.")
                 return

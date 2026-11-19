@@ -137,6 +137,8 @@ class Realismo:
             d["pinchada"] = True
         if getattr(v, "revision_debida", False):
             d["revision"] = True
+        if getattr(v, "queroseno", None) is not None:            # el combustible de una aeronave (vuelo.py)
+            d["queroseno"] = round(float(v.queroseno), 1)
         return d
 
     def averias_de_dict(self, v, d):
@@ -144,6 +146,11 @@ class Realismo:
             v.km = float(d["km"])
         v.pinchada = bool(d.get("pinchada"))
         v.revision_debida = bool(d.get("revision"))
+        if "queroseno" in d:
+            try:
+                v.queroseno = max(0.0, min(100.0, float(d["queroseno"])))
+            except (TypeError, ValueError):
+                pass
 
     # ------------------------------------------------------------------ normas de tráfico
     def normas_activas(self):

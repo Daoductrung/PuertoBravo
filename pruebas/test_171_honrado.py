@@ -1429,7 +1429,7 @@ def test_la_trama_esta_en_los_datos_no_depende_de_ningun_delito_y_tiene_cuatro_f
     ids = {m["id"] for m in trama}
     por_id = {m["id"]: m for m in d["misiones"]}
     for m in trama:
-        assert m["sin_voz"] and m["capitulo"] == 16 and m["lugar"] in {l["id"] for l in d["ciudad"]["lugares"]}
+        assert "sin_voz" not in m and m["capitulo"] == 16 and m["lugar"] in {l["id"] for l in d["ciudad"]["lugares"]}
         assert {p["tipo"] for p in m["pasos"]} <= {"dialogo", "ir", "recoger", "ruta", "escoltar", "seguir", "vigilar", "decision"}, m["id"]      # ni robar, ni eliminar, ni policía
         assert set(m["requiere"]) <= ids | {"m01"}, m["id"]                   # solo pide haber visto a tu tía
         assert set(m.get("requiere_vida", {})) <= set(H.REQUISITOS_VIDA)
@@ -1932,10 +1932,10 @@ def test_los_sonidos_nuevos_estan_en_las_cinco_carpetas_con_su_grupo_y_su_descri
     nuevos = ("despido", "inspeccion", "factura", "titulo")
     assert sintesis.VERSION_CACHE >= 24
     S = sintesis.generar()
-    assert len(S) == 274
+    assert len(S) == 279
     for carpeta in ("por_defecto", "realista", "alternativo", "retro", "envolvente"):
         archivos = {os.path.splitext(f)[0] for f in os.listdir(os.path.join(rutas.PACKS, carpeta)) if f.lower().endswith(rutas.EXT_AUDIO)}
-        assert set(nuevos) <= archivos and len(archivos) == 274, carpeta
+        assert set(nuevos) <= archivos and len(archivos) == 279, carpeta
     grupo = {s: t for t, lista in menus_juego.grupos_de_sonidos(sorted(S)) for s in lista}
     aprender = {x[0] for x in ayuda.SONIDOS}
     guia = open(rutas.data("docs", "cambiar_sonidos.html"), encoding="utf-8").read()
@@ -1958,7 +1958,7 @@ def test_el_editor_lo_edita_todo():
     for c in campos.values():
         por_grupo.setdefault(c.get("grupo", "General"), []).append(c["k"])
     assert max(len(v) for v in por_grupo.values()) <= 16 and len(por_grupo) >= 12            # en pestañas, para que las letras de acceso no se repitan
-    assert {"honrada", "requiere_vida", "epilogos", "sin_voz", "orden"} <= {c["k"] for c in ESQUEMAS["mision"]["campos"]}
+    assert {"honrada", "requiere_vida", "epilogos", "orden"} <= {c["k"] for c in ESQUEMAS["mision"]["campos"]}
     assert "prestigio" in {c["k"] for c in ESQUEMAS["opcion_decision"]["campos"]}
     cat = modelo.Catalogo()
     for clave, _, esq in SECCIONES:

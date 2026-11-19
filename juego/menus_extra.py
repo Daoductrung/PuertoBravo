@@ -21,6 +21,10 @@ def helipuerto(p, l):
     app = p.app
     j = p.j
     volando = j.veh is not None and j.veh.modelo.get("vuela")
+    if volando and p.vuelo_real():                               # a bordo, con el vuelo real: plan de vuelo, combustible y hangar
+        from . import vuelo_pantalla
+        vuelo_pantalla.menu_campo(p, l)
+        return
     if j.veh and not volando:
         app.decir(f"{l.nombre}. Bájate del vehículo: aquí solo despegan helicópteros.", True)
         return
@@ -55,6 +59,9 @@ def helipuerto(p, l):
     ops = [Opcion(f"Volar a {h.nombre}, en {p.mapas[h.mapa].nombre}" + ("" if volando else f": {int(h.get('precio', p.precio('vuelo_helicoptero', 150)))} euros"), volar(h),
                   ayuda=p.desc_localidad(p.mapas[h.mapa])) for h in destinos]
     intro = "Vas en tu helicóptero: el vuelo es gratis" if volando else "Vuelos en helicóptero con piloto"
+    if not volando:
+        from . import vuelo_pantalla
+        ops += vuelo_pantalla.opciones_campo(p, l)
     app.abrir(Menu(app, lambda: f"{l.nombre}. Tienes {j.dinero} euros", ops, intro=intro))
 
 
@@ -174,9 +181,9 @@ def servicios(p):
             app.son("error")
             app.decir("No tienes ningún vehículo aquí. Tiene que ser el que llevas o el que acabas de dejar aparcado cerca.", True)
             return
-        if v.tag or v.modelo.get("barco") or p.mundo.tipo == "mar":
+        if v.tag or v.modelo.get("barco") or v.modelo.get("vuela") or p.mundo.tipo == "mar":
             app.son("error")
-            app.decir(p.motivo_ajeno(v) if v.tag else "Ese vehículo no se puede guardar en un garaje.", True)
+            app.decir(p.motivo_ajeno(v) if v.tag else "Una aeronave no cabe en el garaje de una casa: se guarda en un hangar, en un helipuerto, un aeropuerto o un aeródromo. Desde el móvil, en Mis vehículos, puedes mandarla a uno." if v.modelo.get("vuela") else "Ese vehículo no se puede guardar en un garaje.", True)
             return
 
         def llevar(l):

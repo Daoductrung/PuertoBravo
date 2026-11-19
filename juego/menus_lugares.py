@@ -274,6 +274,8 @@ def aeropuerto(p, l):
     if not pequeno:
         ops.append(Opcion(f"Alquilar un helicóptero: {p.precio('alquiler_helicoptero', ALQUILER['helicoptero'])} euros", alquilar("helicoptero"),
                           ayuda="Te lo dejan en la pista y lo pilotas tú. Más lento que la avioneta, pero se detiene en el aire y aterriza en menos sitio."))
+    from . import vuelo_pantalla
+    ops += vuelo_pantalla.opciones_campo(p, l)
     m = _menu(p, l, ops, intro="Avionetas de línea a las ciudades, a los otros pueblos y helicópteros a las islas, y avionetas de alquiler" if pequeno
               else "Aviones de pasajeros a las otras ciudades, avionetas de línea a los pueblos, helicópteros a las islas, y avionetas y helicópteros de alquiler")
 
@@ -492,7 +494,7 @@ def banco(p, l):
             p.son("caja", cat="interfaz")
             app.decir(f"Hecho. En la cuenta hay {j.banco} euros y llevas encima {j.dinero}.", True)
         return f
-    def atracar():
+    def atracar(plan=None):
         if p.mision or p.trabajo:
             app.son("error")
             app.decir("Termina antes lo que tienes entre manos.", True)
@@ -503,12 +505,21 @@ def banco(p, l):
             app.son("error")
             app.decir("La cámara acorazada está vacía y llena de policías: ya lo atracaste hoy.", True)
         else:
-            p.empezar_atraco_banco(l)
+            p.empezar_atraco_banco(l, plan)
+            return True
+        return False
+
+    def preparar_golpe():
+        from . import golpes
+        golpes.preparar(p, l, atracar, "el golpe al banco")
     ops = [Opcion(lambda: f"Saldo de tu cuenta: {j.banco} euros", ayuda="El dinero del banco no se pierde si te detienen o acabas en el hospital, y da un pequeño interés cada día."),
            Opcion("Ingresar todo el efectivo", mover(None, True)), Opcion("Ingresar 1000 euros", mover(1000, True)),
            Opcion("Retirar 1000 euros", mover(1000, False)), Opcion("Retirar todo", mover(None, False)),
            Opcion("Bolsa: comprar y vender acciones", lambda: __import__("juego.menus_extra", fromlist=["x"]).bolsa(p), ayuda="Cinco empresas de la comarca. Los precios cambian cada medianoche."),
-           Opcion("Atracar el banco", atracar, ayuda="Necesitas un arma de fuego. Cinco vigilantes, un botín enorme y cuatro niveles de búsqueda. Una vez al día por banco.")]
+           Opcion("Atracar el banco", lambda: atracar(), ayuda="Necesitas un arma de fuego. Cinco vigilantes, un botín enorme y cuatro niveles de búsqueda. Una vez al día por banco.")]
+    if j.banda and not p.en_servidor:
+        from .atracos import AYUDA_GOLPE, TEXTO_GOLPE
+        ops.append(Opcion(TEXTO_GOLPE, preparar_golpe, ayuda=AYUDA_GOLPE))
     if not p.en_servidor:
         from . import menus_honrado as mh
         ops.insert(6, Opcion(lambda: "Créditos, hipotecas y obligaciones. " + mh.banco_txt(p), lambda: mh.menu_banco(p, l),

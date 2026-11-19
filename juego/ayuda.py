@@ -7,7 +7,8 @@ TECLAS = {
         ("V", "estado: salud, dinero, arma, nivel de búsqueda y vehículo"),
         ("T", "hora, día y tiempo que hace"),
         ("O", "objetivo de la misión o del trabajo en curso: dice primero dónde está, a cuántos metros, en qué dirección y, si se mueve, hacia dónde va, y después lo demás. "
-              "Si el objetivo se mueve o corre el tiempo, una pulsación dice solo eso, y dos seguidas leen la explicación entera"),
+              "Si el objetivo se mueve o corre el tiempo, una pulsación dice solo eso, y dos seguidas leen la explicación entera. En un golpe preparado con tu banda dice además la fase y quién hace qué; "
+              "con un vuelo comercial o un aparato secuestrado, adónde tienes que llevarlo"),
         ("Mayúsculas O", "volver al objetivo de la misión o del trabajo: deja cualquier desvío, lo marca en el GPS y, si está al alcance, lo deja elegido en el radar. Siempre hace lo mismo"),
         ("N", "descripción del lugar o del barrio en el que estás"),
         ("Mayúsculas N", "siguiente cruce: qué calle es la próxima que te vas a cruzar hacia donde miras o conduces, y a cuántos metros está"),
@@ -72,7 +73,8 @@ TECLAS = {
         ("Flecha abajo", "frenar y, parado, marcha atrás"),
         ("Espacio", "freno de mano"),
         ("Flechas izquierda y derecha", "en conducción asistida ponen el intermitente: el coche girará solo en el próximo cruce. En conducción libre giran el volante"),
-        ("A y D", "en conducción asistida, mantenlas para cambiar de carril: A invade el carril contrario para adelantar y D te arrima a la acera"),
+        ("A y D", "en conducción asistida, mantenlas para cambiar de carril: A invade el carril contrario para adelantar y D te arrima a la acera. "
+                  "Pilotando un helicóptero o una avioneta, con el vuelo real, la D sube y la A baja"),
         ("Frenada automática", "en conducción asistida el coche frena solo si hay un vehículo delante en tu carril. Se desactiva en Opciones"),
         ("U", "media vuelta, con el coche casi parado. Con el piloto del GPS, la da él solo cuando el destino queda a tu espalda"),
         ("Y", "piloto del GPS: el coche va solo hasta el destino marcado; acelera, frena, gira, espera en los semáforos y se detiene al llegar"),
@@ -82,7 +84,9 @@ TECLAS = {
         ("R", "cambia de emisora. Mayúsculas R apaga la radio"),
         ("Control", "disparar desde el vehículo sin bajarte, con un arma de fuego en la mano: primero la Q fija a quien tengas cerca, y Control le dispara. La I cambia de arma. Con un arma automática, mantenla pulsada"),
         ("J", "empieza o termina un trabajo con el vehículo: taxi, ambulancia, autobús, coche patrulla o camión. Si eres agente de policía, en un coche patrulla empieza o termina el turno"),
-        ("Helicóptero", "vuela por encima de edificios y tráfico. Se pilota a mano como un barco. Para bajarte, detente sobre una calle o un espacio abierto. En un helipuerto, Intro te lleva volando a otra localidad"),
+        ("Helicóptero", "y avioneta: vuelan por encima de edificios y tráfico y se pilotan a mano, como un barco. Con el vuelo real, flecha arriba despega, la D sube, la A baja y una nota dice la altura; "
+                        "para aterrizar, frena y pulsa F. Al llegar al borde de la localidad, o con Intro en un helipuerto o un aeropuerto, eliges destino y haces la travesía: allí, las flechas llevan el rumbo y la altitud, "
+                        "Tabulador es el piloto automático, Intro dice cómo va el vuelo, la N lo acelera y F1 lo explica. Con el vuelo real quitado en Opciones, se vuela siempre a la misma altura e Intro en un helipuerto te lleva de un salto"),
         ("En el mar", "los barcos se llevan siempre a mano: izquierda y derecha giran el timón y se anuncia el rumbo. Intro junto a un muelle sirve para atracar"),
     ],
 }

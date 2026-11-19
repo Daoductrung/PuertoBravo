@@ -696,6 +696,16 @@ def opciones(app):
             si_no("frenada_auto", "Frenada automática ante el tráfico", "En conducción asistida, el coche frena solo para no chocar con el vehículo de delante. Mantén A para adelantarlo."),
             si_no("viajes_trayecto", "Viajes en taxi y en autobús con trayecto",
                   "Con sí, al coger un taxi o un autobús se oye el viaje durante un rato: el motor, la calzada y la radio. Dura entre doce segundos y un minuto según la distancia, y con Intro llegas ya. Con no, llegas al momento."),
+            si_no("vuelo_real", "Vuelo real: altura, y travesías de verdad entre localidades",
+                  "Con sí, un helicóptero o una avioneta despegan, tienen altura, que se sube con la D y se baja con la A, y aterrizan con la F; y al salir volando de una localidad, o con Intro en un helipuerto o un aeropuerto, "
+                  "se hace una travesía de verdad hasta otra, con rumbo, altitud, viento, torre y aproximación. Hay piloto automático y se puede acelerar. Con no, es como antes: se vuela siempre a la misma altura y "
+                  "se cambia de localidad de un salto desde un helipuerto. La explicación entera está en cualquier helipuerto o aeropuerto, en Cómo funciona volar."),
+            si_no("vuelo_asistido", "Aterrizaje asistido en las travesías",
+                  "Con sí, al acercarte al campo de destino el aparato baja y se encara solo, aunque pilotes a mano. Con no, lo haces tú: bajas a la altitud que dice la torre y mantienes en el centro los chasquidos de alineación; "
+                  "si entras alto o torcido, la torre te manda dar otra vuelta, y a la segunda te guía ella. Se cambia también durante el vuelo, en el menú de vuelo."),
+            si_no("vuelo_combustible", "Las aeronaves gastan combustible",
+                  "Con el vuelo real. Con sí, cada aparato tiene su depósito, que se llena en helipuertos, aeropuertos y aeródromos; el juego avisa en la reserva, y si se acaba, el motor se para y planeas. "
+                  "Con no, el depósito no se gasta nunca."),
             si_no("piloto_gps", "Piloto del GPS, el coche va solo hasta el destino",
                   "Con un destino marcado en el GPS y en conducción asistida, el coche conduce solo: acelera, frena, gira, espera en los semáforos y se detiene al llegar. "
                   "Con cualquier flecha o el espacio mandas tú. Se activa también con la tecla Y al volante."),
@@ -1431,6 +1441,10 @@ def _casa(p, l):
         if v.tag:
             app.son("error")
             app.decir(p.motivo_ajeno(v), True)
+            return
+        if v.modelo.get("vuela"):
+            app.son("error")
+            app.decir("Una aeronave no cabe en el garaje de una casa: se guarda en un hangar, en un helipuerto, un aeropuerto o un aeródromo.", True)
             return
         if len(garaje) >= int(l.get("garaje", 0)):
             app.son("error")

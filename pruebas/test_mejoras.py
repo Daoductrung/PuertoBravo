@@ -422,7 +422,7 @@ def test_pack_envolvente(app):
     assert meta["nombre"] == "Envolvente" and meta["ambientes_en_estereo"] == 11 and "CC0" in meta["licencia"]
     nombres = {os.path.splitext(f)[0] for f in os.listdir(carpeta) if f.endswith((".wav", ".ogg", ".flac", ".mp3"))}
     realista = {os.path.splitext(f)[0] for f in os.listdir(os.path.join(os.path.dirname(carpeta), "realista")) if f.endswith(".flac")}
-    assert nombres == realista and len(nombres) == 274          # los mismos archivos que los demás packs
+    assert nombres == realista and len(nombres) == 279          # los mismos archivos que los demás packs
     serie = os.path.join(os.path.dirname(carpeta), "por_defecto")
     vistos = 0
     for n in nombres:                                   # los de orientación son, byte a byte, los de serie

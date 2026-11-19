@@ -146,7 +146,18 @@ class Misiones:
                 t += f" Vas por el punto {self.mision.get('ruta_i', 0) + 1} de {len(p.get('puntos', []))}."
             if p["tipo"] == "eliminar" and self.mision.get("generado"):
                 t += f" Quedan {sum(1 for e in self.mision['enemigos'] if not e.muerto and not getattr(e, 'rendido', False))} enemigos."
+            ab = self.mision.get("abriendo")
+            if p["tipo"] == "recoger" and ab:
+                t += f" Se está abriendo: faltan unos {max(1, int(ab['total'] - ab['t']))} segundos. No te apartes."
+            elif p["tipo"] == "recoger" and self._segundos_recoger(p) > 0 and not self.mision.get("recogido"):
+                t += " Tarda en abrirse: quédate al lado hasta que ceda."
+            if p["tipo"] == "policia" and self.mision.get("policia_en") is not None:
+                t += f" La policía tarda aún unos {max(1, int(self.mision['policia_en'] - self.t))} segundos en llegar: aprovecha para alejarte."
+            if getattr(self, "golpe", None):
+                t += " " + self.golpe_estado_txt()
             return t
+        if self.vuelo_objetivo_txt():                            # un vuelo comercial o un aparato secuestrado
+            return self.vuelo_objetivo_txt()
         if self.trabajo:
             g = self.gps if self.gps is None or self.gps["auto"] else self.gps.get("anterior")
             donde = f" Destino: {self.situar(g['dest'][0], g['dest'][1], g['nombre'])}." if g is not None and g["auto"] else ""
@@ -172,6 +183,8 @@ class Misiones:
         self.app.son("notificacion")
         self.decir(f"Misión: {m['titulo']}." + (" La repites: no cuenta ni da recompensa." if repeticion else ""), True)
         self._llevar_al_tutorial(m)
+        if m.get("golpe"):                                       # un golpe preparado con la banda: cada uno a su puesto (golpes.py)
+            self.golpe_al_iniciar(m)
         self._siguiente_paso()
 
     def _llevar_al_tutorial(self, m):
@@ -331,6 +344,9 @@ class Misiones:
         ms["enemigos"] = []
         ms["veh_enemigos"] = []
         ms["generado"] = False
+        if (ms.get("abriendo") or {}).get("canal") is not None:
+            ms["abriendo"]["canal"].parar()
+        ms["abriendo"] = None
         if not ms["recogido"]:
             ms["objeto"] = None
         if tipo in ("dialogo", "dar", "policia"):
@@ -358,6 +374,7 @@ class Misiones:
             return
         ms["limite"] = p.get("limite")
         ms["gps_callado"] = False
+        ms["abriendo"], ms["abierto"], ms["policia_en"] = None, False, None
         ms["t_sin_gps"] = 0.0
         ms["avisos"] = set()
         ms["generado"] = False
@@ -484,7 +501,15 @@ class Misiones:
         l = self._lugar_paso(p)
         if tipo == "policia":
             ms["pendiente"] = False
-            self.poner_busqueda(p.get("nivel", 2))
+            # la policía puede tardar en llegar: lo que diga el paso, y en un golpe preparado, lo que la entretenga el vigilante
+            espera = self.golpe_retraso_policia(p.get("nivel", 2)) if getattr(self, "golpe", None) else self._num_paso(p, "retraso")
+            if espera > 0 and self.j.estrellas == 0 and not self.cfg["sin_policia"]:
+                ms["policia_en"] = self.t + espera
+                if not getattr(self, "golpe", None):
+                    self.decir(f"La policía tardará unos {int(round(espera))} segundos en llegar.")
+            else:
+                ms["policia_en"] = None
+                self.poner_busqueda(p.get("nivel", 2))
             self.quitar_gps_auto()
             return
         if tipo == "practica":                                   # una práctica de un tutorial: no crea nada, solo vigila lo que haces
@@ -812,8 +837,16 @@ class Misiones:
         elif tipo == "recoger":
             if ms["recogido"]:
                 self._paso_hecho()
+            else:
+                self._paso_abrir(ms, p, dt)
         elif tipo == "policia":
-            if j.estrellas == 0 and j.puntos_busqueda < 1:
+            if ms.get("policia_en") is not None:                 # aún no ha llegado: no se da por despistada
+                if getattr(self, "golpe", None):
+                    ms["policia_en"] = self.golpe["llegan"] if not self.golpe["llegado"] else None      # la lleva el golpe: el vigilante y el conductor la retrasan
+                elif self.t >= ms["policia_en"]:
+                    ms["policia_en"] = None
+                    self.poner_busqueda(p.get("nivel", 2))
+            elif j.estrellas == 0 and j.puntos_busqueda < 1:
                 self._paso_hecho()
         elif tipo == "perseguir":
             vo = ms.get("veh_objetivo")
@@ -1207,11 +1240,93 @@ class Misiones:
         self.app.son("llegada")
         self._siguiente_paso()
 
+    # ------------------------------------------------- cajas que tardan en abrirse
+    @staticmethod
+    def _num_paso(p, clave):
+        try:
+            return max(0.0, float(p.get(clave) or 0))
+        except (TypeError, ValueError):
+            return 0.0
+
+    def _segundos_recoger(self, p):
+        return self._num_paso(p, "tarda") if p.get("tipo") == "recoger" else 0.0
+
+    def mision_abrir(self, o):
+        """Intro sobre el objeto de la misión. Si el paso dice que tarda en abrirse (una caja fuerte, una cámara), no se
+        coge al momento: empieza a abrirse y hay que quedarse al lado. True si este objeto es de los que tardan."""
+        ms = self.mision
+        if not ms or ms.get("objeto") is not o or not (0 <= ms["paso"] < len(ms["def"]["pasos"])):
+            return False
+        p = ms["def"]["pasos"][ms["paso"]]
+        total = self._segundos_recoger(p)
+        if total <= 0 or ms.get("abierto"):
+            return False
+        if ms.get("abriendo"):
+            ab = ms["abriendo"]
+            self.decir(f"Se está abriendo: faltan unos {max(1, int(ab['total'] - ab['t']))} segundos. No te apartes.", True)
+            return True
+        self._empezar_a_abrir(ms, p, total)
+        return True
+
+    def _empezar_a_abrir(self, ms, p, total):
+        g = self.golpe_caja() if getattr(self, "golpe", None) else None
+        total = total * (g["factor"] if g else 1.0)
+        ms["abriendo"] = {"t": 0.0, "total": total, "canal": None, "pausa": False, "mitad": False}
+        solo = self.golpe_caja_evento("empieza", total) if g else False
+        if not solo:
+            self.decir(f"Empiezas a abrir: {self.txt(p['objeto'])}. Tardará unos {int(round(total))} segundos. Quédate al lado; si te apartas, se para.", True)
+
+    def _paso_abrir(self, ms, p, dt):
+        """La caja se va abriendo mientras estés al lado (o, en un golpe, mientras cubras a quien la abre)."""
+        o = ms.get("objeto")
+        total = self._segundos_recoger(p)
+        if o is None or total <= 0:
+            return
+        g = self.golpe_caja() if getattr(self, "golpe", None) else None
+        ab = ms.get("abriendo")
+        if ab is None:
+            if g and g["solo"] and o.dist(*self.pos()) <= g["radio"]:      # la abre uno de los tuyos: no hace falta tocarla
+                self._empezar_a_abrir(ms, p, total)
+            return
+        cerca = o.dist(*self.pos()) <= (g["radio"] if g else 5.0) and self.j.veh is None
+        if not cerca:
+            if not ab["pausa"]:
+                ab["pausa"] = True
+                if ab["canal"] is not None:
+                    ab["canal"].parar()
+                    ab["canal"] = None
+                if not (g and self.golpe_caja_evento("pausa")):
+                    self.decir("Te has apartado y la caja deja de abrirse. Vuelve junto a ella.")
+            return
+        if ab["pausa"]:
+            ab["pausa"] = False
+            self.decir("Sigue abriéndose.")
+        if ab["canal"] is None:
+            ab["canal"] = self.son("ganzua", bucle=True, xy=(o.x, o.y), ref=6, maxd=40, vol=0.7)
+        ab["t"] += dt
+        f = min(1.0, ab["t"] / ab["total"])
+        ab["canal"].tono(0.8 + 0.6 * f)                           # se oye avanzar: cada vez más agudo
+        if not ab["mitad"] and f >= 0.5:
+            ab["mitad"] = True
+            if not (g and self.golpe_caja_evento("mitad")):
+                self.decir("Va por la mitad.")
+        if f >= 1.0:
+            ab["canal"].parar()
+            ms["abriendo"] = None
+            ms["abierto"] = True
+            if g:
+                self.golpe_caja_evento("hecho")
+            self.recoger(o)
+
     # ------------------------------------------------------------------- final
     def _limpiar_mision(self):
         ms = self.mision
         if not ms:
             return
+        if (ms.get("abriendo") or {}).get("canal") is not None:
+            ms["abriendo"]["canal"].parar()
+        if getattr(self, "golpe", None):                         # el golpe preparado se deshace con la misión
+            self.golpe_fin(False)
         v = ms.get("veh")
         if v is not None and not v.muerto and not ms.get("veh_tuyo"):      # si la hacías con el tuyo, el tuyo se queda
             if self.j.veh is v:

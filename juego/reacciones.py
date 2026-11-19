@@ -244,6 +244,8 @@ class Reacciones:
         q.salud = max(q.salud, 95.0)
         q.arma = random.choice(["pistola", "pistola", "bate", "navaja"])
         q.sigue_hasta = None
+        nuevo = self.banda_alta(n, f.get("genero"), nervios=30 + 60 * G.caracter(f["caracter"])["valor"], lealtad=min(95, 50 + f["confianza"] / 2))
+        q.bid = nuevo["id"] if nuevo else None
         self.son("pareja", cat="interfaz", vol=0.5)
         return True, (AJ.frase("frases_recluta_si", nombre=n, banda=j.banda_nombre)
                       + (f" Le das {prima} euros de prima." if prima else "") + f" Ya sois {j.banda} además de ti. Cobra {self.precio('sueldo_banda', sistemas.SUELDO)} euros cada medianoche, como los demás.")

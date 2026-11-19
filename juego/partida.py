@@ -27,6 +27,8 @@ from .guerra import Guerra
 from .domicilio import Domicilio
 from .compra import Compra
 from .atracos import Atracos
+from .golpes import Golpes
+from .vuelo import Vuelo
 from .pactos import Pactos
 from .reconquista import Reconquista
 from .escolta import Escolta
@@ -83,7 +85,7 @@ def migrar(d):
 
 
 class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3, Adultos, Vida, Online, EnLinea, Charla, Intimidad, Necesidades, Azar, Combustible, Realismo, MisVehiculos, Calle, Guerra,
-              Domicilio, Atracos, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra, Reconquista, Escolta, Destinos, Honrado):
+              Domicilio, Atracos, Golpes, Vuelo, Pactos, Contratos, Reacciones, Convivencia, Agente, Compra, Reconquista, Escolta, Destinos, Honrado):
     pausa_mundo = False
 
     def __init__(self, app, guardado=None, personaje=None):
@@ -191,6 +193,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.agente_iniciar()            # el oficio de policía, si el modo está encendido (agente.py)
         self.reacciones_iniciar()        # gente que te sigue o te la guarda (reacciones.py)
         self.honrado_iniciar()           # la vida y sus consecuencias: prestigio, antecedentes, carrera, empresa y banco (honrado.py)
+        self.golpes_iniciar()            # los golpes preparados con tu banda (golpes.py)
+        self.vuelo_iniciar()             # volar de verdad: secuestros, vuelos comerciales y hangares (vuelo.py)
         if guardado:
             self.cargar_dict(guardado)
         else:
@@ -1771,6 +1775,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
 
     def recoger(self, o):
         j = self.j
+        if o.tipo == "mision" and self.mision_abrir(o):          # una caja que tarda en abrirse: empieza, y se coge sola al acabar
+            return
         if o.canal:
             o.canal.parar()
         if o in self.objetos:
@@ -1881,6 +1887,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.actualizar_guerra(dt)
         self.actualizar_domicilio(dt)
         self.actualizar_atracos(dt)
+        self.actualizar_golpe(dt)
+        self.actualizar_vuelo(dt)
         self.actualizar_reacciones(dt)
         self.actualizar_convivencia(dt)
         self.actualizar_agente(dt)
@@ -1899,7 +1907,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         # dónde suena todo: el eco del barrio, y la altura si vas volando (solo lo usa el motor envolvente)
         from .audio_al import entorno_de
         self.mez.entorno = entorno_de(self.mundo.barrio(x, y).get("ambiente", ""))
-        self.mez.altura = 35.0 if (j.veh is not None and j.veh.modelo.get("vuela")) else 0.0
+        alt = self.vuelo_alt()
+        self.mez.altura = 0.0 if alt <= 0 else (35.0 if not self.vuelo_real() else min(110.0, 20.0 + alt * 0.15))
 
     def _tiempo(self, dt):
         antes = int(self.reloj // 60)

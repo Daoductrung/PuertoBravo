@@ -137,8 +137,9 @@ class MisVehiculos:
         n = self.mis_en_calle()
         if n <= tope():
             return
-        viejos = sorted([(getattr(v, "mio_n", 0), v) for v in self.mis_vivos() if v is not nuevo and v is not self.j.veh and not getattr(v, "con_chofer", False)]
-                        + [(int(d.get("n", 0)), d) for d in self.mis_lejos], key=lambda e: e[0])
+        vuela = lambda ident: bool((self.modelos.get(ident) or {}).get("vuela"))      # noqa: E731  (las aeronaves no van a un garaje: van a un hangar)
+        viejos = sorted([(getattr(v, "mio_n", 0), v) for v in self.mis_vivos() if v is not nuevo and v is not self.j.veh and not getattr(v, "con_chofer", False) and not v.modelo.get("vuela")]
+                        + [(int(d.get("n", 0)), d) for d in self.mis_lejos if not vuela(d.get("modelo"))], key=lambda e: e[0])
         casa = self.garaje_con_sitio()
         if not viejos or casa is None:
             if not callar:
@@ -470,6 +471,11 @@ class MisVehiculos:
         es_ficha = isinstance(cosa, dict)
         if es_ficha and cosa not in self.mis_lejos:
             return False
+        modelo = self.modelos.get(cosa.get("modelo")) if es_ficha else cosa.modelo
+        if modelo is not None and modelo.get("vuela"):
+            self.app.son("error")
+            self.decir("Una aeronave no cabe en el garaje de una casa: se guarda en un hangar, en un helipuerto, un aeropuerto o un aeródromo.", True)
+            return False
         if not es_ficha and (cosa.muerto or cosa.tag or cosa.modelo.get("barco")):
             self.app.son("error")
             self.decir(self.motivo_ajeno(cosa) if not es_ficha and cosa.tag else "Ese vehículo no se puede guardar en un garaje.", True)
@@ -498,6 +504,10 @@ class MisVehiculos:
         """Por qué no se puede guardar, vender ni mejorar un vehículo que no puede ser tuyo."""
         if v.tag == "banda":
             return "Ese vehículo es de tu banda, y lo lleva tu chófer: no se puede guardar, vender ni mejorar."
+        if v.tag == "secuestro":
+            return "Ese aparato es robado y está denunciado en toda la comarca: no te lo puedes quedar, ni guardarlo, venderlo o mejorarlo."
+        if v.tag in ("compania", "compania_devolver"):
+            return "Ese aparato es de la compañía para la que vuelas: no te lo puedes quedar, ni guardarlo, venderlo o mejorarlo."
         return "Ese vehículo es de una misión: no te lo puedes quedar, ni guardarlo, venderlo o mejorarlo."
 
     # ------------------------------------------------------------------ misiones
@@ -860,6 +870,9 @@ def lista_mis_vehiculos(p):
         for d in lista:
             if d.get("modelo") in p.modelos:
                 ficha_d(d, "garaje", f"En el garaje de {p.nombre_lugar(l) if l else 'una casa'}", garaje=pid)
+    for l, h, d in p.hangares_naves():                            # las aeronaves guardadas en tus hangares (vuelo.py)
+        if d.get("modelo") in p.modelos:
+            ficha_d(d, "hangar", f"En el hangar de {p.nombre_lugar(l)}" + (f". Combustible, {int(float(d.get('queroseno', 100)))} por ciento" if p.cfg["vuelo_combustible"] else ""), hangar=l.id)
     return fichas
 
 
@@ -981,6 +994,37 @@ def menu_mis_vehiculos(p):
                                        ayuda=f"Hasta {NOMBRE_MAX} letras. Lo guarda el servidor y lo ven también los demás jugadores. Si lo dejas vacío, vuelve a llamarse como el modelo. "
                                              "Tabulador propone nombres al azar.", propuestas=nombres_propuestos()))
             ops = []
+            modelo = p.modelos.get(d["modelo"]) if d is not None else v.modelo
+            aerea = bool(modelo and modelo.get("vuela"))         # una aeronave: no se trae ni va a un garaje; va a un hangar
+
+            def al_hangar():
+                def llevar(l):
+                    def g():
+                        if p.mandar_al_hangar(cosa, l):
+                            _volver_al_juego(p)
+                    return g
+                lista = [Opcion(f"{p.nombre_lugar(l)}: {len(p.hangar(l)['naves'])} de {int(p.hangar_plazas())} plazas ocupadas", llevar(l)) for l in p.hangar_destinos(cosa)]
+                app.abrir(Menu(app, f"Mandar {f['nombre']} a un hangar: {p.precio('mandar_hangar', 250)} euros",
+                               lista or [Opcion("No tienes plaza de hangar donde quepa. Se alquilan y se compran en los helipuertos, los aeropuertos y los aeródromos")]))
+
+            def gps_hangar():
+                l = p.lug(f["hangar"])
+                if l is not None:
+                    _volver_al_juego(p)
+                    p.gps_a_lugar(l)
+
+            def queroseno():
+                if p.vuelo_traer_queroseno(v):
+                    app.cerrar(mm)
+                    m.refrescar(False)
+            if tipo == "hangar":
+                ops.append(Opcion("Marcar en el GPS el campo donde está", gps_hangar, ayuda="El GPS te lleva hasta el helipuerto, el aeropuerto o el aeródromo. Allí, en el hangar, la sacas a la pista."))
+            if aerea and tipo in ("calle", "lejos", "ultimo", "llevas") and not servidor:
+                ops.append(Opcion(f"Mandarla a un hangar: {p.precio('mandar_hangar', 250)} euros", al_hangar,
+                                  ayuda="Un piloto de la casa se la lleva a una plaza de hangar tuya, esté donde esté la aeronave. Una aeronave no se trae a la puerta: se va a buscar al campo."))
+            if aerea and v is not None and tipo in ("calle", "ultimo", "llevas") and not servidor and p.vuelo_con_combustible() and float(getattr(v, "queroseno", 100.0)) < 50:
+                ops.append(Opcion(f"Que le traigan combustible: {p.precio('queroseno_domicilio', 450)} euros", queroseno,
+                                  ayuda="Un camión cisterna llega hasta la aeronave y le echa medio depósito, para que puedas despegar y repostar en un campo."))
             if tipo in ("calle", "ultimo") or (tipo == "servidor" and v is not None):
                 ops.append(Opcion("Marcarlo en el GPS", gps, ayuda="El GPS te lleva hasta él. Sin abrir el móvil, Mayúsculas L hace lo mismo con el último que has usado."))
             if tipo == "garaje":
@@ -988,18 +1032,18 @@ def menu_mis_vehiculos(p):
             if tipo == "lejos":
                 ops.append(Opcion("Marcar en el GPS el camino hasta su localidad", gps_lejos,
                                   ayuda="El GPS te guía hasta el sitio más cercano a donde lo dejaste. Cuando estés en esa localidad, márcalo otra vez desde esta lista y te lleva hasta el vehículo."))
-            if tipo in ("calle", "lejos", "garaje"):
+            if tipo in ("calle", "lejos", "garaje") and not aerea:
                 ops.append(Opcion(f"Pedir que te lo traigan: {p.precio('traer_vehiculo', 150)} euros", traer,
                                   ayuda="Tu mecánico lo deja aparcado en la calle, a tu lado, esté donde esté. No viene si te busca mucho la policía."))
             if tipo == "garaje" and j.banda and not servidor:
                 ops.append(Opcion(f"Que venga un chófer de tu banda con él: {p.precio('chofer', 80)} euros", chofer,
                                   ayuda="Alguien de tu banda lo saca del garaje, viene a recogerte y conduce él hasta donde marques en el GPS."))
-            if tipo in ("calle", "lejos", "ultimo", "llevas") and not servidor:
+            if tipo in ("calle", "lejos", "ultimo", "llevas") and not servidor and not aerea:
                 ops.append(Opcion(f"Mandarlo a un garaje: {p.precio('mandar_vehiculo', 100)} euros", al_garaje,
                                   ayuda="Tu mecánico se lo lleva al garaje de la casa que elijas, esté donde esté el vehículo."))
             if tipo == "ultimo" or (tipo == "llevas" and not servidor and not p.es_mio(v)):
                 ops.append(Opcion("Ponerlo a tu nombre", quedar, ayuda="Desde ese momento es tuyo: no desaparece al alejarte ni al coger otro, y se guarda con la partida."))
-            if not servidor or tipo in ("llevas", "garaje"):
+            if not servidor or tipo in ("llevas", "garaje", "hangar"):
                 ops.append(Opcion("Cambiarle el nombre", renombrar, ayuda="El juego dirá ese nombre al subir, al localizarlo y en las listas."))
             if tipo == "servidor":
                 viejo = "" if p.sv_sabe("mis_vehiculos") else " Este servidor va con una versión anterior y todavía no sabe hacerlo: al pulsar, el juego te dice qué puedes hacer en su lugar."
@@ -1027,7 +1071,8 @@ def menu_mis_vehiculos(p):
     def titulo():
         if servidor:
             return f"Mis vehículos: {len(p.sv_mis_vehiculos())} en la calle del servidor y {p.mis_en_garajes()} en garajes"
-        return f"Mis vehículos: {p.mis_en_calle()} en la calle, de {tope()}, y {p.mis_en_garajes()} en garajes"
+        naves = len(p.hangares_naves())
+        return f"Mis vehículos: {p.mis_en_calle()} en la calle, de {tope()}, y {p.mis_en_garajes()} en garajes" + (f", y {naves} en hangares" if naves else "")
     m = Menu(app, titulo, ops, intro="Intro sobre un vehículo abre lo que puedes hacer con él")
     app.abrir(m)
 

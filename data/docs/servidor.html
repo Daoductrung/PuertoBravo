@@ -551,11 +551,13 @@ a { color: #9fd0ff; }
 <ul>
 <li>Basta con actualizar el juego, con el servidor o el panel abiertos. No hace falta pararlo antes.</li>
 <li>El juego dice que tienes abierto el servidor, explica lo que va a pasar y pide permiso. Si dices que sí: avisa a los jugadores, el servidor se para solo, el juego se cierra y se actualiza, y al terminar el servidor vuelve a arrancar solo, igual que estaba: el de consola en su ventana, minimizada, o el panel, con el servidor en marcha si lo estaba.</li>
-<li>Si la actualización fallara, se deja la versión que tenías y el servidor se vuelve a arrancar igualmente.</li>
+<li>Si solo tienes abierto el panel, con el servidor parado, aunque no lo hayas arrancado nunca, no hay nadie a quien avisar: el panel se cierra solo y vuelve a abrirse al terminar, parado como estaba.</li>
+<li>El servidor de consola y el panel vuelven minimizados y sin coger el foco: el foco se queda en el juego. Cuando vayas al panel, el foco está en el estado del servidor, como siempre.</li>
+<li>Si la actualización fallara, se deja la versión que tenías y el servidor se vuelve a arrancar igualmente. Lo que el servidor guardó al cerrarse no se pierde: la actualización solo guarda y devuelve programas, nunca tu base de datos.</li>
 <li>Al abrirse, el juego dice si el servidor ha vuelto a arrancar. Todo queda apuntado en el archivo <code>actualizacion.log</code> de la carpeta <code>data\logs</code> del juego.</li>
 <li>Si el servidor arranca solo al iniciar tu sesión, con Arrancar con Windows, también vuelve a arrancar solo.</li>
 <li>Si lo tienes montado como un servicio o como una tarea programada que funciona sin que nadie inicie sesión, el juego le puede pedir que se cierre, pero no puede arrancarlo igual que lo arranca Windows: te lo avisa antes de empezar, y después tendrás que arrancarlo como lo tengas montado, si no vuelve solo.</li>
-<li>Tu configuración y tus datos no se tocan.</li>
+<li>Tu configuración y tus datos no se tocan, ni si la actualización sale bien ni si falla, estén en la carpeta de datos de serie o en otra que hayas puesto tú. Lo único que no vale es tener la carpeta de datos dentro de una carpeta del propio programa, como <code>lib</code>: si el juego lo ve, lo dice y no actualiza hasta que la muevas.</li>
 </ul>
 <h4>En Linux, Mac, NAS, Raspberry Pi o Docker</h4>
 <p>Ahí el servidor no se actualiza con el juego: se cambia su código a mano. Para que los jugadores tengan la misma espera y la misma vuelta, páralo con la orden de reinicio en vez de cortarlo:</p>
