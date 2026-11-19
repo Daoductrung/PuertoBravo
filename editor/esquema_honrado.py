@@ -305,7 +305,6 @@ CAMPOS_MISION = [
     c("requiere_vida", "Lo que pide de la vida del jugador", "objeto", "Además de las misiones anteriores: un contrato, turnos trabajados, títulos, prestigio, negocios o la ficha limpia. "
       "Mientras falte algo, la misión no aparece, y el móvil dice qué falta.", sub="requisitos_vida"),
     c("epilogos", "Epílogos: los finales del buen camino", "lista", "Si esta misión cierra el buen camino. Se dice el primero cuya condición se cumpla.", sub="epilogo", si=lambda d: d.get("honrada")),
-    c("sin_voz", "Sin voz grabada: sus frases las dice el lector", "si_no", "Para las misiones del juego que no traen grabaciones. En un mod no hace falta marcarlo."),
 ]
 CAMPO_DECISION = c("prestigio", "Prestigio que da o quita", "entero", "Entre los vecinos. Es independiente de la fama.", minimo=-100, maximo=100)
 

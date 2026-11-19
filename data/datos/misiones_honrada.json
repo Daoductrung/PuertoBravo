@@ -13,7 +13,6 @@
     "m01"
    ],
    "honrada": true,
-   "sin_voz": true,
    "orden": 1,
    "resumen": "En la oficina de empleo hay alguien que no te pregunta de dónde vienes, sino adónde quieres ir.",
    "pasos": [
@@ -109,7 +108,6 @@
     "turnos": 2
    },
    "honrada": true,
-   "sin_voz": true,
    "orden": 2,
    "resumen": "Tienes contrato y ya has cumplido tus primeros turnos. Aurora quiere verte.",
    "pasos": [
@@ -171,7 +169,6 @@
     "h02"
    ],
    "honrada": true,
-   "sin_voz": true,
    "orden": 3,
    "resumen": "Casilda ha perdido la cartera con la pensión del mes. Cree que fue en el Mercado Central.",
    "pasos": [
@@ -291,7 +288,6 @@
     "titulos": 1
    },
    "honrada": true,
-   "sin_voz": true,
    "orden": 4,
    "resumen": "Ya tienes un título. Paulino necesita a alguien de confianza para un recado del centro.",
    "pasos": [
@@ -359,7 +355,6 @@
     "prestigio": 40
    },
    "honrada": true,
-   "sin_voz": true,
    "orden": 5,
    "resumen": "En el barrio ya te aprecian. Salva, que ha llevado un bar toda su vida, quiere contarte cómo se tiene algo propio.",
    "pasos": [
@@ -438,7 +433,6 @@
     "negocios": 1
    },
    "honrada": true,
-   "sin_voz": true,
    "orden": 6,
    "resumen": "Ya tienes un negocio. La presidenta de los comerciantes quiere conocerte.",
    "pasos": [
@@ -497,7 +491,6 @@
     "h06"
    ],
    "honrada": true,
-   "sin_voz": true,
    "orden": 7,
    "resumen": "Los Calaveras han pasado por tres tiendas del barrio pidiendo dinero. La tuya es la siguiente.",
    "pasos": [
@@ -633,7 +626,6 @@
     "h07"
    ],
    "honrada": true,
-   "sin_voz": true,
    "orden": 8,
    "resumen": "Un inspector de licencias pide un sobre a cada comerciante. Matilde necesita pruebas.",
    "pasos": [
@@ -730,7 +722,6 @@
    "si_cruce": "proteccion:3",
    "si_cruce_max": 0,
    "honrada": true,
-   "sin_voz": true,
    "orden": 9,
    "resumen": "El ayuntamiento vota el plan del puerto, y los comerciantes te han elegido para hablar en su nombre.",
    "pasos": [
@@ -870,7 +861,6 @@
    "si_clave": "proteccion",
    "si_opcion": 3,
    "honrada": true,
-   "sin_voz": true,
    "orden": 9,
    "resumen": "Los Calaveras quieren pasar mucho más dinero por tu caja. De día sigues siendo quien eres; de noche, ya veremos.",
    "pasos": [

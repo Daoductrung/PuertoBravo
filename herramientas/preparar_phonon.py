@@ -85,14 +85,24 @@ def main():
     for k, esp in rep["protagonista"].items():
         poner("prota_" + k, esp)
         salida["protagonista"][k] = "prota_" + k
+    try:                                             # quien ya tenía archivo lo conserva: si cambiara de nombre, a los jugadores se les
+        with open(os.path.join(DESTINO, "reparto.json"), encoding="utf-8") as f:      # volverían a generar frases que ya tienen hechas
+            antes = {q: a for q, a in json.load(f).get("personajes", {}).items() if re.fullmatch("voz_[0-9]+", str(a))}
+    except (OSError, ValueError):
+        antes = {}
+    quienes = sorted(quienes_le_nombran())
+    ocupados = {antes[q] for q in quienes if q in antes}
     n = 0
-    for quien in sorted(quienes_le_nombran()):
+    for quien in quienes:
         esp = rep["personajes"].get(quien)
         if esp is None:
             print("sin voz en el reparto:", quien)
             continue
-        n += 1
-        archivo = "voz_%02d" % n
+        archivo = antes.get(quien)
+        while archivo is None:
+            n += 1
+            if "voz_%02d" % n not in ocupados:
+                archivo = "voz_%02d" % n
         poner(archivo, esp)
         salida["personajes"][quien] = archivo
     sobran = set(os.listdir(os.path.join(DESTINO, "voces"))) - {v + ".safetensors" for v in list(salida["personajes"].values()) + list(salida["protagonista"].values())}

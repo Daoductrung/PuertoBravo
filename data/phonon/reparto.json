@@ -2,11 +2,15 @@
  "personajes": {
   "Amparo": "voz_01",
   "Anselmo": "voz_02",
+  "Aurora": "voz_16",
   "Carmela": "voz_03",
+  "Casilda": "voz_17",
   "Chispas": "voz_04",
   "Contable": "voz_05",
   "Custodia": "voz_06",
   "El Gordo": "voz_07",
+  "El Mellao": "voz_18",
+  "El alcalde": "voz_19",
   "Encarna": "voz_08",
   "La Rusa": "voz_09",
   "La redactora": "voz_10",
@@ -14,7 +18,8 @@
   "Nerea": "voz_12",
   "Paco": "voz_13",
   "Paula": "voz_14",
-  "Remedios": "voz_15"
+  "Remedios": "voz_15",
+  "Salva": "voz_20"
  },
  "protagonista": {
   "alex_h": "prota_alex_h",
