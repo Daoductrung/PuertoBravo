@@ -72,7 +72,6 @@
   {
    "id": "of01",
    "titulo": "Cajas para el banco de alimentos",
-   "vehiculo_libre": true,
    "capitulo": 23,
    "contacto": "Reme",
    "lugar": "of_alimentos",
@@ -80,6 +79,7 @@
     "m01"
    ],
    "resumen": "Trabajo honrado: el Banco de Alimentos necesita un transportista.",
+   "vehiculo_libre": true,
    "pasos": [
     {
      "tipo": "dialogo",

@@ -117,7 +117,6 @@
   {
    "id": "cd02",
    "titulo": "La furgoneta del pescado",
-   "vehiculo_libre": true,
    "capitulo": 20,
    "contacto": "Amparo",
    "lugar": "cd_taberna",
@@ -125,6 +124,7 @@
     "cd01"
    ],
    "resumen": "La furgoneta de la lonja lleva dos días sin repartir y el arroz no espera.",
+   "vehiculo_libre": true,
    "pasos": [
     {
      "tipo": "dialogo",

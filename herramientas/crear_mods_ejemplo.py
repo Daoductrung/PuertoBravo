@@ -126,7 +126,7 @@ def costa_dorada():
                    D(("Narrador", "El candado está cortado con una cizalla. Dentro hay cajas de madera sin marcar, y huele a gasóleo."),
                      ("Narrador", "Alguien usa el faro de almacén. Vuelves a contárselo a Amparo."))],
          "recompensa": {"dinero": 250}},
-        {"id": "cd02", "titulo": "La furgoneta del pescado", "capitulo": 20, "contacto": "Amparo", "lugar": "cd_taberna", "requiere": ["cd01"],
+        {"id": "cd02", "titulo": "La furgoneta del pescado", "vehiculo_libre": True, "capitulo": 20, "contacto": "Amparo", "lugar": "cd_taberna", "requiere": ["cd01"],
          "resumen": "La furgoneta de la lonja lleva dos días sin repartir y el arroz no espera.",
          "pasos": [D(("Amparo", "El chaval del reparto no aparece y la furgoneta sigue en la lonja, con las llaves puestas. Llévala a La Barraca antes de que se eche a perder el género."),
                      ("Amparo", "Y con cuidado, que si llega abollada el Sento no te paga.")),
@@ -224,7 +224,7 @@ def oficios():
         "personajes": [{"id": "of_noa", "nombre": "Noa", "genero": "m", "apellido": "Santos", "ciudadania": 60, "animo": 80, "resistencia": 3, "dinero": 150, "botiquines": 2,
                         "desc": "Trabajó diez años de mensajera en bicicleta. Empieza con muy buen nombre entre los vecinos, buen ánimo, resistencia al nivel tres y dos botiquines: ideal para una vida honrada."}],
         "misiones": [
-            {"id": "of01", "titulo": "Cajas para el banco de alimentos", "capitulo": 23, "contacto": "Reme", "lugar": "of_alimentos", "requiere": ["m01"],
+            {"id": "of01", "titulo": "Cajas para el banco de alimentos", "vehiculo_libre": True, "capitulo": 23, "contacto": "Reme", "lugar": "of_alimentos", "requiere": ["m01"],
              "resumen": "Trabajo honrado: el Banco de Alimentos necesita un transportista.",
              "pasos": [D(("Reme", "Tenemos una donación esperando en el mercado y nadie con carné. ¿Tú conduces?")),
                        {"tipo": "robar", "lugar": "of_mensajeria", "modelo": "furgoneta" if "furgoneta" in VEHICULOS else "utilitario", "nombre": "la furgoneta prestada", "abierto": True, "texto": "Recoge la furgoneta que os presta Mensajería Relámpago. Está abierta."},
