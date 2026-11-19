@@ -375,20 +375,31 @@ def leer(ruta):
     Una opción por línea: nombre = valor. Las líneas que empiezan por almohadilla son comentarios."""
     crudo, avisos = {}, []
     if ruta and os.path.exists(ruta):
-        with open(ruta, encoding="utf-8-sig") as f:
-            for n, linea in enumerate(f, 1):
-                linea = linea.strip()
-                if not linea or linea.startswith("#"):
-                    continue
-                if "=" not in linea:
-                    avisos.append("Línea %d: no la entiendo, le falta el signo igual. No se le hace caso." % n)
-                    continue
-                k, v = linea.split("=", 1)
-                k = k.strip().lower()
-                if k not in POR_CLAVE:
-                    avisos.append("Línea %d: no existe la opción %s. No se le hace caso; puede ser de otra versión del servidor." % (n, k))
-                    continue
-                crudo[k] = v.strip()
+        with open(ruta, "rb") as f:
+            bruto = f.read()
+        try:
+            texto = bruto.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            # Guardado con un editor que no usa UTF-8 (el ANSI de Windows o Latin-1): se lee igual en vez de no arrancar.
+            try:
+                texto = bruto.decode("cp1252")
+            except UnicodeDecodeError:
+                texto = bruto.decode("latin-1")
+            avisos.append("El archivo %s no está guardado en UTF-8; se ha leído igual, pero conviene guardarlo en UTF-8 "
+                          "(al guardar la configuración desde el panel ya queda bien)." % os.path.basename(ruta))
+        for n, linea in enumerate(texto.splitlines(), 1):
+            linea = linea.strip()
+            if not linea or linea.startswith("#"):
+                continue
+            if "=" not in linea:
+                avisos.append("Línea %d: no la entiendo, le falta el signo igual. No se le hace caso." % n)
+                continue
+            k, v = linea.split("=", 1)
+            k = k.strip().lower()
+            if k not in POR_CLAVE:
+                avisos.append("Línea %d: no existe la opción %s. No se le hace caso; puede ser de otra versión del servidor." % (n, k))
+                continue
+            crudo[k] = v.strip()
     limpio, problemas = validar(crudo)
     return limpio, avisos + problemas
 

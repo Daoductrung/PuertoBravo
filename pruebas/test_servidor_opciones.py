@@ -145,6 +145,23 @@ def test_los_valores_se_comprueban_con_mensajes_claros(tmp_path, capsys):
     assert opciones.leer(str(tmp_path / "no_esta.conf")) == (opciones.valores_de_serie(), [])
 
 
+def test_un_conf_guardado_en_ansi_o_latin1_se_lee_igual_y_se_avisa(tmp_path):
+    # Un servidor.conf guardado por un editor en ANSI de Windows o Latin-1 hacía caer el servidor al arrancar en Linux.
+    conf = tmp_path / "servidor.conf"
+    conf.write_bytes("# Servidor en línea\nnombre = La Peña\npuerto = 5000\n".encode("cp1252"))
+    cfg, avisos = opciones.leer(str(conf))
+    assert cfg["nombre"] == "La Peña" and cfg["puerto"] == 5000
+    assert len(avisos) == 1 and "no está guardado en UTF-8" in avisos[0] and "servidor.conf" in avisos[0]
+    assert nucleo.leer_config(str(conf))["puerto"] == 5000
+    # un byte que el ANSI de Windows no define (0x81) tampoco tumba la lectura
+    conf.write_bytes(b"nombre = Bar\x81\npuerto = 5001\n")
+    cfg, avisos = opciones.leer(str(conf))
+    assert cfg["puerto"] == 5001 and "no está guardado en UTF-8" in avisos[0]
+    # y uno en UTF-8, con o sin marca, no avisa de nada
+    conf.write_text("# Servidor en línea\nnombre = La Peña\n", encoding="utf-8-sig")
+    assert opciones.leer(str(conf)) == (dict(opciones.valores_de_serie(), nombre="La Peña"), [])
+
+
 def test_guardar_escribe_un_archivo_legible_que_se_lee_igual(tmp_path):
     conf = tmp_path / "sub" / "servidor.conf"
     cfg = dict(opciones.valores_de_serie(), nombre="El Rincón de Ñu = «café»", bienvenida="¡Hola! # todos", max_jugadores=0, puerto=5001, pvp="no",
