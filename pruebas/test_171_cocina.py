@@ -1082,12 +1082,12 @@ def test_los_sonidos_nuevos_estan_en_todos_los_packs_y_en_la_guia():
     assert len(S) >= 263
     for n in nuevos:
         assert n in S and 0.3 < len(S[n]) / sintesis.SR < 3.0 and not sintesis.es_bucle(n)
-        assert catalogo_sonidos.describir(n) != "Sonido del juego." and catalogo_sonidos.GRUPOS[catalogo_sonidos.grupo_de(n)][0] == "La compra y la cocina"
+        assert catalogo_sonidos.describir(n) != "Sonido del juego." and catalogo_sonidos.titulo_de(n) == ("Tiendas, dinero y objetos" if n == "cesta" else "Casa, cocina y comida")
         for pack in ("por_defecto", "realista", "alternativo", "retro", "envolvente"):
             carpeta = os.path.join(rutas.PACKS, pack)
             assert os.path.isdir(carpeta) and any(os.path.exists(os.path.join(carpeta, n + e)) for e in rutas.EXT_AUDIO), (pack, n)
     guia = open(os.path.join(rutas.DATA, "docs", "cambiar_sonidos.html"), encoding="utf-8").read()
-    assert all(n in guia for n in nuevos) and "La compra y la cocina" in guia
+    assert all(n in guia for n in nuevos) and "Casa, cocina y comida" in guia
 
 
 def test_el_manual_las_teclas_y_la_guia_del_editor_cuentan_lo_nuevo():

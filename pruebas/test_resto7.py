@@ -225,10 +225,10 @@ def test_sonidos_nuevos_en_todos_los_packs():
     creditos = open(os.path.join(base, "realista", "CREDITOS.txt"), encoding="utf-8-sig").read()
     assert "Freesound" in creditos and "tren.flac" in creditos
     # están en el catálogo, con descripción, y en Aprender los sonidos
-    grupo = next(k for k, g in enumerate(cat.GRUPOS) if g[0] == "Tren, tranvía, avión y agua")
+    grupos = ("Barcos, helicópteros, tren, tranvía y avión", "Moverse a pie y nadar", "Sonidos de los lugares")
     for n in nuevos:
         assert cat.describir(n) != "Sonido del juego.", n
-        assert n == "motor_avioneta" or n.startswith("lugar_") or cat.grupo_de(n) == grupo
+        assert cat.titulo_de(n) in grupos and (not n.startswith("lugar_") or cat.titulo_de(n) == grupos[2])
     aprendidos = {s for s, _, _ in ayuda.SONIDOS}
     assert set(nuevos) <= aprendidos
     assert sintesis.es_bucle("tren") and sintesis.es_bucle("tranvia") and sintesis.es_bucle("bajo_agua") and sintesis.es_bucle("avion") and not sintesis.es_bucle("brazada")

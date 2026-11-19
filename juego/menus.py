@@ -1,6 +1,14 @@
 """Menús y diálogos hablados. Todo se maneja con flechas, Intro y Escape."""
+import unicodedata
+
 import pygame
 from . import registro
+
+
+def _llana(letra):
+    """Una letra en minúscula y sin tilde, para saltar por inicial: la eñe sigue siendo eñe."""
+    letra = letra.lower()
+    return letra if letra == "ñ" else unicodedata.normalize("NFD", letra)[:1]
 
 
 class Opcion:
@@ -133,12 +141,12 @@ class Menu:
         elif k == pygame.K_PERIOD:
             self.leer()
         else:
-            letra = (getattr(ev, "unicode", "") or "").lower()
+            letra = _llana((getattr(ev, "unicode", "") or "")[:1])
             if letra and letra.isalnum():
                 n = len(self.opciones)
                 for d in range(1, n + 1):
                     q = (self.i + d) % n
-                    if self.opciones[q].texto.lower().startswith(letra):
+                    if _llana(self.opciones[q].texto[:1]) == letra:           # la A lleva también a lo que empieza por Á
                         self.app.son("menu_mover")
                         self.i = q
                         self.leer()

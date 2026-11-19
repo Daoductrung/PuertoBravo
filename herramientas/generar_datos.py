@@ -85,9 +85,9 @@ __ESTILO__
 </ul>
 <h3>El volumen se iguala solo</h3>
 <p>Cada grabación viene a un volumen distinto. Para que eso no estropee el equilibrio del juego, al cargar un sonido que has cambiado el juego lo lleva al mismo nivel que tenía el original: mide el tramo más fuerte de tu archivo, lo compara con el del sonido original y lo sube o lo baja lo que haga falta, sin dejar que sature. Así unos pasos no pueden quedar más fuertes que un disparo, ni una baliza inaudible. Se puede desactivar en Opciones, Sonido y música, Igualar el volumen de los sonidos cambiados.</p>
-<p>Si aun así un sonido concreto te parece fuerte o flojo, ve a Opciones, Sonido y música, Ajustar el volumen de cada sonido. Están todos, por grupos: Intro lo hace sonar y las flechas izquierda y derecha lo bajan o lo suben, del 30 al 200 por ciento. El ajuste se guarda con tus opciones.</p>
+<p>Si aun así un sonido concreto te parece fuerte o flojo, ve a Opciones, Sonido y música, Ajustar el volumen de cada sonido. Están todos, por los mismos grupos que la lista del final de este documento: Intro lo hace sonar y las flechas izquierda y derecha lo bajan o lo suben, del 30 al 200 por ciento. Buscar un sonido lo encuentra por una palabra de su nombre, sin tener que saber en qué grupo está. El menú dice cuántos sonidos tienes cambiados, en total y en cada grupo, y deja devolver a su volumen de serie uno solo, un grupo entero o todos. El ajuste se guarda con tus opciones y va por el nombre del archivo, así que no se pierde al actualizar el juego.</p>
 <h3>Escuchar cualquier sonido dentro del juego</h3>
-<p>En el menú principal y en el de pausa, Aprender los sonidos tiene los __N_SONIDOS__ sonidos del juego: primero el grupo Los más importantes y después todos, por los mismos grupos que la lista del final de este documento. Entra en un grupo y pulsa Intro sobre un sonido: el juego dice qué es y lo hace sonar a él solo, con el pack que tengas puesto. Sirve para comprobar cómo ha quedado una grabación tuya sin tener que provocar el sonido jugando.</p>
+<p>En el menú principal y en el de pausa, Aprender los sonidos tiene los __N_SONIDOS__ sonidos del juego: primero el grupo Los más importantes, después Buscar un sonido y después todos, por los mismos grupos que la lista del final de este documento y en el mismo orden. Entra en un grupo y pulsa Intro sobre un sonido: el juego dice cómo se llama y qué significa, y lo hace sonar a él solo, con el pack que tengas puesto. Con Buscar un sonido escribes una palabra, por ejemplo sirena, y salen todos los que la tienen en el nombre o en la explicación, con tildes o sin ellas. Sirve para comprobar cómo ha quedado una grabación tuya sin tener que provocar el sonido jugando.</p>
 
 <h2>3. Packs de sonidos</h2>
 <p>Un pack es una carpeta con archivos que se llaman igual que los sonidos del juego. Los packs van dentro de <code>data\\sonidos</code>, cada uno en su subcarpeta, al lado de <code>por_defecto</code>, y se eligen dentro del juego en Opciones, Sonido y música, Pack de sonidos, con las flechas izquierda y derecha. El cambio se oye al momento y no toca tus archivos de <code>data\\sonidos\\por_defecto</code>: para volver atrás, elige «por defecto».</p>
@@ -96,7 +96,7 @@ __ESTILO__
 <li>El volumen de cada sonido del pack se iguala al del original, como se explica arriba.</li>
 <li>Los packs que vienen con el juego traen exactamente los mismos archivos que <code>por_defecto</code>, con los mismos nombres: ni uno más ni uno menos. Sus grabaciones son de dominio público (licencia CC0) y salen de kenney.nl, opengameart.org, freesound.org y bigsoundbank.com.</li>
 <li>Los tonos de los canales de rol (<code>chat_personaje</code>, <code>chat_fuera</code> y <code>chat_accion</code>) y el de la espera al servidor (<code>espera_servidor</code>) son en todos los packs los de serie, a propósito: son un código de tonos y conviene que suenen siempre igual.</li>
-<li>De serie vienen instalados los packs __PACKS__. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y firmas de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
+<li>De serie vienen instalados los packs __PACKS__. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y sonidos de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
 </ul>
 <h3>Hacer tu propio pack</h3>
 <ol>
@@ -147,7 +147,8 @@ __AMBIENTES__
 </ul>
 
 <h2>6. Lista completa de sonidos</h2>
-<p>El nombre del archivo es el que aparece al principio de cada línea, con la extensión <code>.flac</code> en los que trae el juego. Los tuyos pueden llevar cualquiera de las admitidas.</p>
+<p>El nombre del archivo es el que aparece al principio de cada línea, con la extensión <code>.flac</code> en los que trae el juego. Los tuyos pueden llevar cualquiera de las admitidas. Detrás va el nombre con el que el juego lo dice en voz alta y lo que significa oírlo.</p>
+<p>Los grupos son los mismos, con los mismos nombres y en el mismo orden, que en Aprender los sonidos y en Opciones, Sonido y música, Ajustar el volumen de cada sonido. Van por lo que se hace en el juego. Dentro de cada grupo, los sonidos están por orden alfabético del nombre que se dice. Cada grupo es un encabezado: salta de uno a otro con la tecla H, o busca una palabra con la búsqueda de tu navegador.</p>
 """
 
 
@@ -171,10 +172,9 @@ def _escribir(nombre, texto):
 
 
 def generar_doc(sonidos):
-    grupos = {}
-    for nombre in sorted(sonidos):
-        grupos.setdefault(cat.grupo_de(nombre), []).append(nombre)
-    cab = CABECERA.replace("__ESTILO__", ESTILO).replace("__N_SONIDOS__", str(len(sonidos)))
+    grupos = cat.clasificar(sonidos)                       # la misma clasificación que los menús del juego
+    intros = {g[0]: g[1] for g in cat.GRUPOS}
+    cab = CABECERA.replace("__ESTILO__", ESTILO).replace("__N_SONIDOS__", str(sum(len(v) for _, v in grupos)))
     from juego import packs
     instalados = [p for p in packs.listar() if not p["id"].startswith("_")]
     cab = cab.replace("__PACKS__", ", ".join(f"«{html.escape(p['nombre'])}», con {p['n']} sonidos" for p in instalados) or "que copies tú")
@@ -182,20 +182,17 @@ def generar_doc(sonidos):
     cab = cab.replace("__AMBIENTES__", "\n".join(
         f"<li><code>data\\musica\\{k}</code>: {html.escape(desc[0].lower() + desc[1:])}. De serie trae {len(piezas)} piezas, de <code>{k}_1.mp3</code> a <code>{k}_{len(piezas)}.mp3</code>.</li>"
         for k, (desc, piezas) in AMBIENTES.items()))
-    partes = [cab]
-    for k in sorted(grupos):
-        if k < len(cat.GRUPOS):
-            titulo, intro = cat.GRUPOS[k][0], cat.GRUPOS[k][1]
-        else:
-            titulo, intro = "Otros sonidos", ""
+    partes = [cab, f"<p>Son {len(grupos)} grupos:</p>", "<ol>"]
+    partes += [f"<li>{html.escape(titulo)}: {len(v)} sonidos.</li>" for titulo, v in grupos]
+    partes.append("</ol>")
+    for titulo, lista in grupos:
         partes.append(f"<h3>{html.escape(titulo)}</h3>")
-        if intro:
-            partes.append(f"<p>{html.escape(intro)}</p>")
+        partes.append(f"<p>{len(lista)} sonidos. {html.escape(intros.get(titulo, ''))}</p>".replace(". </p>", ".</p>"))
         partes.append("<ul>")
-        for nombre in grupos[k]:
+        for nombre in lista:
             dur = len(sonidos[nombre]) / sintesis.SR
-            bucle = " Se reproduce en bucle." if sintesis.es_bucle(nombre) and "En bucle" not in cat.describir(nombre) else ""
-            partes.append(f"<li><code>{nombre}</code>: {html.escape(cat.describir(nombre))}{bucle} Dura " + f"{dur:.2f}".replace(".", ",") + " segundos.</li>")
+            bucle = " Se reproduce en bucle." if sintesis.es_bucle(nombre) else ""
+            partes.append(f"<li><code>{nombre}</code>: {html.escape(cat.nombre(nombre))}. {html.escape(cat.describir(nombre))}{bucle} Dura " + f"{dur:.2f}".replace(".", ",") + " segundos.</li>")
         partes.append("</ul>")
     partes.append("</body>\n</html>\n")
     return _escribir("cambiar_sonidos.html", "\n".join(partes))
@@ -205,7 +202,8 @@ def generar_doc(sonidos):
 TITULOS_TECLAS = {"general": "En cualquier momento", "pie": "A pie", "coche": "Al volante, en barco y en helicóptero"}
 MENUS = [("Flecha arriba y flecha abajo", "moverte por las opciones"), ("Intro", "elegir"), ("Flecha izquierda y flecha derecha", "cambiar el valor de una opción"),
          ("Escape", "volver atrás. Todos los menús tienen además una opción Volver"), ("Inicio y Fin", "primera y última opción"),
-         ("Una letra", "salta a la siguiente opción que empieza por ella"), ("F1", "explicación de la opción actual"),
+         ("Una letra", "salta a la siguiente opción que empieza por ella. Las tildes no cuentan: la A lleva también a lo que empieza por Á"),
+         ("Suprimir, en Ajustar el volumen de cada sonido", "devuelve el sonido elegido a su volumen de serie. Con mando, se hace desde la lista Sonidos cambiados de ese mismo menú"), ("F1", "explicación de la opción actual"),
          ("Re Pág y Av Pág", "repasar los mensajes anteriores"),
          ("Tabulador, al escribir un texto", "pasa por las frases o los nombres propuestos, si los hay, y deja escrito el elegido. Mayúsculas Tabulador vuelve al anterior")]
 
@@ -339,18 +337,16 @@ def generar_lista_packs(sonidos):
     """adjuntos/lista_de_sonidos.txt: lo que debe traer un pack de sonidos completo, archivo por archivo."""
     carpeta = os.path.join(rutas.base(), "adjuntos")
     os.makedirs(carpeta, exist_ok=True)
-    grupos = {}
-    for nombre in sorted(sonidos):
-        grupos.setdefault(cat.grupo_de(nombre), []).append(nombre)
     lineas = ["LISTA DE SONIDOS DE PUERTO BRAVO PARA HACER PACKS", "",
               f"Un pack completo trae estos {len(sonidos)} archivos, con estos nombres y extensión wav, ogg, flac o mp3.",
-              "Cada línea: nombre del archivo, qué es, si va en bucle y cuánto dura el original.", ""]
-    for k in sorted(grupos):
-        lineas.append((cat.GRUPOS[k][0] if k < len(cat.GRUPOS) else "Otros sonidos").upper())
-        for nombre in grupos[k]:
+              "Cada línea: nombre del archivo, cómo lo llama el juego, qué significa, si va en bucle y cuánto dura el original.",
+              "Los grupos son los de Aprender los sonidos y los del volumen de cada sonido.", ""]
+    for titulo, lista in cat.clasificar(sonidos):
+        lineas.append(f"{titulo.upper()} ({len(lista)})")
+        for nombre in lista:
             dur = f"{len(sonidos[nombre]) / sintesis.SR:.2f}".replace(".", ",")
             bucle = " En bucle." if sintesis.es_bucle(nombre) else ""
-            lineas.append(f"  {nombre}: {cat.describir(nombre)}{bucle} Dura {dur} segundos.")
+            lineas.append(f"  {nombre}: {cat.nombre(nombre)}. {cat.describir(nombre)}{bucle} Dura {dur} segundos.")
         lineas.append("")
     ruta = os.path.join(carpeta, "lista_de_sonidos.txt")
     with open(ruta, "w", encoding="utf-8-sig", newline="\r\n") as f:

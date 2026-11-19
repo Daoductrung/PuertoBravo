@@ -369,7 +369,7 @@ def test_armas_nuevas_cada_una_con_su_sonido_en_todos_los_packs(app):
     for ident, sonido in NUEVAS.items():
         a = armas[ident]
         assert a["sonido"] == sonido and sonido not in usados and a["precio"] > 0 and len(a["desc"]) > 40, ident      # su sonido es solo suyo
-        assert sonido in app.mez.sonidos and catalogo_sonidos.describir(sonido) != "Sonido del juego." and catalogo_sonidos.grupo_de(sonido) == 4
+        assert sonido in app.mez.sonidos and catalogo_sonidos.describir(sonido) != "Sonido del juego." and catalogo_sonidos.titulo_de(sonido) in ("Armas, el disparo de cada una", "Combate, puntería y heridas")
         for pack in ("por_defecto", "realista", "alternativo", "retro", "envolvente"):
             assert any(os.path.exists(os.path.join(rutas.PACKS, pack, sonido + e)) for e in rutas.EXT_AUDIO), (pack, sonido)
     assert {armas[i]["tipo"] for i in NUEVAS} == {"cuerpo", "fuego", "explosivo"} and armas["pistola_rafagas"]["automatica"]

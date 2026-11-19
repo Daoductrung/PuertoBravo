@@ -1940,7 +1940,7 @@ def test_los_sonidos_nuevos_estan_en_las_cinco_carpetas_con_su_grupo_y_su_descri
     aprender = {x[0] for x in ayuda.SONIDOS}
     guia = open(rutas.data("docs", "cambiar_sonidos.html"), encoding="utf-8").read()
     for n in nuevos:
-        assert 0.5 < len(S[n]) / sintesis.SR < 2.0 and grupo[n].startswith("Puertas") and n in aprender and cat.DESCRIPCIONES[n] if hasattr(cat, "DESCRIPCIONES") else True
+        assert 0.5 < len(S[n]) / sintesis.SR < 2.0 and grupo[n] == "Misiones, trabajo, reputación y ánimo" and n in aprender and cat.DESCRIPCIONES[n] if hasattr(cat, "DESCRIPCIONES") else True
         assert f"<code>{n}</code>" in guia
 
 

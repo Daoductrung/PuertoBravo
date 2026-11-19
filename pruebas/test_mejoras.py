@@ -424,10 +424,9 @@ def test_pack_envolvente(app):
     realista = {os.path.splitext(f)[0] for f in os.listdir(os.path.join(os.path.dirname(carpeta), "realista")) if f.endswith(".flac")}
     assert nombres == realista and len(nombres) == 274          # los mismos archivos que los demás packs
     serie = os.path.join(os.path.dirname(carpeta), "por_defecto")
-    orientacion = {k for k, g in enumerate(cat.GRUPOS) if g[0] in ("Orientación y GPS", "Localizadores", "Firmas de los lugares")}
     vistos = 0
     for n in nombres:                                   # los de orientación son, byte a byte, los de serie
-        if cat.grupo_de(n) in orientacion:
+        if cat.es_orientacion(n):                       # balizas, tonos, semáforos, radar, localizadores y sonidos de los lugares
             vistos += 1
             assert open(os.path.join(carpeta, n + ".flac"), "rb").read() == open(os.path.join(serie, n + ".flac"), "rb").read(), n
     assert vistos >= 40

@@ -206,7 +206,7 @@ def cargar(mez, cfg):
 
 def ajustar(mez, cfg, nombre, delta):
     """Sube o baja un sonido concreto un diez por ciento. Devuelve el ajuste nuevo."""
-    viejo = float(cfg["vol_sonidos"].get(nombre, 1.0))
+    viejo = factor(cfg, nombre)
     nuevo = round(max(AJUSTE_MIN, min(AJUSTE_MAX, viejo + 0.1 * delta)), 1)
     if nuevo != viejo and nombre in mez.sonidos:
         mez.registrar(nombre, mez.sonidos[nombre] * (nuevo / viejo))
@@ -215,3 +215,31 @@ def ajustar(mez, cfg, nombre, delta):
         else:
             cfg["vol_sonidos"][nombre] = nuevo
     return nuevo
+
+
+def factor(cfg, nombre):
+    """El ajuste del jugador que de verdad se aplica a un sonido: 1.0 si no lo ha tocado o si lo guardado no es un número."""
+    f = cfg["vol_sonidos"].get(nombre, 1.0)
+    if isinstance(f, bool) or not isinstance(f, (int, float)):
+        return 1.0
+    return max(AJUSTE_MIN, min(AJUSTE_MAX, float(f)))
+
+
+def cambiado(cfg, nombre):
+    return abs(factor(cfg, nombre) - 1.0) >= 0.01
+
+
+def restablecer(mez, cfg, nombres):
+    """Devuelve a su volumen de serie los sonidos dados. Devuelve (cuántos estaban cambiados, si hay que recargar los sonidos):
+    un ambiente largo que todavía no se ha cargado lleva el ajuste dentro, y solo se le quita volviendo a cargar."""
+    n, recargar = 0, False
+    for nombre in list(nombres):
+        f = factor(cfg, nombre)
+        if cfg["vol_sonidos"].pop(nombre, None) is None or abs(f - 1.0) < 0.01:
+            continue
+        n += 1
+        if nombre in mez.diferidos or nombre not in mez.sonidos:
+            recargar = True
+        else:
+            mez.registrar(nombre, mez.sonidos[nombre] / f)
+    return n, recargar

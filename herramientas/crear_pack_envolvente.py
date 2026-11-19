@@ -25,7 +25,6 @@ from juego import catalogo_sonidos as cat, sintesis          # noqa: E402
 FUENTES = os.path.join(RAIZ, "adjuntos", "packs", "fuentes_envolvente")
 BASE = os.path.join(RAIZ, "data", "sonidos", "realista")
 DESTINO = os.path.join(RAIZ, "data", "sonidos", "envolvente")
-ORIENTACION = ("Orientación y GPS", "Localizadores", "Firmas de los lugares")
 MAXIMO = 60.0            # segundos
 FUNDIDO = 2.5            # segundos que se solapan el final y el principio de un ambiente
 NIVEL = 0.10             # volumen medio (RMS) al que se dejan los ambientes
@@ -33,11 +32,10 @@ EXT = (".wav", ".ogg", ".flac", ".mp3")
 
 
 SERIE = os.path.join(RAIZ, "data", "sonidos", "por_defecto")
-_INDICES = {k for k, g in enumerate(cat.GRUPOS) if g[0] in ORIENTACION}
 
 
 def es_orientacion(nombre):
-    return cat.grupo_de(nombre) in _INDICES
+    return cat.es_orientacion(nombre)          # balizas, tonos, semáforos, radar, localizadores y sonidos de los lugares
 
 
 def bucle(d, sr):
