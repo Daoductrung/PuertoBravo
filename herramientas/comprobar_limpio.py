@@ -111,12 +111,19 @@ def comprobar(raiz):
             problemas.append("Falta el generador de voces: " + os.path.join("data", "phonon", n))
     if not hay("LICENCIA_Phonon_Gradium.txt"):
         problemas.append("Falta LICENCIA_Phonon_Gradium.txt")
+    # cuántos sonidos tiene el juego lo dicen los de serie del código fuente: así no hay que tocar esto en cada versión
+    def _sonidos(ruta):
+        return {os.path.splitext(f)[0] for f in os.listdir(ruta) if f.lower().endswith((".flac", ".ogg", ".wav", ".mp3"))}
+    fuente = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "sonidos", "por_defecto")
+    esperados = _sonidos(fuente) if os.path.isdir(fuente) else None
     for pack in ("por_defecto", "realista", "alternativo", "retro", "envolvente"):
         ruta = os.path.join(data, "sonidos", pack)
-        if os.path.isdir(ruta):
-            n = len({os.path.splitext(f)[0] for f in os.listdir(ruta) if f.lower().endswith((".flac", ".ogg", ".wav", ".mp3"))})
-            if n != 243:
-                problemas.append(f"El pack {pack} tiene {n} sonidos y deberían ser 243")
+        if os.path.isdir(ruta) and esperados:
+            tiene = _sonidos(ruta)
+            if tiene != esperados:
+                problemas.append(f"El pack {pack} tiene {len(tiene)} sonidos y deberían ser {len(esperados)}"
+                                 + (": faltan " + ", ".join(sorted(esperados - tiene)[:8]) if esperados - tiene else "")
+                                 + (": sobran " + ", ".join(sorted(tiene - esperados)[:8]) if tiene - esperados else ""))
     mods = os.path.join(data, "mods")
     if os.path.isdir(mods):
         for f in os.listdir(mods):
