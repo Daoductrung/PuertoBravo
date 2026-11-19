@@ -280,3 +280,19 @@ def test_menu_del_registro(con_registro):
     dicho = robot.dicho()
     assert os.path.basename(carpeta) in dicho and "cinco últimas sesiones" in dicho and "Comprímela en un ZIP" in dicho
     assert "GitHub" in dicho and "Mastodon" in dicho and "No contiene nada de lo que escribes" in dicho and "Marca añadida" in dicho
+
+
+def test_fallo_grave_sin_los_avisos_inofensivos_de_la_voz_de_windows(tmp_path):
+    # La voz de Windows lanza por dentro la excepción 0xe0000002 al hablar; el juego sigue, pero Python la anota igual.
+    sapi = ("Windows fatal exception: code 0xe0000002\n\nThread 0x0001 (most recent call first):\n  File \"sapi5.py\", line 92 in speak\n\n"
+            "Current thread 0x0002 (most recent call first):\n  File \"voz.py\", line 86 in decir\n")
+    caida = "Windows fatal exception: access violation\n\nCurrent thread 0x0002 (most recent call first):\n  File \"juego.py\", line 5 in bucle\n"
+    p = tmp_path / "fallo_grave.log"
+    p.write_text(sapi, encoding="utf-8")
+    registro._sanear(str(p))
+    assert not p.exists()                                            # solo traía el aviso de la voz: no es un fallo grave
+    p.write_text(sapi + "\n" + caida + sapi, encoding="utf-8")
+    registro._sanear(str(p))
+    texto = p.read_text(encoding="utf-8")
+    assert "access violation" in texto and "juego.py" in texto      # la caída de verdad se conserva entera
+    assert "0xe0000002" not in texto and "sapi5.py" not in texto

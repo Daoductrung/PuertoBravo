@@ -13,6 +13,33 @@ from .musica import MusicaAmbiente, Radio
 from .voz import Voz
 
 
+def al_frente():
+    """Pone la ventana del juego en primer plano. Tras actualizar la abre el instalador, que va escondido, y Windows no
+    deja que se ponga delante sola: quien juega con lector se quedaría en otra ventana sin saberlo."""
+    if os.name != "nt":
+        return
+    try:
+        import ctypes
+        u32, k32 = ctypes.windll.user32, ctypes.windll.kernel32
+        hwnd = pygame.display.get_wm_info().get("window")
+        if not hwnd or u32.SetForegroundWindow(hwnd):
+            return
+        delante = u32.GetForegroundWindow()
+        suyo = u32.GetWindowThreadProcessId(delante, None) if delante else 0
+        mio = k32.GetCurrentThreadId()
+        unido = bool(suyo and suyo != mio and u32.AttachThreadInput(mio, suyo, True))
+        try:
+            u32.ShowWindow(hwnd, 9)                           # SW_RESTORE
+            u32.BringWindowToTop(hwnd)
+            u32.SetForegroundWindow(hwnd)
+        finally:
+            if unido:
+                u32.AttachThreadInput(mio, suyo, False)
+        registro.info("arranque", "Ventana al frente tras actualizar", conseguido=u32.GetForegroundWindow() == hwnd)
+    except Exception as e:
+        registro.aviso("arranque", "No se pudo poner la ventana al frente: " + str(e))
+
+
 class EventoFalso:
     def __init__(self, key, mod=0, unicode=""):
         self.key = key
@@ -49,6 +76,8 @@ class App:
         if not pruebas:
             self.pantalla = pygame.display.set_mode((900, 420))
             pygame.display.set_caption(NOMBRE)
+            if "--tras-actualizar" in sys.argv or "--actualizacion-fallida" in sys.argv:
+                al_frente()                                   # lo abre el instalador: sin esto, Windows lo deja detrás
             pygame.key.set_repeat(0)
             self.fuente = pygame.font.SysFont("segoeui,arial", 26)
             self.fuente_g = pygame.font.SysFont("segoeui,arial", 38, bold=True)

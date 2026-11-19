@@ -191,11 +191,38 @@ def _preparar_filtro():
             _ocultos.add(v)
 
 
+# Excepciones de Windows que el programa recoge y sigue como si nada, pero que Python anota igual en fallo_grave.log:
+# 0xe0000002 la lanza por dentro la voz de Windows (SAPI) al hablar. No son caídas: se quitan para no confundir.
+INOFENSIVAS = ("0xe0000002",)
+
+
+def _sin_inofensivas(lineas):
+    """Quita los bloques de excepciones de Windows que no tiraron el programa."""
+    fuera, salta = [], False
+    for l in lineas:
+        if l.startswith("Windows fatal exception:"):
+            salta = any(c in l.lower() for c in INOFENSIVAS)
+        elif l.startswith("Fatal Python error") or (l and not l[0].isspace() and not l.startswith(("Thread ", "Current thread ", "Stack ", "Extension modules"))):
+            salta = False
+        if not salta:
+            fuera.append(l)
+    return fuera if any(l.strip() for l in fuera) else []
+
+
 def _sanear(ruta):
-    """fallo_grave.log lo escribe Python directamente, sin pasar por el filtro: se limpia después, línea a línea."""
+    """fallo_grave.log lo escribe Python directamente, sin pasar por el filtro: se limpia después, línea a línea.
+    Si solo traía excepciones inofensivas de Windows, se borra."""
     try:
         with open(ruta, encoding="utf-8", errors="replace") as f:
             lineas = f.read().splitlines()
+        lineas_sin = _sin_inofensivas(lineas)
+        if not lineas_sin:
+            os.remove(ruta)
+            return
+        if lineas_sin != lineas:
+            with open(ruta, "w", encoding="utf-8", newline="\r\n") as f:
+                f.write("\n".join(lineas_sin) + "\n")
+            lineas = lineas_sin
         limpio = [limpiar(l) for l in lineas]
         if limpio != lineas:
             with open(ruta, "w", encoding="utf-8", newline="\r\n") as f:

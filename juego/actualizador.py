@@ -1237,6 +1237,11 @@ def lanzar_instalador(ruta_bat):
         info = subprocess.STARTUPINFO()
         info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         info.wShowWindow = 0                                      # SW_HIDE
+        try:                                                      # el juego que se abra al final podrá ponerse delante
+            import ctypes
+            ctypes.windll.user32.AllowSetForegroundWindow(-1)     # ASFW_ANY
+        except Exception:
+            pass
     subprocess.Popen([de_windows("cmd.exe"), "/c", ruta_bat], cwd=os.path.dirname(ruta_bat), creationflags=banderas, close_fds=True, startupinfo=info)
 
 
