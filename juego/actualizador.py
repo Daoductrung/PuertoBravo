@@ -517,7 +517,9 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
         ":mirar",
     ]
     for exe in OTROS_PROGRAMAS:
-        lineas += [f'tasklist /fi "IMAGENAME eq {exe}" 2>nul | find /i "{exe}" >nul', "if not errorlevel 1 goto ocupado"]
+        # En CSV (/fo csv): en su tabla de siempre, tasklist recorta el nombre del programa a 25 letras, y con eso el panel
+        # del servidor (PuertoBravoServidorPanel.exe, 28) no se encontraba nunca: se copiaba con él todavía abierto.
+        lineas += [f'tasklist /fi "IMAGENAME eq {exe}" /fo csv /nh 2>nul | find /i "{exe}" >nul', "if not errorlevel 1 goto ocupado"]
     lineas += [
         "goto copiar",
         ":ocupado",
