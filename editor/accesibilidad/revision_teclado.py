@@ -47,6 +47,7 @@ PLANTILLA del agente «accesibilidad-wx».
 
 from __future__ import annotations
 
+from juego.i18n import tr
 import unicodedata
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
@@ -80,38 +81,38 @@ SIN_FOCO: tuple[type, ...] = (wx.StaticText, wx.StaticLine, wx.StaticBitmap, wx.
 #: Letras que se pueden pulsar con Alt en un teclado español sin combinaciones raras.
 LETRAS_FACILES = set("abcdefghijklmnopqrstuvwxyzñç0123456789")
 
-_TECLAS_EDICION = {"Ctrl+A", "Ctrl+C", "Ctrl+V", "Ctrl+X", "Ctrl+Z", "Ctrl+Y"}
+_TECLAS_EDICION = {tr("Ctrl+A"), tr("Ctrl+C"), tr("Ctrl+V"), tr("Ctrl+X"), tr("Ctrl+Z"), tr("Ctrl+Y")}
 
 _NOMBRES_TECLA = {
-	wx.WXK_ESCAPE: "Escape", wx.WXK_RETURN: "Intro", wx.WXK_NUMPAD_ENTER: "Intro",
-	wx.WXK_DELETE: "Supr", wx.WXK_INSERT: "Insert", wx.WXK_SPACE: "Espacio",
-	wx.WXK_TAB: "Tab", wx.WXK_BACK: "Retroceso", wx.WXK_HOME: "Inicio",
-	wx.WXK_END: "Fin", wx.WXK_PAGEUP: "Re Pág", wx.WXK_PAGEDOWN: "Av Pág",
-	wx.WXK_UP: "Arriba", wx.WXK_DOWN: "Abajo", wx.WXK_LEFT: "Izquierda",
-	wx.WXK_RIGHT: "Derecha", wx.WXK_CAPITAL: "Bloq Mayús",
+	wx.WXK_ESCAPE: tr("Escape"), wx.WXK_RETURN: tr("Intro"), wx.WXK_NUMPAD_ENTER: tr("Intro"),
+	wx.WXK_DELETE: tr("Supr"), wx.WXK_INSERT: tr("Insert"), wx.WXK_SPACE: tr("Espacio"),
+	wx.WXK_TAB: tr("Tab"), wx.WXK_BACK: tr("Retroceso"), wx.WXK_HOME: tr("Inicio"),
+	wx.WXK_END: tr("Fin"), wx.WXK_PAGEUP: tr("Re Pág"), wx.WXK_PAGEDOWN: tr("Av Pág"),
+	wx.WXK_UP: tr("Arriba"), wx.WXK_DOWN: tr("Abajo"), wx.WXK_LEFT: tr("Izquierda"),
+	wx.WXK_RIGHT: tr("Derecha"), wx.WXK_CAPITAL: tr("Bloq Mayús"),
 }
 _NOMBRES_MODIFICADOR = {
-	"ctrl": "Ctrl", "control": "Ctrl", "alt": "Alt", "mayús": "Mayús", "mayus": "Mayús",
-	"shift": "Mayús", "mayúsculas": "Mayús",
+	"ctrl": tr("Ctrl"), "control": tr("Ctrl"), "alt": tr("Alt"), "mayús": tr("Mayús"), "mayus": tr("Mayús"),
+	"shift": tr("Mayús"), "mayúsculas": tr("Mayús"),
 }
 _ALIAS_TECLA = {
-	"esc": "Escape", "escape": "Escape", "enter": "Intro", "intro": "Intro", "return": "Intro",
-	"del": "Supr", "delete": "Supr", "supr": "Supr", "ins": "Insert", "insert": "Insert",
-	"space": "Espacio", "espacio": "Espacio", "tab": "Tab", "back": "Retroceso",
-	"retroceso": "Retroceso", "home": "Inicio", "inicio": "Inicio", "end": "Fin", "fin": "Fin",
-	"pgup": "Re Pág", "re pág": "Re Pág", "pgdn": "Av Pág", "av pág": "Av Pág",
-	"up": "Arriba", "arriba": "Arriba", "down": "Abajo", "abajo": "Abajo",
-	"left": "Izquierda", "izquierda": "Izquierda", "right": "Derecha", "derecha": "Derecha",
+	"esc": tr("Escape"), "escape": tr("Escape"), "enter": tr("Intro"), "intro": tr("Intro"), "return": tr("Intro"),
+	"del": tr("Supr"), "delete": tr("Supr"), "supr": tr("Supr"), "ins": tr("Insert"), "insert": tr("Insert"),
+	"space": tr("Espacio"), "espacio": tr("Espacio"), "tab": tr("Tab"), "back": tr("Retroceso"),
+	"retroceso": tr("Retroceso"), "home": tr("Inicio"), "inicio": tr("Inicio"), "end": tr("Fin"), "fin": tr("Fin"),
+	"pgup": tr("Re Pág"), "re pág": tr("Re Pág"), "pgdn": tr("Av Pág"), "av pág": tr("Av Pág"),
+	"up": tr("Arriba"), "arriba": tr("Arriba"), "down": tr("Abajo"), "abajo": tr("Abajo"),
+	"left": tr("Izquierda"), "izquierda": tr("Izquierda"), "right": tr("Derecha"), "derecha": tr("Derecha"),
 }
 
 #: Atajo → (motivo, palabra que lo permite en la etiqueta del menú). Ctrl+H
 #: puede estar en un elemento «Ayuda del control enfocado», que es esa misma acción.
 _RESERVADAS: dict[str, tuple[str, str]] = {
-	"Ctrl+H": ("ayuda contextual del control enfocado", "ayuda"),
-	"F10": ("Windows la usa para ir a la barra de menús", ""),
-	"Mayús+F10": ("abre el menú contextual", "contextual"),
-	"Alt+F4": ("Windows la usa para cerrar la ventana", ""),
-	"Alt+Espacio": ("abre el menú de sistema de la ventana", ""),
+	"Ctrl+H": (tr("ayuda contextual del control enfocado"), "ayuda"),
+	"F10": (tr("Windows la usa para ir a la barra de menús"), ""),
+	"Mayús+F10": (tr("abre el menú contextual"), "contextual"),
+	"Alt+F4": (tr("Windows la usa para cerrar la ventana"), ""),
+	"Alt+Espacio": (tr("abre el menú de sistema de la ventana"), ""),
 }
 
 
@@ -124,7 +125,7 @@ class Problema:
 	aviso: bool = False
 
 	def __str__(self) -> str:
-		return f"{'Aviso' if self.aviso else 'Error'} ({self.codigo}): {self.mensaje}"
+		return f"{tr('Aviso') if self.aviso else tr('Error')} ({self.codigo}): {self.mensaje}"
 
 
 @dataclass(frozen=True)
@@ -174,7 +175,7 @@ def normalizar_atajo(texto: str) -> str:
 	tecla = _ALIAS_TECLA.get(partes[-1].lower(), partes[-1])
 	if len(tecla) == 1 or (tecla[:1] in "fF" and tecla[1:].isdigit()):
 		tecla = tecla.upper()
-	orden = [m for m in ("Ctrl", "Alt", "Mayús") if m in modificadores]
+	orden = [m for m in (tr("Ctrl"), tr("Alt"), tr("Mayús")) if m in modificadores]
 	return "+".join([*orden, tecla])
 
 
@@ -182,11 +183,11 @@ def atajo_de_entrada(banderas: int, codigo: int) -> str:
 	"""Texto normalizado de una ``wx.AcceleratorEntry`` (banderas ``wx.ACCEL_*``)."""
 	modificadores = []
 	if banderas & wx.ACCEL_CTRL:
-		modificadores.append("Ctrl")
+		modificadores.append(tr("Ctrl"))
 	if banderas & wx.ACCEL_ALT:
-		modificadores.append("Alt")
+		modificadores.append(tr("Alt"))
 	if banderas & wx.ACCEL_SHIFT:
-		modificadores.append("Mayús")
+		modificadores.append(tr("Mayús"))
 	if codigo in _NOMBRES_TECLA:
 		tecla = _NOMBRES_TECLA[codigo]
 	elif wx.WXK_F1 <= codigo <= wx.WXK_F24:
@@ -194,7 +195,7 @@ def atajo_de_entrada(banderas: int, codigo: int) -> str:
 	elif 32 < codigo < 256:
 		tecla = chr(codigo).upper()
 	else:
-		tecla = f"tecla {codigo}"
+		tecla = tr('tecla {codigo}').format(codigo=(codigo))
 	return "+".join([*modificadores, tecla])
 
 
@@ -213,15 +214,15 @@ def _letra_dificil(letra: str) -> bool:
 def _describir(control: wx.Window) -> str:
 	"""«el botón «Guardar»», «la lista «Elementos»» (nombre tomado de su etiqueta)."""
 	tipos = (
-		(wx.Button, "el botón"), (wx.ToggleButton, "el botón de alternar"), (wx.CheckBox, "la casilla"),
-		(wx.RadioButton, "el botón de opción"), (wx.RadioBox, "el grupo de opciones"),
-		(wx.StaticBox, "el grupo"), (wx.StaticText, "la etiqueta"), (wx.TextCtrl, "el campo de texto"),
-		(wx.ComboBox, "el cuadro combinado"), (wx.Choice, "el desplegable"), (wx.ListBox, "la lista"),
-		(wx.ListCtrl, "la lista"), (wx.TreeCtrl, "el árbol"), (wx.Slider, "el deslizador"),
-		(wx.SpinCtrl, "el campo numérico"), (wx.SpinCtrlDouble, "el campo numérico"),
-		(wx.SearchCtrl, "el campo de búsqueda"), (wx.PickerBase, "el selector"),
+		(wx.Button, tr("el botón")), (wx.ToggleButton, tr("el botón de alternar")), (wx.CheckBox, tr("la casilla")),
+		(wx.RadioButton, tr("el botón de opción")), (wx.RadioBox, tr("el grupo de opciones")),
+		(wx.StaticBox, tr("el grupo")), (wx.StaticText, tr("la etiqueta")), (wx.TextCtrl, tr("el campo de texto")),
+		(wx.ComboBox, tr("el cuadro combinado")), (wx.Choice, tr("el desplegable")), (wx.ListBox, tr("la lista")),
+		(wx.ListCtrl, tr("la lista")), (wx.TreeCtrl, tr("el árbol")), (wx.Slider, tr("el deslizador")),
+		(wx.SpinCtrl, tr("el campo numérico")), (wx.SpinCtrlDouble, tr("el campo numérico")),
+		(wx.SearchCtrl, tr("el campo de búsqueda")), (wx.PickerBase, tr("el selector")),
 	)
-	tipo = next((nombre for clase, nombre in tipos if isinstance(control, clase)), f"el control {type(control).__name__}")
+	tipo = next((nombre for clase, nombre in tipos if isinstance(control, clase)), tr('el control {__name__}').format(__name__=(type(control).__name__)))
 	texto = ""
 	if isinstance(control, (*CON_TEXTO_PROPIO, wx.StaticText, wx.StaticBox, wx.RadioBox)):
 		texto = texto_visible(control.GetLabel())
@@ -229,7 +230,7 @@ def _describir(control: wx.Window) -> str:
 		anterior = _hermano_anterior(control)
 		if isinstance(anterior, wx.StaticText):
 			texto = texto_visible(anterior.GetLabel())
-	return f"{tipo} «{texto}»" if texto else f"{tipo} sin texto (name={control.GetName()!r})"
+	return f"{tipo} «{texto}»" if texto else tr('{tipo} sin texto (name={GetName!r})').format(tipo=(tipo), GetName=(control.GetName()))
 
 
 def _frase(texto: str) -> str:
@@ -300,14 +301,14 @@ def _revisar_letras_menu(menu: wx.Menu, ruta: str, problemas: list[Problema]) ->
 		texto = f"{ruta} > {texto_visible(item.GetItemLabel())}"
 		letra = letra_de_acceso(item.GetItemLabel())
 		if letra is None:
-			problemas.append(Problema(SIN_LETRA, f"El elemento de menú «{texto}» no tiene letra de acceso (&)."))
+			problemas.append(Problema(SIN_LETRA, tr('El elemento de menú «{texto}» no tiene letra de acceso (&).').format(texto=(texto))))
 		elif letra in vistas:
 			problemas.append(Problema(
-				LETRA_REPETIDA, f"La letra «{letra.upper()}» se repite en el menú «{ruta}»: «{vistas[letra]}» y «{texto}»."))
+				LETRA_REPETIDA, tr('La letra «{upper}» se repite en el menú «{ruta}»: «{v}» y «{texto}».').format(upper=(letra.upper()), ruta=(ruta), v=(vistas[letra]), texto=(texto))))
 		else:
 			vistas[letra] = texto
 			if _letra_dificil(letra):
-				problemas.append(Problema(LETRA_DIFICIL, f"«{texto}» usa la letra «{letra}», difícil de pulsar con Alt.", aviso=True))
+				problemas.append(Problema(LETRA_DIFICIL, tr('«{texto}» usa la letra «{letra}», difícil de pulsar con Alt.').format(texto=(texto), letra=(letra)), aviso=True))
 		if item.GetSubMenu() is not None:
 			_revisar_letras_menu(item.GetSubMenu(), texto, problemas)
 
@@ -334,7 +335,7 @@ def revisar_teclado(
 			return
 		letras.append(_Letra(letra, origen, paginas))
 		if _letra_dificil(letra):
-			problemas.append(Problema(LETRA_DIFICIL, f"{_frase(origen)} usa la letra «{letra}», difícil de pulsar con Alt.", aviso=True))
+			problemas.append(Problema(LETRA_DIFICIL, tr('{_frase} usa la letra «{letra}», difícil de pulsar con Alt.').format(_frase=(_frase(origen)), letra=(letra)), aviso=True))
 
 	for control, paginas in controles:
 		descripcion = _describir(control)
@@ -343,15 +344,14 @@ def revisar_teclado(
 			if not isinstance(anterior, wx.StaticText):
 				problemas.append(Problema(
 					SIN_ETIQUETA,
-					f"{_frase(descripcion)} no tiene una etiqueta (wx.StaticText) creada justo antes con el mismo padre: "
-					"el lector no le da nombre y Alt+letra no lleva a él."))
+					tr('{_frase} no tiene una etiqueta (wx.StaticText) creada justo antes con el mismo padre: el lector no le da nombre y Alt+letra no lleva a él.').format(_frase=(_frase(descripcion)))))
 			elif letra_de_acceso(anterior.GetLabel()) is None:
 				problemas.append(Problema(
-					SIN_LETRA, f"La etiqueta «{texto_visible(anterior.GetLabel())}» de {descripcion.split(' «')[0]} no tiene letra de acceso (&)."))
+					SIN_LETRA, tr('La etiqueta «{texto_visible}» de {v} no tiene letra de acceso (&).').format(texto_visible=(texto_visible(anterior.GetLabel())), v=(descripcion.split(' «')[0]))))
 		elif isinstance(control, CON_TEXTO_PROPIO):
 			letra = letra_de_acceso(control.GetLabel())
 			if letra is None:
-				problemas.append(Problema(SIN_LETRA, f"{_frase(descripcion)} no tiene letra de acceso (&)."))
+				problemas.append(Problema(SIN_LETRA, tr('{_frase} no tiene letra de acceso (&).').format(_frase=(_frase(descripcion)))))
 			anotar_letra(letra, descripcion, paginas)
 		elif isinstance(control, wx.RadioBox):
 			anotar_letra(letra_de_acceso(control.GetLabel()), descripcion, paginas)
@@ -359,8 +359,8 @@ def revisar_teclado(
 				opcion = control.GetString(indice)
 				letra = letra_de_acceso(opcion)
 				if letra is None:
-					problemas.append(Problema(SIN_LETRA, f"La opción «{texto_visible(opcion)}» de {descripcion} no tiene letra de acceso (&)."))
-				anotar_letra(letra, f"la opción «{texto_visible(opcion)}»", paginas)
+					problemas.append(Problema(SIN_LETRA, tr('La opción «{texto_visible}» de {descripcion} no tiene letra de acceso (&).').format(texto_visible=(texto_visible(opcion)), descripcion=(descripcion))))
+				anotar_letra(letra, tr('la opción «{texto_visible}»').format(texto_visible=(texto_visible(opcion))), paginas)
 		elif isinstance(control, (wx.StaticText, wx.StaticBox)):
 			letra = letra_de_acceso(control.GetLabel())
 			anotar_letra(letra, descripcion, paginas)
@@ -369,8 +369,7 @@ def revisar_teclado(
 				if siguiente is None or isinstance(siguiente, SIN_FOCO):
 					problemas.append(Problema(
 						LETRA_SIN_DESTINO,
-						f"{_frase(descripcion)} tiene letra de acceso pero no va seguida de un control que reciba el foco: "
-						"créela justo antes de su control."))
+						tr('{_frase} tiene letra de acceso pero no va seguida de un control que reciba el foco: créela justo antes de su control.').format(_frase=(_frase(descripcion)))))
 
 	# Letras repetidas en lo que se ve a la vez.
 	for posicion, primera in enumerate(letras):
@@ -378,7 +377,7 @@ def revisar_teclado(
 			if primera.letra == segunda.letra and _compatibles(primera, segunda):
 				problemas.append(Problema(
 					LETRA_REPETIDA,
-					f"Alt+{primera.letra.upper()} está repetido: {primera.origen} y {segunda.origen}."))
+					tr('Alt+{upper} está repetido: {origen} y {origen2}.').format(upper=(primera.letra.upper()), origen=(primera.origen), origen2=(segunda.origen))))
 
 	# Barra de menús: letras de los títulos y de cada menú.
 	barra = ventana.GetMenuBar() if isinstance(ventana, wx.Frame) else None
@@ -389,10 +388,10 @@ def revisar_teclado(
 			titulo = texto_visible(etiqueta)
 			letra = letra_de_acceso(etiqueta)
 			if letra is None:
-				problemas.append(Problema(SIN_LETRA, f"El menú «{titulo}» de la barra de menús no tiene letra de acceso (&)."))
+				problemas.append(Problema(SIN_LETRA, tr('El menú «{titulo}» de la barra de menús no tiene letra de acceso (&).').format(titulo=(titulo))))
 			elif letra in titulos:
 				problemas.append(Problema(
-					LETRA_REPETIDA, f"Alt+{letra.upper()} abre dos menús de la barra: «{titulos[letra]}» y «{titulo}»."))
+					LETRA_REPETIDA, tr('Alt+{upper} abre dos menús de la barra: «{v}» y «{titulo}».').format(upper=(letra.upper()), v=(titulos[letra]), titulo=(titulo))))
 			else:
 				titulos[letra] = titulo
 			_revisar_letras_menu(barra.GetMenu(indice), titulo, problemas)
@@ -403,8 +402,7 @@ def revisar_teclado(
 				vistos.add(clave)
 				problemas.append(Problema(
 					CHOCA_CON_MENU,
-					f"{_frase(letra_control.origen)} usa Alt+{letra_control.letra.upper()}, que también abre el menú "
-					f"«{titulos[letra_control.letra]}»: uno de los dos queda inalcanzable con esa tecla."))
+					tr('{_frase} usa Alt+{upper}, que también abre el menú «{v}»: uno de los dos queda inalcanzable con esa tecla.').format(_frase=(_frase(letra_control.origen)), upper=(letra_control.letra.upper()), v=(titulos[letra_control.letra]))))
 
 	# Atajos: menús, tablas de aceleradores y teclas propias.
 	atajos: list[tuple[str, str, int | None, str]] = []  # (atajo, origen, id, etiqueta del menú)
@@ -414,19 +412,19 @@ def revisar_teclado(
 				entrada = item.GetAccel()
 				if entrada is not None and entrada.GetKeyCode():
 					atajos.append((
-						atajo_de_entrada(entrada.GetFlags(), entrada.GetKeyCode()), f"el menú «{texto}»",
+						atajo_de_entrada(entrada.GetFlags(), entrada.GetKeyCode()), tr('el menú «{texto}»').format(texto=(texto)),
 						item.GetId(), texto_visible(item.GetItemLabel()).lower()))
 	for banderas, codigo, identificador in getattr(ventana, "_atajos_accesibles", ()):
-		atajos.append((atajo_de_entrada(banderas, codigo), "la tabla de atajos (instalar_atajos)", identificador, ""))
+		atajos.append((atajo_de_entrada(banderas, codigo), tr("la tabla de atajos (instalar_atajos)"), identificador, ""))
 	for texto in teclas_propias:
-		atajos.append((normalizar_atajo(texto), "una tecla atendida a mano", None, ""))
+		atajos.append((normalizar_atajo(texto), tr("una tecla atendida a mano"), None, ""))
 
 	reservadas = dict(_RESERVADAS)
 	if any(isinstance(c, wx.BookCtrlBase) for c, _p in controles):
-		reservadas["Ctrl+Tab"] = reservadas["Ctrl+Mayús+Tab"] = ("cambia de pestaña", "")
+		reservadas["Ctrl+Tab"] = reservadas["Ctrl+Mayús+Tab"] = (tr("cambia de pestaña"), "")
 	if any(hasattr(c, "anunciar_celda") for c, _p in controles):  # ListaAccesible
 		for numero in "1234567890":
-			reservadas[f"Ctrl+{numero}"] = ("la lista la usa para leer una columna", "")
+			reservadas[f"Ctrl+{numero}"] = (tr("la lista la usa para leer una columna"), "")
 	hay_campos_editables = any(
 		isinstance(c, (wx.TextCtrl, wx.ComboBox)) and c.IsEditable() for c, _p in controles)
 
@@ -435,28 +433,27 @@ def revisar_teclado(
 		if atajo in por_atajo:
 			origen_previo, id_previo = por_atajo[atajo]
 			if identificador is None or identificador != id_previo:
-				problemas.append(Problema(ATAJO_REPETIDO, f"{atajo} está en {origen_previo} y en {origen}: solo funcionará uno."))
+				problemas.append(Problema(ATAJO_REPETIDO, tr('{atajo} está en {origen_previo} y en {origen}: solo funcionará uno.').format(atajo=(atajo), origen_previo=(origen_previo), origen=(origen))))
 			continue
 		por_atajo[atajo] = (origen, identificador)
 		motivo, permitida = reservadas.get(atajo, ("", ""))
 		if motivo and not (permitida and permitida in etiqueta_menu):
-			problemas.append(Problema(ATAJO_RESERVADO, f"{atajo} ({origen}) está reservado: {motivo}."))
+			problemas.append(Problema(ATAJO_RESERVADO, tr('{atajo} ({origen}) está reservado: {motivo}.').format(atajo=(atajo), origen=(origen), motivo=(motivo))))
 		elif "Insert" in atajo.split("+") or "Bloq Mayús" in atajo:
-			problemas.append(Problema(ATAJO_RESERVADO, f"{atajo} ({origen}) usa una tecla del lector de pantalla."))
+			problemas.append(Problema(ATAJO_RESERVADO, tr('{atajo} ({origen}) usa una tecla del lector de pantalla.').format(atajo=(atajo), origen=(origen))))
 		modificadores = atajo.split("+")[:-1]
 		tecla = atajo.split("+")[-1].lower()
 		if modificadores == ["Alt"] and len(tecla) == 1:
 			if tecla in titulos:
-				problemas.append(Problema(CHOCA_CON_MENU, f"{atajo} ({origen}) también abre el menú «{titulos[tecla]}»."))
+				problemas.append(Problema(CHOCA_CON_MENU, tr('{atajo} ({origen}) también abre el menú «{v}».').format(atajo=(atajo), origen=(origen), v=(titulos[tecla]))))
 			for letra_control in letras:
 				if letra_control.letra == tecla:
 					problemas.append(Problema(
-						LETRA_REPETIDA, f"{atajo} ({origen}) coincide con la letra de acceso de {letra_control.origen}."))
+						LETRA_REPETIDA, tr('{atajo} ({origen}) coincide con la letra de acceso de {origen2}.').format(atajo=(atajo), origen=(origen), origen2=(letra_control.origen))))
 		if atajo in _TECLAS_EDICION and hay_campos_editables and identificador is not None:
 			problemas.append(Problema(
 				ATAJO_EDICION,
-				f"{atajo} ({origen}) se adelanta a los campos de texto de la ventana: su acción debe copiar, "
-				"pegar o deshacer en el campo enfocado cuando el foco esté en uno.", aviso=True))
+				tr('{atajo} ({origen}) se adelanta a los campos de texto de la ventana: su acción debe copiar, pegar o deshacer en el campo enfocado cuando el foco esté en uno.').format(atajo=(atajo), origen=(origen)), aviso=True))
 
 	# Barra de herramientas: cada botón con equivalente de teclado.
 	if isinstance(ventana, wx.Frame) and ventana.GetToolBar() is not None:
@@ -471,7 +468,7 @@ def revisar_teclado(
 			if not en_menu and identificador not in ids_con_teclado:
 				nombre = herramienta.GetShortHelp() or herramienta.GetLabel() or str(identificador)
 				problemas.append(Problema(
-					SIN_TECLADO, f"El botón «{nombre}» de la barra de herramientas no tiene elemento de menú ni atajo con el mismo id."))
+					SIN_TECLADO, tr('El botón «{nombre}» de la barra de herramientas no tiene elemento de menú ni atajo con el mismo id.').format(nombre=(nombre))))
 
 	descartados = set(ignorar)
 	return [p for p in problemas if p.codigo not in descartados]
@@ -480,10 +477,10 @@ def revisar_teclado(
 def informe(problemas: Sequence[Problema]) -> str:
 	"""Texto plano, una línea por problema, que se lee bien con un lector de pantalla."""
 	if not problemas:
-		return "Sin problemas de teclado."
+		return tr("Sin problemas de teclado.")
 	errores = sum(1 for p in problemas if not p.aviso)
 	avisos = len(problemas) - errores
-	lineas = [f"{errores} errores y {avisos} avisos de teclado:"]
+	lineas = [tr('{errores} errores y {avisos} avisos de teclado:').format(errores=(errores), avisos=(avisos))]
 	lineas.extend(f"- {p}" for p in problemas)
 	return "\n".join(lineas)
 

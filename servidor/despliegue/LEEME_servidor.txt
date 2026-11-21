@@ -12,7 +12,8 @@ Para empezar, en este mismo ordenador:
 
 Y además:
 
-- documentacion.html: la guía completa, paso a paso. Ábrela con tu navegador. Desde el panel se abre con F1.
+- documentacion_es.html: la guía completa, paso a paso. Ábrela con tu navegador. Desde el panel se abre con F1.
+  En inglés, documentacion_en.html (English guide).
 - servidor.conf.ejemplo: todas las opciones, explicadas. El panel las cambia desde Configuración, sin tocar archivos.
 - otros_sistemas: lo que hay que copiar a un Linux, un Mac, un NAS, una Raspberry Pi o un servidor alquilado, y los
   archivos para montarlo con Docker. Allí no hace falta el juego: solo Python.

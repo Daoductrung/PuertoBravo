@@ -8,19 +8,20 @@
 Lo que ya era aleatorio sigue siéndolo: qué coches circulan, quiénes son los peatones (cada uno con su
 nombre, su oficio y su carácter), el tiempo, los sucesos callejeros, la bolsa y los precios de la calle.
 """
+from .i18n import tr
 import random
 
 # id, peso, lo que se anuncia, efectos
 DIAS = [
     ("normal", 46, "", {}),
-    ("rebajas", 8, "Hoy hay rebajas en las armerías.", {"armas": 0.8}),
-    ("mercado", 9, "Hoy hay mercado: comer sale más barato.", {"comida": 0.75}),
-    ("escasez", 6, "Han cortado la carretera de la costa y no llega género: hoy todo está más caro.", {"armas": 1.2, "comida": 1.25}),
-    ("fiesta", 8, "Hoy es fiesta: las calles están llenas de gente y hay menos coches.", {"peatones": 1.6, "trafico": 0.7}),
-    ("huelga", 5, "Hay huelga de transportes: apenas circulan vehículos.", {"trafico": 0.4}),
-    ("operacion", 7, "Operación salida: hoy hay mucho más tráfico.", {"trafico": 1.6}),
-    ("desierto", 5, "Hoy no hay un alma por la calle.", {"peatones": 0.4, "trafico": 0.6}),
-    ("turistas", 6, "Ha llegado un crucero: hay turistas por todas partes y los bares suben los precios.", {"peatones": 1.5, "comida": 1.2}),
+    ("rebajas", 8, tr("Hoy hay rebajas en las armerías."), {"armas": 0.8}),
+    ("mercado", 9, tr("Hoy hay mercado: comer sale más barato."), {"comida": 0.75}),
+    ("escasez", 6, tr("Han cortado la carretera de la costa y no llega género: hoy todo está más caro."), {"armas": 1.2, "comida": 1.25}),
+    ("fiesta", 8, tr("Hoy es fiesta: las calles están llenas de gente y hay menos coches."), {"peatones": 1.6, "trafico": 0.7}),
+    ("huelga", 5, tr("Hay huelga de transportes: apenas circulan vehículos."), {"trafico": 0.4}),
+    ("operacion", 7, tr("Operación salida: hoy hay mucho más tráfico."), {"trafico": 1.6}),
+    ("desierto", 5, tr("Hoy no hay un alma por la calle."), {"peatones": 0.4, "trafico": 0.6}),
+    ("turistas", 6, tr("Ha llegado un crucero: hay turistas por todas partes y los bares suben los precios."), {"peatones": 1.5, "comida": 1.2}),
 ]
 
 

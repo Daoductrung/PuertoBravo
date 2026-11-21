@@ -43,6 +43,7 @@ POR_DEFECTO = {
     "voz_tono": 0,                 # de -10 a 10
     "voz_volumen": 100,            # de 0 a 100
     "detalle_voz": "normal",       # cuánto explica el juego al hablar: mucho, normal o poco
+    "historial_al_final": True,    # cada mensaje nuevo lleva el historial (Re Pág y Av Pág) al final; con no, se queda donde lo dejaste
     "vol_senales": 1.0,            # volumen propio de balizas, radar, tonos de puntería y sonidos de los lugares
     "red_upnp": True,              # al abrir tu partida, intentar abrir el puerto del router automáticamente
     "mod_enemigos": False,         # modificador: los enemigos aguantan la mitad más
@@ -102,6 +103,9 @@ POR_DEFECTO = {
     "consecuencias": "suave",      # vida, reputación y consecuencias: apagado | suave | normal | exigente
     "impuestos_facturas": True,    # facturas de tus casas e impuestos de tus propiedades y negocios, cada cierto tiempo y con aviso
     "antecedentes": True,          # las detenciones y las multas dejan antecedentes penales, que caducan
+    "vida_en_persona": True,       # la vida social se vive en persona: desde el móvil se llama, se escribe y se queda (encuentros.py)
+    "idioma": "auto",              # idioma del juego: auto (el del sistema) o un código, es, en... (i18n.py); vale al reiniciar
+    "horarios": "apagado",         # horarios: apagado, solo de la gente, o de la gente y de los locales
     "pareja_familiar": True,       # relaciones sentimentales aptas para todos: conocerse, citas, compromiso, convivir y boda
     "oficio_policia": False,       # modo: poder ingresar en la policía y trabajar de agente
     "radio_coches": True,          # en un servidor, oír floja la emisora del juego que lleva el vehículo de otro jugador que está cerca
@@ -110,6 +114,7 @@ POR_DEFECTO = {
     "red_nombre": "",              # cómo te ven tus amigos; vacío = el nombre de tu personaje
     "red_puerto": 47810,
     "red_ultima": "",              # última dirección a la que te uniste
+    "comp_auto": True,             # buscar componentes nuevos al arrancar: idiomas, voces, packs... (solo avisa)
     "act_auto": True,              # buscar una versión nueva al arrancar (solo avisa)
     "act_fuente": "servidor",      # servidor | github | ambas | personalizada
     "act_url": "",                 # dirección de version.json para la fuente personalizada
@@ -127,6 +132,7 @@ OPCIONES = {
     "charla_peatones": ["nada", "pocas", "algunas", "muchas"],
     "reconquista": ["apagado", "tranquilo", "normal", "duro"],
     "consecuencias": ["apagado", "suave", "normal", "exigente"],
+    "horarios": ["apagado", "gente", "todo"],
     "escolta_misiones": ["no", "moderado", "fuerte"],
     "act_fuente": ["servidor", "github", "ambas", "personalizada"],
     "motor_sonido": ["clasico", "envolvente"],

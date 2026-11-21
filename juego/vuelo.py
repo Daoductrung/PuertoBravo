@@ -15,6 +15,7 @@ Hasta ahora volar era ir por encima de todo, y cambiar de localidad, un salto de
 
 Todo lo que es un número o una frase está en los datos (vida.json: vuelo, aeronaves y mapa_aire).
 """
+from .i18n import tr
 import math
 import random
 
@@ -43,56 +44,56 @@ AJ = Ajustes("vuelo", {
     # vuelos comerciales
     "vuelo_base": 180, "vuelo_km": 9, "vuelo_ofertas": 3, "vuelo_propio": 25, "vuelo_confort": 10, "vuelo_prestigio": 1,
 }, {
-    "torre_despegue": ["{campo}, autorizado a despegar. Viento de {viento}. Rumbo {rumbo} hacia {destino}, {km} kilómetros.",
-                       "Aquí {campo}. Pista libre. Viento de {viento}. {destino} queda a {km} kilómetros, rumbo {rumbo}."],
-    "torre_salida": ["Dejas {origen}. Rumbo {rumbo} hacia {destino}, {km} kilómetros. Viento de {viento}.",
-                     "Control de {origen}: te veo salir hacia {destino}, rumbo {rumbo}, {km} kilómetros. Viento de {viento}."],
-    "torre_crucero": ["Nivel de crucero, {alt} metros. Buen vuelo.", "A {alt} metros y en rumbo. Te quedan {km} kilómetros."],
-    "torre_aprox": ["Torre de {campo}: te tengo a {km} kilómetros. Baja a {alt} metros y mantén rumbo {rumbo}.",
-                    "{campo}, aproximación. Estás a {km} kilómetros: desciende a {alt} metros, rumbo {rumbo}."],
-    "torre_final": ["En final. Bien encarado. Autorizado a aterrizar.", "Pista a la vista. Sigue así: autorizado."],
-    "torre_frustrada": ["Demasiado {motivo}. Motor y al aire: da otra vuelta y vuelve a entrar.", "No así: vienes demasiado {motivo}. Aproximación frustrada, repite."],
-    "torre_guiada": ["Te llevo yo. Sigue mis indicaciones y no toques nada.", "Tranquilidad: te guío hasta el suelo."],
-    "frases_aterrizaje": ["Tocas tierra con suavidad en {campo}.", "Las ruedas besan la pista de {campo}. Buen aterrizaje."],
-    "frases_aterrizaje_duro": ["Tocas tierra con un golpe seco en {campo}: el aparato se resiente.", "Aterrizaje duro en {campo}. Algo ha crujido."],
-    "frases_sobrevuelo": ["Entras volando bajo sobre {destino}. Busca dónde posarte.", "Ya tienes {destino} debajo. Elige dónde bajas."],
-    "frases_turbulencia": ["Turbulencias. El aparato se zarandea.", "Entras en una zona de aire revuelto: agárrate."],
-    "frases_turbulencia_fin": ["El aire se calma.", "Se acabaron las turbulencias."],
-    "torre_trafico": ["Tráfico de frente a tu misma altitud, a pocos kilómetros. Sube o baja cien metros, ya.",
-                      "Atención: un aparato viene hacia ti a tu altura. Cambia de nivel, cien metros arriba o abajo."],
-    "frases_trafico_libre": ["Separación suficiente. El otro aparato pasa de largo.", "Bien. Tráfico librado."],
-    "frases_trafico_susto": ["El otro aparato pasa rozándote. La torre te abre un expediente.", "Por muy poco. Lo vas a ver en un papel con membrete."],
-    "torre_tormenta": ["Meteorología: una tormenta en tu rumbo, a {km} kilómetros. Tú decides.", "Hay un frente de tormenta delante, a {km} kilómetros."],
-    "frases_tormenta_dentro": ["Estás dentro de la tormenta: agua, rayos y un aire que no perdona.", "La tormenta te envuelve. El aparato cruje."],
-    "frases_tormenta_fuera": ["Sales de la tormenta.", "La tormenta queda atrás."],
-    "frases_tormenta_encima": ["Pasas por encima de la tormenta: abajo se ven los relámpagos.", "La tormenta queda debajo de ti."],
-    "frases_paisaje": ["Dejas {lugar} a tu {lado}, a {km} kilómetros.", "A tu {lado}, a {km} kilómetros, {lugar}."],
-    "frases_obstaculo": ["¡Obstáculo delante! Un tendido eléctrico: sube.", "¡Una loma justo delante! Arriba, ya.", "¡Cables! Gana altura."],
-    "frases_obstaculo_libre": ["Lo libras por arriba.", "Pasas por encima. Por poco."],
-    "frases_obstaculo_roce": ["Rozas algo con la panza del aparato. Has perdido piezas.", "Un golpe seco por debajo: has tocado."],
-    "frases_reserva": ["Combustible en reserva: te queda un {pct} por ciento.", "Queda poco combustible: un {pct} por ciento."],
-    "frases_critico": ["¡Combustible crítico! Un {pct} por ciento. Aterriza ya.", "Casi sin combustible: {pct} por ciento. Busca dónde bajar."],
-    "frases_sin_motor": ["El motor tose y se para: no queda combustible. Planeas.", "Silencio. Te has quedado sin combustible y bajas planeando."],
-    "frases_forzoso": ["Aterrizaje forzoso: el aparato se arrastra por el suelo y se para.", "Te posas como puedes. No ha sido bonito."],
-    "frases_caida": ["El aparato cae y se estrella. Sales de los restos como puedes.", "Golpe brutal contra el suelo. Sigues vivo de milagro."],
-    "frases_radar": ["El radar te sigue: mientras vueles por encima de {alt} metros, saben dónde estás.", "Te tienen en la pantalla. Por debajo de {alt} metros no te ven."],
-    "frases_radar_perdido": ["Te han perdido en el radar.", "Para el radar, has desaparecido."],
-    "frases_radar_otra_vez": ["Vuelves a salir en el radar.", "Has subido demasiado: el radar te tiene otra vez."],
-    "frases_te_esperan": ["En {campo} te estaban esperando: coches patrulla en la pista.", "Nada más tocar tierra en {campo} lo ves: la policía te esperaba."],
-    "frases_reconocen": ["En {campo} alguien reconoce el aparato y descuelga un teléfono.", "El de la torre de {campo} mira dos veces la matrícula. Mala señal."],
-    "frases_secuestro": ["Encañonas al piloto, que salta a la pista con las manos en alto. El aparato es tuyo. Toda la comarca lo va a saber.",
-                         "Subes de un salto y echas al piloto. Por megafonía ya están dando la alarma."],
-    "frases_encargo_hecho": ["Unos tipos salen de entre los árboles, miran el aparato y te pagan sin preguntar: {paga} euros.",
-                             "El comprador cuenta los billetes mientras los suyos cubren el aparato con una lona: {paga} euros."],
-    "frases_encargo_radar": ["Aquí no hay nadie: te han seguido por el radar y el comprador se ha esfumado. No hay paga.",
-                             "El comprador no aparece. Con el radar encima, nadie se acerca."],
-    "frases_piloto_oferta": ["{que} a {destino}: {km} kilómetros, {paga} euros."],
-    "frases_piloto_sale": ["Pasaje a bordo. Destino, {destino}.", "Carga estibada y papeles en regla. Destino, {destino}."],
-    "frases_piloto_llega": ["Vuelo cumplido. Cobras {paga} euros.", "Entregado en {destino}. La compañía te paga {paga} euros."],
-    "frases_piloto_propina": ["Vuelo tranquilo: te dan {extra} euros más.", "Ni un bache: {extra} euros de gratificación."],
-    "frases_piloto_queja": ["El viaje ha sido movido: te descuentan {extra} euros.", "Hay quejas por el vuelo: {extra} euros menos."],
-    "pasajes": ["Tres ejecutivos con prisa", "Una familia con maletas", "Un equipo de rodaje", "Dos médicos con una nevera", "Unos novios y su fotógrafo", "Un geólogo y sus cajas"],
-    "cargas": ["Correo urgente", "Repuestos para un taller", "Medicinas", "Marisco en hielo", "Una pieza de turbina", "Instrumentos de una orquesta"],
+    "torre_despegue": [tr("{campo}, autorizado a despegar. Viento de {viento}. Rumbo {rumbo} hacia {destino}, {km} kilómetros."),
+                       tr("Aquí {campo}. Pista libre. Viento de {viento}. {destino} queda a {km} kilómetros, rumbo {rumbo}.")],
+    "torre_salida": [tr("Dejas {origen}. Rumbo {rumbo} hacia {destino}, {km} kilómetros. Viento de {viento}."),
+                     tr("Control de {origen}: te veo salir hacia {destino}, rumbo {rumbo}, {km} kilómetros. Viento de {viento}.")],
+    "torre_crucero": [tr("Nivel de crucero, {alt} metros. Buen vuelo."), tr("A {alt} metros y en rumbo. Te quedan {km} kilómetros.")],
+    "torre_aprox": [tr("Torre de {campo}: te tengo a {km} kilómetros. Baja a {alt} metros y mantén rumbo {rumbo}."),
+                    tr("{campo}, aproximación. Estás a {km} kilómetros: desciende a {alt} metros, rumbo {rumbo}.")],
+    "torre_final": [tr("En final. Bien encarado. Autorizado a aterrizar."), tr("Pista a la vista. Sigue así: autorizado.")],
+    "torre_frustrada": [tr("Demasiado {motivo}. Motor y al aire: da otra vuelta y vuelve a entrar."), tr("No así: vienes demasiado {motivo}. Aproximación frustrada, repite.")],
+    "torre_guiada": [tr("Te llevo yo. Sigue mis indicaciones y no toques nada."), tr("Tranquilidad: te guío hasta el suelo.")],
+    "frases_aterrizaje": [tr("Tocas tierra con suavidad en {campo}."), tr("Las ruedas besan la pista de {campo}. Buen aterrizaje.")],
+    "frases_aterrizaje_duro": [tr("Tocas tierra con un golpe seco en {campo}: el aparato se resiente."), tr("Aterrizaje duro en {campo}. Algo ha crujido.")],
+    "frases_sobrevuelo": [tr("Entras volando bajo sobre {destino}. Busca dónde posarte."), tr("Ya tienes {destino} debajo. Elige dónde bajas.")],
+    "frases_turbulencia": [tr("Turbulencias. El aparato se zarandea."), tr("Entras en una zona de aire revuelto: agárrate.")],
+    "frases_turbulencia_fin": [tr("El aire se calma."), tr("Se acabaron las turbulencias.")],
+    "torre_trafico": [tr("Tráfico de frente a tu misma altitud, a pocos kilómetros. Sube o baja cien metros, ya."),
+                      tr("Atención: un aparato viene hacia ti a tu altura. Cambia de nivel, cien metros arriba o abajo.")],
+    "frases_trafico_libre": [tr("Separación suficiente. El otro aparato pasa de largo."), tr("Bien. Tráfico librado.")],
+    "frases_trafico_susto": [tr("El otro aparato pasa rozándote. La torre te abre un expediente."), tr("Por muy poco. Lo vas a ver en un papel con membrete.")],
+    "torre_tormenta": [tr("Meteorología: una tormenta en tu rumbo, a {km} kilómetros. Tú decides."), tr("Hay un frente de tormenta delante, a {km} kilómetros.")],
+    "frases_tormenta_dentro": [tr("Estás dentro de la tormenta: agua, rayos y un aire que no perdona."), tr("La tormenta te envuelve. El aparato cruje.")],
+    "frases_tormenta_fuera": [tr("Sales de la tormenta."), tr("La tormenta queda atrás.")],
+    "frases_tormenta_encima": [tr("Pasas por encima de la tormenta: abajo se ven los relámpagos."), tr("La tormenta queda debajo de ti.")],
+    "frases_paisaje": [tr("Dejas {lugar} a tu {lado}, a {km} kilómetros."), tr("A tu {lado}, a {km} kilómetros, {lugar}.")],
+    "frases_obstaculo": [tr("¡Obstáculo delante! Un tendido eléctrico: sube."), tr("¡Una loma justo delante! Arriba, ya."), tr("¡Cables! Gana altura.")],
+    "frases_obstaculo_libre": [tr("Lo libras por arriba."), tr("Pasas por encima. Por poco.")],
+    "frases_obstaculo_roce": [tr("Rozas algo con la panza del aparato. Has perdido piezas."), tr("Un golpe seco por debajo: has tocado.")],
+    "frases_reserva": [tr("Combustible en reserva: te queda un {pct} por ciento."), tr("Queda poco combustible: un {pct} por ciento.")],
+    "frases_critico": [tr("¡Combustible crítico! Un {pct} por ciento. Aterriza ya."), tr("Casi sin combustible: {pct} por ciento. Busca dónde bajar.")],
+    "frases_sin_motor": [tr("El motor tose y se para: no queda combustible. Planeas."), tr("Silencio. Te has quedado sin combustible y bajas planeando.")],
+    "frases_forzoso": [tr("Aterrizaje forzoso: el aparato se arrastra por el suelo y se para."), tr("Te posas como puedes. No ha sido bonito.")],
+    "frases_caida": [tr("El aparato cae y se estrella. Sales de los restos como puedes."), tr("Golpe brutal contra el suelo. Sigues vivo de milagro.")],
+    "frases_radar": [tr("El radar te sigue: mientras vueles por encima de {alt} metros, saben dónde estás."), tr("Te tienen en la pantalla. Por debajo de {alt} metros no te ven.")],
+    "frases_radar_perdido": [tr("Te han perdido en el radar."), tr("Para el radar, has desaparecido.")],
+    "frases_radar_otra_vez": [tr("Vuelves a salir en el radar."), tr("Has subido demasiado: el radar te tiene otra vez.")],
+    "frases_te_esperan": [tr("En {campo} te estaban esperando: coches patrulla en la pista."), tr("Nada más tocar tierra en {campo} lo ves: la policía te esperaba.")],
+    "frases_reconocen": [tr("En {campo} alguien reconoce el aparato y descuelga un teléfono."), tr("El de la torre de {campo} mira dos veces la matrícula. Mala señal.")],
+    "frases_secuestro": [tr("Encañonas al piloto, que salta a la pista con las manos en alto. El aparato es tuyo. Toda la comarca lo va a saber."),
+                         tr("Subes de un salto y echas al piloto. Por megafonía ya están dando la alarma.")],
+    "frases_encargo_hecho": [tr("Unos tipos salen de entre los árboles, miran el aparato y te pagan sin preguntar: {paga} euros."),
+                             tr("El comprador cuenta los billetes mientras los suyos cubren el aparato con una lona: {paga} euros.")],
+    "frases_encargo_radar": [tr("Aquí no hay nadie: te han seguido por el radar y el comprador se ha esfumado. No hay paga."),
+                             tr("El comprador no aparece. Con el radar encima, nadie se acerca.")],
+    "frases_piloto_oferta": [tr("{que} a {destino}: {km} kilómetros, {paga} euros.")],
+    "frases_piloto_sale": [tr("Pasaje a bordo. Destino, {destino}."), tr("Carga estibada y papeles en regla. Destino, {destino}.")],
+    "frases_piloto_llega": [tr("Vuelo cumplido. Cobras {paga} euros."), tr("Entregado en {destino}. La compañía te paga {paga} euros.")],
+    "frases_piloto_propina": [tr("Vuelo tranquilo: te dan {extra} euros más."), tr("Ni un bache: {extra} euros de gratificación.")],
+    "frases_piloto_queja": [tr("El viaje ha sido movido: te descuentan {extra} euros."), tr("Hay quejas por el vuelo: {extra} euros menos.")],
+    "pasajes": [tr("Tres ejecutivos con prisa"), tr("Una familia con maletas"), tr("Un equipo de rodaje"), tr("Dos médicos con una nevera"), tr("Unos novios y su fotógrafo"), tr("Un geólogo y sus cajas")],
+    "cargas": [tr("Correo urgente"), tr("Repuestos para un taller"), tr("Medicinas"), tr("Marisco en hielo"), tr("Una pieza de turbina"), tr("Instrumentos de una orquesta")],
     "sitios_discretos": ["monumento", "pesca", "tesoro", "feria", "protectora", "desguace", "taller"],
 }, cero=("consumo_local", "viento_max", "frustradas", "peso_turbulencia", "peso_trafico", "peso_tormenta", "peso_paisaje", "trafico_multa", "tormenta_dano",
          "obstaculo_dano", "duro_dano", "secuestro_reconocen", "vuelo_propio", "vuelo_confort", "vuelo_prestigio", "forzoso_min", "hangar_impago"))
@@ -267,11 +268,11 @@ class Vuelo:
     def vuelo_texto_subir(self, v):
         self.vuelo_prep(v)
         a = aeronave(v.modelo)
-        t = " Estás en tierra. Flecha arriba despega; en el aire, izquierda y derecha giran, la D sube y la A baja. Para aterrizar, frena y pulsa F"
-        t += ": con este aparato hace falta una pista, la de un aeropuerto o un aeródromo." if a["pista"] else " sobre una calle, un helipuerto o un espacio abierto."
+        t = tr(" Estás en tierra. Flecha arriba despega; en el aire, izquierda y derecha giran, la D sube y la A baja. Para aterrizar, frena y pulsa F")
+        t += tr(": con este aparato hace falta una pista, la de un aeropuerto o un aeródromo.") if a["pista"] else tr(" sobre una calle, un helipuerto o un espacio abierto.")
         if self.vuelo_con_combustible():
-            t += f" Combustible, {int(v.queroseno)} por ciento."
-        return t + " En el borde de la localidad, o con Intro en un helipuerto o un aeropuerto, empiezas una travesía a otra localidad."
+            t += tr(' Combustible, {int} por ciento.').format(int=(int(v.queroseno)))
+        return t + tr(" En el borde de la localidad, o con Intro en un helipuerto o un aeropuerto, empiezas una travesía a otra localidad.")
 
     # ------------------------------------------------------------------ volar dentro de una localidad
     def vuelo_controles(self, v, dt, t):
@@ -289,10 +290,10 @@ class Vuelo:
                     if self.t - getattr(self, "t_aviso_seco", -99) > 6:
                         self.t_aviso_seco = self.t
                         self.son("motor_seco", cat="interfaz")
-                        self.decir("El motor no arranca: no queda combustible. Se reposta en un helipuerto, un aeropuerto o un aeródromo, o desde el móvil, en Mis vehículos.")
+                        self.decir(tr("El motor no arranca: no queda combustible. Se reposta en un helipuerto, un aeropuerto o un aeródromo, o desde el móvil, en Mis vehículos."))
                     return sin
                 v.fase = "despegue"
-                self.decir("Coges carrera: mantén flecha arriba hasta que se levante." if a["pista"] else "Despegas.", True)
+                self.decir(tr("Coges carrera: mantén flecha arriba hasta que se levante.") if a["pista"] else tr("Despegas."), True)
                 self._tono_alt(10, a["techo"])
                 return t
             v.vel = 0.0
@@ -303,7 +304,7 @@ class Vuelo:
                     v.alt += a["ascenso"] * dt
                 elif v.alt <= 0 and pygame.K_UP not in t and abs(v.vel) < 1.0:
                     v.fase = "tierra"
-                    self.decir("Despegue abortado. Mantén flecha arriba hasta que el aparato se levante.")
+                    self.decir(tr("Despegue abortado. Mantén flecha arriba hasta que el aparato se levante."))
                     return sin
             else:
                 v.alt += a["ascenso"] * dt
@@ -311,7 +312,7 @@ class Vuelo:
                 v.alt = AJ("alt_despegue")
                 v.fase = "vuelo"
                 self._tono_alt(v.alt, a["techo"])
-                self.decir(f"En el aire, a {int(v.alt)} metros. La D sube y la A baja.")
+                self.decir(tr('En el aire, a {int} metros. La D sube y la A baja.').format(int=(int(v.alt))))
             return t if v.alt >= 12 or a["pista"] else sin       # el helicóptero sube en vertical; la avioneta coge carrera
         if fase == "aterrizando":
             v.vel = max(0.0, v.vel - 12 * dt)
@@ -341,16 +342,16 @@ class Vuelo:
                 self._tono_alt(v.alt, a["techo"])
                 m = int(round(v.alt / paso) * paso)
                 if m % 100 == 0:
-                    self.decir(f"{m} metros.", True)
+                    self.decir(tr('{m} metros.').format(m=(m)), True)
             alta = AJ("alt_alta")
             if antes < alta <= v.alt:
-                self.decir("Vuelo alto: desde el suelo ya no te siguen." + (" Pero el radar te ve." if self.secuestro else ""))
+                self.decir(tr("Vuelo alto: desde el suelo ya no te siguen.") + (tr(" Pero el radar te ve.") if self.secuestro else ""))
             elif v.alt < alta <= antes:
-                self.decir("Vuelo bajo.")
+                self.decir(tr("Vuelo bajo."))
             if v.alt >= a["techo"] and antes < a["techo"]:
-                self.decir(f"Techo del aparato: {int(a['techo'])} metros. No sube más.")
+                self.decir(tr('Techo del aparato: {int} metros. No sube más.').format(int=(int(a['techo']))))
             elif v.alt <= AJ("alt_minima") and antes > AJ("alt_minima"):
-                self.decir(f"{int(v.alt)} metros: más abajo, solo para aterrizar, con la F.")
+                self.decir(tr('{int} metros: más abajo, solo para aterrizar, con la F.').format(int=(int(v.alt))))
         if self.vuelo_con_combustible():
             self._vuelo_gastar(v, AJ("consumo_local") * dt / 60.0 * (0.4 + 0.6 * min(1.0, abs(v.vel) / max(1.0, v.modelo["vel_max"]))))
         return t
@@ -367,7 +368,7 @@ class Vuelo:
             v.fase = "sin_motor"
             self.son("motor_seco", cat="interfaz")
             self.son("alarma_cabina", cat="interfaz", vol=0.7)
-            self.decir(AJ.frase("frases_sin_motor") + " Dirige el aparato con izquierda y derecha hacia una calle o un espacio abierto.")
+            self.decir(AJ.frase("frases_sin_motor") + tr(" Dirige el aparato con izquierda y derecha hacia una calle o un espacio abierto."))
         return v.queroseno > 0
 
     def _campo_cerca(self, v, radio=None, pista=False):
@@ -382,32 +383,32 @@ class Vuelo:
         if v.fase == "tierra":
             return False
         if v.fase in ("aterrizando", "sin_motor"):
-            self.decir("Ya estás bajando.", True)
+            self.decir(tr("Ya estás bajando."), True)
             return True
         if v.fase == "despegue":
-            self.decir("Estás despegando: espera a estar en el aire.", True)
+            self.decir(tr("Estás despegando: espera a estar en el aire."), True)
             return True
         if abs(v.vel) > 3:
-            self.decir("Frena antes de aterrizar.", True)
+            self.decir(tr("Frena antes de aterrizar."), True)
             return True
         a = aeronave(v.modelo)
         if not self.mundo.transitable(v.x, v.y) and self.mundo.tipo != "mar":
-            self.decir("No puedes aterrizar aquí: debajo hay un edificio. Busca una calle o un espacio abierto; la tecla C te dice sobre qué estás.", True)
+            self.decir(tr("No puedes aterrizar aquí: debajo hay un edificio. Busca una calle o un espacio abierto; la tecla C te dice sobre qué estás."), True)
             return True
         if self.mundo.tipo == "mar":
-            self.decir("No puedes posarte sobre el mar.", True)
+            self.decir(tr("No puedes posarte sobre el mar."), True)
             return True
         v.forzoso = False
         if a["pista"] and self._campo_cerca(v, pista=True) is None:
             if self.t - getattr(v, "t_forzoso", -99) > 8:
                 v.t_forzoso = self.t
                 self.son("alarma_cabina", cat="interfaz", vol=0.6)
-                self.decir(f"Aquí no hay pista. {v.nombre} necesita la de un aeropuerto o un aeródromo; si bajas aquí será un aterrizaje forzoso y el aparato sufrirá. Pulsa F otra vez para hacerlo de todos modos.", True)
+                self.decir(tr('Aquí no hay pista. {nombre} necesita la de un aeropuerto o un aeródromo; si bajas aquí será un aterrizaje forzoso y el aparato sufrirá. Pulsa F otra vez para hacerlo de todos modos.').format(nombre=(v.nombre)), True)
                 return True
             v.forzoso = True
         v.fase = "aterrizando"
         v.bajar_al_tocar = True
-        self.decir(f"Desciendes desde {int(v.alt)} metros.", True)
+        self.decir(tr('Desciendes desde {int} metros.').format(int=(int(v.alt))), True)
         return True
 
     def _vuelo_toca_tierra(self, v):
@@ -419,7 +420,7 @@ class Vuelo:
             dano = v.salud_max * random.uniform(*sorted((AJ("forzoso_min"), AJ("forzoso_max")))) / 100.0
             v.salud = max(1.0, v.salud - dano)
             self.son("choque", vol=0.7)
-            self.decir(AJ.frase("frases_forzoso") + f" Estado, {int(100 * v.salud / v.salud_max)} por ciento.")
+            self.decir(AJ.frase("frases_forzoso") + tr(' Estado, {int} por ciento.').format(int=(int(100 * v.salud / v.salud_max))))
         campo = self._campo_cerca(v)
         self.vuelo_al_posarse(v, campo)
         if getattr(v, "bajar_al_tocar", False) and self.j.veh is v:
@@ -437,7 +438,7 @@ class Vuelo:
         self.son("choque", vol=0.9)
         self.son("aterrizaje", vol=0.7)
         self.app.vibrar(1.0, 0.8, 600)
-        self.decir(AJ.frase("frases_forzoso" if libre else "frases_caida") + f" Estado del aparato, {int(100 * v.salud / v.salud_max)} por ciento. No queda combustible: se pide desde el móvil, en Mis vehículos.")
+        self.decir(AJ.frase("frases_forzoso" if libre else "frases_caida") + tr(' Estado del aparato, {int} por ciento. No queda combustible: se pide desde el móvil, en Mis vehículos.').format(int=(int(100 * v.salud / v.salud_max))))
         if not libre:
             self.vuelo_herida(v)
         self.vuelo_al_posarse(v, None)
@@ -452,8 +453,8 @@ class Vuelo:
         s = self.secuestro
         if s and s["veh"] is v:
             self._secuestro_al_posarse(v, campo)
-        tr = self.vuelo_trabajo
-        if tr and tr.get("veh") is v and campo is not None and campo.mapa == tr["destino_mapa"]:
+        trab = self.vuelo_trabajo
+        if trab and trab.get("veh") is v and campo is not None and campo.mapa == trab["destino_mapa"]:
             self._piloto_cobrar(campo)
 
     def vuelo_borde(self, v):
@@ -463,7 +464,7 @@ class Vuelo:
             return
         self._vuelo_borde_t = self.t
         if v.fase != "vuelo":
-            self.decir("Fin del mapa.")
+            self.decir(tr("Fin del mapa."))
             return
         from . import vuelo_pantalla
         vuelo_pantalla.plan_de_vuelo(self, None)
@@ -502,7 +503,7 @@ class Vuelo:
         s = self.secuestro
         if s and s["veh"] is v and not s["radar"] and self.j.estrellas:      # te perdió el radar por el camino: adonde llegas, nadie te busca
             self.limpiar_busqueda(hablar=False)
-            self.decir("Aquí nadie sabe nada de ti: has dejado atrás a los que te buscaban.")
+            self.decir(tr("Aquí nadie sabe nada de ti: has dejado atrás a los que te buscaban."))
         self.j.stats["travesias"] = self.j.stats.get("travesias", 0) + 1
         self.j.stats["km_volados"] = round(self.j.stats.get("km_volados", 0) + float(d.get("km", 0)), 1)
         self.vuelo_prep(v)
@@ -516,9 +517,9 @@ class Vuelo:
             self.app.vibrar(0.5, 0.3, 250)
             if d.get("duro"):
                 v.salud = max(1.0, v.salud - v.salud_max * AJ("duro_dano") / 100.0)
-                self.decir(AJ.frase("frases_aterrizaje_duro", campo=campo.nombre) + f" Estado, {int(100 * v.salud / v.salud_max)} por ciento. Son las {self.hora_txt()}.")
+                self.decir(AJ.frase("frases_aterrizaje_duro", campo=campo.nombre) + tr(' Estado, {int} por ciento. Son las {hora_txt}.').format(int=(int(100 * v.salud / v.salud_max)), hora_txt=(self.hora_txt())))
             else:
-                self.decir(AJ.frase("frases_aterrizaje", campo=campo.nombre) + f" Son las {self.hora_txt()}. Con F te bajas; con Intro, el menú del campo.")
+                self.decir(AJ.frase("frases_aterrizaje", campo=campo.nombre) + tr(' Son las {hora_txt}. Con F te bajas; con Intro, el menú del campo.').format(hora_txt=(self.hora_txt())))
             self.vuelo_al_posarse(v, campo)
             return
         # entras volando bajo por el lado del que vienes
@@ -534,7 +535,7 @@ class Vuelo:
         s = self.secuestro
         if s and s["veh"] is v and s["radar"] and AJ("secuestro_llegada") >= 1:
             self.poner_busqueda(AJ.entero("secuestro_llegada"))
-        self.decir(AJ.frase("frases_sobrevuelo", destino=m.nombre) + f" Vas a {int(v.alt)} metros, hacia el {M.cardinal(rumbo)}. Son las {self.hora_txt()}.")
+        self.decir(AJ.frase("frases_sobrevuelo", destino=m.nombre) + tr(' Vas a {int} metros, hacia el {cardinal}. Son las {hora_txt}.').format(int=(int(v.alt)), cardinal=(M.cardinal(rumbo)), hora_txt=(self.hora_txt())))
 
     # ------------------------------------------------------------------ combustible en tierra
     def vuelo_repostar(self, v):
@@ -542,14 +543,14 @@ class Vuelo:
         self.vuelo_prep(v)
         falta = 100.0 - v.queroseno
         if falta < 1:
-            self.decir("El depósito está lleno.", True)
+            self.decir(tr("El depósito está lleno."), True)
             return False
         precio = self.vuelo_precio_repostar(v)
         if not self.pagar(precio):
             return False
         v.queroseno = 100.0
         self.son("repostar", cat="interfaz")
-        self.decir(f"Depósito lleno. Con él puedes hacer unos {int(aeronave(v.modelo)['autonomia'])} kilómetros. Te quedan {self.j.dinero} euros.", True)
+        self.decir(tr('Depósito lleno. Con él puedes hacer unos {int} kilómetros. Te quedan {dinero} euros.').format(int=(int(aeronave(v.modelo)['autonomia'])), dinero=(self.j.dinero)), True)
         return True
 
     def vuelo_precio_repostar(self, v_o_pct):
@@ -560,13 +561,13 @@ class Vuelo:
         """Desde el móvil: te traen combustible adonde esté el aparato, para poder despegar."""
         self.vuelo_prep(v)
         if v.queroseno >= 50:
-            self.decir("Todavía le queda más de medio depósito.", True)
+            self.decir(tr("Todavía le queda más de medio depósito."), True)
             return False
         if not self.pagar(self.precio("queroseno_domicilio", 450)):
             return False
         v.queroseno = 50.0
         self.son("repostar", cat="interfaz")
-        self.decir(f"Un camión cisterna llega hasta {v.nombre} y le echa medio depósito.", True)
+        self.decir(tr('Un camión cisterna llega hasta {nombre} y le echa medio depósito.').format(nombre=(v.nombre)), True)
         return True
 
     # ------------------------------------------------------------------ hangares
@@ -602,20 +603,20 @@ class Vuelo:
         """Por qué no cabe una aeronave más en ese hangar, o vacío."""
         h = self.hangar(l)
         if h is None:
-            return "Aquí no tienes plaza de hangar: alquílala o cómprala en este mismo campo."
+            return tr("Aquí no tienes plaza de hangar: alquílala o cómprala en este mismo campo.")
         if h["debe"] > 0:
-            return f"Debes {h['debe']} euros de alquiler de este hangar. Págalos antes."
+            return tr('Debes {debe} euros de alquiler de este hangar. Págalos antes.').format(debe=(h['debe']))
         if len(h["naves"]) >= AJ.entero("hangar_plazas"):
-            return "El hangar está lleno."
+            return tr("El hangar está lleno.")
         if len(self.hangares_naves()) >= AJ.entero("hangar_tope"):
-            return f"No puedes tener más de {AJ.entero('hangar_tope')} aeronaves guardadas entre todos tus hangares."
+            return tr('No puedes tener más de {entero} aeronaves guardadas entre todos tus hangares.').format(entero=(AJ.entero('hangar_tope')))
         if v is not None:
             if not v.modelo.get("vuela"):
-                return "En un hangar solo se guardan aeronaves."
+                return tr("En un hangar solo se guardan aeronaves.")
             if v.tag or getattr(v, "secuestrado", False):
-                return self.motivo_ajeno(v) if v.tag != "secuestro" else "Un aparato robado no se puede guardar aquí: está denunciado en toda la comarca."
+                return self.motivo_ajeno(v) if v.tag != "secuestro" else tr("Un aparato robado no se puede guardar aquí: está denunciado en toda la comarca.")
             if aeronave(v.modelo)["pista"] and l.tipo != "aeropuerto":
-                return f"{v.nombre} necesita pista: no cabe en un helipuerto."
+                return tr('{nombre} necesita pista: no cabe en un helipuerto.').format(nombre=(v.nombre))
         return ""
 
     def hangar_contratar(self, l, comprar):
@@ -629,8 +630,8 @@ class Vuelo:
         h["propia"], h["pagado"], h["debe"] = bool(comprar), self.dia, 0
         self.son("caja", cat="interfaz")
         self.j.stats["hangares"] = len(self.j.hangares)
-        self.decir((f"La plaza de hangar de {l.nombre} es tuya." if comprar else f"Plaza de hangar alquilada en {l.nombre}: {precio} euros al día, que se cobran cada medianoche.")
-                   + f" Caben {AJ.entero('hangar_plazas')} aeronaves.", True)
+        self.decir((tr('La plaza de hangar de {nombre} es tuya.').format(nombre=(l.nombre)) if comprar else tr('Plaza de hangar alquilada en {nombre}: {precio} euros al día, que se cobran cada medianoche.').format(nombre=(l.nombre), precio=(precio)))
+                   + tr(' Caben {entero} aeronaves.').format(entero=(AJ.entero('hangar_plazas'))), True)
         return True
 
     def hangar_dejar(self, l):
@@ -640,12 +641,12 @@ class Vuelo:
             return False
         if h["naves"]:
             self.app.son("error")
-            self.decir("Saca antes las aeronaves que tienes dentro.", True)
+            self.decir(tr("Saca antes las aeronaves que tienes dentro."), True)
             return False
         if h["debe"] > 0 and not self.pagar(h["debe"]):
             return False
         del self.j.hangares[l.id]
-        self.decir(f"Dejas la plaza de hangar de {l.nombre}.", True)
+        self.decir(tr('Dejas la plaza de hangar de {nombre}.').format(nombre=(l.nombre)), True)
         return True
 
     def _ficha_nave(self, v):
@@ -666,7 +667,7 @@ class Vuelo:
             if getattr(v, "fase", "tierra") != "tierra":
                 if not callar:
                     self.app.son("error")
-                    self.decir("Aterriza antes.", True)
+                    self.decir(tr("Aterriza antes."), True)
                 return False
             self.salir_vehiculo(forzado=True)
         self.hangar(l)["naves"].append(self._ficha_nave(v))
@@ -675,7 +676,7 @@ class Vuelo:
         self.quitar_vehiculo(v)
         if not callar:
             self.son("puerta_entrar", cat="interfaz")
-            self.decir(f"{v.nombre} queda en el hangar de {l.nombre}. Aquí no se pierde.", True)
+            self.decir(tr('{nombre} queda en el hangar de {nombre2}. Aquí no se pierde.').format(nombre=(v.nombre), nombre2=(l.nombre)), True)
         return True
 
     def hangar_sacar(self, l, d):
@@ -685,11 +686,11 @@ class Vuelo:
             return None
         if h["debe"] > 0:
             self.app.son("error")
-            self.decir(f"Debes {h['debe']} euros de alquiler de este hangar. Hasta que pagues, no te dejan sacar nada.", True)
+            self.decir(tr('Debes {debe} euros de alquiler de este hangar. Hasta que pagues, no te dejan sacar nada.').format(debe=(h['debe'])), True)
             return None
         if l.mapa != self.mundo.id:
             self.app.son("error")
-            self.decir(f"Esa aeronave está en {self.nombre_lugar(l)}: ve allí a por ella.", True)
+            self.decir(tr('Esa aeronave está en {nombre_lugar}: ve allí a por ella.').format(nombre_lugar=(self.nombre_lugar(l))), True)
             return None
         h["naves"].remove(d)
         x, y, di = self.mundo.plaza_junto_a(l)
@@ -700,7 +701,7 @@ class Vuelo:
         self.hacer_mio(v, callar=True)
         self.son("puerta_salir", cat="interfaz")
         self.fijar_gps(x, y, v.nombre, auto=True, radio=4, callar=True)
-        self.decir(f"Sacan {v.nombre} a la pista. {self.situar(x, y, 'Está')}. Sube con F.", True)
+        self.decir(tr('Sacan {nombre} a la pista. {situar}. Sube con F.').format(nombre=(v.nombre), situar=(self.situar(x, y, tr('Está')))), True)
         return v
 
     def hangar_revisar(self, d):
@@ -709,13 +710,13 @@ class Vuelo:
         smax = misvehiculos._salud_max(self, d["modelo"], d.get("mejoras"))
         falta = max(0.0, 1.0 - float(d.get("salud", smax)) / smax)
         if falta < 0.01:
-            self.decir("Está en perfecto estado.", True)
+            self.decir(tr("Está en perfecto estado."), True)
             return False
         if not self.pagar(self.hangar_precio_revision(d)):
             return False
         d["salud"] = smax
         self.son("reparar", cat="interfaz")
-        self.decir(f"Revisada y reparada: como nueva. Te quedan {self.j.dinero} euros.", True)
+        self.decir(tr('Revisada y reparada: como nueva. Te quedan {dinero} euros.').format(dinero=(self.j.dinero)), True)
         return True
 
     def hangar_precio_revision(self, d):
@@ -727,13 +728,13 @@ class Vuelo:
     def hangar_repostar(self, d):
         pct = float(d.get("queroseno", 100.0))
         if pct >= 99:
-            self.decir("El depósito está lleno.", True)
+            self.decir(tr("El depósito está lleno."), True)
             return False
         if not self.pagar(self.vuelo_precio_repostar(pct)):
             return False
         d["queroseno"] = 100.0
         self.son("repostar", cat="interfaz")
-        self.decir(f"Depósito lleno. Te quedan {self.j.dinero} euros.", True)
+        self.decir(tr('Depósito lleno. Te quedan {dinero} euros.').format(dinero=(self.j.dinero)), True)
         return True
 
     def hangar_destinos(self, cosa):
@@ -753,7 +754,7 @@ class Vuelo:
         h = self.hangar(l)
         if not es_ficha and cosa is self.j.veh and getattr(cosa, "fase", "tierra") != "tierra":
             self.app.son("error")
-            self.decir("Aterriza antes.", True)
+            self.decir(tr("Aterriza antes."), True)
             return False
         motivo = self.hangar_motivo(l, None if es_ficha else cosa)
         if motivo:
@@ -779,7 +780,7 @@ class Vuelo:
             nombre = cosa.nombre
             self.quitar_vehiculo(cosa)
         self.son("motor_avioneta" if (self.modelos.get(h["naves"][-1]["modelo"]) or {}).get("motor") == "motor_avioneta" else "motor_helicoptero", vol=0.4, cat="interfaz")
-        self.decir(f"Un piloto de la casa se lleva {nombre} al hangar de {self.nombre_lugar(l)}.", True)
+        self.decir(tr('Un piloto de la casa se lleva {nombre} al hangar de {nombre_lugar}.').format(nombre=(nombre), nombre_lugar=(self.nombre_lugar(l))), True)
         return True
 
     def _hangares_dia(self):
@@ -800,14 +801,14 @@ class Vuelo:
             cuota = dias * self.precio("hangar_alquiler", 120)
             if h["debe"] <= 0 and j.dinero >= cuota:
                 j.dinero -= cuota
-                self.decir(f"Pagas {cuota} euros por la plaza de hangar de {self.nombre_lugar(l)}.")
+                self.decir(tr('Pagas {cuota} euros por la plaza de hangar de {nombre_lugar}.').format(cuota=(cuota), nombre_lugar=(self.nombre_lugar(l))))
             else:
                 h["debe"] += cuota
                 self.son("factura", cat="interfaz", vol=0.5)
-                self.decir(f"No has pagado el hangar de {self.nombre_lugar(l)}: debes {h['debe']} euros. Tus aeronaves siguen allí, pero no te dejan sacarlas hasta que pagues.")
+                self.decir(tr('No has pagado el hangar de {nombre_lugar}: debes {debe} euros. Tus aeronaves siguen allí, pero no te dejan sacarlas hasta que pagues.').format(nombre_lugar=(self.nombre_lugar(l)), debe=(h['debe'])))
                 if not h["naves"] and h["debe"] >= AJ("hangar_impago") * self.precio("hangar_alquiler", 120) and AJ("hangar_impago") > 0:
                     del j.hangares[pid]
-                    self.decir(f"Te quitan la plaza de {self.nombre_lugar(l)}, que estaba vacía.")
+                    self.decir(tr('Te quitan la plaza de {nombre_lugar}, que estaba vacía.').format(nombre_lugar=(self.nombre_lugar(l))))
 
     def hangar_pagar_deuda(self, l):
         h = self.hangar(l)
@@ -815,7 +816,7 @@ class Vuelo:
             return False
         h["debe"] = 0
         self.son("caja", cat="interfaz")
-        self.decir("Deuda pagada. Ya puedes sacar tus aeronaves.", True)
+        self.decir(tr("Deuda pagada. Ya puedes sacar tus aeronaves."), True)
         return True
 
     # ------------------------------------------------------------------ radar y secuestro
@@ -826,21 +827,21 @@ class Vuelo:
 
     def secuestro_motivo(self, l):
         if self.en_servidor or self.online_activo():
-            return "En un servidor en línea y jugando con amigos no se secuestran aeronaves: la policía y el dinero los lleva el servidor."
+            return tr("En un servidor en línea y jugando con amigos no se secuestran aeronaves: la policía y el dinero los lleva el servidor.")
         if not self.vuelo_real():
-            return "Para secuestrar un aparato hace falta el vuelo real, que tienes apagado en Opciones, Movimiento y conducción."
+            return tr("Para secuestrar un aparato hace falta el vuelo real, que tienes apagado en Opciones, Movimiento y conducción.")
         if self.secuestro:
-            return "Ya tienes un aparato secuestrado."
+            return tr("Ya tienes un aparato secuestrado.")
         if self.j.veh:
-            return "Bájate del vehículo."
+            return tr("Bájate del vehículo.")
         if self.mision or self.trabajo or self.guerra or self.vuelo_trabajo:
-            return "Termina antes lo que tienes entre manos."
+            return tr("Termina antes lo que tienes entre manos.")
         if self.de_servicio():
-            return "Estás de servicio. Si haces eso, se acabó la placa."
+            return tr("Estás de servicio. Si haces eso, se acabó la placa.")
         if self.arma()["tipo"] != "fuego":
-            return "Para secuestrar un aparato tienes que empuñar un arma de fuego."
+            return tr("Para secuestrar un aparato tienes que empuñar un arma de fuego.")
         if self.j.stats.get("secuestro_dia") == self.dia and self.j.stats.get("secuestro_en") == l.id:
-            return "Después de lo de hoy, aquí hay más policías que pasajeros. Vuelve otro día."
+            return tr("Después de lo de hoy, aquí hay más policías que pasajeros. Vuelve otro día.")
         return ""
 
     def secuestro_modelo(self, l):
@@ -890,7 +891,7 @@ class Vuelo:
         self.app.teclas.clear()
         self.salir_interior(silencio=True)
         x, y, di = self.mundo.plaza_junto_a(l)
-        v = self.crear_vehiculo(modelo, x, y, di, None, f"{self.modelos[modelo]['nombre']} de línea", "secuestro")
+        v = self.crear_vehiculo(modelo, x, y, di, None, tr('{nombre} de línea').format(nombre=(self.modelos[modelo]['nombre'])), "secuestro")
         v.propio, v.cerrado, v.secuestrado = True, False, True
         self.vuelo_prep(v)
         v.queroseno = random.uniform(70, 100)
@@ -904,29 +905,29 @@ class Vuelo:
         j.stats["secuestros"] = j.stats.get("secuestros", 0) + 1
         j.stats["secuestro_dia"], j.stats["secuestro_en"] = self.dia, l.id
         self.cambiar_reputacion(4)
-        self.hon_antecedente(AJ.entero("secuestro_gravedad"), f"secuestro de una aeronave en {l.nombre}")
+        self.hon_antecedente(AJ.entero("secuestro_gravedad"), tr('secuestro de una aeronave en {nombre}').format(nombre=(l.nombre)))
         self.decir(AJ.frase("frases_secuestro") + " " + self.vuelo_texto_subir(v).strip(), True)
         self.poner_busqueda(min(5, nivel))
         self.son("alarma", xy=(l.x, l.y), ref=10, maxd=160, vol=0.5)
-        self.decir(AJ.frase("frases_radar", alt=AJ.entero("alt_alta")) + " Si aterrizas en un helipuerto o en un aeropuerto mientras te siga, te estarán esperando.")
+        self.decir(AJ.frase("frases_radar", alt=AJ.entero("alt_alta")) + tr(" Si aterrizas en un helipuerto o en un aeropuerto mientras te siga, te estarán esperando."))
         if encargo:
             dest = self.lug(encargo["lugar"])
-            self.decir(f"El encargo: déjalo junto a {dest.nombre}, en {self.mapas[encargo['mapa']].nombre}, sin el radar encima. Pagan {encargo['paga']} euros. La tecla O te lo recuerda.")
+            self.decir(tr('El encargo: déjalo junto a {nombre}, en {nombre2}, sin el radar encima. Pagan {paga} euros. La tecla O te lo recuerda.').format(nombre=(dest.nombre), nombre2=(self.mapas[encargo['mapa']].nombre), paga=(encargo['paga'])))
         return v
 
     def secuestro_txt(self):
         s = self.secuestro
         if not s:
             return ""
-        t = "Llevas un aparato secuestrado. " + ("El radar te sigue: vuela por debajo de " + str(AJ.entero("alt_alta")) + " metros un rato para que te pierda. " if s["radar"] else "El radar te ha perdido. ")
+        t = tr("Llevas un aparato secuestrado. ") + (tr("El radar te sigue: vuela por debajo de ") + str(AJ.entero("alt_alta")) + tr(" metros un rato para que te pierda. ") if s["radar"] else tr("El radar te ha perdido. "))
         e = s.get("encargo")
         if e:
             dest = self.lug(e["lugar"])
             if dest is not None:
-                donde = self.situar(dest.x, dest.y, "Queda") if dest.mapa == self.mundo.id else f"Está en {self.mapas[e['mapa']].nombre}"
-                t += f"Encargo: dejarlo junto a {dest.nombre}, sin el radar encima, por {e['paga']} euros. {donde}."
+                donde = self.situar(dest.x, dest.y, tr("Queda")) if dest.mapa == self.mundo.id else tr('Está en {nombre}').format(nombre=(self.mapas[e['mapa']].nombre))
+                t += tr('Encargo: dejarlo junto a {nombre}, sin el radar encima, por {paga} euros. {donde}.').format(nombre=(dest.nombre), paga=(e['paga']), donde=(donde))
         else:
-            t += "Aterriza lejos de helipuertos y aeropuertos, o te reconocerán."
+            t += tr("Aterriza lejos de helipuertos y aeropuertos, o te reconocerán.")
         return t
 
     def _secuestro_paso(self, dt):
@@ -962,7 +963,7 @@ class Vuelo:
         if s and s["radar"]:
             s["radar"], s["bajo"] = False, 0.0
             self.son("policia_perdida", cat="interfaz", vol=0.6)
-            self.decir(AJ.frase("frases_radar_perdido") + " No subas por encima de " + str(AJ.entero("alt_alta")) + " metros o volverán a verte.")
+            self.decir(AJ.frase("frases_radar_perdido") + tr(" No subas por encima de ") + str(AJ.entero("alt_alta")) + tr(" metros o volverán a verte."))
 
     def _secuestro_al_posarse(self, v, campo):
         s = self.secuestro
@@ -993,20 +994,20 @@ class Vuelo:
                     self.j.stats["secuestros_entregados"] = self.j.stats.get("secuestros_entregados", 0) + 1
                     self.app.son("mision_ok")
                     self.cambiar_reputacion(3)
-                    self.decir(AJ.frase("frases_encargo_hecho", paga=e["paga"]) + f" Tienes {self.j.dinero}.")
+                    self.decir(AJ.frase("frases_encargo_hecho", paga=e["paga"]) + tr(' Tienes {dinero}.').format(dinero=(self.j.dinero)))
 
     # ------------------------------------------------------------------ vuelos comerciales
     def piloto_motivo(self, l=None):
         if self.en_servidor or self.online_activo():
-            return "En un servidor en línea y jugando con amigos no hay vuelos comerciales: el dinero lo arbitra el servidor."
+            return tr("En un servidor en línea y jugando con amigos no hay vuelos comerciales: el dinero lo arbitra el servidor.")
         if not self.vuelo_real():
-            return "Los vuelos comerciales necesitan el vuelo real, que tienes apagado en Opciones, Movimiento y conducción."
+            return tr("Los vuelos comerciales necesitan el vuelo real, que tienes apagado en Opciones, Movimiento y conducción.")
         if "piloto" not in self.hon_titulos() and self.hon_titulo("piloto") is not None:
-            return f"Para volar con pasaje o con carga hace falta la {self.hon_titulo_nombre('piloto').lower()}. Se saca en una academia, sesión a sesión."
+            return tr('Para volar con pasaje o con carga hace falta la {lower}. Se saca en una academia, sesión a sesión.').format(lower=(self.hon_titulo_nombre('piloto').lower()))
         if self.j.estrellas:
-            return "Con la policía buscándote, la compañía no te deja ni acercarte a la pista."
+            return tr("Con la policía buscándote, la compañía no te deja ni acercarte a la pista.")
         if self.mision or self.trabajo or self.guerra or self.secuestro:
-            return "Termina antes lo que tienes entre manos."
+            return tr("Termina antes lo que tienes entre manos.")
         return ""
 
     def piloto_ofertas(self, l):
@@ -1042,7 +1043,7 @@ class Vuelo:
             return False
         if self.vuelo_trabajo:
             self.app.son("error")
-            self.decir("Ya tienes un vuelo comercial entre manos.", True)
+            self.decir(tr("Ya tienes un vuelo comercial entre manos."), True)
             return False
         dest = self.lug(o["destino"])
         mio = self.j.veh if self.volando() else next((v for v in self.vehiculos if v.modelo.get("vuela") and self.es_mio(v) and not v.muerto and v.dist(l.x, l.y) <= 90), None)
@@ -1056,7 +1057,7 @@ class Vuelo:
         if mio is None:
             modelo = "helicoptero" if o["heli"] or "avioneta" not in self.modelos else "avioneta"
             x, y, di = self.mundo.plaza_junto_a(l)
-            mio = self.crear_vehiculo(modelo, x, y, di, None, f"{self.modelos[modelo]['nombre']} de la compañía", "compania")
+            mio = self.crear_vehiculo(modelo, x, y, di, None, tr('{nombre} de la compañía').format(nombre=(self.modelos[modelo]['nombre'])), "compania")
             mio.propio, mio.cerrado = True, False
             self.vuelo_prep(mio)
             mio.sirena = self.son("loc_vehiculo", bucle=True, xy=(x, y), ref=5, maxd=70)
@@ -1065,29 +1066,29 @@ class Vuelo:
         self.vuelo_trabajo = {"destino": dest.id, "destino_mapa": dest.mapa, "paga": int(o["paga"]), "que": o["que"], "pasaje": bool(o["pasaje"]), "km": o["km"], "veh": mio,
                               "propio": propio, "confort": 0, "origen": l.id, "n": o["n"], "dia": self.dia}
         self.son("notificacion", cat="interfaz")
-        self.decir(f"{o['que']}: {'pasaje' if o['pasaje'] else 'carga'} para {dest.nombre}, en {self.mapas[dest.mapa].nombre}. "
+        self.decir(tr('{que}: {v} para {nombre}, en {nombre2}. ').format(que=(o['que']), v=(tr('pasaje') if o['pasaje'] else tr('carga')), nombre=(dest.nombre), nombre2=(self.mapas[dest.mapa].nombre))
                    + AJ.frase("frases_piloto_sale", destino=self.mapas[dest.mapa].nombre)
-                   + (" Vuelas con tu aparato: te pagan un suplemento." if propio else f" Te dejan {mio.nombre}: {self.situar(mio.x, mio.y, 'está')}. Sube con F.")
-                   + " Despega, sal de la localidad y aterriza en ese campo. La tecla O te lo recuerda.", True)
+                   + (tr(" Vuelas con tu aparato: te pagan un suplemento.") if propio else tr(' Te dejan {nombre}: {situar}. Sube con F.').format(nombre=(mio.nombre), situar=(self.situar(mio.x, mio.y, 'está'))))
+                   + tr(" Despega, sal de la localidad y aterriza en ese campo. La tecla O te lo recuerda."), True)
         return True
 
     def piloto_txt(self):
-        tr = self.vuelo_trabajo
-        if not tr:
+        trab = self.vuelo_trabajo
+        if not trab:
             return ""
-        dest = self.lug(tr["destino"])
+        dest = self.lug(trab["destino"])
         if dest is None:
             return ""
-        donde = self.situar(dest.x, dest.y, "Queda") if dest.mapa == self.mundo.id else f"Está a {km_txt(distancia(punto_aire(self.mundo.id), punto_aire(dest.mapa)))} kilómetros, rumbo {rumbo_txt(rumbo_entre(punto_aire(self.mundo.id), punto_aire(dest.mapa)))}"
-        return f"Vuelo comercial: {tr['que'].lower()}, hasta {self.nombre_lugar(dest)}. {donde}. Pagan {tr['paga']} euros al aterrizar allí."
+        donde = self.situar(dest.x, dest.y, tr("Queda")) if dest.mapa == self.mundo.id else tr('Está a {km_txt} kilómetros, rumbo {rumbo_txt}').format(km_txt=(km_txt(distancia(punto_aire(self.mundo.id), punto_aire(dest.mapa)))), rumbo_txt=(rumbo_txt(rumbo_entre(punto_aire(self.mundo.id), punto_aire(dest.mapa)))))
+        return tr('Vuelo comercial: {lower}, hasta {nombre_lugar}. {donde}. Pagan {paga} euros al aterrizar allí.').format(lower=(trab['que'].lower()), nombre_lugar=(self.nombre_lugar(dest)), donde=(donde), paga=(trab['paga']))
 
-    def piloto_dejar(self, texto="Dejas el vuelo comercial. La compañía busca a otro piloto."):
-        tr = self.vuelo_trabajo
-        if not tr:
+    def piloto_dejar(self, texto=tr("Dejas el vuelo comercial. La compañía busca a otro piloto.")):
+        trab = self.vuelo_trabajo
+        if not trab:
             return
         self.vuelo_trabajo = None
-        v = tr["veh"]
-        if not tr["propio"] and v is not None and not v.muerto and v in self.vehiculos:
+        v = trab["veh"]
+        if not trab["propio"] and v is not None and not v.muerto and v in self.vehiculos:
             if self.j.veh is v and getattr(v, "fase", "tierra") == "tierra":
                 self.salir_vehiculo(forzado=True)
             if self.j.veh is not v:
@@ -1098,48 +1099,48 @@ class Vuelo:
             self.decir(texto, True)
 
     def _piloto_cobrar(self, campo):
-        tr = self.vuelo_trabajo
-        if campo.id != tr["destino"] and campo.mapa == tr["destino_mapa"]:
-            self.decir(f"Este no es el campo: el encargo es para {self.lug(tr['destino']).nombre}.")
+        trab = self.vuelo_trabajo
+        if campo.id != trab["destino"] and campo.mapa == trab["destino_mapa"]:
+            self.decir(tr('Este no es el campo: el encargo es para {nombre}.').format(nombre=(self.lug(trab['destino']).nombre)))
             return
         self.vuelo_trabajo = None
-        v = tr["veh"]
-        paga = tr["paga"]
-        if tr["propio"]:
+        v = trab["veh"]
+        paga = trab["paga"]
+        if trab["propio"]:
             paga += int(paga * AJ("vuelo_propio") / 100.0)
-        extra = int(tr["paga"] * AJ("vuelo_confort") / 100.0)
+        extra = int(trab["paga"] * AJ("vuelo_confort") / 100.0)
         texto = AJ.frase("frases_piloto_llega", paga=paga, destino=campo.nombre)
-        if extra and tr.get("confort", 0) == 0:
+        if extra and trab.get("confort", 0) == 0:
             paga += extra
             texto += " " + AJ.frase("frases_piloto_propina", extra=extra)
-        elif extra and tr.get("confort", 0) >= 2:
+        elif extra and trab.get("confort", 0) >= 2:
             paga -= extra
             texto += " " + AJ.frase("frases_piloto_queja", extra=extra)
         self.dar_dinero(paga)
         self.j.stats["vuelos_comerciales"] = self.j.stats.get("vuelos_comerciales", 0) + 1
-        self.atracadas[f"vuelo:{tr['origen']}:{tr['n']}"] = tr["dia"]      # ese encargo, hoy, ya está hecho
+        self.atracadas[f"vuelo:{trab['origen']}:{trab['n']}"] = trab["dia"]      # ese encargo, hoy, ya está hecho
         if AJ("vuelo_prestigio") > 0:
             self.cambiar_ciudadania(AJ("vuelo_prestigio"))
         self.app.son("mision_ok")
-        self.decir(texto + f" Tienes {self.j.dinero}.")
-        if not tr["propio"] and v is not None and not v.muerto:
+        self.decir(texto + tr(' Tienes {dinero}.').format(dinero=(self.j.dinero)))
+        if not trab["propio"] and v is not None and not v.muerto:
             if self.j.veh is v:
                 self.salir_vehiculo(forzado=True)
             self.quitar_vehiculo(v)
-            self.decir("Entregas el aparato de la compañía en el hangar.")
+            self.decir(tr("Entregas el aparato de la compañía en el hangar."))
 
     def _piloto_paso(self, dt):
-        tr = self.vuelo_trabajo
-        if not tr:
+        trab = self.vuelo_trabajo
+        if not trab:
             return
-        v = tr["veh"]
+        v = trab["veh"]
         if v is None or v.muerto or v not in self.vehiculos:
             self.vuelo_trabajo = None
             self.son("mision_fallo", cat="interfaz")
-            self.decir("Te has quedado sin aparato: el vuelo comercial se cancela.")
+            self.decir(tr("Te has quedado sin aparato: el vuelo comercial se cancela."))
             return
         if self.j.estrellas >= 2:
-            self.piloto_dejar("Con la policía detrás, la compañía te quita el vuelo.")
+            self.piloto_dejar(tr("Con la policía detrás, la compañía te quita el vuelo."))
 
     # ------------------------------------------------------------------ cada fotograma y cada día
     def actualizar_vuelo(self, dt):

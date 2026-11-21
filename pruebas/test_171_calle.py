@@ -551,7 +551,7 @@ def test_rendirse_tiene_tecla_y_boton(app):
     assert mando.ACCIONES["rendirse"][1:3] == (pygame.K_h, pygame.KMOD_SHIFT)
     assert mando.POR_DEFECTO["pie_combo"]["lt"] == mando.POR_DEFECTO["coche_combo"]["lt"] == "rendirse"
     assert any("rendirte ante la policía" in linea for linea in app.mando.lineas_ayuda())
-    manual = open(os.path.join(rutas.base(), "data", "docs", "manual.html"), encoding="utf-8").read()
+    manual = open(os.path.join(rutas.base(), "data", "docs", "manual_es.html"), encoding="utf-8").read()
     assert "Mayúsculas H" in manual and "Rendirse" in manual
 
 
@@ -976,7 +976,7 @@ def test_los_sonidos_nuevos_estan_en_todos_los_packs_y_en_la_guia(app):
             d = sintesis.leer_audio(archivos[n])
             assert len(d) > sintesis.SR * 0.15 and float(abs(d).max()) > 0.05, (c, n)
     assert sintesis.es_bucle("helicoptero_policia") and not sintesis.es_bucle("megafono")
-    guia = open(os.path.join(rutas.base(), "data", "docs", "cambiar_sonidos.html"), encoding="utf-8").read()
+    guia = open(os.path.join(rutas.base(), "data", "docs", "cambiar_sonidos_es.html"), encoding="utf-8").read()
     assert all(n in guia for n in nuevos)
 
 

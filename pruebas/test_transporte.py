@@ -159,7 +159,7 @@ def test_tren_entre_localidades(robot):
     app.viajes_en_pruebas = False
     assert p.mundo.id == "puerto_bravo" and j.stats["trenes"] == 2
     menus_juego.lugar(p, bus)
-    assert all(o.texto.startswith(("Autobús a ", "Volver")) for o in app.pila[-1].opciones)
+    assert all(o.texto.startswith(("Autobús a ", "Volver", "Cajero automático")) for o in app.pila[-1].opciones)      # y el cajero de la estación
     _al_juego(app)
 
 

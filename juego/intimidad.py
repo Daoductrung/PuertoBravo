@@ -5,6 +5,7 @@ Todo se cuenta de forma sensual pero sin escenas explícitas: el juego describe 
 lo que cambia después, y deja el resto a la imaginación. Todas las personas son adultas y siempre
 pueden decir que no; un no se respeta y no hay ninguna opción para forzar a nadie.
 """
+from .i18n import tr
 import random
 
 from . import gente
@@ -12,31 +13,31 @@ from .charla import ficha
 
 # tipo de encuentro: (nombre, lo que se cuenta, ánimo que da, horas)
 ENCUENTROS = {
-    "romantico": ("Una noche romántica", ["Cenáis despacio, con velas, y os quedáis hablando hasta que sobran las palabras.",
-                                          "Suena música bajita. Bailáis en el salón, muy cerca, y lo demás llega solo.",
-                                          "Os miráis un rato largo antes del primer beso. La noche se hace corta."], 24, 8),
-    "apasionado": ("Una noche apasionada", ["No llegáis ni a encender la luz. La ropa va quedando por el pasillo.",
-                                            "Os buscáis con prisa, como si llevarais semanas esperándolo. Nadie duerme mucho.",
-                                            "La puerta se cierra de un golpe y ya no hay nada más en el mundo que vosotros dos."], 26, 8),
-    "jugueton": ("Una noche de risas y juegos", ["Empezáis de broma, con cosquillas y almohadas, y acabáis sin aliento por otros motivos.",
-                                                  "Os retáis, os provocáis, os reís. Es de esas noches en las que todo vale si lo queréis los dos.",
-                                                  "Entre risas y susurros descubrís un par de cosas nuevas el uno del otro."], 22, 7),
-    "tranquilo": ("Una noche tranquila", ["Un masaje lento, una ducha larga, y os dormís abrazados.",
-                                          "Hoy no hay prisa. Caricias, la ventana abierta y el mar de fondo.",
-                                          "Os quedáis piel con piel, hablando bajito, hasta que os vence el sueño."], 20, 9),
+    "romantico": (tr("Una noche romántica"), [tr("Cenáis despacio, con velas, y os quedáis hablando hasta que sobran las palabras."),
+                                          tr("Suena música bajita. Bailáis en el salón, muy cerca, y lo demás llega solo."),
+                                          tr("Os miráis un rato largo antes del primer beso. La noche se hace corta.")], 24, 8),
+    "apasionado": (tr("Una noche apasionada"), [tr("No llegáis ni a encender la luz. La ropa va quedando por el pasillo."),
+                                            tr("Os buscáis con prisa, como si llevarais semanas esperándolo. Nadie duerme mucho."),
+                                            tr("La puerta se cierra de un golpe y ya no hay nada más en el mundo que vosotros dos.")], 26, 8),
+    "jugueton": (tr("Una noche de risas y juegos"), [tr("Empezáis de broma, con cosquillas y almohadas, y acabáis sin aliento por otros motivos."),
+                                                  tr("Os retáis, os provocáis, os reís. Es de esas noches en las que todo vale si lo queréis los dos."),
+                                                  tr("Entre risas y susurros descubrís un par de cosas nuevas el uno del otro.")], 22, 7),
+    "tranquilo": (tr("Una noche tranquila"), [tr("Un masaje lento, una ducha larga, y os dormís abrazados."),
+                                          tr("Hoy no hay prisa. Caricias, la ventana abierta y el mar de fondo."),
+                                          tr("Os quedáis piel con piel, hablando bajito, hasta que os vence el sueño.")], 20, 9),
 }
 GESTOS = {
-    "beso": ("Darle un beso", 4, 4, 35, "Le das un beso. {n} sonríe y te lo devuelve."),
-    "baile": ("Bailar juntos", 5, 5, 20, "Bailáis pegados un par de canciones. {n} se deja llevar."),
-    "masaje": ("Darle un masaje", 6, 5, 45, "Le das un masaje en los hombros. {n} cierra los ojos y suspira."),
-    "susurro": ("Decirle algo al oído", 3, 3, 30, "Le dices algo al oído. {n} se ríe y te mira de otra manera."),
+    "beso": (tr("Darle un beso"), 4, 4, 35, tr("Le das un beso. {n} sonríe y te lo devuelve.")),
+    "baile": (tr("Bailar juntos"), 5, 5, 20, tr("Bailáis pegados un par de canciones. {n} se deja llevar.")),
+    "masaje": (tr("Darle un masaje"), 6, 5, 45, tr("Le das un masaje en los hombros. {n} cierra los ojos y suspira.")),
+    "susurro": (tr("Decirle algo al oído"), 3, 3, 30, tr("Le dices algo al oído. {n} se ríe y te mira de otra manera.")),
 }
 ARTICULOS = [
-    {"id": "preservativos", "nombre": "Caja de preservativos", "precio": 9, "unidades": 6, "desc": "Seis unidades. Evitan sustos: sin ellos, cada encuentro con alguien a quien no conoces bien tiene su riesgo."},
-    {"id": "lenceria", "nombre": "Lencería fina", "precio": 60, "afinidad": 9, "desc": "Un regalo para tu pareja, o para estrenarlo en vuestra próxima noche: la hace más especial."},
-    {"id": "aceite", "nombre": "Aceite de masaje", "precio": 22, "afinidad": 5, "desc": "Con olor a naranja. Mejora las noches tranquilas y los masajes."},
-    {"id": "velas", "nombre": "Velas aromáticas", "precio": 14, "afinidad": 4, "desc": "Para las noches románticas."},
-    {"id": "juguete", "nombre": "Un juguete para dos", "precio": 45, "afinidad": 7, "desc": "Para parejas con confianza. Mejora las noches de risas y juegos."},
+    {"id": "preservativos", "nombre": tr("Caja de preservativos"), "precio": 9, "unidades": 6, "desc": tr("Seis unidades. Evitan sustos: sin ellos, cada encuentro con alguien a quien no conoces bien tiene su riesgo.")},
+    {"id": "lenceria", "nombre": tr("Lencería fina"), "precio": 60, "afinidad": 9, "desc": tr("Un regalo para tu pareja, o para estrenarlo en vuestra próxima noche: la hace más especial.")},
+    {"id": "aceite", "nombre": tr("Aceite de masaje"), "precio": 22, "afinidad": 5, "desc": tr("Con olor a naranja. Mejora las noches tranquilas y los masajes.")},
+    {"id": "velas", "nombre": tr("Velas aromáticas"), "precio": 14, "afinidad": 4, "desc": tr("Para las noches románticas.")},
+    {"id": "juguete", "nombre": tr("Un juguete para dos"), "precio": 45, "afinidad": 7, "desc": tr("Para parejas con confianza. Mejora las noches de risas y juegos.")},
 ]
 MEJORA = {"romantico": "velas", "tranquilo": "aceite", "jugueton": "juguete", "apasionado": "lenceria"}
 
@@ -56,7 +57,7 @@ class Intimidad:
         if not self.pagar(art["precio"]):
             return False
         j.intimos[art["id"]] = j.intimos.get(art["id"], 0) + art.get("unidades", 1)
-        self.decir(f"Compras {art['nombre'].lower()}. Tienes {j.intimos[art['id']]}. Te quedan {j.dinero} euros.", True)
+        self.decir(tr('Compras {lower}. Tienes {v}. Te quedan {dinero} euros.').format(lower=(art['nombre'].lower()), v=(j.intimos[art['id']]), dinero=(j.dinero)), True)
         return True
 
     # ------------------------------------------------------------- ligar
@@ -66,9 +67,9 @@ class Intimidad:
         f = ficha(q)
         n = f["nombre"]
         if not self.me_atrae(f["genero"]):
-            return f"{n} no es tu tipo. Lo puedes cambiar en Opciones, Contenido para adultos."
+            return tr('{n} no es tu tipo. Lo puedes cambiar en Opciones, Contenido para adultos.').format(n=(n))
         if f.get("calabazas"):
-            return f"{n} ya te dijo que no. Déjalo estar."
+            return tr('{n} ya te dijo que no. Déjalo estar.').format(n=(n))
         mi_genero = self.cfg["mi_genero"]
         compatible = f["disponible"] and (mi_genero == "x" or mi_genero in f["le_atraen"])
         encanto = f["confianza"] + (j.animo - 50) * 0.3 + min(20, j.reputacion * 0.15) + j.ciudadania * 0.1 + random.uniform(-15, 15)
@@ -78,14 +79,14 @@ class Intimidad:
             f["calabazas"] = True
             self._trato(f, -3)
             self.cambiar_animo(-2)
-            return f"{n}: " + random.choice(["Eres muy amable, pero no estoy por la labor.", "Gracias, pero tengo pareja.", "No eres mi tipo, lo siento. Sin malos rollos."])
+            return f"{n}: " + random.choice([tr("Eres muy amable, pero no estoy por la labor."), tr("Gracias, pero tengo pareja."), tr("No eres mi tipo, lo siento. Sin malos rollos.")])
         if encanto < 12:
             self._trato(f, 2)
-            return f"{n}: " + random.choice(["Uy, qué directo. Primero invítame a algo, ¿no?", "Ja. Tú no pierdes el tiempo. Ya veremos.", "No vayas tan deprisa, que acabamos de conocernos."])
+            return f"{n}: " + random.choice([tr("Uy, qué directo. Primero invítame a algo, ¿no?"), tr("Ja. Tú no pierdes el tiempo. Ya veremos."), tr("No vayas tan deprisa, que acabamos de conocernos.")])
         self._trato(f, 9 if gente.caracter(f["caracter"])["cumplido"] > 5 else 6)
         self.cambiar_animo(3)
         f["interes"] = True
-        return f"{n}: " + random.choice(["Pues tú tampoco estás nada mal.", "Me gusta cómo me miras. Sigue hablando.", "¿Siempre eres así, o es que hoy te has levantado con suerte?"]) + " Le gustas."
+        return f"{n}: " + random.choice([tr("Pues tú tampoco estás nada mal."), tr("Me gusta cómo me miras. Sigue hablando."), tr("¿Siempre eres así, o es que hoy te has levantado con suerte?")]) + tr(" Le gustas.")
 
     def puede_proponer(self, q):
         f = ficha(q)
@@ -98,20 +99,20 @@ class Intimidad:
         n = f["nombre"]
         if j.estrellas:
             self.app.son("error")
-            self.decir("Con la policía detrás no es momento.", True)
+            self.decir(tr("Con la policía detrás no es momento."), True)
             return False
         if not self.puede_proponer(q):
-            self.decir(f"{n}: " + random.choice(["Para, para. Todavía no.", "No tan rápido. Conóceme un poco más.", "Me caes bien, pero no."]), True)
+            self.decir(f"{n}: " + random.choice([tr("Para, para. Todavía no."), tr("No tan rápido. Conóceme un poco más."), tr("Me caes bien, pero no.")]), True)
             self._trato(f, -4)
             return False
         if f["confianza"] + random.uniform(-10, 20) < 45:
-            self.decir(f"{n}: Hoy no. Pero quédate con mi número.", True)
+            self.decir(tr('{n}: Hoy no. Pero quédate con mi número.').format(n=(n)), True)
             return False
         casa = next((l for l in self.mundo.lugares.values() if l.tipo == "casa" and l.id in j.propiedades), None)
         if casa is None or en_hotel:
             if not self.pagar(self.precio("hotel_cita", 70)):
                 return False
-            donde = "un hotel"
+            donde = tr("un hotel")
         else:
             donde = casa.nombre
             if self.aventura_en_casa(casa):                      # tu pareja vive ahí, y estaba en casa
@@ -130,11 +131,11 @@ class Intimidad:
         j = self.j
         if j.intimos.get("preservativos", 0) > 0:
             j.intimos["preservativos"] -= 1
-            return " Habéis tenido cuidado."
+            return tr(" Habéis tenido cuidado.")
         if desconocido and not j.its and random.random() < 0.12:
             j.its = self.dia
-            return " No habéis usado protección."
-        return " No lleváis protección." if desconocido else ""
+            return tr(" No habéis usado protección.")
+        return tr(" No lleváis protección.") if desconocido else ""
 
     def encuentro(self, nombre, tipo, donde, desconocido=False, pid=None, sintonia=None):
         """Una noche con alguien. Se cuenta sin detalles explícitos y tiene efectos en el ánimo, la salud y la relación.
@@ -162,8 +163,8 @@ class Intimidad:
         if mejora and j.intimos.get(mejora, 0) > 0:
             j.intimos[mejora] -= 1
             animo += 6
-            extra = " " + {"velas": "Las velas hacen su parte.", "aceite": "El aceite de naranja lo cambia todo.", "juguete": "Estrenáis lo que compraste, entre risas.",
-                           "lenceria": "La lencería dura puesta muy poco."}[mejora]
+            extra = " " + {"velas": tr("Las velas hacen su parte."), "aceite": tr("El aceite de naranja lo cambia todo."), "juguete": tr("Estrenáis lo que compraste, entre risas."),
+                           "lenceria": tr("La lencería dura puesta muy poco.")}[mejora]
             if pid:
                 self.sumar_afinidad(pid, 4)
         proteccion = self._proteccion(desconocido)
@@ -177,18 +178,22 @@ class Intimidad:
             self.app.pila.pop()
         self.app.teclas.clear()
         self.app.abrir(Dialogo(self.app, [
-            ("Narrador", f"{titulo} con {nombre}, en {donde}. {random.choice(frases)}{extra}"),
-            ("Narrador", f"Lo que pasa después es solo vuestro.{proteccion} Por la mañana, son las {self.hora_txt()} y te sientes {self.animo_txt()}.")]))
+            (tr("Narrador"), tr('{titulo} con {nombre}, en {donde}. {choice}{extra}').format(titulo=(titulo), nombre=(nombre), donde=(donde), choice=(random.choice(frases)), extra=(extra))),
+            (tr("Narrador"), tr('Lo que pasa después es solo vuestro.{proteccion} Por la mañana, son las {hora_txt} y te sientes {animo_txt}.').format(proteccion=(proteccion), hora_txt=(self.hora_txt()), animo_txt=(self.animo_txt())))]))
 
     def gesto(self, pid, pers, clave):
         """Un gesto de cariño con alguien con quien tienes una relación: beso, baile, masaje o un susurro."""
         nombre, afin, animo, minimo, frase = GESTOS[clave]
         r = self.relacion(pid)
         if r["afinidad"] < minimo and self.j.pareja != pid:
-            self.decir(f"{pers['nombre']} se aparta con una sonrisa. Todavía es pronto para eso.", True)
+            self.decir(tr('{nombre} se aparta con una sonrisa. Todavía es pronto para eso.').format(nombre=(pers['nombre'])), True)
+            return False
+        if self.apesta():                                        # oliendo mal, nada de besos (necesidades.py)
+            from .necesidades import AJ as NEC
+            self.decir(NEC.frase("frases_gesto_sucio", n=pers["nombre"]), True)
             return False
         if self._hecho_hoy(r, "gesto_" + clave):
-            self.decir("Eso ya lo habéis hecho hoy. No hay que gastarlo.", True)
+            self.decir(tr("Eso ya lo habéis hecho hoy. No hay que gastarlo."), True)
             return False
         if clave == "masaje" and self.j.intimos.get("aceite", 0) > 0:
             self.j.intimos["aceite"] -= 1
@@ -196,7 +201,9 @@ class Intimidad:
         self.sumar_afinidad(pid, afin)
         self.cambiar_animo(animo)
         self.son("cita" if clave != "beso" else "afinidad_sube", cat="interfaz", vol=0.7)
-        self.decir(frase.format(n=pers["nombre"]) + f" Ahora {self.afinidad_txt(r)}.", True)
+        self.decir(frase.format(n=pers["nombre"]) + tr(' Ahora {afinidad_txt}.').format(afinidad_txt=(self.afinidad_txt(r))), True)
+        if clave != "susurro":                                   # un beso o un baile con otra persona también se ven (encuentros.py)
+            self.celos(pid)
         return True
 
     # ------------------------------------------------------------- salud
@@ -209,18 +216,18 @@ class Intimidad:
         if dias >= 2:
             self.cambiar_animo(-4)
             if dias == 2:
-                self.decir("Notas molestias desde hace un par de días. Deberías pasar por una farmacia o un hospital a hacerte una prueba.")
+                self.decir(tr("Notas molestias desde hace un par de días. Deberías pasar por una farmacia o un hospital a hacerte una prueba."))
             if dias >= 5 and j.pareja:
                 pers = self.persona_social(j.pareja)
                 if pers:
                     self.sumar_afinidad(j.pareja, -20)
-                    self.decir(f"{pers['nombre']} se ha enterado de lo tuyo y no le ha hecho ninguna gracia.")
+                    self.decir(tr('{nombre} se ha enterado de lo tuyo y no le ha hecho ninguna gracia.').format(nombre=(pers['nombre'])))
 
     def prueba_y_tratamiento(self):
         """En farmacias y hospitales: prueba gratuita y, si hace falta, tratamiento."""
         j = self.j
         if not j.its:
-            self.decir("Te haces la prueba. Todo está bien.", True)
+            self.decir(tr("Te haces la prueba. Todo está bien."), True)
             return True
         coste = self.precio("tratamiento_its", 120)
         if not self.pagar(coste):
@@ -228,14 +235,14 @@ class Intimidad:
         j.its = 0
         self.son("curar", cat="interfaz")
         self.cambiar_animo(5)
-        self.decir(f"La prueba da positivo. Te ponen tratamiento por {coste} euros y en unos días estarás bien. La próxima vez, con protección.", True)
+        self.decir(tr('La prueba da positivo. Te ponen tratamiento por {coste} euros y en unos días estarás bien. La próxima vez, con protección.').format(coste=(coste)), True)
         return True
 
     def estado_intimo_txt(self):
         j = self.j
         partes = []
         if j.intimos.get("preservativos", 0):
-            partes.append(f"llevas {j.intimos['preservativos']} preservativos")
+            partes.append(tr('llevas {preservativos} preservativos').format(preservativos=(j.intimos['preservativos'])))
         if j.its and self.dia - j.its >= 2:
-            partes.append("tienes molestias que deberías mirarte")
+            partes.append(tr("tienes molestias que deberías mirarte"))
         return ". ".join(partes).capitalize() + "." if partes else ""

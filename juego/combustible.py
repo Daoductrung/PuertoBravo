@@ -6,6 +6,7 @@ queda donde esté. Se reposta en las gasolineras (tiendas con surtidor), con un 
 asistencia en carretera desde el móvil. Viene desactivada. No cuenta en los barcos, en lo que vuela, en las bicicletas,
 en los vehículos de las misiones ni jugando en un servidor.
 """
+from .i18n import tr
 import random
 
 # Los números salen de los datos del juego (data/datos/vida.json, sección combustible), que un mod puede cambiar.
@@ -102,16 +103,16 @@ class Combustible:
         if b <= 0:
             v.seco = True
             self.son("motor_seco", cat="interfaz")
-            self.decir("Te has quedado sin combustible. El motor se para. Con el móvil, en Servicios, puedes llamar a la asistencia en carretera, "
-                       "o echarle un bidón si llevas uno.")
+            self.decir(tr("Te has quedado sin combustible. El motor se para. Con el móvil, en Servicios, puedes llamar a la asistencia en carretera, "
+                       "o echarle un bidón si llevas uno."))
             return False
         if a > 0.05 >= b:
             self.son("reserva", cat="interfaz")
-            self.decir("Casi no queda combustible. Reposta ya.")
+            self.decir(tr("Casi no queda combustible. Reposta ya."))
         elif a > RESERVA >= b:
             self.son("reserva", cat="interfaz")
             g = self.surtidor_cercano()
-            self.decir("Entras en reserva: queda poco combustible." + (f" La gasolinera más cercana: {self.situar(g.x, g.y, g.nombre)}." if g else ""))
+            self.decir(tr("Entras en reserva: queda poco combustible.") + (tr(' La gasolinera más cercana: {situar}.').format(situar=(self.situar(g.x, g.y, g.nombre))) if g else ""))
         v.seco = False
         return True
 
@@ -125,7 +126,7 @@ class Combustible:
             return ""
         cap = capacidad(v)
         l = self.litros(v)
-        return f" Depósito al {int(round(100 * l / cap))} por ciento, {int(round(l))} litros" + (", en reserva." if l / cap <= RESERVA else ".")
+        return tr(' Depósito al {int} por ciento, {int2} litros').format(int=(int(round(100 * l / cap))), int2=(int(round(l)))) + (tr(", en reserva.") if l / cap <= RESERVA else ".")
 
     def repostar(self, v, litros=None, gratis=False, precio=None):
         """Echa combustible. Con litros=None, llena. Devuelve los litros echados, o 0 si no se pudo pagar o ya estaba lleno."""
@@ -152,32 +153,32 @@ class Combustible:
         v = self.vehiculo_para_repostar(12)
         if not j.objetos.get("bidon"):
             self.app.son("error")
-            self.decir("No llevas ningún bidón de gasolina. Se compran en las gasolineras.", True)
+            self.decir(tr("No llevas ningún bidón de gasolina. Se compran en las gasolineras."), True)
         elif v is None or deposito(v.modelo) <= 0:
             self.app.son("error")
-            self.decir("Tienes que estar en tu vehículo o al lado de él.", True)
+            self.decir(tr("Tienes que estar en tu vehículo o al lado de él."), True)
         elif self.repostar(v, LITROS_BIDON, gratis=True):
             j.objetos["bidon"] -= 1
-            self.decir(f"Vacías el bidón en el depósito de {v.nombre}.{self.combustible_txt(v)}", True)
+            self.decir(tr('Vacías el bidón en el depósito de {nombre}.{combustible_txt}').format(nombre=(v.nombre), combustible_txt=(self.combustible_txt(v))), True)
         else:
-            self.decir("El depósito está lleno.", True)
+            self.decir(tr("El depósito está lleno."), True)
 
     def asistencia_carretera(self):
         v = self.vehiculo_para_repostar(30)
         if v is None or deposito(v.modelo) <= 0 or self.mundo.tipo == "mar":
             self.app.son("error")
-            self.decir("La asistencia viene a donde esté tu vehículo: tienes que estar en él o al lado.", True)
+            self.decir(tr("La asistencia viene a donde esté tu vehículo: tienes que estar en él o al lado."), True)
             return False
         if self.j.estrellas:
             self.app.son("error")
-            self.decir("Con la policía buscándote, la grúa no se acerca.", True)
+            self.decir(tr("Con la policía buscándote, la grúa no se acerca."), True)
             return False
         if capacidad(v) - self.litros(v) < 1:
-            self.decir("El depósito está lleno.", True)
+            self.decir(tr("El depósito está lleno."), True)
             return False
         if not self.pagar(PRECIO_ASISTENCIA):
             return False
         self.pasar_horas(0.5)
         self.repostar(v, LITROS_ASISTENCIA, gratis=True)
-        self.decir(f"En media hora llega la asistencia y te echa {LITROS_ASISTENCIA} litros.{self.combustible_txt(v)}", True)
+        self.decir(tr('En media hora llega la asistencia y te echa {LITROS_ASISTENCIA} litros.{combustible_txt}').format(LITROS_ASISTENCIA=(LITROS_ASISTENCIA), combustible_txt=(self.combustible_txt(v))), True)
         return True

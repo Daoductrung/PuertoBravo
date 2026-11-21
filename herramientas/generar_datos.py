@@ -4,9 +4,12 @@ y pone al día la documentación que sale del propio código.
 - data/sonidos: un archivo WAV por cada efecto de sonido que falte.
 - data/radio: un archivo WAV por cada emisora de serie que falte.
 - data/musica: las piezas de música de ambiente que falten, una carpeta por situación.
-- data/docs/cambiar_sonidos.html: la guía para cambiar sonidos, con la lista completa.
-- data/docs/teclas.html: la lista de teclas y de botones del mando.
-- data/docs/manual.html: se actualizan la sección de teclas y las cifras (lugares, misiones...).
+- data/docs/cambiar_sonidos_<idioma>.html: la guía para cambiar sonidos, con la lista completa.
+- data/docs/teclas_<idioma>.html: la lista de teclas y de botones del mando.
+- data/docs/manual_<idioma>.html: se actualizan la sección de teclas y las cifras (lugares, misiones...).
+
+Los documentos salen en cada idioma instalado (data/idiomas): para cada uno se lanza este mismo programa con ese idioma,
+porque los textos del juego se traducen al cargarse. Sus propios textos van en tr(), como los del juego.
 
 Nunca pisa un archivo de audio que ya exista: lo que hayas cambiado tú se respeta.
 Lo ejecuta compilar.bat antes de compilar, y también se puede lanzar a mano:
@@ -24,7 +27,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from juego import ayuda, mando                     # noqa: E402
 from juego import catalogo_sonidos as cat          # noqa: E402
-from juego import rutas, sintesis                  # noqa: E402
+from juego import i18n, rutas, sintesis            # noqa: E402
+from juego.i18n import tr                          # noqa: E402
 from juego.audio import Mezclador                  # noqa: E402
 from juego.musica import AMBIENTES, EMISORAS, MusicaAmbiente, Radio          # noqa: E402
 
@@ -37,7 +41,7 @@ kbd { border: 1px solid #aaa; border-radius: 4px; padding: 0 .35em; background: 
 li { margin-bottom: .3em; }
 </style>"""
 
-CABECERA = """<!DOCTYPE html>
+CABECERA = tr("""<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -149,7 +153,7 @@ __AMBIENTES__
 <h2>6. Lista completa de sonidos</h2>
 <p>El nombre del archivo es el que aparece al principio de cada línea, con la extensión <code>.flac</code> en los que trae el juego. Los tuyos pueden llevar cualquiera de las admitidas. Detrás va el nombre con el que el juego lo dice en voz alta y lo que significa oírlo.</p>
 <p>Los grupos son los mismos, con los mismos nombres y en el mismo orden, que en Aprender los sonidos y en Opciones, Sonido y música, Ajustar el volumen de cada sonido. Van por lo que se hace en el juego. Dentro de cada grupo, los sonidos están por orden alfabético del nombre que se dice. Cada grupo es un encabezado: salta de uno a otro con la tecla H, o busca una palabra con la búsqueda de tu navegador.</p>
-"""
+""")
 
 
 def generar_audio():
@@ -165,10 +169,18 @@ def generar_audio():
 
 
 def _escribir(nombre, texto):
-    ruta = os.path.join(rutas.carpeta_data("docs"), nombre)
+    """Escribe data/docs/<nombre>_<idioma>.html."""
+    base, ext = os.path.splitext(nombre)
+    ruta = os.path.join(rutas.carpeta_data("docs"), f"{base}_{i18n.actual()}{ext}")
     with open(ruta, "w", encoding="utf-8", newline="\n") as f:
         f.write(texto)
     return ruta
+
+
+def _num(x):
+    """Un número con dos decimales, con la coma o el punto que toque en el idioma."""
+    t = f"{x:.2f}"
+    return t.replace(".", ",") if tr("coma decimal") == "coma decimal" else t
 
 
 def generar_doc(sonidos):
@@ -177,35 +189,36 @@ def generar_doc(sonidos):
     cab = CABECERA.replace("__ESTILO__", ESTILO).replace("__N_SONIDOS__", str(sum(len(v) for _, v in grupos)))
     from juego import packs
     instalados = [p for p in packs.listar() if not p["id"].startswith("_")]
-    cab = cab.replace("__PACKS__", ", ".join(f"«{html.escape(p['nombre'])}», con {p['n']} sonidos" for p in instalados) or "que copies tú")
+    cab = cab.replace("__PACKS__", ", ".join(tr("«{nombre}», con {n} sonidos").format(nombre=html.escape(p['nombre']), n=p['n']) for p in instalados) or tr("que copies tú"))
     cab = cab.replace("__EMISORAS__", "\n".join(f"<li><code>{e['id']}.mp3</code>: {html.escape(e['nombre'])}.</li>" for e in EMISORAS if "estilo" in e))
     cab = cab.replace("__AMBIENTES__", "\n".join(
-        f"<li><code>data\\musica\\{k}</code>: {html.escape(desc[0].lower() + desc[1:])}. De serie trae {len(piezas)} piezas, de <code>{k}_1.mp3</code> a <code>{k}_{len(piezas)}.mp3</code>.</li>"
+        tr("<li><code>data\\musica\\{k}</code>: {desc}. De serie trae {n} piezas, de <code>{k}_1.mp3</code> a <code>{k}_{n}.mp3</code>.</li>").format(
+            k=k, desc=html.escape(desc[0].lower() + desc[1:]), n=len(piezas))
         for k, (desc, piezas) in AMBIENTES.items()))
-    partes = [cab, f"<p>Son {len(grupos)} grupos:</p>", "<ol>"]
-    partes += [f"<li>{html.escape(titulo)}: {len(v)} sonidos.</li>" for titulo, v in grupos]
+    partes = [cab, tr("<p>Son {n} grupos:</p>").format(n=len(grupos)), "<ol>"]
+    partes += [tr("<li>{titulo}: {n} sonidos.</li>").format(titulo=html.escape(titulo), n=len(v)) for titulo, v in grupos]
     partes.append("</ol>")
     for titulo, lista in grupos:
         partes.append(f"<h3>{html.escape(titulo)}</h3>")
-        partes.append(f"<p>{len(lista)} sonidos. {html.escape(intros.get(titulo, ''))}</p>".replace(". </p>", ".</p>"))
+        partes.append((tr("<p>{n} sonidos.").format(n=len(lista)) + f" {html.escape(intros.get(titulo, ''))}</p>").replace(". </p>", ".</p>"))
         partes.append("<ul>")
         for nombre in lista:
             dur = len(sonidos[nombre]) / sintesis.SR
-            bucle = " Se reproduce en bucle." if sintesis.es_bucle(nombre) else ""
-            partes.append(f"<li><code>{nombre}</code>: {html.escape(cat.nombre(nombre))}. {html.escape(cat.describir(nombre))}{bucle} Dura " + f"{dur:.2f}".replace(".", ",") + " segundos.</li>")
+            bucle = tr(" Se reproduce en bucle.") if sintesis.es_bucle(nombre) else ""
+            partes.append(f"<li><code>{nombre}</code>: {html.escape(cat.nombre(nombre))}. {html.escape(cat.describir(nombre))}{bucle}" + tr(" Dura {s} segundos.</li>").format(s=_num(dur)))
         partes.append("</ul>")
     partes.append("</body>\n</html>\n")
     return _escribir("cambiar_sonidos.html", "\n".join(partes))
 
 
 # ------------------------------------------------------------------ teclas y manual
-TITULOS_TECLAS = {"general": "En cualquier momento", "pie": "A pie", "coche": "Al volante, en barco y en helicóptero"}
-MENUS = [("Flecha arriba y flecha abajo", "moverte por las opciones"), ("Intro", "elegir"), ("Flecha izquierda y flecha derecha", "cambiar el valor de una opción"),
-         ("Escape", "volver atrás. Todos los menús tienen además una opción Volver"), ("Inicio y Fin", "primera y última opción"),
-         ("Una letra", "salta a la siguiente opción que empieza por ella. Las tildes no cuentan: la A lleva también a lo que empieza por Á"),
-         ("Suprimir, en Ajustar el volumen de cada sonido", "devuelve el sonido elegido a su volumen de serie. Con mando, se hace desde la lista Sonidos cambiados de ese mismo menú"), ("F1", "explicación de la opción actual"),
-         ("Re Pág y Av Pág", "repasar los mensajes anteriores"),
-         ("Tabulador, al escribir un texto", "pasa por las frases o los nombres propuestos, si los hay, y deja escrito el elegido. Mayúsculas Tabulador vuelve al anterior")]
+TITULOS_TECLAS = {"general": tr("En cualquier momento"), "pie": tr("A pie"), "coche": tr("Al volante, en barco y en helicóptero")}
+MENUS = [(tr("Flecha arriba y flecha abajo"), tr("moverte por las opciones")), (tr("Intro"), tr("elegir")), (tr("Flecha izquierda y flecha derecha"), tr("cambiar el valor de una opción")),
+         (tr("Escape"), tr("volver atrás. Todos los menús tienen además una opción Volver")), (tr("Inicio y Fin"), tr("primera y última opción")),
+         (tr("Una letra"), tr("salta a la siguiente opción que empieza por ella. Las tildes no cuentan: la A lleva también a lo que empieza por Á")),
+         (tr("Suprimir, en Ajustar el volumen de cada sonido"), tr("devuelve el sonido elegido a su volumen de serie. Con mando, se hace desde la lista Sonidos cambiados de ese mismo menú")), (tr("F1"), tr("explicación de la opción actual")),
+         (tr("Re Pág y Av Pág"), tr("repasar los mensajes anteriores")),
+         (tr("Tabulador, al escribir un texto"), tr("pasa por las frases o los nombres propuestos, si los hay, y deja escrito el elegido. Mayúsculas Tabulador vuelve al anterior"))]
 
 
 def _lista(pares):
@@ -220,11 +233,11 @@ def html_teclas(nivel=3):
         partes.append(_lista(ayuda.TECLAS[clave]))
     recorrido = getattr(ayuda, "TECLAS_RECORRIDO", None)
     if recorrido:
-        partes.append(f"<{h}>Recorriendo una casa, un local o una tienda por dentro</{h}>")
+        partes.append(f"<{h}>" + tr("Recorriendo una casa, un local o una tienda por dentro") + f"</{h}>")
         partes.append(_lista(recorrido))
     extra = getattr(ayuda, "TECLAS_ADULTOS", None)
     if extra:
-        partes.append(f"<{h}>Con el contenido para adultos activado</{h}>")
+        partes.append(f"<{h}>" + tr("Con el contenido para adultos activado") + f"</{h}>")
         partes.append(_lista(extra))
     return "\n".join(partes)
 
@@ -235,17 +248,17 @@ def html_mando(nivel=3):
     m.mapa = {c: dict(v) for c, v in mando.POR_DEFECTO.items()}
     m.tipo = "xbox"
     partes = []
-    for c, titulo in (("menu", "Mando, en los menús"), ("pie", "Mando, a pie"), ("coche", "Mando, al volante")):
+    for c, titulo in (("menu", tr("Mando, en los menús")), ("pie", tr("Mando, a pie")), ("coche", tr("Mando, al volante"))):
         lineas = [l.split(". ", 1)[1] for l in m.lineas_ayuda((c,))]
         if not lineas:
             continue
         partes.append(f"<{h}>{titulo}</{h}>")
         partes.append("<ul>\n" + "\n".join(f"<li>{html.escape(l)}</li>" for l in lineas) + "\n</ul>")
     # el menú de acciones: lo que no tiene botón propio
-    donde = {"pie": " Solo a pie.", "coche": " Solo al volante.", "ambos": ""}
-    partes.append(f"<{h}>Mando, el menú de acciones</{h}>")
-    partes.append("<p>Se abre manteniendo el botón Vista, o Crear o Share en PlayStation, y pulsando el gatillo derecho, o R2. Es una lista con todo lo que en el teclado "
-                  "es una tecla y en el mando no tiene botón propio. Solo salen las acciones que valen en ese momento.</p>")
+    donde = {"pie": tr(" Solo a pie."), "coche": tr(" Solo al volante."), "ambos": ""}
+    partes.append(f"<{h}>" + tr("Mando, el menú de acciones") + f"</{h}>")
+    partes.append(tr("<p>Se abre manteniendo el botón Vista, o Crear o Share en PlayStation, y pulsando el gatillo derecho, o R2. Es una lista con todo lo que en el teclado "
+                  "es una tecla y en el mando no tiene botón propio. Solo salen las acciones que valen en ese momento.</p>"))
     partes.append("<ul>\n" + "\n".join(f"<li>{html.escape(e[0])}.{donde[e[3]]}</li>" for e in mando.MENU_ACCIONES) + "\n</ul>")
     return "\n".join(partes)
 
@@ -254,21 +267,21 @@ def generar_teclas():
     try:
         botones = html_mando(2)
     except Exception as e:                                  # el mando no debe impedir generar el resto
-        botones = f"<p>La lista de botones se consulta dentro del juego, en Opciones, Mando. ({html.escape(str(e))})</p>"
-    texto = f"""<!DOCTYPE html>
+        botones = tr("<p>La lista de botones se consulta dentro del juego, en Opciones, Mando. ({e})</p>").format(e=html.escape(str(e)))
+    texto = tr("""<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <title>Teclas y botones de Puerto Bravo: Ley del Asfalto</title>
-{ESTILO}
+{estilo}
 </head>
 <body>
 <h1>Teclas y botones de Puerto Bravo</h1>
 <p>Lista completa de teclas del juego. Sale del propio programa, así que siempre está al día. Dentro del juego la tienes con <kbd>F1</kbd>.</p>
 <h2>En los menús</h2>
-{_lista(MENUS)}
+{menus}
 <p>En los diálogos de la historia, Intro pasa a la frase siguiente, flecha arriba la repite, flecha izquierda vuelve a la anterior y Escape salta el diálogo.</p>
-{html_teclas(2)}
+{teclas}
 <p>Los nombres de los botones del mando son los de Xbox. Con un mando de PlayStation el juego los dice con sus nombres: equis, círculo, cuadrado y triángulo.</p>
 {botones}
 <h2>En el panel del servidor</h2>
@@ -298,7 +311,7 @@ def generar_teclas():
 </ul>
 </body>
 </html>
-"""
+""").format(estilo=ESTILO, menus=_lista(MENUS), teclas=html_teclas(2), botones=botones)
     return _escribir("teclas.html", texto)
 
 
@@ -306,7 +319,7 @@ def cifras():
     """Números del juego, para que el manual no se quede atrás."""
     from juego import mundo
     from juego.extras2 import LOGROS
-    d = mundo.cargar_datos(con_mods=False)
+    d = mundo.cargar_datos(con_mods=False, traducir=False)
     mapas = mundo.crear_mapas(d)
     lugares = sum(len(getattr(m, "lugares_todos", m.lugares)) for m in mapas.values())
     armas = d["armas"]
@@ -316,7 +329,7 @@ def cifras():
 
 
 def actualizar_manual():
-    ruta = os.path.join(rutas.carpeta_data("docs"), "manual.html")
+    ruta = os.path.join(rutas.carpeta_data("docs"), f"manual_{i18n.actual()}.html")
     if not os.path.exists(ruta):
         return None
     with open(ruta, encoding="utf-8") as f:
@@ -355,15 +368,32 @@ def generar_lista_packs(sonidos):
 
 
 def generar_docs(sonidos=None):
+    """Los documentos en el idioma de este proceso. La lista de sonidos para packs, solo en español."""
     if sonidos is None:
         mez = Mezclador(dispositivo=False)
         sonidos = sintesis.cargar(mez, rutas.carpeta_sonidos())
-    return [generar_doc(sonidos), generar_teclas(), actualizar_manual(), generar_lista_packs(sonidos)]
+    hechos = [generar_doc(sonidos), generar_teclas(), actualizar_manual()] + ([generar_lista_packs(sonidos)] if i18n.es_origen() else [])
+    return [r for r in hechos if r]          # el manual de un idioma que aún no lo tiene, no
+
+
+def generar_docs_todos_los_idiomas():
+    """Lanza este mismo programa una vez por idioma instalado, con ese idioma: los textos del juego se traducen al
+    cargarse los módulos, así que cada idioma pide un proceso nuevo."""
+    import subprocess
+    rutas_hechas = []
+    for cod in i18n.disponibles():
+        env = dict(os.environ, PUERTOBRAVO_IDIOMA=cod, PYTHONIOENCODING="utf-8")
+        r = subprocess.run([sys.executable, os.path.abspath(__file__), "docs", "--un-idioma"], env=env, capture_output=True, text=True, encoding="utf-8")
+        if r.returncode:
+            print(r.stdout, r.stderr)
+            raise SystemExit(f"No se pudieron generar los documentos en {cod}.")
+        rutas_hechas += [l.split(":", 1)[1].strip() for l in r.stdout.splitlines() if "Documento al dia:" in l]
+    return rutas_hechas
 
 
 if __name__ == "__main__":
     if "docs" in sys.argv[1:]:
-        for r in generar_docs():
+        for r in (generar_docs() if "--un-idioma" in sys.argv else generar_docs_todos_los_idiomas()):
             print("  Documento al dia:", r)
         sys.exit(0)
     print("Generando sonidos, radio y musica de ambiente en la carpeta data...")
@@ -371,5 +401,5 @@ if __name__ == "__main__":
     print(f"  {len(S)} sonidos en data\\sonidos\\por_defecto")
     print(f"  {sum(1 for e in R.emisoras if 'estilo' in e)} emisoras en data\\radio")
     print(f"  {sum(len(v) for v in A.pistas.values())} piezas de musica de ambiente en data\\musica")
-    for r in generar_docs(S):
+    for r in generar_docs_todos_los_idiomas():
         print("  Documento al dia:", r)

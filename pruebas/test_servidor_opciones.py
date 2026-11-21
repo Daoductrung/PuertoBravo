@@ -178,7 +178,7 @@ def test_guardar_escribe_un_archivo_legible_que_se_lee_igual(tmp_path):
     # qué cambia al momento y qué pide reiniciar
     al_momento, con_reinicio = opciones.cambios(opciones.valores_de_serie(), dict(opciones.valores_de_serie(), puerto=1, bienvenida="x", cifrado="no", pvp="no"))
     assert al_momento == ["bienvenida", "pvp"] and con_reinicio == ["puerto", "cifrado"]
-    assert {o.clave for o in opciones.OPCIONES if o.reinicio} == {"puerto", "interfaz", "cifrado", "certificado", "llave", "datos"}
+    assert {o.clave for o in opciones.OPCIONES if o.reinicio} == {"puerto", "interfaz", "cifrado", "certificado", "llave", "datos", "idioma"}
 
 
 def test_la_guia_dice_lo_mismo_que_las_opciones_y_las_ordenes():

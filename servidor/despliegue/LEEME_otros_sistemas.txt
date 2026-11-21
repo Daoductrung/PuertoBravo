@@ -42,8 +42,13 @@ Parado así, el programa termina con el código 75. El servicio de systemd y el 
 vuelven a arrancar solos. La cuenta atrás es la opción parada_aviso, que de serie son 20 segundos. Si lo para el
 sistema (systemctl stop, docker compose down, parar.sh), avisa igual de que es un reinicio, pero sin cuenta atrás.
 
-La guía completa, paso a paso, está en documentacion.html, en la carpeta servidor del juego. Sus apartados 18 y 19
+La guía completa, paso a paso, está en documentacion_es.html (en inglés, documentacion_en.html), en la carpeta servidor del juego. Sus apartados 18 y 19
 explican lo nuevo de la versión 1.7.1: el tope de dinero y los encargos, los canales de rol y la radio de los vehículos.
 El apartado 17 explica cómo se juega con versiones distintas del juego en el mismo servidor: no se rechaza a nadie
 por su versión salvo que pongas una versión mínima, y el servidor arbitra con las mismas cifras para todos.
 El apartado 20 explica cómo actualizar el servidor.
+
+Idioma: el servidor escribe la consola y el registro en el idioma del sistema (la variable LANG): en español si el
+sistema está en español, y si no, en inglés. Se puede fijar con la opción idioma de servidor.conf (auto, es, en) o con
+la variable PUERTOBRAVO_IDIOMA. Lo que oyen los jugadores no depende de esto: el servidor se lo manda en español y el
+juego de cada uno lo dice en el suyo, así que en un mismo servidor puede jugar gente de idiomas distintos.

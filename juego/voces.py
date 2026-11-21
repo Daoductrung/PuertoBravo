@@ -1,7 +1,9 @@
 """Voces grabadas para las escenas: si hay una grabación de una frase, suena en lugar de la voz sintética.
 
 Las grabaciones van en data/voces, en WAV, OGG, FLAC o MP3. Las que trae el juego están en una subcarpeta por
-historia. Las del jugador van en data/voces/propias: tienen preferencia y las actualizaciones no las tocan.
+historia y por idioma, como los documentos: historia_principal_es, historia_principal_en... Solo suenan las del idioma
+del juego. Una carpeta sin idioma detrás (la de un mod, por ejemplo) vale para cualquiera.
+Las del jugador van en data/voces/propias: tienen preferencia y las actualizaciones no las tocan.
 Cada archivo se llama
 como la misión, el número de paso y el número de frase, empezando en uno y separados por guion bajo:
 
@@ -15,6 +17,7 @@ Sirve igual para las misiones del juego que para las de los mods. No hace falta 
 frases sin archivo las sigue diciendo el lector de pantalla. El editor de mods escribe el guion completo
 de un mod, con el nombre de archivo de cada frase, para repartirlo entre quienes vayan a grabar.
 """
+from .i18n import tr
 import os
 import re
 
@@ -29,8 +32,30 @@ PROPIAS = "propias"
 
 
 def carpeta():
-    """Todas las voces: las que trae el juego, en una subcarpeta por historia, y las del jugador."""
+    """Todas las voces: las que trae el juego, en una subcarpeta por historia e idioma, y las del jugador."""
     return os.path.join(rutas.DATA, "voces")
+
+
+def idioma_de_carpeta(nombre):
+    """El idioma de una carpeta de voces por cómo acaba su nombre (historia_principal_en: en). None si no lo dice."""
+    from . import i18n
+    base, _, cod = nombre.lower().rpartition("_")
+    return cod if base and cod in i18n.NOMBRES else None
+
+
+def quitar_sin_idioma():
+    """Hasta la 1.7.1 las voces de cada historia iban en una carpeta sin idioma (historia_principal). Ahora van con él
+    (historia_principal_es): la vieja, si ya está la nueva, sobra. Devuelve cuántas carpetas ha quitado."""
+    import shutil
+    raiz, n = carpeta(), 0
+    try:
+        for d in os.listdir(raiz):
+            if d.lower() != PROPIAS and idioma_de_carpeta(d) is None and os.path.isdir(os.path.join(raiz, d + "_es")):
+                shutil.rmtree(os.path.join(raiz, d), ignore_errors=True)
+                n += 1
+    except OSError:
+        pass
+    return n
 
 
 def carpeta_propias():
@@ -80,6 +105,7 @@ def recoger_puente():
                     os.replace(os.path.join(base, n), os.path.join(destino, n))
                     puestas += 1
         shutil.rmtree(puente, ignore_errors=True)
+        quitadas += quitar_sin_idioma()
     except OSError:
         registro.excepcion("voces", "No se pudieron recoger las voces de la actualización")
         return puestas
@@ -109,8 +135,15 @@ def _archivos():
     raiz_voces = carpeta()
     if not os.path.isdir(raiz_voces):
         return {}
-    bases = [(base, nombres) for base, _, nombres in os.walk(raiz_voces)]
-    marca = (carpeta_propias(), max(os.path.getmtime(base) for base, _ in bases))
+    from . import i18n
+    idioma = i18n.actual()
+
+    def del_idioma(base):                                    # cada historia, solo en el idioma del juego
+        rel = os.path.relpath(base, raiz_voces)
+        cod = idioma_de_carpeta(rel.split(os.sep)[0]) if rel != "." else None
+        return cod is None or cod == idioma
+    bases = [(base, nombres) for base, _, nombres in os.walk(raiz_voces) if del_idioma(base)]
+    marca = (carpeta_propias(), idioma, max(os.path.getmtime(base) for base, _ in bases))
     if _indice["t"] != marca:
         _indice["t"], _indice["archivos"] = marca, {}
         propias = os.path.normcase(carpeta_propias())
@@ -139,7 +172,7 @@ def buscar(mision, paso, frase, forma=""):
 #   @alex         le llaman por otro nombre
 #   @m            le hablan en femenino
 #   @alex_m       depende de las dos cosas, o la dice el propio protagonista con su voz
-PROTA = "Dani"                                       # con este nombre figuran en los datos las frases del protagonista
+PROTA = tr("Dani")                                           # con este nombre figuran en los datos las frases del protagonista
 PERSONAJES = ("dani", "alex", "sam", "cris")         # los que tienen sus frases grabadas
 _DANI = re.compile(r"\bDani\b")
 
@@ -218,12 +251,12 @@ def sonar(app, ruta):
 def guion(misiones, titulo="", existentes=None):
     """Texto del guion de grabación de unas misiones: cada frase con quién la dice y cómo se llama su archivo."""
     existentes = _archivos() if existentes is None else existentes
-    lineas = [f"Guion de voces{': ' + titulo if titulo else ''}", "",
-              "Graba cada frase en un archivo aparte, en WAV, OGG, FLAC o MP3, con el nombre que se indica,",
-              "y deja los archivos en la carpeta data, voces del juego. Las frases sin archivo las dice el lector de pantalla.",
-              "Las frases marcadas con la palabra GRABADA ya tienen archivo.",
-              "El archivo sin nada detrás es para el protagonista Dani en masculino. Las frases que le nombran, que cambian",
-              "si es hombre o mujer, o que dice él mismo, tienen más formas: se indican debajo de cada una.", ""]
+    lineas = [tr('Guion de voces{v}').format(v=(': ' + titulo if titulo else '')), "",
+              tr("Graba cada frase en un archivo aparte, en WAV, OGG, FLAC o MP3, con el nombre que se indica,"),
+              tr("y deja los archivos en la carpeta data, voces del juego. Las frases sin archivo las dice el lector de pantalla."),
+              tr("Las frases marcadas con la palabra GRABADA ya tienen archivo."),
+              tr("El archivo sin nada detrás es para el protagonista Dani en masculino. Las frases que le nombran, que cambian"),
+              tr("si es hombre o mujer, o que dice él mismo, tienen más formas: se indican debajo de cada una."), ""]
     total = hechas = 0
     personajes = {}
     for m in misiones:
@@ -235,21 +268,21 @@ def guion(misiones, titulo="", existentes=None):
                 quien, texto = (linea.get("quien"), linea.get("texto")) if isinstance(linea, dict) else (linea[0], linea[1])
                 texto = genero.resolver(texto, "h")              # las voces se graban para el protagonista en masculino
                 if not cab:
-                    lineas += [f"Misión {m.get('id')}: {m.get('titulo', '')}", ""]
+                    lineas += [tr('Misión {get}: {get2}').format(get=(m.get('id')), get2=(m.get('titulo', ''))), ""]
                     cab = True
                 arch = nombre(m.get("id"), k, n)
                 hecha = arch.lower() in existentes
                 total += 1
                 hechas += hecha
                 personajes[quien] = personajes.get(quien, 0) + 1
-                lineas += [f"{arch}{'  GRABADA' if hecha else ''}", f"{quien}: {texto}"]
+                lineas += [f"{arch}{tr('  GRABADA') if hecha else ''}", f"{quien}: {texto}"]
                 otras = [x for x in formas(quien, linea.get("texto") if isinstance(linea, dict) else linea[1]) if x[0]]
                 if otras:                                        # cambia según quién sea el protagonista: sus otras formas
-                    lineas.append("  Esta frase cambia con el protagonista. Para que suene con todos, grábala también así:")
+                    lineas.append(tr("  Esta frase cambia con el protagonista. Para que suene con todos, grábala también así:"))
                     for suf, pj, g in otras:
                         hecha2 = (arch + suf).lower() in existentes
-                        lineas.append(f"  {arch}{suf}{'  GRABADA' if hecha2 else ''}: con {pj.capitalize()}, {genero.NOMBRES[g]}")
+                        lineas.append(tr('  {arch}{suf}{v}: con {capitalize}, {v2}').format(arch=(arch), suf=(suf), v=(tr('  GRABADA') if hecha2 else ''), capitalize=(pj.capitalize()), v2=(genero.NOMBRES[g])))
                 lineas.append("")
-    lineas += [f"Total: {total} frases, {hechas} grabadas.", "",
-               "Frases por personaje: " + ", ".join(f"{q} {c}" for q, c in sorted(personajes.items(), key=lambda x: -x[1])) + "."]
+    lineas += [tr('Total: {total} frases, {hechas} grabadas.').format(total=(total), hechas=(hechas)), "",
+               tr("Frases por personaje: ") + ", ".join(f"{q} {c}" for q, c in sorted(personajes.items(), key=lambda x: -x[1])) + "."]
     return "\n".join(lineas) + "\n"

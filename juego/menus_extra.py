@@ -1,4 +1,5 @@
 """Menús de la segunda ampliación: helipuertos, ruleta, marcadores, servicios, habilidades y logros."""
+from .i18n import tr
 import math
 import random
 
@@ -26,11 +27,11 @@ def helipuerto(p, l):
         vuelo_pantalla.menu_campo(p, l)
         return
     if j.veh and not volando:
-        app.decir(f"{l.nombre}. Bájate del vehículo: aquí solo despegan helicópteros.", True)
+        app.decir(tr('{nombre}. Bájate del vehículo: aquí solo despegan helicópteros.').format(nombre=(l.nombre)), True)
         return
     if j.estrellas and not volando:
         app.son("error")
-        app.decir("El piloto no despega con la policía buscándote.", True)
+        app.decir(tr("El piloto no despega con la policía buscándote."), True)
         return
     destinos = [h for h in p.lugares.values() if h.tipo in ("helipuerto", "aeropuerto") and h.id != l.id and h.mapa != p.mundo.id]
     if not volando:
@@ -49,20 +50,20 @@ def helipuerto(p, l):
                 p.pasar_horas(0.4)
                 p.son("motor_helicoptero", cat="interfaz", vol=0.6)
                 p.cambiar_mapa(h.mapa, h.x, h.y, None,
-                               f"{'Aterrizas' if not volando else 'Llegas volando'} en {h.nombre}, {p.mapas[h.mapa].nombre}. Son las {p.hora_txt()}.")
+                               tr('{v} en {nombre}, {nombre2}. Son las {hora_txt}.').format(v=(tr('Aterrizas') if not volando else tr('Llegas volando')), nombre=(h.nombre), nombre2=(p.mapas[h.mapa].nombre), hora_txt=(p.hora_txt())))
             if volando:
                 llegar()                                 # pilotas tú: no hay trayecto de pasajero
             else:
                 from .pantallas import viajar as trayecto
                 trayecto(app, 35.0, llegar, destino=p.mapas[h.mapa].nombre, vuelo=True)
         return f
-    ops = [Opcion(f"Volar a {h.nombre}, en {p.mapas[h.mapa].nombre}" + ("" if volando else f": {int(h.get('precio', p.precio('vuelo_helicoptero', 150)))} euros"), volar(h),
+    ops = [Opcion(tr('Volar a {nombre}, en {nombre2}').format(nombre=(h.nombre), nombre2=(p.mapas[h.mapa].nombre)) + ("" if volando else tr(': {int} euros').format(int=(int(h.get('precio', p.precio('vuelo_helicoptero', 150)))))), volar(h),
                   ayuda=p.desc_localidad(p.mapas[h.mapa])) for h in destinos]
-    intro = "Vas en tu helicóptero: el vuelo es gratis" if volando else "Vuelos en helicóptero con piloto"
+    intro = tr("Vas en tu helicóptero: el vuelo es gratis") if volando else tr("Vuelos en helicóptero con piloto")
     if not volando:
         from . import vuelo_pantalla
         ops += vuelo_pantalla.opciones_campo(p, l)
-    app.abrir(Menu(app, lambda: f"{l.nombre}. Tienes {j.dinero} euros", ops, intro=intro))
+    app.abrir(Menu(app, lambda: tr('{nombre}. Tienes {dinero} euros').format(nombre=(l.nombre), dinero=(j.dinero)), ops, intro=intro))
 
 
 # ======================================================================== ruleta
@@ -76,29 +77,33 @@ def ruleta(p):
             n = random.randint(0, 36)
             p.son("ruleta", cat="interfaz")
             color = "verde" if n == 0 else "rojo" if n in ROJOS else "negro"
-            txt = f"Sale el {n}, {color}. "
+            txt = tr('Sale el {n}, {color}. ').format(n=(n), color=(color))
             if gana(n):
                 premio = apuesta * (pago + 1)
                 p.dar_dinero(premio)
-                txt += f"¡Ganas {apuesta * pago} euros!"
+                txt += tr('¡Ganas {v} euros!').format(v=(apuesta * pago))
             else:
-                txt += f"Pierdes {apuesta} euros."
-            app.decir(txt + f" Tienes {p.j.dinero}.", True)
+                txt += tr('Pierdes {apuesta} euros.').format(apuesta=(apuesta))
+            app.decir(txt + tr(' Tienes {dinero}.').format(dinero=(p.j.dinero)), True)
         return f
 
     def mesa(apuesta):
-        ops = [Opcion("Apostar al rojo, paga el doble", jugar("rojo", lambda n: n in ROJOS, 1, apuesta)),
-               Opcion("Apostar al negro, paga el doble", jugar("negro", lambda n: n != 0 and n not in ROJOS, 1, apuesta)),
-               Opcion("Apostar a par, paga el doble", jugar("par", lambda n: n != 0 and n % 2 == 0, 1, apuesta)),
-               Opcion("Apostar a impar, paga el doble", jugar("impar", lambda n: n % 2 == 1, 1, apuesta)),
-               Opcion("Apostar a la primera docena, paga el triple", jugar("d1", lambda n: 1 <= n <= 12, 2, apuesta)),
-               Opcion("Apostar a la segunda docena, paga el triple", jugar("d2", lambda n: 13 <= n <= 24, 2, apuesta)),
-               Opcion("Apostar a la tercera docena, paga el triple", jugar("d3", lambda n: 25 <= n <= 36, 2, apuesta)),
-               Opcion("Pleno al 7, paga treinta y cinco a uno", jugar("7", lambda n: n == 7, 35, apuesta)),
-               Opcion("Pleno al 17, paga treinta y cinco a uno", jugar("17", lambda n: n == 17, 35, apuesta)),
-               Opcion("Pleno al 0, paga treinta y cinco a uno", jugar("0", lambda n: n == 0, 35, apuesta))]
-        app.abrir(Menu(app, lambda: f"Ruleta, fichas de {apuesta} euros. Tienes {p.j.dinero}", ops))
-    app.abrir(Menu(app, "Ruleta. Elige el valor de la ficha", [Opcion(f"Fichas de {a} euros", (lambda a=a: mesa(a))) for a in (10, 100, 1000)]))
+        doble = tr('Pones una ficha de {apuesta} euros y gira la bola. Si aciertas, recuperas la ficha y ganas otro tanto. Con el cero pierdes.').format(apuesta=apuesta)
+        triple = tr('Pones una ficha de {apuesta} euros. Aciertas si sale uno de esos doce números, y ganas el doble de la ficha. Con el cero pierdes.').format(apuesta=apuesta)
+        pleno = tr('Pones una ficha de {apuesta} euros a un solo número de los treinta y siete. Si sale, ganas {premio} euros además de la ficha.').format(apuesta=apuesta, premio=apuesta * 35)
+        ops = [Opcion(tr("Apostar al rojo, paga el doble"), jugar("rojo", lambda n: n in ROJOS, 1, apuesta), ayuda=doble),
+               Opcion(tr("Apostar al negro, paga el doble"), jugar("negro", lambda n: n != 0 and n not in ROJOS, 1, apuesta), ayuda=doble),
+               Opcion(tr("Apostar a par, paga el doble"), jugar("par", lambda n: n != 0 and n % 2 == 0, 1, apuesta), ayuda=doble),
+               Opcion(tr("Apostar a impar, paga el doble"), jugar("impar", lambda n: n % 2 == 1, 1, apuesta), ayuda=doble),
+               Opcion(tr("Apostar a la primera docena, paga el triple"), jugar("d1", lambda n: 1 <= n <= 12, 2, apuesta), ayuda=triple),
+               Opcion(tr("Apostar a la segunda docena, paga el triple"), jugar("d2", lambda n: 13 <= n <= 24, 2, apuesta), ayuda=triple),
+               Opcion(tr("Apostar a la tercera docena, paga el triple"), jugar("d3", lambda n: 25 <= n <= 36, 2, apuesta), ayuda=triple),
+               Opcion(tr("Pleno al 7, paga treinta y cinco a uno"), jugar("7", lambda n: n == 7, 35, apuesta), ayuda=pleno),
+               Opcion(tr("Pleno al 17, paga treinta y cinco a uno"), jugar("17", lambda n: n == 17, 35, apuesta), ayuda=pleno),
+               Opcion(tr("Pleno al 0, paga treinta y cinco a uno"), jugar("0", lambda n: n == 0, 35, apuesta), ayuda=pleno)]
+        app.abrir(Menu(app, lambda: tr('Ruleta, fichas de {apuesta} euros. Tienes {dinero}').format(apuesta=(apuesta), dinero=(p.j.dinero)), ops))
+    app.abrir(Menu(app, tr("Ruleta. Elige el valor de la ficha"), [Opcion(tr('Fichas de {a} euros').format(a=(a)), (lambda a=a: mesa(a)),
+                                                                          ayuda=tr('Te sientas en la mesa y cada apuesta te cuesta {a} euros. Lo que ganas depende de a qué apuestes.').format(a=a)) for a in (10, 100, 1000)]))
 
 
 # ==================================================================== marcadores
@@ -109,18 +114,18 @@ def marcadores(p):
     def guardar():
         x, y = p.pos()
         n = len(j.marcadores) + 1
-        nombre = f"Marcador {n}: {p.mundo.describir(x, y)}"
+        nombre = tr('Marcador {n}: {describir}').format(n=(n), describir=(p.mundo.describir(x, y)))
         j.marcadores.append({"nombre": nombre, "mapa": p.mundo.id, "x": x, "y": y})
         app.son("guardado")
         m.refrescar(False)
-        app.decir(f"Guardado: {nombre}.", True)
+        app.decir(tr('Guardado: {nombre}.').format(nombre=(nombre)), True)
 
     def ir(k):
         def f():
             mk = j.marcadores[k]
             if mk["mapa"] != p.mundo.id:
                 app.son("error")
-                app.decir(f"Ese marcador está en {p.mapas[mk['mapa']].nombre}. Viaja primero allí.", True)
+                app.decir(tr('Ese marcador está en {nombre}. Viaja primero allí.').format(nombre=(p.mapas[mk['mapa']].nombre)), True)
                 return
             _volver_al_juego(p)
             p.fijar_gps(mk["x"], mk["y"], mk["nombre"], radio=6)
@@ -128,20 +133,21 @@ def marcadores(p):
 
     def borrar():
         if not j.marcadores:
-            app.decir("No hay marcadores.", True)
+            app.decir(tr("No hay marcadores."), True)
             return
         j.marcadores.pop()
         m.refrescar(False)
-        app.decir("Último marcador borrado.", True)
+        app.decir(tr("Último marcador borrado."), True)
 
     def ops():
-        lista = [Opcion("Guardar un marcador en mi posición actual", guardar, ayuda="Recuerda este punto exacto para volver luego con el GPS.")]
+        lista = [Opcion(tr("Guardar un marcador en mi posición actual"), guardar, ayuda=tr("Recuerda este punto exacto para volver luego con el GPS."))]
         for k, mk in enumerate(j.marcadores):
-            donde = "" if mk["mapa"] == p.mundo.id else f", en {p.mapas[mk['mapa']].nombre}"
-            lista.append(Opcion(f"Ir a {mk['nombre']}{donde}", ir(k)))
-        lista.append(Opcion("Borrar el último marcador", borrar))
+            donde = "" if mk["mapa"] == p.mundo.id else tr(', en {nombre}').format(nombre=(p.mapas[mk['mapa']].nombre))
+            lista.append(Opcion(tr('Ir a {nombre}{donde}').format(nombre=(mk['nombre']), donde=(donde)), ir(k),
+                                ayuda=tr("Vuelves al juego con el GPS puesto hacia ese punto. Si está en otra localidad, primero tienes que viajar allí.")))
+        lista.append(Opcion(tr("Borrar el último marcador"), borrar, ayuda=tr("Quita el marcador que guardaste el último. Los demás se quedan como están.")))
         return lista
-    m = Menu(app, "Marcadores personales", ops)
+    m = Menu(app, tr("Marcadores personales"), ops)
     app.abrir(m)
 
 
@@ -152,18 +158,9 @@ def servicios(p):
 
     def traer(pid, k):
         def f():
-            if p.mundo.tipo in ("mar",):
-                app.decir("En mitad del mar no te pueden traer un coche.", True)
-                return
-            if not p.pagar(p.precio("traer_vehiculo", 150)):
-                return
-            d = j.garajes[pid].pop(k)
-            x, y, di = p.plaza_cercana()
-            v = p._veh_de_dict(dict(d, rumbo=di * 90.0), x, y)
-            _volver_al_juego(p)
-            p.son("claxon", xy=(x, y))
-            p.decir(f"Tu mecánico te deja {v.nombre} en la calle. {p.situar(x, y, 'Está')}.", True)
-            p.hacer_mio(v)
+            lista = j.garajes.get(pid) or []
+            if k < len(lista) and p.traer_mi_vehiculo(lista[k], pid) is not None:      # lo mismo que desde Mis vehículos
+                _volver_al_juego(p)
         return f
 
     def vehiculos():
@@ -171,19 +168,21 @@ def servicios(p):
         for pid, lista in j.garajes.items():
             l = p.lug(pid)
             for k, d in enumerate(lista):
-                ops.append(Opcion(f"{d.get('nombre', d['modelo'])}, guardado en {p.nombre_lugar(l) if l else 'un garaje'}: {p.precio('traer_vehiculo', 150)} euros", traer(pid, k)))
-        app.abrir(Menu(app, "Que te traigan un vehículo", ops or [Opcion("No tienes vehículos guardados en ningún garaje")]))
+                ops.append(Opcion(tr('{get}, guardado en {v}: {precio} euros').format(get=(d.get('nombre', d['modelo'])), v=(p.nombre_lugar(l) if l else tr('un garaje')), precio=(p.precio('traer_vehiculo', 150))), traer(pid, k),
+                                  ayuda=tr("Tu mecánico lo saca del garaje y te lo deja en la calle, a tu lado. En mitad del mar o con mucha policía buscándote no viene.")))
+        app.abrir(Menu(app, tr("Que te traigan un vehículo"), ops or [Opcion(tr("No tienes vehículos guardados en ningún garaje"),
+                                                                             ayuda=tr("Para tener uno aquí, guárdalo antes en el garaje de una casa tuya."))]))
 
     def al_garaje():
         """Que se lleven a un garaje tuyo el vehículo que llevas o el que acabas de dejar."""
         v = j.veh or p.tu_vehiculo(120)
         if v is None:
             app.son("error")
-            app.decir("No tienes ningún vehículo aquí. Tiene que ser el que llevas o el que acabas de dejar aparcado cerca.", True)
+            app.decir(tr("No tienes ningún vehículo aquí. Tiene que ser el que llevas o el que acabas de dejar aparcado cerca."), True)
             return
         if v.tag or v.modelo.get("barco") or v.modelo.get("vuela") or p.mundo.tipo == "mar":
             app.son("error")
-            app.decir(p.motivo_ajeno(v) if v.tag else "Una aeronave no cabe en el garaje de una casa: se guarda en un hangar, en un helipuerto, un aeropuerto o un aeródromo. Desde el móvil, en Mis vehículos, puedes mandarla a uno." if v.modelo.get("vuela") else "Ese vehículo no se puede guardar en un garaje.", True)
+            app.decir(p.motivo_ajeno(v) if v.tag else tr("Una aeronave no cabe en el garaje de una casa: se guarda en un hangar, en un helipuerto, un aeropuerto o un aeródromo. Desde el móvil, en Mis vehículos, puedes mandarla a uno.") if v.modelo.get("vuela") else tr("Ese vehículo no se puede guardar en un garaje."), True)
             return
 
         def llevar(l):
@@ -191,7 +190,7 @@ def servicios(p):
                 g = j.garajes.setdefault(l.id, [])
                 if len(g) >= int(l.get("garaje", 0)):
                     app.son("error")
-                    app.decir("Ese garaje está lleno.", True)
+                    app.decir(tr("Ese garaje está lleno."), True)
                     return
                 if v.muerto or not p.pagar(p.precio("mandar_vehiculo", 100)):
                     return
@@ -202,32 +201,34 @@ def servicios(p):
                 p.ultimo_veh = None
                 _volver_al_juego(p)
                 p.son("arranque", vol=0.6)
-                p.decir(f"Tu mecánico se lleva {v.nombre} al garaje de {p.nombre_lugar(l)}." + (" Te quedas a pie." if not j.veh else ""), True)
+                p.decir(tr('Tu mecánico se lleva {nombre} al garaje de {nombre_lugar}.').format(nombre=(v.nombre), nombre_lugar=(p.nombre_lugar(l))) + (tr(" Te quedas a pie.") if not j.veh else ""), True)
             return f
-        casas = [l for l in (p.lug(pid) for pid in j.propiedades) if l is not None and int(l.get("garaje", 0)) > 0]
-        ops = [Opcion(f"{p.nombre_lugar(l)}: {len(j.garajes.get(l.id, []))} de {l.get('garaje', 0)} plazas ocupadas", llevar(l)) for l in casas]
-        app.abrir(Menu(app, f"Mandar {v.nombre} a un garaje: {p.precio('mandar_vehiculo', 100)} euros", ops or [Opcion("No tienes ninguna casa con garaje")]))
+        casas = [l for l in (p.lug(pid) for pid in j.propiedades) if l is not None and int(l.get("garaje", 0)) > 0 and not p.alquilada(l.id)]
+        ops = [Opcion(tr('{nombre_lugar}: {len} de {get} plazas ocupadas').format(nombre_lugar=(p.nombre_lugar(l)), len=(len(j.garajes.get(l.id, []))), get=(l.get('garaje', 0))), llevar(l),
+                      ayuda=tr('Pagas {precio} euros y tu mecánico se lleva el vehículo a este garaje. Si ibas en él, te quedas a pie. Si el garaje está lleno, no se puede.').format(precio=p.precio('mandar_vehiculo', 100))) for l in casas]
+        app.abrir(Menu(app, tr('Mandar {nombre} a un garaje: {precio} euros').format(nombre=(v.nombre), precio=(p.precio('mandar_vehiculo', 100))), ops or [Opcion(tr("No tienes ninguna casa con garaje"),
+                                                                                                                                                              ayuda=tr("Hace falta una casa tuya con garaje, comprada y no alquilada."))]))
 
     def guardaespaldas():
         n = sum(1 for e in p.personas if e.tipo == "aliado" and not e.muerto and not getattr(e, "de_banda", False))      # los de tu banda no cuentan
         if n >= 2:
-            app.decir("Ya llevas dos guardaespaldas.", True)
+            app.decir(tr("Ya llevas dos guardaespaldas."), True)
         elif p.pagar(p.precio("guardaespaldas", 350)):
             p.crear_aliado()
-            app.decir(f"Un guardaespaldas llega en un minuto y se pone a tu lado. Cobra {p.precio('guardaespaldas_sueldo', 200)} euros cada medianoche.", True)
+            app.decir(tr('Un guardaespaldas llega en un minuto y se pone a tu lado. Cobra {precio} euros cada medianoche.').format(precio=(p.precio('guardaespaldas_sueldo', 200))), True)
 
     def ambulancia():
         x, y = p.pos()
         if any(e.hostil and not e.muerto and e.activo and e.dist(x, y) < 45 for e in p.personas):
             app.son("error")
-            app.decir("La ambulancia no entra mientras haya tiros. Aléjate de los enemigos.", True)
+            app.decir(tr("La ambulancia no entra mientras haya tiros. Aléjate de los enemigos."), True)
         elif j.salud >= j.salud_max:
-            app.decir("No tienes heridas.", True)
+            app.decir(tr("No tienes heridas."), True)
         elif p.pagar(p.precio("ambulancia", 200)):
             j.salud = j.salud_max
             p.son("sirena_ambulancia", cat="interfaz", vol=0.4)
             p.son("curar", cat="interfaz")
-            app.decir("Los sanitarios te atienden en el sitio. Salud al máximo.", True)
+            app.decir(tr("Los sanitarios te atienden en el sitio. Salud al máximo."), True)
     def asistencia():
         if p.asistencia_carretera():
             _volver_al_juego(p)
@@ -243,10 +244,10 @@ def servicios(p):
         from . import realismo as R
         v = j.veh or p.tu_vehiculo(30)
         if v is None or not getattr(v, "pinchada", False):
-            app.decir("No tienes ninguna rueda pinchada.", True)
+            app.decir(tr("No tienes ninguna rueda pinchada."), True)
         elif j.estrellas:
             app.son("error")
-            app.decir("Con la policía buscándote, la grúa no se acerca.", True)
+            app.decir(tr("Con la policía buscándote, la grúa no se acerca."), True)
         elif p.pagar(int(R.aj("precio_cambio_rueda")) * 2):
             p.pasar_horas(0.5)
             p.cambiar_rueda(v, gratis=True)
@@ -256,7 +257,7 @@ def servicios(p):
         from . import menus_juego
         if j.estrellas or p.mision:
             app.son("error")
-            app.decir("Ahora mismo ningún taxista quiere llevarte.", True)
+            app.decir(tr("Ahora mismo ningún taxista quiere llevarte."), True)
         else:
             _volver_al_juego(p)
             menus_juego.menu_viaje(p)
@@ -266,29 +267,33 @@ def servicios(p):
             if e.tipo == "aliado" and not e.muerto and not getattr(e, "de_banda", False):
                 p.personas.remove(e)
                 n += 1
-        app.decir(f"Despides a {'tu guardaespaldas' if n == 1 else f'tus {n} guardaespaldas'}. Ya no te cobrarán." if n else "No llevas guardaespaldas.", True)
+        app.decir(tr('Despides a {v}. Ya no te cobrarán.').format(v=(tr('tu guardaespaldas') if n == 1 else tr('tus {n} guardaespaldas').format(n=(n)))) if n else tr("No llevas guardaespaldas."), True)
 
-    app.abrir(Menu(app, lambda: f"Servicios por teléfono. Tienes {j.dinero} euros", [
-        Opcion(f"Que te traigan un vehículo de tus garajes: {p.precio('traer_vehiculo', 150)} euros", vehiculos),
-        Opcion(f"Mandar tu vehículo a uno de tus garajes: {p.precio('mandar_vehiculo', 100)} euros", al_garaje,
-               ayuda="Tu mecánico se lleva el vehículo que llevas, o el que acabas de dejar aparcado cerca, al garaje de la casa que elijas. Vale para casas de cualquier localidad."),
-        Opcion(lambda: "Chófer de tu banda" + (f": {p.chofer['nombre']}" if p.chofer else f": {p.precio('chofer', 80)} euros"),
+    app.abrir(Menu(app, lambda: tr('Servicios por teléfono. Tienes {dinero} euros').format(dinero=(j.dinero)), [
+        Opcion(tr('Que te traigan un vehículo de tus garajes: {precio} euros').format(precio=(p.precio('traer_vehiculo', 150))), vehiculos,
+               ayuda=tr("Eliges uno de los vehículos que guardas en tus garajes, de cualquier localidad, y tu mecánico te lo deja en la calle, a tu lado.")),
+        Opcion(tr('Mandar tu vehículo a uno de tus garajes: {precio} euros').format(precio=(p.precio('mandar_vehiculo', 100))), al_garaje,
+               ayuda=tr("Tu mecánico se lleva el vehículo que llevas, o el que acabas de dejar aparcado cerca, al garaje de la casa que elijas. Vale para casas de cualquier localidad.")),
+        Opcion(lambda: tr("Chófer de tu banda") + (f": {p.chofer['nombre']}" if p.chofer else tr(': {precio} euros').format(precio=(p.precio('chofer', 80)))),
                lambda: __import__("juego.misvehiculos", fromlist=["x"]).menu_chofer(p),
-               ayuda="Alguien de tu banda viene a recogerte con un vehículo de tu garaje o con uno de la banda, y conduce él hasta el destino que marques en el GPS. "
-                     "Tú vas de pasajero y puedes disparar. Hace falta tener a alguien reclutado. Desde aquí también lo despides."),
-        Opcion(f"Llamar a un guardaespaldas: {p.precio('guardaespaldas', 350)} euros", guardaespaldas),
-        Opcion(lambda: f"Despedir a tus guardaespaldas: llevas {sum(1 for e in p.personas if e.tipo == 'aliado' and not e.muerto and not getattr(e, 'de_banda', False))}", despedir,
-               ayuda=f"Se marchan y dejan de cobrarte los {p.precio('guardaespaldas_sueldo', 200)} euros de cada medianoche."),
-        Opcion(f"Pedir una ambulancia: {p.precio('ambulancia', 200)} euros", ambulancia),
-        Opcion("Pedir un taxi: viaje rápido", taxi)] + ([
-        Opcion(lambda: f"Asistencia en carretera: {C.LITROS_ASISTENCIA} litros de combustible por {C.PRECIO_ASISTENCIA} euros", asistencia,
-               ayuda="Para cuando te quedas sin combustible lejos de una gasolinera. Tienes que estar en tu vehículo o al lado. Tarda media hora y no viene si te busca la policía."),
-        Opcion(lambda: f"Echar un bidón de gasolina al depósito: llevas {j.objetos.get('bidon', 0)}", bidon,
-               ayuda="Los bidones se compran en las gasolineras. Tienes que estar en tu vehículo o al lado.")] if p.combustible_activo() else []) + ([
-        Opcion(lambda: f"Cambiar la rueda pinchada con la de repuesto: llevas {j.objetos.get('rueda', 0)}", rueda,
-               ayuda="Con el vehículo parado, estando en él o al lado. Tardas un cuarto de hora. Las ruedas de repuesto se compran en los talleres y en las gasolineras."),
-        Opcion("Que venga la grúa a cambiarte la rueda", grua_rueda,
-               ayuda="Si has pinchado y no llevas repuesto. Cuesta el doble que en el taller, tarda media hora y no viene si te busca la policía.")] if p.averias_activas() else [])))
+               ayuda=tr("Alguien de tu banda viene a recogerte con un vehículo de tu garaje o con uno de la banda, y conduce él hasta el destino que marques en el GPS. "
+                     "Tú vas de pasajero y puedes disparar. Hace falta tener a alguien reclutado. Desde aquí también lo despides.")),
+        Opcion(tr('Llamar a un guardaespaldas: {precio} euros').format(precio=(p.precio('guardaespaldas', 350))), guardaespaldas,
+               ayuda=tr('Llega uno armado con pistola, te sigue y pelea a tu lado. Además cobra {precio} euros cada medianoche. Puedes llevar dos como mucho.').format(precio=(p.precio('guardaespaldas_sueldo', 200)))),
+        Opcion(lambda: tr('Despedir a tus guardaespaldas: llevas {sum}').format(sum=(sum(1 for e in p.personas if e.tipo == 'aliado' and not e.muerto and not getattr(e, 'de_banda', False)))), despedir,
+               ayuda=tr('Se marchan y dejan de cobrarte los {precio} euros de cada medianoche.').format(precio=(p.precio('guardaespaldas_sueldo', 200)))),
+        Opcion(tr('Pedir una ambulancia: {precio} euros').format(precio=(p.precio('ambulancia', 200))), ambulancia,
+               ayuda=tr("Los sanitarios te curan donde estás y te dejan la salud al máximo. No vienen si hay enemigos cerca, y si no tienes heridas no te cobran.")),
+        Opcion(tr("Pedir un taxi: viaje rápido"), taxi,
+               ayuda=tr("Eliges un sitio de esta localidad y el taxi te lleva. El precio y las horas que pasan dependen de la distancia. Con la policía detrás o en mitad de una misión, no te recoge."))] + ([
+        Opcion(lambda: tr('Asistencia en carretera: {LITROS_ASISTENCIA} litros de combustible por {PRECIO_ASISTENCIA} euros').format(LITROS_ASISTENCIA=(C.LITROS_ASISTENCIA), PRECIO_ASISTENCIA=(C.PRECIO_ASISTENCIA)), asistencia,
+               ayuda=tr("Para cuando te quedas sin combustible lejos de una gasolinera. Tienes que estar en tu vehículo o al lado. Tarda media hora y no viene si te busca la policía.")),
+        Opcion(lambda: tr('Echar un bidón de gasolina al depósito: llevas {get}').format(get=(j.objetos.get('bidon', 0))), bidon,
+               ayuda=tr("Los bidones se compran en las gasolineras. Tienes que estar en tu vehículo o al lado."))] if p.combustible_activo() else []) + ([
+        Opcion(lambda: tr('Cambiar la rueda pinchada con la de repuesto: llevas {get}').format(get=(j.objetos.get('rueda', 0))), rueda,
+               ayuda=tr("Con el vehículo parado, estando en él o al lado. Tardas un cuarto de hora. Las ruedas de repuesto se compran en los talleres y en las gasolineras.")),
+        Opcion(tr("Que venga la grúa a cambiarte la rueda"), grua_rueda,
+               ayuda=tr("Si has pinchado y no llevas repuesto. Cuesta el doble que en el taller, tarda media hora y no viene si te busca la policía."))] if p.averias_activas() else [])))
 
 
 # ========================================================= habilidades y logros
@@ -299,16 +304,21 @@ def progreso(p):
     def habilidades():
         ops = []
         for h, (nombre, desc) in HABILIDADES.items():
-            ops.append(Opcion(f"{nombre}: nivel {p.nivel(h)} de 10", ayuda=desc))
-        ops.append(Opcion(f"Salud máxima: {int(j.salud_max)} de 150. Se sube entrenando en un gimnasio"))
-        app.abrir(Menu(app, "Habilidades", ops, intro="Mejoran solas con la práctica. F1 explica cada una"))
+            ops.append(Opcion(tr('{nombre}: nivel {nivel} de 10').format(nombre=(nombre), nivel=(p.nivel(h))), ayuda=desc))
+        ops.append(Opcion(tr('Salud máxima: {int} de 150. Se sube entrenando en un gimnasio').format(int=(int(j.salud_max))),
+                          ayuda=tr("Es lo más que llega a tener tu salud: cuanta más, más golpes y disparos aguantas. Cada entrenamiento en el gimnasio la sube cinco puntos, uno al día.")))
+        app.abrir(Menu(app, tr("Habilidades"), ops, intro=tr("Mejoran solas con la práctica. F1 explica cada una")))
 
     def logros():
         ops = []
         for ident, nombre, desc, _ in LOGROS:
-            ops.append(Opcion(f"{nombre}: {'conseguido' if ident in j.logros else 'pendiente'}. {desc}"))
-        app.abrir(Menu(app, f"Logros: {len(j.logros)} de {len(LOGROS)}", ops))
-    app.abrir(Menu(app, "Habilidades y logros", [Opcion("Habilidades", habilidades), Opcion(lambda: f"Logros: {len(j.logros)} de {len(LOGROS)}", logros)]))
+            ops.append(Opcion(f"{nombre}: {'conseguido' if ident in j.logros else 'pendiente'}. {desc}",
+                              ayuda=tr("Un logro se consigue solo, en cuanto haces lo que dice, y el juego te lo anuncia con un sonido.")))
+        app.abrir(Menu(app, tr('Logros: {len} de {len2}').format(len=(len(j.logros)), len2=(len(LOGROS))), ops))
+    app.abrir(Menu(app, tr("Habilidades y logros"), [
+        Opcion(tr("Habilidades"), habilidades, ayuda=tr("Tu nivel en cada habilidad, del uno al diez, y tu salud máxima. Suben solas con la práctica, y F1 explica cada una.")),
+        Opcion(lambda: tr('Logros: {len} de {len2}').format(len=(len(j.logros)), len2=(len(LOGROS))), logros,
+               ayuda=tr("La lista de todos los logros, cuáles tienes ya y qué hace falta para cada uno."))]))
 
 
 # =================================================================== protectora
@@ -326,8 +336,7 @@ def protectora(p, l):
                 p.crear_perro()
                 _volver_al_juego(p)
                 p.son("ladrido")
-                p.decir(f"{nombre} sale moviendo el rabo y ya no se separa de ti. Gruñe cuando hay peligro cerca y, a pie, con la tecla Y, "
-                        "busca por el olfato el objeto más cercano y te marca el camino.", True)
+                p.decir(tr('{nombre} sale moviendo el rabo y ya no se separa de ti. Gruñe cuando hay peligro cerca y, a pie, con la tecla Y, busca por el olfato el objeto más cercano y te marca el camino.').format(nombre=(nombre)), True)
         return f
 
     def dejar():
@@ -339,13 +348,17 @@ def protectora(p, l):
         j.perro_en_casa = False
         j.perro_hambre, j.perro_confianza = 0.0, 100.0
         app.cerrar()
-        app.decir(f"Dejas a {nombre} en la protectora. Aquí lo cuidarán bien.", True)
+        app.decir(tr('Dejas a {nombre} en la protectora. Aquí lo cuidarán bien.').format(nombre=(nombre)), True)
     pienso = __import__("juego.menus_juego", fromlist=["x"])._comprar_objeto(p, "pienso")
     if j.perro:
-        ops = [Opcion(lambda: p.perro_txt()), pienso, Opcion(f"Cómo está y qué necesita {j.perro}", lambda: menu_perro(p)), Opcion(f"Dejar a {j.perro} en la protectora", dejar)]
+        ops = [Opcion(lambda: p.perro_txt(), ayuda=tr("Dónde está tu perro, cuánta hambre tiene y cuánto confía en ti.")), pienso,
+               Opcion(tr('Cómo está y qué necesita {perro}').format(perro=(j.perro)), lambda: menu_perro(p),
+                      ayuda=tr("Abre el menú de tu perro: acariciarlo, darle de comer, mandarlo a buscar o mandarlo a casa.")),
+               Opcion(tr('Dejar a {perro} en la protectora').format(perro=(j.perro)), dejar,
+                      ayuda=tr("Te despides de tu perro para siempre y se queda aquí. No te devuelven el donativo. Luego puedes adoptar otro."))]
     else:
-        ops = [Opcion(f"Adoptar a {n}: {p.precio('adoptar_perro', 200)} euros de donativo", adoptar(n), ayuda="Un perro te acompaña a todas partes, avisa de los enemigos y encuentra objetos por el olfato.") for n in random.sample(NOMBRES_PERRO, min(4, len(NOMBRES_PERRO)))]
-    app.abrir(Menu(app, lambda: f"{l.nombre}. Tienes {j.dinero} euros", ops))
+        ops = [Opcion(tr('Adoptar a {n}: {precio} euros de donativo').format(n=(n), precio=(p.precio('adoptar_perro', 200))), adoptar(n), ayuda=tr("Un perro te acompaña a todas partes, avisa de los enemigos y encuentra objetos por el olfato.")) for n in random.sample(NOMBRES_PERRO, min(4, len(NOMBRES_PERRO)))]
+    app.abrir(Menu(app, lambda: tr('{nombre}. Tienes {dinero} euros').format(nombre=(l.nombre), dinero=(j.dinero)), ops))
 
 
 def menu_perro(p):
@@ -353,7 +366,7 @@ def menu_perro(p):
     app = p.app
     j = p.j
     if not j.perro:
-        app.decir("No tienes perro. Puedes adoptar uno en una protectora de animales.", True)
+        app.decir(tr("No tienes perro. Puedes adoptar uno en una protectora de animales."), True)
         return
 
     def volver_y(f):
@@ -370,16 +383,17 @@ def menu_perro(p):
 
     def ops():
         if j.perro_en_casa:
-            return [Opcion(p.perro_txt()), Opcion(f"Llamar a {j.perro} para que vuelva contigo", volver_y(p.llamar_perro), ayuda="Llega corriendo desde casa. En mitad del mar no puede.")]
+            return [Opcion(p.perro_txt(), ayuda=tr("En casa tiene comida y agua, y se le pasa el miedo. Desde aquí lo llamas para que vuelva contigo.")), Opcion(tr('Llamar a {perro} para que vuelva contigo').format(perro=(j.perro)), volver_y(p.llamar_perro), ayuda=tr("Llega corriendo desde casa. En mitad del mar no puede."))]
         if p.perro() is None:
-            return [Opcion(f"{j.perro} no está aquí ahora mismo: vuelve contigo en cuanto pises tierra")]
-        return [Opcion(p.perro_txt(), ayuda="Con hambre avisa gimiendo, y sin fuerzas no busca. Si te tiene miedo, te sigue de lejos y no avisa de los enemigos ni busca."),
-                Opcion("Acariciar", lambda: (p.acariciar_perro(), m.refrescar(False)), ayuda="Le sube la confianza poco a poco. Si le has hecho daño, así hacéis las paces."),
-                Opcion(lambda: f"Dar de comer: te quedan {j.objetos.get('pienso', 0)} raciones de pienso", lambda: (p.alimentar_perro(), m.refrescar(False)),
-                       ayuda="Una ración le quita el hambre de casi un día y le sube mucho la confianza. El pienso se compra en la protectora de animales y en las tiendas."),
-                Opcion("Buscar por el olfato el objeto más cercano", buscar, ayuda="Lo mismo que la tecla Y."),
-                Opcion("Mandar a casa", volver_y(p.mandar_perro_a_casa), ayuda="Se va a tu vivienda y te espera allí, con comida y agua. Hace falta tener una casa. Para que vuelva, lo llamas desde este mismo menú.")]
-    m = Menu(app, f"Tu perro, {j.perro}", ops)
+            return [Opcion(tr('{perro} no está aquí ahora mismo: vuelve contigo en cuanto pises tierra').format(perro=(j.perro)),
+                           ayuda=tr("Mientras no esté a tu lado no puedes acariciarlo, darle de comer ni mandarlo a buscar."))]
+        return [Opcion(p.perro_txt(), ayuda=tr("Con hambre avisa gimiendo, y sin fuerzas no busca. Si te tiene miedo, te sigue de lejos y no avisa de los enemigos ni busca.")),
+                Opcion(tr("Acariciar"), lambda: (p.acariciar_perro(), m.refrescar(False)), ayuda=tr("Le sube la confianza poco a poco. Si le has hecho daño, así hacéis las paces.")),
+                Opcion(lambda: tr('Dar de comer: te quedan {get} raciones de pienso').format(get=(j.objetos.get('pienso', 0))), lambda: (p.alimentar_perro(), m.refrescar(False)),
+                       ayuda=tr("Una ración le quita el hambre de casi un día y le sube mucho la confianza. El pienso se compra en la protectora de animales y en las tiendas.")),
+                Opcion(tr("Buscar por el olfato el objeto más cercano"), buscar, ayuda=tr("Lo mismo que la tecla Y.")),
+                Opcion(tr("Mandar a casa"), volver_y(p.mandar_perro_a_casa), ayuda=tr("Se va a tu vivienda y te espera allí, con comida y agua. Hace falta tener una casa. Para que vuelva, lo llamas desde este mismo menú."))]
+    m = Menu(app, tr('Tu perro, {perro}').format(perro=(j.perro)), ops)
     app.abrir(m)
 
 
@@ -403,13 +417,16 @@ def feria(p, l):
         if p.pagar(p.precio("feria_algodon", 3)):
             p.j.salud = min(p.j.salud_max, p.j.salud + 6)
             p.son("comer", cat="interfaz")
-            app.decir(f"Algodón de azúcar. Salud {int(p.j.salud)}.", True)
-    app.abrir(Menu(app, lambda: f"{l.nombre}. Tienes {p.j.dinero} euros", [
-        Opcion(f"Máquina de memoria de sonidos: {p.precio('feria_memoria', 10)} euros", simon,
-               ayuda=f"La máquina toca una secuencia de notas y tú la repites con las flechas. Con cinco rondas ya hay premio; con doce, {p.precio('memoria_premio_12', 1000)} euros."),
-        Opcion(f"Caseta de tiro: {p.precio('feria_tiro', 20)} euros", tiro),
-        Opcion(f"Algodón de azúcar: {p.precio('feria_algodon', 3)} euros", algodon),
-        Opcion(lambda: f"Tu récord en la máquina de memoria: {p.j.stats.get('simon', 0)} rondas")]))
+            app.decir(tr('Algodón de azúcar. Salud {int}.').format(int=(int(p.j.salud))), True)
+    app.abrir(Menu(app, lambda: tr('{nombre}. Tienes {dinero} euros').format(nombre=(l.nombre), dinero=(p.j.dinero)), [
+        Opcion(tr('Máquina de memoria de sonidos: {precio} euros').format(precio=(p.precio('feria_memoria', 10))), simon,
+               ayuda=tr('La máquina toca una secuencia de notas y tú la repites con las flechas. Con cinco rondas ya hay premio; con doce, {precio} euros.').format(precio=(p.precio('memoria_premio_12', 1000)))),
+        Opcion(tr('Caseta de tiro: {precio} euros').format(precio=(p.precio('feria_tiro', 20))), tiro,
+               ayuda=tr('Suenan diez dianas a la izquierda, al centro o a la derecha, y pulsas enseguida la flecha de ese lado. Con siete aciertos ganas {p7} euros; con nueve, {p9}.').format(p7=(p.precio('tiro_premio_7', 80)), p9=(p.precio('tiro_premio_9', 200)))),
+        Opcion(tr('Algodón de azúcar: {precio} euros').format(precio=(p.precio('feria_algodon', 3))), algodon,
+               ayuda=tr("Te lo comes en el sitio y te sube un poco la salud.")),
+        Opcion(lambda: tr('Tu récord en la máquina de memoria: {get} rondas').format(get=(p.j.stats.get('simon', 0))),
+               ayuda=tr("La secuencia más larga que has repetido sin fallar en la máquina de memoria."))]))
 
 
 # ======================================================================= tesoro
@@ -418,10 +435,10 @@ def tesoro(p, l):
     j = p.j
     buceo = p.mundo.tipo == "mar"
     if buceo and j.veh and abs(j.veh.vel) > 1.5:
-        app.decir("Detén el barco antes de bucear.", True)
+        app.decir(tr("Detén el barco antes de bucear."), True)
         return
     if not buceo and j.veh:
-        app.decir(f"{l.nombre}. Bájate del vehículo.", True)
+        app.decir(tr('{nombre}. Bájate del vehículo.').format(nombre=(l.nombre)), True)
         return
     clave = "tesoro:" + l.id
     hechos = p.atracadas.get(clave, [0, 0])
@@ -431,7 +448,7 @@ def tesoro(p, l):
     def buscar():
         if hechos[1] >= 3:
             app.son("error")
-            app.decir("Hoy ya has removido todo esto tres veces. Vuelve mañana.", True)
+            app.decir(tr("Hoy ya has removido todo esto tres veces. Vuelve mañana."), True)
             return
         if p.pagar(p.precio("tesoro_alquiler", 25)):
             hechos[1] += 1
@@ -439,50 +456,89 @@ def tesoro(p, l):
             from .pantallas import BuscaTesoro
             _volver_al_juego(p)
             app.abrir(BuscaTesoro(app, p, buceo))
-    que = f"Alquilar botellas y bucear: {p.precio('tesoro_alquiler', 25)} euros" if buceo else f"Alquilar un detector de metales: {p.precio('tesoro_alquiler', 25)} euros"
-    app.abrir(Menu(app, lambda: f"{l.nombre}. Tienes {j.dinero} euros", [
-        Opcion(que, buscar, ayuda="Un juego de frío o caliente con el oído. El pitido se acelera y se agudiza al acercarte al tesoro. Tres búsquedas al día en cada sitio."),
-        Opcion("Descripción", lambda: app.decir(l.desc, True)),
-        Opcion(lambda: f"Tesoros encontrados: {j.stats.get('tesoros', 0)}")]))
+    que = tr('Alquilar botellas y bucear: {precio} euros').format(precio=(p.precio('tesoro_alquiler', 25))) if buceo else tr('Alquilar un detector de metales: {precio} euros').format(precio=(p.precio('tesoro_alquiler', 25)))
+    app.abrir(Menu(app, lambda: tr('{nombre}. Tienes {dinero} euros').format(nombre=(l.nombre), dinero=(j.dinero)), [
+        Opcion(que, buscar, ayuda=tr("Un juego de frío o caliente con el oído. El pitido se acelera y se agudiza al acercarte al tesoro. Tres búsquedas al día en cada sitio.")),
+        Opcion(tr("Descripción"), lambda: app.decir(l.desc, True), ayuda=tr("Te cuenta cómo es este sitio.")),
+        Opcion(lambda: tr('Tesoros encontrados: {get}').format(get=(j.stats.get('tesoros', 0))),
+               ayuda=tr("Los tesoros que has sacado en toda la partida, en todos los sitios de búsqueda."))]))
 
 
 # ======================================================================== bolsa
 def bolsa(p):
-    from .extras3 import EMPRESAS
+    """La bolsa, en los bancos: precios, cuánto han cambiado, lo que tienes, lo que ganas o pierdes, noticias y dividendos (bolsa.py)."""
+    from . import bolsa as B
     app = p.app
     j = p.j
 
+    def cambio_txt(ident):
+        hoy, ayer = p.precio_accion(ident), p.precio_ayer(ident)
+        if ayer <= 0 or abs(hoy - ayer) / ayer < 0.005:
+            return tr("igual que ayer")
+        pct = int(round(abs(hoy - ayer) / ayer * 100)) or 1
+        return tr('{v} un {pct} por ciento desde ayer').format(v=(tr('sube') if hoy > ayer else tr('baja')), pct=(pct))
+
+    def tuyo_txt(ident):
+        n = j.acciones.get(ident, 0)
+        if not n:
+            return tr("No tienes")
+        p.cartera_coste()
+        coste = float(j.coste_acciones.get(ident, 0.0))
+        valor = n * p.precio_accion(ident)
+        return tr('Tienes {n}, que valen {int} euros: {balance_txt}').format(n=(n), int=(int(valor)), balance_txt=(p.balance_txt(valor - coste)))
+
     def operar(ident):
-        nombre, _, desc = EMPRESAS[ident]
+        e = B.EMPRESAS[ident]
 
         def comprar(n):
             def f():
-                precio = int(round(p.precio_accion(ident) * n))
-                if p.pagar(precio):
-                    j.acciones[ident] = j.acciones.get(ident, 0) + n
+                precio = p.comprar_acciones(ident, n)
+                if precio:
                     p.son("bolsa", cat="interfaz")
-                    app.decir(f"Compras {n} acciones por {precio} euros. Tienes {j.acciones[ident]}.", True)
+                    app.decir(tr('Compras {n} acciones por {precio} euros. Tienes {v}.').format(n=(n), precio=(precio), v=(j.acciones[ident])), True)
+                    mm.refrescar(False)
             return f
 
         def vender(n):
             def f():
-                tengo = j.acciones.get(ident, 0)
-                k = tengo if n is None else min(n, tengo)
+                k, ganado = p.vender_acciones(ident, n)
                 if k <= 0:
                     app.son("error")
-                    app.decir("No tienes acciones de esta empresa.", True)
+                    app.decir(tr("No tienes acciones de esta empresa."), True)
                     return
-                cobro = int(p.precio_accion(ident) * k)
-                j.acciones[ident] = tengo - k
-                p.dar_dinero(cobro)
-                app.decir(f"Vendes {k} acciones por {cobro} euros. Te quedan {j.acciones[ident]}.", True)
+                app.decir(tr('Vendes {k} acciones. Con esta venta, {balance_txt}. Te quedan {v}.').format(k=(k), balance_txt=(p.balance_txt(ganado)), v=(j.acciones[ident])), True)
+                mm.refrescar(False)
             return f
-        app.abrir(Menu(app, lambda: f"{nombre}. Precio {p.precio_accion(ident):.2f} euros. Tienes {j.acciones.get(ident, 0)} acciones y {j.dinero} euros", [
-            Opcion("Comprar 10 acciones", comprar(10)), Opcion("Comprar 100 acciones", comprar(100)),
-            Opcion("Vender 10 acciones", vender(10)), Opcion("Vender todas", vender(None)),
-            Opcion(desc)]))
-    ops = [Opcion((lambda i=i: f"{EMPRESAS[i][0]}: {p.precio_accion(i):.2f} euros la acción. Tienes {j.acciones.get(i, 0)}"), (lambda i=i: operar(i)), ayuda=EMPRESAS[i][2]) for i in EMPRESAS]
-    app.abrir(Menu(app, "Bolsa de la comarca", ops, intro="Los precios cambian cada medianoche, y algunos reaccionan a lo que pasa en la historia"))
+        div = tr(' Reparte un {dividendo:g} por ciento del precio cada {entero} días.').format(dividendo=(e['dividendo']), entero=(B.AJ.entero('dividendo_dias'))) if e["dividendo"] > 0 else tr(" No reparte dividendos.")
+        mm = Menu(app, lambda: tr('{nombre}. {precio_accion:.2f} euros la acción, {cambio_txt}. {tuyo_txt}. Tienes {dinero} euros').format(nombre=(e['nombre']), precio_accion=(p.precio_accion(ident)), cambio_txt=(cambio_txt(ident)), tuyo_txt=(tuyo_txt(ident)), dinero=(j.dinero)), lambda: [
+            Opcion(tr("Comprar 10 acciones"), comprar(10),
+                   ayuda=tr('Pagas diez veces el precio de hoy: unos {precio} euros.').format(precio=int(round(p.precio_accion(ident) * 10)))),
+            Opcion(tr("Comprar 100 acciones"), comprar(100),
+                   ayuda=tr('Pagas cien veces el precio de hoy: unos {precio} euros.').format(precio=int(round(p.precio_accion(ident) * 100)))),
+            Opcion(tr("Vender 10 acciones"), vender(10),
+                   ayuda=tr("Las vendes al precio de hoy y te dice si con ellas ganas o pierdes respecto a lo que te costaron. Si tienes menos de diez, vendes las que tengas.")),
+            Opcion(tr("Vender todas"), vender(None),
+                   ayuda=tr("Vendes todas las que tienes de esta empresa al precio de hoy, y te dice cuánto ganas o pierdes con la venta.")),
+            Opcion(e["desc"] + div, ayuda=tr("A qué se dedica esta empresa y si reparte dividendos."))])
+        app.abrir(mm)
+
+    def ops():
+        lista = []
+        if any(j.acciones.values()):
+            valor = p.cartera_valor()
+            lista.append(Opcion(tr('Tu cartera vale {int} euros: {balance_txt}. Dividendos cobrados: {get} euros').format(int=(int(valor)), balance_txt=(p.balance_txt(valor - p.cartera_coste())), get=(j.stats.get('dividendos', 0))),
+                                ayuda=tr("Lo que te darían hoy por todas tus acciones, y lo que ganas o pierdes comparado con lo que pagaste por ellas.")))
+        lista += [Opcion((lambda i=i: tr('{nombre}: {precio_accion:.2f} euros, {cambio_txt}. {tuyo_txt}').format(nombre=(B.EMPRESAS[i]['nombre']), precio_accion=(p.precio_accion(i)), cambio_txt=(cambio_txt(i)), tuyo_txt=(tuyo_txt(i)))), (lambda i=i: operar(i)), ayuda=B.EMPRESAS[i]["desc"])
+                  for i in B.EMPRESAS]
+        noticias = list(getattr(j, "bolsa_noticias", None) or [])
+        if noticias:
+            lista.append(Opcion(tr('Noticias de la bolsa: {len}').format(len=(len(noticias))), lambda: app.abrir(Menu(app, tr("Noticias de la bolsa"),
+                [Opcion(tr('Día {dia}: {texto}').format(dia=(x['dia']), texto=(x['texto'])), ayuda=tr("Una noticia de una empresa, del día que dice. Las noticias mueven su precio.")) for x in noticias] + [Opcion(tr("Volver"), lambda: app.cerrar())])),
+                ayuda=tr("Lo último que ha pasado en las empresas, con el día de cada noticia.")))
+        lista.append(Opcion(tr("Cómo funciona la bolsa"), lambda: app.decir(B.como_funciona(), True),
+                            ayuda=tr("Te explica de una vez cómo se mueven los precios, cómo se gana y cómo se cobran los dividendos.")))
+        return lista
+    app.abrir(Menu(app, tr("Bolsa de la comarca"), ops, intro=tr("Los precios cambian cada medianoche. Ganas si vendes más caro de lo que compraste; algunas empresas reparten dividendos")))
 
 
 # ================================================================== territorios
@@ -493,36 +549,33 @@ def como_funcionan_territorios(p):
     app, j = p.app, p.j
     tributo = p.precio("tributo_territorio", 300)
     ciudades = [m.nombre for m in p.mapas.values() if m.tipo == "ciudad" and m.barrios]
-    en_ciudades = ", ".join(ciudades[:-1]) + " y " + ciudades[-1] if len(ciudades) > 1 else (ciudades[0] if ciudades else "las ciudades")
+    en_ciudades = ", ".join(ciudades[:-1]) + tr(" y ") + ciudades[-1] if len(ciudades) > 1 else (ciudades[0] if ciudades else tr("las ciudades"))
     oleadas = int(GU.aj("oleadas"))
     lineas = [
-        f"Qué es. Cada barrio de las ciudades, que son {en_ciudades}, puede ser tuyo. Un barrio tuyo es un territorio. Los pueblos y las islas no tienen barrios que conquistar. "
-        "No hace falta para seguir la historia: es otra manera de ganar dinero y de hacerte fuerte.",
-        f"Para qué sirve, uno: dinero. Cada territorio te paga {tributo} euros cada medianoche, sin hacer nada. Con {max(2, len(j.territorios))} serían {tributo * max(2, len(j.territorios))} euros al día.",
-        f"Para qué sirve, dos: tu banda. Sin territorios no hay banda. Con el primero puedes reclutar a dos personas, y cada territorio más te deja mantener a una más, hasta {sistemas.TOPE_BANDA}. "
-        "Los tuyos te siguen, suben a tu vehículo, pelean a tu lado, y uno puede hacerte de chófer. Se reclutan aquí mismo, en Tu banda.",
-        "Para qué sirve, tres: fama y calle. Conquistar sube tu reputación, en tus barrios no andan los pandilleros de la banda que echaste, y la tecla N, el mapa y los tablones dicen que el barrio es tuyo.",
-        ("Cómo se conquista. Tienes activada la guerra de barrios en la calle: ve al barrio, con el GPS desde este menú, y planta cara a la banda allí, tumbando a dos de los suyos o eligiendo el barrio en este menú cuando ya estés dentro. "
+        tr('Qué es. Cada barrio de las ciudades, que son {en_ciudades}, puede ser tuyo. Un barrio tuyo es un territorio. Los pueblos y las islas no tienen barrios que conquistar. No hace falta para seguir la historia: es otra manera de ganar dinero y de hacerte fuerte.').format(en_ciudades=(en_ciudades)),
+        tr('Para qué sirve, uno: dinero. Cada territorio te paga {tributo} euros cada medianoche, sin hacer nada. Con {max} serían {v} euros al día.').format(tributo=(tributo), max=(max(2, len(j.territorios))), v=(tributo * max(2, len(j.territorios)))),
+        tr('Para qué sirve, dos: tu banda. Sin territorios no hay banda. Con el primero puedes reclutar a dos personas, y cada territorio más te deja mantener a una más, hasta {TOPE_BANDA}. Los tuyos te siguen, suben a tu vehículo, pelean a tu lado, y uno puede hacerte de chófer. Se reclutan aquí mismo, en Tu banda.').format(TOPE_BANDA=(sistemas.TOPE_BANDA)),
+        tr("Para qué sirve, tres: fama y calle. Conquistar sube tu reputación, en tus barrios no andan los pandilleros de la banda que echaste, y la tecla N, el mapa y los tablones dicen que el barrio es tuyo."),
+        (tr("Cómo se conquista. Tienes activada la guerra de barrios en la calle: ve al barrio, con el GPS desde este menú, y planta cara a la banda allí, tumbando a dos de los suyos o eligiendo el barrio en este menú cuando ya estés dentro. ")
          if p.guerra_activa() else
-         "Cómo se conquista. En este menú, elige Conquistar y el nombre del barrio, estando en esa ciudad. Empieza en el acto, estés donde estés. ")
-        + f"Vienen a por ti {oleadas} oleadas de pandilleros, cada una más dura. Si tienes banda, acude a ayudarte. Si caes o te vas, no pierdes nada más que la ocasión: puedes volver a intentarlo. "
-        "Lleva un arma de fuego, munición de sobra y botiquines. La tecla O dice cómo va la pelea.",
-        "Otra manera, sin pegar un tiro: en Negociar con las bandas puedes comprarles un barrio, devolverles uno tuyo a cambio de dinero o cobrarles un tributo por dejarles estar. Depende de tu fuerza y de cómo te lleves con ellos.",
-        "Cómo se defiende. De vez en cuando una banda ataca un barrio tuyo: suena un aviso de tambores y te lo dice el juego. Tienes hasta la medianoche: arriba del todo en este menú aparece la opción de defenderlo, "
-        "en persona o enviando a tu banda. Si no haces nada, lo pierdes y deja de pagarte.",
-        ("Reconquista. La tienes activada: cuando tienes muchos barrios, o una ciudad entera, las bandas vencidas se rehacen e intentan recuperarlos, con aviso y con plazo. "
-         "En Defensa de tus barrios ves la amenaza, la lealtad y la defensa de cada uno, y pones guardias, refuerzos, informantes y treguas. Dentro, la primera opción lo explica con detalle."
+         tr("Cómo se conquista. En este menú, elige Conquistar y el nombre del barrio, estando en esa ciudad. Empieza en el acto, estés donde estés. "))
+        + tr('Vienen a por ti {oleadas} oleadas de pandilleros, cada una más dura. Si tienes banda, acude a ayudarte. Si caes o te vas, no pierdes nada más que la ocasión: puedes volver a intentarlo. Lleva un arma de fuego, munición de sobra y botiquines. La tecla O dice cómo va la pelea.').format(oleadas=(oleadas)),
+        tr("Otra manera, sin pegar un tiro: en Negociar con las bandas puedes comprarles un barrio, devolverles uno tuyo a cambio de dinero o cobrarles un tributo por dejarles estar. Depende de tu fuerza y de cómo te lleves con ellos."),
+        tr("Cómo se defiende. De vez en cuando una banda ataca un barrio tuyo: suena un aviso de tambores y te lo dice el juego. Tienes hasta la medianoche: arriba del todo en este menú aparece la opción de defenderlo, "
+        "en persona o enviando a tu banda. Si no haces nada, lo pierdes y deja de pagarte."),
+        (tr("Reconquista. La tienes activada: cuando tienes muchos barrios, o una ciudad entera, las bandas vencidas se rehacen e intentan recuperarlos, con aviso y con plazo. "
+         "En Defensa de tus barrios ves la amenaza, la lealtad y la defensa de cada uno, y pones guardias, refuerzos, informantes y treguas. Dentro, la primera opción lo explica con detalle.")
          if p.rec_nivel() else
-         "Reconquista. Es una opción, en Opciones, La calle: Las bandas intentan reconquistar tus barrios. Con ella, las bandas vencidas se rehacen e intentan recuperar lo suyo, y tú preparas la defensa con guardias, refuerzos y treguas. "
-         "Ahora la tienes apagada o estás en un servidor: solo hay los ataques sueltos de siempre."),
-        "Si pierdes un barrio. Deja de pagarte, pasa a ser de la banda que te lo quitó, y si te quedas sin ninguno, tu banda se queda sin sitio. Se puede volver a conquistar igual que la primera vez.",
-        "Pelear por pelear. Si lo que quieres es una pelea con una banda sin conquistar nada, en este menú está Buscar pelea con una banda: vienen a por ti donde estés y no hay barrio en juego."
+         tr("Reconquista. Es una opción, en Opciones, La calle: Las bandas intentan reconquistar tus barrios. Con ella, las bandas vencidas se rehacen e intentan recuperar lo suyo, y tú preparas la defensa con guardias, refuerzos y treguas. "
+         "Ahora la tienes apagada o estás en un servidor: solo hay los ataques sueltos de siempre.")),
+        tr("Si pierdes un barrio. Deja de pagarte, pasa a ser de la banda que te lo quitó, y si te quedas sin ninguno, tu banda se queda sin sitio. Se puede volver a conquistar igual que la primera vez."),
+        tr("Pelear por pelear. Si lo que quieres es una pelea con una banda sin conquistar nada, en este menú está Buscar pelea con una banda: vienen a por ti donde estés y no hay barrio en juego.")
         if not p.en_servidor else
-        "En un servidor en línea es distinto: los barrios son de las bandas de los jugadores, y se disputan entre bandas desde el menú del servidor. Lo de este menú es para jugar sin conexión.",
+        tr("En un servidor en línea es distinto: los barrios son de las bandas de los jugadores, y se disputan entre bandas desde el menú del servidor. Lo de este menú es para jugar sin conexión."),
     ]
-    ops = [Opcion(t.rstrip(".")) for t in lineas]              # el menú pone el punto
-    ops.append(Opcion("Volver", lambda: app.cerrar(m)))
-    m = Menu(app, "Territorios: cómo funciona. Recorre la explicación con las flechas", ops)
+    ops = [Opcion(t.rstrip("."), ayuda=tr("Una parte de la explicación. Con flecha abajo pasas a la siguiente.")) for t in lineas]              # el menú pone el punto
+    ops.append(Opcion(tr("Volver"), lambda: app.cerrar(m)))
+    m = Menu(app, tr("Territorios: cómo funciona. Recorre la explicación con las flechas"), ops)
     app.abrir(m)
 
 
@@ -545,22 +598,23 @@ def buscar_pelea(p):
     def elegir(banda):
         def f():
             corta, larga = p.pelea_tamano(False), p.pelea_tamano(True)
-            app.abrir(Menu(app, f"Pelea con {banda}. Con ellos, {p.rep_banda_txt(p.rep_banda(banda))}", [
-                Opcion(f"Una pelea corta: vienen {corta[0]} de una vez", empezar(banda, False)),
-                Opcion(f"Una pelea larga: {len(larga)} tandas, de {' y '.join(str(n) for n in larga)}", empezar(banda, True),
-                       ayuda="Entre una tanda y otra hay unos segundos para recargar y curarte."),
-                Opcion("Dejarlo", lambda: app.cerrar())]))
+            app.abrir(Menu(app, tr('Pelea con {banda}. Con ellos, {rep_banda_txt}').format(banda=(banda), rep_banda_txt=(p.rep_banda_txt(p.rep_banda(banda)))), [
+                Opcion(tr('Una pelea corta: vienen {v} de una vez').format(v=(corta[0])), empezar(banda, False),
+                       ayuda=tr("Vuelves al juego y llegan todos juntos a por ti, en una sola tanda.")),
+                Opcion(tr('Una pelea larga: {len} tandas, de {join}').format(len=(len(larga)), join=(tr(' y ').join(str(n) for n in larga))), empezar(banda, True),
+                       ayuda=tr("Entre una tanda y otra hay unos segundos para recargar y curarte.")),
+                Opcion(tr("Dejarlo"), lambda: app.cerrar())]))
         return f
     motivo = p.pelea_motivo()
     if motivo:
         app.son("error")
         app.decir(motivo, True)
         return
-    ayuda = ("Vienen a por ti donde estás ahora, a pie, y hay que quedarse en el barrio hasta acabar. No se gana ningún barrio ni dinero, salvo lo que suelten al caer. "
-             "Tu banda acude a ayudarte. La relación con esa banda empeora, y si hay disparos, la policía puede presentarse, como en cualquier pelea.")
+    ayuda = (tr("Vienen a por ti donde estás ahora, a pie, y hay que quedarse en el barrio hasta acabar. No se gana ningún barrio ni dinero, salvo lo que suelten al caer. "
+             "Tu banda acude a ayudarte. La relación con esa banda empeora, y si hay disparos, la policía puede presentarse, como en cualquier pelea."))
     ops = [Opcion(lambda b=b: f"{b}: {p.rep_banda_txt(p.rep_banda(b))}", elegir(b), ayuda=ayuda) for b in p.bandas_para_pelea()]
-    ops.append(Opcion("Dejarlo", lambda: app.cerrar()))
-    app.abrir(Menu(app, "Buscar pelea con una banda, sin conquistar nada. ¿Con cuál?", ops, intro="F1 explica las consecuencias"))
+    ops.append(Opcion(tr("Dejarlo"), lambda: app.cerrar()))
+    app.abrir(Menu(app, tr("Buscar pelea con una banda, sin conquistar nada. ¿Con cuál?"), ops, intro=tr("F1 explica las consecuencias")))
 
 
 def territorios(p):
@@ -571,10 +625,10 @@ def territorios(p):
         def f():
             if p.mision or p.trabajo:
                 app.son("error")
-                app.decir("Termina antes lo que tienes entre manos.", True)
+                app.decir(tr("Termina antes lo que tienes entre manos."), True)
             elif j.estrellas:
                 app.son("error")
-                app.decir("Con la policía detrás no es momento de empezar una guerra.", True)
+                app.decir(tr("Con la policía detrás no es momento de empezar una guerra."), True)
             else:
                 p.empezar_conquista(b)
         return f
@@ -585,7 +639,7 @@ def territorios(p):
             if p.mundo.barrio(*p.pos())["id"] == b["id"]:
                 if p.mision or p.trabajo:
                     app.son("error")
-                    return app.decir("Termina antes lo que tienes entre manos.", True)
+                    return app.decir(tr("Termina antes lo que tienes entre manos."), True)
                 while app.pila and app.pila[-1] is not p:
                     app.cerrar(app.pila[-1])
                 p.empezar_guerra(b)
@@ -593,29 +647,29 @@ def territorios(p):
             l = p.lugar_de_barrio(b)
             if l is not None:
                 p.gps_a_lugar(l)
-            app.decir(f"{b['nombre']} es de {p.banda_de_barrio(b)}. Ve allí: el GPS te lleva a {l.nombre if l else 'ese barrio'}. "
-                      "Cuando estés dentro, tumba a dos de los suyos o vuelve a este menú para plantarles cara, y empezará la guerra.", True)
+            app.decir(tr('{nombre} es de {banda_de_barrio}. Ve allí: el GPS te lleva a {v}. Cuando estés dentro, tumba a dos de los suyos o vuelve a este menú para plantarles cara, y empezará la guerra.').format(nombre=(b['nombre']), banda_de_barrio=(p.banda_de_barrio(b)), v=(l.nombre if l else tr('ese barrio'))), True)
         return f
     ops = []
     guerra = p.guerra_activa()
     for b in p.mundo.barrios if p.mundo.tipo == "ciudad" else []:
         if b["id"] in j.territorios:
             if p.rec_activa():                                   # con la reconquista: cómo está el barrio, que siempre se puede consultar
-                ops.append(Opcion(lambda b=b: f"{b['nombre']}: es tuyo. Te da {p.precio('tributo_territorio', 300)} euros al día. Lealtad {int(p.rec_barrio(b['id'])['lealtad'])} de 100, "
-                                  f"defensa {int(p.rec_defensa(b['id']))} de 100. Amenaza: {p.rec_amenaza_txt(b['id'])}",
-                                  ayuda="Las bandas vencidas intentan recuperar tus barrios. La lealtad baja si pasan días sin que pises el barrio; la defensa sube con guardias, refuerzos, lealtad y tu banda; "
-                                        "y la amenaza dice si se prepara algo contra él. Todo se maneja más abajo, en Defensa de tus barrios."))
+                ops.append(Opcion(lambda b=b: tr('{nombre}: es tuyo. Te da {precio} euros al día. Lealtad {int} de 100, defensa {int2} de 100. Amenaza: {rec_amenaza_txt}').format(nombre=(b['nombre']), precio=(p.precio('tributo_territorio', 300)), int=(int(p.rec_barrio(b['id'])['lealtad'])), int2=(int(p.rec_defensa(b['id']))), rec_amenaza_txt=(p.rec_amenaza_txt(b['id']))),
+                                  ayuda=tr("Las bandas vencidas intentan recuperar tus barrios. La lealtad baja si pasan días sin que pises el barrio; la defensa sube con guardias, refuerzos, lealtad y tu banda; "
+                                        "y la amenaza dice si se prepara algo contra él. Todo se maneja más abajo, en Defensa de tus barrios.")))
                 continue
-            ops.append(Opcion(f"{b['nombre']}: es tuyo. Te da {p.precio('tributo_territorio', 300)} euros al día"))
+            ops.append(Opcion(tr('{nombre}: es tuyo. Te da {precio} euros al día').format(nombre=(b['nombre']), precio=(p.precio('tributo_territorio', 300))),
+                              ayuda=tr("Te paga cada medianoche sin hacer nada. Si una banda lo ataca, tienes hasta la medianoche para defenderlo o lo pierdes.")))
         elif guerra:
-            ops.append(Opcion(lambda b=b: f"{b['nombre']}: de {p.banda_de_barrio(b)}. " + ("Estás aquí: plantarles cara" if p.mundo.barrio(*p.pos())["id"] == b["id"] else "Se conquista en la calle: marcar en el GPS"),
-                              en_la_calle(b), ayuda="Tienes activado el modo de guerra de barrios en la calle: los barrios no se conquistan desde el móvil. Ve al barrio y planta cara a la banda allí: "
-                              f"vienen a por ti en oleadas, cada una más dura, y tu banda acude a ayudarte. Si ganas, el barrio te paga {p.precio('tributo_territorio', 300)} euros cada medianoche."))
+            ops.append(Opcion(lambda b=b: tr('{nombre}: de {banda_de_barrio}. ').format(nombre=(b['nombre']), banda_de_barrio=(p.banda_de_barrio(b))) + (tr("Estás aquí: plantarles cara") if p.mundo.barrio(*p.pos())["id"] == b["id"] else tr("Se conquista en la calle: marcar en el GPS")),
+                              en_la_calle(b), ayuda=tr('Tienes activado el modo de guerra de barrios en la calle: los barrios no se conquistan desde el móvil. Ve al barrio y planta cara a la banda allí: vienen a por ti en oleadas, cada una más dura, y tu banda acude a ayudarte. Si ganas, el barrio te paga {precio} euros cada medianoche.').format(precio=(p.precio('tributo_territorio', 300)))))
         else:
-            ops.append(Opcion(f"Conquistar {b['nombre']}", conquistar(b), ayuda=f"Tres oleadas de pandilleros, cada una más dura. Si ganas, el barrio te paga {p.precio('tributo_territorio', 300)} euros cada medianoche."))
+            ops.append(Opcion(tr('Conquistar {nombre}').format(nombre=(b['nombre'])), conquistar(b), ayuda=tr('Tres oleadas de pandilleros, cada una más dura. Si ganas, el barrio te paga {precio} euros cada medianoche.').format(precio=(p.precio('tributo_territorio', 300)))))
     if not ops:
-        ops = [Opcion("Aquí no hay barrios que conquistar. Las guerras de territorio son cosa de las ciudades: Puerto Bravo, San Lucero y Monteferro")]
-    ops.append(Opcion(lambda: f"Territorios en tu poder: {len(j.territorios)}"))
+        ops = [Opcion(tr("Aquí no hay barrios que conquistar. Las guerras de territorio son cosa de las ciudades: Puerto Bravo, San Lucero y Monteferro"),
+                      ayuda=tr("Ve a una de esas ciudades y vuelve a abrir este menú para ver sus barrios."))]
+    ops.append(Opcion(lambda: tr('Territorios en tu poder: {len}').format(len=(len(j.territorios))),
+                      ayuda=tr("Los barrios que son tuyos, sumando todas las ciudades. Cada uno te paga cada medianoche y te deja mantener a más gente en tu banda.")))
     from . import sistemas
     urgente = sistemas.opciones_sucesos(p, Menu, Opcion)
     ops[0:0] = urgente
@@ -625,20 +679,20 @@ def territorios(p):
     ops += abajo
     from .menus import EntradaTexto
     if not p.en_servidor:
-        ops.append(Opcion(lambda: "Negociar con las bandas" + (f": {len(j.tributos)} te {'paga' if len(j.tributos) == 1 else 'pagan'} tributo" if j.tributos else ""),
+        ops.append(Opcion(lambda: tr("Negociar con las bandas") + (tr(': {len} te {v} tributo').format(len=(len(j.tributos)), v=(tr('paga') if len(j.tributos) == 1 else tr('pagan'))) if j.tributos else ""),
                           lambda: __import__("juego.pactos", fromlist=["x"]).menu_pactos(p),
-                          ayuda="Tres tratos que propones tú: devolverles un barrio tuyo a cambio de dinero, comprarles uno sin pegar un tiro, o cobrarles un tributo diario por dejarles estar. "
-                                "Lo que contestan depende de tu fuerza y de cómo te lleves con ellos, y no es igual cada día."))
-    ops.append(Opcion(lambda: f"Tu banda: {j.banda_nombre or 'sin nombre'}, {j.banda} de {sistemas.cupo(j)}" if j.territorios else "Tu banda: necesitas un territorio para tenerla",
+                          ayuda=tr("Tres tratos que propones tú: devolverles un barrio tuyo a cambio de dinero, comprarles uno sin pegar un tiro, o cobrarles un tributo diario por dejarles estar. "
+                                "Lo que contestan depende de tu fuerza y de cómo te lleves con ellos, y no es igual cada día.")))
+    ops.append(Opcion(lambda: tr('Tu banda: {v}, {banda} de {cupo}').format(v=(j.banda_nombre or tr('sin nombre')), banda=(j.banda), cupo=(sistemas.cupo(j))) if j.territorios else tr("Tu banda: necesitas un territorio para tenerla"),
                       lambda: sistemas.menu_banda(p, Menu, Opcion, EntradaTexto),
-                      ayuda="Con un territorio puedes reclutar gente. Te siguen, suben a tu vehículo y pelean a tu lado. Cada territorio te deja mantener a uno más."))
+                      ayuda=tr("Con un territorio puedes reclutar gente. Te siguen, suben a tu vehículo y pelean a tu lado. Cada territorio te deja mantener a uno más.")))
     if not p.en_servidor:
-        ops.append(Opcion("Buscar pelea con una banda, sin conquistar nada", lambda: buscar_pelea(p),
-                          ayuda="Para pelear por pelear: eliges una banda y vienen a por ti donde estés. No hay barrio en juego ni premio, y esa banda te cogerá más manía."))
+        ops.append(Opcion(tr("Buscar pelea con una banda, sin conquistar nada"), lambda: buscar_pelea(p),
+                          ayuda=tr("Para pelear por pelear: eliges una banda y vienen a por ti donde estés. No hay barrio en juego ni premio, y esa banda te cogerá más manía.")))
     # la explicación va la primera, salvo que haya algo que atender ya (un ataque, un asalto, un pacto): eso sigue arriba del todo
-    ops.insert(len(arriba) + len(urgente), Opcion("Cómo funciona esto: para qué sirven los territorios y cómo se ganan y se defienden", lambda: como_funcionan_territorios(p),
-                         ayuda="Una explicación corta, con las cifras de tu partida: lo que paga cada barrio, la banda, cómo se conquista, cómo se defiende y qué pasa si lo pierdes."))
-    app.abrir(Menu(app, f"Territorios de {p.mundo.nombre}", ops))
+    ops.insert(len(arriba) + len(urgente), Opcion(tr("Cómo funciona esto: para qué sirven los territorios y cómo se ganan y se defienden"), lambda: como_funcionan_territorios(p),
+                         ayuda=tr("Una explicación corta, con las cifras de tu partida: lo que paga cada barrio, la banda, cómo se conquista, cómo se defiende y qué pasa si lo pierdes.")))
+    app.abrir(Menu(app, tr('Territorios de {nombre}').format(nombre=(p.mundo.nombre)), ops))
 
 
 # ======================================================================== mando
@@ -658,10 +712,10 @@ def opciones_mando(app):
 
     def probar():
         if not md.conectado:
-            app.decir("No hay ningún mando conectado.", True)
+            app.decir(tr("No hay ningún mando conectado."), True)
         else:
             md.vibrar(1.0, 0.0, 350)
-            app.decir("Vibración de prueba. Si no notas nada, tu mando no la admite o está desactivada.", True)
+            app.decir(tr("Vibración de prueba. Si no notas nada, tu mando no la admite o está desactivada."), True)
 
     def reasignar(ctx, titulo):
         def elegir(b):
@@ -673,41 +727,45 @@ def opciones_mando(app):
                         app.cerrar()
                         app.decir(f"{md.nombre_boton(b).capitalize()}: {ACCIONES[a][0]}.", True)
                     return g
-                app.abrir(Menu(app, f"Acción para {md.nombre_boton(b)}", [Opcion(ACCIONES[a][0].capitalize(), poner(a)) for a in ACCIONES],
-                               intro="Elige qué hará este botón"))
+                app.abrir(Menu(app, tr('Acción para {nombre_boton}').format(nombre_boton=(md.nombre_boton(b))), [Opcion(ACCIONES[a][0].capitalize(), poner(a), ayuda=tr("Este botón pasa a hacer esto, y el cambio se guarda al momento.")) for a in ACCIONES],
+                               intro=tr("Elige qué hará este botón")))
             return f
-        app.abrir(Menu(app, titulo, lambda: [Opcion(f"{md.nombre_boton(b).capitalize()}: {ACCIONES[md.mapa[ctx].get(b, 'nada')][0]}", elegir(b)) for b in ORDEN_BOTONES],
-                       intro="Pulsa Intro sobre un botón para cambiar lo que hace"))
+        app.abrir(Menu(app, titulo, lambda: [Opcion(f"{md.nombre_boton(b).capitalize()}: {ACCIONES[md.mapa[ctx].get(b, 'nada')][0]}", elegir(b),
+                                                    ayuda=tr("El botón y lo que hace ahora. Con Intro eliges otra acción para él.")) for b in ORDEN_BOTONES],
+                       intro=tr("Pulsa Intro sobre un botón para cambiar lo que hace")))
 
     def restablecer():
         md.restablecer()
-        app.decir("Botones restablecidos a su asignación original.", True)
+        app.decir(tr("Botones restablecidos a su asignación original."), True)
 
     def ayuda_mando():
-        app.abrir(Menu(app, "Qué hace cada botón del mando", [Opcion(t) for t in md.lineas_ayuda()]))
+        app.abrir(Menu(app, tr("Qué hace cada botón del mando"), [Opcion(t, ayuda=tr("Un botón y lo que hace. Se cambia en Reasignar, en el menú del mando.")) for t in md.lineas_ayuda()]))
 
     def tipo(d):
         md.tipo = "ps" if md.tipo == "xbox" else "xbox"
-    estado = (lambda: f"Mando conectado: {md.nombre}" if md.ctrl is not None else "No hay ningún mando conectado. Conéctalo por cable o Bluetooth y se detecta solo")
-    app.abrir(Menu(app, "Mando", [
-        Opcion(estado),
-        Opcion("Qué hace cada botón", ayuda_mando),
-        Opcion(lambda: f"Fuerza de la vibración: {int(cfg['vibracion_fuerza'] * 100)} por ciento", ajuste=fuerza,
-               ayuda="Izquierda y derecha la bajan y la suben, del veinte al cien por cien. Cada cambio hace vibrar el mando para que la notes."),
-        Opcion(lambda: f"Decir los botones del mando en lugar de las teclas: {'sí' if cfg['mando_textos'] else 'no'}",
+    estado = (lambda: tr('Mando conectado: {nombre}').format(nombre=(md.nombre)) if md.ctrl is not None else tr("No hay ningún mando conectado. Conéctalo por cable o Bluetooth y se detecta solo"))
+    app.abrir(Menu(app, tr("Mando"), [
+        Opcion(estado, ayuda=tr("Si hay un mando conectado y cuál es. Se detecta solo al conectarlo, sin salir del juego.")),
+        Opcion(tr("Qué hace cada botón"), ayuda_mando, ayuda=tr("La lista de lo que hace cada botón a pie, al volante y en los menús, con tu asignación de ahora.")),
+        Opcion(lambda: tr('Fuerza de la vibración: {int} por ciento').format(int=(int(cfg['vibracion_fuerza'] * 100))), ajuste=fuerza,
+               ayuda=tr("Izquierda y derecha la bajan y la suben, del veinte al cien por cien. Cada cambio hace vibrar el mando para que la notes.")),
+        Opcion(lambda: tr('Decir los botones del mando en lugar de las teclas: {v}').format(v=(tr('sí') if cfg['mando_textos'] else tr('no'))),
                ajuste=lambda d: cfg.__setitem__("mando_textos", not cfg["mando_textos"]),
-               ayuda="Con un mando conectado, lo que el juego cuenta mientras juegas y lo que explican los tutoriales y las escenas nombra el botón que hace cada cosa: "
+               ayuda=tr("Con un mando conectado, lo que el juego cuenta mientras juegas y lo que explican los tutoriales y las escenas nombra el botón que hace cada cosa: "
                      "pulsa el gatillo izquierdo, en vez de pulsa Q. Lo que va en una combinación se dice con ella. Lo que no tiene botón se sigue diciendo con su tecla, y está en el menú de acciones. Sin mando conectado no cambia nada. "
-                     "Las frases que cambian las lee tu lector de pantalla, no la voz grabada."),
-        Opcion(lambda: f"Vibración: {'sí' if cfg['mando_vibracion'] else 'no'}", ajuste=vib, ayuda="El mando vibra con los golpes, los disparos que recibes, las explosiones y cuando pica un pez."),
-        Opcion("Probar la vibración", probar),
-        Opcion(lambda: f"Nombres de los botones: {'PlayStation' if md.tipo == 'ps' else 'Xbox'}", ajuste=tipo, ayuda="Se detecta solo al conectar el mando, pero puedes cambiarlo a mano."),
-        Opcion("Reasignar los botones a pie", lambda: reasignar("pie", "Botones a pie")),
-        Opcion("Reasignar los botones al volante", lambda: reasignar("coche", "Botones al volante")),
-        Opcion("Reasignar las combinaciones a pie", lambda: reasignar("pie_combo", "Combinaciones a pie: " + md.nombre_boton("back") + " mantenido, más otro botón"),
-               ayuda="Las segundas funciones: mantienes pulsado el botón Vista, Crear o Share y pulsas otro. De serie: siguiente cruce, dónde está tu vehículo, "
-                     "hambre y sueño, caminar solo, hablar, hora, rumbo, rendirte con el gatillo izquierdo y, con el gatillo derecho, el menú de acciones, que tiene todo lo que no cabe en un botón."),
-        Opcion("Reasignar las combinaciones al volante", lambda: reasignar("coche_combo", "Combinaciones al volante: " + md.nombre_boton("back") + " mantenido, más otro botón"),
-               ayuda="De serie: piloto del GPS, repetir la indicación del GPS con la distancia que falta, objetivo, velocidad, siguiente cruce, emisora, rendirte con el gatillo izquierdo "
-                     "y, con el gatillo derecho, el menú de acciones, que tiene todo lo que no cabe en un botón."),
-        Opcion("Restablecer los botones originales", restablecer)], al_cerrar=cfg.guardar))
+                     "Las frases que cambian las lee tu lector de pantalla, no la voz grabada.")),
+        Opcion(lambda: tr('Vibración: {v}').format(v=(tr('sí') if cfg['mando_vibracion'] else tr('no'))), ajuste=vib, ayuda=tr("El mando vibra con los golpes, los disparos que recibes, las explosiones y cuando pica un pez.")),
+        Opcion(tr("Probar la vibración"), probar, ayuda=tr("El mando vibra un momento para que compruebes que la nota. Hace falta tenerlo conectado.")),
+        Opcion(lambda: tr('Nombres de los botones: {v}').format(v=(tr('PlayStation') if md.tipo == 'ps' else tr('Xbox'))), ajuste=tipo, ayuda=tr("Se detecta solo al conectar el mando, pero puedes cambiarlo a mano.")),
+        Opcion(tr("Reasignar los botones a pie"), lambda: reasignar("pie", tr("Botones a pie")),
+               ayuda=tr("Eliges qué hace cada botón cuando vas andando. Los cambios se guardan al momento.")),
+        Opcion(tr("Reasignar los botones al volante"), lambda: reasignar("coche", tr("Botones al volante")),
+               ayuda=tr("Eliges qué hace cada botón cuando conduces. Los cambios se guardan al momento.")),
+        Opcion(tr("Reasignar las combinaciones a pie"), lambda: reasignar("pie_combo", tr("Combinaciones a pie: ") + md.nombre_boton("back") + tr(" mantenido, más otro botón")),
+               ayuda=tr("Las segundas funciones: mantienes pulsado el botón Vista, Crear o Share y pulsas otro. De serie: siguiente cruce, dónde está tu vehículo, "
+                     "hambre y sueño, caminar solo, hablar, hora, rumbo, rendirte con el gatillo izquierdo y, con el gatillo derecho, el menú de acciones, que tiene todo lo que no cabe en un botón.")),
+        Opcion(tr("Reasignar las combinaciones al volante"), lambda: reasignar("coche_combo", tr("Combinaciones al volante: ") + md.nombre_boton("back") + tr(" mantenido, más otro botón")),
+               ayuda=tr("De serie: piloto del GPS, repetir la indicación del GPS con la distancia que falta, objetivo, velocidad, siguiente cruce, emisora, rendirte con el gatillo izquierdo "
+                     "y, con el gatillo derecho, el menú de acciones, que tiene todo lo que no cabe en un botón.")),
+        Opcion(tr("Restablecer los botones originales"), restablecer,
+               ayuda=tr("Deshace todos tus cambios de botones y combinaciones, a pie y al volante, y vuelve a la asignación de serie. No pregunta antes."))], al_cerrar=cfg.guardar))

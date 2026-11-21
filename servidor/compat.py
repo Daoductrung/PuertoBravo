@@ -14,6 +14,7 @@ Tres cosas, y ninguna necesita el juego:
 
 Funciona con Python 3.8 y solo usa la biblioteca de serie.
 """
+from .idioma import es
 import math
 
 # Los mundos de las versiones publicadas, para saber qué conoce el juego de cada una sin tener que pedírselo.
@@ -133,29 +134,33 @@ def diferencias(mundo, cat, suyo=None):
 def _lista(nombres, tope=4):
     nombres = [n for n in nombres if n]
     if len(nombres) <= tope:
-        return ", ".join(nombres[:-1]) + (" y " if len(nombres) > 1 else "") + nombres[-1] if nombres else ""
-    return ", ".join(nombres[:tope]) + " y %d más" % (len(nombres) - tope)
+        if len(nombres) > 1:
+            return es("%s y %s") % (", ".join(nombres[:-1]), nombres[-1])
+        return nombres[0] if nombres else ""
+    return es("%s y %d más") % (", ".join(nombres[:tope]), len(nombres) - tope)
+
+
+def _partes(armas, vehiculos):
+    """«Un arma: la escopeta» o «3 vehículos: ...», ya con mayúscula, para cada clase de cosa que haya."""
+    partes = []
+    if armas:
+        partes.append(es("Un arma: %s") % _lista(armas) if len(armas) == 1 else es("%d armas: %s") % (len(armas), _lista(armas)))
+    if vehiculos:
+        partes.append(es("Un vehículo: %s") % _lista(vehiculos) if len(vehiculos) == 1 else es("%d vehículos: %s") % (len(vehiculos), _lista(vehiculos)))
+    return partes
 
 
 def texto_diferencias(le_falta, sobra):
     """Lo mismo, dicho para el jugador: qué no coincide y qué va a notar. Vacío si no hay nada que decir."""
     out = []
-    partes = []
-    if le_falta["armas"]:
-        partes.append("%s: %s" % ("un arma" if len(le_falta["armas"]) == 1 else "%d armas" % len(le_falta["armas"]), _lista(le_falta["armas"])))
-    if le_falta["vehiculos"]:
-        partes.append("%s: %s" % ("un vehículo" if len(le_falta["vehiculos"]) == 1 else "%d vehículos" % len(le_falta["vehiculos"]), _lista(le_falta["vehiculos"])))
+    partes = _partes(le_falta["armas"], le_falta["vehiculos"])
     if partes:
-        out.append("En este servidor hay cosas que tu versión del juego no tiene. " + ". ".join(p[0].upper() + p[1:] for p in partes) +
-                   ". Las oirás y las verás como lo más parecido de lo que tu juego conoce; hacen el daño que marca el servidor, el mismo para todos.")
-    partes = []
-    if sobra["armas"]:
-        partes.append("%s: %s" % ("un arma" if len(sobra["armas"]) == 1 else "%d armas" % len(sobra["armas"]), _lista(sobra["armas"])))
-    if sobra["vehiculos"]:
-        partes.append("%s: %s" % ("un vehículo" if len(sobra["vehiculos"]) == 1 else "%d vehículos" % len(sobra["vehiculos"]), _lista(sobra["vehiculos"])))
+        out.append(es("En este servidor hay cosas que tu versión del juego no tiene. %s. Las oirás y las verás como lo más parecido de lo que tu "
+                      "juego conoce; hacen el daño que marca el servidor, el mismo para todos.") % ". ".join(partes))
+    partes = _partes(sobra["armas"], sobra["vehiculos"])
     if partes:
-        out.append("Tu juego trae cosas que este servidor no conoce. " + ". ".join(p[0].upper() + p[1:] for p in partes) +
-                   ". Puedes usarlas en lo tuyo, pero contra otros jugadores esas armas cuentan como ir con las manos, y esos vehículos los verán como un utilitario.")
+        out.append(es("Tu juego trae cosas que este servidor no conoce. %s. Puedes usarlas en lo tuyo, pero contra otros jugadores esas armas "
+                      "cuentan como ir con las manos, y esos vehículos los verán como un utilitario.") % ". ".join(partes))
     return " ".join(out)
 
 

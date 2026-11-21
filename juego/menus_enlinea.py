@@ -1,4 +1,5 @@
 """Menús para jugar en un servidor: la lista de servidores, y dentro de la partida, todo lo que se hace con los demás."""
+from .i18n import tr, tr_servidor
 from . import enlinea, red
 from . import mundo as M
 from .menus import EntradaTexto, Menu, Opcion
@@ -25,19 +26,19 @@ def _copiar(texto):
 def servidores(app):
     cfg = app.cfg
     if not cfg["red_nombre"] and enlinea.perfil():           # en las copias de pruebas, cada instancia con su nombre
-        cfg["red_nombre"] = "Jugador " + enlinea.perfil()
+        cfg["red_nombre"] = tr("Jugador ") + enlinea.perfil()
 
     def entrar(s, clave="", invitacion=""):
         def f():
-            app.decir(f"Conectando con {s.get('nombre') or 'el servidor'}.", True)
+            app.decir(tr('Conectando con {v}.').format(v=(s.get('nombre') or tr('el servidor'))), True)
             enlace, motivo = enlinea.conectar(app, s, clave, invitacion)
             if enlace is None:
-                if motivo.startswith("certificado: "):
+                if motivo.startswith(tr("certificado: ")):
                     return cambio_certificado(s, motivo[13:])
                 if "contraseña" in motivo and not clave:
-                    return app.abrir(EntradaTexto(app, "Contraseña de entrada del servidor", lambda t: entrar(s, clave=t)(), secreto=True, maximo=60))
+                    return app.abrir(EntradaTexto(app, tr("Contraseña de entrada del servidor"), lambda t: entrar(s, clave=t)(), secreto=True, maximo=60))
                 if "invitación" in motivo and not invitacion:
-                    return app.abrir(EntradaTexto(app, "Código de invitación que te ha dado quien lleva el servidor", lambda t: entrar(s, invitacion=t)(), maximo=20))
+                    return app.abrir(EntradaTexto(app, tr("Código de invitación que te ha dado quien lleva el servidor"), lambda t: entrar(s, invitacion=t)(), maximo=20))
                 app.son("error")
                 app.decir(motivo, True)
                 return
@@ -49,11 +50,10 @@ def servidores(app):
                 from . import VERSION
                 de = str(enlace.ok.get("partida_de") or "")
                 if de and enlinea.version_tupla(de) > enlinea.version_tupla(VERSION):
-                    app.decir(f"Aviso: este personaje se guardó la última vez con la versión {de} del juego, más nueva que la tuya. "
-                              "Si notas algo raro, actualiza el juego.", True)
+                    app.decir(tr('Aviso: este personaje se guardó la última vez con la versión {de} del juego, más nueva que la tuya. Si notas algo raro, actualiza el juego.').format(de=(de)), True)
                 app.empezar_partida(enlace.ok["partida"])
             else:
-                app.decir(f"Entras por primera vez en {s.get('nombre')}. Elige con qué personaje vas a jugar aquí.", True)
+                app.decir(tr('Entras por primera vez en {get}. Elige con qué personaje vas a jugar aquí.').format(get=(s.get('nombre'))), True)
                 from . import menus_vida
                 menus_vida.elegir_personaje(app)
         return f
@@ -63,10 +63,10 @@ def servidores(app):
             s["cert"] = ""
             app.cerrar(mm)
             entrar(s)()
-        mm = Menu(app, "El servidor no presenta el mismo certificado que la otra vez", [
-            Opcion("No entrar", lambda: app.cerrar(mm), ayuda="Es lo prudente si no sabes por qué ha cambiado."),
-            Opcion("Quien lleva el servidor me ha dicho que lo ha cambiado: entrar y recordar el nuevo", aceptar,
-                   ayuda="El certificado cambia si reinstalan el servidor. Si nadie te ha avisado, puede que alguien se esté haciendo pasar por él.")])
+        mm = Menu(app, tr("El servidor no presenta el mismo certificado que la otra vez"), [
+            Opcion(tr("No entrar"), lambda: app.cerrar(mm), ayuda=tr("Es lo prudente si no sabes por qué ha cambiado.")),
+            Opcion(tr("Quien lleva el servidor me ha dicho que lo ha cambiado: entrar y recordar el nuevo"), aceptar,
+                   ayuda=tr("El certificado cambia si reinstalan el servidor. Si nadie te ha avisado, puede que alguien se esté haciendo pasar por él."))])
         app.son("error")
         app.abrir(mm)
 
@@ -74,7 +74,7 @@ def servidores(app):
         def hecho(t):
             if red.analizar_direccion(t) is None:
                 app.son("error")
-                app.decir("No entiendo esa dirección. Tiene que ser como puertobravo, dos puntos, barra, barra, el sitio, dos puntos y el puerto.", True)
+                app.decir(tr("No entiendo esa dirección. Tiene que ser como puertobravo, dos puntos, barra, barra, el sitio, dos puntos y el puerto."), True)
                 return
             d = t.strip()
             if not d.lower().startswith(red.PREFIJO):
@@ -83,13 +83,13 @@ def servidores(app):
                 d += f":{enlinea.PUERTO}"
             lista = list(cfg["servidores"])
             if not any(x.get("dir") == d for x in lista):
-                lista.append({"nombre": "Servidor nuevo", "dir": d, "cert": ""})
+                lista.append({"nombre": tr("Servidor nuevo"), "dir": d, "cert": ""})
             cfg["servidores"] = lista
             cfg.guardar()
-            app.decir("Servidor añadido a tu lista. Pulsa Intro sobre él para entrar.", True)
+            app.decir(tr("Servidor añadido a tu lista. Pulsa Intro sobre él para entrar."), True)
             m.refrescar(False)
-        app.abrir(EntradaTexto(app, "Dirección del servidor", hecho, maximo=90,
-                               ayuda="Te la da quien lleva el servidor. Puedes pegarla con Control V. Si no lleva puerto, se usa el de serie."))
+        app.abrir(EntradaTexto(app, tr("Dirección del servidor"), hecho, maximo=90,
+                               ayuda=tr("Te la da quien lleva el servidor. Puedes pegarla con Control V. Si no lleva puerto, se usa el de serie.")))
 
     def quitar():
         def borrar(s):
@@ -97,58 +97,61 @@ def servidores(app):
                 cfg["servidores"] = [x for x in cfg["servidores"] if x is not s]
                 cfg.guardar()
                 app.cerrar(mq)
-                app.decir("Quitado de tu lista. Tu personaje sigue guardado en ese servidor.", True)
+                app.decir(tr("Quitado de tu lista. Tu personaje sigue guardado en ese servidor."), True)
                 m.refrescar(False)
             return f
-        mq = Menu(app, "Qué servidor quitas de la lista", [Opcion(f"{s.get('nombre')}, {deletrear(s.get('dir', ''))}", borrar(s)) for s in cfg["servidores"]]
-                  or [Opcion("No hay ninguno")])
+        mq = Menu(app, tr("Qué servidor quitas de la lista"), [Opcion(f"{s.get('nombre')}, {deletrear(s.get('dir', ''))}", borrar(s),
+                                                                     ayuda=tr("Intro lo quita de tu lista. Tu personaje sigue guardado en ese servidor y puedes volver a añadirlo."))
+                                                              for s in cfg["servidores"]]
+                  or [Opcion(tr("No hay ninguno"), ayuda=tr("Tu lista de servidores está vacía: no hay nada que quitar."))])
         app.abrir(mq)
 
     def nombre():
         def hecho(t):
             cfg["red_nombre"] = t.strip()[:24]
             cfg.guardar()
-            app.decir(f"En los servidores en los que entres por primera vez te llamarás {cfg['red_nombre'] or 'Jugador'}.", True)
-        app.abrir(EntradaTexto(app, "Tu nombre de jugador", hecho, inicial=cfg["red_nombre"], maximo=24,
-                               ayuda="Es el nombre con el que te ven los demás. En un servidor donde ya tienes personaje no cambia."))
+            app.decir(tr('En los servidores en los que entres por primera vez te llamarás {v}.').format(v=(cfg['red_nombre'] or tr('Jugador'))), True)
+        app.abrir(EntradaTexto(app, tr("Tu nombre de jugador"), hecho, inicial=cfg["red_nombre"], maximo=24,
+                               ayuda=tr("Es el nombre con el que te ven los demás. En un servidor donde ya tienes personaje no cambia.")))
 
     def identidad():
         def exportar():
             ok = _copiar(enlinea.exportar_identidad())
             app.son("menu_ok" if ok else "error")
-            app.decir("Tu identidad está copiada en el portapapeles. Pégala en un archivo y guárdalo donde nadie más lo vea. Quien la tenga puede entrar como tú." if ok
-                      else "No se pudo copiar al portapapeles.", True)
+            app.decir(tr("Tu identidad está copiada en el portapapeles. Pégala en un archivo y guárdalo donde nadie más lo vea. Quien la tenga puede entrar como tú.") if ok
+                      else tr("No se pudo copiar al portapapeles."), True)
 
         def importar():
             def hecho(t):
                 if enlinea.importar_identidad(t):
                     app.son("guardado")
-                    app.decir("Identidad cambiada. En los servidores donde jugabas con ella, vuelves a ser tú.", True)
+                    app.decir(tr("Identidad cambiada. En los servidores donde jugabas con ella, vuelves a ser tú."), True)
                 else:
                     app.son("error")
-                    app.decir("Eso no es una identidad de Puerto Bravo. Empieza por P B uno y un guion.", True)
-            app.abrir(EntradaTexto(app, "Pega aquí la identidad que guardaste", hecho, maximo=90, secreto=True, ayuda="Control V pega."))
+                    app.decir(tr("Eso no es una identidad de Puerto Bravo. Empieza por P B uno y un guion."), True)
+            app.abrir(EntradaTexto(app, tr("Pega aquí la identidad que guardaste"), hecho, maximo=90, secreto=True, ayuda=tr("Control V pega.")))
         enlinea.identidad()
-        app.abrir(Menu(app, "Tu identidad en los servidores", [
-            Opcion("Qué es", ayuda="Sin contraseñas ni correo: la primera vez, el juego crea una llave y la guarda en tu carpeta de datos. Cada servidor te reconoce por ella. "
-                                   "Si borras la carpeta de datos o cambias de ordenador, la pierdes, y con ella tus personajes, salvo que la hayas guardado antes."),
-            Opcion("Copiar mi identidad para guardarla", exportar, ayuda="La copia al portapapeles. Es como una contraseña larga: no se la des a nadie."),
-            Opcion("Recuperar una identidad guardada", importar, ayuda="Sustituye la de este ordenador por la que pegues."),
-        ], intro="F1 explica cada opción"))
+        app.abrir(Menu(app, tr("Tu identidad en los servidores"), [
+            Opcion(tr("Qué es"), ayuda=tr("Sin contraseñas ni correo: la primera vez, el juego crea una llave y la guarda en tu carpeta de datos. Cada servidor te reconoce por ella. "
+                                   "Si borras la carpeta de datos o cambias de ordenador, la pierdes, y con ella tus personajes, salvo que la hayas guardado antes.")),
+            Opcion(tr("Copiar mi identidad para guardarla"), exportar, ayuda=tr("La copia al portapapeles. Es como una contraseña larga: no se la des a nadie.")),
+            Opcion(tr("Recuperar una identidad guardada"), importar, ayuda=tr("Sustituye la de este ordenador por la que pegues.")),
+        ], intro=tr("F1 explica cada opción")))
 
     def ops():
-        lista = [Opcion(lambda s=s: f"{s.get('nombre')}, {deletrear(s.get('dir', ''))}", entrar(s), ayuda="Intro entra. Si ya tienes personaje en este servidor, sigues donde lo dejaste.")
+        lista = [Opcion(lambda s=s: f"{s.get('nombre')}, {deletrear(s.get('dir', ''))}", entrar(s), ayuda=tr("Intro entra. Si ya tienes personaje en este servidor, sigues donde lo dejaste."))
                  for s in cfg["servidores"]]
         if not lista:
-            lista.append(Opcion("Todavía no tienes ningún servidor en la lista", ayuda="Añade uno con la dirección que te dé quien lo lleva."))
-        lista += [Opcion("Añadir un servidor", anadir),
-                  Opcion("Quitar un servidor de la lista", quitar),
-                  Opcion(lambda: f"Tu nombre de jugador: {cfg['red_nombre'] or 'sin poner'}", nombre),
-                  Opcion("Tu identidad", identidad, ayuda="Cómo te reconoce cada servidor, y cómo guardar tu identidad para no perder tus personajes."),
-                  Opcion("Qué es jugar en un servidor",
-                         ayuda="El mismo juego, con todo lo que haces por tu cuenta, misiones, trabajos, casas y negocios, y además jugadores de verdad: se les oye, se habla con ellos, "
+            lista.append(Opcion(tr("Todavía no tienes ningún servidor en la lista"), ayuda=tr("Añade uno con la dirección que te dé quien lo lleva.")))
+        lista += [Opcion(tr("Añadir un servidor"), anadir, ayuda=tr("Te pide la dirección que te ha dado quien lleva el servidor y la apunta en tu lista.")),
+                  Opcion(tr("Quitar un servidor de la lista"), quitar, ayuda=tr("Eliges cuál. Tu personaje no se borra: sigue guardado en ese servidor.")),
+                  Opcion(lambda: tr('Tu nombre de jugador: {v}').format(v=(cfg['red_nombre'] or tr('sin poner'))), nombre,
+                         ayuda=tr("Intro para cambiarlo. Solo cuenta en los servidores en los que entres por primera vez.")),
+                  Opcion(tr("Tu identidad"), identidad, ayuda=tr("Cómo te reconoce cada servidor, y cómo guardar tu identidad para no perder tus personajes.")),
+                  Opcion(tr("Qué es jugar en un servidor"),
+                         ayuda=tr("El mismo juego, con todo lo que haces por tu cuenta, misiones, trabajos, casas y negocios, y además jugadores de verdad: se les oye, se habla con ellos, "
                                "se les da o se les quita dinero, armas y vehículos, se forman bandas, se pelea por los barrios y se hacen misiones en grupo. "
-                               "Tu personaje en línea es distinto de tus partidas de un jugador y se guarda en el servidor. La hora es la del servidor y no se para.")]
+                               "Tu personaje en línea es distinto de tus partidas de un jugador y se guarda en el servidor. La hora es la del servidor y no se para."))]
         return lista
     try:                                                     # las copias de pruebas traen su servidor apuntado
         from . import rutas
@@ -163,7 +166,7 @@ def servidores(app):
     if getattr(app, "enlace", None) is not None:             # una entrada que se quedó a medias
         app.enlace.cli.cerrar()
         app.enlace = None
-    m = Menu(app, "Jugar en un servidor", ops, intro="Elige un servidor y pulsa Intro. F1 explica cada opción")
+    m = Menu(app, tr("Jugar en un servidor"), ops, intro=tr("Elige un servidor y pulsa Intro. F1 explica cada opción"))
     app.abrir(m)
 
 
@@ -183,17 +186,17 @@ def _numero(app, titulo, hecho, tope=10 ** 7):
             n = 0
         if n <= 0 or n > tope:
             app.son("error")
-            app.decir("Esa cantidad no vale.", True)
+            app.decir(tr("Esa cantidad no vale."), True)
             return
         hecho(n)
     app.abrir(EntradaTexto(app, titulo, f, maximo=9))
 
 
-TITULOS_ROL = {"ic": "Qué dice tu personaje. Lo oye quien esté cerca", "yo": "Qué hace tu personaje. Por ejemplo: abre la puerta",
-               "ooc": "Mensaje fuera de personaje, para todo el servidor"}
+TITULOS_ROL = {"ic": tr("Qué dice tu personaje. Lo oye quien esté cerca"), "yo": tr("Qué hace tu personaje. Por ejemplo: abre la puerta"),
+               "ooc": tr("Mensaje fuera de personaje, para todo el servidor")}
 
 
-def chat(p, canal="todos", a=None, titulo="Mensaje para todo el servidor"):
+def chat(p, canal="todos", a=None, titulo=tr("Mensaje para todo el servidor")):
     app = p.app
     if canal in TITULOS_ROL:
         if not p.sv_rol():
@@ -202,8 +205,8 @@ def chat(p, canal="todos", a=None, titulo="Mensaje para todo el servidor"):
         titulo = TITULOS_ROL[canal]
     ayuda = None
     if p.sv_rol():
-        ayuda = ("Escribe y pulsa Intro. En cualquier mensaje, si empiezas por barra yo y un espacio, cuentas lo que hace tu personaje; con barra ep hablas en personaje, "
-                 "para los que están cerca; y con barra fp, fuera de personaje, para todo el servidor.")
+        ayuda = (tr("Escribe y pulsa Intro. En cualquier mensaje, si empiezas por barra yo y un espacio, cuentas lo que hace tu personaje; con barra ep hablas en personaje, "
+                 "para los que están cerca; y con barra fp, fuera de personaje, para todo el servidor."))
     from . import gente                                      # frases ya escritas: con Tabulador, o con X o Cuadrado en el mando
     frases = gente.lista("rol_frases_" + canal) if canal in TITULOS_ROL else gente.lista("frases_chat") if canal == "todos" else None
     app.abrir(EntradaTexto(app, titulo, lambda t: p.sv_enviar_chat(t, canal, a), maximo=300, ayuda=ayuda, propuestas=frases))
@@ -215,9 +218,9 @@ def ficha_propia(p):
     if not p.sv_rol():
         app.son("error")
         return app.decir(p.sv_rol_motivo(), True)
-    app.abrir(EntradaTexto(app, "Tu ficha: una frase sobre tu personaje", p.sv_poner_ficha, inicial=p.sv.get("ficha", ""), maximo=enlinea.MAX_FICHA,
-                           ayuda="Quién es tu personaje, cómo es o a qué se dedica, en una frase de hasta doscientas letras. La puede leer cualquier jugador del servidor. "
-                                 "Si la dejas vacía, se quita. Lo que escribas no se anota en el registro del juego."))
+    app.abrir(EntradaTexto(app, tr("Tu ficha: una frase sobre tu personaje"), p.sv_poner_ficha, inicial=p.sv.get("ficha", ""), maximo=enlinea.MAX_FICHA,
+                           ayuda=tr("Quién es tu personaje, cómo es o a qué se dedica, en una frase de hasta doscientas letras. La puede leer cualquier jugador del servidor. "
+                                 "Si la dejas vacía, se quita. Lo que escribas no se anota en el registro del juego.")))
 
 
 def rol(p):
@@ -227,29 +230,30 @@ def rol(p):
     def repasar(canales, titulo):
         def abrir():
             lineas = [t for c, t in reversed(sv["historial"]) if c in canales]
-            app.abrir(Menu(app, titulo, [Opcion(t) for t in lineas] or [Opcion("Todavía no hay nada")], intro="Lo último, primero"))
+            app.abrir(Menu(app, titulo, [Opcion(t, ayuda=tr("Una línea de lo dicho. La más reciente va primero.")) for t in lineas]
+                           or [Opcion(tr("Todavía no hay nada"), ayuda=tr("Cuando alguien diga algo por estos canales, aparecerá aquí."))], intro=tr("Lo último, primero")))
         return abrir
 
     def ops():
         if not p.sv_rol():
-            return [Opcion(p.sv_rol_motivo())]
+            return [Opcion(p.sv_rol_motivo(), ayuda=tr("Sin canales de rol, los mensajes van por el chat de siempre: para todos, para los que están cerca, para tu banda o para tu grupo."))]
         metros = sv["info"].get("rol_metros", 30)
-        return [Opcion("Hablar en personaje", lambda: chat(p, "ic"),
-                       ayuda=f"Lo que dice tu personaje. Lo oye quien esté a menos de {metros} metros. También con Mayúsculas F10 durante el juego y, con mando, en el menú de acciones. Hay frases ya escritas: Tabulador, o el botón X o Cuadrado, pasa por ellas."),
-                Opcion("Describir lo que hace tu personaje", lambda: chat(p, "yo"),
-                       ayuda=f"Escribes, por ejemplo, abre la puerta, y los que están a menos de {metros} metros oyen tu nombre y abre la puerta. También con Control F10 y, con mando, en el menú de acciones. Hay acciones ya escritas: Tabulador, o el botón X o Cuadrado, pasa por ellas."),
-                Opcion("Hablar fuera de personaje", lambda: chat(p, "ooc"),
-                       ayuda="Para hablar como jugador y no como tu personaje: dudas, avisos, quedar. Lo oye todo el servidor."),
-                Opcion(lambda: "Tu ficha: " + (sv.get("ficha") or "sin escribir"), lambda: ficha_propia(p),
-                       ayuda="Una frase sobre tu personaje que cualquier jugador puede leer: en Quién hay, eligiéndote, o con Mayúsculas J si te tiene cerca."),
-                Opcion("Repasar lo dicho en personaje y las acciones", repasar(("ic", "yo"), "En personaje y acciones")),
-                Opcion("Repasar lo dicho fuera de personaje", repasar(("ooc",), "Fuera de personaje")),
-                Opcion("Cómo se rolea aquí",
-                       ayuda=f"Hay tres canales, cada uno con su sonido. En personaje: habla tu personaje, y lo oye quien esté a menos de {metros} metros. Acción: cuentas lo que hace, "
-                             "y se oye tu nombre seguido de lo que escribas. Fuera de personaje: hablas tú, y lo oye todo el servidor. En cualquier mensaje puedes empezar por "
-                             "barra yo, barra ep o barra fp para elegir el canal, y barra ficha y una frase cambia tu ficha. Para hablar de viva voz, usad un programa de voz aparte.")]
+        return [Opcion(tr("Hablar en personaje"), lambda: chat(p, "ic"),
+                       ayuda=tr('Lo que dice tu personaje. Lo oye quien esté a menos de {metros} metros. También con Mayúsculas F10 durante el juego y, con mando, en el menú de acciones. Hay frases ya escritas: Tabulador, o el botón X o Cuadrado, pasa por ellas.').format(metros=(metros))),
+                Opcion(tr("Describir lo que hace tu personaje"), lambda: chat(p, "yo"),
+                       ayuda=tr('Escribes, por ejemplo, abre la puerta, y los que están a menos de {metros} metros oyen tu nombre y abre la puerta. También con Control F10 y, con mando, en el menú de acciones. Hay acciones ya escritas: Tabulador, o el botón X o Cuadrado, pasa por ellas.').format(metros=(metros))),
+                Opcion(tr("Hablar fuera de personaje"), lambda: chat(p, "ooc"),
+                       ayuda=tr("Para hablar como jugador y no como tu personaje: dudas, avisos, quedar. Lo oye todo el servidor.")),
+                Opcion(lambda: tr("Tu ficha: ") + (sv.get("ficha") or tr("sin escribir")), lambda: ficha_propia(p),
+                       ayuda=tr("Una frase sobre tu personaje que cualquier jugador puede leer: en Quién hay, eligiéndote, o con Mayúsculas J si te tiene cerca.")),
+                Opcion(tr("Repasar lo dicho en personaje y las acciones"), repasar(("ic", "yo"), tr("En personaje y acciones")),
+                       ayuda=tr("Lo último que se ha dicho en personaje y las acciones que se han contado, lo más reciente primero.")),
+                Opcion(tr("Repasar lo dicho fuera de personaje"), repasar(("ooc",), tr("Fuera de personaje")),
+                       ayuda=tr("Lo último que se ha dicho fuera de personaje en el servidor, lo más reciente primero.")),
+                Opcion(tr("Cómo se rolea aquí"),
+                       ayuda=tr('Hay tres canales, cada uno con su sonido. En personaje: habla tu personaje, y lo oye quien esté a menos de {metros} metros. Acción: cuentas lo que hace, y se oye tu nombre seguido de lo que escribas. Fuera de personaje: hablas tú, y lo oye todo el servidor. En cualquier mensaje puedes empezar por barra yo, barra ep o barra fp para elegir el canal, y barra ficha y una frase cambia tu ficha. Para hablar de viva voz, usad un programa de voz aparte.').format(metros=(metros)))]
 
-    app.abrir(Menu(app, "Rol", ops, intro="F1 explica cada opción"))
+    app.abrir(Menu(app, tr("Rol"), ops, intro=tr("F1 explica cada opción")))
 
 
 def jugador(p, r):
@@ -260,14 +264,14 @@ def jugador(p, r):
         def hecho(n):
             if p.dar_dinero_a(r, n):
                 app.cerrar(m)
-        _numero(app, f"Cuánto dinero le das a {r.nombre}. Tienes {j.dinero}", hecho, tope=max(1, j.dinero))
+        _numero(app, tr('Cuánto dinero le das a {nombre}. Tienes {dinero}').format(nombre=(r.nombre), dinero=(j.dinero)), hecho, tope=max(1, j.dinero))
 
     def dar():
         def arma(ident):
             def f():
                 if r.mapa != p.mundo.id or r.dist(*p.pos()) > 12:
                     app.son("error")
-                    return app.decir(f"Para darle algo en mano, {r.nombre} tiene que estar a tu lado.", True)
+                    return app.decir(tr('Para darle algo en mano, {nombre} tiene que estar a tu lado.').format(nombre=(r.nombre)), True)
                 if ident == j.arma:
                     j.arma = "punos"
                 del j.armas[ident]
@@ -281,18 +285,18 @@ def jugador(p, r):
                     n = min(n, j.armas[ident]["reserva"])
                     if n <= 0 or r.mapa != p.mundo.id or r.dist(*p.pos()) > 12:
                         app.son("error")
-                        return app.decir(f"Para darle algo en mano, {r.nombre} tiene que estar a tu lado.", True)
+                        return app.decir(tr('Para darle algo en mano, {nombre} tiene que estar a tu lado.').format(nombre=(r.nombre)), True)
                     j.armas[ident]["reserva"] -= n
                     p.red.enviar({"t": "dar", "a": r.id, "clase": "balas", "id": ident, "n": n})
                     app.cerrar(md)
-                _numero(app, f"Cuántas balas de reserva le das. Tienes {j.armas[ident]['reserva']}", hecho, tope=max(1, j.armas[ident]["reserva"]))
+                _numero(app, tr('Cuántas balas de reserva le das. Tienes {reserva}').format(reserva=(j.armas[ident]['reserva'])), hecho, tope=max(1, j.armas[ident]["reserva"]))
             return f
 
         def objeto(ident):
             def f():
                 if j.objetos.get(ident, 0) <= 0 or r.mapa != p.mundo.id or r.dist(*p.pos()) > 12:
                     app.son("error")
-                    return app.decir(f"Para darle algo en mano, {r.nombre} tiene que estar a tu lado.", True)
+                    return app.decir(tr('Para darle algo en mano, {nombre} tiene que estar a tu lado.').format(nombre=(r.nombre)), True)
                 j.objetos[ident] -= 1
                 p.red.enviar({"t": "dar", "a": r.id, "clase": "objeto", "id": ident, "n": 1})
                 md.refrescar(False)
@@ -303,36 +307,43 @@ def jugador(p, r):
             for ident, d in j.armas.items():
                 if ident == "punos" or ident not in p.armas_d:
                     continue
-                out.append(Opcion(f"El arma: {p.armas_d[ident]['nombre']}", arma(ident)))
+                out.append(Opcion(tr('El arma: {nombre}').format(nombre=(p.armas_d[ident]['nombre'])), arma(ident),
+                                  ayuda=tr("Se la das y dejas de tenerla. Tiene que estar a tu lado.")))
                 if d.get("reserva", 0) > 0:
-                    out.append(Opcion(lambda ident=ident: f"Balas de {p.armas_d[ident]['nombre'].lower()}: tienes {j.armas[ident]['reserva']} de reserva", balas(ident)))
+                    out.append(Opcion(lambda ident=ident: tr('Balas de {lower}: tienes {reserva} de reserva').format(lower=(p.armas_d[ident]['nombre'].lower()), reserva=(j.armas[ident]['reserva'])), balas(ident),
+                                      ayuda=tr("Escribes cuántas balas de reserva le das. Tiene que estar a tu lado.")))
             nombres = {o["id"]: o["nombre"] for o in p.datos["objetos"]}
             for ident, n in j.objetos.items():
                 if n > 0 and ident in nombres:
-                    out.append(Opcion(lambda ident=ident: f"{nombres[ident]}: tienes {j.objetos.get(ident, 0)}", objeto(ident)))
-            return out or [Opcion("No llevas nada que dar")]
-        md = Menu(app, f"Qué le das a {r.nombre}. Tiene que estar a tu lado", lista)
+                    out.append(Opcion(lambda ident=ident: tr('{v}: tienes {get}').format(v=(nombres[ident]), get=(j.objetos.get(ident, 0))), objeto(ident),
+                                      ayuda=tr("Cada Intro le das uno. Tiene que estar a tu lado.")))
+            return out or [Opcion(tr("No llevas nada que dar"), ayuda=tr("No tienes armas, balas de reserva ni objetos que se puedan dar."))]
+        md = Menu(app, tr('Qué le das a {nombre}. Tiene que estar a tu lado').format(nombre=(r.nombre)), lista)
         app.abrir(md)
 
     def ops():
         rel = p.sv_relacion(r)
-        out = [Opcion(lambda: p.donde_esta(r) + (f", {rel}" if rel else "") + (", en modo pasivo" if getattr(r, "pasivo", False) else "")
-                      + (", en zona segura" if getattr(r, "segura", False) else "")),
-               Opcion("Marcarle en el GPS", lambda: (_al_juego(p), p.gps_a_amigo(r)))]
+        out = [Opcion(lambda: p.donde_esta(r) + (f", {rel}" if rel else "") + (tr(", en modo pasivo") if getattr(r, "pasivo", False) else "")
+                      + (tr(", en zona segura") if getattr(r, "segura", False) else ""),
+                      ayuda=tr("Dónde está, si va a pie o al volante, si es de tu banda o de tu grupo y si está en modo pasivo o en zona segura.")),
+               Opcion(tr("Marcarle en el GPS"), lambda: (_al_juego(p), p.gps_a_amigo(r)),
+                      ayuda=tr("Vuelves al juego con el GPS hacia esta persona. Si está en otra localidad, te lleva al sitio más cercano a donde está. Si se mueve, vuelve a marcarla."))]
         if p.sv_rol() and not getattr(r, "ia", False):
-            out.append(Opcion("Leer su ficha", lambda: p.sv_pedir_ficha(r), ayuda="La frase que ha escrito sobre su personaje."))
+            out.append(Opcion(tr("Leer su ficha"), lambda: p.sv_pedir_ficha(r), ayuda=tr("La frase que ha escrito sobre su personaje.")))
         out += [
-               Opcion("Mensaje solo para él o ella", lambda: chat(p, "priv", r.id, f"Mensaje privado para {r.nombre}")),
-               Opcion("Darle dinero", dinero),
-               Opcion("Darle un arma, balas o un objeto", dar, ayuda="En mano: tiene que estar a tu lado.")]
+               Opcion(tr("Mensaje solo para él o ella"), lambda: chat(p, "priv", r.id, tr('Mensaje privado para {nombre}').format(nombre=(r.nombre))),
+                      ayuda=tr("Lo lee solo esta persona, esté donde esté en el servidor.")),
+               Opcion(tr("Darle dinero"), dinero, ayuda=tr("Escribes cuánto. Sale de lo que llevas encima y le llega esté donde esté.")),
+               Opcion(tr("Darle un arma, balas o un objeto"), dar, ayuda=tr("En mano: tiene que estar a tu lado."))]
         if sv["info"].get("pvp"):
-            out.append(Opcion("Fijarle como objetivo", lambda: (_al_juego(p), setattr(p, "objetivo", r), p.decir(f"Fijado: {p.donde_esta(r)}.", True)),
-                              ayuda="Durante el juego, la Q fija a quien te ha atacado, y Mayúsculas Q recorre a todos los que hay cerca, también a los demás jugadores."))
+            out.append(Opcion(tr("Fijarle como objetivo"), lambda: (_al_juego(p), setattr(p, "objetivo", r), p.decir(tr('Fijado: {donde_esta}.').format(donde_esta=(p.donde_esta(r))), True)),
+                              ayuda=tr("Durante el juego, la Q fija a quien te ha atacado, y Mayúsculas Q recorre a todos los que hay cerca, también a los demás jugadores.")))
         if sv["banda"] and sv["rango"] in ("jefe", "mano") and getattr(r, "banda", None) is None:
-            out.append(Opcion(f"Invitarle a tu banda, {sv['banda']['nombre']}", lambda: p.red.enviar({"t": "banda_invitar", "a": r.id})))
+            out.append(Opcion(tr('Invitarle a tu banda, {nombre}').format(nombre=(sv['banda']['nombre'])), lambda: p.red.enviar({"t": "banda_invitar", "a": r.id}),
+                              ayuda=tr("Le llega la invitación y tiene tres minutos para aceptarla. Entraría como miembro.")))
         if sv["grupo"] in (None, p.red.id):
-            out.append(Opcion("Invitarle a tu grupo de misión", lambda: p.red.enviar({"t": "grupo_invitar", "a": r.id, "mision": p.mision["def"]["titulo"] if p.mision else ""}),
-                              ayuda="En grupo, los enemigos de tus misiones son de todos, no os podéis herir entre vosotros, y quien te ayuda cobra la mitad de la recompensa."))
+            out.append(Opcion(tr("Invitarle a tu grupo de misión"), lambda: p.red.enviar({"t": "grupo_invitar", "a": r.id, "mision": p.mision["def"]["titulo"] if p.mision else ""}),
+                              ayuda=tr("En grupo, los enemigos de tus misiones son de todos, no os podéis herir entre vosotros, y quien te ayuda cobra la mitad de la recompensa.")))
         return out
     m = Menu(app, f"{r.nombre}", ops)
     app.abrir(m)
@@ -348,59 +359,72 @@ def banda(p):
         def hecho(t):
             env({"t": "banda_crear", "nombre": t.strip()[:30]})
             app.cerrar(m)
-        app.abrir(EntradaTexto(app, f"Nombre de tu banda. Fundarla cuesta {precio} euros", hecho, maximo=30))
+        app.abrir(EntradaTexto(app, tr('Nombre de tu banda. Fundarla cuesta {precio} euros').format(precio=(precio)), hecho, maximo=30))
 
     def miembro(q):
         def f():
             def rango(r):
                 return lambda: (env({"t": "banda_rango", "cuenta": q["cuenta"], "rango": r}), app.cerrar(mm))
             mm = Menu(app, f"{q['nombre']}, {q['rango']}", [
-                Opcion("Hacerle mano derecha", rango("mano"), ayuda="Puede invitar, sacar de la caja, reclamar barrios y declarar guerras."),
-                Opcion("Dejarle de miembro", rango("miembro")),
-                Opcion("Cederle el mando de la banda", rango("jefe"), ayuda="Pasa a ser el jefe y tú quedas de mano derecha."),
-                Opcion("Echarle de la banda", lambda: (env({"t": "banda_expulsar", "cuenta": q["cuenta"]}), app.cerrar(mm)))])
+                Opcion(tr("Hacerle mano derecha"), rango("mano"), ayuda=tr("Puede invitar, sacar de la caja, reclamar barrios y declarar guerras.")),
+                Opcion(tr("Dejarle de miembro"), rango("miembro"),
+                       ayuda=tr("Le quitas el rango de mano derecha, si lo tenía: ya no podrá invitar, sacar de la caja, reclamar barrios ni declarar guerras.")),
+                Opcion(tr("Cederle el mando de la banda"), rango("jefe"), ayuda=tr("Pasa a ser el jefe y tú quedas de mano derecha.")),
+                Opcion(tr("Echarle de la banda"), lambda: (env({"t": "banda_expulsar", "cuenta": q["cuenta"]}), app.cerrar(mm)),
+                       ayuda=tr("Sale de la banda al momento y se avisa a los demás de la banda."))])
             app.abrir(mm)
         return f
 
     def ver_gente():
         b = sv["banda"]
         jefe = sv["rango"] == "jefe"
-        nombres = {"jefe": "jefe", "mano": "mano derecha", "miembro": "miembro"}
-        app.abrir(Menu(app, f"Gente de {b['nombre']}", lambda: [
-            Opcion(f"{q['nombre']}, {nombres.get(q['rango'], q['rango'])}, {'en línea' if q['en_linea'] else 'fuera'}",
-                   miembro(q) if jefe and q["cuenta"] != sv.get("cuenta") else None) for q in sv["banda"]["miembros"]] if sv["banda"] else [Opcion("Ya no estás en la banda")]))
+        nombres = {"jefe": "jefe", "mano": tr("mano derecha"), "miembro": "miembro"}
+        app.abrir(Menu(app, tr('Gente de {nombre}').format(nombre=(b['nombre'])), lambda: [
+            Opcion(f"{q['nombre']}, {nombres.get(q['rango'], q['rango'])}, {tr('en línea') if q['en_linea'] else 'fuera'}",
+                   miembro(q) if jefe and q["cuenta"] != sv.get("cuenta") else None,
+                   ayuda=tr("Intro para cambiarle el rango, cederle el mando o echarle de la banda.") if jefe and q["cuenta"] != sv.get("cuenta")
+                   else tr("Su rango en la banda y si está conectado ahora.")) for q in sv["banda"]["miembros"]] if sv["banda"]
+            else [Opcion(tr("Ya no estás en la banda"), ayuda=tr("Has dejado la banda o te han echado: ya no puedes ver su gente ni su caja."))]))
 
     def caja():
         def ops():
             b = sv["banda"]
             if not b:
-                return [Opcion("Ya no estás en la banda")]
-            out = [Opcion(f"En la caja hay {b['caja']} euros"),
-                   Opcion("Ingresar dinero", lambda: _numero(app, f"Cuánto ingresas. Llevas {j.dinero}", lambda n: env({"t": "banda_ingresar", "n": n}), tope=max(1, j.dinero)))]
+                return [Opcion(tr("Ya no estás en la banda"), ayuda=tr("Has dejado la banda o te han echado: ya no puedes ver su gente ni su caja."))]
+            out = [Opcion(tr('En la caja hay {caja} euros').format(caja=(b['caja'])),
+                          ayuda=tr("El dinero común de la banda. Lo meten los miembros y los barrios cada medianoche, y con él se pagan los barrios y las guerras.")),
+                   Opcion(tr("Ingresar dinero"), lambda: _numero(app, tr('Cuánto ingresas. Llevas {dinero}').format(dinero=(j.dinero)), lambda n: env({"t": "banda_ingresar", "n": n}), tope=max(1, j.dinero)),
+                          ayuda=tr("Escribes cuánto metes de lo que llevas encima. Ingresar puede cualquiera de la banda; sacar, solo el jefe y su mano derecha."))]
             if sv["rango"] in ("jefe", "mano"):
-                out.append(Opcion("Sacar dinero", lambda: _numero(app, f"Cuánto sacas. Hay {b['caja']}", lambda n: env({"t": "banda_sacar", "n": n}), tope=max(1, b["caja"]))))
-            out += [Opcion(f"{a['nombre']}: {'más' if a['cantidad'] >= 0 else 'menos'} {abs(a['cantidad'])} euros, {a['motivo']}") for a in b["apuntes"]]
+                out.append(Opcion(tr("Sacar dinero"), lambda: _numero(app, tr('Cuánto sacas. Hay {caja}').format(caja=(b['caja'])), lambda n: env({"t": "banda_sacar", "n": n}), tope=max(1, b["caja"])),
+                                  ayuda=tr("Escribes cuánto y te lo llevas encima. Queda apuntado en la caja con tu nombre.")))
+            out += [Opcion(tr('{nombre}: {v} {abs} euros, {motivo}').format(nombre=(tr_servidor(str(a['nombre']))), v=(tr('más') if a['cantidad'] >= 0 else tr('menos')), abs=(abs(a['cantidad'])), motivo=(tr_servidor(str(a['motivo'])))),
+                           ayuda=tr("Un apunte de la caja: quién metió o sacó dinero, cuánto y por qué.")) for a in b["apuntes"]]
             return out
-        app.abrir(Menu(app, "La caja de la banda", ops, intro="Debajo están los últimos apuntes"))
+        app.abrir(Menu(app, tr("La caja de la banda"), ops, intro=tr("Debajo están los últimos apuntes")))
 
     def alianza():
         def con(nombre, romper=False):
             return lambda: (env({"t": "alianza", "banda": nombre, "romper": romper}), app.cerrar(ma))
         b = sv["banda"]
         otras = [x for x in sv["bandas"] if x["nombre"] != b["nombre"]]
-        ma = Menu(app, "Alianzas", [Opcion(f"Romper la alianza con {n}", con(n, True)) for n in b["aliadas"]]
-                  + [Opcion(f"Proponer una alianza a {x['nombre']}", con(x["nombre"])) for x in otras if x["nombre"] not in b["aliadas"]]
-                  or [Opcion("No hay más bandas en el servidor")],
-                  intro="Una alianza se cierra cuando los dos jefes se la proponen el uno al otro. Los aliados no se pueden herir")
+        ma = Menu(app, tr("Alianzas"), [Opcion(tr('Romper la alianza con {n}').format(n=(n)), con(n, True),
+                                               ayuda=tr("Se rompe al momento y se avisa a esa banda. Desde entonces os podéis herir y declarar la guerra.")) for n in b["aliadas"]]
+                  + [Opcion(tr('Proponer una alianza a {nombre}').format(nombre=(x['nombre'])), con(x["nombre"]),
+                            ayuda=tr("Se lo dices a esa banda. Si su jefe ya os la había propuesto, queda cerrada; si no, se cierra cuando lo haga.")) for x in otras if x["nombre"] not in b["aliadas"]]
+                  or [Opcion(tr("No hay más bandas en el servidor"), ayuda=tr("Cuando alguien funde otra banda, podrás proponerle una alianza aquí."))],
+                  intro=tr("Una alianza se cierra cuando los dos jefes se la proponen el uno al otro. Los aliados no se pueden herir"))
         app.abrir(ma)
 
     def salir():
-        mm = Menu(app, "¿Seguro que dejas la banda?", [Opcion("No", lambda: app.cerrar(mm)), Opcion("Sí, la dejo", lambda: (env({"t": "banda_salir"}), app.cerrar(mm), app.cerrar(m)))])
+        mm = Menu(app, tr("¿Seguro que dejas la banda?"), [Opcion(tr("No"), lambda: app.cerrar(mm)), Opcion(tr("Sí, la dejo"), lambda: (env({"t": "banda_salir"}), app.cerrar(mm), app.cerrar(m)),
+                                                                                   ayuda=tr("Sales de la banda. Si eras el jefe, el mando pasa a otro miembro; si no queda nadie, la banda se disuelve."))])
         app.abrir(mm)
 
     def disolver():
-        mm = Menu(app, "¿Seguro que disuelves la banda? Los barrios quedan libres y la caja te la llevas tú",
-                  [Opcion("No", lambda: app.cerrar(mm)), Opcion("Sí, se acabó", lambda: (env({"t": "banda_disolver"}), app.cerrar(mm), app.cerrar(m)))])
+        mm = Menu(app, tr("¿Seguro que disuelves la banda? Los barrios quedan libres y la caja te la llevas tú"),
+                  [Opcion(tr("No"), lambda: app.cerrar(mm)), Opcion(tr("Sí, se acabó"), lambda: (env({"t": "banda_disolver"}), app.cerrar(mm), app.cerrar(m)),
+                                                            ayuda=tr("La banda desaparece para todos: sus miembros se quedan sin banda, sus barrios quedan libres y lo que haya en la caja pasa a tu bolsillo."))])
         app.abrir(mm)
 
     def responder(si):
@@ -416,11 +440,12 @@ def banda(p):
         if not b:
             out = []
             if sv["inv_banda"]:
-                out += [Opcion(f"{sv['inv_banda']['de']} te invita a la banda {sv['inv_banda']['nombre']}: aceptar", responder(True)),
-                        Opcion("Rechazar la invitación", responder(False))]
-            out += [Opcion("No estás en ninguna banda"),
-                    Opcion(f"Fundar una banda: {pr.get('precio_banda', 2000)} euros", crear,
-                           ayuda="Eres el jefe. Puedes invitar a otros jugadores, llevar una caja común, quedaros con barrios, que dejan dinero en la caja cada medianoche, y declarar guerras.")]
+                out += [Opcion(tr('{de} te invita a la banda {nombre}: aceptar').format(de=(sv['inv_banda']['de']), nombre=(sv['inv_banda']['nombre'])), responder(True),
+                               ayuda=tr("Entras en la banda como miembro. La invitación caduca a los tres minutos.")),
+                        Opcion(tr("Rechazar la invitación"), responder(False), ayuda=tr("Dices que no. Para entrar más adelante, tendrán que volver a invitarte."))]
+            out += [Opcion(tr("No estás en ninguna banda"), ayuda=tr("Puedes fundar la tuya aquí debajo, o esperar a que el jefe o la mano derecha de otra banda te invite.")),
+                    Opcion(tr('Fundar una banda: {get} euros').format(get=(pr.get('precio_banda', 2000))), crear,
+                           ayuda=tr("Eres el jefe. Puedes invitar a otros jugadores, llevar una caja común, quedaros con barrios, que dejan dinero en la caja cada medianoche, y declarar guerras."))]
             return out
         x, y = p.pos()
         try:
@@ -428,31 +453,34 @@ def banda(p):
         except Exception:
             barrio = None
         dueno = p.sv_dueno_barrio(p.mundo.id, barrio["id"]) if barrio else None
-        out = [Opcion(f"{b['nombre']}. Eres {({'jefe': 'el jefe', 'mano': 'la mano derecha'}).get(sv['rango'], 'miembro')}. "
-                      f"Sois {len(b['miembros'])}, con {len(b['barrios'])} barrios y {b['caja']} euros en la caja"),
-               Opcion("La gente de la banda", ver_gente),
-               Opcion(f"La caja: {b['caja']} euros", caja),
-               Opcion("Mensaje para la banda", lambda: chat(p, "banda", None, "Mensaje para tu banda"))]
+        out = [Opcion(tr('{nombre}. Eres {get}. Sois {len}, con {len2} barrios y {caja} euros en la caja').format(nombre=(b['nombre']), get=(({'jefe': tr('el jefe'), 'mano': tr('la mano derecha')}).get(sv['rango'], tr('miembro'))), len=(len(b['miembros'])), len2=(len(b['barrios'])), caja=(b['caja'])),
+                      ayuda=tr("Tu rango, cuántos sois, cuántos barrios tenéis y el dinero de la caja.")),
+               Opcion(tr("La gente de la banda"), ver_gente,
+                      ayuda=tr("Cada miembro con su rango y si está conectado.") + (tr(" Como jefe, Intro sobre uno cambia su rango o lo echa.") if sv["rango"] == "jefe" else "")),
+               Opcion(tr('La caja: {caja} euros').format(caja=(b['caja'])), caja, ayuda=tr("Lo que hay, ingresar o sacar dinero y los últimos apuntes.")),
+               Opcion(tr("Mensaje para la banda"), lambda: chat(p, "banda", None, tr("Mensaje para tu banda")),
+                      ayuda=tr("Lo leen solo los de tu banda que estén conectados, estén donde estén."))]
         if barrio and sv["rango"] in ("jefe", "mano"):
             nombre_b = barrio.get("nombre", barrio["id"])
             if dueno is None:
-                out.append(Opcion(f"Reclamar este barrio, {nombre_b}: {pr.get('precio_barrio', 3000)} euros de la caja", lambda: env({"t": "barrio_reclamar"}),
-                                  ayuda=f"No es de nadie. Dejará {pr.get('renta_barrio', 300)} euros en la caja cada medianoche del servidor. Podéis tener un barrio más que miembros sois."))
+                out.append(Opcion(tr('Reclamar este barrio, {nombre_b}: {get} euros de la caja').format(nombre_b=(nombre_b), get=(pr.get('precio_barrio', 3000))), lambda: env({"t": "barrio_reclamar"}),
+                                  ayuda=tr('No es de nadie. Dejará {get} euros en la caja cada medianoche del servidor. Podéis tener un barrio más que miembros sois.').format(get=(pr.get('renta_barrio', 300)))))
             elif dueno["banda"] != b["id"]:
-                out.append(Opcion(f"Declarar la guerra por {nombre_b}, que es de {dueno['nombre']}: {pr.get('precio_guerra', 1000)} euros de la caja",
+                out.append(Opcion(tr('Declarar la guerra por {nombre_b}, que es de {nombre}: {get} euros de la caja').format(nombre_b=(nombre_b), nombre=(dueno['nombre']), get=(pr.get('precio_guerra', 1000))),
                                   lambda: env({"t": "barrio_guerra"}),
-                                  ayuda=f"No empieza ya: empieza a los {pr.get('guerra_espera', 20)} minutos, para que a nadie le quiten un barrio mientras duerme, y dura {pr.get('guerra_dura', 10)}. "
-                                        "Gana la banda que más gente tenga dentro del barrio y más rivales tumbe. Si empatáis, se lo queda quien lo tenía."))
+                                  ayuda=tr('No empieza ya: empieza a los {get} minutos, para que a nadie le quiten un barrio mientras duerme, y dura {get2}. Gana la banda que más gente tenga dentro del barrio y más rivales tumbe. Si empatáis, se lo queda quien lo tenía.').format(get=(pr.get('guerra_espera', 20)), get2=(pr.get('guerra_dura', 10)))))
             else:
-                out.append(Opcion(f"Este barrio, {nombre_b}, es vuestro"))
+                out.append(Opcion(tr('Este barrio, {nombre_b}, es vuestro').format(nombre_b=(nombre_b)),
+                                  ayuda=tr("Deja dinero en la caja cada medianoche. Otra banda os lo puede quitar declarándoos la guerra.")))
         if sv["rango"] == "jefe":
-            out += [Opcion(lambda: f"Fuego amigo dentro de la banda: {'sí' if sv['banda'] and sv['banda']['fuego'] else 'no'}",
-                           lambda: env({"t": "banda_fuego", "si": not sv["banda"]["fuego"]}), ayuda="Con no, los de la banda no os podéis herir entre vosotros."),
-                    Opcion("Alianzas con otras bandas", lambda: (env({"t": "banda_lista"}), alianza())),
-                    Opcion("Disolver la banda", disolver)]
-        out.append(Opcion("Dejar la banda", salir))
+            out += [Opcion(lambda: tr('Fuego amigo dentro de la banda: {v}').format(v=(tr('sí') if sv['banda'] and sv['banda']['fuego'] else tr('no'))),
+                           lambda: env({"t": "banda_fuego", "si": not sv["banda"]["fuego"]}), ayuda=tr("Con no, los de la banda no os podéis herir entre vosotros.")),
+                    Opcion(tr("Alianzas con otras bandas"), lambda: (env({"t": "banda_lista"}), alianza()),
+                           ayuda=tr("Proponer una alianza a otra banda o romper una que tengáis. Entre aliados no os podéis herir ni declararos la guerra.")),
+                    Opcion(tr("Disolver la banda"), disolver, ayuda=tr("Te pregunta antes. La banda desaparece, los barrios quedan libres y la caja te la llevas tú."))]
+        out.append(Opcion(tr("Dejar la banda"), salir, ayuda=tr("Te pregunta antes. Si eres el jefe, el mando pasa a otro miembro.")))
         return out
-    m = Menu(app, "Tu banda", ops)
+    m = Menu(app, tr("Tu banda"), ops)
     app.abrir(m)
 
 
@@ -464,21 +492,22 @@ def opciones_propiedad(p, l):
     pct = 70
 
     def al_mercado():
-        mm = Menu(app, f"¿Vendes {l.nombre} al mercado por {int(l.get('precio', 0)) * pct // 100} euros? Vuelve a estar en venta para cualquiera", [
-            Opcion("No", lambda: app.cerrar(mm)),
-            Opcion("Sí, vender", lambda: (p.red.enviar({"t": "prop_soltar", "lugar": l.id}), _al_juego(p)))])
+        mm = Menu(app, tr('¿Vendes {nombre} al mercado por {v} euros? Vuelve a estar en venta para cualquiera').format(nombre=(l.nombre), v=(int(l.get('precio', 0)) * pct // 100)), [
+            Opcion(tr("No"), lambda: app.cerrar(mm)),
+            Opcion(tr("Sí, vender"), lambda: (p.red.enviar({"t": "prop_soltar", "lugar": l.id}), _al_juego(p)),
+                   ayuda=tr("Vuelves al juego y la propiedad sale a la venta para cualquiera. Si al servidor no le consta que la pagaras aquí, no te da dinero."))])
         app.abrir(mm)
 
     def a_jugadores():
         def hecho(t):
             n = int("".join(c for c in t if c.isdigit()) or "0")
             p.red.enviar({"t": "prop_oferta", "lugar": l.id, "precio": n})
-            app.decir(f"En venta por {n} euros. Quien lo quiera, lo compra en la puerta." if n else "Retirado de la venta.", True)
-        app.abrir(EntradaTexto(app, "Precio para otros jugadores. Cero para no venderlo", hecho, maximo=9))
-    return [Opcion(lambda: "En venta para otros jugadores: " + (f"{p.sv_oferta(l)} euros" if p.sv_oferta(l) else "no"), a_jugadores,
-                   ayuda="Pones tu precio. Otro jugador lo compra en la puerta y el dinero te llega a ti, estés conectado o no."),
-            Opcion(f"Vender al mercado por {int(l.get('precio', 0)) * pct // 100} euros", al_mercado,
-                   ayuda="Recuperas una parte de lo que costó y la propiedad vuelve a estar en venta para cualquiera. Saca antes los vehículos del garaje.")]
+            app.decir(tr('En venta por {n} euros. Quien lo quiera, lo compra en la puerta.').format(n=(n)) if n else tr("Retirado de la venta."), True)
+        app.abrir(EntradaTexto(app, tr("Precio para otros jugadores. Cero para no venderlo"), hecho, maximo=9))
+    return [Opcion(lambda: tr("En venta para otros jugadores: ") + (tr('{sv_oferta} euros').format(sv_oferta=(p.sv_oferta(l))) if p.sv_oferta(l) else "no"), a_jugadores,
+                   ayuda=tr("Pones tu precio. Otro jugador lo compra en la puerta y el dinero te llega a ti, estés conectado o no.")),
+            Opcion(tr('Vender al mercado por {v} euros').format(v=(int(l.get('precio', 0)) * pct // 100)), al_mercado,
+                   ayuda=tr("Recuperas una parte de lo que costó y la propiedad vuelve a estar en venta para cualquiera. Saca antes los vehículos del garaje."))]
 
 
 def en_venta(p):
@@ -491,18 +520,22 @@ def en_venta(p):
             if l.tipo not in ("casa", "negocio") or int(l.get("precio", 0) or 0) <= 0:
                 continue
             ir = (lambda l=l: (_al_juego(p), p.gps_a_lugar(l)))
-            que = "Casa" if l.tipo == "casa" else "Negocio"
+            que = tr("Casa") if l.tipo == "casa" else tr("Negocio")
             d = p.sv["props"].get(l.id)
             if d is None:
-                libres.append(Opcion(f"{que} en venta: {l.nombre}, {int(l.get('precio'))} euros" + (f", da {int(l.get('ingresos', 0))} al día" if l.tipo == "negocio" else ""), ir))
+                libres.append(Opcion(tr('{que} en venta: {nombre}, {int} euros').format(que=(que), nombre=(l.nombre), int=(int(l.get('precio')))) + (tr(', da {int} al día').format(int=(int(l.get('ingresos', 0)))) if l.tipo == "negocio" else ""), ir,
+                                     ayuda=tr("No es de nadie. Intro marca el sitio en el GPS, y se compra en la puerta.")))
             elif d.get("cuenta") == p.sv.get("cuenta"):
-                ocupados.append(Opcion(f"{que} tuyo: {l.nombre}", ir))
+                ocupados.append(Opcion(tr('{que} tuyo: {nombre}').format(que=(que), nombre=(l.nombre)), ir, ayuda=tr("Intro marca en el GPS dónde está.")))
             elif d.get("oferta"):
-                ofertas.append(Opcion(f"{que} que vende {d['nombre']}: {l.nombre}, {d['oferta']} euros", ir))
+                ofertas.append(Opcion(tr('{que} que vende {nombre}: {nombre2}, {oferta} euros').format(que=(que), nombre=(d['nombre']), nombre2=(l.nombre), oferta=(d['oferta'])), ir,
+                                      ayuda=tr("Intro marca el sitio en el GPS. Se compra en la puerta, al precio que ha puesto, y el dinero le llega a ese jugador.")))
             else:
-                ocupados.append(Opcion(f"{que} de {d['nombre']}: {l.nombre}", ir))
-        return (libres + ofertas + ocupados) or [Opcion("En esta localidad no hay casas ni negocios que se puedan comprar")]
-    app.abrir(Menu(app, f"Casas y negocios de {p.mundo.nombre}", ops, intro="Primero lo que está en venta. Intro marca el sitio en el GPS"))
+                ocupados.append(Opcion(tr('{que} de {nombre}: {nombre2}').format(que=(que), nombre=(d['nombre']), nombre2=(l.nombre)), ir,
+                                       ayuda=tr("No está en venta. Intro marca en el GPS dónde está.")))
+        return (libres + ofertas + ocupados) or [Opcion(tr("En esta localidad no hay casas ni negocios que se puedan comprar"),
+                                                        ayuda=tr("Las casas y los negocios que se compran están en otras localidades."))]
+    app.abrir(Menu(app, tr('Casas y negocios de {nombre}').format(nombre=(p.mundo.nombre)), ops, intro=tr("Primero lo que está en venta. Intro marca el sitio en el GPS")))
 
 
 def tablon(p):
@@ -515,16 +548,19 @@ def tablon(p):
         for g in sv["territorios"].get("guerras", []):
             mapa = p.mapas.get(g["mapa"])
             barrio = next((b.get("nombre", b["id"]) for b in getattr(mapa, "barrios", []) if b["id"] == g["barrio"]), g["barrio"]) if mapa else g["barrio"]
-            cuando = f"empieza en {max(1, g.get('falta', 0) // 60)} minutos" if g.get("fase") == "espera" else f"en marcha, {int(g.get('pa', 0))} a {int(g.get('pd', 0))}, quedan {max(1, g.get('queda', 0) // 60)} minutos"
-            out.append(Opcion(f"Guerra: {g.get('ataca_n')} contra {g.get('defiende_n')} por {barrio}, en {mapa.nombre if mapa else g['mapa']}: {cuando}"))
+            cuando = tr('empieza en {max} minutos').format(max=(max(1, g.get('falta', 0) // 60))) if g.get("fase") == "espera" else tr('en marcha, {int} a {int2}, quedan {max} minutos').format(int=(int(g.get('pa', 0))), int2=(int(g.get('pd', 0))), max=(max(1, g.get('queda', 0) // 60)))
+            out.append(Opcion(tr('Guerra: {get} contra {get2} por {barrio}, en {v}: {cuando}').format(get=(g.get('ataca_n')), get2=(g.get('defiende_n')), barrio=(barrio), v=(mapa.nombre if mapa else g['mapa']), cuando=(cuando)),
+                              ayuda=tr("Una guerra declarada por un barrio. Gana la banda que más gente tenga dentro del barrio y más rivales tumbe; si empatan, se lo queda quien lo tenía.")))
         for b in sv["bandas"]:
-            out.append(Opcion(f"{b['nombre']}: {b['miembros']} miembros, {b['barrios']} barrios"))
+            out.append(Opcion(tr('{nombre}: {miembros} miembros, {barrios} barrios').format(nombre=(b['nombre']), miembros=(b['miembros']), barrios=(b['barrios'])),
+                              ayuda=tr("Una banda del servidor, con cuántos miembros tiene y cuántos barrios controla.")))
         for t in sv["territorios"].get("barrios", []):
             mapa = p.mapas.get(t["mapa"])
             barrio = next((b.get("nombre", b["id"]) for b in getattr(mapa, "barrios", []) if b["id"] == t["barrio"]), t["barrio"]) if mapa else t["barrio"]
-            out.append(Opcion(f"{barrio}, en {mapa.nombre if mapa else t['mapa']}: de {t['nombre']}"))
-        return out or [Opcion("Todavía no hay bandas en este servidor")]
-    app.abrir(Menu(app, "Bandas, barrios y guerras", ops, intro="Primero las guerras, luego las bandas y luego de quién es cada barrio"))
+            out.append(Opcion(tr('{barrio}, en {v}: de {nombre}').format(barrio=(barrio), v=(mapa.nombre if mapa else t['mapa']), nombre=(t['nombre'])),
+                              ayuda=tr("Un barrio con dueño. Le deja dinero a esa banda cada medianoche del servidor.")))
+        return out or [Opcion(tr("Todavía no hay bandas en este servidor"), ayuda=tr("Cualquiera puede fundar una en En línea, Tu banda."))]
+    app.abrir(Menu(app, tr("Bandas, barrios y guerras"), ops, intro=tr("Primero las guerras, luego las bandas y luego de quién es cada barrio")))
 
 
 def grupo(p):
@@ -541,25 +577,29 @@ def grupo(p):
         out = []
         if sv["inv_grupo"]:
             inv = sv["inv_grupo"]
-            out += [Opcion(f"{inv['nombre']} te invita a su grupo" + (f" para la misión {inv['mision']}" if inv["mision"] else "") + ": aceptar", responder(True)),
-                    Opcion("Rechazar la invitación", responder(False))]
+            out += [Opcion(tr('{nombre} te invita a su grupo').format(nombre=(inv['nombre'])) + (tr(' para la misión {mision}').format(mision=(inv['mision'])) if inv["mision"] else "") + tr(": aceptar"), responder(True),
+                           ayuda=tr("Entras en su grupo de misión: le ayudas en sus misiones y cobras la mitad de la recompensa.")),
+                    Opcion(tr("Rechazar la invitación"), responder(False), ayuda=tr("Dices que no. Para unirte más adelante, tendrá que volver a invitarte."))]
         if sv["grupo"] is None:
-            out.append(Opcion("No vas en ningún grupo", ayuda="Para formar uno, abre En línea, Quién hay, elige a alguien e invítale a tu grupo de misión. Caben cuatro."))
+            out.append(Opcion(tr("No vas en ningún grupo"), ayuda=tr("Para formar uno, abre En línea, Quién hay, elige a alguien e invítale a tu grupo de misión. Caben cuatro.")))
         else:
             lider = next((q["nombre"] for q in sv["miembros"] if q["id"] == sv["grupo"]), "alguien")
-            out.append(Opcion("Vas en un grupo. Lo lleva " + ("tú" if sv["grupo"] == p.red.id else lider) + ". Sois: " + ", ".join(q["nombre"] for q in sv["miembros"])))
+            out.append(Opcion(tr("Vas en un grupo. Lo lleva ") + ("tú" if sv["grupo"] == p.red.id else lider) + tr(". Sois: ") + ", ".join(q["nombre"] for q in sv["miembros"]),
+                              ayuda=tr("Quién lleva el grupo y quiénes vais en él. Caben cuatro.")))
             if sv["mision_grupo"]:
-                out.append(Opcion(f"Misión del grupo, {sv['mision_grupo']['titulo']}: {sv['mision_grupo']['texto']}",
+                out.append(Opcion(tr('Misión del grupo, {titulo}: {texto}').format(titulo=(sv['mision_grupo']['titulo']), texto=(sv['mision_grupo']['texto'])),
                                   lambda: (_al_juego(p), p.gps_a_lugar(p.lugares[sv["mision_grupo"]["lugar"]])) if p.lugares.get(sv["mision_grupo"].get("lugar") or "") else None,
-                                  ayuda="Intro marca en el GPS el sitio de la misión."))
-            out += [Opcion("Mensaje para el grupo", lambda: chat(p, "grupo", None, "Mensaje para tu grupo")),
-                    Opcion("Dejar el grupo" if sv["grupo"] != p.red.id else "Deshacer el grupo", lambda: (p.red.enviar({"t": "grupo_salir"}), app.cerrar(m)))]
-        out.append(Opcion("Cómo funcionan las misiones en grupo",
-                          ayuda="Quien lleva el grupo empieza una misión suya, de las de siempre. Los demás oís qué pide cada paso y el GPS os lleva al sitio. "
+                                  ayuda=tr("Intro marca en el GPS el sitio de la misión.")))
+            out += [Opcion(tr("Mensaje para el grupo"), lambda: chat(p, "grupo", None, tr("Mensaje para tu grupo")),
+                           ayuda=tr("Lo leen solo los de tu grupo de misión, estén donde estén.")),
+                    Opcion(tr("Dejar el grupo") if sv["grupo"] != p.red.id else tr("Deshacer el grupo"), lambda: (p.red.enviar({"t": "grupo_salir"}), app.cerrar(m)),
+                           ayuda=tr("Sales del grupo y los demás siguen juntos.") if sv["grupo"] != p.red.id else tr("El grupo se deshace para todos y se avisa a los demás."))]
+        out.append(Opcion(tr("Cómo funcionan las misiones en grupo"),
+                          ayuda=tr("Quien lleva el grupo empieza una misión suya, de las de siempre. Los demás oís qué pide cada paso y el GPS os lleva al sitio. "
                                 "Los enemigos de la misión aparecen también en vuestro juego, y lo que le quitáis a uno se lo quitáis para todos. "
-                                "Entre los del grupo no os podéis herir. Al completarla, quien la llevaba cobra su recompensa y cada uno de los demás, la mitad, una vez por misión."))
+                                "Entre los del grupo no os podéis herir. Al completarla, quien la llevaba cobra su recompensa y cada uno de los demás, la mitad, una vez por misión.")))
         return out
-    m = Menu(app, "Grupo de misión", ops, intro="F1 explica cada opción")
+    m = Menu(app, tr("Grupo de misión"), ops, intro=tr("F1 explica cada opción"))
     app.abrir(m)
 
 
@@ -578,23 +618,25 @@ def actividades(p):
 
     def carrera():
         from . import menus_juego
-        menus_juego.lista_lugares(p, al_elegir=lambda l: hecho(p.proponer_carrera(l)), titulo="Destino de la carrera", otras=False)
+        menus_juego.lista_lugares(p, al_elegir=lambda l: hecho(p.proponer_carrera(l)), titulo=tr("Destino de la carrera"), otras=False)
 
     def ops():
-        out = [Opcion(lambda: p.coop_txt(), ayuda="Además, a pie junto al vehículo parado de otro jugador, Intro te sube de pasajero.")]
+        out = [Opcion(lambda: p.coop_txt(), ayuda=tr("Además, a pie junto al vehículo parado de otro jugador, Intro te sube de pasajero."))]
         c = p.coop
         if c is None:
-            out += [Opcion("Proponer una carrera hasta un lugar: 100 euros de apuesta", carrera, ayuda="Eliges el destino. Quien llega primero se lleva las apuestas."),
-                    Opcion("Proponer un reparto en equipo", lambda: hecho(p.proponer_reparto()), ayuda="Cuatro entregas por esta localidad en seis minutos. Si las hacéis entre todos, cobráis todos.")]
+            out += [Opcion(tr("Proponer una carrera hasta un lugar: 100 euros de apuesta"), carrera, ayuda=tr("Eliges el destino. Quien llega primero se lleva las apuestas.")),
+                    Opcion(tr("Proponer un reparto en equipo"), lambda: hecho(p.proponer_reparto()), ayuda=tr("Cuatro entregas por esta localidad en seis minutos. Si las hacéis entre todos, cobráis todos."))]
         else:
             if c["estado"] == "propuesta" and c["de"] == p.red.id:
-                out.append(Opcion("Empezar ya", lambda: hecho(p.empezar_coop(), True)))
+                out.append(Opcion(tr("Empezar ya"), lambda: hecho(p.empezar_coop(), True),
+                                  ayuda=tr("Arranca la actividad con los que han aceptado y vuelves al juego. Hace falta que haya aceptado al menos uno.")))
             elif c["estado"] == "propuesta" and p.red.id not in c["participantes"]:
-                out.append(Opcion("Aceptar y participar", lambda: hecho(p.aceptar_coop())))
+                out.append(Opcion(tr("Aceptar y participar"), lambda: hecho(p.aceptar_coop()),
+                                  ayuda=tr("Te apuntas. Si es una carrera, tienes que llevar encima el dinero de la apuesta. Empieza cuando lo diga quien la ha propuesto.")))
             if c["de"] == p.red.id:
-                out.append(Opcion("Cancelar la actividad", lambda: (p.cancelar_coop(), m.refrescar(False))))
+                out.append(Opcion(tr("Cancelar la actividad"), lambda: (p.cancelar_coop(), m.refrescar(False)), ayuda=tr("La anulas para todos y se quita el GPS.")))
         return out
-    m = Menu(app, "Actividades en común", ops)
+    m = Menu(app, tr("Actividades en común"), ops)
     app.abrir(m)
 
 
@@ -606,13 +648,14 @@ def menu(p):
         def ops():
             x, y = p.pos()
             gente = sorted(p.remotos.values(), key=lambda r: (r.mapa != p.mundo.id, r.dist(x, y)))
-            return [Opcion(lambda r=r: p.donde_esta(r) + (f", {p.sv_relacion(r)}" if p.sv_relacion(r) else "") + (", personaje del servidor" if getattr(r, "ia", False) else ""),
-                           lambda r=r: jugador(p, r)) for r in gente] \
-                or [Opcion("No hay nadie más en el servidor ahora mismo")]
-        app.abrir(Menu(app, "Quién hay", ops, intro="Intro sobre alguien abre lo que puedes hacer con él o con ella"))
+            return [Opcion(lambda r=r: p.donde_esta(r) + (f", {p.sv_relacion(r)}" if p.sv_relacion(r) else "") + (tr(", personaje del servidor") if getattr(r, "ia", False) else ""),
+                           lambda r=r: jugador(p, r), ayuda=tr("Intro abre lo que puedes hacer con esta persona: el GPS, un mensaje, darle cosas o invitarla.")) for r in gente] \
+                or [Opcion(tr("No hay nadie más en el servidor ahora mismo"), ayuda=tr("Cuando entre alguien, aparecerá aquí con dónde está."))]
+        app.abrir(Menu(app, tr("Quién hay"), ops, intro=tr("Intro sobre alguien abre lo que puedes hacer con él o con ella")))
 
     def repasar():
-        app.abrir(Menu(app, "Últimos mensajes", [Opcion(t) for t in reversed(p.chat)] or [Opcion("No hay mensajes")]))
+        app.abrir(Menu(app, tr("Últimos mensajes"), [Opcion(t, ayuda=tr("Un mensaje del servidor. El más reciente va primero.")) for t in reversed(p.chat)]
+                       or [Opcion(tr("No hay mensajes"), ayuda=tr("Cuando alguien escriba, sus mensajes aparecerán aquí."))]))
 
     def pasivo():
         p.red.enviar({"t": "pasivo", "si": not sv["pasivo"]})
@@ -620,74 +663,95 @@ def menu(p):
     def guardar():
         p.sv_guardar(ya=True)
         app.son("guardado")
-        app.decir("Personaje guardado en el servidor.", True)
+        app.decir(tr("Personaje guardado en el servidor."), True)
 
     def salir():
-        mm = Menu(app, "¿Sales del servidor? Tu personaje queda guardado", [
-            Opcion("No, sigo jugando", lambda: app.cerrar(mm)),
-            Opcion("Sí, salir al menú principal", lambda: p.sv_salir(al_menu=True))])
+        mm = Menu(app, tr("¿Sales del servidor? Tu personaje queda guardado"), [
+            Opcion(tr("No, sigo jugando"), lambda: app.cerrar(mm)),
+            Opcion(tr("Sí, salir al menú principal"), lambda: p.sv_salir(al_menu=True), ayuda=tr("Se guarda tu personaje en el servidor y vuelves al menú principal."))])
         app.abrir(mm)
 
     def version_servidor():
         from . import VERSION
         m = sv.get("mundo") or {}
         if not m.get("version"):
-            return f"Tu juego es la versión {VERSION}"
+            return tr('Tu juego es la versión {VERSION}').format(VERSION=(VERSION))
         if m.get("igual", True):
-            return f"El servidor va con los datos de la versión {m['version']} del juego, los mismos que tienes tú"
-        return f"El servidor va con los datos de la versión {m['version']} del juego y tú tienes la {VERSION}: jugáis juntos, cada uno con lo que su versión conoce" + p.sv_distinto_txt()
+            return tr('El servidor va con los datos de la versión {version} del juego, los mismos que tienes tú').format(version=(m['version']))
+        return tr('El servidor va con los datos de la versión {version} del juego y tú tienes la {VERSION}: jugáis juntos, cada uno con lo que su versión conoce').format(version=(m['version']), VERSION=(VERSION)) + p.sv_distinto_txt()
 
     def info():
         i = sv["info"]
         pr = i.get("precios", {})
         if p.sv_sabe("topes"):
             p.red.enviar({"t": "economia"})                      # cómo vas de margen ahora mismo
-        app.abrir(Menu(app, f"Servidor {sv['nombre_servidor']}", [
-            Opcion(f"Te llamas {p.red.nombre}" + (". Eres administrador" if sv["admin"] else "")),
-            Opcion("La conexión va cifrada" if sv["cifrado"] else "La conexión no va cifrada"),
-            Opcion(version_servidor(), ayuda="En un mismo servidor pueden jugar juntos jugadores con versiones distintas del juego. Cada uno ve y usa "
-                                             "lo que su versión conoce: lo que solo tiene una versión más nueva no lo ven quienes van con una anterior."),
-            Opcion("Caben " + (f"{i.get('max_jugadores')} jugadores a la vez" if i.get("max_jugadores") else "todos los jugadores que entren: no hay límite")),
-            Opcion("Combate entre jugadores: " + ("sí" if i.get("pvp") else "no")),
-            Opcion("Zonas seguras en hospitales, comisarías, casas y dentro de los locales: " + ("sí" if i.get("seguras") else "no")),
-            Opcion("Modo pasivo permitido: " + ("sí" if i.get("pasivo") else "no")),
-            Opcion("Contenido para adultos: " + ("sí" if i.get("adultos") else "no")),
-            Opcion(f"Al llegar y al reaparecer, {i.get('proteccion', 0)} segundos de protección"),
-            Opcion(f"Fundar una banda: {pr.get('precio_banda')} euros. Reclamar un barrio: {pr.get('precio_barrio')}. Declarar una guerra: {pr.get('precio_guerra')}"),
-            Opcion(f"Una guerra empieza a los {pr.get('guerra_espera')} minutos de declararla y dura {pr.get('guerra_dura')}"),
-            Opcion(f"Ofrecen {sv['recompensa']} euros por tu cabeza" if sv["recompensa"] else "Nadie ofrece nada por tu cabeza"),
+        app.abrir(Menu(app, tr('Servidor {nombre_servidor}').format(nombre_servidor=(sv['nombre_servidor'])), [
+            Opcion(tr('Te llamas {nombre}').format(nombre=(p.red.nombre)) + (tr(". Eres administrador") if sv["admin"] else ""),
+                   ayuda=tr("El nombre con el que te ven los demás en este servidor, y si eres de los que lo administran.")),
+            Opcion(tr("La conexión va cifrada") if sv["cifrado"] else tr("La conexión no va cifrada"),
+                   ayuda=tr("Con la conexión cifrada, nadie que esté entre tú y el servidor puede leer lo que os enviáis.")),
+            Opcion(version_servidor(), ayuda=tr("En un mismo servidor pueden jugar juntos jugadores con versiones distintas del juego. Cada uno ve y usa "
+                                             "lo que su versión conoce: lo que solo tiene una versión más nueva no lo ven quienes van con una anterior.")),
+            Opcion(tr("Caben ") + (tr('{get} jugadores a la vez').format(get=(i.get('max_jugadores'))) if i.get("max_jugadores") else tr("todos los jugadores que entren: no hay límite")),
+                   ayuda=tr("Cuántos jugadores pueden estar dentro del servidor a la vez.")),
+            Opcion(tr("Combate entre jugadores: ") + ("sí" if i.get("pvp") else "no"),
+                   ayuda=tr("Con sí, los jugadores pueden herirse y tumbarse entre ellos, y quien tumba a otro se lleva parte del dinero que llevaba encima.")),
+            Opcion(tr("Zonas seguras en hospitales, comisarías, casas y dentro de los locales: ") + ("sí" if i.get("seguras") else "no"),
+                   ayuda=tr("Con sí, en esos sitios ningún jugador puede herirte ni tú a ellos.")),
+            Opcion(tr("Modo pasivo permitido: ") + ("sí" if i.get("pasivo") else "no"),
+                   ayuda=tr("Con sí, y si hay combate entre jugadores, puedes ponerte en modo pasivo desde el menú En línea: ni hieres ni te hieren.")),
+            Opcion(tr("Contenido para adultos: ") + ("sí" if i.get("adultos") else "no"),
+                   ayuda=tr("Si quien lleva el servidor permite el contenido para adultos del juego.")),
+            Opcion(tr('Al llegar y al reaparecer, {get} segundos de protección').format(get=(i.get('proteccion', 0))),
+                   ayuda=tr("Durante ese tiempo, al entrar en el servidor y después de que te tumben, nadie puede herirte.")),
+            Opcion(tr('Fundar una banda: {get} euros. Reclamar un barrio: {get2}. Declarar una guerra: {get3}').format(get=(pr.get('precio_banda')), get2=(pr.get('precio_barrio')), get3=(pr.get('precio_guerra'))),
+                   ayuda=tr("Fundar la banda lo pagas de tu bolsillo; los barrios y las guerras se pagan con la caja de la banda.")),
+            Opcion(tr('Una guerra empieza a los {get} minutos de declararla y dura {get2}').format(get=(pr.get('guerra_espera')), get2=(pr.get('guerra_dura'))),
+                   ayuda=tr("La espera da tiempo a la otra banda para prepararse. Gana quien más gente tenga dentro del barrio y más rivales tumbe.")),
+            Opcion(tr('Ofrecen {recompensa} euros por tu cabeza').format(recompensa=(sv['recompensa'])) if sv["recompensa"] else tr("Nadie ofrece nada por tu cabeza"),
+                   ayuda=tr("Sube cuando tumbas a alguien que no te había atacado. Quien te tumbe se lleva lo que ofrecen.")),
             Opcion(lambda: p.sv_economia_txt(),
-                   ayuda="En un servidor que lleva la cuenta del dinero, lo que ganas por tu cuenta tiene un tope por hora. No cuentan contra él las misiones de la historia, "
-                         "lo que te da el servidor o te dan otros jugadores, ni los encargos repetibles que el servidor reconoce. Lo que pase del tope se retira, y el juego te dice cuánto."),
-            Opcion("Canales de rol: " + ((f"sí; lo dicho en personaje llega a {i.get('rol_metros', 30)} metros") if p.sv_rol() else "no")),
-            Opcion("Radio de los vehículos de otros jugadores: " + ("sí, la de las emisoras del juego" if p.sv_sabe("radio") and i.get("radio_coches") else "no")),
-        ] + ([Opcion("Órdenes de administrador", ayuda="Escríbelas en el chat general con una barra delante: barra ayuda las dice todas. Por ejemplo, barra jugadores, barra aviso y el texto, "
-                                                         "barra expulsar y el nombre, barra vetar y el nombre, barra invitar, barra guardar.")] if sv["admin"] else [])))
+                   ayuda=tr("En un servidor que lleva la cuenta del dinero, lo que ganas por tu cuenta tiene un tope por hora. No cuentan contra él las misiones de la historia, "
+                         "lo que te da el servidor o te dan otros jugadores, ni los encargos repetibles que el servidor reconoce. Lo que pase del tope se retira, y el juego te dice cuánto.")),
+            Opcion(tr("Canales de rol: ") + ((tr('sí; lo dicho en personaje llega a {get} metros').format(get=(i.get('rol_metros', 30)))) if p.sv_rol() else "no"),
+                   ayuda=tr("Si se puede hablar en personaje, contar lo que hace tu personaje y escribir una ficha. Está en En línea, Rol.")),
+            Opcion(tr("Radio de los vehículos de otros jugadores: ") + (tr("sí, la de las emisoras del juego") if p.sv_sabe("radio") and i.get("radio_coches") else "no"),
+                   ayuda=tr("Con sí, cerca del vehículo de otro jugador oyes floja la emisora que lleva puesta. En las opciones del juego puedes dejar de oírla.")),
+        ] + ([Opcion(tr("Órdenes de administrador"), ayuda=tr("Escríbelas en el chat general con una barra delante: barra ayuda las dice todas. Por ejemplo, barra jugadores, barra aviso y el texto, "
+                                                         "barra expulsar y el nombre, barra vetar y el nombre, barra invitar, barra guardar."))] if sv["admin"] else [])))
 
     def ops():
-        out = [Opcion(lambda: f"Estás en {sv['nombre_servidor']}. Hay {sum(1 for r in p.remotos.values() if not getattr(r, 'ia', False))} jugadores además de ti"
-                      + (f" y {sum(1 for r in p.remotos.values() if getattr(r, 'ia', False))} personajes del servidor" if any(getattr(r, 'ia', False) for r in p.remotos.values()) else "")
-                      + (". Estás en modo pasivo" if sv["pasivo"] else "") + (". Estás en zona segura" if sv["segura"] else "")),
-               Opcion("Quién hay", quien, ayuda="Dónde está cada uno y todo lo que puedes hacer con él: marcarle en el GPS, escribirle, darle dinero o cosas, invitarle a tu banda o a tu grupo."),
-               Opcion("Mensaje para todos", lambda: chat(p), ayuda="También con F10 durante el juego."),
-               Opcion("Mensaje para los que están cerca", lambda: chat(p, "cerca", None, "Mensaje para quien esté a menos de ochenta metros")),
-               Opcion("Rol: hablar en personaje, acciones y tu ficha" if p.sv_rol() else "Rol: este servidor no tiene canales de rol", lambda: rol(p),
-                      ayuda="Un canal para hablar como tu personaje, que oye quien está cerca; otro para hablar fuera de personaje, que oye todo el servidor; "
-                            "una orden para contar lo que hace tu personaje; y una frase de ficha que los demás pueden leer. Depende de que el servidor los tenga."),
-               Opcion("Repasar los últimos mensajes", repasar)]
+        out = [Opcion(lambda: tr('Estás en {nombre_servidor}. Hay {sum} jugadores además de ti').format(nombre_servidor=(sv['nombre_servidor']), sum=(sum(1 for r in p.remotos.values() if not getattr(r, 'ia', False))))
+                      + (tr(' y {sum} personajes del servidor').format(sum=(sum(1 for r in p.remotos.values() if getattr(r, 'ia', False)))) if any(getattr(r, 'ia', False) for r in p.remotos.values()) else "")
+                      + (tr(". Estás en modo pasivo") if sv["pasivo"] else "") + (tr(". Estás en zona segura") if sv["segura"] else ""),
+                      ayuda=tr("Cuántos hay conectados, y si estás en modo pasivo o en zona segura.")),
+               Opcion(tr("Quién hay"), quien, ayuda=tr("Dónde está cada uno y todo lo que puedes hacer con él: marcarle en el GPS, escribirle, darle dinero o cosas, invitarle a tu banda o a tu grupo.")),
+               Opcion(tr("Mensaje para todos"), lambda: chat(p), ayuda=tr("También con F10 durante el juego.")),
+               Opcion(tr("Mensaje para los que están cerca"), lambda: chat(p, "cerca", None, tr("Mensaje para quien esté a menos de ochenta metros")),
+                      ayuda=tr("Lo leen solo los jugadores que estén a menos de ochenta metros de ti, en la misma localidad.")),
+               Opcion(tr("Rol: hablar en personaje, acciones y tu ficha") if p.sv_rol() else tr("Rol: este servidor no tiene canales de rol"), lambda: rol(p),
+                      ayuda=tr("Un canal para hablar como tu personaje, que oye quien está cerca; otro para hablar fuera de personaje, que oye todo el servidor; "
+                            "una orden para contar lo que hace tu personaje; y una frase de ficha que los demás pueden leer. Depende de que el servidor los tenga.")),
+               Opcion(tr("Repasar los últimos mensajes"), repasar, ayuda=tr("Los últimos mensajes del servidor, del más reciente al más antiguo."))]
         if sv["inv_banda"] or sv["inv_grupo"]:
-            out.insert(1, Opcion("Tienes invitaciones pendientes: están en Tu banda y en Grupo de misión"))
-        out += [Opcion(lambda: "Tu banda: " + (sv["banda"]["nombre"] if sv["banda"] else "ninguna"), lambda: banda(p)),
-                Opcion("Bandas, barrios y guerras del servidor", lambda: tablon(p)),
-                Opcion("Casas y negocios: en venta y de quién son", lambda: en_venta(p),
-                       ayuda="En un servidor, cada casa y cada negocio es de un solo jugador. Aquí está lo que queda libre, lo que vende otro jugador a su precio y de quién es lo demás."),
-                Opcion(lambda: "Grupo de misión: " + ("sí" if sv["grupo"] is not None else "no"), lambda: grupo(p))]
+            out.insert(1, Opcion(tr("Tienes invitaciones pendientes: están en Tu banda y en Grupo de misión"),
+                                 ayuda=tr("Alguien te ha invitado a su banda o a su grupo. Entra en esas opciones para aceptar o rechazar.")))
+        out += [Opcion(lambda: tr("Tu banda: ") + (sv["banda"]["nombre"] if sv["banda"] else "ninguna"), lambda: banda(p),
+                       ayuda=tr("Fundar una banda o, si ya tienes una, su gente, su caja, sus barrios y sus alianzas.")),
+                Opcion(tr("Bandas, barrios y guerras del servidor"), lambda: tablon(p),
+                       ayuda=tr("Las guerras en marcha o a punto de empezar, todas las bandas y de quién es cada barrio.")),
+                Opcion(tr("Casas y negocios: en venta y de quién son"), lambda: en_venta(p),
+                       ayuda=tr("En un servidor, cada casa y cada negocio es de un solo jugador. Aquí está lo que queda libre, lo que vende otro jugador a su precio y de quién es lo demás.")),
+                Opcion(lambda: tr("Grupo de misión: ") + ("sí" if sv["grupo"] is not None else "no"), lambda: grupo(p),
+                       ayuda=tr("Tu grupo, las invitaciones que tengas, la misión del grupo y cómo funcionan las misiones en grupo."))]
         if sv["info"].get("pvp") and sv["info"].get("pasivo"):
-            out.append(Opcion(lambda: f"Modo pasivo: {'sí' if sv['pasivo'] else 'no'}", pasivo,
-                              ayuda="En modo pasivo no puedes herir a otros jugadores ni ellos a ti. No se puede cambiar en mitad de una pelea, ni más de una vez cada dos minutos."))
-        out += [Opcion("Actividades en común: carrera y reparto en equipo", lambda: actividades(p)),
-                Opcion("Guardar ahora", guardar, ayuda="El personaje se guarda solo cada minuto y al salir. Esto lo guarda ya."),
-                Opcion("Datos y reglas de este servidor", info),
-                Opcion("Salir del servidor", salir)]
+            out.append(Opcion(lambda: tr('Modo pasivo: {v}').format(v=(tr('sí') if sv['pasivo'] else tr('no'))), pasivo,
+                              ayuda=tr("En modo pasivo no puedes herir a otros jugadores ni ellos a ti. No se puede cambiar en mitad de una pelea, ni más de una vez cada dos minutos.")))
+        out += [Opcion(tr("Actividades en común: carrera y reparto en equipo"), lambda: actividades(p),
+                       ayuda=tr("Proponer a los demás jugadores una carrera con apuesta o un reparto en equipo, o apuntarte a la que hayan propuesto.")),
+                Opcion(tr("Guardar ahora"), guardar, ayuda=tr("El personaje se guarda solo cada minuto y al salir. Esto lo guarda ya.")),
+                Opcion(tr("Datos y reglas de este servidor"), info,
+                       ayuda=tr("Lo que ha decidido quien lleva el servidor: combate, zonas seguras, precios de las bandas, tope de ganancias y más.")),
+                Opcion(tr("Salir del servidor"), salir, ayuda=tr("Te pregunta antes. Tu personaje se guarda y vuelves al menú principal."))]
         return out
-    app.abrir(Menu(app, "En línea", ops, intro="F1 explica cada opción"))
+    app.abrir(Menu(app, tr("En línea"), ops, intro=tr("F1 explica cada opción")))

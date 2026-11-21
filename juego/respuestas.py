@@ -9,6 +9,7 @@ Los temas están en respuestas_datos1.py y respuestas_datos2.py. Para añadir un
 En las frases se pueden usar: {yo} nombre de quien habla, {oficio}, {barrio}, {ciudad}, {tu} nombre del jugador,
 {o} terminación de género de quien habla (cansad{o}) y {hora}.
 """
+from .i18n import tr
 import random
 import unicodedata
 
@@ -29,52 +30,52 @@ def T(ident, claves, generales, amable=(), hablador=(), seco=(), timido=(), chul
 
 # Piezas que dan a cada frase el aire del carácter de quien habla. La cadena vacía cuenta: muchas veces no se pone nada.
 ENTRADAS = {
-    "amable": ("", "", "", "Pues mira, ", "Ay, ", "Mira, ", "Pues la verdad, ", "Hombre, ", "Te digo una cosa: ", "Si te soy sincer{o}, ", "Qué quieres que te diga, ", "Pues verás, "),
-    "hablador": ("", "", "Uy, ", "Calla, calla, ", "Pues mira, te cuento: ", "No me tires de la lengua. ", "¿Tú sabes lo que te digo? ", "Mira que te diga, ", "Anda que no. ",
-                 "Fíjate lo que te voy a decir: ", "Pues eso mismo decía yo ayer. ", "Ahora que lo dices, "),
-    "seco": ("", "", "", "", "", "Mira, ", "A ver, ", "Pues ", "Bah. ", "En fin. "),
-    "timido": ("", "", "Eh... ", "Pues... ", "Bueno... ", "No sé... ", "Yo... ", "A ver... ", "Esto... ", "Perdona, es que... "),
-    "chulo": ("", "", "Mira, chaval[|a], ", "Te lo digo yo: ", "A mí me lo vas a contar. ", "Escucha, ", "Venga ya. ", "Eso lo sé yo de sobra. ", "Tú apunta: ", "Mira lo que te digo, "),
+    "amable": ("", "", "", tr("Pues mira, "), tr("Ay, "), tr("Mira, "), tr("Pues la verdad, "), tr("Hombre, "), tr("Te digo una cosa: "), tr("Si te soy sincer{o}, "), tr("Qué quieres que te diga, "), tr("Pues verás, ")),
+    "hablador": ("", "", tr("Uy, "), tr("Calla, calla, "), tr("Pues mira, te cuento: "), tr("No me tires de la lengua. "), tr("¿Tú sabes lo que te digo? "), tr("Mira que te diga, "), tr("Anda que no. "),
+                 tr("Fíjate lo que te voy a decir: "), tr("Pues eso mismo decía yo ayer. "), tr("Ahora que lo dices, ")),
+    "seco": ("", "", "", "", "", tr("Mira, "), tr("A ver, "), tr("Pues "), tr("Bah. "), tr("En fin. ")),
+    "timido": ("", "", tr("Eh... "), tr("Pues... "), tr("Bueno... "), tr("No sé... "), tr("Yo... "), tr("A ver... "), tr("Esto... "), tr("Perdona, es que... ")),
+    "chulo": ("", "", tr("Mira, chaval[|a], "), tr("Te lo digo yo: "), tr("A mí me lo vas a contar. "), tr("Escucha, "), tr("Venga ya. "), tr("Eso lo sé yo de sobra. "), tr("Tú apunta: "), tr("Mira lo que te digo, ")),
 }
 COLETILLAS = {
-    "amable": ("", "", "", " ¿Y tú qué tal?", " Así es la vida.", " Pero bien, ¿eh?", " Gracias por preguntar.", " No nos podemos quejar.", " Ya ves tú.", " Qué le vamos a hacer.",
-               " Poquito a poco.", " Y que no falte."),
-    "hablador": ("", " Y no te cuento más porque no acabamos.", " Que luego dicen que hablo mucho.", " ¿A que sí?", " Y eso que no sabes ni la mitad.", " Ya te contaré otro día con calma.",
-                 " Bueno, ya sabes cómo es esto.", " Y así todo.", " Pero vamos, que es lo que hay.", " Que yo de esto podría escribir un libro.", " ¿Tú qué opinas?", " Lo que yo te diga."),
-    "seco": ("", "", "", "", "", " Y ya.", " Punto.", " Nada más.", " Es lo que hay.", " Pues eso."),
-    "timido": ("", "", "", " Creo.", " O eso me parece.", " No sé si me explico.", " Perdona.", " Bueno, tú sabrás más.", " Digo yo.", " Si no te importa."),
-    "chulo": ("", "", " Y el que diga otra cosa, miente.", " Como te lo cuento.", " Para que te enteres.", " Y a mucha honra.", " Que aquí me conoce todo el mundo.", " Apréndetelo.",
-              " Yo no hablo por hablar.", " Tú hazme caso."),
+    "amable": ("", "", "", tr(" ¿Y tú qué tal?"), tr(" Así es la vida."), tr(" Pero bien, ¿eh?"), tr(" Gracias por preguntar."), tr(" No nos podemos quejar."), tr(" Ya ves tú."), tr(" Qué le vamos a hacer."),
+               tr(" Poquito a poco."), tr(" Y que no falte.")),
+    "hablador": ("", tr(" Y no te cuento más porque no acabamos."), tr(" Que luego dicen que hablo mucho."), tr(" ¿A que sí?"), tr(" Y eso que no sabes ni la mitad."), tr(" Ya te contaré otro día con calma."),
+                 tr(" Bueno, ya sabes cómo es esto."), tr(" Y así todo."), tr(" Pero vamos, que es lo que hay."), tr(" Que yo de esto podría escribir un libro."), tr(" ¿Tú qué opinas?"), tr(" Lo que yo te diga.")),
+    "seco": ("", "", "", "", "", tr(" Y ya."), tr(" Punto."), tr(" Nada más."), tr(" Es lo que hay."), tr(" Pues eso.")),
+    "timido": ("", "", "", tr(" Creo."), tr(" O eso me parece."), tr(" No sé si me explico."), tr(" Perdona."), tr(" Bueno, tú sabrás más."), tr(" Digo yo."), tr(" Si no te importa.")),
+    "chulo": ("", "", tr(" Y el que diga otra cosa, miente."), tr(" Como te lo cuento."), tr(" Para que te enteres."), tr(" Y a mucha honra."), tr(" Que aquí me conoce todo el mundo."), tr(" Apréndetelo."),
+              tr(" Yo no hablo por hablar."), tr(" Tú hazme caso.")),
 }
 # Cuando el jugador vuelve sobre lo mismo
-REPETIDO = ("Ya te lo he dicho antes, pero bueno. ", "¿Otra vez con eso? ", "Como te decía, ", "Sigues con lo mismo, ¿eh? ", "Te lo repito: ", "Lo mismo que antes: ", "Y dale. ")
+REPETIDO = (tr("Ya te lo he dicho antes, pero bueno. "), tr("¿Otra vez con eso? "), tr("Como te decía, "), tr("Sigues con lo mismo, ¿eh? "), tr("Te lo repito: "), tr("Lo mismo que antes: "), tr("Y dale. "))
 # Lo que dice quien no se fía de ti, a cualquier pregunta
-DESCONFIANZA = ("No sé por qué te lo iba a contar a ti.", "Eso no es asunto tuyo.", "Prefiero no hablar de eso contigo.", "Mira, mejor lo dejamos.", "¿Y a ti qué más te da?",
-                "No te conozco tanto como para eso.", "Pregúntale a otro.", "Tengo prisa.", "Yo no sé nada.", "Déjame en paz, anda.")
+DESCONFIANZA = (tr("No sé por qué te lo iba a contar a ti."), tr("Eso no es asunto tuyo."), tr("Prefiero no hablar de eso contigo."), tr("Mira, mejor lo dejamos."), tr("¿Y a ti qué más te da?"),
+                tr("No te conozco tanto como para eso."), tr("Pregúntale a otro."), tr("Tengo prisa."), tr("Yo no sé nada."), tr("Déjame en paz, anda."))
 # Cuando no se reconoce de qué habla: una pregunta
 NO_SE_PREGUNTA = {
-    "": ("Pues no sabría decirte.", "Ni idea, la verdad.", "Eso habría que preguntárselo a otro.", "No lo sé. De eso no entiendo.", "Buena pregunta. No tengo ni idea.", "A saber.",
-         "Eso depende de a quién le preguntes.", "No me lo había planteado nunca.", "Pues ahora que lo dices, no lo sé.", "Vete tú a saber.", "No te lo sé decir seguro.",
-         "Eso pregúntalo en {barrio}, que allí lo saben todo.", "Yo de eso sé lo justo.", "No me hagas mucho caso, pero creo que no.", "Yo diría que sí, pero no pongo la mano en el fuego.",
-         "Quién sabe.", "Eso mismo me pregunto yo.", "Uf, me pillas fuera de juego.", "No sabría ni por dónde empezar.", "Pregunta en el bar, que allí se enteran de todo."),
-    "amable": ("Ojalá pudiera ayudarte, pero no lo sé.", "Lo siento, de eso no sé nada. Pregunta a ver si alguien te dice.", "Ay, pues no te sé decir. Perdona.", "No lo sé, pero si me entero te lo digo."),
-    "hablador": ("No lo sé, pero conozco a uno que seguro que sí. Bueno, lo conocía.", "De eso no sé, y mira que yo sé de casi todo.", "Pues no, y eso que le he dado vueltas. A otras cosas, pero vueltas.",
-                 "Ni idea, pero te puedo contar otra cosa si quieres."),
-    "seco": ("No sé.", "Ni idea.", "No.", "A mí no me preguntes.", "Sabe Dios."),
-    "timido": ("No... no lo sé. Perdona.", "Yo de eso no sé nada, lo siento.", "Creo que no lo sé.", "Mejor pregúntale a otra persona."),
-    "chulo": ("Si lo supiera no te lo iba a decir gratis.", "Eso no lo sabe ni el alcalde.", "Yo sé muchas cosas, pero esa no.", "¿Me has visto cara de oficina de información?"),
+    "": (tr("Pues no sabría decirte."), tr("Ni idea, la verdad."), tr("Eso habría que preguntárselo a otro."), tr("No lo sé. De eso no entiendo."), tr("Buena pregunta. No tengo ni idea."), tr("A saber."),
+         tr("Eso depende de a quién le preguntes."), tr("No me lo había planteado nunca."), tr("Pues ahora que lo dices, no lo sé."), tr("Vete tú a saber."), tr("No te lo sé decir seguro."),
+         tr("Eso pregúntalo en {barrio}, que allí lo saben todo."), tr("Yo de eso sé lo justo."), tr("No me hagas mucho caso, pero creo que no."), tr("Yo diría que sí, pero no pongo la mano en el fuego."),
+         tr("Quién sabe."), tr("Eso mismo me pregunto yo."), tr("Uf, me pillas fuera de juego."), tr("No sabría ni por dónde empezar."), tr("Pregunta en el bar, que allí se enteran de todo.")),
+    "amable": (tr("Ojalá pudiera ayudarte, pero no lo sé."), tr("Lo siento, de eso no sé nada. Pregunta a ver si alguien te dice."), tr("Ay, pues no te sé decir. Perdona."), tr("No lo sé, pero si me entero te lo digo.")),
+    "hablador": (tr("No lo sé, pero conozco a uno que seguro que sí. Bueno, lo conocía."), tr("De eso no sé, y mira que yo sé de casi todo."), tr("Pues no, y eso que le he dado vueltas. A otras cosas, pero vueltas."),
+                 tr("Ni idea, pero te puedo contar otra cosa si quieres.")),
+    "seco": (tr("No sé."), tr("Ni idea."), tr("No."), tr("A mí no me preguntes."), tr("Sabe Dios.")),
+    "timido": (tr("No... no lo sé. Perdona."), tr("Yo de eso no sé nada, lo siento."), tr("Creo que no lo sé."), tr("Mejor pregúntale a otra persona.")),
+    "chulo": (tr("Si lo supiera no te lo iba a decir gratis."), tr("Eso no lo sabe ni el alcalde."), tr("Yo sé muchas cosas, pero esa no."), tr("¿Me has visto cara de oficina de información?")),
 }
 # Cuando no se reconoce de qué habla: un comentario
 NO_SE_COMENTARIO = {
-    "": ("Ya, ya.", "Puede ser.", "Si tú lo dices.", "Mira qué bien.", "Eso dicen.", "Pues vaya.", "No te digo que no.", "Cada uno lo ve a su manera.", "Qué cosas.", "Ajá.",
-         "Vaya por Dios.", "Pues mira, no lo había pensado así.", "Tú sabrás.", "Eso es verdad.", "Ya ves.", "Hombre, visto así.", "Algo de eso he oído.", "No me extraña nada.",
-         "Pues qué bien, ¿no?", "Así están las cosas.", "Será eso.", "Lo que tú digas.", "Me lo creo.", "Pues anda que no.", "Menuda historia."),
-    "amable": ("Qué interesante lo que cuentas.", "Me alegro por ti, de verdad.", "Pues mira, eso está muy bien.", "Qué bien que me lo cuentes."),
-    "hablador": ("Eso mismo le decía yo a mi vecina el otro día, que no me dejó ni terminar.", "Uy, de eso tengo yo una historia, pero es larga.", "Pues igualito que lo que me pasó a mí. Bueno, parecido.",
-                 "¡No me digas! Sigue, sigue."),
-    "seco": ("Ya.", "Bueno.", "Vale.", "Ah.", "Si tú lo dices."),
-    "timido": ("Ah... vale.", "Sí, supongo.", "Claro, claro.", "No sabía."),
-    "chulo": ("Eso ya lo sabía yo.", "Me lo vas a contar a mí.", "Bah, eso no es nada.", "Qué me vas a contar."),
+    "": (tr("Ya, ya."), tr("Puede ser."), tr("Si tú lo dices."), tr("Mira qué bien."), tr("Eso dicen."), tr("Pues vaya."), tr("No te digo que no."), tr("Cada uno lo ve a su manera."), tr("Qué cosas."), tr("Ajá."),
+         tr("Vaya por Dios."), tr("Pues mira, no lo había pensado así."), tr("Tú sabrás."), tr("Eso es verdad."), tr("Ya ves."), tr("Hombre, visto así."), tr("Algo de eso he oído."), tr("No me extraña nada."),
+         tr("Pues qué bien, ¿no?"), tr("Así están las cosas."), tr("Será eso."), tr("Lo que tú digas."), tr("Me lo creo."), tr("Pues anda que no."), tr("Menuda historia.")),
+    "amable": (tr("Qué interesante lo que cuentas."), tr("Me alegro por ti, de verdad."), tr("Pues mira, eso está muy bien."), tr("Qué bien que me lo cuentes.")),
+    "hablador": (tr("Eso mismo le decía yo a mi vecina el otro día, que no me dejó ni terminar."), tr("Uy, de eso tengo yo una historia, pero es larga."), tr("Pues igualito que lo que me pasó a mí. Bueno, parecido."),
+                 tr("¡No me digas! Sigue, sigue.")),
+    "seco": (tr("Ya."), tr("Bueno."), tr("Vale."), tr("Ah."), tr("Si tú lo dices.")),
+    "timido": (tr("Ah... vale."), tr("Sí, supongo."), tr("Claro, claro."), tr("No sabía.")),
+    "chulo": (tr("Eso ya lo sabía yo."), tr("Me lo vas a contar a mí."), tr("Bah, eso no es nada."), tr("Qué me vas a contar.")),
 }
 
 
@@ -90,7 +91,7 @@ def tema_de(texto):
     """El tema del que habla el jugador, o None. Gana el que más y más largas palabras clave acierte."""
     _cargar()
     t = normal(texto)
-    for relleno in (" muy ", " tan ", " bastante ", " un poco ", " super ", " realmente ", " de verdad ", " oye ", " pues "):
+    for relleno in (tr(" muy "), tr(" tan "), tr(" bastante "), tr(" un poco "), tr(" super "), tr(" realmente "), tr(" de verdad "), tr(" oye "), tr(" pues ")):
         t = t.replace(relleno, " ")                 # «estoy muy triste» es «estoy triste»
     mejor, nota = None, 0
     for tema in TEMAS:
@@ -118,7 +119,7 @@ def cuantas():
     return len(TEMAS), frases
 
 
-PROPIOS = ("Belmonte", "Bravo", "Dios", "Capitán", "{yo}", "{barrio}", "{ciudad}", "{hora}")
+PROPIOS = (tr("Belmonte"), tr("Bravo"), tr("Dios"), tr("Capitán"), "{yo}", "{barrio}", "{ciudad}", "{hora}")
 
 
 def _unir(entrada, frase):
@@ -138,7 +139,7 @@ def _elegir(opciones, dichas, rng):
 
 def _poner_datos(frase, ficha, ctx):
     datos = {"yo": ficha.get("nombre", ""), "oficio": ficha.get("oficio", ""), "o": "a" if ficha.get("genero") == "m" else "o",
-             "barrio": ctx.get("barrio", "el barrio"), "ciudad": ctx.get("ciudad", "la ciudad"), "hora": ctx.get("hora", ""), "tu": ctx.get("tu", "")}
+             "barrio": ctx.get("barrio", tr("el barrio")), "ciudad": ctx.get("ciudad", tr("la ciudad")), "hora": ctx.get("hora", ""), "tu": ctx.get("tu", "")}
     for k, v in datos.items():
         frase = frase.replace("{" + k + "}", v)
     return frase[0].upper() + frase[1:]
@@ -204,7 +205,7 @@ def responder(texto, ficha, ctx, rng=random):
         frase += rng.choice(COLETILLAS[caracter])
     frase = _unir(repetido, frase)
     datos = {"yo": ficha.get("nombre", ""), "oficio": ficha.get("oficio", ""), "o": "a" if ficha.get("genero") == "m" else "o",
-             "barrio": ctx.get("barrio", "el barrio"), "ciudad": ctx.get("ciudad", "la ciudad"), "hora": ctx.get("hora", ""), "tu": ctx.get("tu", "")}
+             "barrio": ctx.get("barrio", tr("el barrio")), "ciudad": ctx.get("ciudad", tr("la ciudad")), "hora": ctx.get("hora", ""), "tu": ctx.get("tu", "")}
     for k, v in datos.items():
         frase = frase.replace("{" + k + "}", v)
     return frase[0].upper() + frase[1:], cambio, ident

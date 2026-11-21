@@ -8,6 +8,7 @@ quiere, y respetar un «espera», es lo que hace que la noche salga bien. Todas 
 El laboratorio: un oficio ilegal dentro del juego. Es un minijuego de oído, de mantener un tono en su sitio.
 No describe ni se parece a ningún proceso real: las sustancias del juego son inventadas, como sus efectos.
 """
+from .i18n import tr
 import random
 
 import pygame
@@ -16,25 +17,25 @@ import pygame
 # Cada persona tiene un ritmo que le gusta. No se dice: se nota en cómo responde.
 RITMOS = ("lento", "intenso", "jugando")
 MOMENTOS = [
-    ("Acabáis de entrar. {n} deja las llaves y te mira.", [
-        ("Poner música bajita y servir dos copas", "lento", "{n} se quita los zapatos y se sienta muy cerca de ti."),
-        ("Besarle antes de que diga nada", "intenso", "{n} te agarra de la camisa y no te suelta."),
-        ("Hacerle una broma y perseguirle por el pasillo", "jugando", "{n} se escapa riéndose y se deja alcanzar.")]),
-    ("Estáis muy cerca. Notas su respiración.", [
-        ("Acariciarle despacio, sin prisa ninguna", "lento", "{n} cierra los ojos y apoya la frente en la tuya."),
-        ("Abrazarle fuerte y dejar que hablen las manos", "intenso", "{n} te busca la boca con hambre."),
-        ("Susurrarle una tontería al oído", "jugando", "{n} se ríe contra tu cuello.")]),
-    ("{n} te mira a los ojos, esperando.", [
-        ("Preguntarle qué le apetece", "pregunta", ""),
-        ("Llevarle de la mano al dormitorio", "lento", "{n} te sigue sin soltarte."),
-        ("Dejar que sea quien decida", "cede", "{n} sonríe y toma la iniciativa.")]),
-    ("La ropa empieza a sobrar.", [
-        ("Ir despacio, mirándole", "lento", "{n} te deja hacer y suspira."),
-        ("Con prisa, sin pensar", "intenso", "{n} te ayuda, con las manos torpes de ganas."),
-        ("Entre risas, enredándoos", "jugando", "Acabáis los dos riéndoos, hechos un lío.")]),
+    (tr("Acabáis de entrar. {n} deja las llaves y te mira."), [
+        (tr("Poner música bajita y servir dos copas"), "lento", tr("{n} se quita los zapatos y se sienta muy cerca de ti.")),
+        (tr("Besarle antes de que diga nada"), "intenso", tr("{n} te agarra de la camisa y no te suelta.")),
+        (tr("Hacerle una broma y perseguirle por el pasillo"), "jugando", tr("{n} se escapa riéndose y se deja alcanzar."))]),
+    (tr("Estáis muy cerca. Notas su respiración."), [
+        (tr("Acariciarle despacio, sin prisa ninguna"), "lento", tr("{n} cierra los ojos y apoya la frente en la tuya.")),
+        (tr("Abrazarle fuerte y dejar que hablen las manos"), "intenso", tr("{n} te busca la boca con hambre.")),
+        (tr("Susurrarle una tontería al oído"), "jugando", tr("{n} se ríe contra tu cuello."))]),
+    (tr("{n} te mira a los ojos, esperando."), [
+        (tr("Preguntarle qué le apetece"), "pregunta", ""),
+        (tr("Llevarle de la mano al dormitorio"), "lento", tr("{n} te sigue sin soltarte.")),
+        (tr("Dejar que sea quien decida"), "cede", tr("{n} sonríe y toma la iniciativa."))]),
+    (tr("La ropa empieza a sobrar."), [
+        (tr("Ir despacio, mirándole"), "lento", tr("{n} te deja hacer y suspira.")),
+        (tr("Con prisa, sin pensar"), "intenso", tr("{n} te ayuda, con las manos torpes de ganas.")),
+        (tr("Entre risas, enredándoos"), "jugando", tr("Acabáis los dos riéndoos, hechos un lío."))]),
 ]
-ESPERA = ["{n} te pone una mano en el pecho. «Espera. Más despacio.»", "{n} se aparta un poco. «Un momento. Así no.»"]
-QUIERE = {"lento": "«Despacio. Hoy quiero que dure.»", "intenso": "«No pienses tanto. Ven aquí.»", "jugando": "«Sorpréndeme. Hazme reír.»"}
+ESPERA = [tr("{n} te pone una mano en el pecho. «Espera. Más despacio.»"), tr("{n} se aparta un poco. «Un momento. Así no.»")]
+QUIERE = {"lento": tr("«Despacio. Hoy quiero que dure.»"), "intenso": tr("«No pienses tanto. Ven aquí.»"), "jugando": tr("«Sorpréndeme. Hazme reír.»")}
 
 
 def ritmo_de(nombre, dia):
@@ -65,15 +66,15 @@ class Noche:
             self.app.cerrar(self.menu)
         if self.espera:
             titulo = antes + self.azar.choice(ESPERA).format(n=n)
-            ops = [Opcion("Parar, y preguntarle si está bien", lambda: self._responde_espera(True), ayuda="Un espera se respeta. Parar y escuchar es lo que más os acerca."),
-                   Opcion("Bajar el ritmo sin decir nada", lambda: self._responde_espera(False), ayuda="Aflojas, pero no preguntas.")]
+            ops = [Opcion(tr("Parar, y preguntarle si está bien"), lambda: self._responde_espera(True), ayuda=tr("Un espera se respeta. Parar y escuchar es lo que más os acerca.")),
+                   Opcion(tr("Bajar el ritmo sin decir nada"), lambda: self._responde_espera(False), ayuda=tr("Aflojas, pero no preguntas."))]
         elif self.paso >= len(MOMENTOS):
             self._fin(antes)
             return
         else:
             texto, opciones = MOMENTOS[self.paso]
             titulo = antes + texto.format(n=n)
-            ops = [Opcion(t, (lambda r=r, d=d: self._elegir(r, d)), ayuda="No hay una respuesta correcta para todo el mundo: fíjate en cómo responde.") for t, r, d in opciones]
+            ops = [Opcion(t, (lambda r=r, d=d: self._elegir(r, d)), ayuda=tr("No hay una respuesta correcta para todo el mundo: fíjate en cómo responde.")) for t, r, d in opciones]
         self.menu = Menu(self.app, titulo, ops, escapable=False)
         self.app.abrir(self.menu)
 
@@ -83,7 +84,7 @@ class Noche:
         self.maximo += 1.0
         if ritmo == "pregunta":                              # preguntar siempre acierta, y además te dice lo que quiere
             self.puntos += 1.0
-            self._mostrar(f"{n} te lo dice al oído: {QUIERE[self.ritmo]} ")
+            self._mostrar(tr('{n} te lo dice al oído: {v} ').format(n=(n), v=(QUIERE[self.ritmo])))
             return
         if ritmo == "cede":
             self.puntos += 0.7
@@ -92,13 +93,13 @@ class Noche:
         if ritmo == self.ritmo:
             self.puntos += 1.0
             self.app.son("afinidad_sube", vol=0.5)
-            self._mostrar(dice.format(n=n) + " Es justo lo que quería. ")
+            self._mostrar(dice.format(n=n) + tr(" Es justo lo que quería. "))
         elif ritmo == "intenso" and self.ritmo == "lento":   # ir más deprisa de lo que quiere: te frena
             self.espera = True
             self._mostrar()
         else:
             self.puntos += 0.4
-            self._mostrar(dice.format(n=n) + " Aunque notas que hoy le apetecía otra cosa. ")
+            self._mostrar(dice.format(n=n) + tr(" Aunque notas que hoy le apetecía otra cosa. "))
 
     def _responde_espera(self, pregunta):
         n = self.nombre
@@ -106,18 +107,18 @@ class Noche:
         if pregunta:
             self.puntos += 1.0
             self.app.son("afinidad_sube", vol=0.5)
-            self._mostrar(f"Paras. {n} respira, te sonríe y te lo dice: {QUIERE[self.ritmo]} ")
+            self._mostrar(tr('Paras. {n} respira, te sonríe y te lo dice: {v} ').format(n=(n), v=(QUIERE[self.ritmo])))
         else:
             self.puntos += 0.2
-            self._mostrar(f"Aflojas. {n} no dice nada, pero tarda en volver a acercarse. ")
+            self._mostrar(tr('Aflojas. {n} no dice nada, pero tarda en volver a acercarse. ').format(n=(n)))
 
     def _fin(self, antes):
         from .menus import Dialogo
         s = self.puntos / self.maximo if self.maximo else 0.5
-        como = ("Ha sido una de esas noches que se recuerdan: os habéis entendido sin palabras." if s >= 0.8 else
-                "Ha estado bien. Os vais conociendo." if s >= 0.5 else "No habéis acabado de encontraros. Otra vez será mejor si le escuchas.")
+        como = (tr("Ha sido una de esas noches que se recuerdan: os habéis entendido sin palabras.") if s >= 0.8 else
+                tr("Ha estado bien. Os vais conociendo.") if s >= 0.5 else tr("No habéis acabado de encontraros. Otra vez será mejor si le escuchas."))
         self.menu = None
-        self.app.abrir(Dialogo(self.app, [("Narrador", antes + "Se apaga la luz. Lo que pasa después es solo vuestro."), ("Narrador", como)],
+        self.app.abrir(Dialogo(self.app, [(tr("Narrador"), antes + tr("Se apaga la luz. Lo que pasa después es solo vuestro.")), (tr("Narrador"), como)],
                                lambda: self.al_acabar(s)))
 
 
@@ -143,32 +144,33 @@ def opciones_casa(p, lugar, Menu, Opcion):
             if p.pagar(p.precio("laboratorio", PRECIO_LAB)):
                 j.laboratorios.append(lugar.id)
                 p.son("reparar", cat="interfaz")
-                app.decir("Montas un laboratorio en el cuarto del fondo. Para trabajar en él hace falta material: lo vende cualquier proveedor.", True)
-        return [Opcion(f"Montar un laboratorio clandestino aquí: {p.precio('laboratorio', PRECIO_LAB)} euros", montar,
-                       ayuda="Un cuarto preparado para fabricar mercancía. Da mucho dinero y muchos problemas: los vecinos huelen cosas, la policía pregunta, y si te equivocas puede arder.")]
+                app.decir(tr("Montas un laboratorio en el cuarto del fondo. Para trabajar en él hace falta material: lo vende cualquier proveedor."), True)
+        return [Opcion(tr('Montar un laboratorio clandestino aquí: {precio} euros').format(precio=(p.precio('laboratorio', PRECIO_LAB))), montar,
+                       ayuda=tr("Un cuarto preparado para fabricar mercancía. Da mucho dinero y muchos problemas: los vecinos huelen cosas, la policía pregunta, y si te equivocas puede arder."))]
 
     def trabajar(s):
         def f():
             if j.material <= 0:
                 app.son("error")
-                app.decir("No te queda material. Lo vende cualquier proveedor.", True)
+                app.decir(tr("No te queda material. Lo vende cualquier proveedor."), True)
                 return
             if p.carga() >= 100:
                 app.son("error")
-                app.decir("No te cabe más mercancía encima. Vende antes.", True)
+                app.decir(tr("No te cabe más mercancía encima. Vende antes."), True)
                 return
             j.material -= 1
             app.abrir(Coccion(p, lugar, s))
         return f
-    ops = [Opcion(lambda: f"Laboratorio. Tienes material para {j.material} {'tanda' if j.material == 1 else 'tandas'}")]
+    ops = [Opcion(lambda: tr('Laboratorio. Tienes material para {material} {v}').format(material=(j.material), v=(tr('tanda') if j.material == 1 else tr('tandas'))),
+                  ayuda=tr("Cada tanda que fabricas gasta una de material. El material lo vende cualquier proveedor."))]
     for s in p.dato_adulto("sustancias"):
         if s["id"] in PRODUCTOS:
-            ops.append(Opcion(f"Fabricar {s['nombre'].lower()}", trabajar(s),
-                              ayuda="Un minijuego de oído. Suenan dos tonos: uno fijo, que es el punto bueno, y otro que se te va. Con flecha arriba y flecha abajo llevas el tuyo "
+            ops.append(Opcion(tr('Fabricar {lower}').format(lower=(s['nombre'].lower())), trabajar(s),
+                              ayuda=tr("Un minijuego de oído. Suenan dos tonos: uno fijo, que es el punto bueno, y otro que se te va. Con flecha arriba y flecha abajo llevas el tuyo "
                                     "hasta igualarlo al fijo, y lo mantienes ahí. Cuanto más tiempo estén iguales, mejor sale la tanda y más unidades sacas. "
-                                    "Si lo dejas irse muy arriba mucho rato, puede arder."))
-    return [Opcion("Entrar en el laboratorio", lambda: app.abrir(Menu(app, "Laboratorio", ops)),
-                   ayuda="Fabricar mercancía para venderla después a los proveedores o por la calle.")]
+                                    "Si lo dejas irse muy arriba mucho rato, puede arder.")))
+    return [Opcion(tr("Entrar en el laboratorio"), lambda: app.abrir(Menu(app, tr("Laboratorio"), ops)),
+                   ayuda=tr("Fabricar mercancía para venderla después a los proveedores o por la calle."))]
 
 
 def opcion_proveedor(p, Opcion):
@@ -179,9 +181,9 @@ def opcion_proveedor(p, Opcion):
         if p.pagar(p.precio("material_laboratorio", PRECIO_MATERIAL)):
             j.material += 1
             p.son("trato", cat="interfaz")
-            p.app.decir(f"Material para una tanda. Tienes para {j.material}.", True)
-    return Opcion(lambda: f"Material de laboratorio, una tanda: {p.precio('material_laboratorio', PRECIO_MATERIAL)} euros. Tienes {j.material}", comprar,
-                  ayuda="Hace falta para trabajar en un laboratorio. El laboratorio se monta en una casa tuya, desde su menú.")
+            p.app.decir(tr('Material para una tanda. Tienes para {material}.').format(material=(j.material)), True)
+    return Opcion(lambda: tr('Material de laboratorio, una tanda: {precio} euros. Tienes {material}').format(precio=(p.precio('material_laboratorio', PRECIO_MATERIAL)), material=(j.material)), comprar,
+                  ayuda=tr("Hace falta para trabajar en un laboratorio. El laboratorio se monta en una casa tuya, desde su menú."))
 
 
 class Coccion:
@@ -200,8 +202,7 @@ class Coccion:
         self.hecho = False
 
     def al_entrar(self):
-        self.app.decir(f"Empiezas una tanda de {self.s['nombre'].lower()}. Oirás un tono fijo y otro que se mueve. Con flecha arriba y flecha abajo, iguala el tuyo al fijo "
-                       f"y mantenlo. Dura {int(DURA)} segundos. Escape lo deja a medias.", True)
+        self.app.decir(tr('Empiezas una tanda de {lower}. Oirás un tono fijo y otro que se mueve. Con flecha arriba y flecha abajo, iguala el tuyo al fijo y mantenlo. Dura {int} segundos. Escape lo deja a medias.').format(lower=(self.s['nombre'].lower()), int=(int(DURA))), True)
 
     def tecla(self, ev):
         if ev.key == pygame.K_ESCAPE:
@@ -242,22 +243,27 @@ class Coccion:
             j.laboratorios.remove(self.l.id) if self.l.id in j.laboratorios else None
             p.son("explosion", cat="interfaz", vol=0.8)
             p.danar_jugador(45, None)
-            p.delito(6, "incendio en un laboratorio", siempre=True)
-            app.decir("Se te va de las manos y arde. Sales tosiendo, con quemaduras. El laboratorio se ha perdido, y medio barrio ha llamado a la policía.", True)
+            p.delito(6, tr("incendio en un laboratorio"), siempre=True)
+            app.decir(tr("Se te va de las manos y arde. Sales tosiendo, con quemaduras. El laboratorio se ha perdido, y medio barrio ha llamado a la policía."), True)
             return
         if abandonada:
-            app.decir("Lo dejas a medias. La tanda se ha echado a perder.", True)
+            app.decir(tr("Lo dejas a medias. La tanda se ha echado a perder."), True)
             return
         unidades = max(1, int(round(4 + 12 * calidad)))
-        unidades = min(unidades, max(0, 100 - p.carga()))
-        j.sustancias[self.s["id"]] = j.sustancias.get(self.s["id"], 0) + unidades
+        encima = min(unidades, p.hueco_mercancia())             # lo que cabe en la mochila; el resto, al armario de esta casa (mochila.py)
+        j.sustancias[self.s["id"]] = j.sustancias.get(self.s["id"], 0) + encima
+        resto = unidades - encima
+        if resto:
+            a = p.almacen(self.l.id)["sust"]
+            a[self.s["id"]] = a.get(self.s["id"], 0) + resto
         j.stats["fabricado"] = j.stats.get("fabricado", 0) + unidades
         p.son("trato", cat="interfaz")
-        nota = "Una tanda limpia" if calidad >= 0.6 else "Una tanda normal" if calidad >= 0.3 else "Una tanda floja"
-        app.decir(f"{nota}: {unidades} de {self.s['nombre'].lower()}. Llevas {j.sustancias[self.s['id']]}. Véndelo a un proveedor o por la calle.", True)
+        nota = tr("Una tanda limpia") if calidad >= 0.6 else tr("Una tanda normal") if calidad >= 0.3 else tr("Una tanda floja")
+        app.decir(tr('{nota}: {unidades} de {lower}. Llevas {v}.').format(nota=(nota), unidades=(unidades), lower=(self.s['nombre'].lower()), v=(j.sustancias[self.s['id']]))
+                  + (tr(' No te cabe todo en la mochila: {resto} se quedan en el armario de la casa.').format(resto=(resto)) if resto else "") + tr(" Véndelo a un proveedor o por la calle."), True)
         if self.azar.random() < 0.15:
-            p.delito(3, "olores sospechosos", siempre=True)
-            p.decir("Un vecino ha notado el olor y ha llamado a la policía.")
+            p.delito(3, tr("olores sospechosos"), siempre=True)
+            p.decir(tr("Un vecino ha notado el olor y ha llamado a la policía."))
 
     def cerrado(self):
         pass

@@ -1,0 +1,57 @@
+<h3>Tram, train and airport in your towns</h3>
+<p>In the game data and in the mods that come with it, the tram stops, the train station, the airport and the tracks are written like everything else, and they are edited the same way:</p>
+<ul>
+<li>Each stop, station and airport is a place, with its type: Tram stop, Train station or Airport. You can change its name, description, block, facade and position, or delete it.</li>
+<li>Each stop also has its Order on the tram line: the tram goes through them from lowest to highest and returns to the first.</li>
+<li>An airport can be an airfield: check It is an airfield, with a short runway. Scheduled light aircraft arrive at airfields, not large planes, and only light aircraft can be rented there. It's what suits a village.</li>
+<li>The town has the fields The train line runs along, and Number of that street or avenue. The train line crosses the town from side to side, in a straight line: along a street, from west to east, or along an avenue, from south to north. The trains run along it and stop at the station. If you leave them without a value, the line runs in front of the train station. Without a train station there is no line.</li>
+<li>The town has the field Route of the tram tracks: the list of intersections they pass through, in order. It's enough to enter the intersections where they turn. Each stop is at the point on the tracks closest to it.</li>
+<li>The town also has the field Add the public transport that is missing. With yes, if your town is missing any of these things, the game adds it when loading it: stops in every neighborhood and an airport if it's a city, and a train station if it has a road exit. With no, it only has what you give it.</li>
+</ul>
+<p>If you create a new town and don't add anything, it works the same: the game adds whatever is missing. If you add the stops yourself, it doesn't add any more. The Check button warns you if an intersection on the tracks doesn't exist, if two stops have the same order, or if a stop is more than sixty meters from the tracks.</p>
+<h3>Decisions, branches and endings</h3>
+<p>Each option of a decision can also leave an income: money the player receives, or pays, every midnight, forever.</p>
+<p>The step type A decision by the player opens a menu with the options you write, from two to four. Each option has the text the player chooses, an explanation for F1, what is told when it's chosen, and its consequences: money, reputation, mood and relationship with a gang.</p>
+<ul>
+<li>Give the decision a name, one word with no spaces. With that name, other missions and other steps can depend on what was chosen.</li>
+<li>In a mission, Only appears if the decision was made and Number of the chosen option make that mission exist only in one branch of the story. The first option is 1.</li>
+<li>In a step, the same two fields make that step play only in one branch; in the others it's skipped.</li>
+<li>In a mission, Text of the story's ending turns it into an ending: when it's completed, that text is read out and recorded in the diary. With several missions like this, each one after a different option, the story has several endings.</li>
+</ul>
+<p>In the main story, missions fd1 to fd4 are an example: a decision with three options and an ending for each one.</p>
+
+<h3>Giving the characters a voice</h3>
+<p>The dialogue lines are read by the player's screen reader. If you want them to play with recorded voices, you don't have to change anything in the mod: just put the recordings in the game's voices folder.</p>
+<ol>
+<li>Save the mod and press <kbd>Control G</kbd>, or choose Voice script for recording in the Mod menu. The editor writes a text file with all the lines of all the missions and opens it in Notepad.</li>
+<li>In the script, each line has above it the name its recording must have, for example <strong>oc01_1_2</strong>: mission, step number and line number. At the end it says how many lines each character has, so you can share them out among several people.</li>
+<li>Record each line in a separate file, in WAV, OGG, FLAC or MP3, with that name.</li>
+<li>Some lines change with the protagonist: those that say their name, those that have a masculine and a feminine form in square brackets, and those the protagonist says themselves. The script points this out under each one and gives the name of its other forms, with an at sign: <strong>oc01_1_2@alex</strong>, <strong>oc01_1_2@m</strong>, <strong>oc01_1_2@alex_m</strong>. The file with nothing after it is the one for Dani as a man. You can record just that one: for someone playing with another protagonist, that line will be read by their screen reader, never someone else's recording.</li>
+<li>Put the files in the voices folder, which opens with <kbd>Control Shift V</kbd>. They can be in subfolders.</li>
+<li>Press <kbd>Control G</kbd> again whenever you like: the lines that already have a file are marked with the word RECORDED.</li>
+</ol>
+<p>Lines without a recording are still read by the screen reader, so you can record little by little. If you later change the order of the steps or of the lines in a mission, their numbers change: generate the script again and rename the files.</p>
+<p>To share a mod with voices, give out the mod file and, separately, a folder with the recordings to copy into <strong>data\voces\propias</strong>. Use your own voices or synthetic voices you have permission to use: not voices cloned from real people or taken from other games or films.</p>
+
+<h2>6. Sounds</h2>
+<p>Everything you add must make a sound. Each place has a sound field, which is what you hear when passing its door and in the background when you go inside. Choose one of the game's sounds from the drop-down list. If you want a new one, copy your file into <code>data\sonidos\por_defecto</code> with whatever name you like and it will appear in the list the next time you open the editor. The guide <a href="cambiar_sonidos_en.html">cambiar_sonidos_en.html</a> describes all the sounds.</p>
+
+<h2>7. Checking and testing</h2>
+<p><kbd>F5</kbd> checks the mod and lists what it finds: references to things that don't exist, places outside the map or on top of a building, missions without steps, repeated identifiers and inconsistent steps. Each warning says which element it's in. Fix them and check again until none are left.</p>
+<p><kbd>F9</kbd> saves, checks and opens the game. Start a new game or load one, and go and see your content.</p>
+
+<h2>8. Enabling and disabling mods</h2>
+<p>With <kbd>Control M</kbd> a checklist opens with all the mods in the folder. The checked ones are the ones the game loads. A disabled mod isn't deleted: its file changes extension and the game ignores it.</p>
+
+<h2>9. Sharing a mod</h2>
+<p>Send the <code>.pbm</code> file from the <code>data\mods</code> folder. Whoever receives it just has to copy it into their <code>data\mods</code> folder. If your mod uses new sounds, send those files too, which go in <code>data\sonidos\por_defecto</code>.</p>
+
+<h2>10. Common problems</h2>
+<ul>
+<li>The screen reader doesn't say the name of a field: press <kbd>Control H</kbd>.</li>
+<li>The game doesn't show my content: check with <kbd>Control M</kbd> that the mod is enabled and with <kbd>F5</kbd> that it has no errors. Places with adult content only appear with that option turned on in the game.</li>
+<li>I've broken a mod: the game's originals are never touched. Disable or delete the mod file and the game goes back to how it was.</li>
+</ul>
+
+</body>
+</html>

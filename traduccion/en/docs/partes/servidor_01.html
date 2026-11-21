@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Montar un servidor de Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 56em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3, h4 { color: #ffd84d; }
+li { margin-bottom: .4em; }
+code, kbd { background: #2a2a2a; padding: 0 .3em; }
+a { color: #9fd0ff; }
+</style>
+</head>
+<body>
+<h1>Montar un servidor de Puerto Bravo</h1>
+<p>Un servidor es un programa pequeño que se deja encendido para que varias personas jueguen juntas en la misma ciudad. Guarda los personajes, las bandas y los barrios, y decide lo que pasa entre jugadores. No necesita una máquina potente y lo mismo vale para dos amigos que para cien personas o más.</p>
+<p>Todo se puede hacer con teclado y con lector de pantalla: hay un panel con ventana para Windows y, en cualquier sistema, el servidor se lleva por texto.</p>
+<p>Esta guía se puede recorrer por encabezados. Cada manera de montarlo tiene su apartado, con los pasos uno a uno. No hace falta leerla entera: elige tu manera en el apartado 3 y ve a ella.</p>
+
+<h2 id="indice">Índice</h2>
+<ol>
+<li><a href="#que">Qué hace falta</a></li>
+<li><a href="#carpeta">Lo que hay en la carpeta servidor</a></li>
+<li><a href="#elegir">Elegir cómo montarlo</a></li>
+<li><a href="#panel">En tu Windows, con el panel</a></li>
+<li><a href="#consola">En tu Windows, por consola</a></li>
+<li><a href="#inicio">Que arranque solo con Windows</a></li>
+<li><a href="#linux">En Linux o en un servidor alquilado, con Python</a></li>
+<li><a href="#systemd">En Linux, como servicio de systemd</a></li>
+<li><a href="#raspberry">En una Raspberry Pi</a></li>
+<li><a href="#mac">En un Mac</a></li>
+<li><a href="#docker">Con Docker y docker compose</a></li>
+<li><a href="#synology">En un NAS Synology</a></li>
+<li><a href="#direccion">La dirección que das a tu gente, y cómo entrar desde fuera de casa</a></li>
+<li><a href="#cifrado">Cifrado y certificado</a></li>
+<li><a href="#entrada">Quién puede entrar</a></li>
+<li><a href="#administrar">Administrar el servidor</a></li>
+<li><a href="#versiones">Jugar con versiones distintas del juego</a></li>
+<li><a href="#dinero">El dinero de los jugadores: el tope por hora y los encargos</a></li>
+<li><a href="#rol">Rol por texto, la voz y la radio de los vehículos</a></li>
+<li><a href="#copias">Copias de seguridad, mover el servidor y actualizarlo</a></li>
+<li><a href="#grandes">Servidores con mucha gente</a></li>
+<li><a href="#problemas">Solución de problemas</a></li>
+<li><a href="#privacidad">Qué guarda el servidor</a></li>
+<li><a href="#opciones">Todas las opciones de configuración</a></li>
+</ol>
+
+<h2 id="que">1. Qué hace falta</h2>
+<ul>
+<li>Un ordenador que se quede encendido mientras se juega: tu PC, un portátil viejo, un NAS, una Raspberry Pi o un servidor alquilado.</li>
+<li>En Windows no hay que instalar nada: el servidor viene con el juego.</li>
+<li>En Linux, Mac, NAS o Raspberry Pi hace falta Python 3.8 o posterior, que casi siempre viene ya instalado. No hay que instalar nada más: el servidor solo usa lo que trae Python. Allí no hace falta el juego.</li>
+<li>Para que entre gente de fuera de tu casa: abrir un puerto en el router, o usar una red privada. Está explicado en el apartado 13.</li>
+<li>Consume muy poco: con unos pocos jugadores apenas se nota en el procesador ni en la memoria.</li>
+</ul>
+
+<h2 id="carpeta">2. Lo que hay en la carpeta servidor</h2>
+<p>Dentro de la carpeta del juego hay una carpeta llamada <code>servidor</code>. Ahí está todo lo del servidor y ahí se guarda todo lo suyo. Las actualizaciones del juego no tocan tu configuración ni tus datos.</p>
+<ul>
+<li><code>Panel del servidor.bat</code>: abre la ventana del panel. Es lo más cómodo en Windows.</li>
+<li><code>Servidor por consola.bat</code>: arranca el servidor en una ventana de texto.</li>
+<li><code>Parar el servidor.bat</code>: para con orden el servidor que esté en marcha.</li>
+<li><code>Arrancar con Windows - activar.bat</code> y <code>Arrancar con Windows - quitar.bat</code>: para que arranque solo al iniciar sesión.</li>
+<li><code>documentacion_es.html</code> y <code>documentacion_en.html</code>: esta guía, en español y en inglés.</li>
+<li><code>servidor.conf.ejemplo</code>: todas las opciones, explicadas una a una.</li>
+<li><code>otros_sistemas</code>: lo que se copia a un Linux, un Mac, un NAS o una Raspberry Pi. Lleva el código del servidor, los guiones <code>arrancar.sh</code>, <code>parar.sh</code>, <code>reiniciar.sh</code> y <code>estado.sh</code>, el servicio de systemd <code>puertobravo.service</code>, y los archivos de Docker: <code>Dockerfile</code>, <code>docker-compose.yml</code> y <code>entrada_docker.sh</code>.</li>
+</ul>
+<p>Cuando arranques el servidor por primera vez aparecerán además:</p>
+<ul>
+<li><code>servidor.conf</code>: tu configuración.</li>
+<li><code>datos_servidor</code>: los personajes, las bandas, el certificado y, dentro, la carpeta <code>copias</code> con las copias de seguridad.</li>
+</ul>
+<p>Los programas del servidor en Windows están en la carpeta del juego, junto al juego: <code>PuertoBravoServidorPanel.exe</code>, el panel, y <code>PuertoBravoServidor.exe</code>, la consola. Los dos trabajan siempre con la carpeta <code>servidor</code>, se abran desde donde se abran.</p>
+
+<h2 id="elegir">3. Elegir cómo montarlo</h2>
+<ul>
+<li>Quieres jugar con unos amigos desde tu PC con Windows y que sea fácil: <a href="#panel">el panel</a>, apartado 4.</li>
+<li>Prefieres una ventana de texto, o vas a dejarlo arrancado sin atenderlo: <a href="#consola">la consola</a>, apartado 5, y <a href="#inicio">que arranque solo</a>, apartado 6.</li>
+<li>Tienes un ordenador con Linux, o alquilas un servidor: apartados <a href="#linux">7</a> y <a href="#systemd">8</a>.</li>
+<li>Tienes una Raspberry Pi: <a href="#raspberry">apartado 9</a>.</li>
+<li>Tienes un Mac: <a href="#mac">apartado 10</a>.</li>
+<li>Usas Docker: <a href="#docker">apartado 11</a>.</li>
+<li>Tienes un NAS Synology: <a href="#synology">apartado 12</a>.</li>
+</ul>
+<p>La configuración y los datos son los mismos en todas: puedes empezar en tu PC y llevarte el servidor a otra máquina más adelante. El apartado 20 dice cómo.</p>
+
+<h2 id="panel">4. En tu Windows, con el panel</h2>
+<h3>Arrancarlo por primera vez</h3>
+<ol>
+<li>Abre la carpeta del juego, entra en la carpeta <code>servidor</code> y abre <code>Panel del servidor.bat</code>. También puedes abrir directamente <code>PuertoBravoServidorPanel.exe</code>, en la carpeta del juego.</li>
+<li>Se abre la ventana del panel, con el foco en el estado del servidor, que dirá que está parado.</li>
+<li>Si quieres cambiar algo antes de arrancar, pulsa Control+P para abrir la configuración. Lo mínimo es ponerle un nombre a tu servidor, en la primera pestaña. Pulsa Aceptar para guardar.</li>
+<li>Pulsa F5 para arrancar. La primera vez tarda unos segundos, porque el servidor crea su certificado para cifrar la conexión.</li>
+<li>Cuando termina, el panel dice «Servidor en marcha» y el puerto. Si Windows pregunta si permites al programa comunicarse por la red, di que sí: sin eso no puede entrar nadie.</li>
+<li>En la pestaña Estado está la dirección que tienes que dar a quien juegue en tu misma casa. El botón Copiar la dirección la pone en el portapapeles.</li>
+<li>Entra tú el primero desde el juego: la primera cuenta que entra es la administradora.</li>
+</ol>
+<h3>Las pestañas</h3>
+<p>Se cambia de pestaña con Control+Tabulador y Control+Mayúsculas+Tabulador.</p>
+<ul>
+<li>Estado: si está en marcha, cuánta gente hay, el puerto, la dirección para tus amigos, el cifrado con su huella y el mundo con el que trabaja. Una cosa por línea. Se pone al día solo cuando cambia algo, sin mover el cursor de donde lo tengas; F6 lo pone al día en el momento.</li>
+<li>Jugadores: quién está dentro, dónde y con qué versión del juego. Con los botones, o con la tecla Aplicaciones sobre un jugador, puedes mandarle un mensaje, expulsarle, vetarle o hacerle administrador.</li>
+<li>Cuentas: todas las cuentas que han entrado alguna vez. Desde aquí se veta, se perdona un veto, se da o se quita la administración y se borra una cuenta, aunque la persona no esté dentro.</li>
+<li>Invitaciones: los códigos de invitación, libres y usados. Se crean, se copian y se anulan.</li>
+<li>Registro: lo que va diciendo el servidor, con lo más nuevo al final. Debajo hay un campo para escribirle órdenes, las mismas de la consola.</li>
+</ul>
+<h3>Teclas del panel</h3>
+<ul>
+<li>F5: arrancar el servidor. Mayúsculas+F5: pararlo. Control+F5: reiniciarlo.</li>
+<li>Control+P: configuración. Control+Q: salir.</li>
+<li>Control+N: anuncio a todos los jugadores. Control+M: mensaje al jugador elegido. Control+E: expulsar al jugador elegido.</li>
+<li>Control+I: crear una invitación. Control+D: cambiar el mensaje del día. Control+O: escribir una orden.</li>
+<li>F6: actualizar el estado y las listas.</li>
+<li>Control+S: guardar ahora. Control+B: copia de seguridad ahora. Control+R: restaurar una copia. Control+G: guardar el registro en un archivo.</li>
+<li>F1: abrir esta guía. Control+H: explica el control en el que estás.</li>
+<li>Alt más la letra subrayada: ir a un control de la pestaña o abrir un menú.</li>
+<li>Tecla Aplicaciones, o Mayúsculas+F10, en las listas de jugadores y de cuentas: acciones sobre lo elegido.</li>
+</ul>
+<h3>La configuración</h3>
+<ul>
+<li>Control+P abre un diálogo con una pestaña por cada grupo de opciones. Control+H sobre cualquier control dice qué hace, qué valores admite y si pide reiniciar.</li>
+<li>Aceptar guarda y cierra. Aplicar guarda sin cerrar. Cancelar no cambia nada.</li>
+<li>Valores de fábrica deja como vienen de serie las opciones de la pestaña en la que estás, o todas. No se guarda nada hasta que pulsas Aceptar o Aplicar.</li>
+<li>Casi todo se aplica con el servidor en marcha. Si cambias algo que pide reiniciar, como el puerto o el cifrado, el panel te lo dice y te ofrece reiniciar en ese momento.</li>
+<li>La configuración se guarda en <code>servidor.conf</code>, un archivo de texto con cada opción explicada, que también se puede cambiar con el Bloc de notas.</li>
+</ul>
+<h3>Parar y cerrar</h3>
+<ul>
+<li>Mayúsculas+F5 para el servidor: avisa a los jugadores, guarda todo y los desconecta. Si hay gente dentro, antes pregunta.</li>
+<li>Si cierras el panel con el servidor en marcha, pregunta y, si dices que sí, lo para con orden antes de cerrarse.</li>
+<li>El servidor solo funciona mientras el panel está abierto. Puedes minimizarlo.</li>
+<li>Control+F5 lo reinicia: se dice a los jugadores que es un reinicio, y sus juegos esperan y vuelven a entrar solos en cuanto arranca otra vez.</li>
+<li>Si actualizas el juego con el panel abierto, el panel se cierra solo, con orden, y vuelve a abrirse al terminar, con el servidor otra vez en marcha si lo estaba. Está en el <a href="#copias">apartado 20</a>.</li>
+</ul>
+
+<h2 id="consola">5. En tu Windows, por consola</h2>
+<ol>
+<li>En la carpeta <code>servidor</code> del juego, abre <code>Servidor por consola.bat</code>.</li>
+<li>La primera vez escribe <code>servidor.conf</code> con todas las opciones explicadas, y arranca con los valores de serie.</li>
+<li>La ventana va diciendo lo que pasa: en qué puerto escucha, si cifra, quién entra y quién sale.</li>
+<li>En esa misma ventana se le escriben órdenes. Escribe <code>ayuda</code> y pulsa Intro para oírlas todas. Están en el apartado 16.</li>
+<li>Para cambiar la configuración, abre <code>servidor.conf</code> con el Bloc de notas, cambia lo que quieras y guarda. Después escribe <code>recargar</code> en la consola: aplica lo que se puede cambiar sin reiniciar y te dice qué espera al reinicio.</li>
+<li>Para pararlo escribe <code>apagar</code>, pulsa Control+C o cierra la ventana. En los tres casos avisa a los jugadores y lo guarda todo.</li>
+</ol>
+<p>El panel y la consola usan la misma configuración y los mismos datos: puedes usar un día uno y otro día el otro, pero no los dos a la vez.</p>
+<p>Quien sepa manejar una ventana de órdenes puede llamar al programa directamente desde la carpeta del juego:</p>
+<ul>
+<li><code>PuertoBravoServidor.exe --ejemplo</code>: escribe <code>servidor.conf</code> y sale.</li>
+<li><code>PuertoBravoServidor.exe --comprobar</code>: revisa <code>servidor.conf</code>, dice lo que no vale y sale.</li>
+<li><code>PuertoBravoServidor.exe --opciones</code>: dice todas las opciones con su explicación.</li>
+<li><code>PuertoBravoServidor.exe --parar</code>: para con orden el servidor que está en marcha.</li>
+<li><code>PuertoBravoServidor.exe --actualizar</code>: lo para avisando a los jugadores de que se reinicia para actualizarse. Sus juegos esperan y vuelven a entrar solos cuando lo arranques otra vez.</li>
+<li><code>PuertoBravoServidor.exe --reiniciar</code>: lo mismo, diciendo que es por mantenimiento.</li>
+<li><code>PuertoBravoServidor.exe --puerto=47821</code>: cualquier opción se puede dar así, sin tocar el archivo.</li>
+</ul>
+
+<h2 id="inicio">6. Que arranque solo con Windows</h2>
+<h3>Al iniciar tu sesión</h3>
+<ol>
+<li>En la carpeta <code>servidor</code>, abre <code>Arrancar con Windows - activar.bat</code>. Deja un acceso en la carpeta Inicio de tu usuario. No hacen falta permisos de administrador.</li>
+<li>Desde entonces, cada vez que inicies sesión el servidor arranca solo, en una ventana minimizada.</li>
+<li>Para pararlo sin buscar esa ventana, abre <code>Parar el servidor.bat</code>.</li>
+<li>Para que deje de arrancar solo, abre <code>Arrancar con Windows - quitar.bat</code>.</li>
+</ol>
+<h3>Al encender el ordenador, sin que nadie inicie sesión</h3>
+<p>Esto es para quien tiene un ordenador dedicado. Hace falta una cuenta con permisos de administrador.</p>
+<ol>
+<li>Abre el Programador de tareas de Windows: pulsa la tecla Windows, escribe Programador de tareas y pulsa Intro.</li>
+<li>En el menú Acción, elige Crear tarea.</li>
+<li>En la pestaña General, ponle de nombre Servidor de Puerto Bravo y marca Ejecutar tanto si el usuario inició sesión como si no.</li>
+<li>En la pestaña Desencadenadores, pulsa Nuevo y elige Al iniciar el sistema.</li>
+<li>En la pestaña Acciones, pulsa Nueva. En Programa, pon la ruta completa de <code>PuertoBravoServidor.exe</code>, que está en la carpeta del juego. En Agregar argumentos, escribe <code>servidor.conf</code>.</li>
+<li>En la pestaña Configuración, desmarca Detener la tarea si se ejecuta durante más de, para que no la corte a los tres días.</li>
+<li>Acepta. Windows te pedirá la contraseña de tu cuenta para poder arrancarla sin sesión.</li>
+</ol>
+<p>Arrancado así no tiene ventana. Para pararlo con orden usa <code>Parar el servidor.bat</code>, y para administrarlo, las órdenes desde el chat del juego, que están en el apartado 16. Si en el Programador de tareas eliges Finalizar, se corta en seco: no se pierde más que lo del último minuto, pero es mejor pararlo con orden.</p>
+
+<h2 id="linux">7. En Linux o en un servidor alquilado, con Python</h2>
+<ol>
+<li>Comprueba que hay Python 3.8 o posterior: escribe <code>python3 --version</code>.</li>
+<li>Copia la carpeta <code>otros_sistemas</code> del juego a la máquina, con el nombre que quieras, por ejemplo <code>puertobravo</code> dentro de tu carpeta personal. Sirve cualquier manera de copiar archivos: un lápiz de memoria, <code>scp</code>, o un programa de transferencia de archivos.</li>
+<li>Entra en esa carpeta: <code>cd puertobravo</code>. Dentro tiene que estar la carpeta <code>servidor</code>, con el código.</li>
+<li>Escribe la configuración de ejemplo: <code>python3 -m servidor --ejemplo</code>. Crea <code>servidor.conf</code>.</li>
+<li>Cámbiala a tu gusto con un editor de texto, por ejemplo <code>nano servidor.conf</code>. Para comprobar que no hay errores: <code>python3 -m servidor --comprobar</code>.</li>
+<li>Arranca: <code>python3 -m servidor</code>. Dice en qué puerto escucha y si cifra. En esa misma terminal se le escriben órdenes; <code>ayuda</code> las dice todas. Se para con <code>apagar</code> o con Control+C.</li>
+</ol>
+<h3>Dejarlo en segundo plano</h3>
+<ul>
+<li><code>sh arrancar.sh</code>: lo arranca en segundo plano, si no está ya en marcha. Lo que va diciendo queda en <code>servidor.log</code>.</li>
+<li><code>sh estado.sh</code>: dice si está en marcha y enseña lo último que ha dicho.</li>
+<li><code>sh parar.sh</code>: lo para con orden.</li>
+<li><code>sh reiniciar.sh</code>: avisa a los jugadores con la cuenta atrás, lo para con orden y lo vuelve a arrancar. Es lo que hay que usar después de poner el código nuevo del servidor: los juegos esperan y vuelven a entrar solos.</li>
+<li>Para que arranque al encender la máquina sin systemd, añade a tu cron una línea como <code>@reboot sh /home/tu_usuario/puertobravo/arrancar.sh</code>, con <code>crontab -e</code>.</li>
+<li>Arrancado así no tiene consola. Se administra desde el chat del juego, con las órdenes del apartado 16.</li>
+</ul>
+<h3>El cortafuegos</h3>
+<ul>
+<li>Si la máquina tiene cortafuegos, hay que dejar pasar el puerto del servidor por TCP. Con ufw: <code>sudo ufw allow 47820/tcp</code>. Con firewalld: <code>sudo firewall-cmd --permanent --add-port=47820/tcp</code> y después <code>sudo firewall-cmd --reload</code>.</li>
+<li>En un servidor alquilado suele haber además un cortafuegos en el panel del proveedor, a veces llamado grupo de seguridad: abre ahí también el puerto 47820 por TCP.</li>
+<li>Un servidor alquilado tiene dirección pública fija: no hay router que configurar. La dirección para tu gente es <code>puertobravo://</code>, la dirección de la máquina, dos puntos y el puerto.</li>
+</ul>
+
+<h2 id="systemd">8. En Linux, como servicio de systemd</h2>
+<p>Así arranca solo con el sistema, se reinicia si se cae y se para con orden al apagar. Hace falta poder usar <code>sudo</code>.</p>
+<ol>
+<li>Copia la carpeta del servidor a <code>/opt/puertobravo</code>: <code>sudo cp -r puertobravo /opt/puertobravo</code>. Dentro tiene que quedar la carpeta <code>servidor</code>.</li>
+<li>Crea un usuario sin privilegios para él: <code>sudo useradd --system --home /opt/puertobravo puertobravo</code>.</li>
+<li>Dale la carpeta: <code>sudo chown -R puertobravo: /opt/puertobravo</code>.</li>
+<li>Si todavía no hay configuración, escríbela: <code>cd /opt/puertobravo</code> y <code>sudo -u puertobravo python3 -m servidor --ejemplo</code>. Cámbiala con <code>sudo -u puertobravo nano servidor.conf</code>.</li>
+<li>Copia el servicio: <code>sudo cp /opt/puertobravo/puertobravo.service /etc/systemd/system/</code>.</li>
+<li>Actívalo: <code>sudo systemctl daemon-reload</code> y después <code>sudo systemctl enable --now puertobravo</code>.</li>
+</ol>
+<ul>
+<li>Ver cómo va: <code>systemctl status puertobravo</code>.</li>
+<li>Oír lo que va diciendo: <code>journalctl -u puertobravo -f</code>. Se sale con Control+C.</li>
+<li>Pararlo: <code>sudo systemctl stop puertobravo</code>. Arrancarlo: <code>sudo systemctl start puertobravo</code>. Reiniciarlo, por ejemplo tras cambiar el puerto: <code>sudo systemctl restart puertobravo</code>.</li>
+<li>Si usas otra carpeta u otro usuario, cambia las líneas <code>WorkingDirectory</code> y <code>User</code> del archivo del servicio.</li>
+<li>Como servicio no tiene consola: se administra desde el chat del juego.</li>
+<li>Reiniciarlo avisando, por ejemplo tras actualizarlo: un administrador escribe en el chat del juego <code>/reiniciar</code> o <code>/actualizar</code>, o en la máquina, desde la carpeta del servidor, <code>sudo -u puertobravo python3 -m servidor --actualizar</code>. El servidor avisa con su cuenta atrás, lo guarda todo y termina con el código 75; el servicio lo vuelve a arrancar solo a los cinco segundos, y los juegos vuelven a entrar.</li>
+</ul>
+
+<h2 id="raspberry">9. En una Raspberry Pi</h2>
+<ul>
+<li>Vale cualquier modelo con Raspberry Pi OS: ya trae Python 3. Para unos pocos amigos sobra con el modelo más modesto.</li>
+<li>Los pasos son los mismos que en Linux: los apartados 7 y 8. Lo más práctico es dejarlo como servicio de systemd, para que arranque solo al encenderla.</li>
+<li>Para copiar la carpeta <code>otros_sistemas</code> puedes usar un lápiz de memoria, o <code>scp</code> desde tu ordenador si tienes activado SSH en la Raspberry.</li>
+<li>En los modelos más lentos, comprobar la identidad de quien entra tarda algo más de un segundo. Solo ocurre al entrar; jugando no se nota.</li>
+<li>Dale a la Raspberry una dirección fija en tu red desde la configuración del router, en el apartado de reserva de direcciones o DHCP estático. Así la dirección que das a tu gente no cambia, y la redirección del puerto sigue apuntando a ella.</li>
+<li>Usa una tarjeta de memoria de buena calidad y deja activadas las copias de seguridad automáticas: las tarjetas se estropean.</li>
+</ul>
+
+<h2 id="mac">10. En un Mac</h2>
+<ol>
+<li>Abre Terminal y escribe <code>python3 --version</code>. Si el Mac te ofrece instalar las herramientas de desarrollo, acepta: traen Python. También puedes instalar Python desde su página oficial.</li>
+<li>Copia la carpeta <code>otros_sistemas</code> al Mac, por ejemplo a tu carpeta personal con el nombre <code>puertobravo</code>.</li>
+<li>En Terminal: <code>cd ~/puertobravo</code>, después <code>python3 -m servidor --ejemplo</code> y, cuando hayas cambiado <code>servidor.conf</code> a tu gusto, <code>python3 -m servidor</code>.</li>
+<li>La primera vez, el Mac pregunta si permites conexiones entrantes a Python: di que sí.</li>
+<li>Para dejarlo en segundo plano valen los mismos guiones: <code>sh arrancar.sh</code>, <code>sh estado.sh</code>, <code>sh parar.sh</code> y <code>sh reiniciar.sh</code>.</li>
+<li>Para que el Mac no se duerma mientras hay gente jugando, mira en Ajustes del Sistema, en el apartado de energía o de batería.</li>
+</ol>
+
+<h2 id="docker">11. Con Docker y docker compose</h2>
+<ol>
+<li>Copia la carpeta <code>otros_sistemas</code> a la máquina donde tienes Docker, con el nombre <code>puertobravo</code>. Dentro están <code>Dockerfile</code>, <code>docker-compose.yml</code>, <code>entrada_docker.sh</code> y la carpeta <code>servidor</code>.</li>
+<li>Entra en esa carpeta y escribe <code>docker compose up -d --build</code>. Construye la imagen y arranca el servidor.</li>
+<li>Al lado aparece la carpeta <code>datos</code>. Dentro están <code>servidor.conf</code>, que se escribe solo la primera vez, y <code>datos_servidor</code>, con los personajes y las copias. Están fuera del contenedor: sobreviven a las actualizaciones.</li>
+<li>Para cambiar la configuración, edita <code>datos/servidor.conf</code> y reinicia: <code>docker compose restart</code>.</li>
+</ol>
+<ul>
+<li>Oír lo que dice: <code>docker compose logs -f</code>. Se sale con Control+C, sin parar el servidor.</li>
+<li>Pararlo con orden: <code>docker compose down</code>. Avisa a los jugadores y lo guarda todo.</li>
+<li>Escribirle órdenes: <code>docker attach puertobravo</code>, escribe la orden y pulsa Intro. Para salir sin pararlo, pulsa Control+P y después Control+Q. Lo más cómodo es administrarlo desde el chat del juego.</li>
+<li>No uses la orden <code>apagar</code> dentro de Docker para pararlo: Docker lo volvería a arrancar. Usa <code>docker compose down</code>.</li>
+<li>Para reiniciarlo avisando sí valen las órdenes <code>reiniciar</code> y <code>actualizar</code>, desde el chat del juego o con <code>docker attach</code>: el servidor avisa con su cuenta atrás, lo guarda todo y sale, y Docker lo vuelve a arrancar. Los juegos esperan y vuelven a entrar solos.</li>
+<li>Si cambias el puerto en <code>servidor.conf</code>, cambia también los dos números de la línea <code>ports</code> de <code>docker-compose.yml</code>.</li>
+<li>Con Docker, todas las conexiones pueden llegarle al servidor desde la misma dirección interna. Por eso la opción <code>conexiones_por_ip</code> debe quedarse en 0.</li>
+</ul>
+
+<h2 id="synology">12. En un NAS Synology</h2>
+<h3>Con Container Manager</h3>
+<p>Container Manager es el paquete de Docker de Synology. Se instala desde el Centro de paquetes y crea una carpeta compartida llamada <code>docker</code>.</p>
+<ol>
+<li>Abre File Station, entra en la carpeta compartida <code>docker</code> y crea dentro una carpeta llamada <code>puertobravo</code>.</li>
+<li>Sube a esa carpeta todo el contenido de <code>otros_sistemas</code>: la carpeta <code>servidor</code>, <code>Dockerfile</code>, <code>docker-compose.yml</code> y <code>entrada_docker.sh</code>. Los demás archivos no estorban.</li>
+<li>Abre Container Manager y ve al apartado Proyecto.</li>
+<li>Pulsa Crear. De nombre del proyecto pon <code>puertobravo</code>. En Ruta, elige la carpeta <code>docker/puertobravo</code>.</li>
+<li>Container Manager ve que ahí ya hay un <code>docker-compose.yml</code> y pregunta si lo usas: di que sí.</li>
+<li>Sigue con Siguiente hasta el final, sin activar el portal web, y pulsa Listo. Construye la imagen y arranca el servidor. La primera vez tarda unos minutos.</li>
+<li>La configuración queda en <code>docker/puertobravo/datos/servidor.conf</code>. Se puede cambiar desde File Station con el paquete Editor de texto. Después, en Container Manager, Proyecto, elige <code>puertobravo</code> y, en Acción, Detener e Iniciar.</li>
+<li>Lo que dice el servidor está en Container Manager, Contenedor, <code>puertobravo</code>, pestaña Registro.</li>
+</ol>
+<ul>
+<li>Si tienes activado el cortafuegos del NAS, en Panel de control, Seguridad, Cortafuegos, añade una regla que permita el puerto 47820 por TCP.</li>
+<li>Dale al NAS una dirección fija en tu red, o resérvasela en el router, para que la redirección del puerto no deje de apuntar a él.</li>
+<li>Para actualizar el servidor: sube la carpeta <code>servidor</code> nueva encima de la anterior y, en el proyecto, elige Acción, Compilar. La carpeta <code>datos</code> no se toca.</li>
+</ul>

@@ -8,6 +8,7 @@ se puede hacer con el mando, y los dos se pueden usar a la vez.
 La asignación de botones se guarda en data/config/mando.json y se puede cambiar
 desde Opciones, Mando.
 """
+from .i18n import tr
 import json
 import math
 import os
@@ -22,70 +23,70 @@ EJES_SDL = {0: "lx", 1: "ly", 2: "rx", 3: "ry", 4: "lt", 5: "rt"}
 ORDEN_BOTONES = ["a", "b", "x", "y", "lb", "rb", "lt", "rt", "l3", "r3", "arriba", "abajo", "izquierda", "derecha", "back", "start", "touchpad", "misc"]
 
 NOMBRES = {
-    "xbox": {"a": "A", "b": "B", "x": "X", "y": "Y", "lb": "LB", "rb": "RB", "lt": "gatillo izquierdo", "rt": "gatillo derecho",
-             "l3": "pulsar la palanca izquierda", "r3": "pulsar la palanca derecha", "arriba": "cruceta arriba", "abajo": "cruceta abajo",
-             "izquierda": "cruceta izquierda", "derecha": "cruceta derecha", "back": "botón Vista", "start": "botón Menú",
-             "touchpad": "panel táctil", "misc": "botón Compartir", "guide": "botón Xbox"},
-    "ps": {"a": "Equis", "b": "Círculo", "x": "Cuadrado", "y": "Triángulo", "lb": "L1", "rb": "R1", "lt": "L2", "rt": "R2",
-           "l3": "L3, pulsar la palanca izquierda", "r3": "R3, pulsar la palanca derecha", "arriba": "cruceta arriba", "abajo": "cruceta abajo",
-           "izquierda": "cruceta izquierda", "derecha": "cruceta derecha", "back": "botón Crear o Share", "start": "botón Options",
-           "touchpad": "panel táctil", "misc": "botón del micrófono", "guide": "botón PlayStation"},
+    "xbox": {"a": "A", "b": "B", "x": "X", "y": "Y", "lb": "LB", "rb": "RB", "lt": tr("gatillo izquierdo"), "rt": tr("gatillo derecho"),
+             "l3": tr("pulsar la palanca izquierda"), "r3": tr("pulsar la palanca derecha"), "arriba": tr("cruceta arriba"), "abajo": tr("cruceta abajo"),
+             "izquierda": tr("cruceta izquierda"), "derecha": tr("cruceta derecha"), "back": tr("botón Vista"), "start": tr("botón Menú"),
+             "touchpad": tr("panel táctil"), "misc": tr("botón Compartir"), "guide": tr("botón Xbox")},
+    "ps": {"a": tr("Equis"), "b": tr("Círculo"), "x": tr("Cuadrado"), "y": tr("Triángulo"), "lb": "L1", "rb": "R1", "lt": "L2", "rt": "R2",
+           "l3": tr("L3, pulsar la palanca izquierda"), "r3": tr("R3, pulsar la palanca derecha"), "arriba": tr("cruceta arriba"), "abajo": tr("cruceta abajo"),
+           "izquierda": tr("cruceta izquierda"), "derecha": tr("cruceta derecha"), "back": tr("botón Crear o Share"), "start": tr("botón Options"),
+           "touchpad": tr("panel táctil"), "misc": tr("botón del micrófono"), "guide": tr("botón PlayStation")},
 }
 
 K = pygame
 S = pygame.KMOD_SHIFT
 # acción: (descripción, tecla, modificador, se mantiene pulsada)
 ACCIONES = {
-    "nada": ("sin asignar", None, 0, False),
-    "interactuar": ("interactuar: entrar, empezar misión, recoger, hablar", K.K_RETURN, 0, False),
-    "vehiculo": ("subir a un vehículo o bajarte", K.K_f, 0, False),
-    "atacar": ("atacar o disparar", K.K_SPACE, 0, True),
-    "fijar": ("fijar al enemigo más cercano", K.K_q, 0, False),
-    "recargar": ("recargar el arma", K.K_r, 0, False),
-    "agacharse": ("agacharte o levantarte", K.K_x, 0, False),
-    "arma_sig": ("arma siguiente", K.K_COMMA, 0, False),
-    "arma_ant": ("arma anterior", K.K_COMMA, S, False),
-    "armas": ("lista de armas", K.K_i, 0, False),
-    "botiquin": ("usar un botiquín", K.K_z, 0, False),
-    "donde": ("dónde estoy", K.K_c, 0, False),
-    "estado": ("estado: salud, dinero y arma", K.K_v, 0, False),
-    "radar_sig": ("radar: siguiente", K.K_TAB, 0, False),
-    "radar_ant": ("radar: anterior", K.K_TAB, S, False),
-    "baliza_radar": ("GPS hacia lo último que dijo el radar", K.K_b, 0, False),
-    "gps": ("repetir la indicación del GPS", K.K_g, 0, False),
-    "objetivo": ("objetivo de la misión", K.K_o, 0, False),
-    "describir": ("descripción del lugar", K.K_n, 0, False),
-    "rumbo": ("hacia dónde miro, con tono del norte", K.K_k, 0, False),
-    "hora": ("hora y tiempo", K.K_t, 0, False),
-    "movil": ("abrir el móvil", K.K_m, 0, False),
-    "lugares": ("lista de lugares", K.K_l, 0, False),
-    "mapa": ("explorador de mapa", K.K_F9, 0, False),
-    "pausa": ("menú de pausa", K.K_ESCAPE, 0, False),
-    "ayuda": ("ayuda de teclas y botones", K.K_F1, 0, False),
-    "atracar": ("atracar a un peatón", K.K_e, 0, False),
+    "nada": (tr("sin asignar"), None, 0, False),
+    "interactuar": (tr("interactuar: entrar, empezar misión, recoger, hablar"), K.K_RETURN, 0, False),
+    "vehiculo": (tr("subir a un vehículo o bajarte"), K.K_f, 0, False),
+    "atacar": (tr("atacar o disparar"), K.K_SPACE, 0, True),
+    "fijar": (tr("fijar al enemigo más cercano"), K.K_q, 0, False),
+    "recargar": (tr("recargar el arma"), K.K_r, 0, False),
+    "agacharse": (tr("agacharte o levantarte"), K.K_x, 0, False),
+    "arma_sig": (tr("arma siguiente"), K.K_COMMA, 0, False),
+    "arma_ant": (tr("arma anterior"), K.K_COMMA, S, False),
+    "armas": (tr("lista de armas"), K.K_i, 0, False),
+    "botiquin": (tr("usar un botiquín"), K.K_z, 0, False),
+    "donde": (tr("dónde estoy"), K.K_c, 0, False),
+    "estado": (tr("estado: salud, dinero y arma"), K.K_v, 0, False),
+    "radar_sig": (tr("radar: siguiente"), K.K_TAB, 0, False),
+    "radar_ant": (tr("radar: anterior"), K.K_TAB, S, False),
+    "baliza_radar": (tr("GPS hacia lo último que dijo el radar"), K.K_b, 0, False),
+    "gps": (tr("repetir la indicación del GPS"), K.K_g, 0, False),
+    "objetivo": (tr("objetivo de la misión"), K.K_o, 0, False),
+    "describir": (tr("descripción del lugar"), K.K_n, 0, False),
+    "rumbo": (tr("hacia dónde miro, con tono del norte"), K.K_k, 0, False),
+    "hora": (tr("hora y tiempo"), K.K_t, 0, False),
+    "movil": (tr("abrir el móvil"), K.K_m, 0, False),
+    "lugares": (tr("lista de lugares"), K.K_l, 0, False),
+    "mapa": (tr("explorador de mapa"), K.K_F9, 0, False),
+    "pausa": (tr("menú de pausa"), K.K_ESCAPE, 0, False),
+    "ayuda": (tr("ayuda de teclas y botones"), K.K_F1, 0, False),
+    "atracar": (tr("atracar a un peatón"), K.K_e, 0, False),
     "gritar": ("gritar", K.K_h, 0, False),
     "acelerar": ("acelerar", K.K_UP, 0, True),
-    "frenar": ("frenar y marcha atrás", K.K_DOWN, 0, True),
-    "freno_mano": ("freno de mano", K.K_SPACE, 0, True),
+    "frenar": (tr("frenar y marcha atrás"), K.K_DOWN, 0, True),
+    "freno_mano": (tr("freno de mano"), K.K_SPACE, 0, True),
     "claxon": ("claxon", K.K_h, 0, False),
-    "radio": ("emisora siguiente", K.K_r, 0, False),
-    "radio_off": ("apagar la radio", K.K_r, S, False),
-    "media_vuelta": ("media vuelta", K.K_u, 0, False),
-    "disparar_veh": ("disparar desde el vehículo", K.K_LCTRL, 0, True),
-    "trabajo": ("empezar o terminar un trabajo con el vehículo", K.K_j, 0, False),
-    "piloto": ("piloto del GPS", K.K_y, 0, False),
-    "paseo": ("caminar solo siguiendo el GPS", K.K_u, 0, False),
-    "hablar": ("hablar con la persona de al lado", K.K_j, 0, False),
-    "especial": ("pescar en el mar, o sirena en vehículos de emergencias", K.K_p, 0, False),
-    "velocidad": ("decir la velocidad", K.K_w, 0, False),
-    "cruce": ("siguiente cruce: qué calle viene y a cuántos metros", K.K_n, S, False),
-    "necesidades": ("hambre, sed, sueño e higiene", K.K_v, S, False),
-    "mi_vehiculo": ("dónde está mi vehículo, y marcarlo en el GPS", K.K_l, S, False),
-    "mirar_jugador": ("cómo va vestido el jugador de al lado", K.K_j, S, False),
-    "quitar_gps": ("cancelar el GPS", K.K_g, S, False),
-    "walkman": ("reproductor con auriculares: encender y emisora siguiente", K.K_r, S, False),
-    "rendirse": ("rendirte ante la policía: levantar las manos", K.K_h, S, False),
-    "menu_acciones": ("menú de acciones: todo lo que no tiene botón propio, como dar el alto, gritar, atracar, cubrirte, el tiempo lento, los canales de rol o tu perro", None, 0, False),
+    "radio": (tr("emisora siguiente"), K.K_r, 0, False),
+    "radio_off": (tr("apagar la radio"), K.K_r, S, False),
+    "media_vuelta": (tr("media vuelta"), K.K_u, 0, False),
+    "disparar_veh": (tr("disparar desde el vehículo"), K.K_LCTRL, 0, True),
+    "trabajo": (tr("empezar o terminar un trabajo con el vehículo"), K.K_j, 0, False),
+    "piloto": (tr("piloto del GPS"), K.K_y, 0, False),
+    "paseo": (tr("caminar solo siguiendo el GPS"), K.K_u, 0, False),
+    "hablar": (tr("hablar con la persona de al lado"), K.K_j, 0, False),
+    "especial": (tr("pescar en el mar, o sirena en vehículos de emergencias"), K.K_p, 0, False),
+    "velocidad": (tr("decir la velocidad"), K.K_w, 0, False),
+    "cruce": (tr("siguiente cruce: qué calle viene y a cuántos metros"), K.K_n, S, False),
+    "necesidades": (tr("hambre, sed, sueño e higiene"), K.K_v, S, False),
+    "mi_vehiculo": (tr("dónde está mi vehículo, y marcarlo en el GPS"), K.K_l, S, False),
+    "mirar_jugador": (tr("cómo va vestido el jugador de al lado"), K.K_j, S, False),
+    "quitar_gps": (tr("cancelar el GPS"), K.K_g, S, False),
+    "walkman": (tr("reproductor con auriculares: encender y emisora siguiente"), K.K_r, S, False),
+    "rendirse": (tr("rendirte ante la policía: levantar las manos"), K.K_h, S, False),
+    "menu_acciones": (tr("menú de acciones: todo lo que no tiene botón propio, como dar el alto, gritar, atracar, cubrirte, el tiempo lento, los canales de rol o tu perro"), None, 0, False),
 }
 # El botón que, mantenido, convierte a los demás en una segunda función: Vista en Xbox, Crear o Share en PlayStation.
 # Pulsado y soltado solo, hace lo suyo (de serie, abrir el móvil).
@@ -111,19 +112,19 @@ MENU = {"a": K.K_RETURN, "b": K.K_ESCAPE, "start": K.K_ESCAPE, "y": K.K_F1, "x":
 PANTALLA = {"a": K.K_RETURN, "b": K.K_ESCAPE, "start": K.K_ESCAPE, "x": K.K_TAB, "y": K.K_n, "lb": K.K_HOME, "rb": K.K_d, "back": K.K_F1,
             "arriba": K.K_UP, "abajo": K.K_DOWN, "izquierda": K.K_LEFT, "derecha": K.K_RIGHT}
 PALANCAS_AYUDA = {
-    "pie": ["Palanca izquierda: caminar; empujada a fondo, correr", "Palanca derecha: escáner direccional, dice qué hay hacia donde la muevas"],
-    "coche": ["Palanca izquierda a los lados: intermitente en conducción asistida, o volante en conducción libre, en barcos y en helicópteros",
-              "Palanca derecha a los lados: cambiar de carril para adelantar. Pilotando un helicóptero o una avioneta, a la derecha sube y a la izquierda baja", "Palanca derecha arriba: emisora siguiente",
-              "Palanca derecha abajo: pescar en el mar, o sirena en vehículos de emergencias"],
-    "menu": ["En los menús: cruceta o palanca izquierda para moverte", "A o Equis para elegir", "B o Círculo para volver",
-             "Y o Triángulo para la ayuda de la opción", "X o Cuadrado para repetir", "LB y RB, o L1 y R1, para repasar los mensajes anteriores",
-             "En la pantalla de espera de un servidor: A o Equis repite cómo va, B o Círculo deja de esperar, e Y o Triángulo lo explica",
-             "En una travesía en vuelo: cruceta arriba y abajo, altitud; cruceta izquierda y derecha, rumbo; X o Cuadrado, piloto automático; A o Equis, cómo va el vuelo; Y o Triángulo, acelerar; "
-             "LB o L1, repetir a la torre; RB o R1, o B o Círculo, el menú de vuelo; y el botón Vista, Crear o Share, la ayuda",
-             "Recorriendo una tienda de comida por dentro: X o Cuadrado dice lo que llevas en la cesta. En cada pasillo, A o Equis, o cruceta derecha, echa el producto a la cesta, y cruceta izquierda lo devuelve",
-             "Para escribir un texto con el mando: cruceta arriba y abajo recorren las letras, cruceta derecha escribe la letra elegida y cruceta izquierda borra la última. "
+    "pie": [tr("Palanca izquierda: caminar; empujada a fondo, correr"), tr("Palanca derecha: escáner direccional, dice qué hay hacia donde la muevas")],
+    "coche": [tr("Palanca izquierda a los lados: intermitente en conducción asistida, o volante en conducción libre, en barcos y en helicópteros"),
+              tr("Palanca derecha a los lados: cambiar de carril para adelantar. Pilotando un helicóptero o una avioneta, a la derecha sube y a la izquierda baja"), tr("Palanca derecha arriba: emisora siguiente"),
+              tr("Palanca derecha abajo: pescar en el mar, o sirena en vehículos de emergencias")],
+    "menu": [tr("En los menús: cruceta o palanca izquierda para moverte"), tr("A o Equis para elegir"), tr("B o Círculo para volver"),
+             tr("Y o Triángulo para la ayuda de la opción"), tr("X o Cuadrado para repetir"), tr("LB y RB, o L1 y R1, para repasar los mensajes anteriores"),
+             tr("En la pantalla de espera de un servidor: A o Equis repite cómo va, B o Círculo deja de esperar, e Y o Triángulo lo explica"),
+             tr("En una travesía en vuelo: cruceta arriba y abajo, altitud; cruceta izquierda y derecha, rumbo; X o Cuadrado, piloto automático; A o Equis, cómo va el vuelo; Y o Triángulo, acelerar; "
+             "LB o L1, repetir a la torre; RB o R1, o B o Círculo, el menú de vuelo; y el botón Vista, Crear o Share, la ayuda"),
+             tr("Recorriendo una tienda de comida por dentro: X o Cuadrado dice lo que llevas en la cesta. En cada pasillo, A o Equis, o cruceta derecha, echa el producto a la cesta, y cruceta izquierda lo devuelve"),
+             tr("Para escribir un texto con el mando: cruceta arriba y abajo recorren las letras, cruceta derecha escribe la letra elegida y cruceta izquierda borra la última. "
              "LB o L1 pone un espacio. RB o R1 cambia entre minúsculas, mayúsculas, números y signos. X o Cuadrado pasa por las frases o los nombres propuestos, si los hay. "
-             "Y o Triángulo lee lo escrito. A o Equis acepta y B o Círculo cancela"],
+             "Y o Triángulo lee lo escrito. A o Equis acepta y B o Círculo cancela")],
 }
 # Lo que hacen las palancas, dicho como teclas: esas teclas ya tienen su forma de hacerse con el mando.
 PALANCAS = {"pie": {K.K_UP, K.K_DOWN, K.K_LEFT, K.K_RIGHT, K.K_LSHIFT, K.K_w, K.K_a, K.K_s, K.K_d},
@@ -132,53 +133,55 @@ C = pygame.KMOD_CTRL
 # El menú de acciones: lo que el mando no tiene en un botón. Se abre con el botón de combinar y el gatillo derecho.
 # (frase, tecla, modificador, dónde vale: pie, coche o ambos, condición, explicación, se queda abierto)
 MENU_ACCIONES = [
-    ("Dar el alto a los sospechosos", K.K_h, 0, "pie", "policia", "De servicio como policía, das el alto a quien tengas cerca. A quien se rinde se le esposa con el botón de interactuar, a su lado.", False),
-    ("Gritar para espantar a los peatones", K.K_h, 0, "pie", "sin_placa", "Un grito: los peatones de alrededor se apartan.", False),
-    ("Hablar en personaje, para quien está cerca", K.K_F10, S, "ambos", "servidor", "En un servidor con canales de rol: lo que dice tu personaje. Lo oye solo quien está cerca.", False),
-    ("Describir lo que hace tu personaje", K.K_F10, C, "ambos", "servidor", "En un servidor con canales de rol: cuentas una acción, y los que están cerca oyen tu nombre y lo que haces.", False),
-    ("Escribir un mensaje a los demás jugadores", K.K_F10, 0, "ambos", "online", "Jugando con amigos o en un servidor: un mensaje que se lee en voz alta a los demás.", False),
-    ("Cómo va vestido el jugador de al lado, y su ficha", K.K_j, S, "pie", "online", "Dice la ropa del jugador más cercano y, en un servidor con canales de rol, su ficha si la ha escrito.", False),
-    ("Sacar a otro jugador de su vehículo", K.K_f, S, "pie", "servidor", "En un servidor: tiene que ir despacio y estar a tu lado.", False),
-    ("Atracar al peatón que tienes al lado", K.K_e, 0, "pie", None, "Con un arma en la mano.", False),
-    ("Ponerte a cubierto, o salir", K.K_x, S, "pie", None, "Tras una pared o un vehículo parado. A cubierto te alcanzan mucho menos; si te mueves, sales.", False),
-    ("Tiempo lento: ponerlo o quitarlo", K.K_BACKSPACE, 0, "ambos", None, "Todo va más despacio mientras te quede concentración.", False),
-    ("Fijar a cualquiera, no solo a los enemigos", K.K_q, S, "ambos", None, "Recorre a todos los que hay cerca, también a quien no te ha atacado.", False),
-    ("Lista de armas", K.K_i, 0, "ambos", None, "Abre la lista de tus armas para elegir una.", False),
-    ("Usar un botiquín", K.K_z, 0, "ambos", None, None, False),
-    ("Tus sustancias", K.K_z, S, "ambos", "adultos", None, False),
-    ("Tu perro: que busque por el olfato", K.K_y, 0, "pie", "perro", "Busca el objeto más cercano y te lo marca en el GPS.", False),
-    ("Tu perro: su menú", K.K_y, S, "pie", "perro", "Cómo está, acariciarlo, darle de comer, mandarlo a casa o llamarlo.", False),
-    ("Enderezar el vehículo hacia el punto cardinal más cercano", K.K_e, 0, "coche", "libre", "Solo en conducción libre.", False),
-    ("Pescar en el mar, o sirena en vehículos de emergencias", K.K_p, 0, "ambos", "mar_o_sirena", "Cuando oigas que pican, tira del sedal con el botón de atacar o el de interactuar.", False),
-    ("Objetivo de la misión o del trabajo", K.K_o, 0, "ambos", None, "Dice primero dónde está y hacia dónde va. Si el objetivo se mueve o corre el tiempo, dos pulsaciones seguidas leen la explicación entera.", False),
-    ("Volver al objetivo de la misión: GPS y radar", K.K_o, S, "ambos", None, "Deja cualquier desvío, marca en el GPS lo que pide la misión o el trabajo y, si está cerca, lo deja elegido en el radar.", False),
-    ("Recuperar el último destino que quitaste del GPS", K.K_g, C, "ambos", None, "El destino o el desvío que cancelaste por última vez vuelve al GPS, sin tener que buscarlo otra vez.", False),
-    ("Lista de lugares, para marcar un destino", K.K_l, 0, "ambos", None, None, False),
-    ("Explorador de mapa", K.K_F9, 0, "ambos", None, "Recorre la localidad con un cursor, cruce a cruce, sin mover al personaje.", False),
-    ("Descripción del lugar o del barrio en el que estás", K.K_n, 0, "ambos", None, None, False),
-    ("Dónde está tu vehículo, y marcarlo en el GPS", K.K_l, S, "ambos", None, "El último que has usado. Si tienes más, están en el móvil, en Mis vehículos.", False),
-    ("Dónde estoy, con las coordenadas", K.K_c, S, "ambos", None, None, False),
-    ("Cambiar el filtro del radar", K.K_F6, 0, "ambos", None, "Todo, solo lugares, solo vehículos, solo personas o solo objetos.", False),
-    ("Repetir el último mensaje", K.K_PERIOD, 0, "ambos", None, "Para repasar los anteriores, en este menú o en cualquier otro: LB y RB, o L1 y R1.", False),
-    ("Cambiar entre conducción asistida y libre", K.K_F2, 0, "ambos", None, None, False),
-    ("Cambiar el movimiento a pie entre brújula y giros", K.K_F3, 0, "ambos", None, None, False),
-    ("Baliza sonora del GPS: ponerla o quitarla", K.K_F4, 0, "ambos", None, None, False),
-    ("Guardado rápido", K.K_F5, 0, "ambos", None, "Fuera de las misiones.", False),
-    ("Bajar la música", K.K_F7, 0, "ambos", None, "Cada pulsación la baja un poco. El menú no se cierra.", True),
-    ("Subir la música", K.K_F8, 0, "ambos", None, "Cada pulsación la sube un poco. El menú no se cierra.", True),
-    ("Poner una marca en el registro de la sesión", K.K_F12, 0, "ambos", None, "Para cuando notes algo raro: quien revise el registro sabrá en qué momento fue.", False),
+    (tr("Dar el alto a los sospechosos"), K.K_h, 0, "pie", "policia", tr("De servicio como policía, das el alto a quien tengas cerca. A quien se rinde se le esposa con el botón de interactuar, a su lado."), False),
+    (tr("Gritar para espantar a los peatones"), K.K_h, 0, "pie", "sin_placa", tr("Un grito: los peatones de alrededor se apartan."), False),
+    (tr("Hablar en personaje, para quien está cerca"), K.K_F10, S, "ambos", "servidor", tr("En un servidor con canales de rol: lo que dice tu personaje. Lo oye solo quien está cerca."), False),
+    (tr("Describir lo que hace tu personaje"), K.K_F10, C, "ambos", "servidor", tr("En un servidor con canales de rol: cuentas una acción, y los que están cerca oyen tu nombre y lo que haces."), False),
+    (tr("Escribir un mensaje a los demás jugadores"), K.K_F10, 0, "ambos", "online", tr("Jugando con amigos o en un servidor: un mensaje que se lee en voz alta a los demás."), False),
+    (tr("Cómo va vestido el jugador de al lado, y su ficha"), K.K_j, S, "pie", "online", tr("Dice la ropa del jugador más cercano y, en un servidor con canales de rol, su ficha si la ha escrito."), False),
+    (tr("Sacar a otro jugador de su vehículo"), K.K_f, S, "pie", "servidor", tr("En un servidor: tiene que ir despacio y estar a tu lado."), False),
+    (tr("Atracar al peatón que tienes al lado"), K.K_e, 0, "pie", None, tr("Con un arma en la mano."), False),
+    (tr("Ponerte a cubierto, o salir"), K.K_x, S, "pie", None, tr("Tras una pared o un vehículo parado. A cubierto te alcanzan mucho menos; si te mueves, sales."), False),
+    (tr("Tiempo lento: ponerlo o quitarlo"), K.K_BACKSPACE, 0, "ambos", None, tr("Todo va más despacio mientras te quede concentración."), False),
+    (tr("Fijar a cualquiera, no solo a los enemigos"), K.K_q, S, "ambos", None, tr("Recorre a todos los que hay cerca, también a quien no te ha atacado."), False),
+    (tr("Lista de armas"), K.K_i, 0, "ambos", None, tr("Abre la lista de tus armas para elegir una."), False),
+    (tr("Usar un botiquín"), K.K_z, 0, "ambos", None, None, False),
+    (tr("Tus sustancias"), K.K_z, S, "ambos", "adultos", None, False),
+    (tr("Tu perro: que busque por el olfato"), K.K_y, 0, "pie", "perro", tr("Busca el objeto más cercano y te lo marca en el GPS."), False),
+    (tr("Tu perro: su menú"), K.K_y, S, "pie", "perro", tr("Cómo está, acariciarlo, darle de comer, mandarlo a casa o llamarlo."), False),
+    (tr("Enderezar el vehículo hacia el punto cardinal más cercano"), K.K_e, 0, "coche", "libre", tr("Solo en conducción libre."), False),
+    (tr("Pescar en el mar, o sirena en vehículos de emergencias"), K.K_p, 0, "ambos", "mar_o_sirena", tr("Cuando oigas que pican, tira del sedal con el botón de atacar o el de interactuar."), False),
+    (tr("Objetivo de la misión o del trabajo"), K.K_o, 0, "ambos", None, tr("Dice primero dónde está y hacia dónde va. Si el objetivo se mueve o corre el tiempo, dos pulsaciones seguidas leen la explicación entera."), False),
+    (tr("Volver al objetivo de la misión: GPS y radar"), K.K_o, S, "ambos", None, tr("Deja cualquier desvío, marca en el GPS lo que pide la misión o el trabajo y, si está cerca, lo deja elegido en el radar."), False),
+    (tr("Recuperar el último destino que quitaste del GPS"), K.K_g, C, "ambos", None, tr("El destino o el desvío que cancelaste por última vez vuelve al GPS, sin tener que buscarlo otra vez."), False),
+    (tr("Lista de lugares, para marcar un destino"), K.K_l, 0, "ambos", None, None, False),
+    (tr("Explorador de mapa"), K.K_F9, 0, "ambos", None, tr("Recorre la localidad con un cursor, cruce a cruce, sin mover al personaje."), False),
+    (tr("Descripción del lugar o del barrio en el que estás"), K.K_n, 0, "ambos", None, None, False),
+    (tr("Dónde está tu vehículo, y marcarlo en el GPS"), K.K_l, S, "ambos", None, tr("El último que has usado. Si tienes más, están en el móvil, en Mis vehículos."), False),
+    (tr("Dónde estoy, con las coordenadas"), K.K_c, S, "ambos", None, None, False),
+    (tr("Cambiar el filtro del radar"), K.K_F6, 0, "ambos", None, tr("Todo, solo lugares, solo vehículos, solo personas o solo objetos."), False),
+    (tr("Repetir el último mensaje"), K.K_PERIOD, 0, "ambos", None, tr("Para repasar los anteriores, en este menú o en cualquier otro: LB y RB, o L1 y R1."), False),
+    (tr("Ir al primer mensaje del historial"), K.K_PAGEUP, C, "ambos", None, tr("Desde ahí, LB y RB, o L1 y R1, dentro de cualquier menú, siguen por el historial."), False),
+    (tr("Ir al último mensaje del historial"), K.K_PAGEDOWN, C, "ambos", None, None, False),
+    (tr("Cambiar entre conducción asistida y libre"), K.K_F2, 0, "ambos", None, None, False),
+    (tr("Cambiar el movimiento a pie entre brújula y giros"), K.K_F3, 0, "ambos", None, None, False),
+    (tr("Baliza sonora del GPS: ponerla o quitarla"), K.K_F4, 0, "ambos", None, None, False),
+    (tr("Guardado rápido"), K.K_F5, 0, "ambos", None, tr("Fuera de las misiones."), False),
+    (tr("Bajar la música"), K.K_F7, 0, "ambos", None, tr("Cada pulsación la baja un poco. El menú no se cierra."), True),
+    (tr("Subir la música"), K.K_F8, 0, "ambos", None, tr("Cada pulsación la sube un poco. El menú no se cierra."), True),
+    (tr("Poner una marca en el registro de la sesión"), K.K_F12, 0, "ambos", None, tr("Para cuando notes algo raro: quien revise el registro sabrá en qué momento fue."), False),
 ]
 # Lo que sale en la ayuda de teclas y no necesita botón, con el porqué. Lo vigila una prueba: una tecla nueva tiene que
 # tener botón, combinación o sitio en el menú de acciones, o estar aquí con su razón.
 SIN_BOTON = {
-    "Números del 1 al 9": "las armas se eligen con arma siguiente y arma anterior, o en la lista de armas",
-    "Re Pág y Av Pág": "los mensajes anteriores se repasan con LB y RB, o L1 y R1, dentro de cualquier menú, también en el de acciones",
-    "Frenada automática": "no es una tecla: es una ayuda de la conducción asistida",
-    "Helicóptero": "no es una tecla: explica cómo se pilota. La altura va en la palanca derecha, a los lados, y la travesía tiene sus propios botones",
-    "En el mar": "no es una tecla: explica cómo se llevan los barcos",
+    "Números del 1 al 9": tr("las armas se eligen con arma siguiente y arma anterior, o en la lista de armas"),
+    "Re Pág y Av Pág": tr("los mensajes anteriores se repasan con LB y RB, o L1 y R1, dentro de cualquier menú, también en el de acciones"),
+    "Frenada automática": tr("no es una tecla: es una ayuda de la conducción asistida"),
+    "Helicóptero": tr("no es una tecla: explica cómo se pilota. La altura va en la palanca derecha, a los lados, y la travesía tiene sus propios botones"),
+    "En el mar": tr("no es una tecla: explica cómo se llevan los barcos"),
 }
 # Teclas de la ayuda general que solo valen a pie, con el porqué: no hace falta que estén en el mando al volante.
-SOLO_A_PIE = {"Mayúsculas F": "al volante esa tecla te baja del vehículo; sacar a otro jugador del suyo se hace a pie"}
+SOLO_A_PIE = {"Mayúsculas F": tr("al volante esa tecla te baja del vehículo; sacar a otro jugador del suyo se hace a pie")}
 # En las pantallas que se recorren, teclas que con el mando llegan como otra: la C de la cesta es X o Cuadrado, que allí es Tabulador.
 ALIAS_PANTALLA = {K.K_c: K.K_TAB}
 
@@ -234,7 +237,7 @@ def menu_acciones(app):
             app.teclas.discard(key)
         return f
     ops = [Opcion(frase, hacer(key, mod, queda), ayuda=ayuda) for frase, key, mod, _, _, ayuda, queda in acciones_de(p)]
-    menu = Menu(app, "Acciones", ops, intro="Lo que no tiene botón propio en el mando")
+    menu = Menu(app, tr("Acciones"), ops, intro=tr("Lo que no tiene botón propio en el mando"))
     app.abrir(menu)
 
 
@@ -345,12 +348,12 @@ class Mando:
             self.ctrl = None
             return
         n = self.nombre.lower()
-        self.tipo = "ps" if any(x in n for x in ("ps3", "ps4", "ps5", "dualshock", "dualsense", "playstation", "sony", "wireless controller")) else "xbox"
+        self.tipo = "ps" if any(x in n for x in ("ps3", "ps4", "ps5", "dualshock", "dualsense", "playstation", "sony", tr("wireless controller"))) else "xbox"
         if anunciar:
             self.app.son("notificacion")
             b = next((b for b in ORDEN_BOTONES if self.mapa["pie_combo"].get(b) == "menu_acciones"), None)
-            self.app.decir(f"Mando conectado: {self.nombre}. En cualquier momento, la ayuda dice qué hace cada botón."
-                           + (f" Lo que no tiene botón propio está en el menú de acciones: {_frase(self.tipo, '+' + b)}." if b else ""))
+            self.app.decir(tr('Mando conectado: {nombre}. En cualquier momento, la ayuda dice qué hace cada botón.').format(nombre=(self.nombre))
+                           + (tr(' Lo que no tiene botón propio está en el menú de acciones: {_frase}.').format(_frase=(_frase(self.tipo, '+' + b))) if b else ""))
 
     def desconectar(self, anunciar=True):
         if self.ctrl is None:
@@ -359,7 +362,7 @@ class Mando:
         self._soltar_todo()
         if anunciar:
             self.app.son("menu_atras")
-            self.app.decir("Mando desconectado. Puedes seguir con el teclado.")
+            self.app.decir(tr("Mando desconectado. Puedes seguir con el teclado."))
 
     def _soltar_todo(self):
         for k in self.mis_teclas:
@@ -577,7 +580,7 @@ class Mando:
 
     # -------------------------------------------------------------------- ayuda
     def lineas_ayuda(self, contextos=("pie", "coche", "menu")):
-        titulos = {"pie": "Mando, a pie", "coche": "Mando, al volante", "menu": "Mando"}
+        titulos = {"pie": tr("Mando, a pie"), "coche": tr("Mando, al volante"), "menu": tr("Mando")}
         out = []
         for c in contextos:
             if c in self.mapa:
@@ -594,7 +597,7 @@ class Mando:
                     a = self.mapa[c + "_combo"].get(b, "nada")
                     if a != "nada" and b != COMBINAR and (a, b in ("touchpad", "misc")) not in vistas:
                         vistas.add((a, b in ("touchpad", "misc")))
-                        out.append(f"{titulos[c]}. {mod}, mantenido, más {self.nombre_boton(b)}: {ACCIONES[a][0]}.")
+                        out.append(tr('{v}. {mod}, mantenido, más {nombre_boton}: {v2}.').format(v=(titulos[c]), mod=(mod), nombre_boton=(self.nombre_boton(b)), v2=(ACCIONES[a][0])))
         return out
 
 
@@ -609,11 +612,13 @@ class _Ev:
 # ------------------------------------------------------------- las teclas, dichas como botones
 # Con un mando conectado, lo que el juego cuenta («pulsa Q para fijarlo») se dice con el botón que hace eso mismo.
 _TECLAS_TXT = {"intro": K.K_RETURN, "espacio": K.K_SPACE, "tabulador": K.K_TAB, "escape": K.K_ESCAPE, "f1": K.K_F1, "f9": K.K_F9,
-               "coma": K.K_COMMA, "control": K.K_LCTRL}
+               "coma": K.K_COMMA, "control": K.K_LCTRL,
+               "enter": K.K_RETURN, "space": K.K_SPACE, "tab": K.K_TAB, "comma": K.K_COMMA}         # sus nombres en inglés
 # Cuando una tecla hace dos cosas, según vayas a pie o en un vehículo, la frase dice cuál de las dos es.
-_PISTAS = {"freno_mano": "freno de mano", "atacar": "dispar|atac|golpe|pega", "recargar": "recarg", "radio": "emisora|radio", "claxon": "claxon|pita",
-           "gritar": "grit", "media_vuelta": "media vuelta", "paseo": "camina|pasea|paseo", "trabajo": "trabajo|turno|servicio",
-           "hablar": "habl|charl|convers", "interactuar": ""}
+_PISTAS = {"freno_mano": r"freno\sde\smano|handbrake", "atacar": "dispar|atac|golpe|pega|shoot|fire|attack|hit|strike|punch",
+           "recargar": "recarg|reload", "radio": "emisora|radio|station", "claxon": "claxon|pita|horn|honk",
+           "gritar": "grit|shout|yell", "media_vuelta": r"media\svuelta|u-turn|turn\saround", "paseo": "camina|pasea|paseo|walk|stroll",
+           "trabajo": "trabajo|turno|servicio|work|shift|duty", "hablar": "habl|charl|convers|talk|chat", "interactuar": ""}
 _BOTON_SOLO = ("a", "b", "x", "y", "lb", "rb")
 
 
@@ -621,16 +626,16 @@ def _frase_boton(tipo, b):
     """«el botón A», «el gatillo derecho», «la cruceta arriba»: el botón, con su artículo."""
     n = NOMBRES[tipo].get(b, b)
     if b in ("lt", "rt"):
-        return ("el " + n) if tipo == "xbox" else ("el botón " + n)
+        return (tr("el ") + n) if tipo == "xbox" else tr("el botón {n}").format(n=n)
     if b in ("arriba", "abajo", "izquierda", "derecha"):
-        return "la " + n
+        return tr("la ") + n
     if b in ("l3", "r3"):
-        return "la palanca " + ("izquierda" if b == "l3" else "derecha") + " pulsada"
+        return tr("la palanca izquierda pulsada") if b == "l3" else tr("la palanca derecha pulsada")
     if b in ("back", "start", "misc", "guide"):
-        return "el " + n
+        return tr("el ") + n
     if b == "touchpad":
-        return "el panel táctil"
-    return "el botón " + n
+        return tr("el panel táctil")
+    return tr("el botón {n}").format(n=n)
 
 
 def _boton_de(mapa, key, mod, contexto, frase, tipo):
@@ -658,7 +663,7 @@ def _boton_de(mapa, key, mod, contexto, frase, tipo):
 def _frase(tipo, b):
     """Un botón o una combinación («+botón»), dichos con su artículo."""
     if b.startswith("+"):
-        return f"{_frase_boton(tipo, COMBINAR)} mantenido más {_frase_boton(tipo, b[1:])}"
+        return tr('{_frase_boton} mantenido más {_frase_boton2}').format(_frase_boton=(_frase_boton(tipo, COMBINAR)), _frase_boton2=(_frase_boton(tipo, b[1:])))
     return _frase_boton(tipo, b)
 
 
@@ -668,6 +673,9 @@ def textos_mando(texto, mapa, tipo="xbox", contexto="pie"):
     import re
     if not texto or not isinstance(texto, str):
         return texto
+    from . import i18n
+    if not i18n.es_origen():
+        return _textos_mando_en(texto, mapa, tipo, contexto)
 
     def una_frase(frase):
         def tecla_de(nombre):
@@ -696,7 +704,7 @@ def textos_mando(texto, mapa, tipo="xbox", contexto="pie"):
         def suelta(m):                                           # «pulsa Espacio para disparar y R para recargar»
             key = tecla_de(m.group("tecla"))
             b = _boton_de(mapa, key, 0, contexto, frase, tipo) if key is not None else None
-            return m.group(0) if b is None else f"{m.group(1)} {_frase(tipo, b)} para"
+            return m.group(0) if b is None else tr('{group} {_frase} para').format(group=(m.group(1)), _frase=(_frase(tipo, b)))
         frase = re.sub(r"(?<![\wáéíóúñ])(y|o|ni) (?:la )?(?P<tecla>Intro|Espacio|Tabulador|Escape|Control|[A-ZÑ]) para(?![\wáéíóúñ])", suelta, frase)
 
         def solo_tecla(m):                                       # «la tecla M abre el móvil»
@@ -713,14 +721,77 @@ def textos_mando(texto, mapa, tipo="xbox", contexto="pie"):
         fren = next((b for b in ORDEN_BOTONES if mapa.get("coche", {}).get(b) == "frenar"), None)
         if acel and re.search(r"aceler", f):
             frase = re.sub(r"\b(?:la )?flecha (?:de )?arriba\b", _frase_boton(tipo, acel), frase)
-        if fren and re.search(r"fren|marcha atrás", f):
+        if fren and re.search(tr(r"fren|marcha atrás"), f):
             frase = re.sub(r"\b(?:la )?flecha (?:de )?abajo\b", _frase_boton(tipo, fren), frase)
-        frase = re.sub(r"\blas flechas izquierda y derecha\b", "la palanca izquierda a los lados", frase)
-        frase = re.sub(r"\b(?:la )?flecha (?:de )?arriba\b", "la palanca izquierda hacia delante", frase)
-        frase = re.sub(r"\b(?:la )?flecha (?:de )?abajo\b", "la palanca izquierda hacia atrás", frase)
-        frase = re.sub(r"\b[Ll]as flechas\b", lambda m: ("L" if m.group(0)[0] == "L" else "l") + "a palanca izquierda", frase)
-        frase = re.sub(r"\b([Cc])on flechas\b", r"\1on la palanca izquierda", frase)
-        frase = re.sub(r"\b([Mm])antén Mayúsculas\b", lambda m: ("E" if m.group(1) == "M" else "e") + "mpuja a fondo la palanca izquierda", frase)
+        frase = re.sub(r"\blas flechas izquierda y derecha\b", tr("la palanca izquierda a los lados"), frase)
+        frase = re.sub(r"\b(?:la )?flecha (?:de )?arriba\b", tr("la palanca izquierda hacia delante"), frase)
+        frase = re.sub(r"\b(?:la )?flecha (?:de )?abajo\b", tr("la palanca izquierda hacia atrás"), frase)
+        frase = re.sub(r"\b[Ll]as flechas\b", lambda m: ("L" if m.group(0)[0] == "L" else "l") + tr("a palanca izquierda"), frase)
+        frase = re.sub(r"\b([Cc])on flechas\b", tr(r"\1on la palanca izquierda"), frase)
+        frase = re.sub(r"\b([Mm])antén Mayúsculas\b", lambda m: ("E" if m.group(1) == "M" else "e") + tr("mpuja a fondo la palanca izquierda"), frase)
+        return frase
+
+    return "".join(una_frase(t) for t in re.split(r"(?<=[.!?:;])(\s+)", texto))
+
+
+def literal(t):
+    """Un texto que va tal cual, sin traducir: las piezas inglesas con que se reconocen las teclas en inglés."""
+    return t
+
+
+def _textos_mando_en(texto, mapa, tipo="xbox", contexto="pie"):
+    """Lo mismo que textos_mando, para las frases en inglés (y en cualquier idioma que diga las teclas como el inglés):
+    «press Q», «with the X key», «Shift Y», «the up arrow»..."""
+    import re
+    TECLA = r"(?P<tecla>Enter|Space|Tab|Escape|Control|F1|F9|comma|[A-Z])"
+
+    def tecla_de(nombre):
+        n = nombre.lower()
+        if n in _TECLAS_TXT:
+            return _TECLAS_TXT[n]
+        if len(n) == 1 and n.isalpha():
+            return getattr(K, "K_" + n, None)
+        return None
+
+    def una_frase(frase):
+        def cambia(m):
+            key = tecla_de(m.group("tecla"))
+            if key is None:
+                return m.group(0)
+            b = _boton_de(mapa, key, S if m.group("mayus") else 0, contexto, frase, tipo)
+            return m.group(0) if b is None else f"{m.group('verbo')} {_frase(tipo, b)}"
+        # «press Q», «with the X», «use the J key», «press Shift Y», «hold Control»
+        frase = re.sub(r"(?P<verbo>\b(?:[Pp]ress(?:ing|es|ed)?|[Ww]ith|[Uu]se|[Hh]old(?:ing)?(?: down)?|[Tt]ap))"
+                       r" (?:the )?(?P<mayus>Shift (?:\+ |plus )?)?" + TECLA + r"(?: key)?(?![\w])", cambia, frase)
+
+        def suelta(m):                                           # «press Space to shoot and R to reload»
+            key = tecla_de(m.group("tecla"))
+            b = _boton_de(mapa, key, 0, contexto, frase, tipo) if key is not None else None
+            return m.group(0) if b is None else literal("{g} {f} to").format(g=m.group(1), f=_frase(tipo, b))
+        frase = re.sub(r"(?<![\w])(and|or|nor) (?:the )?" + TECLA + r"(?: key)? to(?![\w])", suelta, frase)
+
+        def solo_tecla(m):                                       # «the M key opens the phone»
+            key = tecla_de(m.group("tecla"))
+            b = _boton_de(mapa, key, 0, contexto, frase, tipo) if key is not None else None
+            if b is None:
+                return m.group(0)
+            f = _frase(tipo, b)
+            return f[0].upper() + f[1:] if m.group(0)[0].isupper() else f
+        frase = re.sub(literal(r"\b[Tt]he ") + TECLA + literal(r" key\b"), solo_tecla, frase)
+        f = frase.lower()
+        acel = next((b for b in ORDEN_BOTONES if mapa.get("coche", {}).get(b) == "acelerar"), None)
+        fren = next((b for b in ORDEN_BOTONES if mapa.get("coche", {}).get(b) == "frenar"), None)
+        arriba = r"\b(?:the )?[Uu]p [Aa]rrow\b"
+        abajo = r"\b(?:the )?[Dd]own [Aa]rrow\b"
+        if acel and re.search(r"accelerat", f):
+            frase = re.sub(arriba, _frase_boton(tipo, acel), frase)
+        if fren and re.search(r"brak|revers", f):
+            frase = re.sub(abajo, _frase_boton(tipo, fren), frase)
+        frase = re.sub(r"\b(?:the )?[Ll]eft and [Rr]ight [Aa]rrows\b", tr("la palanca izquierda a los lados"), frase)
+        frase = re.sub(arriba, tr("la palanca izquierda hacia delante"), frase)
+        frase = re.sub(abajo, tr("la palanca izquierda hacia atrás"), frase)
+        frase = re.sub(r"\b[Tt]he arrow(?: key)?s\b|\b[Tt]he arrows\b", lambda m: ("T" if m.group(0)[0] == "T" else "t") + literal("he left stick"), frase)
+        frase = re.sub(r"\b([Hh])old Shift\b", lambda m: ("P" if m.group(1) == "H" else "p") + literal("ush the left stick all the way"), frase)
         return frase
 
     return "".join(una_frase(t) for t in re.split(r"(?<=[.!?:;])(\s+)", texto))

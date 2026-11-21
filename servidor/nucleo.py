@@ -13,6 +13,7 @@ Lo que decide el servidor, y no el juego de cada cual:
 
 Funciona con Python 3.8 o posterior y solo usa la biblioteca de serie.
 """
+from .idioma import es, tr
 import asyncio
 import binascii
 import hashlib
@@ -60,9 +61,9 @@ CLAVES_PUBLICAS = ("2793c73fefcdb5518570569e41e9ae291373c41126b30d4b3fb99359b09c
 ARCHIVO_ORDEN = "parar.txt"
 # Por qué se para el servidor. Se lo dice a los juegos en el mensaje de cierre: con «apagado» vuelven al menú; con las
 # otras dos, esperan y vuelven a entrar solos. El texto es el que oye quien juega con una versión anterior.
-CAUSAS = {"apagado": "El servidor se ha cerrado.",
-          "actualizacion": "El servidor se reinicia para actualizarse. Volverá en unos minutos: vuelve a entrar entonces.",
-          "reinicio": "El servidor se reinicia por mantenimiento. Volverá en unos minutos: vuelve a entrar entonces."}
+CAUSAS = {"apagado": es("El servidor se ha cerrado."),
+          "actualizacion": es("El servidor se reinicia para actualizarse. Volverá en unos minutos: vuelve a entrar entonces."),
+          "reinicio": es("El servidor se reinicia por mantenimiento. Volverá en unos minutos: vuelve a entrar entonces.")}
 VUELVE = {"actualizacion": 120, "reinicio": 60}      # segundos que se calcula que tarda en volver, para decírselo a los juegos
 AVISOS_PARADA = (60, 30, 10)                          # se repite la cuenta atrás cuando queda esto
 CODIGO_VUELVE = 75                                    # código con el que termina el programa cuando se ha parado para volver
@@ -88,7 +89,7 @@ MAX_NORMAL = 16 * 1024            # cualquier otro mensaje
 SEGURAS = ("hospital", "comisaria", "casa", "ong", "protectora")     # lugares donde nadie puede herir a nadie
 RADIO_SEGURO = 16.0
 RANGOS = ("jefe", "mano", "miembro")
-RANGO_TXT = {"jefe": "jefe", "mano": "mano derecha", "miembro": "miembro"}
+RANGO_TXT = {"jefe": es("jefe"), "mano": es("mano derecha"), "miembro": es("miembro")}
 
 # Las opciones, con su valor de serie, su explicación y sus límites, están descritas una sola vez en opciones.py.
 CONFIG = opciones.valores_de_serie()
@@ -112,12 +113,12 @@ def finito(v):
     de distancias dejan de valer para todos, así que no se admite."""
     v = float(v)
     if not math.isfinite(v):
-        raise ValueError("no es un número que valga")
+        raise ValueError(tr("no es un número que valga"))
     return v
 
 
 def _constante_no_valida(nombre):
-    raise ValueError("un mensaje no puede traer " + nombre)
+    raise ValueError(tr("un mensaje no puede traer %s") % nombre)
 
 
 def limpiar_nombre(t, tope=24):
@@ -521,18 +522,19 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if nuevo is not None and puede_adoptar and ((firmado and (mas_nuevo or provisional)) or por_admin):
             antes = self.mundo.get("version")
             self._poner_mundo(nuevo)
-            self.log("El mundo pasa de la versión %s a la %s%s." % (antes, nuevo.get("version"), ", firmado por quien publica el juego" if firmado else ", traído por un administrador, sin firma"))
-            self._a_todos({"t": "aviso", "texto": ("El servidor pasa a los datos de la versión %s del juego. " % nuevo.get("version"))
-                           + ("Quien tenga otra versión tendrá que ponerse esta para volver a entrar." if estricto else
-                              "Quien tenga una versión anterior puede seguir jugando: lo nuevo lo oirá y lo verá como lo más parecido de lo que su juego conoce."),
-                           "son": "notificacion"})
+            self.log(tr("El mundo pasa de la versión %s a la %s%s.") % (antes, nuevo.get("version"), tr(", firmado por quien publica el juego") if firmado else tr(", traído por un administrador, sin firma")))
+            self._a_todos({"t": "aviso", "texto": (es("El servidor pasa a los datos de la versión %s del juego. Quien tenga otra versión tendrá que "
+                                                      "ponerse esta para volver a entrar.") if estricto else
+                                                   es("El servidor pasa a los datos de la versión %s del juego. Quien tenga una versión anterior puede "
+                                                      "seguir jugando: lo nuevo lo oirá y lo verá como lo más parecido de lo que su juego conoce."))
+                           % nuevo.get("version"), "son": "notificacion"})
             return True, ""
         if nuevo is not None and vacio and admitir and modo != "no":
             # El servidor no tenía mundo y el primero que entra trae uno sin firma (lleva mods, o juega desde el código):
             # se usa mientras no llegue otro mejor. Lo sustituye el primero firmado que entre, o el de un administrador.
             self._poner_mundo(dict(nuevo, provisional=True))
-            self.log("El servidor no tenía mundo: toma, de momento, el que trae %s, de la versión %s, que no viene firmado por quien publica el juego. "
-                     "Lo cambiará por el primero firmado que llegue." % (limpiar_nombre(m.get("nombre")) or "quien entra", nuevo.get("version")))
+            self.log(tr("El servidor no tenía mundo: toma, de momento, el que trae %s, de la versión %s, que no viene firmado por quien publica el juego. "
+                     "Lo cambiará por el primero firmado que llegue.") % (limpiar_nombre(m.get("nombre")) or tr("quien entra"), nuevo.get("version")))
             return True, ""
         if not vacio and not estricto:
             if nuevo is not None and firmado:                 # es de una versión de verdad: desde ahora, conocido
@@ -542,12 +544,12 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             if conocido or admitir:
                 return True, ""
         if vacio:
-            return False, ("Este servidor acaba de estrenarse y todavía no tiene los datos del juego: se los da el primero que entra, y los tuyos no le han "
-                           "llegado bien o no los puede aceptar. Prueba otra vez; si sigue igual, que entre primero quien lleva el servidor.")
+            return False, (es("Este servidor acaba de estrenarse y todavía no tiene los datos del juego: se los da el primero que entra, y los tuyos no le han "
+                           "llegado bien o no los puede aceptar. Prueba otra vez; si sigue igual, que entre primero quien lleva el servidor."))
         if version_tupla(juego) < version_tupla(self.mundo.get("version")) and (estricto or vacio or not m.get("firmado")):
-            return False, "Este servidor va con la versión %s del juego y la tuya es anterior. Actualiza el juego para entrar." % self.mundo.get("version", "?")
-        return False, ("Los datos de tu juego no son los de este servidor, que va con la versión %s: llevas mods que cambian el mundo, "
-                       "o una versión que el servidor no puede comprobar." % self.mundo.get("version", "?"))
+            return False, es("Este servidor va con la versión %s del juego y la tuya es anterior. Actualiza el juego para entrar.") % self.mundo.get("version", "?")
+        return False, (es("Los datos de tu juego no son los de este servidor, que va con la versión %s: llevas mods que cambian el mundo, "
+                       "o una versión que el servidor no puede comprobar.") % self.mundo.get("version", "?"))
     # ================================================================ arranque
     def _contexto_tls(self):
         modo = str(self.cfg["cifrado"]).lower()
@@ -562,7 +564,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 self._crear_certificado(cert, llave)
         if not (os.path.exists(cert) and os.path.exists(llave or cert)):
             if si(modo):
-                raise RuntimeError("El cifrado es obligatorio pero no hay certificado y no se ha podido crear: hace falta el programa openssl.")
+                raise RuntimeError(tr("El cifrado es obligatorio pero no hay certificado y no se ha podido crear: hace falta el programa openssl."))
             return None
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         ctx.load_cert_chain(cert, llave or None)
@@ -595,7 +597,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
     def _certificado_propio(self, cert, llave):
         try:
             from . import certificado
-            self.log("Creando el certificado para cifrar la conexión. Tarda unos segundos y solo se hace la primera vez.")
+            self.log(tr("Creando el certificado para cifrar la conexión. Tarda unos segundos y solo se hace la primera vez."))
             certificado.escribir(cert, llave)
             try:
                 os.chmod(llave, 0o600)
@@ -603,7 +605,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 pass
             return True
         except Exception as e:
-            self.log("No se ha podido crear el certificado: %s: %s" % (type(e).__name__, e))
+            self.log(tr("No se ha podido crear el certificado: %s: %s") % (type(e).__name__, e))
             return False
 
     async def iniciar(self):
@@ -621,7 +623,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         loop = asyncio.get_event_loop()
         loop.set_exception_handler(self._error_del_bucle)
         self.tareas = [loop.create_task(self._bucle_estados()), loop.create_task(self._bucle_lento())]
-        self.log("Servidor «%s» escuchando en el puerto %s, %s." % (self.cfg["nombre"], self.puerto, "con cifrado" if self.cifrado else "SIN cifrado"))
+        self.log(tr("Servidor «%s» escuchando en el puerto %s, %s.") % (self.cfg["nombre"], self.puerto, tr("con cifrado") if self.cifrado else tr("SIN cifrado")))
 
     def _error_del_bucle(self, loop, contexto):
         """Lo que falla por dentro sin que nadie lo recoja. Va al registro en una línea, no a la consola como un volcado.
@@ -640,7 +642,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 pass
             return
         try:
-            self.log("Error interno del servidor: %s%s" % (contexto.get("message") or "sin más datos", (": %s: %s" % (type(exc).__name__, exc)) if exc is not None else ""))
+            self.log(tr("Error interno del servidor: %s%s") % (contexto.get("message") or tr("sin más datos"), (": %s: %s" % (type(exc).__name__, exc)) if exc is not None else ""))
         except Exception:
             pass
 
@@ -654,9 +656,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if "reconexion" in j.sabe:
             self._enviar(j, {"t": "parada", "causa": causa, "en": queda, "vuelve": int(vuelve)})
             return
-        que = "para actualizarse" if causa == "actualizacion" else "por mantenimiento"
-        self._aviso(j, "Aviso del servidor: dentro de %d segundos se reinicia %s. Tu personaje se guarda solo. Volverá en unos minutos: "
-                       "vuelve a entrar entonces." % (queda, que), "notificacion")
+        que = es("para actualizarse") if causa == "actualizacion" else es("por mantenimiento")
+        self._aviso(j, es("Aviso del servidor: dentro de %d segundos se reinicia %s. Tu personaje se guarda solo. Volverá en unos minutos: "
+                          "vuelve a entrar entonces.") % (queda, que), "notificacion")
 
     async def detener(self, motivo=None, causa="apagado", aviso=0.0, vuelve=None, espera=None, codigo=0):
         """Para el servidor con orden: avisa (con cuenta atrás si se pide), dice a los juegos que se cierra y por qué,
@@ -677,7 +679,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         except (TypeError, ValueError):
             aviso = 0.0
         if aviso > 0 and causa != "apagado" and self._humanos():
-            self.log("Aviso a los jugadores: el servidor se para dentro de %d segundos, %s." % (aviso, "para actualizarse" if causa == "actualizacion" else "por mantenimiento"))
+            self.log(tr("Aviso a los jugadores: el servidor se para dentro de %d segundos, %s.") % (aviso, tr("para actualizarse") if causa == "actualizacion" else tr("por mantenimiento")))
             self._parada_fin = time.monotonic() + aviso
             for j in self._humanos():
                 self._anunciar_parada(j, causa, aviso, vuelve)
@@ -707,8 +709,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         while time.monotonic() < tope and (self._guardan or time.monotonic() < minimo):
             await asyncio.sleep(0.05)
         if self._guardan:
-            self.log("No ha llegado a tiempo el último guardado de %d %s: su personaje queda como estaba en el anterior." % (
-                len(self._guardan), "jugador" if len(self._guardan) == 1 else "jugadores"))
+            self.log((tr("No ha llegado a tiempo el último guardado de %d jugador: su personaje queda como estaba en el anterior.")
+                      if len(self._guardan) == 1 else
+                      tr("No ha llegado a tiempo el último guardado de %d jugadores: su personaje queda como estaba en el anterior.")) % len(self._guardan))
         self.activo = False
         for t in self.tareas:
             t.cancel()
@@ -756,13 +759,13 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         except ValueError:
             aviso = None
         if que in ("actualizar", "actualizacion"):
-            self.log("Se ha pedido parar el servidor para actualizarlo.")
+            self.log(tr("Se ha pedido parar el servidor para actualizarlo."))
             self.parar_para_volver("actualizacion", aviso)
         elif que in ("reiniciar", "reinicio", "mantenimiento"):
-            self.log("Se ha pedido parar el servidor por mantenimiento.")
+            self.log(tr("Se ha pedido parar el servidor por mantenimiento."))
             self.parar_para_volver("reinicio", aviso)
         else:
-            self.log("Se ha pedido parar el servidor.")
+            self.log(tr("Se ha pedido parar el servidor."))
             asyncio.get_event_loop().create_task(self.detener())
 
     def _mirar_orden(self):
@@ -870,7 +873,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if not linea:
             return None
         if len(linea) > tope:
-            raise ValueError("mensaje demasiado largo")
+            raise ValueError(tr("mensaje demasiado largo"))
         try:
             m = json.loads(linea.decode("utf-8"), parse_constant=_constante_no_valida)      # ni NaN ni Infinity: no son JSON
         except ValueError:
@@ -893,10 +896,10 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self.por_ip[j.ip] = self.por_ip.get(j.ip, 0) + 1
         try:
             if si(self.cfg["registro_ip"]):
-                self.log("Conexión desde %s" % (par,))
+                self.log(tr("Conexión desde %s") % (par,))
             tope_ip = int(self.cfg["conexiones_por_ip"])
             if tope_ip > 0 and j.ip is not None and self.por_ip.get(j.ip, 0) > tope_ip:
-                self._rechazo(j, "Hay demasiadas conexiones desde tu dirección. Prueba dentro de un momento.")
+                self._rechazo(j, es("Hay demasiadas conexiones desde tu dirección. Prueba dentro de un momento."))
             elif await self._entrada(j, lector):
                 while j.conectado and self.activo:
                     m = await self._leer(lector, MAX_LINEA, 90)
@@ -905,7 +908,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                     if not m:
                         continue
                     if not self._ficha(j):
-                        self._echar(j, "Tu juego manda demasiados mensajes.")
+                        self._echar(j, es("Tu juego manda demasiados mensajes."))
                         break
                     j.t_ultimo = time.monotonic()
                     if m.get("t") == "adios":
@@ -920,13 +923,13 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                         clave = str(m.get("t"))[:30]
                         if clave not in j.raros and len(j.raros) < 20:
                             j.raros.add(clave)
-                            self.log("Un mensaje «%s» de %s no se ha podido atender y se deja pasar: %s: %s" % (clave, j.nombre, type(e).__name__, e))
+                            self.log(tr("Un mensaje «%s» de %s no se ha podido atender y se deja pasar: %s: %s") % (clave, j.nombre, type(e).__name__, e))
         except (asyncio.TimeoutError, ConnectionError, OSError, ValueError, asyncio.IncompleteReadError):
             pass
         except asyncio.CancelledError:
             pass
         except Exception as e:                                # nada de lo que mande un cliente debe tumbar al servidor
-            self.log("Error atendiendo a un jugador: %s: %s" % (type(e).__name__, e))
+            self.log(tr("Error atendiendo a un jugador: %s: %s") % (type(e).__name__, e))
         finally:
             if j.ip is not None:
                 quedan = self.por_ip.get(j.ip, 1) - 1
@@ -981,15 +984,15 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if not m or m.get("t") != "hola":
             return False
         if self.cerrando:
-            return self._rechazo(j, "El servidor se está reiniciando. Prueba otra vez dentro de un momento.", "reiniciando")
+            return self._rechazo(j, es("El servidor se está reiniciando. Prueba otra vez dentro de un momento."), "reiniciando")
         # La versión del protocolo se acuerda: el juego dice la más nueva que habla (v) y la más antigua con la que se
         # entiende (vmin); se usa la más nueva que hablen los dos. Así entra tanto quien va por delante como quien va por detrás.
         v = m.get("v")
         if not isinstance(v, int) or isinstance(v, bool) or v < PROTOCOLO_MIN:
-            return self._rechazo(j, "Tu juego es demasiado antiguo para este servidor. Actualiza el juego.")
+            return self._rechazo(j, es("Tu juego es demasiado antiguo para este servidor. Actualiza el juego."))
         vmin = m.get("vmin")
         if isinstance(vmin, int) and not isinstance(vmin, bool) and vmin > VERSION_RED:
-            return self._rechazo(j, "Tu juego es más nuevo de lo que este servidor entiende. Quien lleva el servidor tiene que actualizarlo.")
+            return self._rechazo(j, es("Tu juego es más nuevo de lo que este servidor entiende. Quien lleva el servidor tiene que actualizarlo."))
         j.proto = min(v, VERSION_RED)
         j.juego = "".join(ch for ch in str(m.get("juego") or "") if ch.isalnum() or ch in ".-")[:20]
         j.huella = str(m.get("huella") or "")[:64]
@@ -997,14 +1000,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             j.sabe = {x[:20] for x in m["sabe"][:30] if isinstance(x, str)}
         pub = str(m.get("pub", "")).lower()
         if len(pub) != 64 or any(ch not in "0123456789abcdef" for ch in pub):
-            return self._rechazo(j, "Tu juego no ha enviado una identidad válida.")
+            return self._rechazo(j, es("Tu juego no ha enviado una identidad válida."))
         reto = secrets.token_hex(24)
         self._enviar(j, {"t": "reto", "n": reto, "servidor": self.cfg["nombre"], "protocolo": j.proto, "v": VERSION_RED, "vmin": PROTOCOLO_MIN})
         f = await self._leer(lector, MAX_NORMAL, 20)
         if not f or f.get("t") != "firma":
             return False
         if self.cerrando:                                     # se ha empezado a cerrar mientras saludaba
-            return self._rechazo(j, "El servidor se está reiniciando. Prueba otra vez dentro de un momento.", "reiniciando")
+            return self._rechazo(j, es("El servidor se está reiniciando. Prueba otra vez dentro de un momento."), "reiniciando")
         try:
             # Comprobar la firma cuesta unas décimas de segundo en una máquina modesta: se hace aparte, sin parar a los que juegan.
             valida = await asyncio.get_event_loop().run_in_executor(
@@ -1012,14 +1015,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         except Exception:
             valida = False
         if not valida:
-            return self._rechazo(j, "No se ha podido comprobar tu identidad.")
+            return self._rechazo(j, es("No se ha podido comprobar tu identidad."))
         fila = self.alm.cuenta_por_pub(pub)
         vetados = self._nombres("vetados")
         if (fila is not None and (fila["vetado"] or fila["nombre"].lower() in vetados)) or (fila is None and limpiar_nombre(m.get("nombre")).lower() in vetados):
-            return self._rechazo(j, "No puedes entrar en este servidor.")
+            return self._rechazo(j, es("No puedes entrar en este servidor."))
         minima = str(self.cfg.get("version_minima", "")).strip()
         if minima and version_tupla(j.juego) < version_tupla(minima):
-            return self._rechazo(j, "Este servidor pide la versión %s del juego o una posterior, y la tuya es la %s. Actualiza el juego para entrar." % (minima, j.juego or "desconocida"),
+            return self._rechazo(j, es("Este servidor pide la versión %s del juego o una posterior, y la tuya es la %s. Actualiza el juego para entrar.") % (minima, j.juego or es("desconocida")),
                                  "version", minima=minima)
         admins = self._nombres("admins")
         es_admin = (fila is not None and (bool(fila["admin"]) or fila["nombre"].lower() in admins)) or (fila is None and si(self.cfg["primer_admin"]) and not self.alm.hay_cuentas())
@@ -1032,16 +1035,16 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 return self._rechazo(j, motivo)
         tope = int(self.cfg["max_jugadores"])                 # con 0 no hay límite; quien administra entra siempre
         if tope > 0 and not es_admin and self._cuantos() >= tope:
-            return self._rechazo(j, "El servidor está lleno.", "lleno")
+            return self._rechazo(j, es("El servidor está lleno."), "lleno")
         if fila is None:                                      # cuenta nueva: aquí se mira quién puede entrar
             modo = str(self.cfg["entrada"]).lower()
             if modo == "clave" and not secrets.compare_digest(str(m.get("clave", "")), hashlib.sha256(("puerto-bravo|" + str(self.cfg["clave"])).encode("utf-8")).hexdigest()):
-                return self._rechazo(j, "La contraseña de entrada no es correcta.")
+                return self._rechazo(j, es("La contraseña de entrada no es correcta."))
             if modo == "invitacion" and not self.alm.invitacion_libre(str(m.get("invitacion", "")).strip().upper()):
-                return self._rechazo(j, "Este servidor es solo para invitados, y ese código de invitación no vale o ya se ha usado.")
-            nombre = limpiar_nombre(m.get("nombre")) or "Jugador"
+                return self._rechazo(j, es("Este servidor es solo para invitados, y ese código de invitación no vale o ya se ha usado."))
+            nombre = limpiar_nombre(m.get("nombre")) or es("Jugador")
             if len(nombre) < 2:
-                return self._rechazo(j, "Ese nombre es demasiado corto.")
+                return self._rechazo(j, es("Ese nombre es demasiado corto."))
             base, k = nombre, 2
             while self.alm.cuenta_por_nombre(nombre) is not None:
                 nombre = "%s %d" % (base[:21], k)
@@ -1062,7 +1065,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                     continue
                 estaba = o.dentro
                 self._salida(o, callar=True)
-                self._echar(o, "Has entrado con tu personaje desde otro sitio.")
+                self._echar(o, es("Has entrado con tu personaje desde otro sitio."))
                 if estaba:                                    # que a los demás no les queden dos con su nombre: el de antes se va
                     self._a_todos({"t": "sale", "id": o.id}, menos=o)
         j.cuenta, j.nombre = fila["id"], fila["nombre"]
@@ -1156,18 +1159,18 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             "mis_vehiculos": [v["id"] for v in self.vehiculos.values() if v.get("dueno") == j.cuenta and v["por"] is None]})
         dia = str(self.cfg.get("mensaje_dia", "")).strip()
         if dia:
-            self._aviso(j, "Mensaje del día: " + dia[:300], "notificacion")
+            self._aviso(j, es("Mensaje del día: %s") % dia[:300], "notificacion")
         difiere = compat.texto_diferencias(le_falta, sobra)
         if difiere:                                           # qué no coincide entre su juego y este servidor, y qué va a notar
             self._aviso(j, difiere, "notificacion")
         if para_el is not partida:
-            self._aviso(j, "Tu personaje tiene armas o vehículos de una versión más nueva del juego. Con esta no los verás, pero no los pierdes: "
-                           "se quedan guardados en el servidor y los tendrás otra vez cuando entres con esa versión.", "notificacion")
+            self._aviso(j, es("Tu personaje tiene armas o vehículos de una versión más nueva del juego. Con esta no los verás, pero no los pierdes: "
+                           "se quedan guardados en el servidor y los tendrás otra vez cuando entres con esa versión."), "notificacion")
         self._a_todos({"t": "entra", "id": j.id, "nombre": j.nombre, "banda": j.banda}, menos=j)
         self.po_entra(j)
         if self.parando and self.parando != "apagado" and self._parada_fin > time.monotonic():      # entra en plena cuenta atrás: que lo sepa
             self._anunciar_parada(j, self.parando, self._parada_fin - time.monotonic(), VUELVE.get(self.parando, 0))
-        self.log("Entra %s%s. Hay %d." % (j.nombre, (", con el juego %s" % j.juego) if j.juego else "", self._cuantos()))
+        self.log(tr("Entra %s%s. Hay %d.") % (j.nombre, (tr(", con el juego %s") % j.juego) if j.juego else "", self._cuantos()))
         return True
 
     def _robos_de_entrada(self, j):
@@ -1219,7 +1222,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         self.jugadores.pop(j.id, None)
         if not callar:
             self._a_todos({"t": "sale", "id": j.id})
-            self.log("Sale %s." % j.nombre)
+            self.log(tr("Sale %s.") % j.nombre)
 
     # ================================================================ mensajes
     def _mensaje(self, j, m):
@@ -1243,8 +1246,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 if isinstance(mapa, str) and mapa and self.mundo["mapas"]:
                     j.mapa, j.mapa_fuera = None, mapa[:40]
                     j.t_actividad = time.monotonic()
-                    self._aviso_compat(j, "mapa:" + mapa[:40], "Esta localidad no existe en la versión del juego con la que va este servidor, la %s. "
-                                       "Puedes estar en ella, pero aquí no verás a los demás jugadores ni ellos a ti." % self.mundo.get("version", "?"))
+                    self._aviso_compat(j, "mapa:" + mapa[:40], es("Esta localidad no existe en la versión del juego con la que va este servidor, la %s. "
+                                       "Puedes estar en ella, pero aquí no verás a los demás jugadores ni ellos a ti.") % self.mundo.get("version", "?"))
                 return
             cambio = mapa != j.mapa
             j.mapa, j.mapa_fuera = mapa, None
@@ -1261,8 +1264,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self._cuadrar_saldo(j)
             j.arma = e.get("ar") if e.get("ar") in self.mundo["armas"] else "punos"
             if j.arma == "punos" and isinstance(e.get("ar"), str) and e.get("ar") not in ("", "punos") and self.mundo["armas"]:
-                self._aviso_compat(j, "arma:" + e["ar"][:40], "El arma que llevas no existe en la versión del juego con la que va este servidor: "
-                                   "contra otros jugadores cuenta como ir con las manos.")
+                self._aviso_compat(j, "arma:" + e["ar"][:40], es("El arma que llevas no existe en la versión del juego con la que va este servidor: "
+                                   "contra otros jugadores cuenta como ir con las manos."))
             j.barrio = e.get("b") if isinstance(e.get("b"), str) else None
             j.agachado, j.interior = bool(e.get("ag")), bool(e.get("in"))
             # Lo de la 1.7.1, que un juego anterior no manda: de quién va de pasajero y qué emisora del juego lleva puesta.
@@ -1343,7 +1346,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             j.dinero = max(0, j.dinero - sobra)               # para el servidor, ese dinero no existe
             if ahora - j.t_saldo > 4:
                 j.t_saldo = ahora
-                self.log("A %s no se le reconocen %d euros de %d: el tope es de %d por hora." % (j.nombre, sobra, delta, int(tope)))
+                self.log(tr("A %s no se le reconocen %d euros de %d: el tope es de %d por hora.") % (j.nombre, sobra, delta, int(tope)))
                 # Con las cifras: cuánto ha ganado, cuánto vale, cuál es el tope y cuándo vuelve a tener margen. Un juego
                 # anterior solo mira «quita» y «saldo».
                 self._enviar(j, dict(self._economia_datos(j), t="saldo", quita=sobra, saldo=j.saldo, ganado=int(delta), aceptado=int(delta - sobra)))
@@ -1404,7 +1407,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         j.gasto_pend = 0
         if vuelve > 0:
             j.saldo += vuelve
-            self.log("%s se ha ido sin guardar su última compra: se le reconocen otra vez %d euros." % (j.nombre, vuelve))
+            self.log(tr("%s se ha ido sin guardar su última compra: se le reconocen otra vez %d euros.") % (j.nombre, vuelve))
 
     def _encargo_tope(self, tipo):
         """Lo más que paga un encargo repetible de ese tipo, o None si el servidor no lo conoce."""
@@ -1437,8 +1440,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             if ahora - j.t_aviso_encargo > 60:
                 j.t_aviso_encargo = ahora
                 falta = int((3600 - (ahora - hechos[0])) // 60) + 1
-                self._aviso(j, "Ya has cobrado %d encargos de este tipo en la última hora, que es lo que este servidor reconoce: este cuenta "
-                               "contra tu ganancia por hora. Dentro de %d minutos vuelve a reconocerte otro." % (por_hora, falta))
+                self._aviso(j, es("Ya has cobrado %d encargos de este tipo en la última hora, que es lo que este servidor reconoce: este cuenta "
+                                  "contra tu ganancia por hora. Dentro de %d minutos vuelve a reconocerte otro.") % (por_hora, falta))
             return
         mios[tipo] = hechos + [ahora]
         j.fiado.append([ahora, min(paga, tope)])
@@ -1526,8 +1529,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             if len(texto) > MAX_LINEA:
                 if "guardar" not in j.raros:                  # una vez por sesión: no se guarda, y que se sepa
                     j.raros.add("guardar")
-                    self.log("El personaje de %s ocupa demasiado (%d KB) y no se guarda: queda el anterior." % (j.nombre, len(texto) // 1024))
-                    self._aviso(j, "Tu personaje ocupa demasiado para este servidor y no se ha podido guardar: queda como estaba en el guardado anterior.", "error")
+                    self.log(tr("El personaje de %s ocupa demasiado (%d KB) y no se guarda: queda el anterior.") % (j.nombre, len(texto) // 1024))
+                    self._aviso(j, es("Tu personaje ocupa demasiado para este servidor y no se ha podido guardar: queda como estaba en el guardado anterior."), "error")
             else:
                 self.alm.poner(j.cuenta, partida=texto, dia_salida=self.dia, partida_juego=de)
                 j.gasto_pend, j.total_guardado = 0, self._dinero_de_partida(p)      # lo comprado hasta aquí ya está en el personaje
@@ -1564,12 +1567,12 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         e = self._nominas()
         que = m.get("que")
         if e is None:
-            return self._enviar(j, {"t": "contrato", "que": "no", "motivo": "En este servidor no hay nóminas de contratos fijos."})
+            return self._enviar(j, {"t": "contrato", "que": "no", "motivo": es("En este servidor no hay nóminas de contratos fijos.")})
         c = j.contrato if isinstance(j.contrato, dict) else {}
         if que == "firmar":
             empleo = m.get("empleo")
             if not isinstance(empleo, str) or empleo not in e["puestos"]:
-                return self._enviar(j, {"t": "contrato", "que": "no", "motivo": "Ese empleo no existe en la versión del juego con la que va este servidor."})
+                return self._enviar(j, {"t": "contrato", "que": "no", "motivo": es("Ese empleo no existe en la versión del juego con la que va este servidor.")})
             # Se entra por abajo; con una carta de recomendación, un escalón más arriba, que es lo más que da el juego.
             puesto = 1 if m.get("puesto") == 1 and len(e["puestos"][empleo]) > 1 else 0
             if c.get("e") == empleo:                           # ya lo tenía firmado aquí: sigue como iba, no empieza otro periodo
@@ -1579,7 +1582,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             return self._enviar(j, {"t": "contrato", "que": "firmado", "c": self._contrato_publico(j)})
         if not c or c.get("e") not in e["puestos"]:
             if que != "dejar":
-                self._enviar(j, {"t": "contrato", "que": "no", "motivo": "Este servidor no tiene apuntado ningún contrato tuyo."})
+                self._enviar(j, {"t": "contrato", "que": "no", "motivo": es("Este servidor no tiene apuntado ningún contrato tuyo.")})
             j.contrato = {}
             return self._guardar_contrato(j)
         puestos = e["puestos"][c["e"]]
@@ -1619,7 +1622,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self._guardar_contrato(j)
             self._guardar_saldo(j)
             if paga > 0:
-                self.log("Nómina de %s: %d euros por %d de %d turnos." % (j.nombre, paga, turnos, cupo))
+                self.log(tr("Nómina de %s: %d euros por %d de %d turnos.") % (j.nombre, paga, turnos, cupo))
             self._enviar(j, {"t": "nomina", "n": paga, "turnos": turnos, "cupo": cupo, "c": self._contrato_publico(j)})
 
     def _m_aspecto(self, j, m):
@@ -1644,7 +1647,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             if de_rol is not None:
                 canal, texto = de_rol, resto.strip()
                 if not texto:
-                    return self._aviso(j, "Detrás de esa orden va lo que quieres decir. Por ejemplo: barra yo abre la puerta.")
+                    return self._aviso(j, es("Detrás de esa orden va lo que quieres decir. Por ejemplo: barra yo abre la puerta."))
             elif j.admin:
                 return self._aviso(j, self.orden(texto[1:], j.nombre))
         if canal in CANALES_ROL:
@@ -1656,7 +1659,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                     self._enviar(o, obj)
         elif canal == "banda":
             if j.banda is None:
-                return self._aviso(j, "No estás en ninguna banda.")
+                return self._aviso(j, es("No estás en ninguna banda."))
             self._a_banda(j.banda, obj, menos=j)
         elif canal == "grupo":
             for o in self._grupo(j):
@@ -1674,18 +1677,18 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         («ooc»), a todo el servidor. A quien juega con una versión que no los conoce le llegan por el chat de siempre,
         con unas palabras delante que dicen qué son."""
         if not si(self.cfg["rol"]):
-            return self._aviso(j, "En este servidor los canales de rol están apagados: usa el chat de siempre.")
+            return self._aviso(j, es("En este servidor los canales de rol están apagados: usa el chat de siempre."))
         texto = "".join(ch for ch in texto if ch.isprintable()).strip()
         if not texto:
             return
         metros = float(self.cfg["rol_metros"])
         nuevo = {"t": "chat", "de": j.id, "nombre": j.nombre, "texto": texto, "canal": canal}
         if canal == "ooc":
-            viejo = dict(nuevo, canal="todos", texto="(fuera de personaje) " + texto)
+            viejo = dict(nuevo, canal="todos", texto=es("(fuera de personaje) %s") % texto)
         elif canal == "yo":
-            viejo = dict(nuevo, canal="cerca", texto="(acción) %s %s" % (j.nombre, texto))
+            viejo = dict(nuevo, canal="cerca", texto=es("(acción) %s %s") % (j.nombre, texto))
         else:
-            viejo = dict(nuevo, canal="cerca", texto="(en personaje) " + texto)
+            viejo = dict(nuevo, canal="cerca", texto=es("(en personaje) %s") % texto)
         oyen = 0
         for o in self.jugadores.values():
             if not o.dentro or o is j or o.bot:
@@ -1697,17 +1700,17 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if "rol" in j.sabe:                                     # para que sepa si le ha oído alguien: no se ve quién hay cerca
             self._enviar(j, {"t": "rol_oido", "canal": canal, "n": oyen})
         elif oyen == 0 and canal != "ooc":
-            self._aviso(j, "No hay nadie lo bastante cerca para oírlo.")
+            self._aviso(j, es("No hay nadie lo bastante cerca para oírlo."))
 
     def _m_ficha(self, j, m):
         """La frase de ficha de un jugador: con «a», leer la de otro; sin ella, poner la propia (vacía, la quita)."""
         if "a" in m:
             o = self.jugadores.get(m.get("a")) if isinstance(m.get("a"), int) else None
             if o is None or not o.dentro:
-                return self._aviso(j, "Esa persona ya no está.")
+                return self._aviso(j, es("Esa persona ya no está."))
             return self._enviar(j, {"t": "ficha", "de": o.id, "nombre": o.nombre, "texto": o.ficha if si(self.cfg["rol"]) else ""})
         if not si(self.cfg["rol"]):
-            return self._aviso(j, "En este servidor los canales de rol están apagados: no hay fichas.")
+            return self._aviso(j, es("En este servidor los canales de rol están apagados: no hay fichas."))
         texto = " ".join("".join(ch for ch in str(m.get("texto", "")) if ch.isprintable()).split())[:MAX_FICHA]
         j.ficha = texto
         if j.cuenta is not None and not j.bot:
@@ -1715,7 +1718,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if "rol" in j.sabe:
             self._enviar(j, {"t": "ficha", "de": j.id, "nombre": j.nombre, "texto": texto, "tuya": True})
         else:
-            self._aviso(j, ("Tu ficha dice ahora: " + texto) if texto else "Has quitado tu ficha.")
+            self._aviso(j, (es("Tu ficha dice ahora: %s") % texto) if texto else es("Has quitado tu ficha."))
 
     def _m_act(self, j, m):
         d = m.get("d")
@@ -1751,8 +1754,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             # recibe tendría dinero que no ha salido de ningún bolsillo. Quien acaba de entrar y aún no ha dicho cuánto
             # lleva, no lleva nada.
             if j.saldo is None or j.dinero < n:
-                self._aviso(j, "No llevas %d euros encima: no se entregan." % n, "error")
-                self._enviar(j, {"t": "dinero", "nombre": "El servidor, de vuelta", "n": n})      # su juego ya los había restado
+                self._aviso(j, es("No llevas %d euros encima: no se entregan.") % n, "error")
+                self._enviar(j, {"t": "dinero", "nombre": es("El servidor, de vuelta"), "n": n})      # su juego ya los había restado
                 j.credito = max(0, j.credito - n)             # una devolución no es dinero nuevo
                 return
             j.dinero -= n
@@ -1763,7 +1766,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         """Dar un arma, munición o un objeto a otro jugador que está al lado."""
         o = self.jugadores.get(m.get("a"))
         if o is None or not o.dentro or o is j or o.mapa != j.mapa or j.dist(o) > 12:
-            return self._aviso(j, "Esa persona ya no está a tu lado.")
+            return self._aviso(j, es("Esa persona ya no está a tu lado."))
         try:
             n = max(1, min(999, int(m.get("n", 1))))
         except (TypeError, ValueError):
@@ -1776,8 +1779,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if clase in ("arma", "balas") and cat is not None and ident not in cat["armas"]:
             # El juego del otro es de una versión que no tiene esa arma: no la puede recibir. A quien la daba, su juego ya se
             # la había quitado: se le devuelve, para que no se pierda por el camino.
-            self._enviar(j, {"t": "recibe", "de": j.id, "nombre": "El servidor, de vuelta", "clase": clase, "id": ident, "n": n})
-            return self._aviso(j, "%s juega con una versión del juego que no tiene esa arma: no la puede recibir, y te la quedas." % o.nombre, "error")
+            self._enviar(j, {"t": "recibe", "de": j.id, "nombre": es("El servidor, de vuelta"), "clase": clase, "id": ident, "n": n})
+            return self._aviso(j, es("%s juega con una versión del juego que no tiene esa arma: no la puede recibir, y te la quedas.") % o.nombre, "error")
         self._enviar(o, {"t": "recibe", "de": j.id, "nombre": j.nombre, "clase": clase, "id": ident, "n": n})
         self._enviar(j, {"t": "dado", "a": o.id, "nombre": o.nombre, "clase": clase, "id": ident, "n": n})
 
@@ -1810,11 +1813,11 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 self.peatones_mover(0.1)
                 self.policia_mover(0.1)
             except Exception as e:
-                self.log("Error moviendo a los personajes y el tráfico del servidor: %s: %s" % (type(e).__name__, e))
+                self.log(tr("Error moviendo a los personajes y el tráfico del servidor: %s: %s") % (type(e).__name__, e))
             try:
                 self._repartir_estados(n)
             except Exception as e:
-                self.log("Error repartiendo las posiciones: %s: %s" % (type(e).__name__, e))
+                self.log(tr("Error repartiendo las posiciones: %s: %s") % (type(e).__name__, e))
 
     def _repartir_estados(self, n):
         """Diez veces por segundo: a cada jugador, dónde están los demás.
@@ -1937,7 +1940,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 self._mirar_orden()
                 self._tic(1.0, k)
             except Exception as e:
-                self.log("Error en el reloj del servidor: %s: %s" % (type(e).__name__, e))
+                self.log(tr("Error en el reloj del servidor: %s: %s") % (type(e).__name__, e))
 
     def _tic(self, dt, k):
         self.reloj += dt / 2.0                                 # un minuto del juego son dos segundos, como en el juego
@@ -1958,8 +1961,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             elif j.dentro and not j.bot and ahora - j.t_ultimo > 75:
                 self._cortar(j)
             elif parado > 0 and j.dentro and not j.bot and not j.admin and ahora - j.t_actividad > parado:
-                self.log("%s lleva %d minutos sin hacer nada: se le saca para dejar sitio." % (j.nombre, parado // 60))
-                self._echar(j, "Llevas %d minutos sin hacer nada y el servidor te ha sacado para dejar sitio. Tu personaje está guardado: puedes volver a entrar." % (parado // 60))
+                self.log(tr("%s lleva %d minutos sin hacer nada: se le saca para dejar sitio.") % (j.nombre, parado // 60))
+                self._echar(j, es("Llevas %d minutos sin hacer nada y el servidor te ha sacado para dejar sitio. Tu personaje está guardado: puedes volver a entrar.") % (parado // 60))
                 j.t_actividad = ahora
         self.bots_pensar(dt)
         self.trafico_pensar()
@@ -1980,9 +1983,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if horas > 0 and ahora - self._t_copia >= 3600.0 * horas:
             self._t_copia = ahora
             try:
-                self.log("Copia de seguridad automática hecha: %s" % os.path.basename(self.copia_seguridad(automatica=True)))
+                self.log(tr("Copia de seguridad automática hecha: %s") % os.path.basename(self.copia_seguridad(automatica=True)))
             except Exception as e:
-                self.log("No se ha podido hacer la copia de seguridad automática: %s: %s" % (type(e).__name__, e))
+                self.log(tr("No se ha podido hacer la copia de seguridad automática: %s: %s") % (type(e).__name__, e))
 
     def copia_seguridad(self, automatica=False):
         """Guarda todo y hace una copia de seguridad en la carpeta copias, dentro de la de datos. Devuelve su ruta."""
@@ -1997,8 +2000,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         for t in self.alm.territorios():
             cuentas[t["banda"]] = cuentas.get(t["banda"], 0) + renta
         for banda, total in cuentas.items():
-            self.alm.apunte(banda, "Barrios", total, "renta de los barrios")
-            self._a_banda(banda, {"t": "aviso", "texto": "Los barrios de tu banda dejan %d euros en la caja." % total, "son": "dinero"})
+            self.alm.apunte(banda, es("Barrios"), total, es("renta de los barrios"))
+            self._a_banda(banda, {"t": "aviso", "texto": es("Los barrios de tu banda dejan %d euros en la caja.") % total, "son": "dinero"})
             self._banda_difundir(banda)
         self._a_todos({"t": "hora", "h": self._hora(), "medianoche": True})
         self._propiedades_abandonadas()
@@ -2059,11 +2062,11 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         """Subirse a un vehículo aparcado de otro jugador: el primero que lo pide se lo lleva."""
         v = self.vehiculos.get(m.get("id"))
         if v is None:
-            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": "Ese vehículo ya no está.", "por": "no_esta"})
+            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": es("Ese vehículo ya no está."), "por": "no_esta"})
         if v["por"] is not None and v["por"] != j.id:
-            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Alguien se te ha adelantado.", "por": "ocupado"})
+            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": es("Alguien se te ha adelantado."), "por": "ocupado"})
         if v["m"] != j.mapa or math.hypot(v["x"] - j.x, v["y"] - j.y) > 14:
-            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Estás demasiado lejos.", "por": "lejos"})
+            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": es("Estás demasiado lejos."), "por": "lejos"})
         if j.vid is not None and j.vid in self.vehiculos and j.vid != v["id"]:
             self._soltar_vehiculo(j, self.vehiculos[j.vid])
         robo = v.get("dueno") not in (None, j.cuenta)
@@ -2077,7 +2080,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if robo:                                               # al dueño se le dice antes de que el coche desaparezca de su calle
             for o in self.jugadores.values():
                 if o.dentro and o.cuenta == antes:
-                    self._aviso(o, "%s se ha llevado tu %s." % (j.nombre, v["nombre"]), "alarma")
+                    self._aviso(o, es("%s se ha llevado tu %s.") % (j.nombre, v["nombre"]), "alarma")
         self._a_todos({"t": "veh_ocupado", "id": v["id"], "por": j.id, "v": self._veh_publico(v)}, menos=j)
 
     def _m_veh_asaltar(self, j, m):
@@ -2085,11 +2088,11 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         v = self.vehiculos.get(m.get("id"))
         o = self.jugadores.get(v["por"]) if v is not None else None
         if v is None or o is None or o is j:
-            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": "Ese vehículo ya no está.", "por": "no_esta"})
+            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": es("Ese vehículo ya no está."), "por": "no_esta"})
         if o.mapa != j.mapa or j.dist(o) > 9:
-            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Estás demasiado lejos.", "por": "lejos"})
+            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": es("Estás demasiado lejos."), "por": "lejos"})
         if o.vel > 6:
-            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": "Va demasiado rápido para abrir la puerta."})
+            return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": es("Va demasiado rápido para abrir la puerta.")})
         if not self._puede_atacar(j, o, avisar=True):
             return self._enviar(j, {"t": "veh_no", "id": v["id"], "motivo": ""})
         self._marcar_agresion(j, o)
@@ -2135,7 +2138,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
     def _veh_mio(self, j, m):
         v = self.vehiculos.get(m.get("id")) if isinstance(m.get("id"), int) else None
         if v is None or v["por"] is not None or v.get("dueno") != j.cuenta:
-            self._enviar(j, {"t": "veh_mio", "que": "no", "id": m.get("id"), "motivo": "Ese vehículo ya no está aparcado a tu nombre: se lo han llevado, lo han reventado o ha caducado."})
+            self._enviar(j, {"t": "veh_mio", "que": "no", "id": m.get("id"), "motivo": es("Ese vehículo ya no está aparcado a tu nombre: se lo han llevado, lo han reventado o ha caducado.")})
             return None
         return v
 
@@ -2149,7 +2152,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
 
     def _m_veh_traer(self, j, m):
         if j.mapa is None:
-            return self._enviar(j, {"t": "veh_mio", "que": "no", "id": m.get("id"), "motivo": "Aquí no te lo pueden traer."})
+            return self._enviar(j, {"t": "veh_mio", "que": "no", "id": m.get("id"), "motivo": es("Aquí no te lo pueden traer.")})
         v = self._veh_mio(j, m)
         if v is None:
             return
@@ -2194,7 +2197,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         l = self.lugares.get(m.get("lugar"))
         f = self.alm.propiedad(l["id"]) if l is not None else None
         if f is None or f["cuenta"] != j.cuenta:
-            return self._aviso(j, "Eso no es tuyo.")
+            return self._aviso(j, es("Eso no es tuyo."))
         self._ver_pagos(j)
         f = self.alm.propiedad(l["id"])
         # Solo da dinero lo que el servidor vio pagar. Lo que se trajo de fuera, o se apuntó sin que saliera el dinero, se
@@ -2206,44 +2209,44 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         self._prop_difundir(l["id"], antes=j.cuenta)
         if n:
             j.dinero += n
-            self._enviar(j, {"t": "dinero", "nombre": "La venta de " + l["nombre"], "n": n})
+            self._enviar(j, {"t": "dinero", "nombre": es("La venta de %s") % l["nombre"], "n": n})
         else:
-            self._aviso(j, "%s vuelve al mercado, pero no te da dinero: a este servidor no le consta que la pagaras aquí." % l["nombre"])
-        self._a_todos({"t": "aviso", "texto": "%s vuelve a estar en venta, en %s." % (l["nombre"], self.mundo["mapas"][l["mapa"]]["nombre"])}, menos=j)
+            self._aviso(j, es("%s vuelve al mercado, pero no te da dinero: a este servidor no le consta que la pagaras aquí.") % l["nombre"])
+        self._a_todos({"t": "aviso", "texto": es("%s vuelve a estar en venta, en %s.") % (l["nombre"], self.mundo["mapas"][l["mapa"]]["nombre"])}, menos=j)
 
     def _m_prop_oferta(self, j, m):
         """Poner tu propiedad en venta para otros jugadores, al precio que tú digas. Con cero, se retira."""
         l = self.lugares.get(m.get("lugar"))
         f = self.alm.propiedad(l["id"]) if l is not None else None
         if f is None or f["cuenta"] != j.cuenta:
-            return self._aviso(j, "Eso no es tuyo.")
+            return self._aviso(j, es("Eso no es tuyo."))
         try:
             precio = max(0, min(10 ** 8, int(m.get("precio", 0))))
         except (TypeError, ValueError):
             return
         self._ver_pagos(j)
         if precio and si(self.cfg["economia"]) and not self.alm.propiedad(l["id"])["pagada"]:
-            return self._aviso(j, "No puedes vender %s a otro jugador: a este servidor no le consta que la pagaras aquí." % l["nombre"], "error")
+            return self._aviso(j, es("No puedes vender %s a otro jugador: a este servidor no le consta que la pagaras aquí.") % l["nombre"], "error")
         self.alm.poner_oferta(l["id"], precio)
         self._prop_difundir(l["id"])
         if precio:
-            self._a_todos({"t": "aviso", "texto": "%s vende %s por %d euros." % (j.nombre, l["nombre"], precio)}, menos=j)
+            self._a_todos({"t": "aviso", "texto": es("%s vende %s por %d euros.") % (j.nombre, l["nombre"], precio)}, menos=j)
 
     def _m_prop_adquirir(self, j, m):
         """Comprarle a otro jugador la propiedad que tiene en venta."""
         l = self.lugares.get(m.get("lugar"))
         f = self.alm.propiedad(l["id"]) if l is not None else None
         if f is None or f["cuenta"] == j.cuenta or not f["oferta"]:
-            return self._aviso(j, "Eso no está en venta.")
+            return self._aviso(j, es("Eso no está en venta."))
         precio = int(f["oferta"])
-        if not self._cobrar(j, precio, "comprar " + l["nombre"]):
+        if not self._cobrar(j, precio, es("comprar %s") % l["nombre"]):
             return
         vendedor = f["cuenta"]
         self.alm.poner_propiedad(l["id"], j.cuenta, pagada=True)
         en_linea = next((o for o in self.jugadores.values() if o.dentro and o.cuenta == vendedor), None)
         if en_linea is not None:
             en_linea.dinero += precio
-            self._enviar(en_linea, {"t": "dinero", "nombre": j.nombre + ", por " + l["nombre"], "n": precio})
+            self._enviar(en_linea, {"t": "dinero", "nombre": es("%s, por %s") % (j.nombre, l["nombre"]), "n": precio})
         else:
             self.alm.dejar_pendiente(vendedor, {"que": "venta", "lugar": l["id"], "n": precio, "por": j.nombre})
         self._prop_difundir(l["id"], antes=vendedor)
@@ -2276,7 +2279,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 j.prop_pend[l["id"]] = [time.monotonic(), int(l["precio"])]     # el juego la paga por su cuenta: hay que verlo
                 self._ver_pagos(j)
             self._prop_difundir(l["id"])
-            self._a_todos({"t": "aviso", "texto": "%s compra %s, en %s." % (j.nombre, l["nombre"], self.mundo["mapas"][l["mapa"]]["nombre"])}, menos=j)
+            self._a_todos({"t": "aviso", "texto": es("%s compra %s, en %s.") % (j.nombre, l["nombre"], self.mundo["mapas"][l["mapa"]]["nombre"])}, menos=j)
 
     def _banda_de(self, cuenta):
         mi = self.alm.miembro(cuenta)
@@ -2287,22 +2290,22 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         l = self.lugares.get(m.get("lugar"))
         f = self.alm.propiedad(l["id"]) if l is not None and l["tipo"] == "negocio" else None
         if f is None or f["cuenta"] == j.cuenta:
-            return self._aviso(j, "Este negocio no es de otro jugador.")
+            return self._aviso(j, es("Este negocio no es de otro jugador."))
         if not si(self.cfg["pvp"]):
-            return self._aviso(j, "En este servidor no se roba a otros jugadores.")
+            return self._aviso(j, es("En este servidor no se roba a otros jugadores."))
         if j.pasivo:
-            return self._aviso(j, "En modo pasivo no puedes atracar a nadie.")
+            return self._aviso(j, es("En modo pasivo no puedes atracar a nadie."))
         if j.mapa != l["mapa"] or math.hypot(j.x - l["x"], j.y - l["y"]) > 30 or j.veh:
-            return self._aviso(j, "Tienes que estar en la puerta, a pie.")
+            return self._aviso(j, es("Tienes que estar en la puerta, a pie."))
         if j.arma == "punos":
-            return self._aviso(j, "Con las manos vacías no impones. Saca un arma.")
+            return self._aviso(j, es("Con las manos vacías no impones. Saca un arma."))
         banda = self._banda_de(f["cuenta"])
         if banda is not None and j.banda is not None and (banda == j.banda or banda in self.alm.aliadas(j.banda)):
-            return self._aviso(j, "Ese negocio es de alguien de tu banda o de una banda aliada.")
+            return self._aviso(j, es("Ese negocio es de alguien de tu banda o de una banda aliada."))
         if f["robado_dia"] == self.dia:
-            return self._aviso(j, "A este negocio ya le han vaciado la caja hoy. Vuelve otro día.")
+            return self._aviso(j, es("A este negocio ya le han vaciado la caja hoy. Vuelve otro día."))
         if j.id in self.robos or any(r["lugar"] == l["id"] for r in self.robos.values()):
-            return self._aviso(j, "Ya hay un atraco en marcha.")
+            return self._aviso(j, es("Ya hay un atraco en marcha."))
         segundos = int(self.cfg["robo_segundos"])
         self.robos[j.id] = {"lugar": l["id"], "fin": time.monotonic() + segundos, "dueno": f["cuenta"], "nombre_dueno": f["nombre"]}
         self._enviar(j, {"t": "robo_empieza", "lugar": l["id"], "segundos": segundos, "nombre": f["nombre"]})
@@ -2324,8 +2327,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self._enviar(j, {"t": "robo_fin", "ok": bool(ok), "botin": botin, "motivo": motivo, "lugar": l["id"]})
         for o in self.jugadores.values():
             if o.dentro and o.cuenta == r["dueno"]:
-                self._aviso(o, ("%s ha vaciado la caja de %s: %d euros. Se te descuentan a medianoche." % (j.nombre, l["nombre"], botin)) if ok
-                            else ("%s no ha conseguido atracar %s." % (j.nombre, l["nombre"])), "alarma" if ok else "llegada")
+                self._aviso(o, (es("%s ha vaciado la caja de %s: %d euros. Se te descuentan a medianoche.") % (j.nombre, l["nombre"], botin)) if ok
+                            else (es("%s no ha conseguido atracar %s.") % (j.nombre, l["nombre"])), "alarma" if ok else "llegada")
 
     def _robos_paso(self):
         ahora = time.monotonic()
@@ -2336,9 +2339,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 self.robos.pop(ident, None)
                 continue
             if j.salud <= 0:
-                self._robo_fin(j, False, "Te han tumbado antes de vaciar la caja.")
+                self._robo_fin(j, False, es("Te han tumbado antes de vaciar la caja."))
             elif j.mapa != l["mapa"] or math.hypot(j.x - l["x"], j.y - l["y"]) > 35 or j.veh:
-                self._robo_fin(j, False, "Te has ido antes de vaciar la caja.")
+                self._robo_fin(j, False, es("Te has ido antes de vaciar la caja."))
             elif ahora >= r["fin"]:
                 self._robo_fin(j, True)
 
@@ -2359,27 +2362,27 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         ahora = time.monotonic()
         motivo = None
         if not si(self.cfg["pvp"]):
-            motivo = "En este servidor no hay combate entre jugadores."
+            motivo = es("En este servidor no hay combate entre jugadores.")
         elif a.mapa != o.mapa:
-            motivo = "Ya no está aquí."
+            motivo = es("Ya no está aquí.")
         elif a.pasivo:
-            motivo = "Estás en modo pasivo: no puedes herir a nadie."
+            motivo = es("Estás en modo pasivo: no puedes herir a nadie.")
         elif o.pasivo:
-            motivo = "%s está en modo pasivo: no se le puede herir." % o.nombre
+            motivo = es("%s está en modo pasivo: no se le puede herir.") % o.nombre
         elif ahora < a.protegido:
-            motivo = "Acabas de llegar: todavía no puedes atacar a nadie."
+            motivo = es("Acabas de llegar: todavía no puedes atacar a nadie.")
         elif ahora < o.protegido:
-            motivo = "%s acaba de llegar y está protegido unos segundos." % o.nombre
+            motivo = es("%s acaba de llegar y está protegido unos segundos.") % o.nombre
         elif self.segura(a) or self.segura(o):
-            motivo = "Zona segura: aquí nadie puede herir a nadie."
+            motivo = es("Zona segura: aquí nadie puede herir a nadie.")
         else:
             rel = self._relacion(a, o)
             if rel == "banda":
-                motivo = "%s es de tu banda, y el fuego amigo está quitado." % o.nombre
+                motivo = es("%s es de tu banda, y el fuego amigo está quitado.") % o.nombre
             elif rel == "aliados":
-                motivo = "%s es de una banda aliada." % o.nombre
+                motivo = es("%s es de una banda aliada.") % o.nombre
             elif rel == "grupo":
-                motivo = "%s va contigo en la misión." % o.nombre
+                motivo = es("%s va contigo en la misión.") % o.nombre
         if motivo and avisar and ahora - getattr(a, "_t_motivo", 0) > 3:
             a._t_motivo = ahora
             self._enviar(a, {"t": "fallo", "a": o.id, "motivo": motivo})
@@ -2466,14 +2469,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if o is None or o is j or not o.dentro:
             return
         if o.mapa != j.mapa or j.dist(o) > 6 or j.veh or o.veh or self._va_con(o) is not None or self._va_con(j) is not None:
-            return self._aviso(j, "Para atracar a alguien tenéis que estar los dos a pie y a un paso.")
+            return self._aviso(j, es("Para atracar a alguien tenéis que estar los dos a pie y a un paso."))
         if j.arma == "punos":
-            return self._aviso(j, "Con las manos vacías no impones. Saca un arma.")
+            return self._aviso(j, es("Con las manos vacías no impones. Saca un arma."))
         if not self._puede_atacar(j, o, avisar=True):
             return
         ahora = time.monotonic()
         if ahora - j.atracos.get(o.cuenta, -9999) < 300:
-            return self._aviso(j, "A %s ya le has atracado hace un momento. No lleva más encima." % o.nombre)
+            return self._aviso(j, es("A %s ya le has atracado hace un momento. No lleva más encima.") % o.nombre)
         j.atracos[o.cuenta] = ahora
         botin = min(int(self.cfg["atraco_max"]), o.dinero * int(self.cfg["atraco"]) // 100)
         self._marcar_agresion(j, o)
@@ -2547,7 +2550,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         texto_extra = ""
         if recompensa > 0:
             self.alm.sumar(caido.cuenta, "recompensa", -recompensa)
-            texto_extra = " Cobras además los %d euros que ofrecían por su cabeza." % recompensa
+            texto_extra = es(" Cobras además los %d euros que ofrecían por su cabeza.") % recompensa
         if inocente:
             sube = int(self.cfg["recompensa"])
             self.alm.sumar(por.cuenta, "recompensa", sube)
@@ -2565,22 +2568,22 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         caido.golpeado.clear()
         caido.agredio.clear()
         if caido.id in self.robos:
-            self._robo_fin(caido, False, "Te han tumbado antes de vaciar la caja.")
+            self._robo_fin(caido, False, es("Te han tumbado antes de vaciar la caja."))
         self._guerra_baja(por, caido)
         self._a_todos({"t": "muerte", "quien": caido.nombre, "por": por.nombre}, menos=por if por.dentro else None)
         self.alm.guardar()
 
     def _m_pasivo(self, j, m):
         if not si(self.cfg["modo_pasivo"]):
-            return self._aviso(j, "En este servidor no hay modo pasivo.")
+            return self._aviso(j, es("En este servidor no hay modo pasivo."))
         ahora = time.monotonic()
         quiere = bool(m.get("si"))
         if quiere == j.pasivo:
             return
         if any(ahora - t < 60 for t in j.agredio.values()) or any(ahora - t < 30 for t in j.golpeado.values()):
-            return self._aviso(j, "No puedes cambiar de modo en mitad de una pelea. Espera un minuto.")
+            return self._aviso(j, es("No puedes cambiar de modo en mitad de una pelea. Espera un minuto."))
         if ahora - j.t_pasivo < 120 and j.t_pasivo:
-            return self._aviso(j, "Acabas de cambiar de modo. Espera dos minutos.")
+            return self._aviso(j, es("Acabas de cambiar de modo. Espera dos minutos."))
         j.pasivo, j.t_pasivo = quiere, ahora
         self._enviar(j, {"t": "pasivo", "si": quiere})
 
@@ -2616,7 +2619,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
     def _cobrar(self, j, n, motivo):
         """Lo que cuesta algo del servidor sale del bolsillo del jugador: su juego lo descuenta."""
         if j.dinero < n:
-            self._aviso(j, "No te llega: hacen falta %d euros y llevas %d." % (n, j.dinero), "error")
+            self._aviso(j, es("No te llega: hacen falta %d euros y llevas %d.") % (n, j.dinero), "error")
             return False
         j.dinero -= n
         if j.saldo is not None:
@@ -2630,39 +2633,39 @@ class Servidor(Bots, Trafico, Peatones, Policia):
     def _m_banda_crear(self, j, m):
         nombre = limpiar_nombre(m.get("nombre"), 30)
         if j.banda is not None:
-            return self._aviso(j, "Ya estás en una banda. Sal de ella antes de fundar otra.")
+            return self._aviso(j, es("Ya estás en una banda. Sal de ella antes de fundar otra."))
         if len(nombre) < 3:
-            return self._aviso(j, "El nombre de la banda tiene que tener al menos tres letras.")
+            return self._aviso(j, es("El nombre de la banda tiene que tener al menos tres letras."))
         if self.alm.banda_por_nombre(nombre) is not None:
-            return self._aviso(j, "Ya hay una banda con ese nombre.")
-        if not self._cobrar(j, int(self.cfg["precio_banda"]), "fundar la banda"):
+            return self._aviso(j, es("Ya hay una banda con ese nombre."))
+        if not self._cobrar(j, int(self.cfg["precio_banda"]), es("fundar la banda")):
             return
         j.banda, j.rango = self.alm.crear_banda(nombre, j.cuenta), "jefe"
         self._banda_difundir(j.banda)
-        self._a_todos({"t": "aviso", "texto": "%s ha fundado la banda %s." % (j.nombre, nombre), "son": "territorio"}, menos=j)
+        self._a_todos({"t": "aviso", "texto": es("%s ha fundado la banda %s.") % (j.nombre, nombre), "son": "territorio"}, menos=j)
         self._a_todos({"t": "de_banda", "id": j.id, "banda": j.banda})
 
     def _m_banda_invitar(self, j, m):
         o = self.jugadores.get(m.get("a"))
         if j.banda is None or j.rango not in ("jefe", "mano"):
-            return self._aviso(j, "Solo el jefe y su mano derecha pueden invitar.")
+            return self._aviso(j, es("Solo el jefe y su mano derecha pueden invitar."))
         if o is None or not o.dentro or o.banda is not None:
-            return self._aviso(j, "Esa persona no está, o ya tiene banda.")
+            return self._aviso(j, es("Esa persona no está, o ya tiene banda."))
         f = self.alm.banda(j.banda)
         self.invitaciones_banda[o.id] = {"banda": j.banda, "de": j.nombre, "hasta": time.monotonic() + 180}
         self._enviar(o, {"t": "banda_invita", "banda": j.banda, "nombre": f["nombre"], "de": j.nombre})
-        self._aviso(j, "Invitación enviada a %s." % o.nombre)
+        self._aviso(j, es("Invitación enviada a %s.") % o.nombre)
 
     def _m_banda_resp(self, j, m):
         inv = self.invitaciones_banda.pop(j.id, None)
         if inv is None or j.banda is not None or self.alm.banda(inv["banda"]) is None:
-            return self._aviso(j, "Esa invitación ya no vale.")
+            return self._aviso(j, es("Esa invitación ya no vale."))
         if not m.get("si"):
             return
         self.alm.meter_miembro(j.cuenta, inv["banda"])
         j.banda, j.rango = inv["banda"], "miembro"
         self._banda_difundir(j.banda)
-        self._a_banda(j.banda, {"t": "aviso", "texto": "%s entra en la banda." % j.nombre, "son": "pareja"}, menos=j)
+        self._a_banda(j.banda, {"t": "aviso", "texto": es("%s entra en la banda.") % j.nombre, "son": "pareja"}, menos=j)
         self._a_todos({"t": "de_banda", "id": j.id, "banda": j.banda})
 
     def _fuera_de_banda(self, cuenta):
@@ -2691,9 +2694,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             for o in self.jugadores.values():
                 if o.cuenta == nuevo["cuenta"]:
                     o.rango = "jefe"
-            self._a_banda(banda, {"t": "aviso", "texto": "%s deja la banda. Ahora manda %s." % (nombre, nuevo["nombre"])})
+            self._a_banda(banda, {"t": "aviso", "texto": es("%s deja la banda. Ahora manda %s.") % (nombre, nuevo["nombre"])})
         else:
-            self._a_banda(banda, {"t": "aviso", "texto": "%s deja la banda." % nombre})
+            self._a_banda(banda, {"t": "aviso", "texto": es("%s deja la banda.") % nombre})
         self._banda_difundir(banda)
 
     def _disolver(self, banda):
@@ -2701,22 +2704,22 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         self.alm.borrar_banda(banda)
         self.guerras = [g for g in self.guerras if banda not in (g["ataca"], g["defiende"])]
         if f is not None:
-            self._a_todos({"t": "aviso", "texto": "La banda %s se ha disuelto. Sus barrios quedan libres." % f["nombre"]})
+            self._a_todos({"t": "aviso", "texto": es("La banda %s se ha disuelto. Sus barrios quedan libres.") % f["nombre"]})
         self._difundir_territorios()
 
     def _m_banda_expulsar(self, j, m):
         mi = self.alm.miembro(m.get("cuenta"))
         if j.banda is None or j.rango != "jefe" or mi is None or mi["banda"] != j.banda or mi["cuenta"] == j.cuenta:
-            return self._aviso(j, "Solo el jefe puede echar a alguien de la banda.")
+            return self._aviso(j, es("Solo el jefe puede echar a alguien de la banda."))
         self._fuera_de_banda(mi["cuenta"])
-        self._a_banda(j.banda, {"t": "aviso", "texto": "El jefe ha echado a alguien de la banda."})
+        self._a_banda(j.banda, {"t": "aviso", "texto": es("El jefe ha echado a alguien de la banda.")})
         self._banda_difundir(j.banda)
 
     def _m_banda_rango(self, j, m):
         mi = self.alm.miembro(m.get("cuenta"))
         rango = m.get("rango")
         if j.banda is None or j.rango != "jefe" or mi is None or mi["banda"] != j.banda or mi["cuenta"] == j.cuenta or rango not in RANGOS:
-            return self._aviso(j, "Solo el jefe reparte los rangos.")
+            return self._aviso(j, es("Solo el jefe reparte los rangos."))
         self.alm.meter_miembro(mi["cuenta"], j.banda, rango)
         if rango == "jefe":                                    # ceder el mando
             self.alm.meter_miembro(j.cuenta, j.banda, "mano")
@@ -2732,9 +2735,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             n = max(1, min(1000000, int(m.get("n", 0))))
         except (TypeError, ValueError):
             return
-        if j.banda is None or not self._cobrar(j, n, "ingreso en la caja de la banda"):
+        if j.banda is None or not self._cobrar(j, n, es("ingreso en la caja de la banda")):
             return
-        self.alm.apunte(j.banda, j.nombre, n, "ingreso")
+        self.alm.apunte(j.banda, j.nombre, n, es("ingreso"))
         self._banda_difundir(j.banda)
 
     def _m_banda_sacar(self, j, m):
@@ -2744,30 +2747,30 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             return
         f = self.alm.banda(j.banda) if j.banda is not None else None
         if f is None or j.rango not in ("jefe", "mano"):
-            return self._aviso(j, "De la caja solo sacan el jefe y su mano derecha.")
+            return self._aviso(j, es("De la caja solo sacan el jefe y su mano derecha."))
         if n > f["caja"]:
-            return self._aviso(j, "En la caja hay %d euros." % f["caja"])
-        self.alm.apunte(j.banda, j.nombre, -n, "retirada")
+            return self._aviso(j, es("En la caja hay %d euros.") % f["caja"])
+        self.alm.apunte(j.banda, j.nombre, -n, es("retirada"))
         j.dinero += n
-        self._enviar(j, {"t": "dinero", "nombre": "La caja de la banda", "n": n})
+        self._enviar(j, {"t": "dinero", "nombre": es("La caja de la banda"), "n": n})
         self._banda_difundir(j.banda)
 
     def _m_banda_fuego(self, j, m):
         if j.banda is None or j.rango != "jefe":
-            return self._aviso(j, "El fuego amigo lo decide el jefe.")
+            return self._aviso(j, es("El fuego amigo lo decide el jefe."))
         self.alm.poner_banda(j.banda, fuego=int(bool(m.get("si"))))
         self.alm.guardar()
-        self._a_banda(j.banda, {"t": "aviso", "texto": "Fuego amigo de la banda: %s." % ("sí, cuidado con los tuyos" if m.get("si") else "no")})
+        self._a_banda(j.banda, {"t": "aviso", "texto": es("Fuego amigo de la banda: %s.") % (es("sí, cuidado con los tuyos") if m.get("si") else "no")})
         self._banda_difundir(j.banda)
 
     def _m_banda_disolver(self, j, m):
         if j.banda is None or j.rango != "jefe":
-            return self._aviso(j, "Solo el jefe puede disolver la banda.")
+            return self._aviso(j, es("Solo el jefe puede disolver la banda."))
         banda = j.banda
         f = self.alm.banda(banda)
         if f is not None and f["caja"] > 0:                    # lo que queda en la caja se lo lleva el jefe
             j.dinero += int(f["caja"])
-            self._enviar(j, {"t": "dinero", "nombre": "La caja de la banda", "n": int(f["caja"])})
+            self._enviar(j, {"t": "dinero", "nombre": es("La caja de la banda"), "n": int(f["caja"])})
         for mi in self.alm.miembros(banda):
             self._fuera_de_banda(mi["cuenta"])
         self._disolver(banda)
@@ -2782,22 +2785,22 @@ class Servidor(Bots, Trafico, Peatones, Policia):
     def _m_alianza(self, j, m):
         otra = self.alm.banda_por_nombre(str(m.get("banda", "")))
         if j.banda is None or j.rango != "jefe" or otra is None or otra["id"] == j.banda:
-            return self._aviso(j, "Las alianzas las propone el jefe, a otra banda que exista.")
+            return self._aviso(j, es("Las alianzas las propone el jefe, a otra banda que exista."))
         if m.get("romper"):
             self.alm.aliar(j.banda, otra["id"], False)
-            self._a_banda(otra["id"], {"t": "aviso", "texto": "La banda %s rompe la alianza con la vuestra." % self.alm.banda(j.banda)["nombre"]})
+            self._a_banda(otra["id"], {"t": "aviso", "texto": es("La banda %s rompe la alianza con la vuestra.") % self.alm.banda(j.banda)["nombre"]})
             self._banda_difundir(j.banda)
             return self._banda_difundir(otra["id"])
         if self.propuestas_alianza.get(j.banda) == otra["id"]:   # ellos ya nos lo habían propuesto: hecho
             self.propuestas_alianza.pop(j.banda, None)
             self.alm.aliar(j.banda, otra["id"], True)
             for b in (j.banda, otra["id"]):
-                self._a_banda(b, {"t": "aviso", "texto": "Alianza cerrada entre %s y %s." % (self.alm.banda(j.banda)["nombre"], otra["nombre"]), "son": "pareja"})
+                self._a_banda(b, {"t": "aviso", "texto": es("Alianza cerrada entre %s y %s.") % (self.alm.banda(j.banda)["nombre"], otra["nombre"]), "son": "pareja"})
                 self._banda_difundir(b)
             return
         self.propuestas_alianza[otra["id"]] = j.banda
-        self._a_banda(otra["id"], {"t": "aviso", "texto": "La banda %s os propone una alianza. Si vuestro jefe se la propone a ellos, queda cerrada." % self.alm.banda(j.banda)["nombre"]})
-        self._aviso(j, "Propuesta enviada a %s." % otra["nombre"])
+        self._a_banda(otra["id"], {"t": "aviso", "texto": es("La banda %s os propone una alianza. Si vuestro jefe se la propone a ellos, queda cerrada.") % self.alm.banda(j.banda)["nombre"]})
+        self._aviso(j, es("Propuesta enviada a %s.") % otra["nombre"])
 
     def _barrio_valido(self, mapa, barrio):
         return mapa in self.mundo["mapas"] and any(b["id"] == barrio for b in self.mundo["mapas"][mapa]["barrios"])
@@ -2805,47 +2808,49 @@ class Servidor(Bots, Trafico, Peatones, Policia):
     def _m_barrio_reclamar(self, j, m):
         """Quedarse con el barrio en el que estás, si no es de nadie. Lo paga la caja."""
         if j.banda is None or j.rango not in ("jefe", "mano"):
-            return self._aviso(j, "Los barrios los reclama el jefe o su mano derecha.")
+            return self._aviso(j, es("Los barrios los reclama el jefe o su mano derecha."))
         if not self._barrio_valido(j.mapa, j.barrio):
-            return self._aviso(j, "Aquí no hay ningún barrio que reclamar.")
+            return self._aviso(j, es("Aquí no hay ningún barrio que reclamar."))
         if self.alm.territorio(j.mapa, j.barrio) is not None:
-            return self._aviso(j, "Este barrio ya tiene dueño. Para quitárselo hay que declararle la guerra.")
+            return self._aviso(j, es("Este barrio ya tiene dueño. Para quitárselo hay que declararle la guerra."))
         f = self.alm.banda(j.banda)
         mios = sum(1 for t in self.alm.territorios() if t["banda"] == j.banda)
         if mios >= len(self.alm.miembros(j.banda)) + 1:
-            return self._aviso(j, "Con la gente que sois no podéis sostener más barrios. Hace falta más banda.")
+            return self._aviso(j, es("Con la gente que sois no podéis sostener más barrios. Hace falta más banda."))
         precio = int(self.cfg["precio_barrio"])
         if f["caja"] < precio:
-            return self._aviso(j, "Reclamar un barrio cuesta %d euros de la caja, y hay %d." % (precio, f["caja"]))
-        self.alm.apunte(j.banda, j.nombre, -precio, "reclamar un barrio")
+            return self._aviso(j, es("Reclamar un barrio cuesta %d euros de la caja, y hay %d.") % (precio, f["caja"]))
+        self.alm.apunte(j.banda, j.nombre, -precio, es("reclamar un barrio"))
         self.alm.poner_territorio(j.mapa, j.barrio, j.banda)
-        self._a_todos({"t": "aviso", "texto": "La banda %s se queda con un barrio de %s." % (f["nombre"], self.mundo["mapas"][j.mapa]["nombre"]), "son": "territorio"})
+        self._a_todos({"t": "aviso", "texto": es("La banda %s se queda con un barrio de %s.") % (f["nombre"], self.mundo["mapas"][j.mapa]["nombre"]), "son": "territorio"})
         self._banda_difundir(j.banda)
         self._difundir_territorios()
 
     def _m_barrio_guerra(self, j, m):
         """Declarar la guerra por el barrio en el que estás. No empieza ya: se avisa y se pelea a una hora."""
         if j.banda is None or j.rango not in ("jefe", "mano"):
-            return self._aviso(j, "La guerra la declara el jefe o su mano derecha.")
+            return self._aviso(j, es("La guerra la declara el jefe o su mano derecha."))
         t = self.alm.territorio(j.mapa, j.barrio) if self._barrio_valido(j.mapa, j.barrio) else None
         if t is None or t["banda"] == j.banda:
-            return self._aviso(j, "Este barrio no es de otra banda.")
+            return self._aviso(j, es("Este barrio no es de otra banda."))
         if t["banda"] in self.alm.aliadas(j.banda):
-            return self._aviso(j, "Ese barrio es de una banda aliada. Rompe antes la alianza.")
+            return self._aviso(j, es("Ese barrio es de una banda aliada. Rompe antes la alianza."))
         if any(g["mapa"] == j.mapa and g["barrio"] == j.barrio for g in self.guerras):
-            return self._aviso(j, "Ya hay una guerra declarada por este barrio.")
+            return self._aviso(j, es("Ya hay una guerra declarada por este barrio."))
         f = self.alm.banda(j.banda)
         precio = int(self.cfg["precio_guerra"])
         if f["caja"] < precio:
-            return self._aviso(j, "Declarar una guerra cuesta %d euros de la caja, y hay %d." % (precio, f["caja"]))
-        self.alm.apunte(j.banda, j.nombre, -precio, "declarar una guerra")
+            return self._aviso(j, es("Declarar una guerra cuesta %d euros de la caja, y hay %d.") % (precio, f["caja"]))
+        self.alm.apunte(j.banda, j.nombre, -precio, es("declarar una guerra"))
         inicio = self.ahora() + 60 * int(self.cfg["guerra_espera"])
         g = {"mapa": j.mapa, "barrio": j.barrio, "ataca": j.banda, "defiende": t["banda"], "inicio": inicio,
              "fin": inicio + 60 * int(self.cfg["guerra_dura"]), "pa": 0, "pd": 0, "fase": "espera"}
         self.guerras.append(g)
-        lugar = "%s, en %s" % (self._nombre_barrio(g), self.mundo["mapas"][g["mapa"]]["nombre"])
-        for b, texto in ((g["defiende"], "¡%s os declara la guerra por %s! Empieza dentro de %d minutos y dura %d. Gana quien más gente tenga dentro del barrio y más rivales tumbe." % (f["nombre"], lugar, int(self.cfg["guerra_espera"]), int(self.cfg["guerra_dura"]))),
-                         (g["ataca"], "Guerra declarada por %s. Empieza dentro de %d minutos y dura %d. Hay que estar dentro del barrio." % (lugar, int(self.cfg["guerra_espera"]), int(self.cfg["guerra_dura"])))):
+        lugar = es("%s, en %s") % (self._nombre_barrio(g), self.mundo["mapas"][g["mapa"]]["nombre"])
+        for b, texto in ((g["defiende"], es("¡%s os declara la guerra por %s! Empieza dentro de %d minutos y dura %d. Gana quien más gente tenga dentro del barrio "
+                                            "y más rivales tumbe.") % (f["nombre"], lugar, int(self.cfg["guerra_espera"]), int(self.cfg["guerra_dura"]))),
+                         (g["ataca"], es("Guerra declarada por %s. Empieza dentro de %d minutos y dura %d. Hay que estar dentro del barrio.") % (
+                             lugar, int(self.cfg["guerra_espera"]), int(self.cfg["guerra_dura"])))):
             self._a_banda(b, {"t": "aviso", "texto": texto, "son": "sirena_lejana"})
         self._banda_difundir(j.banda)
         self._difundir_territorios()
@@ -2859,7 +2864,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             if g["fase"] == "espera" and ahora >= g["inicio"]:
                 g["fase"] = "lucha"
                 for b in (g["ataca"], g["defiende"]):
-                    self._a_banda(b, {"t": "aviso", "texto": "¡Empieza la guerra por %s! Todos al barrio." % self._nombre_barrio(g), "son": "sirena"})
+                    self._a_banda(b, {"t": "aviso", "texto": es("¡Empieza la guerra por %s! Todos al barrio.") % self._nombre_barrio(g), "son": "sirena"})
                 self._difundir_territorios()
             if g["fase"] != "lucha":
                 continue
@@ -2873,7 +2878,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 self._guerra_fin(g)
             elif int(g["fin"] - ahora) % 120 == 0:
                 for b in (g["ataca"], g["defiende"]):
-                    self._a_banda(b, {"t": "aviso", "texto": "Guerra por %s: atacantes %d puntos, defensores %d. Quedan %d minutos." % (
+                    self._a_banda(b, {"t": "aviso", "texto": es("Guerra por %s: atacantes %d puntos, defensores %d. Quedan %d minutos.") % (
                         self._nombre_barrio(g), int(g["pa"]), int(g["pd"]), max(0, int((g["fin"] - ahora) // 60)))})
 
     def _guerra_baja(self, por, caido):
@@ -2891,8 +2896,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         nombre = self._nombre_barrio(g)
         if gana_ataque:
             self.alm.poner_territorio(g["mapa"], g["barrio"], g["ataca"])
-        texto = "La guerra por %s ha terminado: %d a %d. %s" % (nombre, int(g["pa"]), int(g["pd"]),
-                ("El barrio pasa a %s." % ataca["nombre"]) if gana_ataque else ("%s lo conserva." % (defiende["nombre"] if defiende else "Su dueño")))
+        texto = es("La guerra por %s ha terminado: %d a %d. %s") % (nombre, int(g["pa"]), int(g["pd"]),
+                (es("El barrio pasa a %s.") % ataca["nombre"]) if gana_ataque else (es("%s lo conserva.") % (defiende["nombre"] if defiende else es("Su dueño"))))
         self._a_todos({"t": "aviso", "texto": texto, "son": "territorio"})
         for b in (g["ataca"], g["defiende"]):
             self._banda_difundir(b)
@@ -2919,14 +2924,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if o is None or not o.dentro or o is j:
             return
         if j.grupo is not None and j.grupo != j.id:
-            return self._aviso(j, "Vas en el grupo de otro: solo invita quien lo lleva.")
+            return self._aviso(j, es("Vas en el grupo de otro: solo invita quien lo lleva."))
         if o.grupo is not None:
-            return self._aviso(j, "%s ya va en un grupo." % o.nombre)
+            return self._aviso(j, es("%s ya va en un grupo.") % o.nombre)
         if len(self._grupo(j)) >= 4:
-            return self._aviso(j, "En un grupo caben cuatro.")
+            return self._aviso(j, es("En un grupo caben cuatro."))
         self.invitaciones_grupo[o.id] = j.id
         self._enviar(o, {"t": "grupo_invita", "de": j.id, "nombre": j.nombre, "mision": str(m.get("mision", ""))[:80]})
-        self._aviso(j, "Invitación enviada a %s." % o.nombre)
+        self._aviso(j, es("Invitación enviada a %s.") % o.nombre)
 
     def _m_grupo_resp(self, j, m):
         lider = self.jugadores.get(self.invitaciones_grupo.pop(j.id, None))
@@ -2936,7 +2941,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         self._grupo_difundir(lider.id)
         for o in self._grupo(j):
             if o is not j:
-                self._aviso(o, "%s se une al grupo." % j.nombre, "amigo_entra")
+                self._aviso(o, es("%s se une al grupo.") % j.nombre, "amigo_entra")
 
     def _grupo_salir(self, j, callar=False):
         lider = j.grupo
@@ -2950,10 +2955,10 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             for o in resto:
                 o.grupo = None
                 self._enviar(o, {"t": "grupo", "lider": None, "miembros": []})
-                self._aviso(o, "%s ha deshecho el grupo." % j.nombre)
+                self._aviso(o, es("%s ha deshecho el grupo.") % j.nombre)
         else:
             for o in resto:
-                self._aviso(o, "%s deja el grupo." % j.nombre)
+                self._aviso(o, es("%s deja el grupo.") % j.nombre)
             self._grupo_difundir(lider)
 
     def _m_grupo_salir(self, j, m):
@@ -2979,39 +2984,39 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 continue
             clave = (j.cuenta, o.cuenta, m.get("id"))
             if clave in self.ayudas and not mi["repetible"]:
-                self._aviso(o, "Misión completada: %s. Ya cobraste por ayudar en ella." % mi["titulo"], "mision_ok")
+                self._aviso(o, es("Misión completada: %s. Ya cobraste por ayudar en ella.") % mi["titulo"], "mision_ok")
                 continue
             self.ayudas.add(clave)
             self._enviar(o, {"t": "paga_mision", "titulo": mi["titulo"], "n": parte, "de": j.nombre})
 
     # ============================================================ administrar
     AYUDA_ORDENES = (
-        ("ayuda", "dice todas las órdenes"),
-        ("estado", "cómo está el servidor: puerto, cifrado, mundo, tiempo en marcha y cuánta gente hay"),
-        ("jugadores", "quién está dentro y dónde"),
-        ("cuentas", "todas las cuentas del servidor, con las vetadas y las que administran"),
-        ("aviso texto", "dice algo a todos los que están dentro"),
-        ("decir nombre: texto", "dice algo solo a un jugador"),
-        ("expulsar nombre", "saca a un jugador; puede volver a entrar. Detrás de dos puntos se le puede decir el motivo"),
-        ("vetar nombre", "saca a un jugador y no le deja volver"),
-        ("perdonar nombre", "levanta el veto"),
-        ("admin nombre", "hace administrador a un jugador"),
-        ("quitaradmin nombre", "le quita la administración"),
-        ("borrarcuenta nombre", "borra una cuenta con su personaje, sus propiedades y su sitio en la banda; no se puede deshacer"),
-        ("invitar", "crea un código de invitación de un solo uso; con un número detrás, crea varios"),
-        ("invitaciones", "las invitaciones que hay, libres y usadas"),
-        ("anular código", "anula una invitación que aún no ha usado nadie"),
-        ("mensaje texto", "cambia el mensaje del día; sin texto, lo quita"),
-        ("hora número", "pone la hora del juego, de 0 a 23"),
-        ("bandas", "las bandas, con su gente y su caja"),
-        ("guardar", "guarda todo ahora"),
-        ("copia", "hace una copia de seguridad"),
-        ("copias", "las copias de seguridad que hay"),
-        ("recargar", "vuelve a leer servidor.conf y aplica lo que se puede cambiar sin reiniciar"),
-        ("actualizar", "avisa a todos de que el servidor se reinicia para actualizarse, espera la cuenta atrás, lo guarda todo y lo para; "
-                       "los juegos esperan y vuelven a entrar solos cuando lo arranques otra vez. Detrás se pueden poner los segundos de aviso"),
-        ("reiniciar", "lo mismo, pero diciendo que es por mantenimiento. Detrás se pueden poner los segundos de aviso"),
-        ("apagar", "avisa a todos, lo guarda todo y para el servidor"),
+        ("ayuda", tr("dice todas las órdenes")),
+        ("estado", tr("cómo está el servidor: puerto, cifrado, mundo, tiempo en marcha y cuánta gente hay")),
+        ("jugadores", tr("quién está dentro y dónde")),
+        ("cuentas", tr("todas las cuentas del servidor, con las vetadas y las que administran")),
+        ("aviso " + tr("texto"), tr("dice algo a todos los que están dentro")),
+        ("decir " + tr("nombre: texto"), tr("dice algo solo a un jugador")),
+        ("expulsar " + tr("nombre"), tr("saca a un jugador; puede volver a entrar. Detrás de dos puntos se le puede decir el motivo")),
+        ("vetar " + tr("nombre"), tr("saca a un jugador y no le deja volver")),
+        ("perdonar " + tr("nombre"), tr("levanta el veto")),
+        ("admin " + tr("nombre"), tr("hace administrador a un jugador")),
+        ("quitaradmin " + tr("nombre"), tr("le quita la administración")),
+        ("borrarcuenta " + tr("nombre"), tr("borra una cuenta con su personaje, sus propiedades y su sitio en la banda; no se puede deshacer")),
+        ("invitar", tr("crea un código de invitación de un solo uso; con un número detrás, crea varios")),
+        ("invitaciones", tr("las invitaciones que hay, libres y usadas")),
+        ("anular " + tr("código"), tr("anula una invitación que aún no ha usado nadie")),
+        ("mensaje " + tr("texto"), tr("cambia el mensaje del día; sin texto, lo quita")),
+        ("hora " + tr("número"), tr("pone la hora del juego, de 0 a 23")),
+        ("bandas", tr("las bandas, con su gente y su caja")),
+        ("guardar", tr("guarda todo ahora")),
+        ("copia", tr("hace una copia de seguridad")),
+        ("copias", tr("las copias de seguridad que hay")),
+        ("recargar", tr("vuelve a leer servidor.conf y aplica lo que se puede cambiar sin reiniciar")),
+        ("actualizar", tr("avisa a todos de que el servidor se reinicia para actualizarse, espera la cuenta atrás, lo guarda todo y lo para; "
+                       "los juegos esperan y vuelven a entrar solos cuando lo arranques otra vez. Detrás se pueden poner los segundos de aviso")),
+        ("reiniciar", tr("lo mismo, pero diciendo que es por mantenimiento. Detrás se pueden poner los segundos de aviso")),
+        ("apagar", tr("avisa a todos, lo guarda todo y para el servidor")),
     )
 
     def resumen(self):
@@ -3057,16 +3062,16 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             vetados = self._nombres("vetados")
             for j in list(self.jugadores.values()):
                 if j.dentro and not j.bot and j.nombre.lower() in vetados:
-                    self._echar(j, "Un administrador te ha sacado del servidor.")
+                    self._echar(j, es("Un administrador te ha sacado del servidor."))
         return al_momento, con_reinicio
 
     def _tiempo_en_marcha(self):
         if not self.t_inicio:
-            return "parado"
+            return tr("parado")
         s = int(max(0, time.time() - self.t_inicio))
         d, h, m = s // 86400, s % 86400 // 3600, s % 3600 // 60
-        partes = (["%d %s" % (d, "día" if d == 1 else "días")] if d else []) + (["%d %s" % (h, "hora" if h == 1 else "horas")] if h else [])
-        return ", ".join(partes + ["%d %s" % (m, "minuto" if m == 1 else "minutos")])
+        partes = ([(tr("%d día") if d == 1 else tr("%d días")) % d] if d else []) + ([(tr("%d hora") if h == 1 else tr("%d horas")) % h] if h else [])
+        return ", ".join(partes + [(tr("%d minuto") if m == 1 else tr("%d minutos")) % m])
 
     def orden(self, texto, quien="consola"):
         """Órdenes de administración: desde la consola del servidor, desde el panel, o desde el chat con una barra delante."""
@@ -3079,63 +3084,64 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         def buscar(nombre):
             return next((j for j in dentro if j.nombre.lower() == nombre.lower()), None)
         if quien != "consola" and que not in ("ayuda", "?", "jugadores", "estado"):
-            self.log("%s da la orden %s." % (quien, que))
+            self.log(tr("%s da la orden %s.") % (quien, que))
         if que in ("ayuda", "?"):
             if quien != "consola":                              # por el chat, corto: se oye, no se lee
-                return "Órdenes: " + ", ".join(o for o, _ in self.AYUDA_ORDENES) + "."
-            return "Órdenes:\n" + "\n".join("  %s: %s." % o for o in self.AYUDA_ORDENES)
+                return tr("Órdenes: ") + ", ".join(o for o, _ in self.AYUDA_ORDENES) + "."
+            return tr("Órdenes:") + "\n" + "\n".join("  %s: %s." % o for o in self.AYUDA_ORDENES)
         if que == "estado":
             r = self.resumen()
             tope = r["max_jugadores"]
-            return ("Servidor «%s», en marcha desde hace %s. Puerto %s, %s. Mundo de la versión %s, huella %s, con %d localidades. "
-                    "Hay %d %s%s y %d personajes del servidor." % (
-                        r["nombre"], self._tiempo_en_marcha(), r["puerto"], "con cifrado" if r["cifrado"] else "sin cifrado", r["mundo_version"],
-                        r["mundo_huella"], r["localidades"], len(dentro), "jugador" if len(dentro) == 1 else "jugadores",
-                        (" de %d" % tope) if tope > 0 else ", sin límite", r["personajes"]))
+            return (tr("Servidor «%s», en marcha desde hace %s. Puerto %s, %s. Mundo de la versión %s, huella %s, con %d localidades. "
+                       "Hay %d %s%s y %d personajes del servidor.") % (
+                        r["nombre"], self._tiempo_en_marcha(), r["puerto"], tr("con cifrado") if r["cifrado"] else tr("sin cifrado"), r["mundo_version"],
+                        r["mundo_huella"], r["localidades"], len(dentro), tr("jugador") if len(dentro) == 1 else tr("jugadores"),
+                        (tr(" de %d") % tope) if tope > 0 else tr(", sin límite"), r["personajes"]))
         if que == "jugadores":
-            return ("Hay %d: " % len(dentro)) + ", ".join("%s en %s" % (j.nombre, self.mundo["mapas"].get(j.mapa, {}).get("nombre", "sin situar")) for j in dentro) if dentro else "No hay nadie."
+            return (tr("Hay %d: ") % len(dentro)) + ", ".join(tr("%s en %s") % (j.nombre, self.mundo["mapas"].get(j.mapa, {}).get("nombre", tr("sin situar"))) for j in dentro) if dentro else tr("No hay nadie.")
         if que == "cuentas":
             cs = self.lista_cuentas()
             if not cs:
-                return "Todavía no hay ninguna cuenta."
-            return ("Hay %d: " % len(cs)) + ", ".join(c["nombre"] + (" (administra)" if c["admin"] else "") + (" (vetada)" if c["vetado"] else "")
-                                                       + (" (dentro)" if c["dentro"] else "") for c in cs) + "."
+                return tr("Todavía no hay ninguna cuenta.")
+            return (tr("Hay %d: ") % len(cs)) + ", ".join(c["nombre"] + (tr(" (administra)") if c["admin"] else "") + (tr(" (vetada)") if c["vetado"] else "")
+                                                       + (tr(" (dentro)") if c["dentro"] else "") for c in cs) + "."
         if que == "aviso" and resto:
-            self._a_todos({"t": "aviso", "texto": "Aviso del servidor: " + resto[:300], "son": "notificacion"})
-            return "Aviso enviado."
+            self._a_todos({"t": "aviso", "texto": es("Aviso del servidor: %s") % resto[:300], "son": "notificacion"})
+            return tr("Aviso enviado.")
         if que == "decir" and resto:
             nombre, _, dicho = resto.partition(":")
             j = buscar(nombre.strip())
             if j is None or not dicho.strip():
-                return "Escribe decir, el nombre de alguien que esté dentro, dos puntos y el mensaje."
-            self._aviso(j, "Quien administra el servidor te dice: " + dicho.strip()[:300], "notificacion")
-            return "Dicho a %s." % j.nombre
+                return tr("Escribe decir, el nombre de alguien que esté dentro, dos puntos y el mensaje.")
+            self._aviso(j, es("Quien administra el servidor te dice: %s") % dicho.strip()[:300], "notificacion")
+            return tr("Dicho a %s.") % j.nombre
         if que in ("expulsar", "vetar") and resto:
             nombre, _, motivo = resto.partition(":")
             nombre = nombre.strip()
             j = buscar(nombre)
             fila = self.alm.cuenta_por_nombre(nombre)
             if fila is None:
-                return "No hay nadie con ese nombre."
+                return tr("No hay nadie con ese nombre.")
             if que == "vetar":
                 self.alm.poner(fila["id"], vetado=1)
                 self.alm.guardar()
             if j is not None:
-                self._echar(j, "Un administrador te ha sacado del servidor." + ((" Motivo: " + motivo.strip()[:200]) if motivo.strip() else ""))
+                self._echar(j, (es("Un administrador te ha sacado del servidor. Motivo: %s") % motivo.strip()[:200]) if motivo.strip() else
+                            es("Un administrador te ha sacado del servidor."))
             elif que == "expulsar":
-                return "%s no está dentro ahora mismo." % fila["nombre"]
-            return "%s, %s." % (fila["nombre"], "vetado: no podrá volver a entrar" if que == "vetar" else "expulsado")
+                return tr("%s no está dentro ahora mismo.") % fila["nombre"]
+            return (tr("%s, vetado: no podrá volver a entrar.") if que == "vetar" else tr("%s, expulsado.")) % fila["nombre"]
         if que == "perdonar" and resto:
             fila = self.alm.cuenta_por_nombre(resto)
             if fila is None:
-                return "No hay nadie con ese nombre."
+                return tr("No hay nadie con ese nombre.")
             self.alm.poner(fila["id"], vetado=0)
             self.alm.guardar()
-            return "%s puede volver a entrar." % fila["nombre"]
+            return tr("%s puede volver a entrar.") % fila["nombre"]
         if que in ("admin", "quitaradmin") and resto:
             fila = self.alm.cuenta_por_nombre(resto)
             if fila is None:
-                return "No hay nadie con ese nombre."
+                return tr("No hay nadie con ese nombre.")
             pone = que == "admin"
             self.alm.poner(fila["id"], admin=int(pone))
             self.alm.guardar()
@@ -3144,19 +3150,19 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             if j is not None:
                 j.admin = pone or por_lista
             if not pone and por_lista:
-                return "%s sigue administrando porque está en la lista de administradores de la configuración. Quítalo también de ahí." % fila["nombre"]
-            return ("%s ya es administrador." if pone else "%s ya no administra.") % fila["nombre"]
+                return tr("%s sigue administrando porque está en la lista de administradores de la configuración. Quítalo también de ahí.") % fila["nombre"]
+            return (tr("%s ya es administrador.") if pone else tr("%s ya no administra.")) % fila["nombre"]
         if que == "borrarcuenta" and resto:
             fila = self.alm.cuenta_por_nombre(resto)
             if fila is None:
-                return "No hay nadie con ese nombre."
+                return tr("No hay nadie con ese nombre.")
             mi = self.alm.miembro(fila["id"])
             if mi is not None and mi["rango"] == "jefe" and len(self.alm.miembros(mi["banda"])) > 1:
-                return "%s es jefe de una banda con más gente. Antes tiene que ceder el mando o disolverla." % fila["nombre"]
+                return tr("%s es jefe de una banda con más gente. Antes tiene que ceder el mando o disolverla.") % fila["nombre"]
             j = buscar(fila["nombre"])
             if j is not None:
                 self._salida(j, callar=True)
-                self._echar(j, "Un administrador ha borrado tu cuenta de este servidor.")
+                self._echar(j, es("Un administrador ha borrado tu cuenta de este servidor."))
                 self._a_todos({"t": "sale", "id": j.id})
             if mi is not None:                                 # era el único de su banda: la banda se va con él
                 self._fuera_de_banda(fila["id"])
@@ -3170,83 +3176,84 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self.alm.borrar_cuenta(fila["id"])
             for lugar in suyas:                                # lo que tenía vuelve a estar en venta
                 self._prop_difundir(lugar, antes=fila["id"])
-            return "Cuenta de %s borrada, con su personaje y sus propiedades." % fila["nombre"]
+            return tr("Cuenta de %s borrada, con su personaje y sus propiedades.") % fila["nombre"]
         if que == "invitar":
             try:
                 n = max(1, min(50, int(resto))) if resto else 1
             except ValueError:
-                return "Detrás de invitar, si pones algo, tiene que ser cuántos códigos quieres: de 1 a 50."
+                return tr("Detrás de invitar, si pones algo, tiene que ser cuántos códigos quieres: de 1 a 50.")
             codigos = []
             for _ in range(n):
                 codigo = secrets.token_hex(4).upper()
                 self.alm.crear_invitacion(codigo)
                 codigos.append(codigo)
             if n == 1:
-                return "Código de invitación, de un solo uso: %s" % codigos[0]
-            return "Códigos de invitación, de un solo uso cada uno: %s" % ", ".join(codigos)
+                return tr("Código de invitación, de un solo uso: %s") % codigos[0]
+            return tr("Códigos de invitación, de un solo uso cada uno: %s") % ", ".join(codigos)
         if que == "invitaciones":
             inv = self.lista_invitaciones()
             if not inv:
-                return "No hay ninguna invitación. Se crean con la orden invitar."
-            return "; ".join("%s, %s" % (i["codigo"], ("usada por " + (i["por"] or "una cuenta que ya no existe")) if i["usada"] else "libre") for i in inv) + "."
+                return tr("No hay ninguna invitación. Se crean con la orden invitar.")
+            return "; ".join("%s, %s" % (i["codigo"], (tr("usada por %s") % (i["por"] or tr("una cuenta que ya no existe"))) if i["usada"] else tr("libre"))
+                             for i in inv) + "."
         if que == "anular" and resto:
-            return "Invitación anulada." if self.alm.borrar_invitacion(resto.strip().upper()) else "No hay ninguna invitación libre con ese código."
+            return tr("Invitación anulada.") if self.alm.borrar_invitacion(resto.strip().upper()) else tr("No hay ninguna invitación libre con ese código.")
         if que == "mensaje":
             valor, error = opciones.validar_valor("mensaje_dia", resto)
             if error:
-                return "El mensaje del día " + error + "."
+                return tr("El mensaje del día %s.") % error
             self.cfg["mensaje_dia"] = valor
             if valor:
-                self._a_todos({"t": "aviso", "texto": "Mensaje del día: " + valor, "son": "notificacion"})
-                return "Mensaje del día cambiado, hasta que el servidor se reinicie. Para dejarlo fijo, ponlo en la configuración."
-            return "Mensaje del día quitado."
+                self._a_todos({"t": "aviso", "texto": es("Mensaje del día: %s") % valor, "son": "notificacion"})
+                return tr("Mensaje del día cambiado, hasta que el servidor se reinicie. Para dejarlo fijo, ponlo en la configuración.")
+            return tr("Mensaje del día quitado.")
         if que == "hora" and resto:
             try:
                 self.reloj = (finito(resto.replace(",", ".")) % 24) * 60
             except ValueError:
-                return "Dime la hora con un número, de 0 a 23."
+                return tr("Dime la hora con un número, de 0 a 23.")
             self._a_todos({"t": "hora", "h": self._hora()})
-            return "Hora cambiada."
+            return tr("Hora cambiada.")
         if que == "bandas":
             bs = self.alm.bandas()
-            return "; ".join("%s, %d miembros, %d euros" % (b["nombre"], len(self.alm.miembros(b["id"])), b["caja"]) for b in bs) if bs else "No hay bandas."
+            return "; ".join(tr("%s, %d miembros, %d euros") % (b["nombre"], len(self.alm.miembros(b["id"])), b["caja"]) for b in bs) if bs else tr("No hay bandas.")
         if que == "guardar":
             self.guardar_todo()
             self._t_guardado = time.monotonic()
-            return "Guardado."
+            return tr("Guardado.")
         if que == "copia":
             try:
-                return "Copia hecha en %s" % self.copia_seguridad()
+                return tr("Copia hecha en %s") % self.copia_seguridad()
             except Exception as e:
-                return "No se ha podido hacer la copia: %s: %s" % (type(e).__name__, e)
+                return tr("No se ha podido hacer la copia: %s: %s") % (type(e).__name__, e)
         if que == "copias":
             lista = copias.listar(self.cfg["datos"])
             if not lista:
-                return "No hay ninguna copia de seguridad."
-            return ("Hay %d, la más nueva primero: " % len(lista)) + ", ".join(os.path.basename(c[0]) for c in lista[:30]) + "."
+                return tr("No hay ninguna copia de seguridad.")
+            return (tr("Hay %d, la más nueva primero: ") % len(lista)) + ", ".join(os.path.basename(c[0]) for c in lista[:30]) + "."
         if que == "recargar":
             if not self.ruta_conf or not os.path.exists(self.ruta_conf):
-                return "Este servidor no se arrancó con un archivo de configuración: no hay nada que recargar."
+                return tr("Este servidor no se arrancó con un archivo de configuración: no hay nada que recargar.")
             nueva, avisos = opciones.leer(self.ruta_conf)
             al_momento, con_reinicio = self.aplicar_config(nueva)
             nombre = lambda c: opciones.POR_CLAVE[c].etiqueta
             return " ".join(avisos + [
-                ("Aplicado: %s." % ", ".join(nombre(c) for c in al_momento)) if al_momento else "No había nada que aplicar al momento.",
-                ("Esperan a que reinicies el servidor: %s." % ", ".join(nombre(c) for c in con_reinicio)) if con_reinicio else ""]).strip()
+                (tr("Aplicado: %s.") % ", ".join(nombre(c) for c in al_momento)) if al_momento else tr("No había nada que aplicar al momento."),
+                (tr("Esperan a que reinicies el servidor: %s.") % ", ".join(nombre(c) for c in con_reinicio)) if con_reinicio else ""]).strip()
         if que in ("actualizar", "reiniciar", "mantenimiento"):
             if self.parando:
-                return "El servidor ya se está parando."
+                return tr("El servidor ya se está parando.")
             try:
                 aviso = int(resto) if resto else None
             except ValueError:
-                return "Detrás de %s, si pones algo, tienen que ser los segundos de aviso." % que
+                return tr("Detrás de %s, si pones algo, tienen que ser los segundos de aviso.") % que
             aviso = self.parar_para_volver("actualizacion" if que == "actualizar" else "reinicio", aviso)
-            return ("Aviso dado. El servidor se para dentro de %d segundos, guardándolo todo. Los juegos esperarán y volverán a entrar solos "
-                    "cuando lo arranques otra vez." % aviso)
+            return (tr("Aviso dado. El servidor se para dentro de %d segundos, guardándolo todo. Los juegos esperarán y volverán a entrar solos "
+                       "cuando lo arranques otra vez.") % aviso)
         if que == "apagar":
-            asyncio.get_event_loop().create_task(self.detener("Un administrador ha apagado el servidor."))
-            return "Apagando."
+            asyncio.get_event_loop().create_task(self.detener(es("Un administrador ha apagado el servidor.")))
+            return tr("Apagando.")
         uso = next((o for o in self.AYUDA_ORDENES if o[0].split()[0] == que), None)
         if uso is not None:                                    # la orden existe, pero le falta el nombre, el texto o el número
-            return "A esa orden le falta algo. Se escribe así: %s. Sirve para esto: %s." % uso
-        return "No conozco esa orden. Escribe ayuda."
+            return tr("A esa orden le falta algo. Se escribe así: %s. Sirve para esto: %s.") % uso
+        return tr("No conozco esa orden. Escribe ayuda.")

@@ -21,6 +21,7 @@ carpeta por personaje, así que solo se hace una vez. Mientras una frase no est�
 
 El modelo Phonon 40m es de Gradium y tiene licencia CC BY-NC 4.0: uso no comercial, citando a Gradium.
 """
+from .i18n import tr
 import hashlib
 import json
 import os
@@ -32,16 +33,64 @@ import time
 
 from . import genero, registro, rutas
 
-PROTA = "Dani"                                   # con este nombre figuran en los datos las frases del protagonista
+PROTA = tr("Dani")                                       # con este nombre figuran en los datos las frases del protagonista
 VOCES_PROTA = ("dani", "alex", "sam", "cris")    # las voces de protagonista que hay, una por personaje de la lista y género
-NOMBRE_VOZ = {"dani": "la de Dani", "alex": "la de Álex", "sam": "la de Sam", "cris": "la de Cris"}
+NOMBRE_VOZ = {"dani": tr("la de Dani"), "alex": tr("la de Álex"), "sam": tr("la de Sam"), "cris": tr("la de Cris")}
 _DANI = re.compile(r"\bDani\b")
 _estado = {"ok": None, "motivo": ""}
 VERSION = 1                                      # cambia si cambia la manera de generar: lo ya generado se rehace
 
 
+PILA_HILO = 64 * 1024 * 1024                         # el motor de voz y el codificador Vorbis gastan mucha pila
+
+
+def hilo_con_pila(objetivo, nombre, args=()):
+    """Un hilo con pila holgada. En el juego compilado los hilos nacen con la pila de serie de Windows (1 MB), y el
+    generador de voces la desbordaba al guardar una frase: Windows cerraba el juego sin dar tiempo a avisar."""
+    with _cerrojo_pila:
+        antes = threading.stack_size()
+        try:
+            threading.stack_size(PILA_HILO)
+        except (ValueError, RuntimeError):
+            pass
+        try:
+            h = threading.Thread(target=objetivo, args=args, name=nombre, daemon=True)
+            h.start()
+        finally:
+            try:
+                threading.stack_size(antes)
+            except (ValueError, RuntimeError):
+                pass
+    return h
+
+
+def escribir_ogg(ruta, pcm, sr):
+    """Guarda una frase en OGG Vorbis a trozos: el codificador, con todo el audio de una vez, gasta mucha más pila."""
+    import soundfile as sf
+    canales = 1 if getattr(pcm, "ndim", 1) == 1 else pcm.shape[1]
+    with sf.SoundFile(ruta, "w", samplerate=sr, channels=canales, format="OGG", subtype="VORBIS") as f:
+        for k in range(0, len(pcm), 8192):
+            f.write(pcm[k:k + 8192])
+
+
+_cerrojo_pila = threading.Lock()
+
+
 def carpeta_motor():
     return os.path.join(rutas.DATA, "phonon")
+
+
+def idioma():
+    """El idioma en que se generan las voces: el del juego, si hay voces para él (data/phonon/voces_en...); si no, español."""
+    from . import i18n
+    cod = i18n.actual()
+    return cod if cod == "es" or os.path.exists(os.path.join(carpeta_motor(), f"reparto_{cod}.json")) else None
+
+
+def carpeta_voces_motor():
+    """Las voces del generador para el idioma del juego: data/phonon/voces las españolas; voces_en, las inglesas..."""
+    cod = idioma() or "es"
+    return os.path.join(carpeta_motor(), "voces" if cod == "es" else "voces_" + cod)
 
 
 def carpeta_generadas():
@@ -52,7 +101,7 @@ ARG_PRUEBA = "--probar-motor-voz"                # el juego, lanzado con esto, s
 TIEMPO_PRUEBA = 240                              # segundos: en un equipo lento, cargar el modelo y decir una frase tarda
 ARCHIVOS_MOTOR = ("config.json", "tokenizer.json", "model.q8.gguf", "reparto.json")
 NECESARIAS = ("AVX2", "FMA", "F16C")             # lo que el motor pide al procesador, según su documentación
-PROBANDO = "El generador de voces se está comprobando en este equipo. Solo pasa la primera vez y tarda unos segundos: prueba otra vez enseguida."
+PROBANDO = tr("El generador de voces se está comprobando en este equipo. Solo pasa la primera vez y tarda unos segundos: prueba otra vez enseguida.")
 _prueba = {"hilo": None, "proc": None, "al_saber": []}
 _cerrojo = threading.Lock()
 
@@ -162,7 +211,7 @@ def prueba_en_este_proceso(carpeta=None):
         voces = sorted(n for n in os.listdir(os.path.join(carpeta, "voces")) if n.endswith(".safetensors"))
         voz = os.path.splitext(voces[0])[0]
         tts.add_voice(voz, os.path.join(carpeta, "voces", voces[0]))
-        pcm = tts.synth("Hola.", voice=voz, seed=7)
+        pcm = tts.synth(tr("Hola."), voice=voz, seed=7)
         return 0 if len(pcm) > 1000 else 11
     except BaseException:
         return 11
@@ -195,15 +244,15 @@ def _motivo_de(codigo):
     if codigo == 0:
         return ""
     if codigo is None:
-        return "El generador de voces tarda demasiado en este equipo."
+        return tr("El generador de voces tarda demasiado en este equipo.")
     if codigo == 10:
-        return "El generador de voces no se ha podido cargar en este equipo."
+        return tr("El generador de voces no se ha podido cargar en este equipo.")
     if codigo == 11:
-        return "El generador de voces ha cargado, pero no ha conseguido generar una frase en este equipo."
-    return "El generador de voces no funciona en este equipo: al probarlo aparte, se ha cerrado de golpe."
+        return tr("El generador de voces ha cargado, pero no ha conseguido generar una frase en este equipo.")
+    return tr("El generador de voces no funciona en este equipo: al probarlo aparte, se ha cerrado de golpe.")
 
 
-SE_REPETIRA = " Las frases que te nombran las dirá el lector de pantalla. Se volverá a probar cuando actualices el juego."
+SE_REPETIRA = tr(" Las frases que te nombran las dirá el lector de pantalla. Se volverá a probar cuando actualices el juego.")
 
 
 def probar_motor(ejecutar=None):
@@ -214,13 +263,13 @@ def probar_motor(ejecutar=None):
         codigo = ejecutar(orden_prueba(), TIEMPO_PRUEBA)
     except Exception as e:                           # ni siquiera se pudo lanzar el proceso
         registro.una_vez("vozgen", "No se pudo lanzar la prueba del motor de voz", error=type(e).__name__)
-        _estado.update(ok=False, motivo="El generador de voces no se ha podido probar en este equipo." + SE_REPETIRA)
+        _estado.update(ok=False, motivo=tr("El generador de voces no se ha podido probar en este equipo.") + SE_REPETIRA)
         return False                                 # no se apunta: puede ser pasajero, se intentará la próxima vez
     ok = codigo == 0
     texto = _motivo_de(codigo)
     guardar_recuerdo(ok, texto, -1 if codigo is None else codigo)
-    (registro.info if ok else registro.aviso)("vozgen", "Prueba del motor de voz en un proceso aparte", resultado="bien" if ok else "mal",
-                                              codigo="sin terminar" if codigo is None else hex(codigo & 0xFFFFFFFF), segundos=round(time.time() - t0, 1))
+    (registro.info if ok else registro.aviso)("vozgen", tr("Prueba del motor de voz en un proceso aparte"), resultado="bien" if ok else "mal",
+                                              codigo=tr("sin terminar") if codigo is None else hex(codigo & 0xFFFFFFFF), segundos=round(time.time() - t0, 1))
     _estado.update(ok=ok, motivo="" if ok else texto + SE_REPETIRA)
     return ok
 
@@ -274,18 +323,19 @@ def disponible(esperar=False, ejecutar=None):
         faltan = [n for n in NECESARIAS if caps[n] is False]
         rec = None
         if any(not os.path.exists(os.path.join(c, n)) for n in ARCHIVOS_MOTOR):
-            _estado.update(ok=False, motivo="Esta copia del juego no trae el generador de voces.")
+            _estado.update(ok=False, motivo=tr("Esta copia del juego no trae el generador de voces."))
+        elif idioma() is None:
+            _estado.update(ok=False, motivo=tr("El generador de voces aún no tiene voces en este idioma."))
         elif faltan:
-            _estado.update(ok=False, motivo="El procesador de este equipo no puede con el generador de voces: le falta " + " y ".join(faltan) + ".")
+            _estado.update(ok=False, motivo=tr("El procesador de este equipo no puede con el generador de voces: le falta ") + tr(" y ").join(faltan) + ".")
             registro.una_vez("vozgen", "El procesador no tiene lo que pide el motor de voz", faltan=", ".join(faltan))
         else:
             rec = leer_recuerdo()
             if rec is None:                           # nunca se ha probado con esta versión: a probarlo, aparte
                 with _cerrojo:
-                    _prueba["hilo"] = threading.Thread(target=_hilo_prueba, args=(ejecutar,), name="voz-comprobar", daemon=True)
-                _prueba["hilo"].start()
+                    _prueba["hilo"] = hilo_con_pila(_hilo_prueba, "voz-comprobar", (ejecutar,))
             elif rec["ok"] and int(rec.get("a_medias", 0)) >= 2:
-                _estado.update(ok=False, motivo="Las dos últimas veces, el juego se cerró mientras cargaba el generador de voces, así que se ha desactivado en este equipo." + SE_REPETIRA)
+                _estado.update(ok=False, motivo=tr("Las dos últimas veces, el juego se cerró mientras cargaba el generador de voces, así que se ha desactivado en este equipo.") + SE_REPETIRA)
                 registro.una_vez("vozgen", "Motor de voz desactivado: el juego se cerró dos veces mientras lo cargaba")
             else:
                 _estado.update(ok=rec["ok"], motivo="" if rec["ok"] else str(rec.get("motivo", "")) + SE_REPETIRA)
@@ -312,8 +362,9 @@ def _carga_a_medias(delta):
 
 
 def reparto():
+    cod = idioma() or "es"
     try:
-        with open(os.path.join(carpeta_motor(), "reparto.json"), encoding="utf-8") as f:
+        with open(os.path.join(carpeta_motor(), "reparto.json" if cod == "es" else f"reparto_{cod}.json"), encoding="utf-8") as f:
             return json.load(f)
     except (OSError, ValueError):
         return {"personajes": {}, "protagonista": {}}
@@ -335,6 +386,8 @@ class Personaje:
     def clave(self):
         """El nombre de su carpeta: no deja ver cómo se llama."""
         t = "|".join([self.nombre, self.apellido, self.dicho, self.genero, self.voz, str(VERSION)])
+        if (idioma() or "es") != "es":                    # cada idioma, sus frases aparte
+            t += "|" + idioma()
         return hashlib.sha1(t.encode("utf-8")).hexdigest()[:16]
 
     def carpeta(self):
@@ -371,7 +424,11 @@ def pendientes(pj, misiones, rep=None):
                 quien, texto = (linea.get("quien"), linea.get("texto")) if isinstance(linea, dict) else (linea[0], linea[1])
                 if not isinstance(texto, str) or not nombra(texto):
                     continue
-                voz = rep["protagonista"].get(f"{pj.voz}_{pj.genero}") if quien == PROTA else rep["personajes"].get(quien)
+                if quien == PROTA:
+                    voz = rep["protagonista"].get(f"{pj.voz}_{pj.genero}")
+                else:                                           # en otro idioma el nombre viene traducido: el reparto va por el español
+                    from . import i18n
+                    voz = rep["personajes"].get(quien) or rep["personajes"].get(i18n.original(quien))
                 if not voz:
                     continue
                 out.append((os.path.join(destino, f"{m.get('id')}_{k + 1}_{n + 1}.ogg"), voz, pj.texto(texto), str(m.get("id"))))
@@ -419,8 +476,7 @@ class Generador:
             self.hechas = 0
             self.parar = False
         if cuantas and (self.hilo is None or not self.hilo.is_alive()):
-            self.hilo = threading.Thread(target=self._correr, name="voces", daemon=True)
-            self.hilo.start()
+            self.hilo = hilo_con_pila(self._correr, "voces")
         return cuantas
 
     def priorizar(self, mision):
@@ -457,7 +513,7 @@ class Generador:
             _carga_a_medias(1)                        # si el juego se cierra de golpe aquí dentro, queda apuntado
             import ptts
             self._hilos_puestos = None
-            self._tts = ptts.TTS(carpeta_motor(), lang="es", quant="q8")
+            self._tts = ptts.TTS(carpeta_motor(), lang=idioma() or "es", quant="q8")
             self._voces = set()
             self._estrenado = False
         return self._tts
@@ -473,7 +529,7 @@ class Generador:
             except Exception:
                 pass
         if voz not in self._voces:
-            tts.add_voice(voz, os.path.join(carpeta_motor(), "voces", voz + ".safetensors"))
+            tts.add_voice(voz, os.path.join(carpeta_voces_motor(), voz + ".safetensors"))
             self._voces.add(voz)
         mejor = None
         for semilla in (7, 23, 51):                               # si sale con un ritmo raro es que se ha comido algo o ha metido ruido: otra vez
@@ -489,11 +545,10 @@ class Generador:
         return mejor, tts.sample_rate
 
     def _guardar(self, f):
-        import soundfile as sf
         pcm, sr = self.sintetizar(f[1], f[2])
         os.makedirs(os.path.dirname(f[0]), exist_ok=True)
         tmp = f[0] + ".tmp"
-        sf.write(tmp, pcm, sr, format="OGG", subtype="VORBIS")
+        escribir_ogg(tmp, pcm, sr)
         os.replace(tmp, f[0])                                     # entera o nada: nunca suena una frase a medio escribir
         with open(f[0] + ".txt", "w", encoding="ascii") as g:
             g.write(self._marca(f))
@@ -568,8 +623,8 @@ class Preparando:
         self.meta = min(self.PRIMERAS, faltan)
         if not self.meta:
             return self._fin()
-        self.app.decir("Preparando las voces de tu personaje, para que en la historia te llamen por tu nombre. Solo pasa la primera vez. "
-                       "Es cosa de unos segundos; pulsa Escape si prefieres empezar ya.", True)
+        self.app.decir(tr("Preparando las voces de tu personaje, para que en la historia te llamen por tu nombre. Solo pasa la primera vez. "
+                       "Es cosa de unos segundos; pulsa Escape si prefieres empezar ya."), True)
 
     def _fin(self):
         if self.hecho:
@@ -591,15 +646,15 @@ class Preparando:
         if self.t_aviso >= 5.0:
             self.t_aviso = 0.0
             self.app.son("menu_mover")
-            self.app.decir(f"{generador.hechas} de {self.meta}.")
+            self.app.decir(tr('{hechas} de {meta}.').format(hechas=(generador.hechas), meta=(self.meta)))
 
     def tecla(self, ev):
         import pygame
         if ev.key in (pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_KP_ENTER):
-            self.app.decir("Empiezas ya. Lo que falte se irá preparando mientras juegas.", True)
+            self.app.decir(tr("Empiezas ya. Lo que falte se irá preparando mientras juegas."), True)
             self._fin()
         elif ev.key in (pygame.K_F1, pygame.K_UP):
-            self.app.decir(f"Preparando las voces de tu personaje: {generador.hechas} de {self.meta}. Escape para empezar ya.", True)
+            self.app.decir(tr('Preparando las voces de tu personaje: {hechas} de {meta}. Escape para empezar ya.').format(hechas=(generador.hechas), meta=(self.meta)), True)
 
 
 def probar(app, voz, texto, al_terminar=None):
@@ -608,20 +663,19 @@ def probar(app, voz, texto, al_terminar=None):
         app.son("menu_borde" if probando() else "error")
         app.decir(motivo(), True)
         return False
-    app.decir("Un momento.", True)
+    app.decir(tr("Un momento."), True)
 
     def tarea():
         try:
-            import soundfile as sf
             g = Generador()
             g.hilos_motor = max(2, (os.cpu_count() or 4) // 2)
             pcm, sr = g.sintetizar(voz, texto)
             os.makedirs(carpeta_generadas(), exist_ok=True)
             ruta = os.path.join(carpeta_generadas(), "prueba.ogg")
-            sf.write(ruta, pcm, sr, format="OGG", subtype="VORBIS")
+            escribir_ogg(ruta, pcm, sr)
             app.voz_prueba = ruta                    # la recoge el menú en su siguiente fotograma
         except Exception as e:
             registro.una_vez("vozgen", "La prueba de voz no salió", error=type(e).__name__)
             app.voz_prueba = False
-    threading.Thread(target=tarea, name="voz-prueba", daemon=True).start()
+    hilo_con_pila(tarea, "voz-prueba")
     return True

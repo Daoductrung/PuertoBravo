@@ -8,14 +8,15 @@ La traducción se aplica jugando y, si el jugador lo pide en las opciones, tambi
 Nunca en los cuadros de texto. La Mayúsculas izquierda también se puede mover: la tecla que la sustituya sirve para
 correr y para todas las combinaciones con Mayúsculas.
 """
+from .i18n import tr
 import pygame
 
-NOMBRES = {pygame.K_LSHIFT: "Mayúsculas izquierda", pygame.K_UP: "flecha arriba", pygame.K_DOWN: "flecha abajo", pygame.K_LEFT: "flecha izquierda", pygame.K_RIGHT: "flecha derecha",
+NOMBRES = {pygame.K_LSHIFT: tr("Mayúsculas izquierda"), pygame.K_UP: tr("flecha arriba"), pygame.K_DOWN: tr("flecha abajo"), pygame.K_LEFT: tr("flecha izquierda"), pygame.K_RIGHT: tr("flecha derecha"),
            pygame.K_SPACE: "espacio", pygame.K_TAB: "tabulador", pygame.K_COMMA: "coma", pygame.K_PERIOD: "punto", pygame.K_MINUS: "guion",
-           pygame.K_RETURN: "Intro", pygame.K_ESCAPE: "Escape", pygame.K_BACKSPACE: "retroceso", pygame.K_HOME: "inicio", pygame.K_END: "fin",
-           pygame.K_PAGEUP: "retroceder página", pygame.K_PAGEDOWN: "avanzar página", pygame.K_INSERT: "insertar", pygame.K_DELETE: "suprimir",
-           pygame.K_SEMICOLON: "eñe", pygame.K_QUOTE: "acento", pygame.K_LEFTBRACKET: "acento grave", pygame.K_RIGHTBRACKET: "más",
-           pygame.K_BACKSLASH: "ce cedilla", pygame.K_SLASH: "guion", pygame.K_LESS: "menor que"}
+           pygame.K_RETURN: tr("Intro"), pygame.K_ESCAPE: tr("Escape"), pygame.K_BACKSPACE: "retroceso", pygame.K_HOME: "inicio", pygame.K_END: "fin",
+           pygame.K_PAGEUP: tr("retroceder página"), pygame.K_PAGEDOWN: tr("avanzar página"), pygame.K_INSERT: "insertar", pygame.K_DELETE: "suprimir",
+           pygame.K_SEMICOLON: "eñe", pygame.K_QUOTE: "acento", pygame.K_LEFTBRACKET: tr("acento grave"), pygame.K_RIGHTBRACKET: "más",
+           pygame.K_BACKSLASH: tr("ce cedilla"), pygame.K_SLASH: "guion", pygame.K_LESS: tr("menor que")}
 # Estas no se pueden cambiar ni usar como destino: son las de salir, aceptar, la ayuda, la marca del registro y los modificadores.
 FIJAS = {pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_F1, pygame.K_F12, pygame.K_RSHIFT, pygame.K_LCTRL, pygame.K_RCTRL,
          pygame.K_LALT, pygame.K_RALT, pygame.K_LGUI, pygame.K_RGUI, pygame.K_CAPSLOCK, pygame.K_NUMLOCK, pygame.K_PRINTSCREEN}
@@ -30,9 +31,9 @@ def nombre(k):
     if pygame.K_F1 <= k <= pygame.K_F12:
         return f"F{k - pygame.K_F1 + 1}"
     try:
-        return pygame.key.name(k) or f"tecla {k}"
+        return pygame.key.name(k) or tr('tecla {k}').format(k=(k))
     except Exception:
-        return f"tecla {k}"
+        return tr('tecla {k}').format(k=(k))
 
 
 def _codigo(etiqueta):
@@ -48,7 +49,7 @@ def _codigo(etiqueta):
 def funciones():
     """Las funciones que se pueden cambiar de tecla: (código original, contexto, descripción). Salen de la ayuda del juego."""
     from .ayuda import TECLAS
-    titulos = {"general": "En cualquier momento", "pie": "A pie", "coche": "Al volante"}
+    titulos = {"general": tr("En cualquier momento"), "pie": tr("A pie"), "coche": tr("Al volante")}
     vistas, lista = {}, []
     for ctx in ("general", "pie", "coche"):
         for etiqueta, que in TECLAS[ctx]:
@@ -57,20 +58,20 @@ def funciones():
                 continue
             if k in vistas:                           # la misma tecla hace una cosa a pie y otra al volante: una sola entrada
                 n = vistas[k]
-                lista[n] = (k, "A pie y al volante", f"{lista[n][1].lower()}, {lista[n][2]}. {titulos[ctx]}, {que}")
+                lista[n] = (k, tr("A pie y al volante"), f"{lista[n][1].lower()}, {lista[n][2]}. {titulos[ctx]}, {que}")
             else:
                 vistas[k] = len(lista)
                 lista.append((k, titulos[ctx], que))
-    for k, que in ((pygame.K_UP, "caminar al norte o hacia delante, y acelerar al volante"), (pygame.K_DOWN, "caminar al sur o hacia atrás, y frenar al volante"),
-                   (pygame.K_LEFT, "caminar al oeste o girar a la izquierda, e intermitente izquierdo"),
-                   (pygame.K_RIGHT, "caminar al este o girar a la derecha, e intermitente derecho"), (pygame.K_SPACE, "atacar o disparar, y freno de mano"),
-                   (pygame.K_TAB, "radar"), (pygame.K_w, "escáner: delante. Al volante, la velocidad"), (pygame.K_a, "escáner: izquierda. Al volante, cambiar de carril"),
-                   (pygame.K_s, "escáner: detrás"), (pygame.K_d, "escáner: derecha. Al volante, arrimarte a la acera"), (pygame.K_COMMA, "arma siguiente"),
-                   (pygame.K_PERIOD, "repetir el último mensaje"),
-                   (pygame.K_LSHIFT, "correr a pie, y hacer las combinaciones con Mayúsculas, como Mayúsculas Tabulador. La Mayúsculas derecha no cambia, y sirve para las combinaciones pero no para correr")):
+    for k, que in ((pygame.K_UP, tr("caminar al norte o hacia delante, y acelerar al volante")), (pygame.K_DOWN, tr("caminar al sur o hacia atrás, y frenar al volante")),
+                   (pygame.K_LEFT, tr("caminar al oeste o girar a la izquierda, e intermitente izquierdo")),
+                   (pygame.K_RIGHT, tr("caminar al este o girar a la derecha, e intermitente derecho")), (pygame.K_SPACE, tr("atacar o disparar, y freno de mano")),
+                   (pygame.K_TAB, "radar"), (pygame.K_w, tr("escáner: delante. Al volante, la velocidad")), (pygame.K_a, tr("escáner: izquierda. Al volante, cambiar de carril")),
+                   (pygame.K_s, tr("escáner: detrás")), (pygame.K_d, tr("escáner: derecha. Al volante, arrimarte a la acera")), (pygame.K_COMMA, tr("arma siguiente")),
+                   (pygame.K_PERIOD, tr("repetir el último mensaje")),
+                   (pygame.K_LSHIFT, tr("correr a pie, y hacer las combinaciones con Mayúsculas, como Mayúsculas Tabulador. La Mayúsculas derecha no cambia, y sirve para las combinaciones pero no para correr"))):
         if k not in vistas:
             vistas[k] = len(lista)
-            lista.append((k, "Movimiento y acciones", que))
+            lista.append((k, tr("Movimiento y acciones"), que))
     return lista
 
 
@@ -134,7 +135,7 @@ def restablecer(cfg):
 
 def cambios(cfg):
     """Frases con lo cambiado, para la ayuda: «La función de la C está ahora en la P»."""
-    return [f"Lo que hacía {nombre(a)} se hace ahora con {nombre(b)}" for a, b in sorted(_mapa(cfg).items())]
+    return [tr('Lo que hacía {nombre} se hace ahora con {nombre2}').format(nombre=(nombre(a)), nombre2=(nombre(b))) for a, b in sorted(_mapa(cfg).items())]
 
 
 class Captura:
@@ -145,18 +146,18 @@ class Captura:
         self.app, self.titulo, self.al_elegir = app, titulo, al_elegir
 
     def al_entrar(self):
-        self.app.decir(f"{self.titulo}. Pulsa la tecla que quieres usar. Escape cancela.", True)
+        self.app.decir(tr('{titulo}. Pulsa la tecla que quieres usar. Escape cancela.').format(titulo=(self.titulo)), True)
 
     def tecla(self, ev):
         k = ev.key
         if k == pygame.K_ESCAPE:
             self.app.son("menu_atras")
             self.app.cerrar(self)
-            self.app.decir("Cancelado.", True)
+            self.app.decir(tr("Cancelado."), True)
             return
         if k in FIJAS:
             self.app.son("error")
-            self.app.decir(f"{nombre(k).capitalize()} no se puede usar: está reservada. Pulsa otra, o Escape para cancelar.", True)
+            self.app.decir(tr('{capitalize} no se puede usar: está reservada. Pulsa otra, o Escape para cancelar.').format(capitalize=(nombre(k).capitalize())), True)
             return
         self.app.cerrar(self)
         self.al_elegir(k)

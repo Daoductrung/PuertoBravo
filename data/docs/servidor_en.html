@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Setting up a Puerto Bravo server</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 56em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3, h4 { color: #ffd84d; }
+li { margin-bottom: .4em; }
+code, kbd { background: #2a2a2a; padding: 0 .3em; }
+a { color: #9fd0ff; }
+</style>
+</head>
+<body>
+<h1>Setting up a Puerto Bravo server</h1>
+<p>A server is a small program you leave running so several people can play together in the same city. It saves the characters, the gangs and the neighborhoods, and it decides what happens between players. It doesn't need a powerful machine, and it works just as well for two friends as for a hundred people or more.</p>
+<p>Everything can be done with the keyboard and a screen reader: there is a panel with a window for Windows and, on any system, the server can be run through text.</p>
+<p>You can move through this guide by headings. Each way of setting it up has its own section, with the steps one by one. You don't need to read all of it: pick your way in section 3 and go to it.</p>
+
+<h2 id="indice">Contents</h2>
+<ol>
+<li><a href="#que">What you need</a></li>
+<li><a href="#carpeta">What's in the servidor folder</a></li>
+<li><a href="#elegir">Choosing how to set it up</a></li>
+<li><a href="#panel">On your Windows PC, with the panel</a></li>
+<li><a href="#consola">On your Windows PC, from the console</a></li>
+<li><a href="#inicio">Starting it automatically with Windows</a></li>
+<li><a href="#linux">On Linux or a rented server, with Python</a></li>
+<li><a href="#systemd">On Linux, as a systemd service</a></li>
+<li><a href="#raspberry">On a Raspberry Pi</a></li>
+<li><a href="#mac">On a Mac</a></li>
+<li><a href="#docker">With Docker and docker compose</a></li>
+<li><a href="#synology">On a Synology NAS</a></li>
+<li><a href="#direccion">The address you give your people, and how to connect from outside your home</a></li>
+<li><a href="#cifrado">Encryption and certificate</a></li>
+<li><a href="#entrada">Who can join</a></li>
+<li><a href="#administrar">Running the server</a></li>
+<li><a href="#versiones">Playing with different versions of the game</a></li>
+<li><a href="#dinero">Players' money: the hourly cap and the jobs</a></li>
+<li><a href="#rol">Text roleplay, voice and vehicle radio</a></li>
+<li><a href="#copias">Backups, moving the server and updating it</a></li>
+<li><a href="#grandes">Servers with lots of people</a></li>
+<li><a href="#problemas">Troubleshooting</a></li>
+<li><a href="#privacidad">What the server stores</a></li>
+<li><a href="#opciones">All the configuration options</a></li>
+</ol>
+
+<h2 id="que">1. What you need</h2>
+<ul>
+<li>A computer that stays on while people play: your PC, an old laptop, a NAS, a Raspberry Pi or a rented server.</li>
+<li>On Windows you don't need to install anything: the server comes with the game.</li>
+<li>On Linux, Mac, NAS or Raspberry Pi you need Python 3.8 or later, which is almost always already installed. You don't need to install anything else: the server only uses what comes with Python. You don't need the game there.</li>
+<li>For people outside your home to join: open a port on the router, or use a private network. It's explained in section 13.</li>
+<li>It uses very little: with a few players you barely notice it in the processor or the memory.</li>
+</ul>
+
+<h2 id="carpeta">2. What's in the servidor folder</h2>
+<p>Inside the game folder there is a folder called <code>servidor</code>. Everything for the server is there, and everything it saves goes there. Game updates don't touch your configuration or your data.</p>
+<ul>
+<li><code>Panel del servidor.bat</code> (Server panel): opens the panel window. It's the easiest option on Windows.</li>
+<li><code>Servidor por consola.bat</code> (Console server): starts the server in a text window.</li>
+<li><code>Parar el servidor.bat</code> (Stop the server): stops the running server in an orderly way.</li>
+<li><code>Arrancar con Windows - activar.bat</code> (Start with Windows - enable) and <code>Arrancar con Windows - quitar.bat</code> (Start with Windows - remove): to make it start by itself when you sign in.</li>
+<li><code>documentacion_es.html</code> and <code>documentacion_en.html</code>: this guide, in Spanish and in English.</li>
+<li><code>servidor.conf.ejemplo</code>: all the options, explained one by one.</li>
+<li><code>otros_sistemas</code>: what you copy to a Linux machine, a Mac, a NAS or a Raspberry Pi. It contains the server code, the scripts <code>arrancar.sh</code>, <code>parar.sh</code>, <code>reiniciar.sh</code> and <code>estado.sh</code>, the systemd service <code>puertobravo.service</code>, and the Docker files: <code>Dockerfile</code>, <code>docker-compose.yml</code> and <code>entrada_docker.sh</code>.</li>
+</ul>
+<p>When you start the server for the first time, these will also appear:</p>
+<ul>
+<li><code>servidor.conf</code>: your configuration.</li>
+<li><code>datos_servidor</code>: the characters, the gangs, the certificate and, inside it, the <code>copias</code> folder with the backups.</li>
+</ul>
+<p>The server programs for Windows are in the game folder, next to the game: <code>PuertoBravoServidorPanel.exe</code>, the panel, and <code>PuertoBravoServidor.exe</code>, the console. Both always work with the <code>servidor</code> folder, wherever you open them from.</p>
+
+<h2 id="elegir">3. Choosing how to set it up</h2>
+<ul>
+<li>You want to play with some friends from your Windows PC and you want it to be easy: <a href="#panel">the panel</a>, section 4.</li>
+<li>You prefer a text window, or you're going to leave it running unattended: <a href="#consola">the console</a>, section 5, and <a href="#inicio">starting it automatically</a>, section 6.</li>
+<li>You have a computer with Linux, or you rent a server: sections <a href="#linux">7</a> and <a href="#systemd">8</a>.</li>
+<li>You have a Raspberry Pi: <a href="#raspberry">section 9</a>.</li>
+<li>You have a Mac: <a href="#mac">section 10</a>.</li>
+<li>You use Docker: <a href="#docker">section 11</a>.</li>
+<li>You have a Synology NAS: <a href="#synology">section 12</a>.</li>
+</ul>
+<p>The configuration and the data are the same in all of them: you can start on your PC and move the server to another machine later. Section 20 tells you how.</p>
+
+<h2 id="panel">4. On your Windows PC, with the panel</h2>
+<h3>Starting it for the first time</h3>
+<ol>
+<li>Open the game folder, go into the <code>servidor</code> folder and open <code>Panel del servidor.bat</code>. You can also open <code>PuertoBravoServidorPanel.exe</code> directly, in the game folder.</li>
+<li>The panel window opens, with the focus on the server status, which will say it's stopped.</li>
+<li>If you want to change something before starting, press Control+P to open the settings. The minimum is to give your server a name, on the first tab. Press OK to save.</li>
+<li>Press F5 to start. The first time it takes a few seconds, because the server creates its certificate to encrypt the connection.</li>
+<li>When it's done, the panel says "Server running" and the port. If Windows asks whether you allow the program to communicate over the network, say yes: without that, nobody can join.</li>
+<li>The Status tab shows the address you have to give to anyone playing in your own home. The Copy the address button puts it on the clipboard.</li>
+<li>Join first yourself from the game: the first account that joins is the admin.</li>
+</ol>
+<h3>The tabs</h3>
+<p>You switch tabs with Control+Tab and Control+Shift+Tab.</p>
+<ul>
+<li>Status: whether it's running, how many people are on, the port, the address for your friends, the encryption with its fingerprint, and the world it's working with. One thing per line. It updates by itself only when something changes, without moving the cursor from where you have it; F6 updates it right away.</li>
+<li>Players: who is on, where, and with which version of the game. With the buttons, or with the Applications key on a player, you can send them a message, kick them, ban them or make them admin.</li>
+<li>Accounts: every account that has ever joined. From here you can ban, pardon a ban, give or remove admin rights and delete an account, even if the person isn't on.</li>
+<li>Invitations: the invitation codes, free and used. You create, copy and cancel them here.</li>
+<li>Log: what the server says as it goes, with the newest at the end. Below it there is a field to type commands to it, the same ones as in the console.</li>
+</ul>
+<h3>Panel keys</h3>
+<ul>
+<li>F5: start the server. Shift+F5: stop it. Control+F5: restart it.</li>
+<li>Control+P: settings. Control+Q: quit.</li>
+<li>Control+N: announcement to all players. Control+M: message to the selected player. Control+E: kick the selected player.</li>
+<li>Control+I: create an invitation. Control+D: change the message of the day. Control+O: type a command.</li>
+<li>F6: update the status and the lists.</li>
+<li>Control+S: save now. Control+B: backup now. Control+R: restore a backup. Control+G: save the log to a file.</li>
+<li>F1: open this guide. Control+H: explains the control you're on.</li>
+<li>Alt plus the underlined letter: go to a control on the tab or open a menu.</li>
+<li>Applications key, or Shift+F10, in the player and account lists: actions on the selected item.</li>
+</ul>
+<h3>The settings</h3>
+<ul>
+<li>Control+P opens a dialog with one tab for each group of options. Control+H on any control tells you what it does, what values it accepts and whether it needs a restart.</li>
+<li>OK saves and closes. Apply saves without closing. Cancel changes nothing.</li>
+<li>Factory defaults resets the options on the tab you're on, or all of them, to how they come out of the box. Nothing is saved until you press OK or Apply.</li>
+<li>Almost everything is applied with the server running. If you change something that needs a restart, like the port or the encryption, the panel tells you and offers to restart right then.</li>
+<li>The configuration is saved in <code>servidor.conf</code>, a text file with each option explained, which you can also change with Notepad.</li>
+</ul>
+<h3>Stopping and closing</h3>
+<ul>
+<li>Shift+F5 stops the server: it warns the players, saves everything and disconnects them. If there are people on, it asks first.</li>
+<li>If you close the panel with the server running, it asks and, if you say yes, it stops the server in an orderly way before closing.</li>
+<li>The server only works while the panel is open. You can minimize it.</li>
+<li>Control+F5 restarts it: players are told it's a restart, and their games wait and rejoin by themselves as soon as it starts again.</li>
+<li>If you update the game with the panel open, the panel closes by itself, in an orderly way, and opens again when the update finishes, with the server running again if it was. It's in <a href="#copias">section 20</a>.</li>
+</ul>
+
+<h2 id="consola">5. On your Windows PC, from the console</h2>
+<ol>
+<li>In the game's <code>servidor</code> folder, open <code>Servidor por consola.bat</code>.</li>
+<li>The first time, it writes <code>servidor.conf</code> with all the options explained, and starts with the default values.</li>
+<li>The window tells you what's happening: which port it's listening on, whether it encrypts, who joins and who leaves.</li>
+<li>You type commands to it in that same window. Type <code>ayuda</code> and press Enter to hear them all. They're in section 16.</li>
+<li>To change the configuration, open <code>servidor.conf</code> with Notepad, change what you want and save. Then type <code>recargar</code> in the console: it applies what can be changed without restarting and tells you what is waiting for the restart.</li>
+<li>To stop it, type <code>apagar</code>, press Control+C or close the window. In all three cases it warns the players and saves everything.</li>
+</ol>
+<p>The panel and the console use the same configuration and the same data: you can use one on one day and the other on another day, but not both at once.</p>
+<p>If you know how to use a command window, you can call the program directly from the game folder:</p>
+<ul>
+<li><code>PuertoBravoServidor.exe --ejemplo</code>: writes <code>servidor.conf</code> and exits.</li>
+<li><code>PuertoBravoServidor.exe --comprobar</code>: checks <code>servidor.conf</code>, tells you what isn't valid and exits.</li>
+<li><code>PuertoBravoServidor.exe --opciones</code>: lists all the options with their explanation.</li>
+<li><code>PuertoBravoServidor.exe --parar</code>: stops the running server in an orderly way.</li>
+<li><code>PuertoBravoServidor.exe --actualizar</code>: stops it, warning the players that it's restarting to update. Their games wait and rejoin by themselves when you start it again.</li>
+<li><code>PuertoBravoServidor.exe --reiniciar</code>: the same, saying it's for maintenance.</li>
+<li><code>PuertoBravoServidor.exe --puerto=47821</code>: any option can be given like this, without touching the file.</li>
+</ul>
+
+<h2 id="inicio">6. Starting it automatically with Windows</h2>
+<h3>When you sign in</h3>
+<ol>
+<li>In the <code>servidor</code> folder, open <code>Arrancar con Windows - activar.bat</code>. It leaves a shortcut in your user's Startup folder. You don't need administrator rights.</li>
+<li>From then on, every time you sign in, the server starts by itself, in a minimized window.</li>
+<li>To stop it without looking for that window, open <code>Parar el servidor.bat</code>.</li>
+<li>To stop it from starting by itself, open <code>Arrancar con Windows - quitar.bat</code>.</li>
+</ol>
+<h3>When the computer turns on, without anyone signing in</h3>
+<p>This is for people with a dedicated computer. You need an account with administrator rights.</p>
+<ol>
+<li>Open Windows Task Scheduler: press the Windows key, type Task Scheduler and press Enter.</li>
+<li>In the Action menu, choose Create Task.</li>
+<li>On the General tab, name it Puerto Bravo Server and check Run whether user is logged on or not.</li>
+<li>On the Triggers tab, press New and choose At startup.</li>
+<li>On the Actions tab, press New. In Program/script, put the full path of <code>PuertoBravoServidor.exe</code>, which is in the game folder. In Add arguments, type <code>servidor.conf</code>.</li>
+<li>On the Settings tab, uncheck Stop the task if it runs longer than, so it doesn't get cut off after three days.</li>
+<li>Press OK. Windows will ask for your account password so it can start the task without a session.</li>
+</ol>
+<p>Started this way it has no window. To stop it in an orderly way use <code>Parar el servidor.bat</code>, and to run it, the commands from the game chat, which are in section 16. If you choose End in Task Scheduler, it's cut off abruptly: you lose no more than the last minute, but it's better to stop it in an orderly way.</p>
+
+<h2 id="linux">7. On Linux or a rented server, with Python</h2>
+<ol>
+<li>Check that you have Python 3.8 or later: type <code>python3 --version</code>.</li>
+<li>Copy the game's <code>otros_sistemas</code> folder to the machine, with any name you like, for example <code>puertobravo</code> inside your home folder. Any way of copying files works: a USB stick, <code>scp</code>, or a file transfer program.</li>
+<li>Go into that folder: <code>cd puertobravo</code>. The <code>servidor</code> folder, with the code, must be inside it.</li>
+<li>Write the example configuration: <code>python3 -m servidor --ejemplo</code>. It creates <code>servidor.conf</code>.</li>
+<li>Change it as you like with a text editor, for example <code>nano servidor.conf</code>. To check there are no errors: <code>python3 -m servidor --comprobar</code>.</li>
+<li>Start it: <code>python3 -m servidor</code>. It tells you which port it's listening on and whether it encrypts. You type commands to it in that same terminal; <code>ayuda</code> lists them all. You stop it with <code>apagar</code> or with Control+C.</li>
+</ol>
+<h3>Leaving it in the background</h3>
+<ul>
+<li><code>sh arrancar.sh</code>: starts it in the background, if it's not already running. What it says as it goes is kept in <code>servidor.log</code>.</li>
+<li><code>sh estado.sh</code>: tells you whether it's running and shows the last thing it said.</li>
+<li><code>sh parar.sh</code>: stops it in an orderly way.</li>
+<li><code>sh reiniciar.sh</code>: warns the players with the countdown, stops it in an orderly way and starts it again. This is what you use after putting in the new server code: the games wait and rejoin by themselves.</li>
+<li>To make it start when the machine turns on without systemd, add a line like <code>@reboot sh /home/tu_usuario/puertobravo/arrancar.sh</code> to your cron, with <code>crontab -e</code>.</li>
+<li>Started this way it has no console. You run it from the game chat, with the commands in section 16.</li>
+</ul>
+<h3>The firewall</h3>
+<ul>
+<li>If the machine has a firewall, you have to let the server port through over TCP. With ufw: <code>sudo ufw allow 47820/tcp</code>. With firewalld: <code>sudo firewall-cmd --permanent --add-port=47820/tcp</code> and then <code>sudo firewall-cmd --reload</code>.</li>
+<li>On a rented server there is usually also a firewall in the provider's control panel, sometimes called a security group: open port 47820 over TCP there too.</li>
+<li>A rented server has a fixed public address: there's no router to configure. The address for your people is <code>puertobravo://</code>, the machine's address, a colon and the port.</li>
+</ul>
+
+<h2 id="systemd">8. On Linux, as a systemd service</h2>
+<p>This way it starts by itself with the system, restarts if it crashes and stops in an orderly way when the machine shuts down. You need to be able to use <code>sudo</code>.</p>
+<ol>
+<li>Copy the server folder to <code>/opt/puertobravo</code>: <code>sudo cp -r puertobravo /opt/puertobravo</code>. The <code>servidor</code> folder must end up inside it.</li>
+<li>Create an unprivileged user for it: <code>sudo useradd --system --home /opt/puertobravo puertobravo</code>.</li>
+<li>Give it the folder: <code>sudo chown -R puertobravo: /opt/puertobravo</code>.</li>
+<li>If there's no configuration yet, write it: <code>cd /opt/puertobravo</code> and <code>sudo -u puertobravo python3 -m servidor --ejemplo</code>. Change it with <code>sudo -u puertobravo nano servidor.conf</code>.</li>
+<li>Copy the service: <code>sudo cp /opt/puertobravo/puertobravo.service /etc/systemd/system/</code>.</li>
+<li>Enable it: <code>sudo systemctl daemon-reload</code> and then <code>sudo systemctl enable --now puertobravo</code>.</li>
+</ol>
+<ul>
+<li>See how it's doing: <code>systemctl status puertobravo</code>.</li>
+<li>Hear what it says as it goes: <code>journalctl -u puertobravo -f</code>. You exit with Control+C.</li>
+<li>Stop it: <code>sudo systemctl stop puertobravo</code>. Start it: <code>sudo systemctl start puertobravo</code>. Restart it, for example after changing the port: <code>sudo systemctl restart puertobravo</code>.</li>
+<li>If you use another folder or another user, change the <code>WorkingDirectory</code> and <code>User</code> lines in the service file.</li>
+<li>As a service it has no console: you run it from the game chat.</li>
+<li>Restarting it with a warning, for example after updating it: an admin types <code>/reiniciar</code> or <code>/actualizar</code> in the game chat, or on the machine, from the server folder, <code>sudo -u puertobravo python3 -m servidor --actualizar</code>. The server warns with its countdown, saves everything and exits with code 75; the service starts it again by itself after five seconds, and the games rejoin.</li>
+</ul>
+
+<h2 id="raspberry">9. On a Raspberry Pi</h2>
+<ul>
+<li>Any model with Raspberry Pi OS works: it already comes with Python 3. For a few friends, the most modest model is more than enough.</li>
+<li>The steps are the same as on Linux: sections 7 and 8. The most practical thing is to leave it as a systemd service, so it starts by itself when you turn it on.</li>
+<li>To copy the <code>otros_sistemas</code> folder you can use a USB stick, or <code>scp</code> from your computer if you have SSH enabled on the Raspberry Pi.</li>
+<li>On the slowest models, checking the identity of whoever joins takes a little over a second. It only happens when joining; while playing you don't notice it.</li>
+<li>Give the Raspberry Pi a fixed address on your network from the router settings, in the address reservation or static DHCP section. That way the address you give your people doesn't change, and the port forwarding keeps pointing to it.</li>
+<li>Use a good-quality memory card and leave automatic backups turned on: cards wear out.</li>
+</ul>
+
+<h2 id="mac">10. On a Mac</h2>
+<ol>
+<li>Open Terminal and type <code>python3 --version</code>. If the Mac offers to install the developer tools, accept: they include Python. You can also install Python from its official website.</li>
+<li>Copy the <code>otros_sistemas</code> folder to the Mac, for example to your home folder with the name <code>puertobravo</code>.</li>
+<li>In Terminal: <code>cd ~/puertobravo</code>, then <code>python3 -m servidor --ejemplo</code> and, once you've changed <code>servidor.conf</code> as you like, <code>python3 -m servidor</code>.</li>
+<li>The first time, the Mac asks whether you allow incoming connections to Python: say yes.</li>
+<li>To leave it in the background the same scripts work: <code>sh arrancar.sh</code>, <code>sh estado.sh</code>, <code>sh parar.sh</code> and <code>sh reiniciar.sh</code>.</li>
+<li>To stop the Mac from going to sleep while people are playing, look in System Settings, in the energy or battery section.</li>
+</ol>
+
+<h2 id="docker">11. With Docker and docker compose</h2>
+<ol>
+<li>Copy the <code>otros_sistemas</code> folder to the machine where you have Docker, with the name <code>puertobravo</code>. Inside it are <code>Dockerfile</code>, <code>docker-compose.yml</code>, <code>entrada_docker.sh</code> and the <code>servidor</code> folder.</li>
+<li>Go into that folder and type <code>docker compose up -d --build</code>. It builds the image and starts the server.</li>
+<li>The <code>datos</code> folder appears next to it. Inside are <code>servidor.conf</code>, which is written automatically the first time, and <code>datos_servidor</code>, with the characters and the backups. They're outside the container: they survive updates.</li>
+<li>To change the configuration, edit <code>datos/servidor.conf</code> and restart: <code>docker compose restart</code>.</li>
+</ol>
+<ul>
+<li>Hear what it says: <code>docker compose logs -f</code>. You exit with Control+C, without stopping the server.</li>
+<li>Stop it in an orderly way: <code>docker compose down</code>. It warns the players and saves everything.</li>
+<li>Type commands to it: <code>docker attach puertobravo</code>, type the command and press Enter. To leave without stopping it, press Control+P and then Control+Q. The easiest way is to run it from the game chat.</li>
+<li>Don't use the <code>apagar</code> command inside Docker to stop it: Docker would start it again. Use <code>docker compose down</code>.</li>
+<li>To restart it with a warning, the <code>reiniciar</code> and <code>actualizar</code> commands do work, from the game chat or with <code>docker attach</code>: the server warns with its countdown, saves everything and exits, and Docker starts it again. The games wait and rejoin by themselves.</li>
+<li>If you change the port in <code>servidor.conf</code>, also change both numbers on the <code>ports</code> line of <code>docker-compose.yml</code>.</li>
+<li>With Docker, all connections may reach the server from the same internal address. That's why the <code>conexiones_por_ip</code> option must stay at 0.</li>
+</ul>
+
+<h2 id="synology">12. On a Synology NAS</h2>
+<h3>With Container Manager</h3>
+<p>Container Manager is Synology's Docker package. You install it from Package Center, and it creates a shared folder called <code>docker</code>.</p>
+<ol>
+<li>Open File Station, go into the <code>docker</code> shared folder and create a folder inside it called <code>puertobravo</code>.</li>
+<li>Upload the whole content of <code>otros_sistemas</code> to that folder: the <code>servidor</code> folder, <code>Dockerfile</code>, <code>docker-compose.yml</code> and <code>entrada_docker.sh</code>. The other files don't get in the way.</li>
+<li>Open Container Manager and go to the Project section.</li>
+<li>Press Create. For the project name put <code>puertobravo</code>. In Path, choose the <code>docker/puertobravo</code> folder.</li>
+<li>Container Manager sees that there's already a <code>docker-compose.yml</code> there and asks whether to use it: say yes.</li>
+<li>Continue with Next to the end, without enabling the web portal, and press Done. It builds the image and starts the server. The first time it takes a few minutes.</li>
+<li>The configuration ends up in <code>docker/puertobravo/datos/servidor.conf</code>. You can change it from File Station with the Text Editor package. Then, in Container Manager, Project, choose <code>puertobravo</code> and, in Action, Stop and then Start.</li>
+<li>What the server says is in Container Manager, Container, <code>puertobravo</code>, Log tab.</li>
+</ol>
+<ul>
+<li>If you have the NAS firewall turned on, in Control Panel, Security, Firewall, add a rule that allows port 47820 over TCP.</li>
+<li>Give the NAS a fixed address on your network, or reserve one for it in the router, so the port forwarding doesn't stop pointing to it.</li>
+<li>To update the server: upload the new <code>servidor</code> folder on top of the old one and, in the project, choose Action, Build. The <code>datos</code> folder is not touched.</li>
+</ul>
+<h3>Without Docker, with the NAS's own Python</h3>
+<ol>
+<li>Install the Python 3 package from Package Center, if you don't have it.</li>
+<li>Copy the content of <code>otros_sistemas</code> to a folder on the NAS, for example <code>puertobravo</code> inside a shared folder.</li>
+<li>In Control Panel, Task Scheduler, create a Triggered Task of type User-defined script, with the Boot-up event and with your user, not with the system administrator.</li>
+<li>In the script, type <code>sh</code>, a space and the full path of <code>arrancar.sh</code>. For example, <code>sh /volume1/docker/puertobravo/arrancar.sh</code>.</li>
+<li>To start it right away, without restarting the NAS, select the task and press Run.</li>
+<li>To stop it, create another task just like it, with no event, with <code>parar.sh</code>, and run it when needed.</li>
+</ol>
+
+<h2 id="direccion">13. The address you give your people, and how to connect from outside your home</h2>
+<h3>What the address looks like</h3>
+<ul>
+<li>It's <code>puertobravo://</code>, the machine's address, a colon and the port. For example, <code>puertobravo://192.168.1.50:47820</code>.</li>
+<li>In the game you add it in Play on a server, Add a server.</li>
+<li>If you haven't changed the port, which is 47820 by default, you can give the address without the colon and the port.</li>
+</ul>
+<h3>For people playing in your own home</h3>
+<ul>
+<li>The machine's address on your network works; it usually starts with 192.168. The panel tells you on the Status tab and copies it with the Copy the address button.</li>
+<li>On Windows you can also find it by opening a command window and typing <code>ipconfig</code>: it's the IPv4 Address line. On Linux, with <code>hostname -I</code>.</li>
+<li>If the server is on the same computer you play on, you can join with <code>puertobravo://127.0.0.1</code>.</li>
+</ul>
+<h3>For people playing from outside: opening the port on the router</h3>
+<p>From the internet, only your router can be seen. You have to tell it to pass whatever arrives at the server port to the machine where the server is. This is called opening a port, redirecting a port or port forwarding.</p>
+<ol>
+<li>Give the server machine a fixed address on your network. On the router it's usually in the local network or DHCP section, with a name like address reservation or static DHCP.</li>
+<li>Go into the router settings from your browser. The address is usually <code>192.168.1.1</code> or <code>192.168.0.1</code>, and the username and password are on a sticker on the router itself.</li>
+<li>Look for the ports section. Depending on the brand it's called Ports, Port redirection, NAT, Virtual server or Port forwarding.</li>
+<li>Add a rule: TCP protocol, external port 47820, internal port 47820 and, as the destination, the address of the server machine on your network.</li>
+<li>Save. Some routers ask to restart.</li>
+<li>Find out your public address: the router shows it on its status page, with a name like internet IP address or WAN. That one, with <code>puertobravo://</code> in front, is the one you give your people.</li>
+</ol>
+<h3>Opening it automatically, with UPnP</h3>
+<ul>
+<li>Many routers let a program on your network ask them to open a port. This mechanism is called UPnP.</li>
+<li>In the panel, with the server running, go to the Manage menu and choose Open the port on the router with UPnP. If the router allows it, the port is opened and the panel tells you; when you stop the server it closes by itself.</li>
+<li>If the router doesn't answer or refuses, it has UPnP turned off or doesn't support it. You can turn it on in its settings, or open the port by hand as explained above.</li>
+<li>The console server and the Linux one don't open the port by themselves: there you have to do it by hand.</li>
+</ul>
+<h3>If your public address changes: dynamic DNS</h3>
+<ul>
+<li>In many homes the public address changes from time to time. So you don't have to tell your people every time, you use a name that always points to your current address. That's dynamic DNS.</li>
+<li>There are free services that provide it. Many routers and NAS devices have a section called DDNS or dynamic DNS to keep it up to date by themselves.</li>
+<li>With the name, the address for your people becomes, for example, <code>puertobravo://minombre.ejemplo.net:47820</code>.</li>
+</ul>
+<h3>If you can't open ports</h3>
+<ul>
+<li>Some providers don't give each home its own public address: several homes share one. This is called CG-NAT. You can tell because the WAN address your router shows doesn't match the one shown by the websites that tell you your address. In that case opening the port doesn't help. You can ask your provider to take you off CG-NAT, or use a private network.</li>
+<li>A private network, like the ones Tailscale or ZeroTier create, connects the computers you choose over the internet as if they were in the same home, without opening any port. You and each person who is going to play install the program and join the same network. Each computer gets an address inside that network.</li>
+<li>The address for your people is then <code>puertobravo://</code> and the address the private network gives the server machine. With Tailscale it starts with 100.</li>
+<li>Only people on your private network can join: it's also a way to have a server just for your group.</li>
+<li>Another way out is to rent a small server, which has its own public address: section 7.</li>
+</ul>
+
+<h2 id="cifrado">14. Encryption and certificate</h2>
+<ul>
+<li>By default, with <code>cifrado = auto</code>, the connection is encrypted. The server creates its own certificate the first time it starts. You don't need to install anything, on Windows either.</li>
+<li>The certificate and its key are kept in the data folder, in <code>certificado.pem</code> and <code>llave.pem</code>.</li>
+<li>When it starts, the server says its certificate's fingerprint, and the panel shows it on the Status tab. It's a string of letters and numbers that identifies it.</li>
+<li>Each player's game remembers the server's certificate the first time it joins. If one day the server presents a different certificate, the game warns and doesn't join without permission: someone might be pretending to be your server.</li>
+<li>That's why, if you move the server to another machine, take <code>certificado.pem</code> and <code>llave.pem</code> with the data: that way nobody sees a warning. Backups include them.</li>
+<li>If you really do change the certificate, tell your people that the game will ask them, and that they should accept the new one.</li>
+<li>If you have your own certificate, put the paths of its files in the <code>certificado</code> and <code>llave</code> options. It's not necessary: the game doesn't check the certificate's name, only that it's always the same one.</li>
+<li>With <code>cifrado = si</code>, the server doesn't start if it can't encrypt. With <code>cifrado = no</code>, it never encrypts: that only makes sense for tests in your own home.</li>
+<li>The certificate key is secret. Don't share <code>llave.pem</code> or your backups.</li>
+</ul>
+
+<h2 id="entrada">15. Who can join</h2>
+<ul>
+<li>Each player has an identity that their game creates and that never leaves their computer. The server recognizes them by it: there are no account passwords to remember or to steal.</li>
+<li>The <code>entrada</code> option decides who can create a new character. Anyone who already has a character can always come back in.</li>
+<li><code>abierta</code>: anyone who has the address.</li>
+<li><code>clave</code>: you need to know the entry password, which you set in the <code>clave</code> option. The game asks for it the first time.</li>
+<li><code>invitacion</code>: you need a single-use code. You create them in the panel with Control+I, or with the <code>invitar</code> command. Each code is good for one character only.</li>
+<li>The <code>max_jugadores</code> option says how many people fit at once. With 0 there's no limit. Admins get in even if it's full.</li>
+<li>To keep someone out: in the panel, the Ban button; through text, the <code>vetar</code> command and their name. You lift it with Pardon the ban or with the <code>perdonar</code> command. There's also a list of banned names in the configuration, in the <code>vetados</code> option.</li>
+<li>To free up space on full servers, the <code>inactividad_minutos</code> option removes anyone who has spent that long doing nothing. Their character stays saved.</li>
+</ul>
+
+<h2 id="administrar">16. Running the server</h2>
+<h3>Who runs it</h3>
+<ul>
+<li>The first account that joins a new server is the admin. Normally that's you: join first.</li>
+<li>You appoint more with the panel's Make admin button, with the <code>admin</code> command and the name, or by putting their names in the <code>admins</code> option, separated by commas.</li>
+<li>You take it away with the Remove admin rights button, on the Accounts tab, or with the <code>quitaradmin</code> command.</li>
+</ul>
+<h3>Where you give commands from</h3>
+<ul>
+<li>From the panel: with its buttons and menus, or by typing them in the Command for the server field, on the Log tab.</li>
+<li>From the console: by typing them in the server window.</li>
+<li>From the game, if you're an admin: in the general chat, which opens with F10, with a slash in front. For example, <code>/jugadores</code> or <code>/aviso Gang war tonight</code>. The game tells the answer to you alone. This is how you run a server that has no console: a service, a container or a NAS.</li>
+</ul>
+<h3>The commands</h3>
+<!-- ORDENES:INICIO -->
+<ul>
+<li><code>ayuda</code>: lists all the commands.</li>
+<li><code>estado</code>: how the server is doing: port, encryption, world, uptime and how many people there are.</li>
+<li><code>jugadores</code>: who is online and where.</li>
+<li><code>cuentas</code>: all the server&#x27;s accounts, with the banned ones and the admins.</li>
+<li><code>aviso text</code>: says something to everyone who is online.</li>
+<li><code>decir name: text</code>: says something to one player only.</li>
+<li><code>expulsar name</code>: kicks a player; they can come back in. After a colon you can tell them the reason.</li>
+<li><code>vetar name</code>: kicks a player and does not let them come back.</li>
+<li><code>perdonar name</code>: lifts the ban.</li>
+<li><code>admin name</code>: makes a player an admin.</li>
+<li><code>quitaradmin name</code>: takes away their admin rights.</li>
+<li><code>borrarcuenta name</code>: deletes an account with its character, its properties and its place in the gang; it cannot be undone.</li>
+<li><code>invitar</code>: creates a single-use invitation code; with a number after it, creates several.</li>
+<li><code>invitaciones</code>: the invitations there are, free and used.</li>
+<li><code>anular code</code>: cancels an invitation nobody has used yet.</li>
+<li><code>mensaje text</code>: changes the message of the day; with no text, removes it.</li>
+<li><code>hora number</code>: sets the game time, from 0 to 23.</li>
+<li><code>bandas</code>: the gangs, with their people and their till.</li>
+<li><code>guardar</code>: saves everything now.</li>
+<li><code>copia</code>: makes a backup.</li>
+<li><code>copias</code>: the backups there are.</li>
+<li><code>recargar</code>: reads servidor.conf again and applies what can be changed without restarting.</li>
+<li><code>actualizar</code>: warns everyone that the server is restarting to update, waits for the countdown, saves everything and stops it; the games wait and come back in on their own when you start it again. You can add the seconds of warning after it.</li>
+<li><code>reiniciar</code>: the same, but saying it is for maintenance. You can add the seconds of warning after it.</li>
+<li><code>apagar</code>: warns everyone, saves everything and stops the server.</li>
+</ul>
+<!-- ORDENES:FIN -->
+<p>Player names are typed as they are, with their spaces. For example, <code>expulsar Ana la Rápida</code> or <code>decir Ana la Rápida: turn the music down</code>.</p>
+
+<h2 id="versiones">17. Playing with different versions of the game</h2>
+<p>People with different versions of the game can play together on your server. Nobody is kicked for being behind or ahead: someone is only refused because of their version if you ask for it, with the minimum version. And from there, everyone is kept as even as possible.</p>
+<h3>The world is brought by the first one to join</h3>
+<p>The server manages, but the content comes from the game. The world, with its places, its weapons, its vehicles and its missions, isn't tied to the server: it's given by the game of whoever joins.</p>
+<ul>
+<li>The server that ships with the game already includes the world of its version. If you set it up without it, or delete it, it starts empty and takes the world of the first one to join.</li>
+<li>If the first one to join has an older version and later someone arrives with a newer one, the server switches to the world of the newer version, without restarting and without kicking anyone. It announces it to whoever is on. It only does this if that world is signed by the game's publisher, so nobody can sneak a modified world into it.</li>
+<li>If it's the other way around, and someone arrives with a version older than the server's, the server keeps its world, which is the newest, and that person joins anyway.</li>
+<li>The server knows the world of the already released versions out of the box, and it remembers the ones it checks along the way: it asks nothing of anyone who arrives with one of them.</li>
+<li>If the server is empty and the first one to join has mods, or plays with an unsigned copy, their world is taken for the time being, a warning goes in the log, and it's replaced by the first signed one that arrives.</li>
+</ul>
+<h3>What happens when not everyone has the same thing</h3>
+<ul>
+<li><strong>Damage, range, rate of fire and money are decided by the server</strong>, with the figures of its world, the same for someone shooting with one version and someone getting hit with another. Having the new version gives no advantage.</li>
+<li><strong>A weapon someone's game doesn't have</strong> reaches them as the closest thing their game knows: they hear the shot of one of their own weapons of the same class and take the damage the server sets. For example, for someone playing with 1.7.0, the 1.7.1 pump-action shotgun sounds like one of their shotguns.</li>
+<li><strong>A vehicle they don't have</strong> is heard going by and seen parked as the closest one of theirs, with the name its owner gave it. On the server it's still what it is.</li>
+<li><strong>Giving a weapon</strong> to someone who doesn't have it in their version isn't possible: the server gives it back to whoever was giving it, and tells them.</li>
+<li><strong>The roleplay channels</strong> reach an older game through the usual chat, with a few words in front saying what they are.</li>
+<li><strong>Restart warnings</strong> reach them as a normal warning, and the shutdown, with a text their game reads as it is. Their character is saved all the same.</li>
+<li><strong>If the server's world is from an older version</strong> (because you don't want new worlds, or because nobody with the new one has joined yet), the new weapons of whoever has them count against other players as bare hands, their new vehicles are seen as a compact car, and in a new town nobody sees them. That person is told.</li>
+<li><strong>When joining</strong>, anyone who doesn't have the same data as the server is told, by name, which weapons and which vehicles don't match and what they'll notice. It's also on the game's phone, Online, Data and rules of this server.</li>
+</ul>
+<h3>The character, from one version to another</h3>
+<p>The character is saved on the server in full, including what the server doesn't know. If someone plays with a new version and one day joins with an older one, they lose nothing:</p>
+<ul>
+<li>Their old game receives the character without the weapons or vehicles it doesn't know. They're still saved on the server, and the player is told.</li>
+<li>When that game saves, the server puts back everything the old version can't save. Whatever they've earned, spent or obtained while playing with the old one counts.</li>
+<li>When they join again with the new version, they have everything again.</li>
+</ul>
+<h3>What you decide</h3>
+<ul>
+<li><code>version_minima</code>: the oldest version that can join. Empty, which is the default, any version. It's the only way to refuse someone because of their version.</li>
+<li><code>mundo_distinto</code>: what to do with someone who brings data that can't be checked, which is almost always someone with mods that change the world. With <code>admitir</code>, the default, they join and play with what's shared: they're told what doesn't match, and whatever their mod changes or adds doesn't count against the others. With <code>rechazar</code>, they don't get in.</li>
+<li><code>actualizar_mundo</code>: who can bring a new world. With <code>firmado</code>, the default, anyone, if it's from a real version. With <code>admin</code>, also an admin without a signature: that's what you need for your whole server to play with a mod. With <code>no</code>, the server keeps the world it has.</li>
+<li><code>versiones</code>: with <code>compatibles</code>, the default, everything in this section. With <code>iguales</code>, only someone with exactly the same data as the server gets in.</li>
+<li><code>comprobar_datos = no</code> lets anyone in without checking anything, and the server doesn't update to new worlds. You don't need it to play with different versions.</li>
+</ul>
+<h3>Good to know</h3>
+<ul>
+<li>In the panel, the player list says which version each person joined with.</li>
+<li>You don't need to update the server every time a version of the game comes out. A 1.7.0 server accepts 1.7.1 games, but it can't give each game the closest match or restore the character: anyone who joins it with a version older than the server's won't hear the others' new weapons. Update it when you can.</li>
+<li>To make your whole server play with a mod, set <code>actualizar_mundo = admin</code> and have an admin join first with the mod enabled. Anyone who joins without the mod will play anyway, with what they have in common.</li>
+<li>What only exists in the new version and doesn't go through the server (a new mission, a new shop, a new trade) is available to whoever has that version, like any other new feature of the game. Whatever gives money goes through the server's caps, whatever the version.</li>
+<li>If a new version moves the streets of a town that already existed, anyone still on the older one will see the server's traffic moving where there's no longer a street, until they update.</li>
+</ul>
+
+<h3>What's new on the street in version 1.7.1, on a server</h3>
+<p>Since version 1.7.1, for solo play, the game has patrols that do their rounds without looking for anyone, an optional police helicopter and the option to surrender with your hands up. With shared police, which is the <code>policia</code> option set to <code>si</code>, none of that is turned on in each player's game: the patrols are the server's, and there's no helicopter and no surrendering. With that option set to <code>no</code>, each player has them according to their own options, and only they see them. The ambulances that come after a shootout and the neighborhood war mode on the street don't count on a server either. Self-defense does: if someone defends themselves from a gang member who attacked them first, their game doesn't record the crime.</p>
+<h2 id="dinero">18. Players' money: the hourly cap and the jobs</h2>
+<p>With the <code>economia</code> option set to <code>si</code>, which is how it comes, the server keeps track of each player's money so nobody can make it up with a hacked game. Spending is always allowed. Earning depends on where the money comes from.</p>
+<h3>What the server accepts with no limit</h3>
+<ul>
+<li>What the server itself gives: loot between players, sales of houses and businesses, the gang's funds, the pay for helping in a group mission.</li>
+<li>What another player gives.</li>
+<li>The reward for each story mission, only once.</li>
+</ul>
+<h3>Repeatable jobs</h3>
+<p>Board contracts, gym fights, bank and store robberies and car jobs can be done again and again. The server recognizes them without using up the hourly earnings, with two limits:</p>
+<ul>
+<li><code>encargos_hora</code>: how many are recognized per hour, of each type. By default, 6.</li>
+<li><code>encargo_max</code>: the most that is accepted from the pay of a single one. By default, 15,000 euros. On top of that, the server knows from the game data the most each type of job can pay, and doesn't recognize more than that.</li>
+</ul>
+<p>A player who goes over that number in an hour is warned, and that job counts as ordinary earnings. Anyone playing with a version older than 1.7.1 doesn't tell the server about their jobs: for that person, everything counts against the hourly earnings, as before, until they update.</p>
+<h3>Everything else: the hourly earnings</h3>
+<p>Everything else you earn playing on your own (jobs, sales, gambling, street loot) has a cap per clock hour, the <code>ganancia_hora</code> option, which is 30,000 euros by default. Whatever goes over the cap is taken away, and the player is told with figures: how much they earned, how much is accepted, what the cap is, and at what rate they get margin back.</p>
+<ul>
+<li>Unused margin builds up, up to the hours set by <code>ganancia_acumula</code>, which is 3 by default. That way, someone who hasn't earned anything for a while can have a whole good run without losing money. It also builds up while the player is away.</li>
+<li>Someone joining for the first time starts with a quarter of an hour of margin. Leaving and joining again doesn't refill it.</li>
+<li>The player can check how it's going on their phone: Online, Data and rules of this server.</li>
+</ul>
+<h3>Permanent contracts and their paychecks</h3>
+<p>Since version 1.7.1 the game has permanent contracts: you sign them at the job center, they ask for a number of shifts every seven game days and they pay a paycheck at the end of each period. On a server, the paycheck is paid by the server, so nobody can make it up:</p>
+<ul>
+<li>The server counts the shifts, keeps the calendar and sets the amount, which comes from the game data. What each player's game says about how much they earn doesn't count.</li>
+<li>The paycheck doesn't use up the hourly earnings. What you earn for each shift does, like any job.</li>
+<li><code>nominas</code>: with <code>no</code>, there are no permanent contracts on your server. By default, there are.</li>
+<li><code>nomina_max</code>: the most you pay for a paycheck. By default, 1,500 euros, which doesn't cut any of the game's paychecks; it's there so a mod can't make them skyrocket.</li>
+<li><code>nomina_turnos_dia</code>: how many shifts you count for each player in one game day. By default, 3.</li>
+<li>Asking to be paid early, repeating it, or leaving and joining again gives nothing: the contract and its pay date are saved on the server.</li>
+<li>The server's world must be from 1.7.1 or later. Anyone playing with 1.7.0 has no permanent contracts, neither here nor playing solo.</li>
+</ul>
+<p>Of the rest of the game's honest life, on a server you have the academy diplomas, which only cost money; the criminal record, which counts for jobs of trust; and, if you leave <code>trato_prestigio</code> set to <code>si</code>, a small discount in shops for those with a good name and a surcharge for those with a very bad one, the same for everyone. Loans, mortgages, taxes and business management don't exist: they create or move money the server can't check. The game tells the player.</p>
+<h3>What to set on your server</h3>
+<ul>
+<li>Among trusted friends: raise <code>ganancia_hora</code> without fear, to 100,000 or more, or turn off money tracking with <code>economia = no</code>. The cap is there for servers open to strangers, not to spoil things for your people.</li>
+<li>On an open server: leave the default cap and, if your people live off contracts or robberies and complain, raise <code>encargos_hora</code> before <code>ganancia_hora</code>.</li>
+<li>If someone tells you the server is taking money from them, ask them what the game told them: since 1.7.1 it gives them the figures. The server log shows a line each time, with what was taken away and the cap.</li>
+<li>All these options can be changed with the server running.</li>
+</ul>
+<h3>If the connection drops right after buying</h3>
+<p>The character is saved on the server every three quarters of a minute and, since 1.7.1, a few seconds after a purchase: two or three seconds after the first one and, if the player keeps spending, at most every twelve. If even so someone's connection drops before their game saves, the server puts back into their balance what they spent since the last save: what they bought isn't on their character, but the money isn't lost either. A line appears in the log. It can't be used to make money: what was given to another player, what the server charged and houses bought don't come back.</p>
+
+<h2 id="rol">19. Text roleplay, voice and vehicle radio</h2>
+<h3>Role-play channels</h3>
+<p>With the <code>rol</code> option set to <code>si</code>, which is how it comes, players have, besides the usual chat:</p>
+<ul>
+<li>A channel to talk in character. Only those nearby hear it: closer than the meters set in <code>rol_metros</code>, which is 30 by default.</li>
+<li>A command to tell what their character does. Whoever types "opens the door" makes those nearby hear their name and "opens the door". It has the same range.</li>
+<li>A channel to talk out of character, as a player. The whole server hears it.</li>
+<li>A profile line, up to two hundred letters long, that says who their character is. The others read it whenever they want.</li>
+</ul>
+<p>Each channel has its own sound in the game, and everything said can be reviewed on the phone, Online, Role-play. In the game it works like this:</p>
+<ul>
+<li>Shift F10 talks in character, and Control F10 describes an action. F10 on its own is the usual general chat. Players with a controller have them in the actions menu, and can type with the letter wheel or pick one of the ready-made phrases.</li>
+<li>In any message you can type a command in front: slash yo and what the character does; slash ep and what is said in character; slash fp and what is said out of character; and slash ficha and the profile line. For example, <code>/yo abre la puerta</code>.</li>
+<li>Another player's profile is read on the phone, Online, Who is here, by picking them; or with Shift J when they are near you.</li>
+</ul>
+<ul>
+<li>Players with a version older than 1.7.1 do not have those channels in their game, but they are not left out: what is said in character and the actions reach them through the nearby chat, with a few words in front that say what they are, and they can use the slash commands from their general chat.</li>
+<li>With <code>rol = no</code> there are no role-play channels or profiles, and the usual chat remains. It can be changed with the server running: whoever is already in finds out when they try to use them.</li>
+<li>Admin commands are still typed in the chat with a slash in front. The four role-play commands are for everyone; the rest, only for whoever administers.</li>
+<li>The server does not keep what is said on any channel. The profile line is kept, with each player's account.</li>
+</ul>
+<h3>Voice</h3>
+<p>The game has no microphone voice chat. If on your server you want to talk out loud while you play, which is usual on role-play servers, use a separate voice program: any of the ones for group calls over the internet will do, and there is nothing to set up on the server or in the game. A tip if you use a screen reader: put the others' voices through a speaker or headphone other than the reader's, or turn their volume down, so they don't talk over each other.</p>
+<h3>Radio in other players' vehicles</h3>
+<p>With the <code>radio_coches</code> option set to <code>si</code>, which is how it comes, whoever is near another player's vehicle hears, faint and muffled, the station it has on, and stops hearing it when moving away.</p>
+<ul>
+<li>It only works for the stations that come with the game. Nothing is shared about "My music" or the stations each player makes with their own files: neither the music nor the name leaves their computer.</li>
+<li>Only the short name of the station goes through the server, a few letters. No sound goes through: each game plays its own copy of that station, so it may not be the same song the driver hears.</li>
+<li>Each player can turn it off in their Options, in Sound and music. With <code>radio_coches = no</code> nobody hears it.</li>
+<li>Players with an older version neither hear it nor let others hear theirs.</li>
+</ul>
+
+<h2 id="copias">20. Backups, moving the server and updating it</h2>
+<h3>Backups</h3>
+<ul>
+<li>By default, the server makes a backup every 24 hours and keeps the last 7. It is changed with the <code>copia_auto_horas</code> and <code>copias_guardar</code> options.</li>
+<li>They are in the <code>copias</code> folder, inside the data folder. Each backup is a zip file.</li>
+<li>To make one right now: in the panel, Control+B; in text mode, the <code>copia</code> command. The ones you make are not deleted automatically.</li>
+<li>A backup holds the database with the accounts and characters, the world the server was working with, the certificate with its key, and the configuration.</li>
+<li>Because it holds the certificate key and the configuration, a backup is not for sharing: keep it where only you can see it. It is a good idea to have one somewhere other than the server machine.</li>
+</ul>
+<h3>Restoring a backup</h3>
+<ul>
+<li>In the panel: Control+R, choose the backup and press OK. If the server is running, it stops it first. What is there at that moment is saved in another backup, just in case, with a name that starts with <code>antes_de_restaurar</code>.</li>
+<li>You can tick an option to also restore the configuration inside the backup. If you don't tick it, the current one stays.</li>
+<li>By hand, on any system: stop the server, unzip the zip inside the data folder, letting it replace the files, and start it. The backup's <code>servidor.conf</code> file goes next to the data folder, not inside it.</li>
+</ul>
+<h3>Moving the server to another machine</h3>
+<ol>
+<li>Stop the server.</li>
+<li>Copy <code>servidor.conf</code> and the whole data folder, <code>datos_servidor</code>, to the new machine. Or make a backup and take the zip with you.</li>
+<li>On the new machine, set up the server as its section says and put those files in place: on Windows, in the game's <code>servidor</code> folder; on Linux, next to the code's <code>servidor</code> folder; with Docker, inside the <code>datos</code> folder.</li>
+<li>Start it. The characters, the gangs and the certificate are the same: nobody notices the change, except for the new address.</li>
+</ol>
+<h3>Updating the server</h3>
+<p>Since version 1.7.1, updating no longer throws anyone back to the menu. The server warns the players with a countdown, waits for each game to save its character, saves everything and closes saying why. The games stay on a waiting screen, with the game session as it was, and when the server comes back, they wait and come back in on their own: everyone carries on where they were.</p>
+<h4>On Windows</h4>
+<ul>
+<li>Just update the game, with the server or the panel open. There is no need to stop it first.</li>
+<li>The game says you have the server open, explains what is going to happen and asks for permission. If you say yes: it warns the players, the server stops on its own, the game closes and updates, and when it finishes the server starts again on its own, just as it was: the console one in its window, minimized, or the panel, with the server running if it was.</li>
+<li>If you only have the panel open, with the server stopped, even if you have never started it, there is nobody to warn: the panel closes on its own and opens again at the end, stopped as it was.</li>
+<li>The console server and the panel come back minimized and without taking focus: the focus stays on the game. When you go to the panel, the focus is on the server status, as always.</li>
+<li>If the update fails, the version you had is kept and the server is started again anyway. What the server saved when closing is not lost: the update only saves and restores programs, never your database.</li>
+<li>When it opens, the game says whether the server has started again. Everything is written to the <code>actualizacion.log</code> file in the game's <code>data\logs</code> folder.</li>
+<li>If the server starts on its own when you sign in, with Arrancar con Windows (Start with Windows), it also starts again on its own.</li>
+<li>If you have it set up as a service or as a scheduled task that runs without anyone signing in, the game can ask it to close, but cannot start it the way Windows starts it: it warns you before starting, and afterwards you will have to start it the way you have it set up, if it does not come back on its own.</li>
+<li>Your configuration and your data are not touched, whether the update goes well or fails, whether they are in the default data folder or in another one you set. The only thing that does not work is having the data folder inside one of the program's own folders, such as <code>lib</code>: if the game sees that, it says so and does not update until you move it.</li>
+</ul>
+<h4>On Linux, Mac, NAS, Raspberry Pi or Docker</h4>
+<p>There the server is not updated with the game: you replace its code by hand. So that players get the same wait and the same return, stop it with the restart command instead of cutting it off:</p>
+<ol>
+<li>Replace the code's <code>servidor</code> folder with the one from the new game's <code>otros_sistemas</code> folder. It can be done with the server running: it does not read the new code until it starts again. Do not touch <code>servidor.conf</code> or the data folder.</li>
+<li>Restart it with a warning. Depending on how you have it set up:
+<ul>
+<li>With the scripts: <code>sh reiniciar.sh</code>. It warns, stops it and starts it again.</li>
+<li>With systemd or with Docker: an admin types <code>/actualizar</code> in the game chat. The server warns, closes with code 75, and systemd or Docker start it again on their own. With Docker, if you have also changed the image, type <code>docker compose up -d --build</code>: when the container stops, the server still tells the games it is coming back.</li>
+<li>By hand, with the console in front of you: type <code>actualizar</code>, wait for it to finish and start it again.</li>
+<li>Without a console: from the server folder, <code>python3 -m servidor --actualizar</code>. Or leave a text file called <code>parar.txt</code> in the data folder with the word <code>actualizar</code> inside: the server checks it every second, deletes it and obeys. With <code>reiniciar</code> it says it is for maintenance, and with <code>parar</code> it just stops. After the word you can put the seconds of warning, for example <code>actualizar 60</code>.</li>
+</ul></li>
+</ol>
+<ul>
+<li>The countdown is the one in the <code>parada_aviso</code> option, 20 seconds by default. How long it waits for each game's last save is set by <code>parada_espera</code>.</li>
+<li>When the server stops in order to come back (the <code>actualizar</code> and <code>reiniciar</code> commands), its program ends with code 75. If whoever runs it stops it (<code>apagar</code>, Control+C), it ends with 0 and the games go back to the menu, as always.</li>
+<li>If the system stops it (<code>systemctl stop</code>, <code>docker compose down</code>, <code>sh parar.sh</code>, shutting down the machine), there is no time for a countdown, but the server still tells the games it is a restart: they wait and come back in on their own if it returns before they give up, which is ten minutes by default.</li>
+<li>Players with version 1.7.0 hear the warning as a normal notice and, when the server closes, go back to the menu with a text saying the server is restarting and to come back in a few minutes. Their character is saved all the same.</li>
+</ul>
+<h4>In all cases</h4>
+<ul>
+<li>New options work with their default value even if your <code>servidor.conf</code> does not have them. If you save the configuration from the panel, the file is rewritten with all of them. Options a server does not know are let through, and it says so when starting.</li>
+</ul>
+
+<h2 id="grandes">21. Servers with lots of people</h2>
+<ul>
+<li>There is no fixed player cap. With <code>max_jugadores = 0</code> everyone who arrives gets in.</li>
+<li>What weighs the most, on the processor and above all on the network, is telling each player where the others are. That is why those close to them are reported ten times per second; for the others in their town, it tells them roughly where they are once per second; and for those in other towns, every two seconds. If there is a crowd around, it reports less often per second.</li>
+<li>The distance within which others are followed in detail is set by the <code>radio_detalle</code> option, 150 meters by default. If the connection is tight, lower it to 100. Don't set it to 0 with lots of people: with 0 everything is reported, to everyone, all the time.</li>
+<li>As a guide, what the server sends each player just for the others' positions: with ten players, about 3 KB per second; with a hundred spread over a town, about 25; with a hundred all together, about 40. Multiplied by the players, a hundred people means between 2.5 and 4 megabytes per second of upload. Shared traffic, pedestrians and police add a bit more.</li>
+<li>The server's traffic and pedestrians appear by zones, wherever there are players. The caps per town are <code>trafico_total</code> and <code>peatones_total</code>. If the machine is struggling, lower them, or turn off the shared traffic, pedestrians or police: each game will put in its own.</li>
+<li>With lots of people, what runs short first is a home internet upload, not the computer. For a large server, rent a machine with a good connection.</li>
+<li>On Linux, each player takes up an open connection. The systemd service already raises the limit. If you start it by hand with more than about a thousand people, raise the limit first with <code>ulimit -n 65536</code>.</li>
+<li>Turn on <code>inactividad_minutos</code> so that whoever has gone away without leaving does not take up a slot.</li>
+<li>Saving every minute with thousands of accounts is barely noticeable, but you can space it out with <code>guardado_minutos</code>.</li>
+</ul>
+
+<h2 id="problemas">22. Troubleshooting</h2>
+<h3>The server does not start</h3>
+<ul>
+<li>"Could not open port": the server is already running in another window, or in the panel and the console at the same time, or another program is using that port. Close the other one, or change the <code>puerto</code> option.</li>
+<li>"Encryption is mandatory but there is no certificate": you have set <code>cifrado = si</code> and the certificate could not be created. Set <code>cifrado = auto</code>, or check that the data folder can be written to.</li>
+<li>It says there are problems in the configuration: each warning says which option it is and why it is not valid. The server starts anyway, with that option's default value. With <code>--comprobar</code> it is checked without starting.</li>
+</ul>
+<h3>Nobody can get in</h3>
+<ul>
+<li>First try yourself, from the same computer, with <code>puertobravo://127.0.0.1</code>. If you get in, the server is fine and the problem is in the network.</li>
+<li>If someone in your home cannot get in: check that they use your local network address and not the public one, and that the firewall on the server machine lets the port through. On Windows, it asks the first time; if you said no, you have to allow it in Windows Security, Firewall, Allow an app.</li>
+<li>If someone outside cannot get in: check the router rule, that it points to the current address of the server machine and that it is TCP. Also check that you gave them your current public address, and if you are behind CG-NAT, section 13.</li>
+<li>From inside your home, many routers don't let you in using your own public address. It is not a fault: from home, use your local network address.</li>
+</ul>
+<h3>What the game says when trying to get in</h3>
+<ul>
+<li>"The server is full": raise <code>max_jugadores</code> or set it to 0.</li>
+<li>"The entry password is not correct" or "that invitation code is not valid": entry is by password or by invitation. Give them the password, or a new code.</li>
+<li>"You cannot come into this server": that account is banned. It is lifted with Pardon the ban.</li>
+<li>"Your game's data is not this server's": they have mods that change the world, or an unsigned game, and you have <code>mundo_distinto</code> set to <code>rechazar</code> or <code>versiones</code> set to <code>iguales</code>. By default, that person gets in. Section 17.</li>
+<li>"This server has just been set up and does not have the game data yet": the server is empty and could not take the world from whoever is coming in, almost always because you have <code>actualizar_mundo</code> set to <code>no</code>. Section 17.</li>
+<li>"This server requires version such-and-such of the game or later": you have set the <code>version_minima</code> option.</li>
+<li>"The server does not present the same certificate as last time": you have changed the certificate, for example by reinstalling without taking the data with you. Section 14.</li>
+<li>"Too many connections from your address": you have set the <code>conexiones_por_ip</code> option and several players share an address. Raise it or set it to 0.</li>
+</ul>
+<h3>Other things</h3>
+<ul>
+<li>After updating the game, the server has not started again: the game says so when it opens, with the reason, and it is written to <code>actualizacion.log</code>, in the game's <code>data\logs</code> folder. Usually it was set up as a Windows service or task: start it the way you have it set up. If not, open it yourself from the <code>servidor</code> folder.</li>
+<li>Players stay waiting and do not get in: they wait at most what each of them has set in their options, ten minutes by default, and try every few seconds. If the server comes back requiring a newer version of the game (<code>version_minima</code>), their game tells them and offers to update.</li>
+<li>Someone has money taken away: the server keeps track and does not accept what is earned faster than <code>ganancia_hora</code> allows. Since 1.7.1 the game tells them the figures. What counts, what doesn't and what is best to set is in <a href="#dinero">section 18</a>.</li>
+<li>I have lost admin rights: stop the server, put your player name in the <code>admins</code> option and start it.</li>
+<li>I want to start from scratch: stop the server and delete or move away the data folder. A new one is created on startup, with a new certificate.</li>
+<li>To ask for help, save the log: in the panel, Control+G. It holds nothing personal except player names, and the addresses if you turned on <code>registro_ip</code>.</li>
+</ul>
+
+<h2 id="privacidad">23. What the server keeps</h2>
+<ul>
+<li>For each player: their public key, which is a number that identifies them; the name they chose; their character; and the game version they last came in with.</li>
+<li>It does not keep emails, account passwords or network addresses.</li>
+<li>The network address of whoever connects is only written to the log, and only shown in the panel, if you set <code>registro_ip = si</code>. By default, no.</li>
+<li>Chat messages are not kept, not even those on the role-play channels. The profile line each player writes is, with their account, and it is deleted with it.</li>
+<li>From vehicle radios only the short name of a game station goes through the server, and it is not kept.</li>
+<li>The entry password, if you use one, is written in <code>servidor.conf</code>: don't share that file.</li>
+<li>If you run a server open to strangers, you are responsible for their data: tell your people and delete the account of anyone who asks you to. It is done with the Delete the account button, in the panel's Accounts tab, or with the <code>borrarcuenta</code> command and the name.</li>
+</ul>
+
+<h2 id="opciones">24. All the configuration options</h2>
+<p>Each option goes on one line of <code>servidor.conf</code>, in the form <code>nombre = valor</code> (name = value). Lines that start with a hash sign are comments. In the panel they are in Settings, Control+P, each group in its own tab.</p>
+<p>Most apply with the server running: from the panel, when you accept; in text mode, with the <code>recargar</code> command. Some rules, such as traffic, police, pedestrians, combat, adult content and prices, reach each player's game when they come in: whoever is already in will fully notice them when they come back in. The ones that need a server restart say so.</p>
+<!-- OPCIONES:INICIO -->
+<h3>General</h3>
+<p>What the server is called, what whoever comes in is told and how many people fit.</p>
+<h4>Server name: <code>nombre</code></h4>
+<p>The name players see your server by in their list.</p>
+<ul>
+<li>A text of up to 60 letters.</li>
+<li>Default: <code>Servidor de Puerto Bravo</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Welcome: <code>bienvenida</code></h4>
+<p>What each player is told as soon as they come in.</p>
+<ul>
+<li>A text of up to 300 letters.</li>
+<li>Default: <code>Bienvenido. Juega limpio.</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Message of the day: <code>mensaje_dia</code></h4>
+<p>A notice every player hears when coming in, after the welcome: a meetup, a new rule. Empty, none. It can be changed with the server running.</p>
+<ul>
+<li>A text of up to 300 letters.</li>
+<li>Default: empty.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum players at once: <code>max_jugadores</code></h4>
+<p>How many players can be online at once. With 0 there is no limit. Admins get in even when it is full. The characters the server runs do not count.</p>
+<ul>
+<li>A whole number between 0 and 100000.</li>
+<li>Default: <code>32</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Adult content: <code>adultos</code></h4>
+<p>With no, whoever comes in plays without adult content even if they have it turned on in their game.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>no</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Seconds of warning before restarting for an update or maintenance: <code>parada_aviso</code></h4>
+<p>When the server is about to stop to update or for maintenance (the actualizar and reiniciar commands, or the game update on Windows), it warns the players with this countdown before closing. With 0 it closes right away. The games wait and come back in on their own when the server returns.</p>
+<ul>
+<li>A whole number between 0 and 120.</li>
+<li>Default: <code>20</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Final save: seconds to wait when stopping: <code>parada_espera</code></h4>
+<p>When stopping, the server asks each game to save its character and waits up to these seconds for it to arrive. If everyone saves sooner, it does not wait any longer.</p>
+<ul>
+<li>A whole number between 0 and 30.</li>
+<li>Default: <code>6</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Server language: <code>idioma</code></h4>
+<p>The language the server uses for what its admin reads: the console, the log, the command help and the comments of servidor.conf. What players hear does not change: the server sends it to them in Spanish and each player&#x27;s game says it in their own language, so people with different languages can play on the same server. If the server runs inside the panel, it speaks the game&#x27;s language.</p>
+<ul>
+<li>Values:<ul>
+<li><code>auto</code>: the system&#x27;s: Spanish if the system is in Spanish; otherwise English, or the system&#x27;s language if there is a translation into it.</li>
+<li><code>es</code>: Español.</li>
+<li><code>en</code>: English.</li>
+</ul></li>
+<li>Default: <code>auto</code>.</li>
+<li>Needs a server restart.</li>
+</ul>
+<h3>Network and encryption</h3>
+<p>Where the server listens and how it protects the connection.</p>
+<h4>Port: <code>puerto</code></h4>
+<p>The port the server listens on. It is the one to open on the router so people can come in from outside your home. With 0, the system picks a free one each time, which is only useful for testing.</p>
+<ul>
+<li>A whole number between 0 and 65535.</li>
+<li>Default: <code>47820</code>.</li>
+<li>Needs a server restart.</li>
+</ul>
+<h4>Address it listens on: <code>interfaz</code></h4>
+<p>With 0.0.0.0 it listens on all the computer&#x27;s connections, which is the usual. With 127.0.0.1 you can only come in from this same computer. The address of just one of your network connections also works.</p>
+<ul>
+<li>A text of up to 60 letters.</li>
+<li>Default: <code>0.0.0.0</code>.</li>
+<li>Needs a server restart.</li>
+</ul>
+<h4>Connection encryption: <code>cifrado</code></h4>
+<p>With auto, the server creates its own certificate the first time it starts and encrypts; there is nothing to install.</p>
+<ul>
+<li>Values:<ul>
+<li><code>auto</code>: encrypts if it can, and it almost always can.</li>
+<li><code>si</code>: mandatory: if it cannot encrypt, it does not start.</li>
+<li><code>no</code>: never encrypts.</li>
+</ul></li>
+<li>Default: <code>auto</code>.</li>
+<li>Needs a server restart.</li>
+</ul>
+<h4>Certificate file: <code>certificado</code></h4>
+<p>Only if you want to use your own certificate: the path of its PEM file. Empty, the server uses the one it creates itself in the data folder.</p>
+<ul>
+<li>A text of up to 260 letters.</li>
+<li>Default: empty.</li>
+<li>Needs a server restart.</li>
+</ul>
+<h4>Certificate key file: <code>llave</code></h4>
+<p>The path of the PEM file with your certificate&#x27;s private key. Empty if the key is inside the certificate itself or if you use the one the server creates.</p>
+<ul>
+<li>A text of up to 260 letters.</li>
+<li>Default: empty.</li>
+<li>Needs a server restart.</li>
+</ul>
+<h4>Simultaneous connections from the same address: <code>conexiones_por_ip</code></h4>
+<p>How many simultaneous connections are allowed from the same network address. With 0 there is no limit. Careful: people playing from the same home share an address, and behind Docker or a proxy everyone may look like the same one.</p>
+<ul>
+<li>A whole number between 0 and 100000.</li>
+<li>Default: <code>0</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Log the address of whoever connects: <code>registro_ip</code></h4>
+<p>With si, the log records the network address of each connection and the panel shows it. By default, no: the server keeps no personal data.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>no</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Access and administration</h3>
+<p>Who can come in, who is in charge and who is not let in.</p>
+<h4>Who can create a character: <code>entrada</code></h4>
+<p>It only affects whoever comes in for the first time: whoever already has a character can always come back in.</p>
+<ul>
+<li>Values:<ul>
+<li><code>abierta</code>: anyone who has the address.</li>
+<li><code>clave</code>: you need to know the entry password.</li>
+<li><code>invitacion</code>: a single-use code is needed.</li>
+</ul></li>
+<li>Default: <code>abierta</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Entry password: <code>clave</code></h4>
+<p>The password you need to know to create a character when entry is by password.</p>
+<ul>
+<li>A text of up to 60 letters. It is saved as is in the file: do not show it to anyone.</li>
+<li>Default: empty.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Admins: <code>admins</code></h4>
+<p>Player names that administer the server, separated by commas. They add to those named with the admin command.</p>
+<ul>
+<li>A text of up to 600 letters.</li>
+<li>Default: empty.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>The first account is an admin: <code>primer_admin</code></h4>
+<p>With si, the first account created on the server is an admin: normally that is you.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Banned names: <code>vetados</code></h4>
+<p>Player names that cannot come in, separated by commas. They add to the accounts banned with the vetar command.</p>
+<ul>
+<li>A text of up to 600 letters.</li>
+<li>Default: empty.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Kick for inactivity, in minutes: <code>inactividad_minutos</code></h4>
+<p>Minutes without moving or doing anything after which a player is kicked to make room. With 0, never. Admins are not kicked.</p>
+<ul>
+<li>A whole number between 0 and 1440.</li>
+<li>Default: <code>0</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Allow two sessions with the same identity: <code>varias_sesiones</code></h4>
+<p>For testing only. By default, no: if someone comes in with their character from somewhere else, the previous session is closed.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>no</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Game versions</h3>
+<p>Which versions of the game can play together on this server.</p>
+<h4>Check the game data of whoever comes in: <code>comprobar_datos</code></h4>
+<p>With si, the server checks whether the world the incoming player&#x27;s game brings is its own, that of another real version, or one changed with mods, and acts according to the following options. With no, it checks nothing: anyone comes in with whatever they bring, and the server does not catch up with the world of new versions.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>What to do with whoever brings data that cannot be checked: <code>mundo_distinto</code></h4>
+<p>Players with mods that change the world, or with a version whose data the server cannot check. With a real version different from the server&#x27;s you always get in, whatever you set here.</p>
+<ul>
+<li>Values:<ul>
+<li><code>admitir</code>: comes in and plays on what it has in common with the server; it is told what does not match, and what affects others is decided by the server with its world.</li>
+<li><code>rechazar</code>: does not come in: only the data of a real version is played.</li>
+</ul></li>
+<li>Default: <code>admitir</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Versions that can play together: <code>versiones</code></h4>
+<p>The server works with the world of the newest version it has seen, and talks to each game about what its version knows: a weapon or vehicle it does not have reaches it as the closest of its own.</p>
+<ul>
+<li>Values:<ul>
+<li><code>compatibles</code>: players with different versions of the game can play together, each with what their version knows.</li>
+<li><code>iguales</code>: only those with exactly the same data as the server get in.</li>
+</ul></li>
+<li>Default: <code>compatibles</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Minimum game version: <code>version_minima</code></h4>
+<p>The oldest version of the game that can come in, for example 1.7.0. Empty, any.</p>
+<ul>
+<li>A text of up to 20 letters.</li>
+<li>Default: empty.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Who can bring a new world: <code>actualizar_mundo</code></h4>
+<p>The game world (places, weapons, missions) is not tied to the server: the incoming player&#x27;s game brings it. A server without a world takes the first incoming player&#x27;s; if that one is not signed, it replaces it with the first signed one that arrives.</p>
+<ul>
+<li>Values:<ul>
+<li><code>firmado</code>: a newer version&#x27;s is accepted from anyone if it is signed by the game&#x27;s publisher.</li>
+<li><code>admin</code>: also, unsigned, from an admin: for modded servers.</li>
+<li><code>no</code>: never: the server keeps the world it has.</li>
+</ul></li>
+<li>Default: <code>firmado</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Data and backups</h3>
+<p>Where everything is saved, how often and how many backups are kept.</p>
+<h4>Data folder: <code>datos</code></h4>
+<p>The folder where everything is saved: characters, gangs, territories, vehicles, the certificate and the backups.</p>
+<ul>
+<li>A text of up to 260 letters.</li>
+<li>Default: <code>datos_servidor</code>.</li>
+<li>Needs a server restart.</li>
+</ul>
+<h4>Save every so many minutes: <code>guardado_minutos</code></h4>
+<p>Every how many minutes everything is saved to disk. Stopping the server always saves.</p>
+<ul>
+<li>A whole number between 1 and 120.</li>
+<li>Default: <code>1</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Automatic backup, every so many hours: <code>copia_auto_horas</code></h4>
+<p>Every how many hours the server makes a backup in the copias folder, inside the data folder. With 0, it makes none.</p>
+<ul>
+<li>A whole number between 0 and 720.</li>
+<li>Default: <code>24</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Backups kept: <code>copias_guardar</code></h4>
+<p>How many automatic backups are kept: when a new one is made the oldest are deleted. The ones you make by hand with another name are not touched.</p>
+<ul>
+<li>A whole number between 1 and 365.</li>
+<li>Default: <code>7</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Save the log to a file: <code>registro_archivo</code></h4>
+<p>With si, what the server says is also written to registro.txt, inside the data folder.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>no</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Player-versus-player combat</h3>
+<p>The rules for fights, robberies and bounties.</p>
+<h4>Player-versus-player combat: <code>pvp</code></h4>
+<p>With no, players cannot hurt, rob or steal from each other.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Safe zones: <code>zonas_seguras</code></h4>
+<p>With si, nobody can hurt anybody in hospitals, police stations, houses and inside venues.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Allow passive mode: <code>modo_pasivo</code></h4>
+<p>With si, each player can switch to passive mode: they neither hurt other players nor get hurt.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Seconds of protection on arrival: <code>proteccion</code></h4>
+<p>Seconds without being able to hurt or be hurt when coming in and when respawning.</p>
+<ul>
+<li>A whole number between 0 and 600.</li>
+<li>Default: <code>20</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Loot for knocking down another player, as a percentage: <code>botin</code></h4>
+<p>The percentage of pocket money lost by whoever falls to another player.</p>
+<ul>
+<li>A whole number between 0 and 100.</li>
+<li>Default: <code>10</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum loot: <code>botin_max</code></h4>
+<p>The most that can be lost when falling to another player, in euros.</p>
+<ul>
+<li>A whole number between 0 and 100000000.</li>
+<li>Default: <code>5000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Robbing another player, as a percentage: <code>atraco</code></h4>
+<p>The percentage of pocket money taken by whoever robs another player.</p>
+<ul>
+<li>A whole number between 0 and 100.</li>
+<li>Default: <code>15</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum robbery: <code>atraco_max</code></h4>
+<p>The most that can be taken in a robbery of another player, in euros.</p>
+<ul>
+<li>A whole number between 0 and 100000000.</li>
+<li>Default: <code>1000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Seconds to rob a business: <code>robo_segundos</code></h4>
+<p>The seconds you have to hold out at the door to empty the till of another player&#x27;s business. The owner gets the alert.</p>
+<ul>
+<li>A whole number between 1 and 600.</li>
+<li>Default: <code>20</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Bounty for knocking down an innocent: <code>recompensa</code></h4>
+<p>How much, in euros, the bounty rises on whoever knocks down someone who was not defending themselves.</p>
+<ul>
+<li>A whole number between 0 and 100000000.</li>
+<li>Default: <code>500</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Living world</h3>
+<p>Traffic, people on the street, the police and the characters the server runs.</p>
+<h4>Shared traffic: <code>trafico</code></h4>
+<p>With si, the cars on the road are run by the server and are the same for everyone. With no, each player sees their own traffic.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Cars per zone with players: <code>trafico_max</code></h4>
+<p>How many cars the server runs, at most, for each zone of a town where there are players. For a few friends who go together it is the total number of cars in the town.</p>
+<ul>
+<li>A whole number between 0 and 200.</li>
+<li>Default: <code>8</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Cars per town, at most: <code>trafico_total</code></h4>
+<p>The cap on cars in the same town when there are players spread over many zones. With 0 there is no cap.</p>
+<ul>
+<li>A whole number between 0 and 5000.</li>
+<li>Default: <code>60</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Patrol cars per town: <code>patrullas</code></h4>
+<p>Server patrol cars that roam each town with players. With 0, none.</p>
+<ul>
+<li>A whole number between 0 and 50.</li>
+<li>Default: <code>1</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Shared police: <code>policia</code></h4>
+<p>With si, the wanted level, the chase and the arrest are run by the server, and everyone nearby sees and hears them. With no, each player&#x27;s game runs them.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Shared street people: <code>peatones</code></h4>
+<p>With si, pedestrians are run by the server and are the same for everyone.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Pedestrians per zone with players: <code>peatones_max</code></h4>
+<p>How many pedestrians the server runs, at most, for each zone of a town where there are players.</p>
+<ul>
+<li>A whole number between 0 and 200.</li>
+<li>Default: <code>10</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Pedestrians per town, at most: <code>peatones_total</code></h4>
+<p>The cap on pedestrians in the same town when there are players spread over many zones. With 0 there is no cap.</p>
+<ul>
+<li>A whole number between 0 and 5000.</li>
+<li>Default: <code>80</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Characters the server runs: <code>personajes</code></h4>
+<p>Passers-by, pickpockets, gunmen, car thieves and robbers the server runs, the same for everyone. They only appear where there are players. With 0, none.</p>
+<ul>
+<li>A whole number between 0 and 200.</li>
+<li>Default: <code>6</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Meters within which others are followed in detail: <code>radio_detalle</code></h4>
+<p>Each player is told ten times per second where those closer than this distance are, and once per second where the others in their town are. It is what saves the most network and processor on servers with many people. With 0, everyone in detail all the time, which only suits a few people.</p>
+<ul>
+<li>A whole number between 0 and 100000.</li>
+<li>Default: <code>150</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Economy and properties</h3>
+<p>The money the server recognizes, houses, businesses and vehicles.</p>
+<h4>The server keeps track of money: <code>economia</code></h4>
+<p>With si, the server keeps track of each player&#x27;s money and does not accept what it cannot justify.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum earnings per hour: <code>ganancia_hora</code></h4>
+<p>The most that can be earned in one clock hour from jobs, sales, gambling and street loot, in euros. What the server itself gives does not count.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>30000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Hours of earnings that can build up: <code>ganancia_acumula</code></h4>
+<p>The hourly earnings a player does not use are not lost: they are kept up to this number of hours, also while they are away, so a good streak fits whole. With 1, they never have more room than one hour&#x27;s.</p>
+<ul>
+<li>A whole number between 1 and 48.</li>
+<li>Default: <code>3</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Repeatable jobs recognized per hour, of each kind: <code>encargos_hora</code></h4>
+<p>Contracts, gym fights, robberies and car jobs that are really completed do not use up the hourly earnings: the server accepts them, up to this number per hour of each kind. With 0 it recognizes none and they all count against the hourly earnings.</p>
+<ul>
+<li>A whole number between 0 and 1000.</li>
+<li>Default: <code>6</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum pay recognized for a repeatable job: <code>encargo_max</code></h4>
+<p>The most accepted from the pay of a single repeatable job, in euros. Anything above that counts against the hourly earnings.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>15000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum starting money: <code>saldo_inicial</code></h4>
+<p>The most a new character can start with, in euros.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>5000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Sale to the market, as a percentage: <code>venta_mercado</code></h4>
+<p>The percentage of the price recovered by whoever sells their house or business to the market.</p>
+<ul>
+<li>A whole number between 0 and 100.</li>
+<li>Default: <code>70</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Days without coming in to lose properties: <code>propiedad_dias</code></h4>
+<p>Real days without coming in after which a player&#x27;s properties go back on the market. Their share is kept for them.</p>
+<ul>
+<li>A whole number between 1 and 3650.</li>
+<li>Default: <code>30</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Hours a vehicle lasts on the street: <code>vehiculos_horas</code></h4>
+<p>Real hours a vehicle left on the street stays there.</p>
+<ul>
+<li>A whole number between 1 and 8760.</li>
+<li>Default: <code>12</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Parked vehicles per player: <code>vehiculos_por_jugador</code></h4>
+<p>How many vehicles each player can have parked on the street. When one more is left, the oldest disappears.</p>
+<ul>
+<li>A whole number between 1 and 100.</li>
+<li>Default: <code>3</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Gangs and territories</h3>
+<p>What it costs to found a gang, claim a neighborhood and declare a war.</p>
+<h4>Price of founding a gang: <code>precio_banda</code></h4>
+<p>In euros.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>2000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Price of claiming a neighborhood: <code>precio_barrio</code></h4>
+<p>In euros, from the gang&#x27;s till.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>3000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Daily income of each neighborhood: <code>renta_barrio</code></h4>
+<p>What each neighborhood leaves in the gang&#x27;s till at midnight, in euros.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>300</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Price of declaring a war: <code>precio_guerra</code></h4>
+<p>In euros, from the gang&#x27;s till.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>1000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Minutes until a war starts: <code>guerra_espera</code></h4>
+<p>Real minutes between declaring a war and its start.</p>
+<ul>
+<li>A whole number between 1 and 10080.</li>
+<li>Default: <code>20</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Minutes a war lasts: <code>guerra_dura</code></h4>
+<p>Real minutes.</p>
+<ul>
+<li>A whole number between 1 and 1440.</li>
+<li>Default: <code>10</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Role-play and living together</h3>
+<p>The chat channels to play your character and what you hear from the other players.</p>
+<h4>Role-play channels: <code>rol</code></h4>
+<p>With si, players have a channel to talk in character, heard only by those nearby, another to talk out of character, heard by the whole server, a command to describe what their character does and a profile line others can read. With no, only the usual chat remains.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Meters what is said in character reaches: <code>rol_metros</code></h4>
+<p>How far away what a player says in character, and the actions they describe, can be heard. What is said out of character always reaches the whole server.</p>
+<ul>
+<li>A whole number between 5 and 2000.</li>
+<li>Default: <code>30</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Other players&#x27; car radio: <code>radio_coches</code></h4>
+<p>With si, whoever is near another player&#x27;s vehicle hears, faintly, the game radio station they have on. Only which game station it is gets shared: no music or anything personal ever travels. With no, nobody&#x27;s radio is heard.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Honest life</h3>
+<p>Permanent contracts with their paychecks and how shops treat each player according to their standing.</p>
+<h4>Paychecks for permanent contracts: <code>nominas</code></h4>
+<p>With si, whoever signs a permanent contract at the job center gets their paycheck at the end of each period. The server pays it: it counts the shifts and sets the amount, which comes from the game data and does not use up the hourly earnings. With no, there are no permanent contracts on this server. The server&#x27;s world must be from version 1.7.1 or later.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum pay per paycheck: <code>nomina_max</code></h4>
+<p>The most the server pays for one period&#x27;s paycheck, in euros, whatever the game world or a mod says.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>1500</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Contract shifts that count each day: <code>nomina_turnos_dia</code></h4>
+<p>How many shifts of a permanent contract the server counts for a player on the same game day.</p>
+<ul>
+<li>A whole number between 1 and 50.</li>
+<li>Default: <code>3</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Standing discounts in shops: <code>trato_prestigio</code></h4>
+<p>With si, shops give a small discount to those with a good name among the neighbors, and charge extra to those with a very bad one, as when playing offline on the soft level. Only players with version 1.7.1 or later notice it. With no, everyone pays the same.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<!-- OPCIONES:FIN -->
+</body>
+</html>

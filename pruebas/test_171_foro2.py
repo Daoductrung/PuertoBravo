@@ -502,7 +502,7 @@ def test_actualizar_a_mano_esta_en_el_menu_con_sus_pasos_y_en_el_manual(robot, m
     assert abiertos == [A.PAGINA_DESCARGAS] and A.PAGINA_DESCARGAS.startswith("https://github.com/")
     _elegir(robot, "Abrir la carpeta del juego")
     assert abiertos[-1] == A.carpeta_programa()
-    manual = open(os.path.join(rutas.DOCS, "manual.html"), encoding="utf-8").read()
+    manual = open(os.path.join(rutas.DOCS, "manual_es.html"), encoding="utf-8").read()
     assert "Actualizar a mano" in manual and "releases/latest" in manual and "reemplazar" in manual
 
 
@@ -611,7 +611,7 @@ def test_mi_musica_se_encuentra_en_la_pausa_y_lleva_a_la_carpeta(robot, tmp_path
     menus_juego.opciones(app)
     _elegir(robot, "Sonido")
     assert any(o.texto.startswith("Mi música: cómo poner tus canciones") for o in app.pila[-1].opciones)
-    manual = open(os.path.join(rutas.DOCS, "manual.html"), encoding="utf-8").read()
+    manual = open(os.path.join(rutas.DOCS, "manual_es.html"), encoding="utf-8").read()
     assert "Poner tu propia música, paso a paso" in manual
 
 
@@ -657,7 +657,7 @@ def test_territorios_explica_como_funciona_con_las_cifras_de_la_partida(robot):
     menus_extra.territorios(p)
     ops = [o.texto for o in robot.app.pila[-1].opciones]
     assert not ops[0].startswith("Cómo funciona") and any(t.startswith("Cómo funciona esto") for t in ops[:4])
-    manual = open(os.path.join(rutas.DOCS, "manual.html"), encoding="utf-8").read()
+    manual = open(os.path.join(rutas.DOCS, "manual_es.html"), encoding="utf-8").read()
     assert "Cómo funciona esto" in manual and "Buscar pelea con una banda" in manual
 
 

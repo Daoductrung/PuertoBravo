@@ -13,6 +13,7 @@ Todo sale de los datos del juego (data/datos/gente.json), que un mod puede ampli
 Lo que hay aquí escrito es solo lo mínimo para que el juego funcione si esos datos faltan (unos datos antiguos, o un
 mod que deja una lista vacía): entonces se usa esto.
 """
+from .i18n import tr
 import random
 
 SECCIONES = ("gente", "caracteres", "bandas", "tipos_enemigo", "policia_niveles", "cajas_locales")
@@ -25,28 +26,28 @@ PUNTERIA = 0.42                   # la de un enemigo corriente: lo que acierta a
 HABLAS = ("amable", "hablador", "seco", "timido", "chulo")      # los caracteres para los que el juego trae frases escritas
 
 _SERIE = {
-    "nombres_h": ["Antonio", "Manolo", "Paco", "Javi", "Luis", "Rafa"], "nombres_m": ["Carmen", "Lola", "Pilar", "Marta", "Lucía", "Rosa"],
-    "apellidos": ["Mora", "Salas", "Cano", "Vidal"], "frases": ["Buenos días.", "Perdona, llevo prisa.", "Qué calor hace hoy."],
-    "apodos": ["el Chato", "la Culebra", "el Rubio", "la Tuerta"], "perros": ["Canela", "Trufa", "Rayo", "Luna"],
-    "bandas_propias": ["Los del Puerto", "La Cuadrilla"], "rivales_carrera": ["el coche rojo", "el coche negro", "la furgoneta blanca", "el deportivo amarillo"],
+    "nombres_h": [tr("Antonio"), tr("Manolo"), tr("Paco"), tr("Javi"), tr("Luis"), tr("Rafa")], "nombres_m": [tr("Carmen"), tr("Lola"), tr("Pilar"), tr("Marta"), tr("Lucía"), tr("Rosa")],
+    "apellidos": [tr("Mora"), tr("Salas"), tr("Cano"), tr("Vidal")], "frases": [tr("Buenos días."), tr("Perdona, llevo prisa."), tr("Qué calor hace hoy.")],
+    "apodos": [tr("el Chato"), tr("la Culebra"), tr("el Rubio"), tr("la Tuerta")], "perros": [tr("Canela"), tr("Trufa"), tr("Rayo"), tr("Luna")],
+    "bandas_propias": [tr("Los del Puerto"), tr("La Cuadrilla")], "rivales_carrera": [tr("el coche rojo"), tr("el coche negro"), tr("la furgoneta blanca"), tr("el deportivo amarillo")],
     "nombres_servidor": [],
-    "frases_chat": ["Hola a todos.", "¿Dónde estáis?", "Voy para allá.", "Gracias.", "Hasta luego."],
-    "rol_frases_ic": ["Buenas.", "¿Qué tal todo?", "Sígueme.", "Espera un momento.", "Gracias.", "Hasta luego."],
-    "rol_frases_yo": ["saluda con la mano", "asiente", "niega con la cabeza", "mira alrededor", "se encoge de hombros"],
-    "rol_frases_ooc": ["Hola.", "Vuelvo en un momento.", "Ya estoy de vuelta.", "Juego con mando: escribo despacio.", "Me tengo que ir. Hasta otra."],
+    "frases_chat": [tr("Hola a todos."), tr("¿Dónde estáis?"), tr("Voy para allá."), tr("Gracias."), tr("Hasta luego.")],
+    "rol_frases_ic": [tr("Buenas."), tr("¿Qué tal todo?"), tr("Sígueme."), tr("Espera un momento."), tr("Gracias."), tr("Hasta luego.")],
+    "rol_frases_yo": [tr("saluda con la mano"), "asiente", tr("niega con la cabeza"), tr("mira alrededor"), tr("se encoge de hombros")],
+    "rol_frases_ooc": [tr("Hola."), tr("Vuelvo en un momento."), tr("Ya estoy de vuelta."), tr("Juego con mando: escribo despacio."), tr("Me tengo que ir. Hasta otra.")],
 }
 SIN_SERIE = ("nombres_servidor",) + tuple(l for l in LISTAS if l.startswith("frases_servidor_"))      # las que pueden venir vacías: el servidor trae las suyas
 _SERIE.update({l: [] for l in SIN_SERIE})
 _OFICIOS_SERIE = [{"nombre": "camarero", "femenino": "camarera", "edad_max": 66}, {"nombre": "estudiante", "edad_max": 27, "peso": 3},
                   {"nombre": "taxista", "edad_max": 66}, {"nombre": "jubilado", "femenino": "jubilada", "edad_min": 62, "peso": 6}]
 _CARACTERES_SERIE = {
-    "amable": {"desc": "amable", "desc_ia": "amable y cordial", "saludo": 6, "cumplido": 8, "chiste": 5, "insulto": -30, "valor": 0.2},
-    "hablador": {"desc": "con ganas de hablar", "desc_ia": "muy habladora", "saludo": 8, "cumplido": 6, "chiste": 8, "insulto": -25, "valor": 0.3},
-    "seco": {"desc": "de pocas palabras", "desc_ia": "seca, de pocas palabras", "saludo": 2, "cumplido": 2, "chiste": -2, "insulto": -35, "valor": 0.6},
-    "timido": {"desc": "con timidez", "desc_ia": "tímida, se corta al hablar", "saludo": 3, "cumplido": 4, "chiste": 3, "insulto": -40, "valor": 0.05},
-    "chulo": {"desc": "con chulería", "desc_ia": "chula y presumida", "saludo": 1, "cumplido": 9, "chiste": 4, "insulto": -45, "valor": 0.85},
+    "amable": {"desc": "amable", "desc_ia": tr("amable y cordial"), "saludo": 6, "cumplido": 8, "chiste": 5, "insulto": -30, "valor": 0.2},
+    "hablador": {"desc": tr("con ganas de hablar"), "desc_ia": tr("muy habladora"), "saludo": 8, "cumplido": 6, "chiste": 8, "insulto": -25, "valor": 0.3},
+    "seco": {"desc": tr("de pocas palabras"), "desc_ia": tr("seca, de pocas palabras"), "saludo": 2, "cumplido": 2, "chiste": -2, "insulto": -35, "valor": 0.6},
+    "timido": {"desc": tr("con timidez"), "desc_ia": tr("tímida, se corta al hablar"), "saludo": 3, "cumplido": 4, "chiste": 3, "insulto": -40, "valor": 0.05},
+    "chulo": {"desc": tr("con chulería"), "desc_ia": tr("chula y presumida"), "saludo": 1, "cumplido": 9, "chiste": 4, "insulto": -45, "valor": 0.85},
 }
-_BANDAS_SERIE = ["Los Calaveras", "Los Lagartos", "Los Barrenos", "Los Tiburones", "Los Cuervos"]
+_BANDAS_SERIE = [tr("Los Calaveras"), tr("Los Lagartos"), tr("Los Barrenos"), tr("Los Tiburones"), tr("Los Cuervos")]
 
 G = {k: list(v) for k, v in _SERIE.items()}       # las listas en vigor
 OFICIOS = [dict(o) for o in _OFICIOS_SERIE]
@@ -210,7 +211,7 @@ def enemigo(grupo, rng=random):
     grupo = grupo or {}
     t = TIPOS.get(grupo.get("clase")) or {}
     armas = [a for a in (t.get("armas") or []) if a]
-    return {"nombre": str(grupo.get("tipo") or t.get("nombre") or "Enemigo"),
+    return {"nombre": str(grupo.get("tipo") or t.get("nombre") or tr("Enemigo")),
             "arma": grupo.get("arma") or (rng.choice(armas) if armas else t.get("arma")) or "pistola",
             "salud": _num(grupo.get("salud", t.get("salud")), 60.0, 1.0),
             "punteria": _num(grupo.get("punteria", t.get("punteria")), PUNTERIA, 0.02, 1.0),
@@ -249,7 +250,7 @@ def agentes_nivel(nivel, rng=random):
     if tipos:
         e = enemigo({"clase": rng.choice(tipos)}, rng)
     else:
-        e = enemigo({"tipo": "Policía", "arma": "subfusil" if nivel >= 4 else "pistola", "salud": 80, "ocupantes": 2}, rng)
+        e = enemigo({"tipo": tr("Policía"), "arma": "subfusil" if nivel >= 4 else "pistola", "salud": 80, "ocupantes": 2}, rng)
     e["vehiculo"] = e["vehiculo"] or "patrulla"
     return e
 

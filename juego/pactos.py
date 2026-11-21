@@ -10,6 +10,7 @@ dos veces: los precios bailan y hay quien acepta, quien regatea y quien se lo to
 frases están en los datos (vida.json, sección pactos). Solo en solitario: en un servidor, los barrios son de las bandas
 de los jugadores.
 """
+from .i18n import tr
 import random
 import zlib
 
@@ -21,47 +22,47 @@ AJ = Ajustes("pactos", {
     "regateo_extra": 25, "ofensa_ataque": 40, "plante_prob": 8,
     "tregua_base": 900, "tregua_dias_min": 6, "tregua_dias_max": 10, "tregua_rompe_prob": 4,
 }, {
-    "frases_devolver_si": ["{banda}: ¿{barrio}, por las buenas? Te damos {euros} euros y aquí no ha pasado nada.",
-                           "{banda} lo habla entre ellos y vuelve con una cifra: {euros} euros por {barrio}.",
-                           "{banda}: Siempre fue nuestro. {euros} euros, y nos lo devuelves hoy."],
-    "frases_devolver_no": ["{banda}: Con vosotros no hay tratos. {barrio} lo recuperaremos por las malas.",
-                           "{banda} te cuelga. Antes de pagarte un euro prefieren quitártelo a tiros.",
-                           "{banda}: ¿Pagar por lo que es nuestro? Ya iremos a buscarlo."],
-    "frases_devolver_hecho": ["Trato cerrado: {barrio} vuelve a ser de {banda} y tú te llevas {euros} euros.",
-                              "Os dais la mano. {banda} entra en {barrio} sin un tiro, y tú cuentas {euros} euros."],
-    "frases_regateo_si": ["{banda} gruñe, pero sube la oferta: {euros} euros.", "Aguantas la mirada y funciona: {banda} llega a {euros} euros."],
-    "frases_regateo_no": ["{banda} se levanta de la mesa: ya no hay oferta.", "Has tensado demasiado la cuerda. {banda} retira lo dicho."],
-    "frases_tributo_si": ["{banda}: De acuerdo. {euros} euros al día durante {dias} días, y nos dejas trabajar.",
-                          "{banda} no quiere guerra contigo: pagará {euros} euros cada medianoche, {dias} días.",
-                          "{banda} hace cuentas y le sale más barato pagarte: {euros} euros diarios, {dias} días."],
-    "frases_tributo_no": ["{banda}: ¿Tributo? ¿A ti? Vuelve cuando seas alguien.", "{banda} se ríe en tu cara. No van a pagarte nada.",
-                          "{banda}: Aquí el que cobra somos nosotros. Lárgate."],
-    "frases_tributo_ofensa": ["Y no se queda ahí: {banda} se lo ha tomado como una ofensa. Mandarán a alguien a explicártelo.",
-                              "Lo de pedirles dinero les ha sentado mal. {banda} no lo va a dejar pasar."],
-    "frases_tributo_cobro": ["{banda} cumple: te llegan {euros} euros de tributo.", "Sobre de {banda}: {euros} euros, como quedasteis."],
-    "frases_tributo_fin": ["Se acaba el trato con {banda}: desde hoy ya no te pagan. Puedes volver a negociarlo.",
-                           "{banda} ha pagado lo acordado. El tributo termina aquí."],
-    "frases_tributo_plante": ["{banda} se planta: dicen que no pagan ni un día más.", "Hoy no llega el sobre de {banda}. Han decidido que ya no te tienen miedo."],
-    "frases_comprar_si": ["{banda}: Todo tiene un precio. {barrio} es tuyo por {euros} euros.", "{banda} pone la cifra sobre la mesa: {euros} euros por {barrio}.",
-                          "{banda}: Nos viene bien el dinero. {euros} euros y nos vamos de {barrio}."],
-    "frases_comprar_no": ["{banda}: {barrio} no está en venta. Y menos para ti.", "{banda}: A quien nos mata a los nuestros no le vendemos ni la hora.",
-                          "{banda} ni te contesta. Con ellos, de momento, no hay negocio."],
-    "frases_comprar_hecho": ["Pagas {euros} euros y {banda} recoge sus cosas: {barrio} es tuyo, sin pegar un tiro.",
-                             "El dinero cambia de manos y las esquinas de {barrio}, de dueño. Ahora mandas tú."],
-    "frases_tregua_si": ["{banda}: Una tregua se puede hablar. {euros} euros y en {dias} días no tocamos lo tuyo.",
-                         "{banda} hace cuentas: por {euros} euros, {dias} días sin acercarse a tus barrios.",
-                         "{banda}: Nos viene bien un respiro. {euros} euros, {dias} días de paz."],
-    "frases_tregua_no": ["{banda}: ¿Tregua? Contigo solo hablamos de una manera.", "{banda} no quiere oír hablar de treguas. Van a por lo tuyo.",
-                         "{banda} te cuelga: no hay nada que pactar."],
-    "frases_tregua_hecho": ["Tregua cerrada con {banda}: {dias} días sin asaltos suyos, hasta el día {hasta}.",
-                            "Pagas {euros} euros y {banda} da su palabra: {dias} días de paz, hasta el día {hasta}."],
+    "frases_devolver_si": [tr("{banda}: ¿{barrio}, por las buenas? Te damos {euros} euros y aquí no ha pasado nada."),
+                           tr("{banda} lo habla entre ellos y vuelve con una cifra: {euros} euros por {barrio}."),
+                           tr("{banda}: Siempre fue nuestro. {euros} euros, y nos lo devuelves hoy.")],
+    "frases_devolver_no": [tr("{banda}: Con vosotros no hay tratos. {barrio} lo recuperaremos por las malas."),
+                           tr("{banda} te cuelga. Antes de pagarte un euro prefieren quitártelo a tiros."),
+                           tr("{banda}: ¿Pagar por lo que es nuestro? Ya iremos a buscarlo.")],
+    "frases_devolver_hecho": [tr("Trato cerrado: {barrio} vuelve a ser de {banda} y tú te llevas {euros} euros."),
+                              tr("Os dais la mano. {banda} entra en {barrio} sin un tiro, y tú cuentas {euros} euros.")],
+    "frases_regateo_si": [tr("{banda} gruñe, pero sube la oferta: {euros} euros."), tr("Aguantas la mirada y funciona: {banda} llega a {euros} euros.")],
+    "frases_regateo_no": [tr("{banda} se levanta de la mesa: ya no hay oferta."), tr("Has tensado demasiado la cuerda. {banda} retira lo dicho.")],
+    "frases_tributo_si": [tr("{banda}: De acuerdo. {euros} euros al día durante {dias} días, y nos dejas trabajar."),
+                          tr("{banda} no quiere guerra contigo: pagará {euros} euros cada medianoche, {dias} días."),
+                          tr("{banda} hace cuentas y le sale más barato pagarte: {euros} euros diarios, {dias} días.")],
+    "frases_tributo_no": [tr("{banda}: ¿Tributo? ¿A ti? Vuelve cuando seas alguien."), tr("{banda} se ríe en tu cara. No van a pagarte nada."),
+                          tr("{banda}: Aquí el que cobra somos nosotros. Lárgate.")],
+    "frases_tributo_ofensa": [tr("Y no se queda ahí: {banda} se lo ha tomado como una ofensa. Mandarán a alguien a explicártelo."),
+                              tr("Lo de pedirles dinero les ha sentado mal. {banda} no lo va a dejar pasar.")],
+    "frases_tributo_cobro": [tr("{banda} cumple: te llegan {euros} euros de tributo."), tr("Sobre de {banda}: {euros} euros, como quedasteis.")],
+    "frases_tributo_fin": [tr("Se acaba el trato con {banda}: desde hoy ya no te pagan. Puedes volver a negociarlo."),
+                           tr("{banda} ha pagado lo acordado. El tributo termina aquí.")],
+    "frases_tributo_plante": [tr("{banda} se planta: dicen que no pagan ni un día más."), tr("Hoy no llega el sobre de {banda}. Han decidido que ya no te tienen miedo.")],
+    "frases_comprar_si": [tr("{banda}: Todo tiene un precio. {barrio} es tuyo por {euros} euros."), tr("{banda} pone la cifra sobre la mesa: {euros} euros por {barrio}."),
+                          tr("{banda}: Nos viene bien el dinero. {euros} euros y nos vamos de {barrio}.")],
+    "frases_comprar_no": [tr("{banda}: {barrio} no está en venta. Y menos para ti."), tr("{banda}: A quien nos mata a los nuestros no le vendemos ni la hora."),
+                          tr("{banda} ni te contesta. Con ellos, de momento, no hay negocio.")],
+    "frases_comprar_hecho": [tr("Pagas {euros} euros y {banda} recoge sus cosas: {barrio} es tuyo, sin pegar un tiro."),
+                             tr("El dinero cambia de manos y las esquinas de {barrio}, de dueño. Ahora mandas tú.")],
+    "frases_tregua_si": [tr("{banda}: Una tregua se puede hablar. {euros} euros y en {dias} días no tocamos lo tuyo."),
+                         tr("{banda} hace cuentas: por {euros} euros, {dias} días sin acercarse a tus barrios."),
+                         tr("{banda}: Nos viene bien un respiro. {euros} euros, {dias} días de paz.")],
+    "frases_tregua_no": [tr("{banda}: ¿Tregua? Contigo solo hablamos de una manera."), tr("{banda} no quiere oír hablar de treguas. Van a por lo tuyo."),
+                         tr("{banda} te cuelga: no hay nada que pactar.")],
+    "frases_tregua_hecho": [tr("Tregua cerrada con {banda}: {dias} días sin asaltos suyos, hasta el día {hasta}."),
+                            tr("Pagas {euros} euros y {banda} da su palabra: {dias} días de paz, hasta el día {hasta}.")],
 }, cero=("ofensa_ataque", "plante_prob", "regateo_extra", "tregua_rompe_prob"))
 
-ASUNTOS = {"devolver": "devolverles un barrio", "tributo": "cobrarles un tributo", "comprar": "comprarles un barrio", "tregua": "pactar una tregua"}
+ASUNTOS = {"devolver": tr("devolverles un barrio"), "tributo": tr("cobrarles un tributo"), "comprar": tr("comprarles un barrio"), "tregua": tr("pactar una tregua")}
 
 
 def _dias(n):
-    return "un día" if int(n) == 1 else f"{int(n)} días"
+    return tr("un día") if int(n) == 1 else tr('{int} días').format(int=(int(n)))
 
 
 class Pactos:
@@ -99,13 +100,13 @@ class Pactos:
 
     def pactos_motivo(self):
         if self.en_servidor:
-            return "En un servidor en línea no se negocia con estas bandas: allí los barrios son de las bandas de los jugadores."
+            return tr("En un servidor en línea no se negocia con estas bandas: allí los barrios son de las bandas de los jugadores.")
         if self.mundo.tipo != "ciudad":
-            return "Las bandas están en las ciudades: Puerto Bravo, San Lucero y Monteferro."
+            return tr("Las bandas están en las ciudades: Puerto Bravo, San Lucero y Monteferro.")
         if self.j.estrellas:
-            return "Con la policía detrás, nadie se sienta contigo a hablar."
+            return tr("Con la policía detrás, nadie se sienta contigo a hablar.")
         if self.mision or self.guerra:
-            return "Termina antes lo que tienes entre manos."
+            return tr("Termina antes lo que tienes entre manos.")
         return ""
 
     # ------------------------------------------------------------------ devolver un barrio
@@ -155,13 +156,13 @@ class Pactos:
         """Le exiges a una banda que te pague por dejarla estar. Devuelve la frase con lo que pasa."""
         j = self.j
         if not j.territorios:
-            return "Sin un solo barrio tuyo no eres nadie para cobrar a una banda. Conquista uno primero."
+            return tr("Sin un solo barrio tuyo no eres nadie para cobrar a una banda. Conquista uno primero.")
         if banda in j.tributos:
             t = j.tributos[banda]
-            return f"{banda} ya te paga {t['euros']} euros cada medianoche, hasta el día {t['hasta']}."
+            return tr('{banda} ya te paga {euros} euros cada medianoche, hasta el día {hasta}.').format(banda=(banda), euros=(t['euros']), hasta=(t['hasta']))
         falta = self.trato_espera(banda, "tributo")
         if falta:
-            return f"{banda} ya te contestó hace poco. Vuelve a intentarlo dentro de {_dias(falta)}."
+            return tr('{banda} ya te contestó hace poco. Vuelve a intentarlo dentro de {_dias}.').format(banda=(banda), _dias=(_dias(falta)))
         rng = self._azar_trato(banda, "tributo")
         rep, fuerza = self.rep_banda(banda), self.fuerza_propia()
         self._apuntar_trato(banda, "tributo")
@@ -225,7 +226,7 @@ class Pactos:
         self.cambiar_reputacion(4)
         self.son("territorio", cat="interfaz")
         j.stats["tratos_bandas"] = j.stats.get("tratos_bandas", 0) + 1
-        self.decir(AJ.frase("frases_comprar_hecho", banda=banda, barrio=b["nombre"], euros=euros) + f" Te pagará {self.precio('tributo_territorio', 300)} euros cada medianoche.", True)
+        self.decir(AJ.frase("frases_comprar_hecho", banda=banda, barrio=b["nombre"], euros=euros) + tr(' Te pagará {precio} euros cada medianoche.').format(precio=(self.precio('tributo_territorio', 300))), True)
         return True
 
     # ------------------------------------------------------------------ tregua (la reconquista)
@@ -235,17 +236,17 @@ class Pactos:
 
     def tregua_motivo(self, banda):
         if not self.rec_nivel():
-            return "Las treguas son cosa de la reconquista de barrios, que aquí no está en marcha."
+            return tr("Las treguas son cosa de la reconquista de barrios, que aquí no está en marcha.")
         b = self.rec_banda(banda)
         if self.dia <= b["fuera"]:
-            return f"{banda} está desmantelada: no queda nadie con quien pactar."
+            return tr('{banda} está desmantelada: no queda nadie con quien pactar.').format(banda=(banda))
         if self.dia <= b["tregua"]:
-            return f"Ya tienes una tregua con {banda}, hasta el día {b['tregua']}."
+            return tr('Ya tienes una tregua con {banda}, hasta el día {tregua}.').format(banda=(banda), tregua=(b['tregua']))
         if self.j.estrellas:
-            return "Con la policía detrás, nadie se sienta contigo a hablar."
+            return tr("Con la policía detrás, nadie se sienta contigo a hablar.")
         falta = self.trato_espera(banda, "tregua")
         if falta:
-            return f"{banda} ya te contestó hace poco. Vuelve a intentarlo dentro de {_dias(falta)}."
+            return tr('{banda} ya te contestó hace poco. Vuelve a intentarlo dentro de {_dias}.').format(banda=(banda), _dias=(_dias(falta)))
         return ""
 
     def oferta_tregua(self, banda):
@@ -274,7 +275,7 @@ class Pactos:
         if a and a["estado"] == "prepara" and banda in a["bandas"]:      # lo que estuvieran tramando, se queda en nada
             if a["bandas"][0] == banda:
                 r["asalto"] = None
-                texto += " Y lo que estuvieran preparando contra ti, lo dejan."
+                texto += tr(" Y lo que estuvieran preparando contra ti, lo dejan.")
             else:
                 a["bandas"].remove(banda)
                 a["fuerza"] = round(a["fuerza"] * 0.6, 1)
@@ -296,7 +297,7 @@ def _mesa(p, titulo, banda, asunto, extra, euros, hecho, pedir_mas):
     def regatear():
         if estado["regateado"]:
             app.son("error")
-            return app.decir("Ya has apretado una vez. Ahora, o lo tomas o lo dejas.", True)
+            return app.decir(tr("Ya has apretado una vez. Ahora, o lo tomas o lo dejas."), True)
         estado["regateado"] = True
         nuevo = p.regatear(banda, estado["euros"], asunto, extra)
         if nuevo is None:
@@ -308,15 +309,15 @@ def _mesa(p, titulo, banda, asunto, extra, euros, hecho, pedir_mas):
         app.decir(AJ.frase("frases_regateo_si", banda=banda, euros=nuevo), True)
         mm.refrescar(False)
     mm = Menu(app, titulo, lambda: [
-        Opcion(f"Aceptar: {estado['euros']} euros", aceptar),
-        Opcion(pedir_mas, regatear, ayuda="Una sola vez. Cuanto más pesas en la calle y mejor te llevas con ellos, más fácil es que cedan. Si no cuela, se levantan de la mesa y no hay trato en unos días."),
-        Opcion("Dejarlo", lambda: app.cerrar(mm))])
+        Opcion(tr('Aceptar: {euros} euros').format(euros=(estado['euros'])), aceptar, ayuda=tr("Cierras el trato por esa cifra, la de ahora, también si ha cambiado al regatear.")),
+        Opcion(pedir_mas, regatear, ayuda=tr("Una sola vez. Cuanto más pesas en la calle y mejor te llevas con ellos, más fácil es que cedan. Si no cuela, se levantan de la mesa y no hay trato en unos días.")),
+        Opcion(tr("Dejarlo"), lambda: app.cerrar(mm))])
     app.abrir(mm)
 
 
-AYUDA_TREGUA = ("Les pagas y durante unos días esa banda no asalta tus barrios, y se rehace la mitad de deprisa. Si estaba preparando un asalto, lo deja. "
+AYUDA_TREGUA = (tr("Les pagas y durante unos días esa banda no asalta tus barrios, y se rehace la mitad de deprisa. Si estaba preparando un asalto, lo deja. "
                 "Piden más cuanto más fuertes están y peor os lleváis, y la cifra no es la misma cada día. Puedes pedir una rebaja, una vez. "
-                "La tregua se puede romper: ellos, algún día, o tú, si das un golpe a su escondite.")
+                "La tregua se puede romper: ellos, algún día, o tú, si das un golpe a su escondite."))
 
 
 def menu_tregua(p, banda, al_volver=None):
@@ -336,7 +337,7 @@ def menu_tregua(p, banda, al_volver=None):
         p.pactar_tregua(banda, e, dias)
         if al_volver:
             al_volver()
-    _mesa(p, frase + f" Tienes {p.j.dinero} euros", banda, "tregua", "", euros, hecho, "Pedir una rebaja")
+    _mesa(p, frase + tr(' Tienes {dinero} euros').format(dinero=(p.j.dinero)), banda, "tregua", "", euros, hecho, tr("Pedir una rebaja"))
 
 
 def menu_pactos(p):
@@ -356,13 +357,13 @@ def menu_pactos(p):
             banda = p.banda_interesada(b)
             falta = p.trato_espera(banda, "devolver", b["id"])
             if falta:
-                return app.decir(f"{banda} ya te contestó sobre {b['nombre']}. Vuelve dentro de {_dias(falta)}.", True)
+                return app.decir(tr('{banda} ya te contestó sobre {nombre}. Vuelve dentro de {_dias}.').format(banda=(banda), nombre=(b['nombre']), _dias=(_dias(falta))), True)
             si, euros, frase = p.oferta_devolver(b)
             if not si:
                 p._apuntar_trato(banda, "devolver", b["id"])
                 p.son("rechazo", cat="interfaz")
                 return app.decir(frase, True)
-            mesa(frase, banda, "devolver", b["id"], euros, lambda e: (p.devolver_barrio(b, e), m.refrescar(False)), "Pedir más dinero")
+            mesa(frase, banda, "devolver", b["id"], euros, lambda e: (p.devolver_barrio(b, e), m.refrescar(False)), tr("Pedir más dinero"))
         return f
 
     def comprar(b):
@@ -370,13 +371,13 @@ def menu_pactos(p):
             banda = p.banda_interesada(b)
             falta = p.trato_espera(banda, "comprar", b["id"])
             if falta:
-                return app.decir(f"{banda} ya te contestó sobre {b['nombre']}. Vuelve dentro de {_dias(falta)}.", True)
+                return app.decir(tr('{banda} ya te contestó sobre {nombre}. Vuelve dentro de {_dias}.').format(banda=(banda), nombre=(b['nombre']), _dias=(_dias(falta))), True)
             si, euros, frase = p.oferta_comprar(b)
             if not si:
                 p._apuntar_trato(banda, "comprar", b["id"])
                 p.son("rechazo", cat="interfaz")
                 return app.decir(frase, True)
-            mesa(frase + f" Tienes {j.dinero} euros", banda, "comprar", b["id"], euros, lambda e: (p.comprar_barrio(b, e), m.refrescar(False)), "Pedir una rebaja")
+            mesa(frase + tr(' Tienes {dinero} euros').format(dinero=(j.dinero)), banda, "comprar", b["id"], euros, lambda e: (p.comprar_barrio(b, e), m.refrescar(False)), tr("Pedir una rebaja"))
         return f
 
     def tributo(banda):
@@ -386,34 +387,34 @@ def menu_pactos(p):
         return f
 
     def ops():
-        lista = [Opcion(lambda: f"Tu fuerza en la calle: {int(p.fuerza_propia())} de 100. Tu banda, {j.banda}; tus barrios, {len(j.territorios)}",
-                        ayuda="De tu fuerza y de cómo te lleves con cada banda depende lo que te contesten: si aceptan, cuánto pagan y cuánto piden. "
-                              "Sube con más gente en tu banda, más barrios y más fama.")]
+        lista = [Opcion(lambda: tr('Tu fuerza en la calle: {int} de 100. Tu banda, {banda}; tus barrios, {len}').format(int=(int(p.fuerza_propia())), banda=(j.banda), len=(len(j.territorios))),
+                        ayuda=tr("De tu fuerza y de cómo te lleves con cada banda depende lo que te contesten: si aceptan, cuánto pagan y cuánto piden. "
+                              "Sube con más gente en tu banda, más barrios y más fama."))]
         barrios = p.mundo.barrios if p.mundo.tipo == "ciudad" else []
         for b in barrios:
             if b["id"] in j.territorios:
-                lista.append(Opcion(lambda b=b: f"Devolver {b['nombre']} a {p.banda_interesada(b)} a cambio de dinero", devolver(b),
-                                    ayuda="Les ofreces el barrio por las buenas. Si les interesa, dicen una cifra: la aceptas, pides más o lo dejas. "
-                                          "Pierdes el barrio y lo que te paga cada medianoche, pero cobras de golpe y mejora tu relación con esa banda."))
+                lista.append(Opcion(lambda b=b: tr('Devolver {nombre} a {banda_interesada} a cambio de dinero').format(nombre=(b['nombre']), banda_interesada=(p.banda_interesada(b))), devolver(b),
+                                    ayuda=tr("Les ofreces el barrio por las buenas. Si les interesa, dicen una cifra: la aceptas, pides más o lo dejas. "
+                                          "Pierdes el barrio y lo que te paga cada medianoche, pero cobras de golpe y mejora tu relación con esa banda.")))
         for b in barrios:
             if b["id"] not in j.territorios:
-                lista.append(Opcion(lambda b=b: f"Comprar {b['nombre']} a {p.banda_interesada(b)}", comprar(b),
-                                    ayuda="Quedarte con el barrio pagando, sin pelear. Piden más o menos según cómo os llevéis y lo que peses en la calle, y la cifra no es la misma cada día. "
-                                          "Puedes pedir una rebaja, una vez."))
+                lista.append(Opcion(lambda b=b: tr('Comprar {nombre} a {banda_interesada}').format(nombre=(b['nombre']), banda_interesada=(p.banda_interesada(b))), comprar(b),
+                                    ayuda=tr("Quedarte con el barrio pagando, sin pelear. Piden más o menos según cómo os llevéis y lo que peses en la calle, y la cifra no es la misma cada día. "
+                                          "Puedes pedir una rebaja, una vez.")))
         for banda in G.nombres_bandas():
             def texto(banda=banda):
                 t = j.tributos.get(banda)
                 if t:
-                    return f"{banda} te paga {t['euros']} euros cada medianoche, hasta el día {t['hasta']}"
-                return f"Cobrar un tributo a {banda}: {p.rep_banda_txt(p.rep_banda(banda))}"
+                    return tr('{banda} te paga {euros} euros cada medianoche, hasta el día {hasta}').format(banda=(banda), euros=(t['euros']), hasta=(t['hasta']))
+                return tr('Cobrar un tributo a {banda}: {rep_banda_txt}').format(banda=(banda), rep_banda_txt=(p.rep_banda_txt(p.rep_banda(banda))))
             lista.append(Opcion(texto, tributo(banda),
-                                ayuda="Les exiges que te paguen cada día por dejarles estar. Hace falta tener algún barrio. Si te temen, pagan unos días; si no, se niegan, "
-                                      "y si pesas poco pueden mandar a alguien a por ti. Mientras pagan, esa banda no ataca tus barrios."))
+                                ayuda=tr("Les exiges que te paguen cada día por dejarles estar. Hace falta tener algún barrio. Si te temen, pagan unos días; si no, se niegan, "
+                                      "y si pesas poco pueden mandar a alguien a por ti. Mientras pagan, esa banda no ataca tus barrios.")))
         if p.rec_nivel():                                        # con la reconquista: treguas, también con las bandas forasteras
             for banda in p.rec_nombres():
-                lista.append(Opcion(lambda banda=banda: (f"Tregua con {banda} en vigor hasta el día {p.rec_banda(banda)['tregua']}" if p.dia <= p.rec_banda(banda)["tregua"]
-                                                         else f"Pactar una tregua con {banda}: {p.rec_banda_txt(banda).split(': ', 1)[1]}"),
+                lista.append(Opcion(lambda banda=banda: (tr('Tregua con {banda} en vigor hasta el día {tregua}').format(banda=(banda), tregua=(p.rec_banda(banda)['tregua'])) if p.dia <= p.rec_banda(banda)["tregua"]
+                                                         else tr('Pactar una tregua con {banda}: {v}').format(banda=(banda), v=(p.rec_banda_txt(banda).split(': ', 1)[1]))),
                                     lambda banda=banda: menu_tregua(p, banda, lambda: m.refrescar(False)), ayuda=AYUDA_TREGUA))
         return lista
-    m = Menu(app, f"Negociar con las bandas de {p.mundo.nombre}", ops, intro="Devolver un barrio por dinero, comprar uno o cobrar un tributo. F1 explica cada trato")
+    m = Menu(app, tr('Negociar con las bandas de {nombre}').format(nombre=(p.mundo.nombre)), ops, intro=tr("Devolver un barrio por dinero, comprar uno o cobrar un tributo. F1 explica cada trato"))
     app.abrir(m)

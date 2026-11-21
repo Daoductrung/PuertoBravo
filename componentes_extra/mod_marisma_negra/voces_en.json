@@ -1,0 +1,884 @@
+{
+"mn01_1_1": {
+"texto": "Forty years setting traps in the channels and nobody ever touched them. This week they've cut them three times.",
+"quien": "Amador",
+"nota": 0.967,
+"oido": "40 years setting traps in the channels and nobody ever touched them. This week they've cut them three times.",
+"guardada": true
+},
+"mn01_1_2": {
+"texto": "And who would want a bunch of eel traps?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and who would want a bunch of eel traps?",
+"guardada": true
+},
+"mn01_1_2@dani_m": {
+"texto": "And who would want a bunch of eel traps?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and who would want a bunch of eel traps?",
+"guardada": true
+},
+"mn01_1_2@alex_h": {
+"texto": "And who would want a bunch of eel traps?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And who would want a bunch of eel traps?",
+"guardada": true
+},
+"mn01_1_2@alex_m": {
+"texto": "And who would want a bunch of eel traps?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and who would want a bunch of eel traps?",
+"guardada": true
+},
+"mn01_1_2@sam_h": {
+"texto": "And who would want a bunch of eel traps?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and who would want a bunch of eel traps?",
+"guardada": true
+},
+"mn01_1_2@sam_m": {
+"texto": "And who would want a bunch of eel traps?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And who would want a bunch of eel traps?",
+"guardada": true
+},
+"mn01_1_2@cris_h": {
+"texto": "And who would want a bunch of eel traps?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And who would want a bunch of eel traps?",
+"guardada": true
+},
+"mn01_1_2@cris_m": {
+"texto": "And who would want a bunch of eel traps?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and who would want a bunch of eel traps?",
+"guardada": true
+},
+"mn01_1_3": {
+"texto": "Nobody. They cut them because they're in the way. At night a boat comes through with the engine off, rowing, and my nets block its path.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "Nobody. They cut them because they're in the way. At night a boat comes through with the engine off, rowing, and my nets block its path.",
+"guardada": true
+},
+"mn01_1_4": {
+"texto": "You're not from here, outsider, and that suits me: nobody knows you. Go up to the Old Lock, by the rice fields, and see what's there.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "You're not from here, outsider. And that suits me. Nobody knows you. Go up to the old lock, by the rice fields, and see what's there.",
+"guardada": true
+},
+"mn01_4_1": {
+"texto": "The trap was cut with a knife. A blue plastic seal hangs from the hoop, the kind they put on sacks.",
+"quien": "Narrador",
+"nota": 1.0,
+"oido": "The trap was cut with a knife. A blue plastic seal hangs from the hoop, the kind they put on sacks.",
+"guardada": true
+},
+"mn01_4_2": {
+"texto": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"guardada": true
+},
+"mn01_4_2@dani_m": {
+"texto": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"guardada": true
+},
+"mn01_4_2@alex_h": {
+"texto": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"guardada": true
+},
+"mn01_4_2@alex_m": {
+"texto": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"guardada": true
+},
+"mn01_4_2@sam_h": {
+"texto": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"guardada": true
+},
+"mn01_4_2@sam_m": {
+"texto": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"guardada": true
+},
+"mn01_4_2@cris_h": {
+"texto": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Sealed sacks in a marsh where there's nothing but rice and eels, something else is moving through here.",
+"guardada": true
+},
+"mn01_4_2@cris_m": {
+"texto": "Sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "sealed sacks in a marsh where there's nothing but rice and eels. Something else is moving through here.",
+"guardada": true
+},
+"mn01_6_1": {
+"texto": "I know that blue. It belonged to the San Ginés Salt Flats, before they shut them down. They've been dead for ten years.",
+"quien": "Amador",
+"nota": 0.952,
+"oido": "I know that blue. It belongs to the sanguine salt flats, before they shut them down. They've been dead for 10 years.",
+"guardada": true
+},
+"mn01_6_2": {
+"texto": "Dead by day, Amador. At night there's a light on in the warehouse. Half the town knows it and nobody says a thing.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "Dead by Day, Amador. At night there's a light on in the warehouse. Half the town knows it and nobody says a thing.",
+"guardada": true
+},
+"mn01_6_3": {
+"texto": "Then talk to Celia, the lagoon warden. She spends all day in the bird observatory and sees more than anyone.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "Then talk to Celia, the lagoon warden. She spends all day in the bird observatory and sees more than anyone.",
+"guardada": true
+},
+"mn02_1_1": {
+"texto": "So you're the one asking around about the salt flats. Amador says your name is Dani.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "So, you're the one asking around about the salt flats. Amador says your name is Dani.",
+"guardada": true
+},
+"mn02_1_1@alex": {
+"texto": "So you're the one asking around about the salt flats. Amador says your name is Alex.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "So, you're the one asking around about the salt flats. Amador says your name is Alex.",
+"guardada": true
+},
+"mn02_1_1@sam": {
+"texto": "So you're the one asking around about the salt flats. Amador says your name is Sam.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "so you're the one asking around about the salt flats. Amador says your name is Sam.",
+"guardada": true
+},
+"mn02_1_1@cris": {
+"texto": "So you're the one asking around about the salt flats. Amador says your name is Cris.",
+"quien": "Celia",
+"nota": 0.994,
+"oido": "So, you're the one asking around about the salt flats. Amador says your name is Chris.",
+"guardada": true
+},
+"mn02_1_2": {
+"texto": "And you're the one who sees everything from up here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and you're the one who sees everything from up here.",
+"guardada": true
+},
+"mn02_1_2@dani_m": {
+"texto": "And you're the one who sees everything from up here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And you're the one who sees everything from up here.",
+"guardada": true
+},
+"mn02_1_2@alex_h": {
+"texto": "And you're the one who sees everything from up here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And you're the one who sees everything from up here.",
+"guardada": true
+},
+"mn02_1_2@alex_m": {
+"texto": "And you're the one who sees everything from up here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and you're the one who sees everything from up here.",
+"guardada": true
+},
+"mn02_1_2@sam_h": {
+"texto": "And you're the one who sees everything from up here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and you're the one who sees everything from up here.",
+"guardada": true
+},
+"mn02_1_2@sam_m": {
+"texto": "And you're the one who sees everything from up here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and you're the one who sees everything from up here.",
+"guardada": true
+},
+"mn02_1_2@cris_h": {
+"texto": "And you're the one who sees everything from up here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and you're the one who sees everything from up here.",
+"guardada": true
+},
+"mn02_1_2@cris_m": {
+"texto": "And you're the one who sees everything from up here.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and you're the one who sees everything from up here.",
+"guardada": true
+},
+"mn02_1_3": {
+"texto": "I see herons, flamingos and, for the past month, a boat with no lights coming in through the main channel every other night.",
+"quien": "Celia",
+"nota": 0.952,
+"oido": "EC Herons, Flamingos and for the past month, a boat with no lights coming into the main channel every other night.",
+"guardada": true
+},
+"mn02_1_4": {
+"texto": "I've filed three reports with the Guardia Civil and nobody has come. Get close to the salt flats and watch the warehouse. Don't let them see you.",
+"quien": "Celia",
+"nota": 0.961,
+"oido": "eBay filed three reports with the Guardia Civil and nobody has come. Get close to the South Flats and watch the warehouse. Don't let them see you.",
+"guardada": true
+},
+"mn02_4_1": {
+"texto": "The man in the cap goes into the fish market through the back door and greets the manager like an old friend.",
+"quien": "Narrador",
+"nota": 1.0,
+"oido": "The man in the cap goes into the fish market through the back door and greets the manager like an old friend.",
+"guardada": true
+},
+"mn02_4_2": {
+"texto": "Two more nights and we empty the warehouse. And nobody touches that old man's traps again, or he'll start talking.",
+"quien": "Ruano",
+"nota": 1.0,
+"oido": "two more nights and we empty the warehouse. And nobody touches that old man's traps again, or he'll start talking.",
+"guardada": true
+},
+"mn02_6_1": {
+"texto": "Salvador Ruano. He was foreman at the salt flats until they closed, and it seems he kept the keys.",
+"quien": "Celia",
+"nota": 0.958,
+"oido": "Salvador Ruano. It was for a man at the salt flats until they closed and it seems he kept the keys.",
+"guardada": true
+},
+"mn02_6_2": {
+"texto": "He called Amador old. They know each other.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He called Amador old, they know each other.",
+"guardada": true
+},
+"mn02_6_2@dani_m": {
+"texto": "He called Amador old. They know each other.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He called Amador old. They know each other.",
+"guardada": true
+},
+"mn02_6_2@alex_h": {
+"texto": "He called Amador old. They know each other.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He called Amador old. They know each other.",
+"guardada": true
+},
+"mn02_6_2@alex_m": {
+"texto": "He called Amador old. They know each other.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "he called Amador old. They know each other.",
+"guardada": true
+},
+"mn02_6_2@sam_h": {
+"texto": "He called Amador old. They know each other.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He called Amador old. They know each other.",
+"guardada": true
+},
+"mn02_6_2@sam_m": {
+"texto": "He called Amador old. They know each other.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He called Amador old. They know each other.",
+"guardada": true
+},
+"mn02_6_2@cris_h": {
+"texto": "He called Amador old. They know each other.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He called Amador old, they know each other.",
+"guardada": true
+},
+"mn02_6_2@cris_m": {
+"texto": "He called Amador old. They know each other.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He called Amador old. They know each other.",
+"guardada": true
+},
+"mn02_6_3": {
+"texto": "Since they were kids. I don't know what he keeps in those sacks, but it isn't salt. Go see Amador: he'll know how to get at him.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "since they were kids. I don't know what he keeps in those sacks, but it isn't salt. Go see Amador, he'll know how to get at him.",
+"guardada": true
+},
+"mn03_1_1": {
+"texto": "Salvador Ruano... We went to school together. Even back then he sold what wasn't his.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "Salvador Ruano. We went to school together. Even back then he sold what wasn't his.",
+"guardada": true
+},
+"mn03_1_2": {
+"texto": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"guardada": true
+},
+"mn03_1_2@dani_m": {
+"texto": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"guardada": true
+},
+"mn03_1_2@alex_h": {
+"texto": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "he says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"guardada": true
+},
+"mn03_1_2@alex_m": {
+"texto": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "he says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"guardada": true
+},
+"mn03_1_2@sam_h": {
+"texto": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "he says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"guardada": true
+},
+"mn03_1_2@sam_m": {
+"texto": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"guardada": true
+},
+"mn03_1_2@cris_h": {
+"texto": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"guardada": true
+},
+"mn03_1_2@cris_m": {
+"texto": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "He says they'll empty the warehouse in two nights. If we wait, they'll be gone with everything.",
+"guardada": true
+},
+"mn03_1_3": {
+"texto": "Then don't wait. Tonight four of his people are sleeping there, outsiders who don't even know where they're stepping.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "then don't wait. Tonight four of his people are sleeping there, outsiders who don't even know where they're stepping.",
+"guardada": true
+},
+"mn03_1_4": {
+"texto": "Take my duck blind shotgun and the spear. The shotgun for distance; the spear if they get on top of you.",
+"quien": "Amador",
+"nota": 0.985,
+"oido": "Take my duck, Blaine, shotgun and the spear. The shotgun for distance, the spear if they get on top of you.",
+"guardada": true
+},
+"mn03_1_5": {
+"texto": "And come back in one piece, Dani, because nobody's going to let you off your tab at the tavern.",
+"quien": "Toñi",
+"nota": 0.984,
+"oido": "and come back in one piece, Danny, because nobody's going to let you off your tab at the tavern.",
+"guardada": true
+},
+"mn03_1_5@alex": {
+"texto": "And come back in one piece, Alex, because nobody's going to let you off your tab at the tavern.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "and come back in one piece, Alex, because nobody's going to let you off your tab at the tavern.",
+"guardada": true
+},
+"mn03_1_5@sam": {
+"texto": "And come back in one piece, Sam, because nobody's going to let you off your tab at the tavern.",
+"quien": "Toñi",
+"nota": 0.978,
+"oido": "and come back in one piece, Sam, because nobody's going to let you off your top at the tavern.",
+"guardada": true
+},
+"mn03_1_5@cris": {
+"texto": "And come back in one piece, Cris, because nobody's going to let you off your tab at the tavern.",
+"quien": "Toñi",
+"nota": 0.995,
+"oido": "and come back in one piece, Chris, because nobody's going to let you off your tab at the tavern.",
+"guardada": true
+},
+"mn03_7_1": {
+"texto": "The sacks don't hold salt: they hold cartons of cigarettes and unbranded watches, wrapped in plastic to keep the water out.",
+"quien": "Narrador",
+"nota": 1.0,
+"oido": "The sacks don't hold salt. They hold cartons of cigarettes and unbranded watches, wrapped in plastic to keep the water out.",
+"guardada": true
+},
+"mn03_7_2": {
+"texto": "The notebook lists every high tide of the month and, next to each one, a van's license plate and a single word: city.",
+"quien": "Narrador",
+"nota": 0.996,
+"oido": "The notebook lists every high tide of the month and, next to each one, a vans license plate and a single word, city.",
+"guardada": true
+},
+"mn03_7_3": {
+"texto": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"guardada": true
+},
+"mn03_7_3@dani_m": {
+"texto": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"quien": "Dani",
+"nota": 0.971,
+"oido": "They take it out through the channels with the tide and drive it up to Porto Bravo by road. Clever, Rono.",
+"guardada": true
+},
+"mn03_7_3@alex_h": {
+"texto": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "They take it out through the channels with the tide and drive it up to Puerto Bravo by Road. Clever, Ruano.",
+"guardada": true
+},
+"mn03_7_3@alex_m": {
+"texto": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"quien": "Dani",
+"nota": 0.976,
+"oido": "They take it out through the channels with the tide and drive it up to Porto Bravo by road. Clever, Roano.",
+"guardada": true
+},
+"mn03_7_3@sam_h": {
+"texto": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever Ruano.",
+"guardada": true
+},
+"mn03_7_3@sam_m": {
+"texto": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"guardada": true
+},
+"mn03_7_3@cris_h": {
+"texto": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"guardada": true
+},
+"mn03_7_3@cris_m": {
+"texto": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "They take it out through the channels with the tide and drive it up to Puerto Bravo by road. Clever, Ruano.",
+"guardada": true
+},
+"mn04_1_1": {
+"texto": "Ruano knows it was you. He's loaded what he had left into the fish market's refrigerated van and he's leaving for the city tonight.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "Ruano knows it was you. He's loaded what he had left into the fish market's refrigerated van and he's leaving for the city tonight.",
+"guardada": true
+},
+"mn04_1_2": {
+"texto": "I've called the police again. They'll be here in an hour, and by then Ruano will already be in Puerto Bravo.",
+"quien": "Celia",
+"nota": 0.981,
+"oido": "Ibeq called the police again. They'll be here in an hour and by then Ruano will already be in Puerto Bravo.",
+"guardada": true
+},
+"mn04_1_3": {
+"texto": "Then he won't get there. Which way does he go out?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then he won't get there. Which way does he go out?",
+"guardada": true
+},
+"mn04_1_3@dani_m": {
+"texto": "Then he won't get there. Which way does he go out?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then he won't get there. Which way does he go out?",
+"guardada": true
+},
+"mn04_1_3@alex_h": {
+"texto": "Then he won't get there. Which way does he go out?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then he won't get there. Which way does he go out?",
+"guardada": true
+},
+"mn04_1_3@alex_m": {
+"texto": "Then he won't get there. Which way does he go out?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then he won't get there. Which way does he go out?",
+"guardada": true
+},
+"mn04_1_3@sam_h": {
+"texto": "Then he won't get there. Which way does he go out?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then he won't get there. Which way does he go out?",
+"guardada": true
+},
+"mn04_1_3@sam_m": {
+"texto": "Then he won't get there. Which way does he go out?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then he won't get there. Which way does he go out?",
+"guardada": true
+},
+"mn04_1_3@cris_h": {
+"texto": "Then he won't get there. Which way does he go out?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then he won't get there. Which way does he go out?",
+"guardada": true
+},
+"mn04_1_3@cris_m": {
+"texto": "Then he won't get there. Which way does he go out?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then he won't get there. Which way does he go out?",
+"guardada": true
+},
+"mn04_1_4": {
+"texto": "By the coast road, it's the only one. Stop him before he leaves town, Dani. Take more shells.",
+"quien": "Amador",
+"nota": 0.983,
+"oido": "By the coast road, it's the only one. Stop him before he leaves town, Danny. Take more shells.",
+"guardada": true
+},
+"mn04_1_4@alex": {
+"texto": "By the coast road, it's the only one. Stop him before he leaves town, Alex. Take more shells.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "By the coast road, it's the only one. Stop him before he leaves town, Alex. Take more shells.",
+"guardada": true
+},
+"mn04_1_4@sam": {
+"texto": "By the coast road, it's the only one. Stop him before he leaves town, Sam. Take more shells.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "By the coast road, it's the only one. Stop him before he leaves town, Sam. Take more shells.",
+"guardada": true
+},
+"mn04_1_4@cris": {
+"texto": "By the coast road, it's the only one. Stop him before he leaves town, Cris. Take more shells.",
+"quien": "Amador",
+"nota": 0.994,
+"oido": "By the coast road, it's the only one. Stop him before he leaves town, Chris. Take more shells.",
+"guardada": true
+},
+"mn04_5_1": {
+"texto": "This isn't mine, outsider. I just keep it. The ones who pay are in the city, and they're not going to like this.",
+"quien": "Ruano",
+"nota": 0.962,
+"oido": "this isn't mini, outsider. IHOS keep it, the ones who pay are in the city, and they're not going to like this.",
+"guardada": true
+},
+"mn04_5_2": {
+"texto": "Then let them come looking for it in the marsh. We know the way now.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then let them come looking for it in the marsh. We know the way now.",
+"guardada": true
+},
+"mn04_5_2@dani_m": {
+"texto": "Then let them come looking for it in the marsh. We know the way now.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then let them come looking for it in the marsh. We know the way now.",
+"guardada": true
+},
+"mn04_5_2@alex_h": {
+"texto": "Then let them come looking for it in the marsh. We know the way now.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then let them come looking for it in the marsh. We know the way now.",
+"guardada": true
+},
+"mn04_5_2@alex_m": {
+"texto": "Then let them come looking for it in the marsh. We know the way now.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then let them come looking for it in the marsh. We know the way now.",
+"guardada": true
+},
+"mn04_5_2@sam_h": {
+"texto": "Then let them come looking for it in the marsh. We know the way now.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then let them come looking for it in the marsh. We know the way now.",
+"guardada": true
+},
+"mn04_5_2@sam_m": {
+"texto": "Then let them come looking for it in the marsh. We know the way now.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Then let them come looking for it in the marsh. We know the way now.",
+"guardada": true
+},
+"mn04_5_2@cris_h": {
+"texto": "Then let them come looking for it in the marsh. We know the way now.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Then let them come looking for it in the marsh. We know the way now.",
+"guardada": true
+},
+"mn04_5_2@cris_m": {
+"texto": "Then let them come looking for it in the marsh. We know the way now.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "then let them come looking for it in the marsh. We know the way now.",
+"guardada": true
+},
+"mn04_5_3": {
+"texto": "Ruano limps off toward the pines and doesn't look back.",
+"quien": "Narrador",
+"nota": 0.972,
+"oido": "Rono limps off toward the pines and doesn't look back.",
+"guardada": true
+},
+"mn04_8_1": {
+"texto": "With this notebook nobody can look the other way. Tomorrow the lagoon will be full of uniforms, and for once I'm glad.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "With this notebook nobody can look the other way. Tomorrow the lagoon will be full of uniforms and for once I'm glad.",
+"guardada": true
+},
+"mn04_9_1": {
+"texto": "And the notebook? No, don't tell me. At least Ruano won't be coming back here.",
+"quien": "Celia",
+"nota": 0.993,
+"oido": "and the notebook? No, don't tell me. At least Ruanow won't be coming back here.",
+"guardada": true
+},
+"mn04_10_1": {
+"texto": "Tonight the eels come in through the main channel with no one blocking their way.",
+"quien": "Amador",
+"nota": 0.981,
+"oido": "Tonight the eels coming through the main channel with no one blocking their way.",
+"guardada": true
+},
+"mn04_10_2": {
+"texto": "My father's boat is yours, Dani. It draws very little water and goes where nobody else can. It's tied up right here.",
+"quien": "Amador",
+"nota": 0.987,
+"oido": "My father's boat is yours, Danny. It draws very little water and goes where nobody else can. It's tied up right here.",
+"guardada": true
+},
+"mn04_10_2@alex": {
+"texto": "My father's boat is yours, Alex. It draws very little water and goes where nobody else can. It's tied up right here.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "My father's boat is yours, Alex. It draws very little water and goes where nobody else can. It's tied up right here.",
+"guardada": true
+},
+"mn04_10_2@sam": {
+"texto": "My father's boat is yours, Sam. It draws very little water and goes where nobody else can. It's tied up right here.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "My father's boat is yours, Sam. It draws very little water and goes where nobody else can. It's tied up right here.",
+"guardada": true
+},
+"mn04_10_2@cris": {
+"texto": "My father's boat is yours, Cris. It draws very little water and goes where nobody else can. It's tied up right here.",
+"quien": "Amador",
+"nota": 0.996,
+"oido": "My father's boat is yours, Chris. It draws very little water and goes where nobody else can. It's tied up right here.",
+"guardada": true
+},
+"mn04_10_3": {
+"texto": "And at the tavern you've got a plate of rice all winter long. Welcome to Marisma Negra.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "and at the tavern you've got a plate of rice all winter long. Welcome to Marisma Negra.",
+"guardada": true
+},
+"mn05_1_1": {
+"texto": "On Thursdays I close the tavern and lend a hand at the Guild soup kitchen. Today we have no rice and no fish.",
+"quien": "Toñi",
+"nota": 0.981,
+"oido": "On Thursdays, he closed the tavern and lend a hand at the Guild Soup kitchen. Today we have no rice and no fish.",
+"guardada": true
+},
+"mn05_1_2": {
+"texto": "The cooperative is giving us ten sacks. Take their station wagon, it's unlocked, and bring it here without spilling anything.",
+"quien": "Toñi",
+"nota": 0.979,
+"oido": "The cooperative is giving us 10 sacks. Take their station wagon, it's unlocked, and bring it here without spilling anything.",
+"guardada": true
+},
+"mn05_1_3": {
+"texto": "And the fish?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and the fish.",
+"guardada": true
+},
+"mn05_1_3@dani_m": {
+"texto": "And the fish?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and the fish.",
+"guardada": true
+},
+"mn05_1_3@alex_h": {
+"texto": "And the fish?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and the fish.",
+"guardada": true
+},
+"mn05_1_3@alex_m": {
+"texto": "And the fish?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and the fish.",
+"guardada": true
+},
+"mn05_1_3@sam_h": {
+"texto": "And the fish?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and the fish.",
+"guardada": true
+},
+"mn05_1_3@sam_m": {
+"texto": "And the fish?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and the fish.",
+"guardada": true
+},
+"mn05_1_3@cris_h": {
+"texto": "And the fish?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and the fish.",
+"guardada": true
+},
+"mn05_1_3@cris_m": {
+"texto": "And the fish?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and the fish.",
+"guardada": true
+},
+"mn05_1_4": {
+"texto": "That comes later, at the fish market. Ask for the soup kitchen's crate, they already know.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "that comes later at the fish market. Ask for the soup kitchen's crate, they already know.",
+"guardada": true
+},
+"mn05_6_1": {
+"texto": "Just in time. Thirty people get to eat today thanks to you.",
+"quien": "Toñi",
+"nota": 0.873,
+"oido": "hosting time. 30 people get to eat today. Thanks to you.",
+"guardada": true
+},
+"mn05_6_2": {
+"texto": "Save me a plate, the smell alone could feed you.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Save me a plate, the smell alone could feed you.",
+"guardada": true
+},
+"mn05_6_2@dani_m": {
+"texto": "Save me a plate, the smell alone could feed you.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Save me a plate, the smell alone could feed you.",
+"guardada": true
+},
+"mn05_6_2@alex_h": {
+"texto": "Save me a plate, the smell alone could feed you.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Save me a plate, the smell alone could feed you.",
+"guardada": true
+},
+"mn05_6_2@alex_m": {
+"texto": "Save me a plate, the smell alone could feed you.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Save me a plate, the smell alone could feed you.",
+"guardada": true
+},
+"mn05_6_2@sam_h": {
+"texto": "Save me a plate, the smell alone could feed you.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "save me a plate, the smell alone could feed you.",
+"guardada": true
+},
+"mn05_6_2@sam_m": {
+"texto": "Save me a plate, the smell alone could feed you.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "save me a plate, the smell alone could feed you.",
+"guardada": true
+},
+"mn05_6_2@cris_h": {
+"texto": "Save me a plate, the smell alone could feed you.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Save me a plate, the smell alone could feed you.",
+"guardada": true
+},
+"mn05_6_2@cris_m": {
+"texto": "Save me a plate, the smell alone could feed you.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Save me a plate. The smell alone could feed you.",
+"guardada": true
+}
+}

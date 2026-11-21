@@ -1,0 +1,80 @@
+<h3>Mods that come with the game</h3>
+<p>The game includes eight complete mods, already turned on. Together they add a city, three towns, an island and many hours of play:</p>
+<ul>
+<li>Bahía del Ocaso: a large city on the west coast, reached by the west exit of Puerto Bravo that bears its name, by bus, by sea or by helicopter. It hasn't rained there in three years and water is the contraband. It has six neighborhoods, more than fifty places and three gangs: Los Aljibes, the Copper Club and Los Vigías. Its story is twenty-one missions in four chapters, and it starts at Barral Cranes and Tankers, in the El Cauce Seco neighborhood. Also: four honest jobs, a tanker truck, a lowered coupe, a station wagon, a dirt bike, a barge, three weapons, three races, houses, two businesses, two characters to choose from and, with adult content, a club, two people and a mission.</li>
+<li>Costa Dorada: a fishing town west of Puerto Bravo, reached by the west exit, by bus or by sea. It has its own story in five missions, an honest job, almost every type of place, three weapons, a buggy, a delivery van, a sailboat and an autogyro, a race, meals, fish and two characters to choose from. With adult content, also a club, a supplier, a person, a gift, a date plan and a substance.</li>
+<li>Valdeolmos: a wine-growing town to the north, reached by the northeast exit of Puerto Bravo or by bus. Three missions about a wine fraud, an honest job, a tractor race, river fishing, a hunting shotgun, a sickle, a tractor with a trailer and a character.</li>
+<li>Peñas Altas: a mining town high in the mountains, reached by the north exit of Puerto Bravo that bears its name, or by bus. Four missions about a closed mine that someone is working at night, an honest job, a mountain carbine, a pickaxe and sticks of dynamite, a quad bike, a trial motorcycle and a dump truck to haul loads with, a hill climb, fishing in the Black Lake, treasure hunting in the slag heap and two characters. With adult content, a cocktail bar, a supplier, a person and a story.</li>
+<li>Isla de los Vientos: an island out at sea, to the east, which can only be reached by boat or by helicopter. Three missions against some wreckers who raid the boats, an honest job, a house, salt flats that bring in money, fishing in the surf, treasures in the dunes, a silent speargun, a gaff hook, a catamaran, a jet ski and a seafaring character.</li>
+<li>Neon Nights: Puerto Bravo's nightlife, in a neighborhood full of venues to the northeast. A concert hall, an all-night churro shop, a hotel, a penthouse, a night taxi cooperative with its taxi to work in, a limousine, a scooter, a night race, three chauffeur missions and a character. With adult content, a party hall, two people to meet, date plans, gifts, a cocktail and two stories.</li>
+<li>Trades and Errands: more honest life in Puerto Bravo, with a sport shooting club, a food bank, a courier company, an apartment, a delivery motorcycle, a character and two jobs.</li>
+<li>Engine and Asphalt: for those who just want to drive. Three new cars and a new motorcycle, the Viento Sur Racing Team with its workshop and its driving school, three races around Puerto Bravo, a driver to choose and two missions behind the wheel.</li>
+</ul>
+<p>To remove one, turn it off in the editor with <kbd>Control M</kbd> or delete its file from <strong>data\mods</strong>. To add a mod someone has given you, copy its file, with the <strong>.pbm</strong> extension, into that same folder.</p>
+<h3>Translating the game into another language</h3>
+<p>Each language is a folder inside <strong>data\idiomas</strong>, with the language's two-letter code: <strong>en</strong> is English, <strong>it</strong> would be Italian, <strong>fr</strong> French. Inside is <strong>textos.json</strong>, which says how each of the game's texts, always written in Spanish, is said in that language. To translate it into a new language:</p>
+<ol>
+<li>Copy the <strong>data\idiomas\en</strong> folder and give it the code of the new language, for example <strong>data\idiomas\it</strong>.</li>
+<li>In its <strong>textos.json</strong>, change the text on the right of each line to the one in your language. The one on the left, the Spanish, is not touched. Whatever is between curly braces, like <code>{dinero}</code>, is left as is: that's where the game puts the data. A text you leave untranslated appears in Spanish.</li>
+<li>Open the game: it already recognizes it by the folder's code and it appears in Options, Language. If you want it to be called something else, add an <strong>idioma.json</strong> file to the folder with <code>{"nombre": "Italiano"}</code>.</li>
+<li>If you also translate the guides, save them in <strong>data\docs</strong> with the code at the end: <strong>manual_it.html</strong>, <strong>teclas_it.html</strong>. The voices of the scenes go in <strong>data\voces</strong>, in one folder per story with the code at the end, like <strong>historia_principal_it</strong>, and with the same file names as the Spanish ones.</li>
+</ol>
+<p>If you send us your translation, we publish it as a component, and it reaches everyone from Options, Updates, Components, without waiting for a new version of the game.</p>
+<p>A mod's texts appear exactly as its author wrote them. Those of the mods that come with the game are translated, like the rest of the game.</p>
+<h3>The mod editor</h3>
+<p>To create your own mods there is the <strong>EditorMods.exe</strong> program, next to the game. It's an editor accessible with a screen reader that lets you create everything a mod supports by filling in forms: places, missions with all their steps, weapons, vehicles, races, food, items, fish, characters, whole maps, the people on the street, the gangs, the enemy types, the police at each wanted level, the repair shop upgrades, the businesses' cash and, for adult mode, people, date plans, gifts and substances. It checks the mod before saving it and puts it in <strong>data\mods</strong>, ready to play. With it you can also open the mods that come with the game to see how they are made. Its manual is <a href="editor_mods_en.html">editor_mods_en.html</a>, and it opens from the editor itself with <kbd>F1</kbd>.</p>
+<p>With the editor you can create your own vehicles, without knowing how to program: cars, motorcycles, trucks, boats and aircraft. In the Vehicles section, press Add and fill in the name, the top speed, the acceleration, the braking, the toughness, the engine sound and its pitch, the horn, the siren if it has one, whether it's a boat or whether it flies, the tank and the price. Then tell the game where it appears: in the neighborhoods where it drives and parks, at a car dealership or a boat dealer, which sell it if you have given it a price, or as the vehicle for a job or a mission. The quickest way is to bring one in from the game with the Copy from the original game button and change whatever you like.</p>
+
+<h2>18. Your character: who you are and how you dress</h2>
+<p>When you start a new game you choose a character. The story is the same for everyone, and the others call you by the name of the one you choose; what changes are the advantages you start with.</p>
+<ul>
+<li>Dani Roca: a bit of everything. Starts with a first aid kit and no weak points.</li>
+<li>Álex Montes: was a rally driver. Starts with driving at level five and three lockpick sets.</li>
+<li>Sam Ferrer: eight years in the army. Starts with marksmanship at level four, more health, a switchblade and two first aid kits.</li>
+<li>Cris Navarro: used to sell insurance. Starts with eight hundred euros, good mood, some street reputation and the neighbors' goodwill.</li>
+</ul>
+<h3>As male or as female</h3>
+<p>After choosing one of these four, the game asks how you want to be addressed: as male or as female. It changes how others treat you and how the game itself talks to you: Encarna's nephew or niece, son or daughter. The story, the missions and the advantages are exactly the same. It's saved with the game and can't be changed later.</p>
+<p>The characters that some mods add are already he or she, and with them you aren't asked.</p>
+<h3>Creating your own character</h3>
+<p>The last option on the list is Create your own character. It's a menu with these details; you go through it with Up Arrow and Down Arrow:</p>
+<ul>
+<li>First and last name: <kbd>Enter</kbd> opens a box to type it. Letters, spaces and hyphens are allowed, up to twenty. The last name can be left empty. In the story they will call you that.</li>
+<li>They address you: as male or as female. You change it with Left Arrow, Right Arrow or <kbd>Enter</kbd>.</li>
+<li>Your voice in the scenes: Dani's, Álex's, Sam's or Cris's. It's the voice you speak with in the story; each one has a male and a female version, and the one that matches how you are addressed plays. You change it with the Left and Right Arrows.</li>
+<li>How your name is pronounced: by default, the same as it's written. If it doesn't sound right when you listen to it, <kbd>Enter</kbd> opens a box to type it the way it's said, for example Yónatan instead of Jonathan. On screen and in braille it still appears as you wrote it.</li>
+<li>Listen to how you will be called: generates a line with your name, spoken by a character from the story. It takes a moment.</li>
+<li>Listen to your voice: generates a line spoken by you, with the chosen voice.</li>
+<li>Driving, marksmanship, endurance and fishing: Right Arrow raises a level and Left Arrow lowers it. You have eight levels to share out, with five at most in each skill. Each option says how many you have left. Afterwards you keep raising them with practice and at the academies, up to ten.</li>
+<li>Starting advantage, choose one with the Left and Right Arrows: none; savings, eight hundred euros; toughness, more health and two first aid kits; quick hands, three lockpick sets; a switchblade and two first aid kits; or people skills, with good mood, some street reputation and the neighbors' goodwill.</li>
+<li>Start the game. You need to have entered the name. If you have levels left unassigned, the game warns you once and with a second <kbd>Enter</kbd> it starts anyway.</li>
+</ul>
+<p><kbd>F1</kbd> explains each detail. The name you type isn't written to the session log. The last three voice options, the pronunciation one and the two listening ones, only appear if your computer can handle the voice generator.</p>
+<p>When you start, the game prepares the voices that say your name: it's explained further on, in the section Your own character's voices.</p>
+<p>Ready-made characters can be added with the mod editor.</p>
+
+<h3>Clothes, accessories and protection</h3>
+<ul>
+<li>In clothing stores, clothes are sorted by style: casual, sporty, elegant, work, party, beach, cold-weather and tactical. There are more than thirty outfits, from jeans and a T-shirt to a tuxedo or an evening gown, and <kbd>F1</kbd> describes each one.</li>
+<li>Footwear: street, designer or running sneakers, hiking, rain, work or military boots, dress shoes, loafers, high heels, ankle boots, sandals and flip-flops, each with its style. If the footwear is the same style as the clothes, your outfit matches.</li>
+<li>Accessories: glasses, chains, rings, watches, caps, earrings, bags, belts, bracelets, scarves, ties, perfumes and piercings, cheap and designer. They are worn in addition to the clothes, one of each kind. Wearing a new one for the first time lifts your mood, more the more expensive it is.</li>
+<li>What you buy is yours forever. In the store, what's yours says "It's already yours: you put it on for free"; and in your houses' menu, Get dressed gathers all your clothes, footwear and accessories so you can put them on or take them off without paying.</li>
+<li>Style matters. Each person in your social life likes a style: if you go dressed that way on a date, it shows and brings you a bit closer, and even more if your outfit matches. After a couple of dates, their profile tells you which style they like. Dressing elegantly helps sell cars at the car dealership.</li>
+<li>Changing clothes, in a store or at home, throws off the police if they are after you at one or two levels and there are no officers nearby.</li>
+<li>The store, the Get dressed menu and the status key say what you are wearing, including the footwear. Clothes, footwear and accessories are in the game data: with the mod editor you change them and add more, each with its style and description.</li>
+<li>Two garments have reinforcements: the tactical clothing and the camouflage uniform. When you put them on, your armor goes up to 40 or 30 if you had less.</li>
+<li>In gun shops, besides the vest, which sets armor to 100, there are the tactical chest rig, which sets it to 150, and the full tactical gear, at 200.</li>
+</ul>
+<h2>19. The honest life</h2>
+<p>You can finish the game rich without committing a single crime. Everything honest raises your standing among the neighbors; crimes lower it. With good standing you earn more at jobs and the police overlook small offenses. And you can be both: a good person by day and a criminal by night, with everything that brings. It's explained in the section Life, reputation and consequences, a little further down.</p>
+<ul>
+<li>Job center, one in each city: it gathers all the jobs. Day jobs are jobs without a vehicle: eight hours go by and you get paid; only one a day. In trades with a vehicle, <kbd>Enter</kbd> marks on the GPS where one is parked; get in with <kbd>F</kbd> and press <kbd>J</kbd>.</li>
+<li>Day jobs: waiter, shelf stocker, loading dock laborer, carpenter, welder, mechanic's assistant and lifeguard. The hardest ones pay more and tire you out.</li>
+<li>Car salesperson: at any car dealership you can work a day. You get a fixed salary and a commission of two percent of each car you sell; you sell more with a good reputation among the neighbors, with experience and when you are well dressed. In the same place is the temptation: ask for the keys for a test drive and not come back. It's a robbery in plain sight and the police come after you in force.</li>
+<li>Promotions: every eight services in a trade you go up a rank and earn twelve percent more. A short fanfare plays.</li>
+<li>Academies and driving schools: a course costs 250 euros and four hours, and raises a skill much faster than practice. One a day.</li>
+<li>Soup kitchens and food banks: you can donate money or do four hours of volunteering, which isn't paid but raises your mood and your standing a lot.</li>
+<li>Street events: helping counts too.</li>
+<li>Your career: on the phone, it sums up your honest life and your criminal life, with your ranks in each trade.</li>
+<li>Permanent contracts, studies with qualifications, growing businesses, loans and mortgages, and a story of your own without crimes: all of that is further down, in Life, reputation and consequences.</li>
+</ul>

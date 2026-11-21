@@ -1,0 +1,455 @@
+<h3>Access and administration</h3>
+<p>Who can come in, who is in charge and who is not let in.</p>
+<h4>Who can create a character: <code>entrada</code></h4>
+<p>It only affects whoever comes in for the first time: whoever already has a character can always come back in.</p>
+<ul>
+<li>Values:<ul>
+<li><code>abierta</code>: anyone who has the address.</li>
+<li><code>clave</code>: you need to know the entry password.</li>
+<li><code>invitacion</code>: a single-use code is needed.</li>
+</ul></li>
+<li>Default: <code>abierta</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Entry password: <code>clave</code></h4>
+<p>The password you need to know to create a character when entry is by password.</p>
+<ul>
+<li>A text of up to 60 letters. It is saved as is in the file: do not show it to anyone.</li>
+<li>Default: empty.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Admins: <code>admins</code></h4>
+<p>Player names that administer the server, separated by commas. They add to those named with the admin command.</p>
+<ul>
+<li>A text of up to 600 letters.</li>
+<li>Default: empty.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>The first account is an admin: <code>primer_admin</code></h4>
+<p>With si, the first account created on the server is an admin: normally that is you.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Banned names: <code>vetados</code></h4>
+<p>Player names that cannot come in, separated by commas. They add to the accounts banned with the vetar command.</p>
+<ul>
+<li>A text of up to 600 letters.</li>
+<li>Default: empty.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Kick for inactivity, in minutes: <code>inactividad_minutos</code></h4>
+<p>Minutes without moving or doing anything after which a player is kicked to make room. With 0, never. Admins are not kicked.</p>
+<ul>
+<li>A whole number between 0 and 1440.</li>
+<li>Default: <code>0</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Allow two sessions with the same identity: <code>varias_sesiones</code></h4>
+<p>For testing only. By default, no: if someone comes in with their character from somewhere else, the previous session is closed.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>no</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Game versions</h3>
+<p>Which versions of the game can play together on this server.</p>
+<h4>Check the game data of whoever comes in: <code>comprobar_datos</code></h4>
+<p>With si, the server checks whether the world the incoming player's game brings is its own, that of another real version, or one changed with mods, and acts according to the following options. With no, it checks nothing: anyone comes in with whatever they bring, and the server does not catch up with the world of new versions.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>What to do with whoever brings data that cannot be checked: <code>mundo_distinto</code></h4>
+<p>Players with mods that change the world, or with a version whose data the server cannot check. With a real version different from the server's you always get in, whatever you set here.</p>
+<ul>
+<li>Values:<ul>
+<li><code>admitir</code>: comes in and plays on what it has in common with the server; it is told what does not match, and what affects others is decided by the server with its world.</li>
+<li><code>rechazar</code>: does not come in: only the data of a real version is played.</li>
+</ul></li>
+<li>Default: <code>admitir</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Versions that can play together: <code>versiones</code></h4>
+<p>The server works with the world of the newest version it has seen, and talks to each game about what its version knows: a weapon or vehicle it does not have reaches it as the closest of its own.</p>
+<ul>
+<li>Values:<ul>
+<li><code>compatibles</code>: players with different versions of the game can play together, each with what their version knows.</li>
+<li><code>iguales</code>: only those with exactly the same data as the server get in.</li>
+</ul></li>
+<li>Default: <code>compatibles</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Minimum game version: <code>version_minima</code></h4>
+<p>The oldest version of the game that can come in, for example 1.7.0. Empty, any.</p>
+<ul>
+<li>A text of up to 20 letters.</li>
+<li>Default: empty.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Who can bring a new world: <code>actualizar_mundo</code></h4>
+<p>The game world (places, weapons, missions) is not tied to the server: the incoming player's game brings it. A server without a world takes the first incoming player's; if that one is not signed, it replaces it with the first signed one that arrives.</p>
+<ul>
+<li>Values:<ul>
+<li><code>firmado</code>: a newer version's is accepted from anyone if it is signed by the game's publisher.</li>
+<li><code>admin</code>: also, unsigned, from an admin: for modded servers.</li>
+<li><code>no</code>: never: the server keeps the world it has.</li>
+</ul></li>
+<li>Default: <code>firmado</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Data and backups</h3>
+<p>Where everything is saved, how often and how many backups are kept.</p>
+<h4>Data folder: <code>datos</code></h4>
+<p>The folder where everything is saved: characters, gangs, territories, vehicles, the certificate and the backups.</p>
+<ul>
+<li>A text of up to 260 letters.</li>
+<li>Default: <code>datos_servidor</code>.</li>
+<li>Needs a server restart.</li>
+</ul>
+<h4>Save every so many minutes: <code>guardado_minutos</code></h4>
+<p>Every how many minutes everything is saved to disk. Stopping the server always saves.</p>
+<ul>
+<li>A whole number between 1 and 120.</li>
+<li>Default: <code>1</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Automatic backup, every so many hours: <code>copia_auto_horas</code></h4>
+<p>Every how many hours the server makes a backup in the copias folder, inside the data folder. With 0, it makes none.</p>
+<ul>
+<li>A whole number between 0 and 720.</li>
+<li>Default: <code>24</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Backups kept: <code>copias_guardar</code></h4>
+<p>How many automatic backups are kept: when a new one is made the oldest are deleted. The ones you make by hand with another name are not touched.</p>
+<ul>
+<li>A whole number between 1 and 365.</li>
+<li>Default: <code>7</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Save the log to a file: <code>registro_archivo</code></h4>
+<p>With si, what the server says is also written to registro.txt, inside the data folder.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>no</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Player-versus-player combat</h3>
+<p>The rules for fights, robberies and bounties.</p>
+<h4>Player-versus-player combat: <code>pvp</code></h4>
+<p>With no, players cannot hurt, rob or steal from each other.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Safe zones: <code>zonas_seguras</code></h4>
+<p>With si, nobody can hurt anybody in hospitals, police stations, houses and inside venues.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Allow passive mode: <code>modo_pasivo</code></h4>
+<p>With si, each player can switch to passive mode: they neither hurt other players nor get hurt.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Seconds of protection on arrival: <code>proteccion</code></h4>
+<p>Seconds without being able to hurt or be hurt when coming in and when respawning.</p>
+<ul>
+<li>A whole number between 0 and 600.</li>
+<li>Default: <code>20</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Loot for knocking down another player, as a percentage: <code>botin</code></h4>
+<p>The percentage of pocket money lost by whoever falls to another player.</p>
+<ul>
+<li>A whole number between 0 and 100.</li>
+<li>Default: <code>10</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum loot: <code>botin_max</code></h4>
+<p>The most that can be lost when falling to another player, in euros.</p>
+<ul>
+<li>A whole number between 0 and 100000000.</li>
+<li>Default: <code>5000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Robbing another player, as a percentage: <code>atraco</code></h4>
+<p>The percentage of pocket money taken by whoever robs another player.</p>
+<ul>
+<li>A whole number between 0 and 100.</li>
+<li>Default: <code>15</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum robbery: <code>atraco_max</code></h4>
+<p>The most that can be taken in a robbery of another player, in euros.</p>
+<ul>
+<li>A whole number between 0 and 100000000.</li>
+<li>Default: <code>1000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Seconds to rob a business: <code>robo_segundos</code></h4>
+<p>The seconds you have to hold out at the door to empty the till of another player's business. The owner gets the alert.</p>
+<ul>
+<li>A whole number between 1 and 600.</li>
+<li>Default: <code>20</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Bounty for knocking down an innocent: <code>recompensa</code></h4>
+<p>How much, in euros, the bounty rises on whoever knocks down someone who was not defending themselves.</p>
+<ul>
+<li>A whole number between 0 and 100000000.</li>
+<li>Default: <code>500</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Living world</h3>
+<p>Traffic, people on the street, the police and the characters the server runs.</p>
+<h4>Shared traffic: <code>trafico</code></h4>
+<p>With si, the cars on the road are run by the server and are the same for everyone. With no, each player sees their own traffic.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Cars per zone with players: <code>trafico_max</code></h4>
+<p>How many cars the server runs, at most, for each zone of a town where there are players. For a few friends who go together it is the total number of cars in the town.</p>
+<ul>
+<li>A whole number between 0 and 200.</li>
+<li>Default: <code>8</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Cars per town, at most: <code>trafico_total</code></h4>
+<p>The cap on cars in the same town when there are players spread over many zones. With 0 there is no cap.</p>
+<ul>
+<li>A whole number between 0 and 5000.</li>
+<li>Default: <code>60</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Patrol cars per town: <code>patrullas</code></h4>
+<p>Server patrol cars that roam each town with players. With 0, none.</p>
+<ul>
+<li>A whole number between 0 and 50.</li>
+<li>Default: <code>1</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Shared police: <code>policia</code></h4>
+<p>With si, the wanted level, the chase and the arrest are run by the server, and everyone nearby sees and hears them. With no, each player's game runs them.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Shared street people: <code>peatones</code></h4>
+<p>With si, pedestrians are run by the server and are the same for everyone.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Pedestrians per zone with players: <code>peatones_max</code></h4>
+<p>How many pedestrians the server runs, at most, for each zone of a town where there are players.</p>
+<ul>
+<li>A whole number between 0 and 200.</li>
+<li>Default: <code>10</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Pedestrians per town, at most: <code>peatones_total</code></h4>
+<p>The cap on pedestrians in the same town when there are players spread over many zones. With 0 there is no cap.</p>
+<ul>
+<li>A whole number between 0 and 5000.</li>
+<li>Default: <code>80</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Characters the server runs: <code>personajes</code></h4>
+<p>Passers-by, pickpockets, gunmen, car thieves and robbers the server runs, the same for everyone. They only appear where there are players. With 0, none.</p>
+<ul>
+<li>A whole number between 0 and 200.</li>
+<li>Default: <code>6</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Meters within which others are followed in detail: <code>radio_detalle</code></h4>
+<p>Each player is told ten times per second where those closer than this distance are, and once per second where the others in their town are. It is what saves the most network and processor on servers with many people. With 0, everyone in detail all the time, which only suits a few people.</p>
+<ul>
+<li>A whole number between 0 and 100000.</li>
+<li>Default: <code>150</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Economy and properties</h3>
+<p>The money the server recognizes, houses, businesses and vehicles.</p>
+<h4>The server keeps track of money: <code>economia</code></h4>
+<p>With si, the server keeps track of each player's money and does not accept what it cannot justify.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum earnings per hour: <code>ganancia_hora</code></h4>
+<p>The most that can be earned in one clock hour from jobs, sales, gambling and street loot, in euros. What the server itself gives does not count.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>30000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Hours of earnings that can build up: <code>ganancia_acumula</code></h4>
+<p>The hourly earnings a player does not use are not lost: they are kept up to this number of hours, also while they are away, so a good streak fits whole. With 1, they never have more room than one hour's.</p>
+<ul>
+<li>A whole number between 1 and 48.</li>
+<li>Default: <code>3</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Repeatable jobs recognized per hour, of each kind: <code>encargos_hora</code></h4>
+<p>Contracts, gym fights, robberies and car jobs that are really completed do not use up the hourly earnings: the server accepts them, up to this number per hour of each kind. With 0 it recognizes none and they all count against the hourly earnings.</p>
+<ul>
+<li>A whole number between 0 and 1000.</li>
+<li>Default: <code>6</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum pay recognized for a repeatable job: <code>encargo_max</code></h4>
+<p>The most accepted from the pay of a single repeatable job, in euros. Anything above that counts against the hourly earnings.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>15000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum starting money: <code>saldo_inicial</code></h4>
+<p>The most a new character can start with, in euros.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>5000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Sale to the market, as a percentage: <code>venta_mercado</code></h4>
+<p>The percentage of the price recovered by whoever sells their house or business to the market.</p>
+<ul>
+<li>A whole number between 0 and 100.</li>
+<li>Default: <code>70</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Days without coming in to lose properties: <code>propiedad_dias</code></h4>
+<p>Real days without coming in after which a player's properties go back on the market. Their share is kept for them.</p>
+<ul>
+<li>A whole number between 1 and 3650.</li>
+<li>Default: <code>30</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Hours a vehicle lasts on the street: <code>vehiculos_horas</code></h4>
+<p>Real hours a vehicle left on the street stays there.</p>
+<ul>
+<li>A whole number between 1 and 8760.</li>
+<li>Default: <code>12</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Parked vehicles per player: <code>vehiculos_por_jugador</code></h4>
+<p>How many vehicles each player can have parked on the street. When one more is left, the oldest disappears.</p>
+<ul>
+<li>A whole number between 1 and 100.</li>
+<li>Default: <code>3</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Gangs and territories</h3>
+<p>What it costs to found a gang, claim a neighborhood and declare a war.</p>
+<h4>Price of founding a gang: <code>precio_banda</code></h4>
+<p>In euros.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>2000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Price of claiming a neighborhood: <code>precio_barrio</code></h4>
+<p>In euros, from the gang's till.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>3000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Daily income of each neighborhood: <code>renta_barrio</code></h4>
+<p>What each neighborhood leaves in the gang's till at midnight, in euros.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>300</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Price of declaring a war: <code>precio_guerra</code></h4>
+<p>In euros, from the gang's till.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>1000</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Minutes until a war starts: <code>guerra_espera</code></h4>
+<p>Real minutes between declaring a war and its start.</p>
+<ul>
+<li>A whole number between 1 and 10080.</li>
+<li>Default: <code>20</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Minutes a war lasts: <code>guerra_dura</code></h4>
+<p>Real minutes.</p>
+<ul>
+<li>A whole number between 1 and 1440.</li>
+<li>Default: <code>10</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Role-play and living together</h3>
+<p>The chat channels to play your character and what you hear from the other players.</p>
+<h4>Role-play channels: <code>rol</code></h4>
+<p>With si, players have a channel to talk in character, heard only by those nearby, another to talk out of character, heard by the whole server, a command to describe what their character does and a profile line others can read. With no, only the usual chat remains.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Meters what is said in character reaches: <code>rol_metros</code></h4>
+<p>How far away what a player says in character, and the actions they describe, can be heard. What is said out of character always reaches the whole server.</p>
+<ul>
+<li>A whole number between 5 and 2000.</li>
+<li>Default: <code>30</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Other players' car radio: <code>radio_coches</code></h4>
+<p>With si, whoever is near another player's vehicle hears, faintly, the game radio station they have on. Only which game station it is gets shared: no music or anything personal ever travels. With no, nobody's radio is heard.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Honest life</h3>
+<p>Permanent contracts with their paychecks and how shops treat each player according to their standing.</p>
+<h4>Paychecks for permanent contracts: <code>nominas</code></h4>
+<p>With si, whoever signs a permanent contract at the job center gets their paycheck at the end of each period. The server pays it: it counts the shifts and sets the amount, which comes from the game data and does not use up the hourly earnings. With no, there are no permanent contracts on this server. The server's world must be from version 1.7.1 or later.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Maximum pay per paycheck: <code>nomina_max</code></h4>
+<p>The most the server pays for one period's paycheck, in euros, whatever the game world or a mod says.</p>
+<ul>
+<li>A whole number between 0 and 1000000000.</li>
+<li>Default: <code>1500</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Contract shifts that count each day: <code>nomina_turnos_dia</code></h4>
+<p>How many shifts of a permanent contract the server counts for a player on the same game day.</p>
+<ul>
+<li>A whole number between 1 and 50.</li>
+<li>Default: <code>3</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Standing discounts in shops: <code>trato_prestigio</code></h4>
+<p>With si, shops give a small discount to those with a good name among the neighbors, and charge extra to those with a very bad one, as when playing offline on the soft level. Only players with version 1.7.1 or later notice it. With no, everyone pays the same.</p>
+<ul>
+<li>Values: si or no.</li>
+<li>Default: <code>si</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<!-- OPCIONES:FIN -->
+</body>
+</html>

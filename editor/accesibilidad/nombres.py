@@ -33,6 +33,7 @@ PLANTILLA del agente «accesibilidad-wx».
 
 from __future__ import annotations
 
+from juego.i18n import tr
 import builtins
 from collections.abc import Callable
 from typing import TypeVar
@@ -156,7 +157,7 @@ def etiquetar_selector(selector: wx.Window, nombre: str, etiqueta_boton: str = "
 	campo = selector.GetTextCtrl() if hasattr(selector, "GetTextCtrl") else None
 	if campo is not None:
 		asignar_nombre_accesible(campo, nombre, ref_persistente=selector)
-	texto = etiqueta_boton or _("&Seleccionar...")
+	texto = etiqueta_boton or _(tr("&Seleccionar..."))
 	for hijo in selector.GetChildren():
 		if isinstance(hijo, wx.Button):
 			hijo.SetLabel(texto)
@@ -179,8 +180,8 @@ def crear_selector_ruta(
 	creado justo después; el botón abre el diálogo nativo de Windows.
 	"""
 	texto, campo = crear_campo(padre, etiqueta, wx.TextCtrl, value=valor, ayuda=ayuda)
-	boton = wx.Button(padre, label=_("E&xaminar..."))
-	boton.SetHelpText(_("Abre un cuadro para elegir la carpeta.") if carpeta else _("Abre un cuadro para elegir el archivo."))
+	boton = wx.Button(padre, label=_(tr("E&xaminar...")))
+	boton.SetHelpText(_(tr("Abre un cuadro para elegir la carpeta.")) if carpeta else _(tr("Abre un cuadro para elegir el archivo.")))
 
 	def al_examinar(_evento: wx.CommandEvent) -> None:
 		titulo = nombre_limpio(etiqueta)

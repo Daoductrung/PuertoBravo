@@ -42,6 +42,7 @@ data/mods/*
 !data/mods/isla_de_los_vientos.json
 !data/mods/noches_de_neon.json
 !data/mods/LEEME_mods.txt
+!data/mods/LEEME_mods_en.txt
 
 # Sistema y editores
 desktop.ini

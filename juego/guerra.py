@@ -9,6 +9,7 @@ En un servidor en línea los barrios son de las bandas de los jugadores y este m
 
 Los números y las frases salen de los datos (data/datos/vida.json, sección guerra_barrios).
 """
+from .i18n import tr
 import random
 import zlib
 
@@ -19,15 +20,15 @@ _AJUSTES = {"miembros_prob": 35, "bajas_para_empezar": 2, "ventana_bajas": 180, 
             "pelea_base": 3, "pelea_larga_tandas": 2, "pelea_enfado": 6, "pelea_espera": 45, "premio_pelea": 0}
 _CERO_VALE = ("miembros_prob", "premio_conquista", "premio_defensa", "premio_pelea", "pelea_enfado", "pelea_espera")
 _LISTAS = {
-    "frases_empieza": ["¡Has plantado cara a {banda} en su barrio! Empieza la guerra por {barrio}.", "{banda} sale a defender {barrio}: esto ya es una guerra.",
-                       "Se corre la voz por {barrio}: {banda} viene a por ti con todo."],
-    "frases_defensa": ["Entras en {barrio} y {banda} lo está atacando: ¡defiéndelo!", "{banda} anda por {barrio} como si fuera suyo. Échalos."],
-    "frases_gana": ["Los de {banda} que quedan salen corriendo.", "{banda} se retira de {barrio} con el rabo entre las piernas.", "Nadie de {banda} vuelve a asomar por {barrio}."],
-    "frases_retirada": ["Te retiras de {barrio}.", "Dejas {barrio} atrás: la pelea se acaba."],
-    "frases_pelea": ["Mandas recado a {banda}: que vengan a {barrio} si se atreven. Y se atreven.", "Llamas a uno de {banda} y le dices dónde estás. Cuelga sin contestar: ya vienen.",
-                     "Corres la voz de que esperas a {banda} en {barrio}. No tardan en enterarse."],
-    "frases_pelea_gana": ["Los de {banda} que quedan en pie se largan: por hoy han tenido bastante.", "{banda} se retira. De esta se van a acordar.",
-                          "Se acabó: nadie de {banda} quiere más."],
+    "frases_empieza": [tr("¡Has plantado cara a {banda} en su barrio! Empieza la guerra por {barrio}."), tr("{banda} sale a defender {barrio}: esto ya es una guerra."),
+                       tr("Se corre la voz por {barrio}: {banda} viene a por ti con todo.")],
+    "frases_defensa": [tr("Entras en {barrio} y {banda} lo está atacando: ¡defiéndelo!"), tr("{banda} anda por {barrio} como si fuera suyo. Échalos.")],
+    "frases_gana": [tr("Los de {banda} que quedan salen corriendo."), tr("{banda} se retira de {barrio} con el rabo entre las piernas."), tr("Nadie de {banda} vuelve a asomar por {barrio}.")],
+    "frases_retirada": [tr("Te retiras de {barrio}."), tr("Dejas {barrio} atrás: la pelea se acaba.")],
+    "frases_pelea": [tr("Mandas recado a {banda}: que vengan a {barrio} si se atreven. Y se atreven."), tr("Llamas a uno de {banda} y le dices dónde estás. Cuelga sin contestar: ya vienen."),
+                     tr("Corres la voz de que esperas a {banda} en {barrio}. No tardan en enterarse.")],
+    "frases_pelea_gana": [tr("Los de {banda} que quedan en pie se largan: por hoy han tenido bastante."), tr("{banda} se retira. De esta se van a acordar."),
+                          tr("Se acabó: nadie de {banda} quiere más.")],
 }
 AJUSTES = dict(_AJUSTES)
 LISTAS = {k: list(v) for k, v in _LISTAS.items()}
@@ -93,14 +94,14 @@ class Guerra:
         g = self.guerra
         if not g:
             return ""
-        que = f"Defiendes {g['nombre']} de {g['banda']}" if g["tipo"] == "defensa" else f"Pelea con {g['banda']} en {g['nombre']}, sin barrio en juego" if g["tipo"] == "pelea" \
-            else f"Guerra por {g['nombre']} contra {g['banda']}"
+        que = tr('Defiendes {nombre} de {banda}').format(nombre=(g['nombre']), banda=(g['banda'])) if g["tipo"] == "defensa" else tr('Pelea con {banda} en {nombre}, sin barrio en juego').format(banda=(g['banda']), nombre=(g['nombre'])) if g["tipo"] == "pelea" \
+            else tr('Guerra por {nombre} contra {banda}').format(nombre=(g['nombre']), banda=(g['banda']))
         vivos = sum(1 for e in g["vivos"] if not e.muerto)
         if g["oleada"] == 0:
             if g["total"] == 1:
-                return f"{que}. Están al caer. No salgas del barrio."
-            return f"{que}. Vienen {g['total']} oleadas: la primera está al caer. No salgas del barrio."
-        return f"{que}. Oleada {g['oleada']} de {g['total']}" + (f": quedan {vivos}." if vivos else ": superada.") + " No salgas del barrio."
+                return tr('{que}. Están al caer. No salgas del barrio.').format(que=(que))
+            return tr('{que}. Vienen {total} oleadas: la primera está al caer. No salgas del barrio.').format(que=(que), total=(g['total']))
+        return tr('{que}. Oleada {oleada} de {total}').format(que=(que), oleada=(g['oleada']), total=(g['total'])) + (tr(': quedan {vivos}.').format(vivos=(vivos)) if vivos else tr(": superada.")) + tr(" No salgas del barrio.")
 
     # ------------------------------------------------------------------ empezar
     def puede_guerra(self, forzar=False):
@@ -119,7 +120,7 @@ class Guerra:
         self._bajas_guerra[b["id"]] = lista
         falta = int(aj("bajas_para_empezar")) - len(lista)
         if falta > 0:
-            self.decir(f"{banda} no perdona: {'una baja más' if falta == 1 else f'{falta} bajas más'} en {b['nombre']} y habrá guerra por el barrio.")
+            self.decir(tr('{banda} no perdona: {v} en {nombre} y habrá guerra por el barrio.').format(banda=(banda), v=(tr('una baja más') if falta == 1 else tr('{falta} bajas más').format(falta=(falta))), nombre=(b['nombre'])))
         else:
             self._bajas_guerra.pop(b["id"], None)
             self.empezar_guerra(b)
@@ -135,7 +136,7 @@ class Guerra:
                        "rec": bool(rec), "base": int(rec["base"]) if rec else 0, "bandas": list(rec["bandas"]) if rec else [banda]}
         self.son("territorio", cat="interfaz")
         self.decir(random.choice(LISTAS["frases_defensa" if defensa else "frases_empieza"]).format(banda=banda, barrio=b["nombre"])
-                   + f" Son {n} oleadas, cada una más dura. No salgas del barrio, o se dará la pelea por perdida. La tecla O te dice cómo va.")
+                   + tr(' Son {n} oleadas, cada una más dura. No salgas del barrio, o se dará la pelea por perdida. La tecla O te dice cómo va.').format(n=(n)))
         if self.j.banda:                                         # los tuyos acuden a pelear a tu lado
             from . import sistemas
             llegan, frase = sistemas.llamar(self)
@@ -156,19 +157,19 @@ class Guerra:
     def pelea_motivo(self):
         """Por qué no se puede buscar pelea ahora mismo, o cadena vacía si se puede."""
         if getattr(self, "en_servidor", False):
-            return "En un servidor en línea no se puede: allí las peleas son con los demás jugadores y sus bandas."
+            return tr("En un servidor en línea no se puede: allí las peleas son con los demás jugadores y sus bandas.")
         if self.mundo.tipo == "mar" or self.interior is not None:
-            return "Aquí no pueden venir a buscarte: sal a la calle."
+            return tr("Aquí no pueden venir a buscarte: sal a la calle.")
         if self.guerra:
-            return "Ya tienes una pelea en marcha. La tecla O te dice cómo va."
+            return tr("Ya tienes una pelea en marcha. La tecla O te dice cómo va.")
         if self.mision:
-            return "Durante una misión no: termínala o abandónala antes."
+            return tr("Durante una misión no: termínala o abandónala antes.")
         if self.trabajo or self.de_servicio():
-            return "Mientras trabajas no: termina el servicio antes."
+            return tr("Mientras trabajas no: termina el servicio antes.")
         if self.j.estrellas:
-            return "Con la policía buscándote no acude nadie: despístala antes."
+            return tr("Con la policía buscándote no acude nadie: despístala antes.")
         if self.t < self.t_guerra_enfria:
-            return f"Acabas de salir de una. Espera {int(self.t_guerra_enfria - self.t) + 1} segundos y vuelve a intentarlo."
+            return tr('Acabas de salir de una. Espera {v} segundos y vuelve a intentarlo.').format(v=(int(self.t_guerra_enfria - self.t) + 1))
         return ""
 
     def pelea_tamano(self, larga=False):
@@ -189,8 +190,8 @@ class Guerra:
         self.son("amenaza_barrio", cat="interfaz")
         self.cambiar_rep_banda(banda, -float(aj("pelea_enfado")))
         self.decir(random.choice(LISTAS["frases_pelea"]).format(banda=banda, barrio=b["nombre"])
-                   + (f" Vienen {tandas[0]}, de una vez." if len(tandas) == 1 else f" Vienen en {len(tandas)} tandas: {tandas[0]} primero y más después.")
-                   + " No hay barrio en juego. No salgas de aquí o se dará por perdida. La tecla O te dice cómo va.")
+                   + (tr(' Vienen {v}, de una vez.').format(v=(tandas[0])) if len(tandas) == 1 else tr(' Vienen en {len} tandas: {v} primero y más después.').format(len=(len(tandas)), v=(tandas[0])))
+                   + tr(" No hay barrio en juego. No salgas de aquí o se dará por perdida. La tecla O te dice cómo va."))
         if self.j.banda:
             from . import sistemas
             llegan, frase = sistemas.llamar(self)
@@ -202,8 +203,8 @@ class Guerra:
     def _grupo_guerra(self, clase, banda, k):
         t = G.tipo_enemigo(clase)
         if not t:
-            return {"tipo": f"Pandillero de {banda}", "arma": random.choice(["pistola", "pistola", "subfusil", "bate"]), "salud": 70 + 8 * (k - 1)}
-        return {"clase": clase, "tipo": f"{t.get('nombre', 'Pandillero')} de {banda}", "salud": float(t.get("salud", 70)) + 8 * (k - 1)}
+            return {"tipo": tr('Pandillero de {banda}').format(banda=(banda)), "arma": random.choice(["pistola", "pistola", "subfusil", "bate"]), "salud": 70 + 8 * (k - 1)}
+        return {"clase": clase, "tipo": tr('{get} de {banda}').format(get=(t.get('nombre', tr('Pandillero'))), banda=(banda)), "salud": float(t.get("salud", 70)) + 8 * (k - 1)}
 
     def _oleada(self):
         g = self.guerra
@@ -212,11 +213,11 @@ class Guerra:
         k = g["oleada"]
         banda = g["bandas"][(k - 1) % len(g["bandas"])]          # en una alianza, cada oleada es de una de las bandas
         tipos, refuerzo = G.tipos_de_banda(banda)
-        tr = G.tipo_enemigo(refuerzo) if refuerzo else None
-        if tr is None or tr.get("vehiculo") not in self.modelos:
-            tr = None
+        trab = G.tipo_enemigo(refuerzo) if refuerzo else None
+        if trab is None or trab.get("vehiculo") not in self.modelos:
+            trab = None
         n = int(g["base"] or aj("oleada_base")) + k - 1
-        llegan = min(max(0, n - 2), int(tr.get("ocupantes", 3) or 3)) if tr and k == g["total"] and g["total"] > 1 else 0
+        llegan = min(max(0, n - 2), int(trab.get("ocupantes", 3) or 3)) if trab and k == g["total"] and g["total"] > 1 else 0
         x, y = self.pos()
         pos = self._punto_cercano(30, 55) or self.mundo.punto_libre(x + 35, y + 5)
         gente_ = []
@@ -228,7 +229,7 @@ class Guerra:
         veh = None
         if llegan:
             ref = [self._crear_enemigo(self._grupo_guerra(refuerzo, banda, k), pos[0], pos[1]) for _ in range(llegan)]
-            veh = self.llegar_en_vehiculo(tr["vehiculo"], ref)
+            veh = self.llegar_en_vehiculo(trab["vehiculo"], ref)
             if veh is None:                                      # aquí no puede venir un vehículo: llegan a pie con los demás
                 for e in ref:
                     e.x, e.y = self.mundo.punto_libre(pos[0] + random.uniform(-6, 6), pos[1] + random.uniform(-6, 6))
@@ -243,8 +244,8 @@ class Guerra:
         g["vivos"] = gente_
         g["quedan"] = len(gente_)
         self.son("evento", cat="interfaz")
-        self.decir((f"Ya están aquí: {len(gente_)} de {banda}." if g["total"] == 1 else f"Oleada {k} de {g['total']}: {len(gente_)} de {banda}.") + f" {self.situar(pos[0], pos[1], 'Vienen')}."
-                   + (f" {llegan} de ellos llegan en un vehículo: escucha el motor." if veh is not None else "") + " Pulsa Q para fijar al más cercano.")
+        self.decir((tr('Ya están aquí: {len} de {banda}.').format(len=(len(gente_)), banda=(banda)) if g["total"] == 1 else tr('Oleada {k} de {total}: {len} de {banda}.').format(k=(k), total=(g['total']), len=(len(gente_)), banda=(banda))) + f" {self.situar(pos[0], pos[1], tr('Vienen'))}."
+                   + (tr(' {llegan} de ellos llegan en un vehículo: escucha el motor.').format(llegan=(llegan)) if veh is not None else "") + tr(" Pulsa Q para fijar al más cercano."))
         if self.cfg["punteria"] == "completa":
             self.fijar(callar=True)
 
@@ -264,7 +265,7 @@ class Guerra:
             g["fuera"] += dt
             if g["fuera"] > 3 and not g["avisado"]:
                 g["avisado"] = True
-                self.decir(f"Has salido de {g['nombre']}. Vuelve antes de {int(aj('fuera_max'))} segundos o la pelea se da por perdida.")
+                self.decir(tr('Has salido de {nombre}. Vuelve antes de {int} segundos o la pelea se da por perdida.').format(nombre=(g['nombre']), int=(int(aj('fuera_max')))))
             if g["fuera"] > aj("fuera_max"):
                 self.guerra_retirada()
                 return
@@ -274,7 +275,7 @@ class Guerra:
         if vivos:
             if vivos != g["quedan"]:
                 g["quedan"] = vivos
-                self.decir("Queda uno. Pulsa Q para fijarlo." if vivos == 1 else f"Quedan {vivos}.")
+                self.decir(tr("Queda uno. Pulsa Q para fijarlo.") if vivos == 1 else tr('Quedan {vivos}.').format(vivos=(vivos)))
             return
         if not g["limpia"]:                                      # acaba de caer el último de la oleada
             g["limpia"] = True
@@ -283,7 +284,7 @@ class Guerra:
                 return
             g["t"] = random.uniform(aj("pausa_min"), max(aj("pausa_min"), aj("pausa_max")))
             self.app.son("llegada")
-            self.decir(f"Oleada {g['oleada']} superada. Recarga y prepárate: viene otra.")
+            self.decir(tr('Oleada {oleada} superada. Recarga y prepárate: viene otra.').format(oleada=(g['oleada'])))
             return
         g["t"] -= dt
         if g["t"] <= 0:
@@ -306,10 +307,10 @@ class Guerra:
                 j.stats["pelea_dia"] = self.dia
                 self.cambiar_reputacion(1)
             self.decir(random.choice(LISTAS["frases_pelea_gana"]).format(banda=g["banda"], barrio=g["nombre"])
-                       + f" No has ganado ningún barrio: {g['nombre']} sigue como estaba. Con {g['banda']}, {self.rep_banda_txt(self.rep_banda(g['banda']))}.")
+                       + tr(' No has ganado ningún barrio: {nombre} sigue como estaba. Con {banda}, {rep_banda_txt}.').format(nombre=(g['nombre']), banda=(g['banda']), rep_banda_txt=(self.rep_banda_txt(self.rep_banda(g['banda'])))))
             premio = int(aj("premio_pelea") * paga)
             if premio:
-                self.dar_dinero(premio, "Lo que se han dejado en la huida")
+                self.dar_dinero(premio, tr("Lo que se han dejado en la huida"))
             self.cambiar_animo(3)
             return
         frase = random.choice(LISTAS["frases_gana"]).format(banda=g["banda"], barrio=g["nombre"])
@@ -322,16 +323,16 @@ class Guerra:
             j.stats["conquistas"] = j.stats.get("conquistas", 0) + 1
             premio = int(aj("premio_conquista") * paga)
             self.cambiar_reputacion(max(3, 15 - 3 * (len(j.territorios) - 1)))
-            self.decir(f"{frase} {g['nombre']} es tuyo: te pagará {self.precio('tributo_territorio', 300)} euros cada medianoche.")
+            self.decir(tr('{frase} {nombre} es tuyo: te pagará {precio} euros cada medianoche.').format(frase=(frase), nombre=(g['nombre']), precio=(self.precio('tributo_territorio', 300))))
         else:
             if j.amenaza and j.amenaza.get("territorio") == g["barrio"]:
                 j.amenaza = None
             j.stats["defensas"] = j.stats.get("defensas", 0) + 1
             premio = int(aj("premio_defensa") * paga)
             self.cambiar_reputacion(3)
-            self.decir(f"{frase} {g['nombre']} sigue siendo tuyo.")
+            self.decir(tr('{frase} {nombre} sigue siendo tuyo.').format(frase=(frase), nombre=(g['nombre'])))
         if premio:
-            self.dar_dinero(premio, "Lo que se han dejado en la huida")
+            self.dar_dinero(premio, tr("Lo que se han dejado en la huida"))
         self.cambiar_animo(4)
         from . import menus_juego
         menus_juego.autoguardar(self)
@@ -356,13 +357,13 @@ class Guerra:
         self.son("mision_fallo", cat="interfaz")
         base = texto or random.choice(LISTAS["frases_retirada"]).format(banda=g["banda"], barrio=g["nombre"])
         if g["tipo"] == "pelea":
-            self.decir(f"{base} {g['banda']} se queda sin su pelea, y lo irá contando por ahí.")
+            self.decir(tr('{base} {banda} se queda sin su pelea, y lo irá contando por ahí.').format(base=(base), banda=(g['banda'])))
         elif g["rec"]:
-            self.decir(f"{base} El asalto a {g['nombre']} sigue: vuelve y échalos, o envía a tu gente desde el móvil, en Territorios, antes de que se acabe el plazo.")
+            self.decir(tr('{base} El asalto a {nombre} sigue: vuelve y échalos, o envía a tu gente desde el móvil, en Territorios, antes de que se acabe el plazo.').format(base=(base), nombre=(g['nombre'])))
         elif g["tipo"] == "defensa":
-            self.decir(f"{base} {g['banda']} sigue atacando {g['nombre']}: si no vuelves y los echas antes de medianoche, lo pierdes.")
+            self.decir(tr('{base} {banda} sigue atacando {nombre}: si no vuelves y los echas antes de medianoche, lo pierdes.').format(base=(base), banda=(g['banda']), nombre=(g['nombre'])))
         else:
-            self.decir(f"{base} {g['nombre']} sigue siendo de {g['banda']}. Puedes volver a intentarlo cuando quieras.")
+            self.decir(tr('{base} {nombre} sigue siendo de {banda}. Puedes volver a intentarlo cuando quieras.').format(base=(base), nombre=(g['nombre']), banda=(g['banda'])))
 
     def lugar_de_barrio(self, b, mapa=None):
         """Un lugar de ese barrio al que llevar el GPS: el más cercano si estás en su localidad."""

@@ -195,7 +195,7 @@ def test_cada_tienda_es_de_su_clase_y_las_que_no_venden_comida_quedan_como_estab
     assert p.tipo_tienda(p.lugares["ferreteria"]) is None and p.surtido(p.lugares["ferreteria"]) == []
     assert p.tipo_tienda(p.lugares["casa_abuela"]) is None
     assert [pa["id"] for pa, _ in p.surtido(p.lugares["tienda_centro"])] == [x["id"] for x in C.PASILLOS]       # el súper lo tiene todo
-    assert [pa["id"] for pa, _ in p.surtido(p.lugares["gasolinera"])] == ["bebidas", "preparados"]
+    assert [pa["id"] for pa, _ in p.surtido(p.lugares["gasolinera"])] == ["bebidas", "preparados", "drogueria"]
     # el pescado y la carne, solo en el mercado y en el súper; el mercado es más barato y la gasolinera, más cara
     assert "pescaderia" not in [pa["id"] for pa, _ in p.surtido(p.lugares["tienda_paco"])]
     agua = p.producto("agua_botella")
@@ -1086,20 +1086,20 @@ def test_los_sonidos_nuevos_estan_en_todos_los_packs_y_en_la_guia():
         for pack in ("por_defecto", "realista", "alternativo", "retro", "envolvente"):
             carpeta = os.path.join(rutas.PACKS, pack)
             assert os.path.isdir(carpeta) and any(os.path.exists(os.path.join(carpeta, n + e)) for e in rutas.EXT_AUDIO), (pack, n)
-    guia = open(os.path.join(rutas.DATA, "docs", "cambiar_sonidos.html"), encoding="utf-8").read()
+    guia = open(os.path.join(rutas.DATA, "docs", "cambiar_sonidos_es.html"), encoding="utf-8").read()
     assert all(n in guia for n in nuevos) and "Casa, cocina y comida" in guia
 
 
 def test_el_manual_las_teclas_y_la_guia_del_editor_cuentan_lo_nuevo():
     from juego import ayuda
-    manual = open(os.path.join(rutas.DATA, "docs", "manual.html"), encoding="utf-8").read()
+    manual = open(os.path.join(rutas.DATA, "docs", "manual_es.html"), encoding="utf-8").read()
     for frase in ("Comprar paseando por la tienda", "La despensa y la nevera", "Cocinar en casa", "Salir sin pagar", "caduca", "mano en la cocina", "Tortilla de patatas"):
         assert frase in manual, frase
     assert ".json" not in manual and ".py" not in manual             # el manual es para quien juega: nada de programación
-    editor = open(os.path.join(rutas.DATA, "docs", "editor_mods.html"), encoding="utf-8").read()
+    editor = open(os.path.join(rutas.DATA, "docs", "editor_mods_es.html"), encoding="utf-8").read()
     for frase in ("Productos de las tiendas de comida", "Recetas de cocina", "Tipos de tienda de comida", "Pasillos de las tiendas"):
         assert frase in editor, frase
-    teclas = open(os.path.join(rutas.DATA, "docs", "teclas.html"), encoding="utf-8").read()
+    teclas = open(os.path.join(rutas.DATA, "docs", "teclas_es.html"), encoding="utf-8").read()
     assert "qué llevas en la cesta" in teclas and "Recorriendo una casa" in teclas
     assert any("cesta" in d for _, d in ayuda.TECLAS_RECORRIDO)
     # la opción de la vida realista cuenta que se puede cocinar

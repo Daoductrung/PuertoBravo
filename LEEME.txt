@@ -1,5 +1,5 @@
 PUERTO BRAVO: LEY DEL ASFALTO
-Audiojuego de mundo abierto, en español y totalmente accesible. Versión 1.7.1.
+Audiojuego de mundo abierto, en español y en inglés, y totalmente accesible. Versión 1.7.2.
 Se juega con el oído, con teclado o con mando de Xbox o de PlayStation.
 
 PARA JUGAR
@@ -10,11 +10,16 @@ PARA JUGAR
 
 EL MANUAL
   Está en la carpeta data\docs y se abre también desde el menú principal del juego:
-    manual.html            Manual completo, navegable por encabezados.
-    teclas.html            Todas las teclas y los botones del mando.
-    novedades.html         Qué cambia en cada versión.
-    cambiar_sonidos.html   Cómo cambiar los sonidos y la música.
-    editor_mods.html       Manual del editor de mods.
+    manual_es.html            Manual completo, navegable por encabezados.
+    teclas_es.html            Todas las teclas y los botones del mando.
+    novedades_es.html         Qué cambia en cada versión.
+    cambiar_sonidos_es.html   Cómo cambiar los sonidos y la música.
+    editor_mods_es.html       Manual del editor de mods.
+  Cada guía está también en inglés: las que acaban en _en.
+
+EL IDIOMA
+  El juego va en el idioma de Windows: en español si es cualquier variante del español, y si no,
+  en inglés. Se puede elegir en Opciones, en la primera línea, Idioma.
 
 PARA JUGAR CON AMIGOS
   Dentro del juego, abre el móvil con M y entra en Jugar con amigos. Tu propio juego abre
@@ -23,6 +28,8 @@ PARA JUGAR CON AMIGOS
 
 PARA ACTUALIZAR
   En el juego, Opciones, Actualizaciones. Puedes elegir de dónde se actualiza.
+  En Opciones, Actualizaciones, Componentes, están los idiomas, las voces, las guías, los packs
+  de sonidos y los mods que se publican sin esperar a una versión nueva.
   Tus partidas, tus opciones, tu música y tus mods no se tocan.
 
 SI ALGO FALLA

@@ -1,4 +1,5 @@
 """Aplicación: ventana, bucle principal y pila de pantallas."""
+from .i18n import tr
 import os
 import sys
 
@@ -58,10 +59,14 @@ class App:
             self.cfg.v = dict(POR_DEFECTO)
             self.cfg.guardar = lambda: None
         self.voz = Voz(self.cfg["voz_sapi"], muda=pruebas)
+        self.voz.cfg = self.cfg                             # para la opción del historial
         if not pruebas:
             from . import voces
             voces.recoger_puente()                            # las voces que llegan tras actualizar desde una versión anterior
             voces.limpiar_antigua()                           # la carpeta de voces de las versiones anteriores ya no se usa
+            voces.quitar_sin_idioma()                         # y las carpetas de historia sin idioma, de antes de la 1.7.2
+            from . import i18n
+            i18n.quitar_docs_sin_idioma()                     # manual.html y los demás, de antes de la 1.7.2: ahora van por idioma
         from . import audio_al
         self.mez = audio_al.crear(self.cfg, pruebas)          # el motor envolvente si se ha elegido y se puede; si no, el clásico
         self.aplicar_volumenes()
@@ -81,8 +86,8 @@ class App:
             pygame.key.set_repeat(0)
             self.fuente = pygame.font.SysFont("segoeui,arial", 26)
             self.fuente_g = pygame.font.SysFont("segoeui,arial", 38, bold=True)
-            self._dibujar("Cargando sonidos...")
-            self.voz.decir(f"{NOMBRE}. Cargando, espera un momento.", True)
+            self._dibujar(tr("Cargando sonidos..."))
+            self.voz.decir(tr('{NOMBRE}. Cargando, espera un momento.').format(NOMBRE=(NOMBRE)), True)
         registro.info("arranque", "Voz y mezclador listos", error_de_sonido=self.mez.error or "ninguno")
         self.info_sonidos = packs.cargar(self.mez, self.cfg)
         registro.info("arranque", "Sonidos cargados", cuantos=len(self.mez.sonidos), pack=self.cfg["pack_sonidos"] or "por defecto")
@@ -107,9 +112,9 @@ class App:
                 registro.excepcion("registro", "No se pudo escribir sistema.txt")
             registro.vigilar_estado(self.estado_registro)
         if self.mez.error and not pruebas:
-            self.voz.decir("Aviso: no se ha podido abrir la tarjeta de sonido. El juego funcionará sin audio.")
+            self.voz.decir(tr("Aviso: no se ha podido abrir la tarjeta de sonido. El juego funcionará sin audio."))
         for e in self.datos["errores_mods"]:
-            self.voz.decir("Error en un mod: " + e)
+            self.voz.decir(tr("Error en un mod: ") + e)
         menus_juego.principal(self)
         from . import menus_actualizar
         menus_actualizar.al_arrancar(self)
@@ -227,7 +232,7 @@ class App:
         if guardado:
             self.son("guardado")
             p = self.partida
-            self.decir(f"Partida cargada. {p.mundo.describir(p.j.x, p.j.y)}. Son las {p.hora_txt()}. {p.objetivo_txt()}", True)
+            self.decir(tr('Partida cargada. {describir}. Son las {hora_txt}. {objetivo_txt}').format(describir=(p.mundo.describir(p.j.x, p.j.y)), hora_txt=(p.hora_txt()), objetivo_txt=(p.objetivo_txt())), True)
         self.partida.al_entrar()
 
     def volver_al_menu(self):
@@ -273,7 +278,7 @@ class App:
             if ev.key == pygame.K_F12 and not (self.pila and isinstance(self.pila[-1], EntradaTexto)):
                 registro.marca()
                 self.son("guardado")
-                self.decir("Marca añadida al registro de la sesión.", True)
+                self.decir(tr("Marca añadida al registro de la sesión."), True)
                 return
             en_texto = bool(self.pila) and isinstance(self.pila[-1], EntradaTexto)
             try:
@@ -285,6 +290,12 @@ class App:
             registro.tecla(prefijo + nombre.replace(" ", "_"), en_texto)
         if self.pila:
             self.pila[-1].tecla(ev)
+
+    def evento_texto(self, texto):
+        """Lo que escribe el teclado como texto. Con teclas muertas (los acentos), con algunas distribuciones de teclado o
+        con un método de entrada, la letra llega solo así, y no con la pulsación: antes el cuadro de texto se quedaba vacío."""
+        if self.pila and hasattr(self.pila[-1], "texto_tecleado"):
+            self.pila[-1].texto_tecleado(texto)
 
     def paso(self, dt):
         if registro.activo():
@@ -305,7 +316,7 @@ class App:
             from . import voces
             if not prueba or voces.sonar(self, prueba) is None:
                 self.son("error")
-                self.decir("No se ha podido generar la prueba.", True)
+                self.decir(tr("No se ha podido generar la prueba."), True)
         if self.pila:
             cima = self.pila[-1]
             self.mez.mundo_pausado = getattr(cima, "pausa_mundo", True)
@@ -362,6 +373,8 @@ class App:
                         self.activo = False
                     elif ev.type == pygame.KEYDOWN:
                         self.evento_tecla(ev)
+                    elif ev.type == pygame.TEXTINPUT:
+                        self.evento_texto(ev.text)
                     elif ev.type == pygame.KEYUP:
                         self.teclas.discard(ev.key)
                         if self.cfg["teclas"]:
@@ -386,9 +399,9 @@ class App:
             except Exception:
                 pass
         sesion = os.path.basename(registro.carpeta_sesion() or "")
-        self.voz.decir("Ha ocurrido un error inesperado y el juego debe cerrarse. Tu partida se ha guardado automáticamente. "
-                       "Para ayudar a arreglarlo, comprime la carpeta de esta sesión, que está dentro de data, logs" + (f", y se llama {sesion}" if sesion else "") +
-                       ", y envíala. No contiene datos personales.", True)
+        self.voz.decir(tr("Ha ocurrido un error inesperado y el juego debe cerrarse. Tu partida se ha guardado automáticamente. "
+                       "Para ayudar a arreglarlo, comprime la carpeta de esta sesión, que está dentro de data, logs") + (tr(', y se llama {sesion}').format(sesion=(sesion)) if sesion else "") +
+                       tr(", y envíala. No contiene datos personales."), True)
         if not self.pruebas:
             pygame.time.wait(9000)
 

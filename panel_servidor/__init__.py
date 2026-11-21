@@ -3,10 +3,11 @@
 El servidor es el mismo que arranca por consola (el paquete ``servidor``); aquí solo está la ventana, hecha con
 wxPython y con los controles accesibles del editor de mods (``editor.accesibilidad``).
 """
+from juego.i18n import tr
 import os
 import sys
 
-NOMBRE = "Panel del servidor de Puerto Bravo"
+NOMBRE = tr("Panel del servidor de Puerto Bravo")
 CONF = "servidor.conf"
 
 
@@ -62,8 +63,11 @@ def abierto_sin_activar():
 
 def ruta_documentacion():
     """La guía del servidor, donde esté: junto al servidor o con el resto de la documentación del juego."""
+    from juego import i18n
     base = carpeta_programa()
-    for partes in (("servidor", "documentacion.html"), ("data", "docs", "servidor.html")):
+    cod = i18n.actual()
+    for partes in (("servidor", f"documentacion_{cod}.html"), ("servidor", "documentacion_es.html"), ("data", "docs", f"servidor_{cod}.html"),
+                   ("data", "docs", "servidor_es.html")):
         ruta = os.path.join(base, *partes)
         if os.path.exists(ruta):
             return ruta

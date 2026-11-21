@@ -26,7 +26,8 @@ def juego(tmp_path_factory):
     """Una carpeta que hace de juego compilado, con la guía en su sitio, y la carpeta del servidor ya preparada."""
     base = tmp_path_factory.mktemp("juego")
     os.makedirs(base / "data" / "docs")
-    shutil.copyfile(carpeta.GUIA, base / "data" / "docs" / "servidor.html")
+    for cod, ruta in carpeta.guias().items():                 # la guía en cada idioma que haya
+        shutil.copyfile(ruta, base / "data" / "docs" / ("servidor_%s.html" % cod))
     carpeta.preparar(str(base))
     return base
 
@@ -50,12 +51,16 @@ def test_la_carpeta_del_servidor_trae_todo_y_nada_de_nadie(juego):
     assert b"Startup" in _leer(s / "Arrancar con Windows - activar.bat") and b"schtasks" not in _leer(s / "Arrancar con Windows - activar.bat")
     # el ejemplo de configuración y la guía, al día
     assert (s / "servidor.conf.ejemplo").read_text(encoding="utf-8") == opciones.texto_conf() and b"\r\n" in _leer(s / "servidor.conf.ejemplo")
-    assert _leer(s / "documentacion.html") == _leer(juego / "data" / "docs" / "servidor.html") and carpeta.guia_al_dia(str(s / "documentacion.html"))
+    for cod in carpeta.guias():
+        guia = s / ("documentacion_%s.html" % cod)
+        assert _leer(guia) == _leer(juego / "data" / "docs" / ("servidor_%s.html" % cod)) and carpeta.guia_al_dia(str(guia)), cod
+    assert not (s / "documentacion.html").exists()
     assert "Panel del servidor" in (s / "LEEME.txt").read_text(encoding="utf-8")
     # para los demás sistemas: el código entero del servidor, igual que el del proyecto, y con finales de línea de Unix
     otros = s / "otros_sistemas"
     del_proyecto = sorted(n for n in os.listdir(os.path.join(RAIZ, "servidor")) if n.endswith(".py"))
-    assert sorted(n for n in os.listdir(otros / "servidor")) == sorted(del_proyecto + ["mundo.json"])
+    assert sorted(n for n in os.listdir(otros / "servidor")) == sorted(del_proyecto + ["mundo.json", "idiomas"])
+    assert os.listdir(otros / "servidor" / "idiomas") == ["en.json"]           # el catálogo reducido: solo los textos del servidor
     for n in del_proyecto:
         copia = _leer(otros / "servidor" / n)
         assert b"\r" not in copia and copia == _leer(os.path.join(RAIZ, "servidor", n)).replace(b"\r\n", b"\n"), n

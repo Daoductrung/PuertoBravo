@@ -14,7 +14,7 @@
   ],
   "bloques": {"1,1": "plaza", "4,3": "hierba", "0,4": "muelle", "1,4": "muelle", "2,4": "muelle"},
   "lugares": [
-    {"id": "sl_estacion", "nombre": "Estación de autobuses de San Lucero", "tipo": "estacion", "bloque": [3, 1], "lado": "S", "pos": 36, "precio": 25, "vehiculo": "autobus", "desc": "La estación de San Lucero, con autobuses a toda la comarca."},
+    {"id": "sl_estacion", "cajero": true, "nombre": "Estación de autobuses de San Lucero", "tipo": "estacion", "bloque": [3, 1], "lado": "S", "pos": 36, "precio": 25, "vehiculo": "autobus", "desc": "La estación de San Lucero, con autobuses a toda la comarca."},
     {"id": "sl_salida_oeste", "nombre": "Salida oeste, carretera de la costa", "tipo": "salida", "bloque": [0, 1], "lado": "O", "pos": 36, "a_mapa": "cala_brava", "a_lugar": "cb_salida_este", "km": 25, "horas": 0.5, "desc": "La carretera de la costa hacia Cala Brava y Puerto Bravo."},
     {"id": "sl_salida_sur", "nombre": "Salida sur, carretera de Villaseca", "tipo": "salida", "bloque": [3, 0], "lado": "S", "pos": 60, "a_mapa": "villaseca", "a_lugar": "vs_salida_este", "km": 35, "horas": 0.8, "desc": "La carretera del interior, que cruza los campos hasta Villaseca."},
     {"id": "sl_embarcadero", "nombre": "Puerto deportivo de San Lucero", "tipo": "embarcadero", "bloque": [1, 4], "lado": "N", "pos": 36, "a_mapa": "mar", "a_lugar": "mar_sanlucero", "desc": "Pantalanes llenos de veleros. Desde aquí se sale al Mar de Poniente."},
@@ -25,9 +25,9 @@
     {"id": "sl_mercado", "nombre": "Mercado de Abastos", "tipo": "tienda", "bloque": [1, 0], "lado": "N", "pos": 36, "desc": "El mercado de San Lucero. Doña Remedios, la del puesto de especias, manda aquí más que el alcalde."},
     {"id": "sl_universidad", "nombre": "Universidad de San Lucero", "tipo": "monumento", "bloque": [4, 3], "xy": [36, 36], "desc": ""},
     {"id": "sl_catedral", "nombre": "Catedral de San Lucero", "tipo": "monumento", "bloque": [1, 1], "xy": [36, 52], "sonido": "lugar_iglesia", "desc": ""},
-    {"id": "sl_fuente", "nombre": "Fuente de los Leones", "tipo": "monumento", "bloque": [1, 1], "xy": [36, 18], "sonido": "lugar_fuente", "desc": ""},
+    {"id": "sl_fuente", "fuente": true, "nombre": "Fuente de los Leones", "tipo": "monumento", "bloque": [1, 1], "xy": [36, 18], "sonido": "lugar_fuente", "desc": ""},
     {"id": "sl_bingo", "nombre": "Bingo La Suerte", "tipo": "casino", "bloque": [5, 1], "lado": "S", "pos": 36, "desc": "El bingo y casino de San Lucero. Lo controla El Caimán, el jefe de Los Lagartos.", "desc_conquistado": "El bingo y casino de San Lucero. Fue el negocio de El Caimán, el jefe de Los Lagartos, hasta que el barrio cambió de manos."},
-    {"id": "sl_hotel", "nombre": "Gran Hotel San Lucero", "tipo": "hotel", "bloque": [2, 1], "lado": "E", "pos": 36, "precio_noche": 90, "desc": "Un hotel señorial junto a la plaza de la Catedral."},
+    {"id": "sl_hotel", "cajero": true, "nombre": "Gran Hotel San Lucero", "tipo": "hotel", "bloque": [2, 1], "lado": "E", "pos": 36, "precio_noche": 90, "desc": "Un hotel señorial junto a la plaza de la Catedral."},
     {"id": "sl_banco", "nombre": "Caja de Ahorros de San Lucero", "tipo": "banco", "bloque": [3, 1], "lado": "N", "pos": 36, "desc": "Tu cuenta es la misma en todas las oficinas."},
     {"id": "sl_gimnasio", "nombre": "Polideportivo universitario", "tipo": "gimnasio", "bloque": [5, 3], "lado": "S", "pos": 30, "desc": "Pistas, pesas y piscina. Abierto a todo el mundo."},
     {"id": "sl_cine", "nombre": "Teatro Principal", "tipo": "cine", "bloque": [0, 0], "lado": "N", "pos": 36, "desc": "Un teatro antiguo reconvertido en cine."},
@@ -70,8 +70,8 @@
     {"id": "san_lucero_tranvia_7", "nombre": "Parada de tranvía de Calle Ancha, en La Marina", "tipo": "tranvia", "bloque": [0, 2], "lado": "S", "pos": 62, "desc": "Una marquesina con un banco y el cartel de la línea. El tranvía recorre San Lucero parando en todos los barrios.", "orden": 1},
     {"id": "san_lucero_tranvia_8", "nombre": "Parada de tranvía de Paseo del Muelle, en La Marina", "tipo": "tranvia", "bloque": [2, 4], "lado": "N", "pos": 62, "desc": "Una marquesina con un banco y el cartel de la línea. El tranvía recorre San Lucero parando en todos los barrios.", "orden": 8},
     {"id": "san_lucero_tren", "nombre": "Estación de tren de San Lucero", "tipo": "tren", "bloque": [3, 1], "lado": "N", "pos": 62, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
-    {"id": "san_lucero_aeropuerto", "nombre": "Aeropuerto de San Lucero", "tipo": "aeropuerto", "bloque": [5, 0], "lado": "S", "pos": 45, "precio": 180, "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."},
-    {"id": "sl_surtidor", "nombre": "Gasolinera de San Lucero", "tipo": "tienda", "surtidor": true, "bloque": [0, 3], "lado": "O", "pos": 36, "desc": "Surtidores bajo una marquesina y una tienda pequeña. Aquí se llena el depósito."}
+    {"id": "san_lucero_aeropuerto", "cajero": true, "nombre": "Aeropuerto de San Lucero", "tipo": "aeropuerto", "bloque": [5, 0], "lado": "S", "pos": 45, "precio": 180, "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."},
+    {"id": "sl_surtidor", "cajero": true, "nombre": "Gasolinera de San Lucero", "tipo": "tienda", "surtidor": true, "bloque": [0, 3], "lado": "O", "pos": 36, "desc": "Surtidores bajo una marquesina y una tienda pequeña. Aquí se llena el depósito."}
   ],
   "tren_eje": "H",
   "tren_n": 2,

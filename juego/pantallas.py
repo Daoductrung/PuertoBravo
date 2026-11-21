@@ -1,4 +1,5 @@
 """Pantallas especiales: explorador de mapa con cursor virtual y galería de tiro."""
+from .i18n import tr
 import math
 import random
 
@@ -36,17 +37,17 @@ class ExploradorMapa:
         self.k = -1
         self.foco = None
         px, py = self.p.pos()
-        aqui = " Estás aquí." if math.hypot(px - x, py - y) < (60 if self.mar else 46) else ""
+        aqui = tr(" Estás aquí.") if math.hypot(px - x, py - y) < (60 if self.mar else 46) else ""
         n = len(self.cerca)
-        lug = "ningún lugar cerca" if n == 0 else "1 lugar cerca" if n == 1 else f"{n} lugares cerca"
+        lug = tr("ningún lugar cerca") if n == 0 else tr("1 lugar cerca") if n == 1 else tr('{n} lugares cerca').format(n=(n))
         if self.mar:
             return f"{self.m.describir(x, y)}. {lug}.{aqui}"
         b = self.m.barrio(min(max(x, 1), self.m.ancho - 1), min(max(y, 1), self.m.alto - 1))
-        return f"Cruce de {self.m.calles[self.j]} con {self.m.avenidas[self.i]}. {b['nombre']}. {lug}.{aqui}"
+        return tr('Cruce de {v} con {v2}. {nombre}. {lug}.{aqui}').format(v=(self.m.calles[self.j]), v2=(self.m.avenidas[self.i]), nombre=(b['nombre']), lug=(lug), aqui=(aqui))
 
     def al_entrar(self):
-        self.app.decir("Explorador de mapa. Las flechas mueven el cursor de cruce en cruce. Tabulador recorre los lugares cercanos. "
-                       "Intro marca el destino en el GPS. D dice la distancia desde donde estás. Escape sale. " + self._describir(), True)
+        self.app.decir(tr("Explorador de mapa. Las flechas mueven el cursor de cruce en cruce. Tabulador recorre los lugares cercanos. "
+                       "Intro marca el destino en el GPS. D dice la distancia desde donde estás. Escape sale. ") + self._describir(), True)
 
     def tecla(self, ev):
         k = ev.key
@@ -60,7 +61,7 @@ class ExploradorMapa:
                     self.app.decir(self._describir(), True)
                 else:
                     self.app.son("menu_borde")
-                    self.app.decir("Fin del mapa.", True)
+                    self.app.decir(tr("Fin del mapa."), True)
             else:
                 ni, nj = self.i + mov[0], self.j + mov[1]
                 if 0 <= ni < self.m.NX and 0 <= nj < self.m.NY:
@@ -69,10 +70,10 @@ class ExploradorMapa:
                     self.app.decir(self._describir(), True)
                 else:
                     self.app.son("menu_borde")
-                    self.app.decir("Fin de la localidad.", True)
+                    self.app.decir(tr("Fin de la localidad."), True)
         elif k == pygame.K_TAB:
             if not self.cerca:
-                self.app.decir("No hay lugares junto a este punto.", True)
+                self.app.decir(tr("No hay lugares junto a este punto."), True)
                 return
             paso = -1 if ev.mod & pygame.KMOD_SHIFT else 1
             self.k = (self.k + paso) % len(self.cerca)
@@ -80,9 +81,9 @@ class ExploradorMapa:
             self.foco = l
             x, y = self._xy()
             d = math.hypot(l.x - x, l.y - y)
-            visto = "" if l.id in self.p.j.visitados else ", sin visitar"
+            visto = "" if l.id in self.p.j.visitados else tr(", sin visitar")
             self.app.son("menu_mover")
-            self.app.decir(f"{l.nombre}, {M.metros(d)} al {M.cardinal(M.rumbo_a(l.x - x, l.y - y))} del cursor{visto}. {self.k + 1} de {len(self.cerca)}.", True)
+            self.app.decir(tr('{nombre}, {metros} al {cardinal} del cursor{visto}. {v} de {len}.').format(nombre=(l.nombre), metros=(M.metros(d)), cardinal=(M.cardinal(M.rumbo_a(l.x - x, l.y - y))), visto=(visto), v=(self.k + 1), len=(len(self.cerca))), True)
         elif k in (pygame.K_RETURN, pygame.K_KP_ENTER):
             self.app.son("menu_ok")
             self.app.cerrar(self)
@@ -90,11 +91,11 @@ class ExploradorMapa:
                 self.p.gps_a_lugar(self.foco)
             else:
                 x, y = self._xy()
-                nombre = "el punto marcado" if self.mar else f"el cruce de {self.m.calles[self.j]} con {self.m.avenidas[self.i]}"
+                nombre = tr("el punto marcado") if self.mar else tr('el cruce de {v} con {v2}').format(v=(self.m.calles[self.j]), v2=(self.m.avenidas[self.i]))
                 self.p.fijar_gps(x, y, nombre, radio=30 if self.mar else 12)
         elif k == pygame.K_d:
             x, y = self._xy()
-            self.app.decir("El cursor está: " + self.p.situar(x, y, "este punto") + ".", True)
+            self.app.decir(tr("El cursor está: ") + self.p.situar(x, y, tr("este punto")) + ".", True)
         elif k == pygame.K_n:
             if self.foco:
                 self.app.decir(f"{self.foco.nombre}. {self.foco.desc}", True)
@@ -108,10 +109,10 @@ class ExploradorMapa:
                 self.x, self.y = round(px / 100.0) * 100.0, round(py / 100.0) * 100.0
             else:
                 self.i, self.j = self.m._idx(px, self.m.NX), self.m._idx(py, self.m.NY)
-            self.app.decir("Cursor en tu posición. " + self._describir(), True)
+            self.app.decir(tr("Cursor en tu posición. ") + self._describir(), True)
         elif k == pygame.K_F1:
-            self.app.decir("Flechas: mover el cursor. Tabulador: lugares cercanos al cursor. N: descripción. D: distancia desde tu posición. "
-                           "Inicio: volver a donde estás. Intro: marcar en el GPS. Escape: salir.", True)
+            self.app.decir(tr("Flechas: mover el cursor. Tabulador: lugares cercanos al cursor. N: descripción. D: distancia desde tu posición. "
+                           "Inicio: volver a donde estás. Intro: marcar en el GPS. Escape: salir."), True)
         elif k == pygame.K_ESCAPE:
             self.app.son("menu_atras")
             self.app.cerrar(self)
@@ -135,8 +136,8 @@ class TiroAlBlanco:
         self.dir = 0
 
     def al_entrar(self):
-        self.app.decir("Galería de tiro. Sonarán diez dianas: a la izquierda, al centro o a la derecha. "
-                       "Pulsa enseguida flecha izquierda, flecha arriba o flecha derecha según de dónde venga el sonido. Preparados.", True)
+        self.app.decir(tr("Galería de tiro. Sonarán diez dianas: a la izquierda, al centro o a la derecha. "
+                       "Pulsa enseguida flecha izquierda, flecha arriba o flecha derecha según de dónde venga el sonido. Preparados."), True)
         self.t = 9.0
 
     def _siguiente(self):
@@ -153,12 +154,12 @@ class TiroAlBlanco:
         premio = p.precio("tiro_premio_9", 200) if n >= 9 else p.precio("tiro_premio_7", 80) if n >= 7 else 0
         self.app.cerrar(self)
         p.ganar_xp("punteria", n * 6)
-        txt = f"Fin de la tanda: {n} dianas de {self.RONDAS}."
+        txt = tr('Fin de la tanda: {n} dianas de {RONDAS}.').format(n=(n), RONDAS=(self.RONDAS))
         if premio:
             p.dar_dinero(premio)
-            txt += f" Premio de {premio} euros."
+            txt += tr(' Premio de {premio} euros.').format(premio=(premio))
         else:
-            txt += " Con siete o más hay premio."
+            txt += tr(" Con siete o más hay premio.")
         p.decir(txt, True)
 
     def actualizar(self, dt):
@@ -181,7 +182,7 @@ class TiroAlBlanco:
         k = ev.key
         if k == pygame.K_ESCAPE:
             self.app.cerrar(self)
-            self.p.decir("Dejas la galería de tiro.", True)
+            self.p.decir(tr("Dejas la galería de tiro."), True)
             return
         d = {pygame.K_LEFT: -1, pygame.K_UP: 0, pygame.K_RIGHT: 1}.get(k)
         if d is None:
@@ -218,8 +219,8 @@ class SimonSonoro:
         self.k = 0
 
     def al_entrar(self):
-        self.app.decir("Memoria de sonidos. Cada flecha tiene su nota: arriba la más aguda, abajo la más grave, derecha e izquierda suenan por su lado. "
-                       "Escucha la secuencia y repítela. Cada ronda añade una nota. Pulsa una flecha para probarlas, y empezamos.", True)
+        self.app.decir(tr("Memoria de sonidos. Cada flecha tiene su nota: arriba la más aguda, abajo la más grave, derecha e izquierda suenan por su lado. "
+                       "Escucha la secuencia y repítela. Cada ronda añade una nota. Pulsa una flecha para probarlas, y empezamos."), True)
 
     def _tocar(self, n):
         self.app.son(f"simon_{n}", pan=self.PAN[n], vol=0.9)
@@ -236,12 +237,12 @@ class SimonSonoro:
         premio = p.precio("memoria_premio_12", 1000) if rondas >= 12 else p.precio("memoria_premio_8", 250) if rondas >= 8 else p.precio("memoria_premio_5", 60) if rondas >= 5 else 0
         self.app.cerrar(self)
         p.j.stats["simon"] = max(p.j.stats.get("simon", 0), rondas)
-        txt = f"Fallo. Has aguantado {rondas} rondas."
+        txt = tr('Fallo. Has aguantado {rondas} rondas.').format(rondas=(rondas))
         if premio:
             p.dar_dinero(premio)
-            txt += f" Premio de {premio} euros."
+            txt += tr(' Premio de {premio} euros.').format(premio=(premio))
         else:
-            txt += " Con cinco rondas hay premio."
+            txt += tr(" Con cinco rondas hay premio.")
         p.decir(txt, True)
 
     def actualizar(self, dt):
@@ -266,7 +267,7 @@ class SimonSonoro:
     def tecla(self, ev):
         if ev.key == pygame.K_ESCAPE:
             self.app.cerrar(self)
-            self.p.decir("Dejas la máquina.", True)
+            self.p.decir(tr("Dejas la máquina."), True)
             return
         n = self.TECLAS.get(ev.key)
         if n is None:
@@ -330,9 +331,8 @@ class BuscaTesoro:
         self.empezado = False
 
     def al_entrar(self):
-        que = "Buceas hasta el fondo" if self.buceo else "Enciendes el detector de metales"
-        self.app.decir(f"{que}. Muévete con las flechas: el pitido suena más rápido y más agudo cuanto más cerca estás del tesoro, y sale del lado donde está. "
-                       f"Cuando creas que estás encima, pulsa Intro para {'buscar entre la arena' if self.buceo else 'cavar'}. Tienes 45 segundos y tres intentos.", True)
+        que = tr("Buceas hasta el fondo") if self.buceo else tr("Enciendes el detector de metales")
+        self.app.decir(tr('{que}. Muévete con las flechas: el pitido suena más rápido y más agudo cuanto más cerca estás del tesoro, y sale del lado donde está. Cuando creas que estás encima, pulsa Intro para {v}. Tienes 45 segundos y tres intentos.').format(que=(que), v=(tr('buscar entre la arena') if self.buceo else tr('cavar'))), True)
 
     def _dist(self):
         return math.hypot(self.tx - self.x, self.ty - self.y)
@@ -342,7 +342,7 @@ class BuscaTesoro:
             return
         self.tiempo -= dt
         if self.tiempo <= 0:
-            self._fin(False, "Se acabó el aire. Subes con las manos vacías." if self.buceo else "Se acabó la batería del detector.")
+            self._fin(False, tr("Se acabó el aire. Subes con las manos vacías.") if self.buceo else tr("Se acabó la batería del detector."))
             return
         self.t_ping -= dt
         if self.t_ping <= 0:
@@ -360,8 +360,8 @@ class BuscaTesoro:
             p.son("recoger", cat="interfaz")
             p.dar_dinero(premio)
             p.app.vibrar(0.6, 1.0, 400)
-            cosa = random.choice(["un cofre pequeño", "un collar de perlas", "unas monedas antiguas", "un reloj de oro", "una figura de plata"])
-            p.decir(f"¡Encuentras {cosa}! Vale {premio} euros.", True)
+            cosa = random.choice([tr("un cofre pequeño"), tr("un collar de perlas"), tr("unas monedas antiguas"), tr("un reloj de oro"), tr("una figura de plata")])
+            p.decir(tr('¡Encuentras {cosa}! Vale {premio} euros.').format(cosa=(cosa), premio=(premio)), True)
         else:
             p.decir(texto, True)
 
@@ -385,15 +385,15 @@ class BuscaTesoro:
                 self.intentos -= 1
                 self.app.son("error", vol=0.5)
                 if self.intentos <= 0:
-                    self._fin(False, "Nada. Te has quedado sin intentos.")
+                    self._fin(False, tr("Nada. Te has quedado sin intentos."))
                 else:
                     d = self._dist()
-                    pista = "Estás al lado." if d < 1.6 else "Estás cerca." if d < 3 else "Estás lejos."
-                    self.app.decir(f"Aquí no hay nada. {pista} Te quedan {self.intentos} intentos y {int(self.tiempo)} segundos.", True)
+                    pista = tr("Estás al lado.") if d < 1.6 else tr("Estás cerca.") if d < 3 else tr("Estás lejos.")
+                    self.app.decir(tr('Aquí no hay nada. {pista} Te quedan {intentos} intentos y {int} segundos.').format(pista=(pista), intentos=(self.intentos), int=(int(self.tiempo))), True)
         elif k == pygame.K_ESCAPE:
-            self._fin(False, "Lo dejas.")
+            self._fin(False, tr("Lo dejas."))
         elif k == pygame.K_F1:
-            self.app.decir(f"Flechas para moverte, Intro para buscar. Te quedan {self.intentos} intentos y {int(self.tiempo)} segundos.", True)
+            self.app.decir(tr('Flechas para moverte, Intro para buscar. Te quedan {intentos} intentos y {int} segundos.').format(intentos=(self.intentos), int=(int(self.tiempo))), True)
 
 
 class Viaje:
@@ -425,9 +425,9 @@ class Viaje:
             app.son({"tren": "tren_silbato", "tranvia": "tranvia_campana", "avion": "avion_despegue", "avioneta": "puerta_coche"}[self.medio], vol=0.7)
             self.motor = app.son("motor_avioneta" if self.medio == "avioneta" else self.medio, bucle=True, vol=0.45)
             self.canales = [self.motor]
-            app.decir({"tren": "El tren sale de la estación", "tranvia": "El tranvía arranca", "avion": "El avión acelera por la pista y despega",
-                       "avioneta": "La avioneta carretea por la pista y despega"}[self.medio] +
-                      f", camino de {self.destino}. Pulsa Intro si quieres llegar ya.", True)
+            app.decir({"tren": tr("El tren sale de la estación"), "tranvia": tr("El tranvía arranca"), "avion": tr("El avión acelera por la pista y despega"),
+                       "avioneta": tr("La avioneta carretea por la pista y despega")}[self.medio] +
+                      tr(', camino de {destino}. Pulsa Intro si quieres llegar ya.').format(destino=(self.destino)), True)
             return
         app.son("puerta_coche")
         if self.vuelo:
@@ -442,9 +442,9 @@ class Viaje:
             emisora = app.radio.sintonizar(random.randrange(1, n)) if n > 1 else ""
         except Exception:
             emisora = ""
-        quien = "El helicóptero despega" if self.vuelo else "El autobús arranca" if self.autobus else "Subes al taxi"
-        radio = f" En la radio, {emisora}." if emisora else ""
-        app.decir(f"{quien}, camino de {self.destino}.{radio} Pulsa Intro si quieres llegar ya.", True)
+        quien = tr("El helicóptero despega") if self.vuelo else tr("El autobús arranca") if self.autobus else tr("Subes al taxi")
+        radio = tr(' En la radio, {emisora}.').format(emisora=(emisora)) if emisora else ""
+        app.decir(tr('{quien}, camino de {destino}.{radio} Pulsa Intro si quieres llegar ya.').format(quien=(quien), destino=(self.destino), radio=(radio)), True)
 
     def _fin(self):
         if self.hecho:
@@ -464,7 +464,7 @@ class Viaje:
         if ev.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
             self._fin()
         else:
-            self.app.decir(f"Vas de camino a {self.destino}. Quedan unos {max(1, int(self.total - self.t))} segundos. Intro para llegar ya.", True)
+            self.app.decir(tr('Vas de camino a {destino}. Quedan unos {max} segundos. Intro para llegar ya.').format(destino=(self.destino), max=(max(1, int(self.total - self.t)))), True)
 
     def actualizar(self, dt):
         if self.hecho:
@@ -482,7 +482,7 @@ class Viaje:
         self._tren_al_lado(dt, f)
         if not self.avisado and f >= 0.8:
             self.avisado = True
-            self.app.decir("El avión empieza a bajar." if self.medio == "avion" else "La avioneta empieza a bajar hacia la pista." if self.medio == "avioneta" else "Próxima estación." if self.medio == "tren" else "Próxima parada." if self.medio else "Empezáis a bajar." if self.vuelo else "Ya casi estás." if not self.autobus else "Próxima parada.")
+            self.app.decir(tr("El avión empieza a bajar.") if self.medio == "avion" else tr("La avioneta empieza a bajar hacia la pista.") if self.medio == "avioneta" else tr("Próxima estación.") if self.medio == "tren" else tr("Próxima parada.") if self.medio else tr("Empezáis a bajar.") if self.vuelo else tr("Ya casi estás.") if not self.autobus else tr("Próxima parada."))
         if self.t >= self.total:
             self._fin()
 
@@ -499,7 +499,7 @@ class Viaje:
                 c = self.app.son("tren", bucle=True, vol=0.05, pan=-0.9 * lado)
                 self.canales.append(c)
                 self.tren_paso = {"t": 0.0, "canal": c, "lado": lado}
-                self.app.decir("Un tren alcanza al autobús por la vía que va junto a la carretera.")
+                self.app.decir(tr("Un tren alcanza al autobús por la vía que va junto a la carretera."))
             return
         if t["canal"] is None:
             return
@@ -547,8 +547,7 @@ class LineaTranvia:
         app.son("tranvia_campana", vol=0.7)
         self.motor = app.son("tranvia", bucle=True, vol=0.45)
         final = self.paradas[-1]
-        app.decir(f"Subes al tranvía. Vas hasta {self.nombre(final)}, {len(self.paradas)} {'parada' if len(self.paradas) == 1 else 'paradas'}. "
-                  f"La primera: {self.nombre(self.paradas[0])}. Pulsa Intro cuando quieras bajarte en la próxima.", True)
+        app.decir(tr('Subes al tranvía. Vas hasta {nombre}, {len} {v}. La primera: {nombre2}. Pulsa Intro cuando quieras bajarte en la próxima.').format(nombre=(self.nombre(final)), len=(len(self.paradas)), v=(tr('parada') if len(self.paradas) == 1 else tr('paradas')), nombre2=(self.nombre(self.paradas[0]))), True)
 
     def tecla(self, ev):
         if self.hecho:
@@ -557,10 +556,9 @@ class LineaTranvia:
         if ev.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
             self.bajar = True
             self.app.son("menu_ok")
-            self.app.decir(f"Te bajas en la próxima: {self.nombre(prox)}.", True)
+            self.app.decir(tr('Te bajas en la próxima: {nombre}.').format(nombre=(self.nombre(prox))), True)
         else:
-            self.app.decir(f"Vas en el tranvía. Próxima parada: {self.nombre(prox)}, en unos {max(1, int(self.tramo - self.t))} segundos. "
-                           f"{'Te bajas en ella.' if self.bajar or self.i == len(self.paradas) - 1 else 'Intro para bajarte en ella.'}", True)
+            self.app.decir(tr('Vas en el tranvía. Próxima parada: {nombre}, en unos {max} segundos. {v}').format(nombre=(self.nombre(prox)), max=(max(1, int(self.tramo - self.t))), v=(tr('Te bajas en ella.') if self.bajar or self.i == len(self.paradas) - 1 else tr('Intro para bajarte en ella.'))), True)
 
     def actualizar(self, dt):
         if self.hecho:
@@ -580,7 +578,7 @@ class LineaTranvia:
         self.t = 0.0
         self.tramo = self._duracion(self.i)
         self.app.son("tranvia_campana", vol=0.6)
-        self.app.decir(f"{self.nombre(parada)}. Próxima parada: {self.nombre(self.paradas[self.i])}.")
+        self.app.decir(tr('{nombre}. Próxima parada: {nombre2}.').format(nombre=(self.nombre(parada)), nombre2=(self.nombre(self.paradas[self.i]))))
 
     def _fin(self, parada):
         if self.hecho:

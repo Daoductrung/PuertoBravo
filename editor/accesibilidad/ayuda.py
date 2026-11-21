@@ -19,6 +19,7 @@ PLANTILLA del agente «accesibilidad-wx».
 
 from __future__ import annotations
 
+from juego.i18n import tr
 import builtins
 import unicodedata
 
@@ -44,28 +45,28 @@ _NOMBRES_GENERICOS = {
 
 # Ayuda por palabra clave de la etiqueta de un botón (lo más específico primero).
 _AYUDA_POR_ETIQUETA: tuple[tuple[tuple[str, ...], str], ...] = (
-	(("seleccionar todo", "marcar todo", "marcar todas", "marcar todos"), "Marca todos los elementos de la lista."),
-	(("desmarcar", "ninguno", "ninguna"), "Desmarca todos los elementos de la lista."),
-	(("examinar", "seleccionar...", "elegir"), "Abre un cuadro para elegir un archivo o una carpeta."),
-	(("vista previa", "previsualizar"), "Muestra una vista previa antes de aplicar los cambios."),
-	(("restablecer", "restaurar"), "Vuelve a los valores de fábrica."),
-	(("comprobar", "probar", "verificar", "detectar"), "Comprueba el estado y muestra el resultado, sin cambiar nada."),
-	(("actualizar", "refrescar", "recargar"), "Vuelve a cargar la información más reciente."),
-	(("copiar",), "Copia la información al portapapeles."),
-	(("exportar",), "Guarda la información en un archivo."),
-	(("importar",), "Carga información desde un archivo."),
-	(("abrir carpeta", "abrir la carpeta"), "Abre la carpeta en el Explorador de Windows."),
-	(("abrir",), "Abre el elemento seleccionado."),
-	(("detalles", "propiedades", "ficha"), "Muestra la información completa del elemento seleccionado."),
-	(("agregar", "añadir", "nuevo", "nueva"), "Crea un elemento nuevo."),
-	(("editar", "modificar"), "Edita el elemento seleccionado."),
-	(("eliminar", "borrar", "quitar"), "Elimina el elemento seleccionado; pide confirmación."),
-	(("buscar",), "Busca con el texto y los filtros indicados."),
-	(("guardar", "aplicar"), "Guarda los cambios realizados."),
-	(("aceptar",), "Acepta los cambios y cierra la ventana."),
-	(("cancelar",), "Cierra la ventana sin guardar los cambios."),
-	(("cerrar",), "Cierra esta ventana."),
-	(("ayuda",), "Muestra la ayuda."),
+	((tr("seleccionar todo"), tr("marcar todo"), tr("marcar todas"), tr("marcar todos")), tr("Marca todos los elementos de la lista.")),
+	(("desmarcar", "ninguno", "ninguna"), tr("Desmarca todos los elementos de la lista.")),
+	(("examinar", "seleccionar...", "elegir"), tr("Abre un cuadro para elegir un archivo o una carpeta.")),
+	((tr("vista previa"), "previsualizar"), tr("Muestra una vista previa antes de aplicar los cambios.")),
+	(("restablecer", "restaurar"), tr("Vuelve a los valores de fábrica.")),
+	(("comprobar", "probar", "verificar", "detectar"), tr("Comprueba el estado y muestra el resultado, sin cambiar nada.")),
+	(("actualizar", "refrescar", "recargar"), tr("Vuelve a cargar la información más reciente.")),
+	(("copiar",), tr("Copia la información al portapapeles.")),
+	(("exportar",), tr("Guarda la información en un archivo.")),
+	(("importar",), tr("Carga información desde un archivo.")),
+	((tr("abrir carpeta"), tr("abrir la carpeta")), tr("Abre la carpeta en el Explorador de Windows.")),
+	(("abrir",), tr("Abre el elemento seleccionado.")),
+	(("detalles", "propiedades", "ficha"), tr("Muestra la información completa del elemento seleccionado.")),
+	(("agregar", "añadir", "nuevo", "nueva"), tr("Crea un elemento nuevo.")),
+	(("editar", "modificar"), tr("Edita el elemento seleccionado.")),
+	(("eliminar", "borrar", "quitar"), tr("Elimina el elemento seleccionado; pide confirmación.")),
+	(("buscar",), tr("Busca con el texto y los filtros indicados.")),
+	(("guardar", "aplicar"), tr("Guarda los cambios realizados.")),
+	(("aceptar",), tr("Acepta los cambios y cierra la ventana.")),
+	(("cancelar",), tr("Cierra la ventana sin guardar los cambios.")),
+	(("cerrar",), tr("Cierra esta ventana.")),
+	(("ayuda",), tr("Muestra la ayuda.")),
 )
 
 
@@ -86,42 +87,42 @@ def _ayuda_por_etiqueta(control: wx.Window) -> str:
 def ayuda_generica(control: wx.Window) -> str:
 	"""Ayuda de reserva según el tipo de control (el orden importa: subclases primero)."""
 	if isinstance(control, wx.Button):
-		return _ayuda_por_etiqueta(control) or _("Botón. Actívelo con la barra espaciadora o Intro.")
+		return _ayuda_por_etiqueta(control) or _(tr("Botón. Actívelo con la barra espaciadora o Intro."))
 	if isinstance(control, wx.CheckListBox):
-		return _("Lista de casillas. Muévase con las flechas y marque o desmarque con la barra espaciadora.")
+		return _(tr("Lista de casillas. Muévase con las flechas y marque o desmarque con la barra espaciadora."))
 	if isinstance(control, wx.CheckBox):
-		return _("Casilla de verificación. Márquela o desmárquela con la barra espaciadora.")
+		return _(tr("Casilla de verificación. Márquela o desmárquela con la barra espaciadora."))
 	if isinstance(control, wx.RadioButton):
-		return _("Botón de opción. Elija entre las opciones del grupo con las flechas.")
+		return _(tr("Botón de opción. Elija entre las opciones del grupo con las flechas."))
 	if isinstance(control, (wx.SpinCtrl, wx.SpinCtrlDouble)):
-		return _("Campo numérico. Escriba un número o cámbielo con las flechas arriba y abajo.")
+		return _(tr("Campo numérico. Escriba un número o cámbielo con las flechas arriba y abajo."))
 	if isinstance(control, (wx.Choice, wx.ComboBox)):
-		return _("Lista desplegable. Ábrala con Alt+flecha abajo y elija con las flechas.")
+		return _(tr("Lista desplegable. Ábrala con Alt+flecha abajo y elija con las flechas."))
 	if isinstance(control, wx.TextCtrl):
 		if not control.IsEditable():
-			return _("Texto de solo lectura. Recórralo con las flechas y cópielo si lo necesita.")
-		return _("Campo de texto. Escriba aquí el valor.")
+			return _(tr("Texto de solo lectura. Recórralo con las flechas y cópielo si lo necesita."))
+		return _(tr("Campo de texto. Escriba aquí el valor."))
 	if isinstance(control, wx.ListCtrl):
 		return _(
-			"Lista. Arriba y abajo cambian de elemento; izquierda y derecha recorren las columnas; "
-			"Control más un número lee esa columna; Intro abre el elemento."
+			tr("Lista. Arriba y abajo cambian de elemento; izquierda y derecha recorren las columnas; "
+			"Control más un número lee esa columna; Intro abre el elemento.")
 		)
 	if isinstance(control, wx.ListBox):
-		return _("Lista de opciones. Elija con las flechas.")
+		return _(tr("Lista de opciones. Elija con las flechas."))
 	if isinstance(control, wx.TreeCtrl):
-		return _("Árbol. Muévase con las flechas; derecha despliega una rama e izquierda la pliega.")
+		return _(tr("Árbol. Muévase con las flechas; derecha despliega una rama e izquierda la pliega."))
 	if isinstance(control, (wx.DirPickerCtrl, wx.FilePickerCtrl)):
-		return _("Selector de ruta. Escriba la ruta o use el botón Seleccionar.")
+		return _(tr("Selector de ruta. Escriba la ruta o use el botón Seleccionar."))
 	if isinstance(control, wx.adv.DatePickerCtrl):
-		return _("Selector de fecha. Cambie día, mes y año con las flechas.")
+		return _(tr("Selector de fecha. Cambie día, mes y año con las flechas."))
 	if isinstance(control, wx.adv.TimePickerCtrl):
-		return _("Selector de hora. Cambie horas y minutos con las flechas.")
+		return _(tr("Selector de hora. Cambie horas y minutos con las flechas."))
 	if isinstance(control, wx.Slider):
-		return _("Control deslizante. Cambie el valor con las flechas; Re Pág y Av Pág dan saltos mayores.")
+		return _(tr("Control deslizante. Cambie el valor con las flechas; Re Pág y Av Pág dan saltos mayores."))
 	if isinstance(control, wx.Gauge):
-		return _("Barra de progreso. Indica cuánto se ha completado.")
+		return _(tr("Barra de progreso. Indica cuánto se ha completado."))
 	if isinstance(control, wx.Notebook):
-		return _("Pestañas. Cambie de pestaña con Control+Tab o con las flechas.")
+		return _(tr("Pestañas. Cambie de pestaña con Control+Tab o con las flechas."))
 	return ""
 
 
@@ -159,14 +160,14 @@ def describir_control_enfocado(ventana: wx.Window | None = None) -> None:
 	"""Acción de Ctrl+H: dice el nombre y la ayuda del control con el foco."""
 	control = wx.Window.FindFocus()
 	if control is None:
-		voz.hablar(_("No hay ningún control con el foco."), canal=voz.NAVEGACION)
+		voz.hablar(_(tr("No hay ningún control con el foco.")), canal=voz.NAVEGACION)
 		return
-	nombre = nombre_para_anunciar(control) or _("Este control")
+	nombre = nombre_para_anunciar(control) or _(tr("Este control"))
 	ayuda = ayuda_efectiva(control)
 	if ayuda:
 		voz.hablar(_("{nombre}. {ayuda}").format(nombre=nombre, ayuda=ayuda), canal=voz.NAVEGACION)
 	else:
-		voz.hablar(_("{nombre}. No hay ayuda para este control.").format(nombre=nombre), canal=voz.NAVEGACION)
+		voz.hablar(_(tr("{nombre}. No hay ayuda para este control.")).format(nombre=nombre), canal=voz.NAVEGACION)
 
 
 _INTERACTIVOS = (

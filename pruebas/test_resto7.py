@@ -232,6 +232,6 @@ def test_sonidos_nuevos_en_todos_los_packs():
     aprendidos = {s for s, _, _ in ayuda.SONIDOS}
     assert set(nuevos) <= aprendidos
     assert sintesis.es_bucle("tren") and sintesis.es_bucle("tranvia") and sintesis.es_bucle("bajo_agua") and sintesis.es_bucle("avion") and not sintesis.es_bucle("brazada")
-    doc = open(os.path.join(rutas.DATA, "docs", "cambiar_sonidos.html"), encoding="utf-8").read()
+    doc = open(os.path.join(rutas.DATA, "docs", "cambiar_sonidos_es.html"), encoding="utf-8").read()
     for n in nuevos:
         assert f"<code>{n}</code>" in doc, n

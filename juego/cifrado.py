@@ -16,6 +16,7 @@ estándar de Python: no añade dependencias.
 Formato: MARCA (8 bytes) + sal (16) + firma HMAC-SHA256 (32) + datos. Los datos son el JSON en UTF-8,
 comprimido con zlib y combinado (XOR) con un flujo de bytes generado con SHA-256 en modo contador.
 """
+from .i18n import tr
 import hashlib
 import hmac
 import json
@@ -56,12 +57,12 @@ def cifrar(objeto):
 
 def descifrar(datos):
     if not datos.startswith(MARCA) or len(datos) < len(MARCA) + 48:
-        raise ValueError("El archivo no tiene el formato protegido del juego.")
+        raise ValueError(tr("El archivo no tiene el formato protegido del juego."))
     sal = datos[len(MARCA):len(MARCA) + 16]
     firma = datos[len(MARCA) + 16:len(MARCA) + 48]
     cuerpo = datos[len(MARCA) + 48:]
     if not hmac.compare_digest(firma, hmac.new(_clave(sal, b"firma"), cuerpo, hashlib.sha256).digest()):
-        raise ValueError("El archivo está dañado o ha sido modificado.")
+        raise ValueError(tr("El archivo está dañado o ha sido modificado."))
     return json.loads(zlib.decompress(_xor(cuerpo, _flujo(_clave(sal, b"cifra"), len(cuerpo)))).decode("utf-8"))
 
 

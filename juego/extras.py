@@ -1,4 +1,5 @@
 """Actividades libres: pesca, atracos a peatones, guardaespaldas, sirenas y lotería."""
+from .i18n import tr
 import math
 import random
 
@@ -13,21 +14,21 @@ class Extras:
         if self.pesca:
             self.pesca = None
             self.son("carrete", vol=0.5)
-            self.decir("Recoges el sedal.", True)
+            self.decir(tr("Recoges el sedal."), True)
             return
         if j.veh and abs(j.veh.vel) > 1.5:
-            self.decir("Detén el barco para pescar.", True)
+            self.decir(tr("Detén el barco para pescar."), True)
             return
         self.pesca = {"fase": "espera", "t": random.uniform(3, 10) * (1 - 0.05 * self.nivel("pesca")), "muelle": desde_muelle, "x": self.pos()[0], "y": self.pos()[1]}
         self.son("pesca_lanzar", vol=0.7)
-        self.decir("Lanzas el anzuelo. Cuando oigas que pican, pulsa Espacio enseguida. No te muevas.", True)
+        self.decir(tr("Lanzas el anzuelo. Cuando oigas que pican, pulsa Espacio enseguida. No te muevas."), True)
 
     def actualizar_pesca(self, dt):
         ps = self.pesca
         x, y = self.pos()
         if math.hypot(x - ps["x"], y - ps["y"]) > 4:
             self.pesca = None
-            self.decir("Al moverte pierdes el sedal.")
+            self.decir(tr("Al moverte pierdes el sedal."))
             return
         ps["t"] -= dt
         if ps["t"] > 0:
@@ -40,29 +41,29 @@ class Extras:
         else:
             self.pesca = None
             self.son("salpicadura", vol=0.5)
-            self.decir("Se te ha escapado. Pulsa P para lanzar otra vez.")
+            self.decir(tr("Se te ha escapado. Pulsa P para lanzar otra vez."))
 
     def tirar_pesca(self):
         ps = self.pesca
         if ps["fase"] != "pica":
             self.pesca = None
             self.son("carrete", vol=0.5)
-            self.decir("Has tirado antes de tiempo y espantas a los peces.", True)
+            self.decir(tr("Has tirado antes de tiempo y espantas a los peces."), True)
             return
         self.pesca = None
-        peces = self.datos.get("peces") or [{"nombre": "Sardina", "valor": 5, "peso": 10}]
+        peces = self.datos.get("peces") or [{"nombre": tr("Sardina"), "valor": 5, "peso": 10}]
         if ps["muelle"]:
             peces = [p for p in peces if p.get("valor", 0) <= 40] or peces
         pez = random.choices(peces, weights=[p.get("peso", 1) for p in peces])[0]
         self.son("carrete", vol=0.6)
         self.son("salpicadura", vol=0.6)
         if pez.get("valor", 0) <= 0:
-            self.decir(f"Sacas {pez['nombre']}. No vale nada.", True)
+            self.decir(tr('Sacas {nombre}. No vale nada.').format(nombre=(pez['nombre'])), True)
             return
         self.j.pescado.append({"nombre": pez["nombre"], "valor": int(pez["valor"] * random.uniform(0.8, 1.3) * (1 + 0.05 * self.nivel("pesca")))})
         self.ganar_xp("pesca", 25)
         self.j.stats["peces"] = self.j.stats.get("peces", 0) + 1
-        self.decir(f"¡Has pescado {pez['nombre']}! Llevas {len(self.j.pescado)} capturas. Véndelas en una pescadería o en la lonja.", True)
+        self.decir(tr('¡Has pescado {nombre}! Llevas {len} capturas. Véndelas en una pescadería o en la lonja.').format(nombre=(pez['nombre']), len=(len(self.j.pescado))), True)
 
     # ------------------------------------------------------ atracar peatones
     def atracar_peaton(self):
@@ -76,14 +77,14 @@ class Extras:
             self.ofrecer_mercancia()
             return
         if not cerca:
-            self.decir("No hay ningún peatón a tu lado.", True)
+            self.decir(tr("No hay ningún peatón a tu lado."), True)
             return
         if self.arma()["id"] == "punos":
-            self.decir("Para atracar a alguien tienes que empuñar un arma.", True)
+            self.decir(tr("Para atracar a alguien tienes que empuñar un arma."), True)
             return
         p = min(cerca, key=lambda p: p.dist(j.x, j.y))
         if getattr(p, "atracado", False):
-            self.decir("A ese ya le has quitado todo.", True)
+            self.decir(tr("A ese ya le has quitado todo."), True)
             return
         p.atracado = True
         self.sv_peaton_atracado(p)
@@ -94,20 +95,21 @@ class Extras:
             p.estado = "ataca"
             p.arma = "navaja"
             p.tipo = "enemigo"
-            p.nombre = "Peatón armado"
-            self.decir("¡Este no se deja! Saca una navaja.", True)
+            p.nombre = tr("Peatón armado")
+            self.decir(tr("¡Este no se deja! Saca una navaja."), True)
             return
         botin = random.randint(5, 70)
         self.hon_negro(botin)
         self.dar_dinero(botin)
-        self.decir(f"El peatón te da la cartera: {botin} euros, y sale corriendo.", True)
+        self.decir(tr('El peatón te da la cartera: {botin} euros, y sale corriendo.').format(botin=(botin)), True)
+        self.moc_botin("atraco")                                 # a veces, algo más: un móvil, un reloj... (mochila.py)
         self.delito(2, "atraco", siempre=random.random() < 0.3)
 
     # ---------------------------------------------------------- guardaespaldas
     def crear_aliado(self):
         x, y = self.pos()
         px, py = self.mundo.punto_libre(x + random.uniform(-2, 2), y + random.uniform(-2, 2))
-        a = Persona("aliado", px, py, "Guardaespaldas")
+        a = Persona("aliado", px, py, tr("Guardaespaldas"))
         a.salud = 140.0
         a.arma = "pistola"
         a.estado = "sigue"
@@ -152,10 +154,10 @@ class Extras:
         if self.sirena_propia:
             self.sirena_propia.parar()
             self.sirena_propia = None
-            self.decir("Sirena apagada.", True)
+            self.decir(tr("Sirena apagada."), True)
         else:
             self.sirena_propia = self.son(self.j.veh.modelo.get("sirena"), bucle=True, vol=0.35)
-            self.decir("Sirena encendida.", True)
+            self.decir(tr("Sirena encendida."), True)
 
     # ----------------------------------------------------------------- lotería
     def sorteo_loteria(self):

@@ -1,8 +1,9 @@
 """Puerto Bravo: Ley del Asfalto. Audiojuego de mundo abierto totalmente accesible."""
 
-NOMBRE = "Puerto Bravo: Ley del Asfalto"
-VERSION = "1.7.1"
-AUTOR = "Héctor J. Benítez Corredera"
+from .i18n import tr
+NOMBRE = tr("Puerto Bravo: Ley del Asfalto")
+VERSION = "1.7.2"
+AUTOR = tr("Héctor J. Benítez Corredera")
 ANIO = "2026"
 WEB = "https://github.com/hxebolax/PuertoBravo"
 FALLOS = "https://github.com/hxebolax/PuertoBravo/issues"

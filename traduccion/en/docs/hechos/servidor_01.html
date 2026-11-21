@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Setting up a Puerto Bravo server</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 56em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3, h4 { color: #ffd84d; }
+li { margin-bottom: .4em; }
+code, kbd { background: #2a2a2a; padding: 0 .3em; }
+a { color: #9fd0ff; }
+</style>
+</head>
+<body>
+<h1>Setting up a Puerto Bravo server</h1>
+<p>A server is a small program you leave running so several people can play together in the same city. It saves the characters, the gangs and the neighborhoods, and it decides what happens between players. It doesn't need a powerful machine, and it works just as well for two friends as for a hundred people or more.</p>
+<p>Everything can be done with the keyboard and a screen reader: there is a panel with a window for Windows and, on any system, the server can be run through text.</p>
+<p>You can move through this guide by headings. Each way of setting it up has its own section, with the steps one by one. You don't need to read all of it: pick your way in section 3 and go to it.</p>
+
+<h2 id="indice">Contents</h2>
+<ol>
+<li><a href="#que">What you need</a></li>
+<li><a href="#carpeta">What's in the servidor folder</a></li>
+<li><a href="#elegir">Choosing how to set it up</a></li>
+<li><a href="#panel">On your Windows PC, with the panel</a></li>
+<li><a href="#consola">On your Windows PC, from the console</a></li>
+<li><a href="#inicio">Starting it automatically with Windows</a></li>
+<li><a href="#linux">On Linux or a rented server, with Python</a></li>
+<li><a href="#systemd">On Linux, as a systemd service</a></li>
+<li><a href="#raspberry">On a Raspberry Pi</a></li>
+<li><a href="#mac">On a Mac</a></li>
+<li><a href="#docker">With Docker and docker compose</a></li>
+<li><a href="#synology">On a Synology NAS</a></li>
+<li><a href="#direccion">The address you give your people, and how to connect from outside your home</a></li>
+<li><a href="#cifrado">Encryption and certificate</a></li>
+<li><a href="#entrada">Who can join</a></li>
+<li><a href="#administrar">Running the server</a></li>
+<li><a href="#versiones">Playing with different versions of the game</a></li>
+<li><a href="#dinero">Players' money: the hourly cap and the jobs</a></li>
+<li><a href="#rol">Text roleplay, voice and vehicle radio</a></li>
+<li><a href="#copias">Backups, moving the server and updating it</a></li>
+<li><a href="#grandes">Servers with lots of people</a></li>
+<li><a href="#problemas">Troubleshooting</a></li>
+<li><a href="#privacidad">What the server stores</a></li>
+<li><a href="#opciones">All the configuration options</a></li>
+</ol>
+
+<h2 id="que">1. What you need</h2>
+<ul>
+<li>A computer that stays on while people play: your PC, an old laptop, a NAS, a Raspberry Pi or a rented server.</li>
+<li>On Windows you don't need to install anything: the server comes with the game.</li>
+<li>On Linux, Mac, NAS or Raspberry Pi you need Python 3.8 or later, which is almost always already installed. You don't need to install anything else: the server only uses what comes with Python. You don't need the game there.</li>
+<li>For people outside your home to join: open a port on the router, or use a private network. It's explained in section 13.</li>
+<li>It uses very little: with a few players you barely notice it in the processor or the memory.</li>
+</ul>
+
+<h2 id="carpeta">2. What's in the servidor folder</h2>
+<p>Inside the game folder there is a folder called <code>servidor</code>. Everything for the server is there, and everything it saves goes there. Game updates don't touch your configuration or your data.</p>
+<ul>
+<li><code>Panel del servidor.bat</code> (Server panel): opens the panel window. It's the easiest option on Windows.</li>
+<li><code>Servidor por consola.bat</code> (Console server): starts the server in a text window.</li>
+<li><code>Parar el servidor.bat</code> (Stop the server): stops the running server in an orderly way.</li>
+<li><code>Arrancar con Windows - activar.bat</code> (Start with Windows - enable) and <code>Arrancar con Windows - quitar.bat</code> (Start with Windows - remove): to make it start by itself when you sign in.</li>
+<li><code>documentacion_es.html</code> and <code>documentacion_en.html</code>: this guide, in Spanish and in English.</li>
+<li><code>servidor.conf.ejemplo</code>: all the options, explained one by one.</li>
+<li><code>otros_sistemas</code>: what you copy to a Linux machine, a Mac, a NAS or a Raspberry Pi. It contains the server code, the scripts <code>arrancar.sh</code>, <code>parar.sh</code>, <code>reiniciar.sh</code> and <code>estado.sh</code>, the systemd service <code>puertobravo.service</code>, and the Docker files: <code>Dockerfile</code>, <code>docker-compose.yml</code> and <code>entrada_docker.sh</code>.</li>
+</ul>
+<p>When you start the server for the first time, these will also appear:</p>
+<ul>
+<li><code>servidor.conf</code>: your configuration.</li>
+<li><code>datos_servidor</code>: the characters, the gangs, the certificate and, inside it, the <code>copias</code> folder with the backups.</li>
+</ul>
+<p>The server programs for Windows are in the game folder, next to the game: <code>PuertoBravoServidorPanel.exe</code>, the panel, and <code>PuertoBravoServidor.exe</code>, the console. Both always work with the <code>servidor</code> folder, wherever you open them from.</p>
+
+<h2 id="elegir">3. Choosing how to set it up</h2>
+<ul>
+<li>You want to play with some friends from your Windows PC and you want it to be easy: <a href="#panel">the panel</a>, section 4.</li>
+<li>You prefer a text window, or you're going to leave it running unattended: <a href="#consola">the console</a>, section 5, and <a href="#inicio">starting it automatically</a>, section 6.</li>
+<li>You have a computer with Linux, or you rent a server: sections <a href="#linux">7</a> and <a href="#systemd">8</a>.</li>
+<li>You have a Raspberry Pi: <a href="#raspberry">section 9</a>.</li>
+<li>You have a Mac: <a href="#mac">section 10</a>.</li>
+<li>You use Docker: <a href="#docker">section 11</a>.</li>
+<li>You have a Synology NAS: <a href="#synology">section 12</a>.</li>
+</ul>
+<p>The configuration and the data are the same in all of them: you can start on your PC and move the server to another machine later. Section 20 tells you how.</p>
+
+<h2 id="panel">4. On your Windows PC, with the panel</h2>
+<h3>Starting it for the first time</h3>
+<ol>
+<li>Open the game folder, go into the <code>servidor</code> folder and open <code>Panel del servidor.bat</code>. You can also open <code>PuertoBravoServidorPanel.exe</code> directly, in the game folder.</li>
+<li>The panel window opens, with the focus on the server status, which will say it's stopped.</li>
+<li>If you want to change something before starting, press Control+P to open the settings. The minimum is to give your server a name, on the first tab. Press OK to save.</li>
+<li>Press F5 to start. The first time it takes a few seconds, because the server creates its certificate to encrypt the connection.</li>
+<li>When it's done, the panel says "Server running" and the port. If Windows asks whether you allow the program to communicate over the network, say yes: without that, nobody can join.</li>
+<li>The Status tab shows the address you have to give to anyone playing in your own home. The Copy the address button puts it on the clipboard.</li>
+<li>Join first yourself from the game: the first account that joins is the admin.</li>
+</ol>
+<h3>The tabs</h3>
+<p>You switch tabs with Control+Tab and Control+Shift+Tab.</p>
+<ul>
+<li>Status: whether it's running, how many people are on, the port, the address for your friends, the encryption with its fingerprint, and the world it's working with. One thing per line. It updates by itself only when something changes, without moving the cursor from where you have it; F6 updates it right away.</li>
+<li>Players: who is on, where, and with which version of the game. With the buttons, or with the Applications key on a player, you can send them a message, kick them, ban them or make them admin.</li>
+<li>Accounts: every account that has ever joined. From here you can ban, pardon a ban, give or remove admin rights and delete an account, even if the person isn't on.</li>
+<li>Invitations: the invitation codes, free and used. You create, copy and cancel them here.</li>
+<li>Log: what the server says as it goes, with the newest at the end. Below it there is a field to type commands to it, the same ones as in the console.</li>
+</ul>
+<h3>Panel keys</h3>
+<ul>
+<li>F5: start the server. Shift+F5: stop it. Control+F5: restart it.</li>
+<li>Control+P: settings. Control+Q: quit.</li>
+<li>Control+N: announcement to all players. Control+M: message to the selected player. Control+E: kick the selected player.</li>
+<li>Control+I: create an invitation. Control+D: change the message of the day. Control+O: type a command.</li>
+<li>F6: update the status and the lists.</li>
+<li>Control+S: save now. Control+B: backup now. Control+R: restore a backup. Control+G: save the log to a file.</li>
+<li>F1: open this guide. Control+H: explains the control you're on.</li>
+<li>Alt plus the underlined letter: go to a control on the tab or open a menu.</li>
+<li>Applications key, or Shift+F10, in the player and account lists: actions on the selected item.</li>
+</ul>
+<h3>The settings</h3>
+<ul>
+<li>Control+P opens a dialog with one tab for each group of options. Control+H on any control tells you what it does, what values it accepts and whether it needs a restart.</li>
+<li>OK saves and closes. Apply saves without closing. Cancel changes nothing.</li>
+<li>Factory defaults resets the options on the tab you're on, or all of them, to how they come out of the box. Nothing is saved until you press OK or Apply.</li>
+<li>Almost everything is applied with the server running. If you change something that needs a restart, like the port or the encryption, the panel tells you and offers to restart right then.</li>
+<li>The configuration is saved in <code>servidor.conf</code>, a text file with each option explained, which you can also change with Notepad.</li>
+</ul>
+<h3>Stopping and closing</h3>
+<ul>
+<li>Shift+F5 stops the server: it warns the players, saves everything and disconnects them. If there are people on, it asks first.</li>
+<li>If you close the panel with the server running, it asks and, if you say yes, it stops the server in an orderly way before closing.</li>
+<li>The server only works while the panel is open. You can minimize it.</li>
+<li>Control+F5 restarts it: players are told it's a restart, and their games wait and rejoin by themselves as soon as it starts again.</li>
+<li>If you update the game with the panel open, the panel closes by itself, in an orderly way, and opens again when the update finishes, with the server running again if it was. It's in <a href="#copias">section 20</a>.</li>
+</ul>
+
+<h2 id="consola">5. On your Windows PC, from the console</h2>
+<ol>
+<li>In the game's <code>servidor</code> folder, open <code>Servidor por consola.bat</code>.</li>
+<li>The first time, it writes <code>servidor.conf</code> with all the options explained, and starts with the default values.</li>
+<li>The window tells you what's happening: which port it's listening on, whether it encrypts, who joins and who leaves.</li>
+<li>You type commands to it in that same window. Type <code>ayuda</code> and press Enter to hear them all. They're in section 16.</li>
+<li>To change the configuration, open <code>servidor.conf</code> with Notepad, change what you want and save. Then type <code>recargar</code> in the console: it applies what can be changed without restarting and tells you what is waiting for the restart.</li>
+<li>To stop it, type <code>apagar</code>, press Control+C or close the window. In all three cases it warns the players and saves everything.</li>
+</ol>
+<p>The panel and the console use the same configuration and the same data: you can use one on one day and the other on another day, but not both at once.</p>
+<p>If you know how to use a command window, you can call the program directly from the game folder:</p>
+<ul>
+<li><code>PuertoBravoServidor.exe --ejemplo</code>: writes <code>servidor.conf</code> and exits.</li>
+<li><code>PuertoBravoServidor.exe --comprobar</code>: checks <code>servidor.conf</code>, tells you what isn't valid and exits.</li>
+<li><code>PuertoBravoServidor.exe --opciones</code>: lists all the options with their explanation.</li>
+<li><code>PuertoBravoServidor.exe --parar</code>: stops the running server in an orderly way.</li>
+<li><code>PuertoBravoServidor.exe --actualizar</code>: stops it, warning the players that it's restarting to update. Their games wait and rejoin by themselves when you start it again.</li>
+<li><code>PuertoBravoServidor.exe --reiniciar</code>: the same, saying it's for maintenance.</li>
+<li><code>PuertoBravoServidor.exe --puerto=47821</code>: any option can be given like this, without touching the file.</li>
+</ul>
+
+<h2 id="inicio">6. Starting it automatically with Windows</h2>
+<h3>When you sign in</h3>
+<ol>
+<li>In the <code>servidor</code> folder, open <code>Arrancar con Windows - activar.bat</code>. It leaves a shortcut in your user's Startup folder. You don't need administrator rights.</li>
+<li>From then on, every time you sign in, the server starts by itself, in a minimized window.</li>
+<li>To stop it without looking for that window, open <code>Parar el servidor.bat</code>.</li>
+<li>To stop it from starting by itself, open <code>Arrancar con Windows - quitar.bat</code>.</li>
+</ol>
+<h3>When the computer turns on, without anyone signing in</h3>
+<p>This is for people with a dedicated computer. You need an account with administrator rights.</p>
+<ol>
+<li>Open Windows Task Scheduler: press the Windows key, type Task Scheduler and press Enter.</li>
+<li>In the Action menu, choose Create Task.</li>
+<li>On the General tab, name it Puerto Bravo Server and check Run whether user is logged on or not.</li>
+<li>On the Triggers tab, press New and choose At startup.</li>
+<li>On the Actions tab, press New. In Program/script, put the full path of <code>PuertoBravoServidor.exe</code>, which is in the game folder. In Add arguments, type <code>servidor.conf</code>.</li>
+<li>On the Settings tab, uncheck Stop the task if it runs longer than, so it doesn't get cut off after three days.</li>
+<li>Press OK. Windows will ask for your account password so it can start the task without a session.</li>
+</ol>
+<p>Started this way it has no window. To stop it in an orderly way use <code>Parar el servidor.bat</code>, and to run it, the commands from the game chat, which are in section 16. If you choose End in Task Scheduler, it's cut off abruptly: you lose no more than the last minute, but it's better to stop it in an orderly way.</p>
+
+<h2 id="linux">7. On Linux or a rented server, with Python</h2>
+<ol>
+<li>Check that you have Python 3.8 or later: type <code>python3 --version</code>.</li>
+<li>Copy the game's <code>otros_sistemas</code> folder to the machine, with any name you like, for example <code>puertobravo</code> inside your home folder. Any way of copying files works: a USB stick, <code>scp</code>, or a file transfer program.</li>
+<li>Go into that folder: <code>cd puertobravo</code>. The <code>servidor</code> folder, with the code, must be inside it.</li>
+<li>Write the example configuration: <code>python3 -m servidor --ejemplo</code>. It creates <code>servidor.conf</code>.</li>
+<li>Change it as you like with a text editor, for example <code>nano servidor.conf</code>. To check there are no errors: <code>python3 -m servidor --comprobar</code>.</li>
+<li>Start it: <code>python3 -m servidor</code>. It tells you which port it's listening on and whether it encrypts. You type commands to it in that same terminal; <code>ayuda</code> lists them all. You stop it with <code>apagar</code> or with Control+C.</li>
+</ol>
+<h3>Leaving it in the background</h3>
+<ul>
+<li><code>sh arrancar.sh</code>: starts it in the background, if it's not already running. What it says as it goes is kept in <code>servidor.log</code>.</li>
+<li><code>sh estado.sh</code>: tells you whether it's running and shows the last thing it said.</li>
+<li><code>sh parar.sh</code>: stops it in an orderly way.</li>
+<li><code>sh reiniciar.sh</code>: warns the players with the countdown, stops it in an orderly way and starts it again. This is what you use after putting in the new server code: the games wait and rejoin by themselves.</li>
+<li>To make it start when the machine turns on without systemd, add a line like <code>@reboot sh /home/tu_usuario/puertobravo/arrancar.sh</code> to your cron, with <code>crontab -e</code>.</li>
+<li>Started this way it has no console. You run it from the game chat, with the commands in section 16.</li>
+</ul>
+<h3>The firewall</h3>
+<ul>
+<li>If the machine has a firewall, you have to let the server port through over TCP. With ufw: <code>sudo ufw allow 47820/tcp</code>. With firewalld: <code>sudo firewall-cmd --permanent --add-port=47820/tcp</code> and then <code>sudo firewall-cmd --reload</code>.</li>
+<li>On a rented server there is usually also a firewall in the provider's control panel, sometimes called a security group: open port 47820 over TCP there too.</li>
+<li>A rented server has a fixed public address: there's no router to configure. The address for your people is <code>puertobravo://</code>, the machine's address, a colon and the port.</li>
+</ul>
+
+<h2 id="systemd">8. On Linux, as a systemd service</h2>
+<p>This way it starts by itself with the system, restarts if it crashes and stops in an orderly way when the machine shuts down. You need to be able to use <code>sudo</code>.</p>
+<ol>
+<li>Copy the server folder to <code>/opt/puertobravo</code>: <code>sudo cp -r puertobravo /opt/puertobravo</code>. The <code>servidor</code> folder must end up inside it.</li>
+<li>Create an unprivileged user for it: <code>sudo useradd --system --home /opt/puertobravo puertobravo</code>.</li>
+<li>Give it the folder: <code>sudo chown -R puertobravo: /opt/puertobravo</code>.</li>
+<li>If there's no configuration yet, write it: <code>cd /opt/puertobravo</code> and <code>sudo -u puertobravo python3 -m servidor --ejemplo</code>. Change it with <code>sudo -u puertobravo nano servidor.conf</code>.</li>
+<li>Copy the service: <code>sudo cp /opt/puertobravo/puertobravo.service /etc/systemd/system/</code>.</li>
+<li>Enable it: <code>sudo systemctl daemon-reload</code> and then <code>sudo systemctl enable --now puertobravo</code>.</li>
+</ol>
+<ul>
+<li>See how it's doing: <code>systemctl status puertobravo</code>.</li>
+<li>Hear what it says as it goes: <code>journalctl -u puertobravo -f</code>. You exit with Control+C.</li>
+<li>Stop it: <code>sudo systemctl stop puertobravo</code>. Start it: <code>sudo systemctl start puertobravo</code>. Restart it, for example after changing the port: <code>sudo systemctl restart puertobravo</code>.</li>
+<li>If you use another folder or another user, change the <code>WorkingDirectory</code> and <code>User</code> lines in the service file.</li>
+<li>As a service it has no console: you run it from the game chat.</li>
+<li>Restarting it with a warning, for example after updating it: an admin types <code>/reiniciar</code> or <code>/actualizar</code> in the game chat, or on the machine, from the server folder, <code>sudo -u puertobravo python3 -m servidor --actualizar</code>. The server warns with its countdown, saves everything and exits with code 75; the service starts it again by itself after five seconds, and the games rejoin.</li>
+</ul>
+
+<h2 id="raspberry">9. On a Raspberry Pi</h2>
+<ul>
+<li>Any model with Raspberry Pi OS works: it already comes with Python 3. For a few friends, the most modest model is more than enough.</li>
+<li>The steps are the same as on Linux: sections 7 and 8. The most practical thing is to leave it as a systemd service, so it starts by itself when you turn it on.</li>
+<li>To copy the <code>otros_sistemas</code> folder you can use a USB stick, or <code>scp</code> from your computer if you have SSH enabled on the Raspberry Pi.</li>
+<li>On the slowest models, checking the identity of whoever joins takes a little over a second. It only happens when joining; while playing you don't notice it.</li>
+<li>Give the Raspberry Pi a fixed address on your network from the router settings, in the address reservation or static DHCP section. That way the address you give your people doesn't change, and the port forwarding keeps pointing to it.</li>
+<li>Use a good-quality memory card and leave automatic backups turned on: cards wear out.</li>
+</ul>
+
+<h2 id="mac">10. On a Mac</h2>
+<ol>
+<li>Open Terminal and type <code>python3 --version</code>. If the Mac offers to install the developer tools, accept: they include Python. You can also install Python from its official website.</li>
+<li>Copy the <code>otros_sistemas</code> folder to the Mac, for example to your home folder with the name <code>puertobravo</code>.</li>
+<li>In Terminal: <code>cd ~/puertobravo</code>, then <code>python3 -m servidor --ejemplo</code> and, once you've changed <code>servidor.conf</code> as you like, <code>python3 -m servidor</code>.</li>
+<li>The first time, the Mac asks whether you allow incoming connections to Python: say yes.</li>
+<li>To leave it in the background the same scripts work: <code>sh arrancar.sh</code>, <code>sh estado.sh</code>, <code>sh parar.sh</code> and <code>sh reiniciar.sh</code>.</li>
+<li>To stop the Mac from going to sleep while people are playing, look in System Settings, in the energy or battery section.</li>
+</ol>
+
+<h2 id="docker">11. With Docker and docker compose</h2>
+<ol>
+<li>Copy the <code>otros_sistemas</code> folder to the machine where you have Docker, with the name <code>puertobravo</code>. Inside it are <code>Dockerfile</code>, <code>docker-compose.yml</code>, <code>entrada_docker.sh</code> and the <code>servidor</code> folder.</li>
+<li>Go into that folder and type <code>docker compose up -d --build</code>. It builds the image and starts the server.</li>
+<li>The <code>datos</code> folder appears next to it. Inside are <code>servidor.conf</code>, which is written automatically the first time, and <code>datos_servidor</code>, with the characters and the backups. They're outside the container: they survive updates.</li>
+<li>To change the configuration, edit <code>datos/servidor.conf</code> and restart: <code>docker compose restart</code>.</li>
+</ol>
+<ul>
+<li>Hear what it says: <code>docker compose logs -f</code>. You exit with Control+C, without stopping the server.</li>
+<li>Stop it in an orderly way: <code>docker compose down</code>. It warns the players and saves everything.</li>
+<li>Type commands to it: <code>docker attach puertobravo</code>, type the command and press Enter. To leave without stopping it, press Control+P and then Control+Q. The easiest way is to run it from the game chat.</li>
+<li>Don't use the <code>apagar</code> command inside Docker to stop it: Docker would start it again. Use <code>docker compose down</code>.</li>
+<li>To restart it with a warning, the <code>reiniciar</code> and <code>actualizar</code> commands do work, from the game chat or with <code>docker attach</code>: the server warns with its countdown, saves everything and exits, and Docker starts it again. The games wait and rejoin by themselves.</li>
+<li>If you change the port in <code>servidor.conf</code>, also change both numbers on the <code>ports</code> line of <code>docker-compose.yml</code>.</li>
+<li>With Docker, all connections may reach the server from the same internal address. That's why the <code>conexiones_por_ip</code> option must stay at 0.</li>
+</ul>
+
+<h2 id="synology">12. On a Synology NAS</h2>
+<h3>With Container Manager</h3>
+<p>Container Manager is Synology's Docker package. You install it from Package Center, and it creates a shared folder called <code>docker</code>.</p>
+<ol>
+<li>Open File Station, go into the <code>docker</code> shared folder and create a folder inside it called <code>puertobravo</code>.</li>
+<li>Upload the whole content of <code>otros_sistemas</code> to that folder: the <code>servidor</code> folder, <code>Dockerfile</code>, <code>docker-compose.yml</code> and <code>entrada_docker.sh</code>. The other files don't get in the way.</li>
+<li>Open Container Manager and go to the Project section.</li>
+<li>Press Create. For the project name put <code>puertobravo</code>. In Path, choose the <code>docker/puertobravo</code> folder.</li>
+<li>Container Manager sees that there's already a <code>docker-compose.yml</code> there and asks whether to use it: say yes.</li>
+<li>Continue with Next to the end, without enabling the web portal, and press Done. It builds the image and starts the server. The first time it takes a few minutes.</li>
+<li>The configuration ends up in <code>docker/puertobravo/datos/servidor.conf</code>. You can change it from File Station with the Text Editor package. Then, in Container Manager, Project, choose <code>puertobravo</code> and, in Action, Stop and then Start.</li>
+<li>What the server says is in Container Manager, Container, <code>puertobravo</code>, Log tab.</li>
+</ol>
+<ul>
+<li>If you have the NAS firewall turned on, in Control Panel, Security, Firewall, add a rule that allows port 47820 over TCP.</li>
+<li>Give the NAS a fixed address on your network, or reserve one for it in the router, so the port forwarding doesn't stop pointing to it.</li>
+<li>To update the server: upload the new <code>servidor</code> folder on top of the old one and, in the project, choose Action, Build. The <code>datos</code> folder is not touched.</li>
+</ul>

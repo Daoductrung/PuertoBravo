@@ -19,6 +19,7 @@ tranquilo, normal o duro. Cómo va:
 Todo el estado va en Jugador.reconquista y se guarda con la partida. Los números y las frases salen de los datos
 (data/datos/vida.json, sección reconquista).
 """
+from .i18n import tr
 import random
 
 from . import gente as G
@@ -48,47 +49,47 @@ AJ = Ajustes("reconquista", {
     "forastera_dias": 30, "forastera_fuerza": 30, "forastera_quedan": 2, "forastera_prob": 30,
     "golpe_fuerza_min": 20, "golpe_quita": 60, "golpe_espera": 4, "golpe_paga": 600,
 }, {
-    "forasteras": ["La Marea Negra", "Los del Norte", "Los Chacales del Estrecho", "La Hermandad del Faro", "Los Sin Santo"],
-    "frases_inicio_todo": ["Has conquistado todos los barrios de {ciudad}, pero conquistar no es el final."],
-    "frases_inicio_muchos": ["Tienes ya {n} barrios, y eso no pasa desapercibido."],
-    "frases_inicio_carga": ["Aviso importante sobre tus barrios: desde esta versión, tenerlos no basta."],
-    "frases_explicacion": ["Las bandas que has vencido se están rehaciendo y van a intentar recuperar lo suyo. Tienes {dias} de calma. "
+    "forasteras": [tr("La Marea Negra"), tr("Los del Norte"), tr("Los Chacales del Estrecho"), tr("La Hermandad del Faro"), tr("Los Sin Santo")],
+    "frases_inicio_todo": [tr("Has conquistado todos los barrios de {ciudad}, pero conquistar no es el final.")],
+    "frases_inicio_muchos": [tr("Tienes ya {n} barrios, y eso no pasa desapercibido.")],
+    "frases_inicio_carga": [tr("Aviso importante sobre tus barrios: desde esta versión, tenerlos no basta.")],
+    "frases_explicacion": [tr("Las bandas que has vencido se están rehaciendo y van a intentar recuperar lo suyo. Tienes {dias} de calma. "
                            "Después, cuando una banda asalte un barrio, tendrás unas horas para ir a defenderlo en persona o para enviar a tu gente desde el móvil; "
                            "si no haces nada, lo pierdes. Prepárate en el móvil, en Territorios, Defensa de tus barrios: allí pones guardias, refuerzas un barrio, "
                            "pagas informantes que te avisan con tiempo, pactas treguas y das golpes a los escondites. Y pisa tus barrios de vez en cuando: "
-                           "uno abandonado cae antes. Si prefieres que no ocurra, se apaga en Opciones, La calle."],
-    "frases_calma": ["Has conquistado todos los barrios de {ciudad}. Las bandas tardarán en levantar cabeza: tienes {dias} de calma."],
-    "frases_rumor_vago": ["Se rumorea en la calle que alguna banda prepara algo contra uno de tus barrios, hoy mismo. Nadie sabe decirte más.",
-                          "Hoy hay caras raras por la calle. Alguien trama algo contra tus barrios, pero no sabes dónde."],
-    "frases_rumor": ["Rumor en la calle: alguien prepara un asalto a {barrio}, {cuando}. No se sabe quién.",
-                     "Los vecinos de {barrio} han visto movimiento raro: algo se prepara allí para {cuando}."],
-    "frases_chivatazo": ["Chivatazo: {banda} prepara un asalto a {barrio} para {cuando}.",
-                         "Un informante te lo sopla: {banda} irá a por {barrio}, {cuando}."],
-    "frases_mensaje": ["Mensaje al móvil de tu mejor informante: {banda} asaltará {barrio}, {cuando}, hacia las {hora}. Fuerza, unos {fuerza} de 100. {motivo}",
-                       "Tu gente lo sabe todo: {banda} va a por {barrio}, {cuando}, sobre las {hora}, con una fuerza de {fuerza} de 100. {motivo}"],
-    "frases_alianza": ["Y no van solos: {banda} y {aliada} se han aliado para un golpe grande.", "Es una alianza: {banda} y {aliada} juntan a su gente."],
-    "frases_asalto": ["¡{banda} asalta {barrio}!", "¡Asalto! {banda} ha entrado en {barrio}.", "¡{banda} ha venido a por {barrio}!"],
-    "frases_defendido": ["{banda} se retira de {barrio} con las manos vacías.", "{barrio} aguanta: {banda} sale por piernas.", "Nadie de {banda} se queda en {barrio}."],
-    "frases_perdido": ["{banda} se ha quedado con {barrio}.", "Has perdido {barrio}: ahora manda {banda}.", "{barrio} cae: las esquinas vuelven a ser de {banda}."],
-    "frases_desmantelada": ["{banda} no levanta cabeza: queda desmantelada una buena temporada.", "Después de tantos palos, {banda} se deshace. Tardará mucho en volver."],
-    "frases_forastera": ["Llega gente nueva a la comarca: se hacen llamar {banda}, y vienen a por lo que es tuyo.",
-                         "Se corre la voz: una banda de fuera, {banda}, se ha instalado en la comarca."],
-    "frases_forastera_fin": ["{banda} recoge y se marcha de la comarca para siempre.", "De {banda} no queda nadie: se han ido por donde vinieron."],
-    "frases_lealtad_aviso": ["En {barrio} empiezan a decir que no se te ve el pelo. Pásate por allí, o invierte en el barrio, antes de que vaya a más.",
-                             "La gente de {barrio} se siente abandonada. Una visita, o algo de dinero para el barrio, lo arreglaría."],
-    "frases_lealtad_grave": ["{barrio} está muy descuidado: allí ya casi nadie daría la cara por ti. Así caerá al primer asalto.",
-                             "En {barrio} ya no te deben nada, dicen. Si no vas pronto, quien venga a quitártelo lo tendrá fácil."],
-    "frases_golpe": ["El escondite de {banda} queda arrasado: pierden gente, armas y ganas.", "{banda} tardará en rehacerse de esta: les has dejado sin escondite."],
-    "frases_golpe_suspende": ["Y el asalto que preparaban a {barrio} queda suspendido.", "Con esto, lo de {barrio} se les ha acabado antes de empezar."],
-    "frases_tregua_rota": ["{banda} ha roto la tregua: vuelven a ir a por lo tuyo.", "Se acabó la tregua con {banda}: dicen que ya no les compensa."],
-    "frases_tregua_fin": ["La tregua con {banda} termina hoy.", "Hoy vence lo pactado con {banda}: desde mañana, cada uno a lo suyo."],
+                           "uno abandonado cae antes. Si prefieres que no ocurra, se apaga en Opciones, La calle.")],
+    "frases_calma": [tr("Has conquistado todos los barrios de {ciudad}. Las bandas tardarán en levantar cabeza: tienes {dias} de calma.")],
+    "frases_rumor_vago": [tr("Se rumorea en la calle que alguna banda prepara algo contra uno de tus barrios, hoy mismo. Nadie sabe decirte más."),
+                          tr("Hoy hay caras raras por la calle. Alguien trama algo contra tus barrios, pero no sabes dónde.")],
+    "frases_rumor": [tr("Rumor en la calle: alguien prepara un asalto a {barrio}, {cuando}. No se sabe quién."),
+                     tr("Los vecinos de {barrio} han visto movimiento raro: algo se prepara allí para {cuando}.")],
+    "frases_chivatazo": [tr("Chivatazo: {banda} prepara un asalto a {barrio} para {cuando}."),
+                         tr("Un informante te lo sopla: {banda} irá a por {barrio}, {cuando}.")],
+    "frases_mensaje": [tr("Mensaje al móvil de tu mejor informante: {banda} asaltará {barrio}, {cuando}, hacia las {hora}. Fuerza, unos {fuerza} de 100. {motivo}"),
+                       tr("Tu gente lo sabe todo: {banda} va a por {barrio}, {cuando}, sobre las {hora}, con una fuerza de {fuerza} de 100. {motivo}")],
+    "frases_alianza": [tr("Y no van solos: {banda} y {aliada} se han aliado para un golpe grande."), tr("Es una alianza: {banda} y {aliada} juntan a su gente.")],
+    "frases_asalto": [tr("¡{banda} asalta {barrio}!"), tr("¡Asalto! {banda} ha entrado en {barrio}."), tr("¡{banda} ha venido a por {barrio}!")],
+    "frases_defendido": [tr("{banda} se retira de {barrio} con las manos vacías."), tr("{barrio} aguanta: {banda} sale por piernas."), tr("Nadie de {banda} se queda en {barrio}.")],
+    "frases_perdido": [tr("{banda} se ha quedado con {barrio}."), tr("Has perdido {barrio}: ahora manda {banda}."), tr("{barrio} cae: las esquinas vuelven a ser de {banda}.")],
+    "frases_desmantelada": [tr("{banda} no levanta cabeza: queda desmantelada una buena temporada."), tr("Después de tantos palos, {banda} se deshace. Tardará mucho en volver.")],
+    "frases_forastera": [tr("Llega gente nueva a la comarca: se hacen llamar {banda}, y vienen a por lo que es tuyo."),
+                         tr("Se corre la voz: una banda de fuera, {banda}, se ha instalado en la comarca.")],
+    "frases_forastera_fin": [tr("{banda} recoge y se marcha de la comarca para siempre."), tr("De {banda} no queda nadie: se han ido por donde vinieron.")],
+    "frases_lealtad_aviso": [tr("En {barrio} empiezan a decir que no se te ve el pelo. Pásate por allí, o invierte en el barrio, antes de que vaya a más."),
+                             tr("La gente de {barrio} se siente abandonada. Una visita, o algo de dinero para el barrio, lo arreglaría.")],
+    "frases_lealtad_grave": [tr("{barrio} está muy descuidado: allí ya casi nadie daría la cara por ti. Así caerá al primer asalto."),
+                             tr("En {barrio} ya no te deben nada, dicen. Si no vas pronto, quien venga a quitártelo lo tendrá fácil.")],
+    "frases_golpe": [tr("El escondite de {banda} queda arrasado: pierden gente, armas y ganas."), tr("{banda} tardará en rehacerse de esta: les has dejado sin escondite.")],
+    "frases_golpe_suspende": [tr("Y el asalto que preparaban a {barrio} queda suspendido."), tr("Con esto, lo de {barrio} se les ha acabado antes de empezar.")],
+    "frases_tregua_rota": [tr("{banda} ha roto la tregua: vuelven a ir a por lo tuyo."), tr("Se acabó la tregua con {banda}: dicen que ya no les compensa.")],
+    "frases_tregua_fin": [tr("La tregua con {banda} termina hoy."), tr("Hoy vence lo pactado con {banda}: desde mañana, cada uno a lo suyo.")],
 }, cero=("alianza_prob", "rumor_prob", "baja_prob", "peso_antiguo", "peso_defensa", "peso_abandono", "peso_rentable", "peso_azar", "descanso_azar",
          "premio_defensa", "fama_defensa", "fama_perdida", "forastera_prob", "golpe_paga", "lealtad_baja", "lealtad_visita", "calma_carga",
          "defensa_banda", "defensa_lealtad", "defensa_resta", "lealtad_impago", "fuerza_inicial_min", "fuerza_inicial_max"))
 
-MOTIVOS = {"antiguo": "Quieren recuperar el que fue su barrio.", "defensa": "Saben que es el peor defendido.",
-           "abandono": "Saben que allí la gente está descontenta contigo.", "rentable": "Van a por el que más dinero te da.", "": ""}
-EXPLICACION = ("Las bandas que has vencido se rehacen con los días e intentan recuperar tus barrios. Cuando una asalta un barrio, se te avisa siempre y tienes unas horas: "
+MOTIVOS = {"antiguo": tr("Quieren recuperar el que fue su barrio."), "defensa": tr("Saben que es el peor defendido."),
+           "abandono": tr("Saben que allí la gente está descontenta contigo."), "rentable": tr("Van a por el que más dinero te da."), "": ""}
+EXPLICACION = (tr("Las bandas que has vencido se rehacen con los días e intentan recuperar tus barrios. Cuando una asalta un barrio, se te avisa siempre y tienes unas horas: "
                "ve allí y defiéndelo en persona, por oleadas y con tu banda a tu lado, o envía a tu gente desde este menú, y el resultado se calcula con su fuerza contra tu defensa, más la suerte. "
                "Si no haces nada, defiende sola la guardia fija, si la hay; si no, el barrio se pierde, con su dinero diario y algo de fama, y habrá que reconquistarlo. "
                "El plazo no corre mientras haces una misión, y si duermes o pasas por el hospital o el calabozo, tu gente aguanta: al volver te quedan siempre unas horas. "
@@ -97,32 +98,32 @@ EXPLICACION = ("Las bandas que has vencido se rehacen con los días e intentan r
                "Los informantes cobran cada día y te avisan antes: sin ellos, te enteras tarde o cuando ya han llegado. "
                "Con una banda puedes pactar una tregua de unos días, o dar un golpe a su escondite para hundir su fuerza. "
                "Una banda vencida varias veces queda desmantelada una temporada larga, pero siempre acaba llegando alguien nuevo. "
-               "Nunca hay dos asaltos a la vez y siempre hay unos días de descanso entre uno y otro. La intensidad se elige en Opciones, La calle: apagado, tranquilo, normal o duro.")
+               "Nunca hay dos asaltos a la vez y siempre hay unos días de descanso entre uno y otro. La intensidad se elige en Opciones, La calle: apagado, tranquilo, normal o duro."))
 
 
 def _dias(n):
-    return "un día" if int(n) == 1 else f"{int(n)} días"
+    return tr("un día") if int(n) == 1 else tr('{int} días').format(int=(int(n)))
 
 
 def _cuando(faltan):
-    return "hoy" if faltan <= 0 else "mañana" if faltan == 1 else f"dentro de {int(faltan)} días"
+    return "hoy" if faltan <= 0 else "mañana" if faltan == 1 else tr('dentro de {int} días').format(int=(int(faltan)))
 
 
 def _rato(minutos):
     m = max(0.0, float(minutos))
     if m >= 90:
-        return f"{int(round(m / 60.0))} horas"
-    return "una hora" if m >= 45 else f"{max(1, int(m))} minutos"
+        return tr('{int} horas').format(int=(int(round(m / 60.0))))
+    return tr("una hora") if m >= 45 else tr('{max} minutos').format(max=(max(1, int(m))))
 
 
 def _suerte(n):
     n = int(round(n))
-    return f"{n} a favor" if n > 0 else f"{-n} en contra" if n < 0 else "ni a favor ni en contra"
+    return tr('{n} a favor').format(n=(n)) if n > 0 else tr('{v} en contra').format(v=(-n)) if n < 0 else tr("ni a favor ni en contra")
 
 
 def _y(nombres):
     nombres = list(nombres)
-    return nombres[0] if len(nombres) == 1 else ", ".join(nombres[:-1]) + " y " + nombres[-1]
+    return nombres[0] if len(nombres) == 1 else ", ".join(nombres[:-1]) + tr(" y ") + nombres[-1]
 
 
 def probabilidad(diferencia, azar_max):
@@ -222,7 +223,7 @@ class Reconquista:
 
     def _rec_parte(self, texto):
         r = self.rec()
-        r["partes"].append(f"Día {self.dia}: {texto}")
+        r["partes"].append(tr('Día {dia}: {texto}').format(dia=(self.dia), texto=(texto)))
         del r["partes"][:-8]
 
     def _rec_decir(self, texto, sonido=None, interrumpir=False):
@@ -250,7 +251,7 @@ class Reconquista:
         mios = set(self.j.territorios)
         ciudad = next((m.nombre for m in self.mapas.values() if m.tipo == "ciudad" and m.barrios and all(b["id"] in mios for b in m.barrios)), "")
         if fase == "mundo":
-            ciudad = "todas las ciudades"
+            ciudad = tr("todas las ciudades")
         if not antes:
             r["forastera_dia"] = self.dia
         cargada, self._rec_cargada = self._rec_cargada, False
@@ -307,21 +308,21 @@ class Reconquista:
             return
         if j.dinero >= total_g + total_i:
             j.dinero -= total_g + total_i
-            partes = ([f"{total_g} euros a los {guardias} guardias de tus barrios" if guardias > 1 else f"{total_g} euros al guardia de tu barrio"] if total_g else []) \
-                + ([f"{total_i} euros a tus informantes"] if total_i else [])
-            self.decir("Pagas " + " y ".join(partes) + ".")
+            partes = ([tr('{total_g} euros a los {guardias} guardias de tus barrios').format(total_g=(total_g), guardias=(guardias)) if guardias > 1 else tr('{total_g} euros al guardia de tu barrio').format(total_g=(total_g))] if total_g else []) \
+                + ([tr('{total_i} euros a tus informantes').format(total_i=(total_i))] if total_i else [])
+            self.decir(tr("Pagas ") + tr(" y ").join(partes) + ".")
             return
         if total_i:
             r["informantes"] = 0
         if j.dinero >= total_g:
             j.dinero -= total_g
-            self._rec_decir("No te llega para pagar a tus informantes, y dejan de trabajar para ti." + (f" A los guardias sí: {total_g} euros." if total_g else ""), "error")
+            self._rec_decir(tr("No te llega para pagar a tus informantes, y dejan de trabajar para ti.") + (tr(' A los guardias sí: {total_g} euros.').format(total_g=(total_g)) if total_g else ""), "error")
             return
         for bid, st in r["barrios"].items():
             if st["guardia"]:
                 st["guardia"] = 0
                 st["lealtad"] = max(0.0, st["lealtad"] - AJ("lealtad_impago"))
-        self._rec_decir("No te llega para pagar a los guardias de tus barrios" + (" ni a tus informantes" if total_i else "") + ": se marchan todos, y en esos barrios sienta mal.", "error")
+        self._rec_decir(tr("No te llega para pagar a los guardias de tus barrios") + (tr(" ni a tus informantes") if total_i else "") + tr(": se marchan todos, y en esos barrios sienta mal."), "error")
 
     def rec_impago(self):
         """No has podido pagar a tu banda: en tus barrios se sabe."""
@@ -460,7 +461,7 @@ class Reconquista:
         faltan = a["dia"] - self.dia
         q = self.rec_calidad_aviso(a["barrio"])
         sabe = 3 if q >= 3 else 2 if q == 2 and faltan <= 2 else 1 if q >= 1 and faltan <= 1 else 0
-        donde = a["nombre"] + (f", en {a['ciudad']}" if a["mapa"] != self.mundo.id else "")
+        donde = a["nombre"] + (tr(', en {ciudad}').format(ciudad=(a['ciudad'])) if a["mapa"] != self.mundo.id else "")
         if sabe > a["sabido"]:
             a["sabido"] = sabe
             if sabe == 3:
@@ -471,7 +472,7 @@ class Reconquista:
                 texto = AJ.frase("frases_rumor", azar, barrio=donde, cuando=_cuando(faltan))
             if sabe >= 2 and len(a["bandas"]) > 1:
                 texto += " " + AJ.frase("frases_alianza", azar, banda=a["bandas"][0], aliada=a["bandas"][1])
-            self._rec_decir(texto.strip() + " Mira qué puedes hacer en el móvil, en Territorios, Defensa de tus barrios.", "amenaza_barrio")
+            self._rec_decir(texto.strip() + tr(" Mira qué puedes hacer en el móvil, en Territorios, Defensa de tus barrios."), "amenaza_barrio")
         elif not a["sabido"] and faltan <= 0 and "vago" not in a["avisos"]:
             a["avisos"].append("vago")
             if azar.random() * 100 < AJ("rumor_prob"):
@@ -509,7 +510,7 @@ class Reconquista:
             if a["quedan"] <= minutos and marca not in a["avisos"] and a["plazo"] > minutos:
                 a["avisos"].append(marca)
                 self.son("amenaza_barrio", cat="interfaz")
-                self.decir(f"Quedan {_rato(a['quedan'])} para que {a['nombre']} caiga. Ve allí, o envía a tu gente desde el móvil, en Territorios.")
+                self.decir(tr('Quedan {_rato} para que {nombre} caiga. Ve allí, o envía a tu gente desde el móvil, en Territorios.').format(_rato=(_rato(a['quedan'])), nombre=(a['nombre'])))
         if not g and self.t > self.t_guerra_enfria and self.mundo.id == a["mapa"] and self.puede_guerra(True) and self.mundo.barrio(*self.pos())["id"] == a["barrio"]:
             self.rec_defender_en_persona()
 
@@ -537,14 +538,14 @@ class Reconquista:
         gracia = AJ("gracia_horas") * 60.0
         a["gracia"] = a["plazo"] - atraso < gracia                # empezó mientras dormías o estabas fuera, y ya se ha gastado el margen
         a["quedan"] = max(gracia, a["plazo"] - max(0.0, atraso))
-        donde = a["nombre"] + (f", en {a['ciudad']}" if a["mapa"] != self.mundo.id else "")
+        donde = a["nombre"] + (tr(', en {ciudad}').format(ciudad=(a['ciudad'])) if a["mapa"] != self.mundo.id else "")
         texto = AJ.frase("frases_asalto", banda=_y(a["bandas"]), barrio=donde)
         if len(a["bandas"]) > 1:
             texto += " " + AJ.frase("frases_alianza", banda=a["bandas"][0], aliada=a["bandas"][1])
         if atraso > 30:
-            texto += " Empezó mientras no estabas, y tu gente ha aguantado como ha podido."
-        texto += (f" Tienes {_rato(a['quedan'])}: ve allí y defiéndelo en persona, la pelea empieza al entrar en el barrio, o abre el móvil, Territorios, y envía a tu gente. "
-                  + ("Si no haces nada, defenderá sola la guardia del barrio." if self.rec_barrio(a["barrio"])["guardia"] else "Si no haces nada, lo pierdes."))
+            texto += tr(" Empezó mientras no estabas, y tu gente ha aguantado como ha podido.")
+        texto += (tr(' Tienes {_rato}: ve allí y defiéndelo en persona, la pelea empieza al entrar en el barrio, o abre el móvil, Territorios, y envía a tu gente. ').format(_rato=(_rato(a['quedan'])))
+                  + (tr("Si no haces nada, defenderá sola la guardia del barrio.") if self.rec_barrio(a["barrio"])["guardia"] else tr("Si no haces nada, lo pierdes.")))
         self._rec_decir(texto, "amenaza_barrio")
 
     def rec_pasar_horas(self, horas):
@@ -559,7 +560,7 @@ class Reconquista:
             a["gracia"] = True
             nuevo = min(a["quedan"], gracia)
             self.son("amenaza_barrio", cat="interfaz")
-            self.decir(f"Mientras no estabas, tu gente ha aguantado en {a['nombre']}, pero no puede más: te quedan {_rato(nuevo)} para defenderlo o enviar refuerzos.")
+            self.decir(tr('Mientras no estabas, tu gente ha aguantado en {nombre}, pero no puede más: te quedan {_rato} para defenderlo o enviar refuerzos.').format(nombre=(a['nombre']), _rato=(_rato(nuevo))))
         a["quedan"] = nuevo
 
     def rec_plan_persona(self):
@@ -596,11 +597,11 @@ class Reconquista:
         """Mandas a tu banda a defender el barrio asaltado. Devuelve (hecho, frase)."""
         a = self.j.reconquista.get("asalto")
         if not a or a["estado"] != "en_curso":
-            return False, "Ahora mismo nadie está asaltando un barrio tuyo."
+            return False, tr("Ahora mismo nadie está asaltando un barrio tuyo.")
         if self.j.banda < 1:
-            return False, "No tienes a nadie en tu banda a quien enviar. Recluta gente en Territorios, Tu banda, o ve tú en persona."
+            return False, tr("No tienes a nadie en tu banda a quien enviar. Recluta gente en Territorios, Tu banda, o ve tú en persona.")
         if self.guerra and self.guerra.get("rec"):
-            return False, "Ya estás tú allí, peleando."
+            return False, tr("Ya estás tú allí, peleando.")
         return True, self._rec_calculo("gente", azar)
 
     def _rec_calculo(self, modo, azar=random):
@@ -612,17 +613,17 @@ class Reconquista:
         az = AJ("envio_azar")
         sd, sa = azar.uniform(-az, az), azar.uniform(-az, az)
         td, ta = poder + sd, a["fuerza"] + sa
-        texto = f"{_y(a['bandas'])} ataca {a['nombre']} con una fuerza de {int(round(a['fuerza']))}. "
+        texto = tr('{_y} ataca {nombre} con una fuerza de {int}. ').format(_y=(_y(a['bandas'])), nombre=(a['nombre']), int=(int(round(a['fuerza']))))
         if modo == "gente":
-            texto += (f"Tu defensa suma {int(round(poder))}: {int(round(base))} del barrio y {int(round(poder - base))} de "
-                      + ("el único que envías" if j.banda == 1 else f"los {j.banda} que envías") + ". ")
+            texto += (tr('Tu defensa suma {int}: {int2} del barrio y {int3} de ').format(int=(int(round(poder))), int2=(int(round(base))), int3=(int(round(poder - base))))
+                      + (tr("el único que envías") if j.banda == 1 else tr('los {banda} que envías').format(banda=(j.banda))) + ". ")
         else:
-            texto += f"No has ido ni has enviado a nadie: defiende sola la guardia del barrio, con {int(round(poder))}. "
-        texto += f"La suerte: {_suerte(sd)} para los tuyos, y {_suerte(sa)} para ellos. Resultado: {int(round(td))} contra {int(round(ta))}. "
+            texto += tr('No has ido ni has enviado a nadie: defiende sola la guardia del barrio, con {int}. ').format(int=(int(round(poder))))
+        texto += tr('La suerte: {_suerte} para los tuyos, y {_suerte2} para ellos. Resultado: {int} contra {int2}. ').format(_suerte=(_suerte(sd)), _suerte2=(_suerte(sa)), int=(int(round(td))), int2=(int(round(ta))))
         gana = td >= ta
         if modo == "gente" and j.banda > 0 and (not gana or td - ta < 10) and azar.random() * 100 < AJ("baja_prob"):
             j.banda -= 1
-            texto += f"En la pelea cae uno de los tuyos: te quedan {j.banda}. "
+            texto += tr('En la pelea cae uno de los tuyos: te quedan {banda}. ').format(banda=(j.banda))
         if gana:
             self.rec_defendido(modo, texto)
         else:
@@ -638,7 +639,7 @@ class Reconquista:
         if self.rec_barrio(a["barrio"])["guardia"]:
             self._rec_calculo("guardia")
         else:
-            self._rec_perdido(f"Nadie ha defendido {a['nombre']}. ")
+            self._rec_perdido(tr('Nadie ha defendido {nombre}. ').format(nombre=(a['nombre'])))
 
     def _rec_cerrar_asalto(self):
         r = self.rec()
@@ -669,13 +670,13 @@ class Reconquista:
             fin = self._rec_desmantelar(nombre)
             if fin:
                 extra.append(fin)
-        self._rec_decir(" ".join([texto.strip(), frase, f"{a['nombre']} sigue siendo tuyo."] + extra).strip(), None, modo != "persona")
+        self._rec_decir(" ".join([texto.strip(), frase, tr("{nombre} sigue siendo tuyo.").format(nombre=a['nombre'])] + extra).strip(), None, modo != "persona")
         self.cambiar_reputacion(AJ("fama_defensa"))
         if modo == "persona":
             j.stats["defensas"] = j.stats.get("defensas", 0) + 1
             premio = int(AJ("premio_defensa") * (0.5 if self.cfg["mod_dinero"] else 1.0))
             if premio:
-                self.dar_dinero(premio, "Lo que se han dejado en la huida")
+                self.dar_dinero(premio, tr("Lo que se han dejado en la huida"))
             self.cambiar_animo(4)
             from . import menus_juego
             menus_juego.autoguardar(self)
@@ -692,7 +693,7 @@ class Reconquista:
             return AJ.frase("frases_forastera_fin", banda=nombre)
         dias = random.randint(*sorted((AJ.entero("desmantela_min"), AJ.entero("desmantela_max"))))
         b.update(fuerza=0.0, moral=0.0, derrotas=0, fuera=self.dia + dias, tregua=0)
-        return AJ.frase("frases_desmantelada", banda=nombre) + f" No sabrás de ellos en unos {dias} días."
+        return AJ.frase("frases_desmantelada", banda=nombre) + tr(' No sabrás de ellos en unos {dias} días.').format(dias=(dias))
 
     def _rec_perdido(self, texto=""):
         j = self.j
@@ -715,8 +716,7 @@ class Reconquista:
             b["derrotas"] = max(0, b["derrotas"] - 1)
         j.stats["barrios_perdidos"] = j.stats.get("barrios_perdidos", 0) + 1
         self.son("barrio_perdido", cat="interfaz")
-        self._rec_decir(f"{texto.strip()} {AJ.frase('frases_perdido', banda=banda, barrio=a['nombre'])} Pierdes los {self.precio('tributo_territorio', 300)} euros que te daba cada medianoche, "
-                        "y algo de fama. Puedes reconquistarlo como cualquier otro barrio, en el móvil, en Territorios.".strip(), None, True)
+        self._rec_decir(tr('{strip} {frase} Pierdes los {precio} euros que te daba cada medianoche, y algo de fama. Puedes reconquistarlo como cualquier otro barrio, en el móvil, en Territorios.').format(strip=(texto.strip()), frase=(AJ.frase('frases_perdido', banda=banda, barrio=a['nombre'])), precio=(self.precio('tributo_territorio', 300))).strip(), None, True)
         self.cambiar_reputacion(-AJ("fama_perdida"))
         self.reconquista_revisar()
 
@@ -728,16 +728,16 @@ class Reconquista:
         if d > 0:
             if st["guardia"] >= AJ.entero("guardia_max"):
                 self.app.son("error")
-                return f"Ese barrio ya tiene los {AJ.entero('guardia_max')} guardias que admite."
+                return tr('Ese barrio ya tiene los {entero} guardias que admite.').format(entero=(AJ.entero('guardia_max')))
             if not self.pagar(coste):
                 return ""
             st["guardia"] += 1
-            return f"Contratado. Ahora hay {st['guardia']} de guardia fija, a {coste} euros cada uno cada medianoche. Defensa del barrio: {int(self.rec_defensa(bid))} de 100."
+            return tr('Contratado. Ahora hay {guardia} de guardia fija, a {coste} euros cada uno cada medianoche. Defensa del barrio: {int} de 100.').format(guardia=(st['guardia']), coste=(coste), int=(int(self.rec_defensa(bid))))
         if st["guardia"] <= 0:
             self.app.son("error")
-            return "En ese barrio no hay guardia fija."
+            return tr("En ese barrio no hay guardia fija.")
         st["guardia"] -= 1
-        return f"Despides a uno. Quedan {st['guardia']} de guardia fija. Defensa del barrio: {int(self.rec_defensa(bid))} de 100."
+        return tr('Despides a uno. Quedan {guardia} de guardia fija. Defensa del barrio: {int} de 100.').format(guardia=(st['guardia']), int=(int(self.rec_defensa(bid))))
 
     def rec_precio_refuerzo(self, bid):
         st = self.rec_barrio(bid)
@@ -748,27 +748,27 @@ class Reconquista:
         precio = self.rec_precio_refuerzo(bid)
         if not precio:
             self.app.son("error")
-            return "Ese barrio ya está reforzado al máximo."
+            return tr("Ese barrio ya está reforzado al máximo.")
         if not self.pagar(precio):
             return ""
         st["refuerzo"] += 1
         st["lealtad"] = min(100.0, st["lealtad"] + 5)
-        return f"Hecho: refuerzo de nivel {st['refuerzo']} de {AJ.entero('refuerzo_max')}. Puertas, vigías y gente del barrio pagada para avisar. Defensa: {int(self.rec_defensa(bid))} de 100."
+        return tr('Hecho: refuerzo de nivel {refuerzo} de {entero}. Puertas, vigías y gente del barrio pagada para avisar. Defensa: {int} de 100.').format(refuerzo=(st['refuerzo']), entero=(AJ.entero('refuerzo_max')), int=(int(self.rec_defensa(bid))))
 
     def rec_invertir(self, bid):
         st = self.rec_barrio(bid)
         if st["inversion"] == self.dia:
             self.app.son("error")
-            return "Hoy ya has puesto dinero en este barrio. Mañana, más."
+            return tr("Hoy ya has puesto dinero en este barrio. Mañana, más.")
         if st["lealtad"] >= 100:
             self.app.son("error")
-            return "La gente de este barrio ya está contigo a muerte: no hace falta."
+            return tr("La gente de este barrio ya está contigo a muerte: no hace falta.")
         if not self.pagar(AJ.entero("inversion_precio")):
             return ""
         st["inversion"] = self.dia
         st["lealtad"] = min(100.0, st["lealtad"] + AJ("lealtad_inversion"))
         self.son("prestigio", cat="interfaz")
-        return f"Arreglas lo que hace falta y se nota. Lealtad del barrio: {int(st['lealtad'])} de 100."
+        return tr('Arreglas lo que hace falta y se nota. Lealtad del barrio: {int} de 100.').format(int=(int(st['lealtad'])))
 
     def rec_informantes(self, d):
         """Sube o baja el nivel de tus informantes. Subir cuesta ya el primer día."""
@@ -776,34 +776,34 @@ class Reconquista:
         nuevo = max(0, min(AJ.entero("informante_max"), r["informantes"] + d))
         if nuevo == r["informantes"]:
             self.app.son("error")
-            return "No hay más niveles." if d > 0 else "Ya no tienes informantes."
+            return tr("No hay más niveles.") if d > 0 else tr("Ya no tienes informantes.")
         if nuevo > r["informantes"] and not self.pagar(AJ.entero("informante_coste")):
             return ""
         r["informantes"] = nuevo
         self._rec_avisar()
-        return (f"Informantes de nivel {nuevo}: {AJ.entero('informante_coste') * nuevo} euros cada medianoche. " + self.rec_informantes_txt(nuevo)) if nuevo else "Despides a tus informantes."
+        return (tr('Informantes de nivel {nuevo}: {v} euros cada medianoche. ').format(nuevo=(nuevo), v=(AJ.entero('informante_coste') * nuevo)) + self.rec_informantes_txt(nuevo)) if nuevo else tr("Despides a tus informantes.")
 
     @staticmethod
     def rec_informantes_txt(nivel):
-        return ("Sin informantes: te enteras el mismo día, si acaso por un rumor, o cuando ya han llegado.", "Te llega el rumor un día antes, con el barrio.",
-                "Chivatazo dos días antes, con la banda y el barrio.", "Lo sabes en cuanto lo deciden: banda, barrio, día, hora y fuerza.")[max(0, min(3, int(nivel)))]
+        return (tr("Sin informantes: te enteras el mismo día, si acaso por un rumor, o cuando ya han llegado."), tr("Te llega el rumor un día antes, con el barrio."),
+                tr("Chivatazo dos días antes, con la banda y el barrio."), tr("Lo sabes en cuanto lo deciden: banda, barrio, día, hora y fuerza."))[max(0, min(3, int(nivel)))]
 
     def golpe_motivo(self, banda):
         """Por qué no puedes dar ahora un golpe al escondite de esa banda, o vacío."""
         b = self.rec_banda(banda)
         if self.mundo.tipo != "ciudad":
-            return "Los escondites están en las ciudades. Ve a una."
+            return tr("Los escondites están en las ciudades. Ve a una.")
         if self.mision or self.trabajo or self.guerra:
-            return "Termina antes lo que tienes entre manos."
+            return tr("Termina antes lo que tienes entre manos.")
         if self.j.estrellas:
-            return "Con la policía detrás no es momento."
+            return tr("Con la policía detrás no es momento.")
         if self.dia <= b["fuera"]:
-            return f"{banda} está desmantelada: no hay a quién golpear."
+            return tr('{banda} está desmantelada: no hay a quién golpear.').format(banda=(banda))
         falta = int(b["golpe"]) + AJ.entero("golpe_espera") - self.dia
         if falta > 0:
-            return f"Después del último golpe, {banda} se ha escondido bien. Tus fuentes tardarán {_dias(falta)} en dar con ellos."
+            return tr('Después del último golpe, {banda} se ha escondido bien. Tus fuentes tardarán {_dias} en dar con ellos.').format(banda=(banda), _dias=(_dias(falta)))
         if b["fuerza"] < AJ("golpe_fuerza_min"):
-            return f"{banda} está tan deshecha que no tiene ni escondite que asaltar."
+            return tr('{banda} está tan deshecha que no tiene ni escondite que asaltar.').format(banda=(banda))
         return ""
 
     def empezar_golpe(self, banda):
@@ -826,29 +826,29 @@ class Reconquista:
         def grupo(clase, cuantos, mas=0):
             t = G.tipo_enemigo(clase)
             if not t:
-                return {"n": cuantos, "tipo": f"Pandillero de {banda}", "arma": random.choice(["pistola", "pistola", "subfusil", "bate"]), "salud": 70 + mas}
-            return {"n": cuantos, "clase": clase, "tipo": f"{t.get('nombre', 'Pandillero')} de {banda}", "salud": float(t.get("salud", 70)) + mas}
+                return {"n": cuantos, "tipo": tr('Pandillero de {banda}').format(banda=(banda)), "arma": random.choice(["pistola", "pistola", "subfusil", "bate"]), "salud": 70 + mas}
+            return {"n": cuantos, "clase": clase, "tipo": tr('{get} de {banda}').format(get=(t.get('nombre', tr('Pandillero'))), banda=(banda)), "salud": float(t.get("salud", 70)) + mas}
         base, duro = (tipos[0], tipos[-1]) if tipos else ("", "")
         variante = random.choice(["directo", "vigias", "arsenal"] + (["refuerzos"] if refuerzo else []))
         if variante == "directo":
-            pasos = [{"tipo": "eliminar", "lugar": l1.id, "texto": f"{banda} se esconde junto a {l1.nombre}: son {n}. Entra y no dejes a nadie.",
+            pasos = [{"tipo": "eliminar", "lugar": l1.id, "texto": tr('{banda} se esconde junto a {nombre}: son {n}. Entra y no dejes a nadie.').format(banda=(banda), nombre=(l1.nombre), n=(n)),
                       "enemigos": [grupo(base, n - 1), grupo(duro, 1, 15)]}]
         elif variante == "vigias":
-            pasos = [{"tipo": "eliminar", "lugar": l1.id, "texto": f"Primero, los vigías de {banda}: 2, junto a {l1.nombre}. Que no den la voz.", "enemigos": [grupo(base, 2)]},
-                     {"tipo": "eliminar", "lugar": l2.id, "texto": f"Ya no hay quien avise. El escondite está junto a {l2.nombre}: quedan {n - 1}.", "enemigos": [grupo(base, max(1, n - 2)), grupo(duro, 1, 15)]}]
+            pasos = [{"tipo": "eliminar", "lugar": l1.id, "texto": tr('Primero, los vigías de {banda}: 2, junto a {nombre}. Que no den la voz.').format(banda=(banda), nombre=(l1.nombre)), "enemigos": [grupo(base, 2)]},
+                     {"tipo": "eliminar", "lugar": l2.id, "texto": tr('Ya no hay quien avise. El escondite está junto a {nombre}: quedan {v}.').format(nombre=(l2.nombre), v=(n - 1)), "enemigos": [grupo(base, max(1, n - 2)), grupo(duro, 1, 15)]}]
         elif variante == "arsenal":
-            pasos = [{"tipo": "eliminar", "lugar": l1.id, "texto": f"{banda} guarda sus armas junto a {l1.nombre}, con {n - 1} de guardia. Acaba con ellos.", "enemigos": [grupo(base, max(1, n - 2)), grupo(duro, 1, 10)]},
-                     {"tipo": "recoger", "lugar": l1.id, "objeto": "La caja de armas", "texto": "Despejado. Busca la caja de armas y llévatela: sin ella no son nadie."}]
+            pasos = [{"tipo": "eliminar", "lugar": l1.id, "texto": tr('{banda} guarda sus armas junto a {nombre}, con {v} de guardia. Acaba con ellos.').format(banda=(banda), nombre=(l1.nombre), v=(n - 1)), "enemigos": [grupo(base, max(1, n - 2)), grupo(duro, 1, 10)]},
+                     {"tipo": "recoger", "lugar": l1.id, "objeto": tr("La caja de armas"), "texto": tr("Despejado. Busca la caja de armas y llévatela: sin ella no son nadie.")}]
         else:
             llegan = min(max(1, n - 2), int(G.tipo_enemigo(refuerzo).get("ocupantes", 3) or 3))
-            pasos = [{"tipo": "eliminar", "lugar": l1.id, "texto": f"El escondite de {banda} está junto a {l1.nombre}: {n} en total, y {llegan} de ellos llegarán en un vehículo en cuanto empiece. Escucha el motor.",
+            pasos = [{"tipo": "eliminar", "lugar": l1.id, "texto": tr('El escondite de {banda} está junto a {nombre}: {n} en total, y {llegan} de ellos llegarán en un vehículo en cuanto empiece. Escucha el motor.').format(banda=(banda), nombre=(l1.nombre), n=(n), llegan=(llegan)),
                       "enemigos": [g for g in (grupo(base, n - llegan - 1), grupo(duro, 1, 10), grupo(refuerzo, llegan, 5)) if g["n"] > 0]}]
         b["golpe"] = self.dia
         if self.dia <= b["tregua"]:                              # golpear a una banda con la que tienes tregua la rompe
             b["tregua"] = 0
             b["moral"] = min(100.0, b["moral"] + 15)
             self.cambiar_rep_banda(banda, -15, hablar=False)
-            self._rec_decir(f"Con este golpe rompes la tregua con {banda}. No lo olvidarán.", "amenaza_barrio")
+            self._rec_decir(tr('Con este golpe rompes la tregua con {banda}. No lo olvidarán.').format(banda=(banda)), "amenaza_barrio")
 
         def hecho():
             r, b = self.rec(), self.rec_banda(banda)             # tras reintentar la misión, el estado guardado es otro: se pide otra vez
@@ -868,10 +868,10 @@ class Reconquista:
                 else:
                     a["bandas"].remove(banda)
                     a["fuerza"] = round(a["fuerza"] * 0.6, 1)
-                    texto += f" {a['bandas'][0]} se queda sin su aliada."
+                    texto += tr(' {v} se queda sin su aliada.').format(v=(a['bandas'][0]))
             fin = self._rec_desmantelar(banda)
             self._rec_decir((texto + " " + fin).strip(), "barrio_defendido")
-        self._empezar_repetible({"id": "golpe_preventivo", "titulo": f"Golpe al escondite de {banda}", "lugar": l1.id, "contador": "golpes_preventivos", "banda": banda,
+        self._empezar_repetible({"id": "golpe_preventivo", "titulo": tr('Golpe al escondite de {banda}').format(banda=(banda)), "lugar": l1.id, "contador": "golpes_preventivos", "banda": banda,
                                  "variante": variante, "pasos": pasos, "recompensa": {"dinero": AJ.entero("golpe_paga")}, "al_completar": hecho})
         return True
 
@@ -885,28 +885,28 @@ class Reconquista:
         a = self.j.reconquista.get("asalto")
         if not a or a["estado"] != "en_curso" or not self.rec_nivel():
             return ""
-        return (f"{_y(a['bandas'])} está asaltando {a['nombre']}" + (f", en {a['ciudad']}" if a["mapa"] != self.mundo.id else "")
-                + f". Te quedan {_rato(a['quedan'])}: ve allí y defiéndelo, o envía a tu gente desde el móvil, en Territorios.")
+        return (tr('{_y} está asaltando {nombre}').format(_y=(_y(a['bandas'])), nombre=(a['nombre'])) + (tr(', en {ciudad}').format(ciudad=(a['ciudad'])) if a["mapa"] != self.mundo.id else "")
+                + tr('. Te quedan {_rato}: ve allí y defiéndelo, o envía a tu gente desde el móvil, en Territorios.').format(_rato=(_rato(a['quedan']))))
 
     def rec_amenaza_txt(self, bid):
         """El estado de amenaza de un barrio tuyo, que siempre se puede consultar. Los detalles dependen de lo que sepas."""
         r = self.rec()
         a = self.rec_asalto_de(bid)
         if a and a["estado"] == "en_curso":
-            return f"¡asalto en curso de {_y(a['bandas'])}! Quedan {_rato(a['quedan'])}"
+            return tr('¡asalto en curso de {_y}! Quedan {_rato}').format(_y=(_y(a['bandas'])), _rato=(_rato(a['quedan'])))
         if a:
             cuando = _cuando(a["dia"] - self.dia)
             if a["sabido"] >= 3:
-                return f"{_y(a['bandas'])} lo asaltará {cuando}, hacia las {a['hora']}, con una fuerza de {int(a['fuerza'])} de 100"
+                return tr('{_y} lo asaltará {cuando}, hacia las {hora}, con una fuerza de {int} de 100').format(_y=(_y(a['bandas'])), cuando=(cuando), hora=(a['hora']), int=(int(a['fuerza'])))
             if a["sabido"] == 2:
-                return f"{a['bandas'][0]} prepara un asalto para {cuando}"
+                return tr('{v} prepara un asalto para {cuando}').format(v=(a['bandas'][0]), cuando=(cuando))
             if a["sabido"] == 1:
-                return f"se rumorea un asalto para {cuando}"
-            return "alta: se nota movimiento raro por sus calles"
+                return tr('se rumorea un asalto para {cuando}').format(cuando=(cuando))
+            return tr("alta: se nota movimiento raro por sus calles")
         if not r["fase"]:
-            return "ninguna, de momento"
+            return tr("ninguna, de momento")
         if self.dia <= r["calma"]:
-            return f"baja: las bandas siguen lamiéndose las heridas, hasta el día {r['calma']}"
+            return tr('baja: las bandas siguen lamiéndose las heridas, hasta el día {calma}').format(calma=(r['calma']))
         listas = self._rec_listas()
         fuerte = max((self.rec_banda(n)["fuerza"] for n in listas), default=0.0)
         riesgo = fuerte / max(1.0, AJ("umbral_max")) * (0.5 + 0.5 * (100.0 - self.rec_defensa(bid)) / 100.0)
@@ -914,41 +914,41 @@ class Reconquista:
 
     @staticmethod
     def rec_fuerza_txt(f):
-        return "deshecha" if f < 15 else "rehaciéndose" if f < 35 else "con gente otra vez" if f < 55 else "fuerte" if f < 75 else "muy fuerte, lista para golpear"
+        return tr("deshecha") if f < 15 else tr("rehaciéndose") if f < 35 else tr("con gente otra vez") if f < 55 else tr("fuerte") if f < 75 else tr("muy fuerte, lista para golpear")
 
     def rec_banda_txt(self, nombre):
         b = self.rec_banda(nombre)
         if self.dia <= b["fuera"]:
-            return f"{nombre}: desmantelada hasta el día {b['fuera']}"
-        partes = [self.rec_fuerza_txt(b["fuerza"]) + (f", fuerza {int(b['fuerza'])} de 100" if self.rec()["informantes"] >= 2 else "")]
+            return tr('{nombre}: desmantelada hasta el día {fuera}').format(nombre=(nombre), fuera=(b['fuera']))
+        partes = [self.rec_fuerza_txt(b["fuerza"]) + (tr(', fuerza {int} de 100').format(int=(int(b['fuerza']))) if self.rec()["informantes"] >= 2 else "")]
         if b.get("forastera"):
-            partes.append("banda forastera")
+            partes.append(tr("banda forastera"))
         if self.dia <= b["tregua"]:
-            partes.append(f"en tregua contigo hasta el día {b['tregua']}")
+            partes.append(tr('en tregua contigo hasta el día {tregua}').format(tregua=(b['tregua'])))
         if nombre in self.j.tributos:
-            partes.append("te paga tributo y no ataca")
+            partes.append(tr("te paga tributo y no ataca"))
         if b["derrotas"]:
-            partes.append(f"lleva {b['derrotas']} de {AJ.entero('derrotas_desmantela')} derrotas para quedar desmantelada")
+            partes.append(tr('lleva {derrotas} de {entero} derrotas para quedar desmantelada').format(derrotas=(b['derrotas']), entero=(AJ.entero('derrotas_desmantela'))))
         return f"{nombre}: " + ", ".join(partes)
 
     def rec_estado_txt(self):
         r = self.rec()
         nivel = self.rec_nivel()
         if not nivel:
-            return "Reconquista: apagada o no disponible aquí"
+            return tr("Reconquista: apagada o no disponible aquí")
         if not r["fase"]:
-            return f"Reconquista, nivel {nivel}: todavía no. Empieza al tener todos los barrios de una ciudad, o {AJ.entero('suave_barrios')} barrios en total"
-        fase = {"suave": "tienes muchos barrios: las bandas se mueven despacio", "plena": "tienes una ciudad entera: las bandas quieren recuperarla",
-                "mundo": "tienes todas las ciudades: todas las bandas van a por ti"}[r["fase"]]
+            return tr('Reconquista, nivel {nivel}: todavía no. Empieza al tener todos los barrios de una ciudad, o {entero} barrios en total').format(nivel=(nivel), entero=(AJ.entero('suave_barrios')))
+        fase = {"suave": tr("tienes muchos barrios: las bandas se mueven despacio"), "plena": tr("tienes una ciudad entera: las bandas quieren recuperarla"),
+                "mundo": tr("tienes todas las ciudades: todas las bandas van a por ti")}[r["fase"]]
         if r["asalto"] and r["asalto"]["estado"] == "en_curso":
-            cola = "hay un asalto en curso"
+            cola = tr("hay un asalto en curso")
         elif self.dia <= r["calma"]:
-            cola = f"calma hasta el día {r['calma']}. Hoy es el día {self.dia}"
+            cola = tr('calma hasta el día {calma}. Hoy es el día {dia}').format(calma=(r['calma']), dia=(self.dia))
         elif self.dia <= r["descanso"]:
-            cola = f"las bandas descansan tras el último asalto, al menos hasta el día {r['descanso']}"
+            cola = tr('las bandas descansan tras el último asalto, al menos hasta el día {descanso}').format(descanso=(r['descanso']))
         else:
-            cola = "las bandas se están rehaciendo"
-        return f"Reconquista, nivel {nivel}: {fase}; {cola}"
+            cola = tr("las bandas se están rehaciendo")
+        return tr('Reconquista, nivel {nivel}: {fase}; {cola}').format(nivel=(nivel), fase=(fase), cola=(cola))
 
 
 # ====================================================================== menús
@@ -977,7 +977,7 @@ def menu_reconquista(p):
                 app.cerrar(app.pila[-1])
             if l is not None:
                 p.gps_a_lugar(l)
-            app.decir(f"{_y(a['bandas'])} está en {a['nombre']}" + (f", en {a['ciudad']}" if a["mapa"] != p.mundo.id else "") + f". Ve allí: la defensa empieza en cuanto entres en el barrio. Te quedan {_rato(a['quedan'])}.", True)
+            app.decir(tr('{_y} está en {nombre}').format(_y=(_y(a['bandas'])), nombre=(a['nombre'])) + (tr(', en {ciudad}').format(ciudad=(a['ciudad'])) if a["mapa"] != p.mundo.id else "") + tr('. Ve allí: la defensa empieza en cuanto entres en el barrio. Te quedan {_rato}.').format(_rato=(_rato(a['quedan']))), True)
         return f
 
     def enviar():
@@ -998,20 +998,20 @@ def menu_reconquista(p):
                     app.cerrar(app.pila[-1])
                 if l is not None:
                     p.gps_a_lugar(l)
-                app.decir(f"Marcado: {l.nombre if l else b['nombre']}, en {b['nombre']}. Con pasar por allí ya cuenta como visita.", True)
-            mb = Menu(app, lambda: f"{b['nombre']}, en {mapa.nombre}. Lealtad {int(st['lealtad'])} de 100, defensa {int(p.rec_defensa(bid))} de 100. Amenaza: {p.rec_amenaza_txt(bid)}", lambda: [
-                Opcion(lambda: f"Guardia fija: {st['guardia']} de {AJ.entero('guardia_max')}. Contratar a uno más, {AJ.entero('guardia_coste')} euros al día", decir(p.rec_guardia, bid, 1),
-                       ayuda="Gente que se queda en el barrio. Cada guardia sube la defensa, cobra cada medianoche y hace que la lealtad baje la mitad de deprisa. "
-                             "Si te asaltan y no haces nada, la guardia defiende sola; sin guardia, el barrio se pierde. Si una medianoche no puedes pagarles, se van. Pagas el primer día al contratar."),
-                Opcion("Despedir a un guardia", decir(p.rec_guardia, bid, -1), ayuda="Uno menos que pagar cada medianoche, y menos defensa."),
-                Opcion(lambda: (f"Reforzar el barrio: nivel {st['refuerzo']} de {AJ.entero('refuerzo_max')}. Subir cuesta {p.rec_precio_refuerzo(bid)} euros, una sola vez"
-                                if p.rec_precio_refuerzo(bid) else f"Reforzar el barrio: ya está al máximo, nivel {st['refuerzo']}"), decir(p.rec_reforzar, bid),
-                       ayuda="Una mejora que se paga una vez y se queda: vigías, puertas y gente avisada. Cada nivel sube la defensa, y cada nivel cuesta más que el anterior. "
-                             "Con más defensa, quien te asalte lo tiene peor contra tu gente, y si vas tú, vienen menos en cada oleada. Si pierdes el barrio, pierde un nivel."),
-                Opcion(lambda: f"Invertir en el barrio: {AJ.entero('inversion_precio')} euros. Tienes {j.dinero}", decir(p.rec_invertir, bid),
-                       ayuda="Dinero para la gente del barrio: sube su lealtad. Una vez al día por barrio. Un barrio leal se defiende mejor, es menos tentador para las bandas, "
-                             "y sus vecinos te avisan de lo que se prepara aunque no pagues informantes."),
-                Opcion("Marcarlo en el GPS para visitarlo", gps, ayuda="La lealtad baja si pasan días sin que pises el barrio, y sube la primera vez que entras en él cada día."),
+                app.decir(tr('Marcado: {v}, en {nombre}. Con pasar por allí ya cuenta como visita.').format(v=(l.nombre if l else b['nombre']), nombre=(b['nombre'])), True)
+            mb = Menu(app, lambda: tr('{nombre}, en {nombre2}. Lealtad {int} de 100, defensa {int2} de 100. Amenaza: {rec_amenaza_txt}').format(nombre=(b['nombre']), nombre2=(mapa.nombre), int=(int(st['lealtad'])), int2=(int(p.rec_defensa(bid))), rec_amenaza_txt=(p.rec_amenaza_txt(bid))), lambda: [
+                Opcion(lambda: tr('Guardia fija: {guardia} de {entero}. Contratar a uno más, {entero2} euros al día').format(guardia=(st['guardia']), entero=(AJ.entero('guardia_max')), entero2=(AJ.entero('guardia_coste'))), decir(p.rec_guardia, bid, 1),
+                       ayuda=tr("Gente que se queda en el barrio. Cada guardia sube la defensa, cobra cada medianoche y hace que la lealtad baje la mitad de deprisa. "
+                             "Si te asaltan y no haces nada, la guardia defiende sola; sin guardia, el barrio se pierde. Si una medianoche no puedes pagarles, se van. Pagas el primer día al contratar.")),
+                Opcion(tr("Despedir a un guardia"), decir(p.rec_guardia, bid, -1), ayuda=tr("Uno menos que pagar cada medianoche, y menos defensa.")),
+                Opcion(lambda: (tr('Reforzar el barrio: nivel {refuerzo} de {entero}. Subir cuesta {rec_precio_refuerzo} euros, una sola vez').format(refuerzo=(st['refuerzo']), entero=(AJ.entero('refuerzo_max')), rec_precio_refuerzo=(p.rec_precio_refuerzo(bid)))
+                                if p.rec_precio_refuerzo(bid) else tr('Reforzar el barrio: ya está al máximo, nivel {refuerzo}').format(refuerzo=(st['refuerzo']))), decir(p.rec_reforzar, bid),
+                       ayuda=tr("Una mejora que se paga una vez y se queda: vigías, puertas y gente avisada. Cada nivel sube la defensa, y cada nivel cuesta más que el anterior. "
+                             "Con más defensa, quien te asalte lo tiene peor contra tu gente, y si vas tú, vienen menos en cada oleada. Si pierdes el barrio, pierde un nivel.")),
+                Opcion(lambda: tr('Invertir en el barrio: {entero} euros. Tienes {dinero}').format(entero=(AJ.entero('inversion_precio')), dinero=(j.dinero)), decir(p.rec_invertir, bid),
+                       ayuda=tr("Dinero para la gente del barrio: sube su lealtad. Una vez al día por barrio. Un barrio leal se defiende mejor, es menos tentador para las bandas, "
+                             "y sus vecinos te avisan de lo que se prepara aunque no pagues informantes.")),
+                Opcion(tr("Marcarlo en el GPS para visitarlo"), gps, ayuda=tr("La lealtad baja si pasan días sin que pises el barrio, y sube la primera vez que entras en él cada día.")),
             ])
             app.abrir(mb)
         return f
@@ -1027,22 +1027,22 @@ def menu_reconquista(p):
                 def ya():
                     if not p.empezar_golpe(nombre):
                         app.son("error")
-                        app.decir("Aquí no hay dónde dar el golpe.", True)
+                        app.decir(tr("Aquí no hay dónde dar el golpe."), True)
                 if p.dia <= p.rec_banda(nombre)["tregua"]:
-                    return app.abrir(Menu(app, f"Tienes una tregua con {nombre}. Si das el golpe, la rompes", [Opcion("Dar el golpe de todas formas", ya), Opcion("Dejarlo", lambda: app.cerrar())]))
+                    return app.abrir(Menu(app, tr('Tienes una tregua con {nombre}. Si das el golpe, la rompes').format(nombre=(nombre)), [
+                        Opcion(tr("Dar el golpe de todas formas"), ya, ayuda=tr("Rompes la tregua: esa banda te coge manía, se crece y puede volver a asaltar tus barrios.")),
+                        Opcion(tr("Dejarlo"), lambda: app.cerrar())]))
                 ya()
 
             def tregua():
                 from . import pactos
                 pactos.menu_tregua(p, nombre, lambda: [mm.refrescar(False) for mm in app.pila if isinstance(mm, Menu) and mm is not app.pila[0]])
             mb = Menu(app, lambda: p.rec_banda_txt(nombre), [
-                Opcion(lambda: f"Dar un golpe a su escondite. Paga {AJ.entero('golpe_paga')} euros", golpe,
-                       ayuda=f"Una misión corta, cada vez distinta, en la ciudad en la que estés: asaltas el escondite donde se están rehaciendo. Si la cumples, pierden el {AJ.entero('golpe_quita')} por ciento de su fuerza, "
-                             "cuenta como una derrota y, si eran ellos quienes preparaban un asalto, se suspende. Hace falta que tengan fuerza bastante para tener escondite, "
-                             f"y no se puede repetir contra la misma banda hasta pasados {_dias(AJ.entero('golpe_espera'))}. Si tienes una tregua con ellos, la rompes."),
-                Opcion(lambda: f"Pactar una tregua con {nombre}" if p.dia > p.rec_banda(nombre)["tregua"] else f"Tregua en vigor hasta el día {p.rec_banda(nombre)['tregua']}", tregua,
-                       ayuda="Les pagas y durante unos días no asaltan tus barrios, y se rehacen la mitad de deprisa. Si estaban preparando un asalto, lo dejan. "
-                             "Piden más cuanto más fuertes están y peor os lleváis; se puede regatear una vez. La tregua se puede romper: ellos, algún día, sin avisar antes, o tú, si das un golpe a su escondite."),
+                Opcion(lambda: tr('Dar un golpe a su escondite. Paga {entero} euros').format(entero=(AJ.entero('golpe_paga'))), golpe,
+                       ayuda=tr('Una misión corta, cada vez distinta, en la ciudad en la que estés: asaltas el escondite donde se están rehaciendo. Si la cumples, pierden el {entero} por ciento de su fuerza, cuenta como una derrota y, si eran ellos quienes preparaban un asalto, se suspende. Hace falta que tengan fuerza bastante para tener escondite, y no se puede repetir contra la misma banda hasta pasados {_dias}. Si tienes una tregua con ellos, la rompes.').format(entero=(AJ.entero('golpe_quita')), _dias=(_dias(AJ.entero('golpe_espera'))))),
+                Opcion(lambda: tr('Pactar una tregua con {nombre}').format(nombre=(nombre)) if p.dia > p.rec_banda(nombre)["tregua"] else tr('Tregua en vigor hasta el día {tregua}').format(tregua=(p.rec_banda(nombre)['tregua'])), tregua,
+                       ayuda=tr("Les pagas y durante unos días no asaltan tus barrios, y se rehacen la mitad de deprisa. Si estaban preparando un asalto, lo dejan. "
+                             "Piden más cuanto más fuertes están y peor os lleváis; se puede regatear una vez. La tregua se puede romper: ellos, algún día, sin avisar antes, o tú, si das un golpe a su escondite.")),
             ])
             app.abrir(mb)
         return f
@@ -1053,41 +1053,40 @@ def menu_reconquista(p):
             app.decir(t, True)
 
     def partes():
-        app.decir("Últimos partes. " + " ".join(reversed(r["partes"])) if r["partes"] else "Todavía no ha pasado nada que contar.", True)
+        app.decir(tr("Últimos partes. ") + " ".join(reversed(r["partes"])) if r["partes"] else tr("Todavía no ha pasado nada que contar."), True)
 
     def ops():
         lista = [Opcion(lambda: p.rec_estado_txt(), lambda: app.decir(EXPLICACION, True),
-                        ayuda="Pulsa Intro para oír cómo funciona todo. " + EXPLICACION)]
+                        ayuda=tr("Pulsa Intro para oír cómo funciona todo. ") + EXPLICACION)]
         a = r["asalto"]
         if a and a["estado"] == "en_curso":
-            lista.append(Opcion(lambda: f"Asalto a {a['nombre']}: ir en persona. Quedan {_rato(a['quedan'])}", ir(a),
-                                ayuda="Marca el barrio en el GPS. La defensa empieza al entrar en él: vienen por oleadas, cada una más dura, y tu banda acude a tu lado. "
-                                      "Mientras peleas, el plazo no corre. Si sales del barrio o caes, el asalto sigue y puedes volver a intentarlo o enviar a tu gente."))
-            lista.append(Opcion(lambda: (f"Enviar a tu gente a defender {a['nombre']}: unas {int(round(p.rec_posibilidades() * 10))} de cada 10 posibilidades" if j.banda
-                                         else f"Enviar a tu gente a defender {a['nombre']}: no tienes a nadie en la banda"), enviar,
-                                ayuda="Tu banda va sin ti y el resultado se calcula al momento: la fuerza de ellos contra la defensa del barrio más lo que suma cada uno de los tuyos, y la suerte de cada bando. "
-                                      "Se te dice con sus números. Puede caer alguno de los tuyos. Si sale mal, pierdes el barrio."))
+            lista.append(Opcion(lambda: tr('Asalto a {nombre}: ir en persona. Quedan {_rato}').format(nombre=(a['nombre']), _rato=(_rato(a['quedan']))), ir(a),
+                                ayuda=tr("Marca el barrio en el GPS. La defensa empieza al entrar en él: vienen por oleadas, cada una más dura, y tu banda acude a tu lado. "
+                                      "Mientras peleas, el plazo no corre. Si sales del barrio o caes, el asalto sigue y puedes volver a intentarlo o enviar a tu gente.")))
+            lista.append(Opcion(lambda: (tr('Enviar a tu gente a defender {nombre}: unas {int} de cada 10 posibilidades').format(nombre=(a['nombre']), int=(int(round(p.rec_posibilidades() * 10)))) if j.banda
+                                         else tr('Enviar a tu gente a defender {nombre}: no tienes a nadie en la banda').format(nombre=(a['nombre']))), enviar,
+                                ayuda=tr("Tu banda va sin ti y el resultado se calcula al momento: la fuerza de ellos contra la defensa del barrio más lo que suma cada uno de los tuyos, y la suerte de cada bando. "
+                                      "Se te dice con sus números. Puede caer alguno de los tuyos. Si sale mal, pierdes el barrio.")))
         elif a and a["sabido"] >= 1:
-            lista.append(Opcion(lambda: f"Lo que sabes: {a['nombre']}, {p.rec_amenaza_txt(a['barrio'])}",
-                                ayuda="Aún no ha empezado. Puedes reforzar ese barrio, ponerle guardia, pactar una tregua con esa banda o dar un golpe a su escondite antes de que llegue el día."))
+            lista.append(Opcion(lambda: tr('Lo que sabes: {nombre}, {rec_amenaza_txt}').format(nombre=(a['nombre']), rec_amenaza_txt=(p.rec_amenaza_txt(a['barrio']))),
+                                ayuda=tr("Aún no ha empezado. Puedes reforzar ese barrio, ponerle guardia, pactar una tregua con esa banda o dar un golpe a su escondite antes de que llegue el día.")))
         for mapa, b in p.rec_barrios():
-            lista.append(Opcion(lambda b=b, mapa=mapa: f"{b['nombre']}, en {mapa.nombre}: lealtad {int(p.rec_barrio(b['id'])['lealtad'])}, defensa {int(p.rec_defensa(b['id']))}, "
-                                f"guardias {p.rec_barrio(b['id'])['guardia']}. Amenaza: {p.rec_amenaza_txt(b['id'])}", barrio(mapa, b),
-                                ayuda="Intro abre el barrio: guardia fija, refuerzos, invertir y marcarlo en el GPS. La lealtad y la defensa van de 0 a 100. "
-                                      "La amenaza se puede consultar siempre; con informantes, o con el barrio de tu parte, sabrás además quién viene y cuándo."))
-        lista.append(Opcion(lambda: f"Informantes: nivel {r['informantes']} de {AJ.entero('informante_max')}, {AJ.entero('informante_coste') * r['informantes']} euros al día. {p.rec_informantes_txt(r['informantes'])}",
+            lista.append(Opcion(lambda b=b, mapa=mapa: tr('{nombre}, en {nombre2}: lealtad {int}, defensa {int2}, guardias {guardia}. Amenaza: {rec_amenaza_txt}').format(nombre=(b['nombre']), nombre2=(mapa.nombre), int=(int(p.rec_barrio(b['id'])['lealtad'])), int2=(int(p.rec_defensa(b['id']))), guardia=(p.rec_barrio(b['id'])['guardia']), rec_amenaza_txt=(p.rec_amenaza_txt(b['id']))), barrio(mapa, b),
+                                ayuda=tr("Intro abre el barrio: guardia fija, refuerzos, invertir y marcarlo en el GPS. La lealtad y la defensa van de 0 a 100. "
+                                      "La amenaza se puede consultar siempre; con informantes, o con el barrio de tu parte, sabrás además quién viene y cuándo.")))
+        lista.append(Opcion(lambda: tr('Informantes: nivel {informantes} de {entero}, {v} euros al día. {rec_informantes_txt}').format(informantes=(r['informantes']), entero=(AJ.entero('informante_max')), v=(AJ.entero('informante_coste') * r['informantes']), rec_informantes_txt=(p.rec_informantes_txt(r['informantes']))),
                             lambda: informantes(1), ajuste=None,
-                            ayuda="Intro sube un nivel; la opción siguiente lo baja. Cada nivel cuesta lo mismo cada medianoche, y el primer día se paga al contratar. "
+                            ayuda=tr("Intro sube un nivel; la opción siguiente lo baja. Cada nivel cuesta lo mismo cada medianoche, y el primer día se paga al contratar. "
                                   "Nivel 1: el rumor, un día antes. Nivel 2: chivatazo dos días antes, con la banda, y ves la fuerza exacta de cada banda. Nivel 3: mensaje al móvil en cuanto lo deciden, con día, hora y fuerza. "
-                                  "Sin informantes, un barrio con mucha lealtad también te avisa: con 50, como el nivel 1; con 75, como el 2. Si una medianoche no puedes pagarles, se van."))
-        lista.append(Opcion("Bajar un nivel de informantes", lambda: informantes(-1), ayuda="Pagas menos cada medianoche y te enteras más tarde."))
+                                  "Sin informantes, un barrio con mucha lealtad también te avisa: con 50, como el nivel 1; con 75, como el 2. Si una medianoche no puedes pagarles, se van.")))
+        lista.append(Opcion(tr("Bajar un nivel de informantes"), lambda: informantes(-1), ayuda=tr("Pagas menos cada medianoche y te enteras más tarde.")))
         for nombre in p.rec_nombres():
             lista.append(Opcion(lambda nombre=nombre: p.rec_banda_txt(nombre), banda(nombre),
-                                ayuda="Intro abre lo que puedes hacer con esta banda: darle un golpe a su escondite o pactar una tregua. "
-                                      "Su fuerza crece cada día; cuando es bastante, prepara un asalto. Con informantes de nivel 2 ves la cifra exacta."))
-        lista.append(Opcion("Últimos partes: lo que ha ido pasando", partes, ayuda="Los últimos avisos, asaltos y resultados, por si se te pasó alguno."))
+                                ayuda=tr("Intro abre lo que puedes hacer con esta banda: darle un golpe a su escondite o pactar una tregua. "
+                                      "Su fuerza crece cada día; cuando es bastante, prepara un asalto. Con informantes de nivel 2 ves la cifra exacta.")))
+        lista.append(Opcion(tr("Últimos partes: lo que ha ido pasando"), partes, ayuda=tr("Los últimos avisos, asaltos y resultados, por si se te pasó alguno.")))
         return lista
-    m = Menu(app, "Defensa de tus barrios", ops, intro="F1 explica cada opción. La primera, con Intro, cuenta cómo funciona todo")
+    m = Menu(app, tr("Defensa de tus barrios"), ops, intro=tr("F1 explica cada opción. La primera, con Intro, cuenta cómo funciona todo"))
     app.abrir(m)
 
 
@@ -1099,10 +1098,10 @@ def opciones_territorios(p, Opcion):
     a = r["asalto"]
     arriba = []
     if a and a["estado"] == "en_curso":
-        arriba.append(Opcion(lambda: f"¡Asalto a {a['nombre']}! {_y(a['bandas'])}. Quedan {_rato(a['quedan'])}: defenderlo", lambda: menu_reconquista(p),
-                             ayuda="Abre Defensa de tus barrios: desde allí marcas el barrio en el GPS para ir en persona, o envías a tu gente. Si no haces nada antes de que se acabe el plazo, "
-                                   "defiende sola la guardia fija, si la hay; si no, lo pierdes."))
-    abajo = [Opcion(lambda: "Defensa de tus barrios. " + p.rec_estado_txt(), lambda: menu_reconquista(p),
-                    ayuda="Las bandas que has vencido intentan recuperar tus barrios. Aquí ves la amenaza, la lealtad y la defensa de cada uno, pones guardias y refuerzos, pagas informantes, "
-                          "pactas treguas, das golpes a los escondites y, cuando te asaltan, envías a tu gente. Dentro, la primera opción lo explica todo.")]
+        arriba.append(Opcion(lambda: tr('¡Asalto a {nombre}! {_y}. Quedan {_rato}: defenderlo').format(nombre=(a['nombre']), _y=(_y(a['bandas'])), _rato=(_rato(a['quedan']))), lambda: menu_reconquista(p),
+                             ayuda=tr("Abre Defensa de tus barrios: desde allí marcas el barrio en el GPS para ir en persona, o envías a tu gente. Si no haces nada antes de que se acabe el plazo, "
+                                   "defiende sola la guardia fija, si la hay; si no, lo pierdes.")))
+    abajo = [Opcion(lambda: tr("Defensa de tus barrios. ") + p.rec_estado_txt(), lambda: menu_reconquista(p),
+                    ayuda=tr("Las bandas que has vencido intentan recuperar tus barrios. Aquí ves la amenaza, la lealtad y la defensa de cada uno, pones guardias y refuerzos, pagas informantes, "
+                          "pactas treguas, das golpes a los escondites y, cuando te asaltan, envías a tu gente. Dentro, la primera opción lo explica todo."))]
     return arriba, abajo

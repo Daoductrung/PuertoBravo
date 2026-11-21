@@ -1,0 +1,15 @@
+{
+"Documentación": "Documentation",
+"El componente contiene rutas no permitidas. No se instala.": "The component contains paths that aren't allowed. It won't be installed.",
+"El componente es demasiado grande.": "The component is too large.",
+"El componente está dañado.": "The component is damaged.",
+"El componente intenta escribir fuera de su sitio. No se instala.": "The component tries to write outside its place. It won't be installed.",
+"El componente intenta tocar tus datos personales. No se instala.": "The component tries to touch your personal data. It won't be installed.",
+"Idiomas": "Languages",
+"Mods": "Mods",
+"Packs de sonidos": "Sound packs",
+"Un componente no es válido: {id}.": "A component isn't valid: {id}.",
+"Voces": "Voices",
+"instalar el componente": "install the component",
+"{nombre} instalado, versión {version}.": "{nombre} installed, version {version}."
+}

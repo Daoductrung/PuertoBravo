@@ -13,6 +13,7 @@ leen en voz alta; el claxon; y el dinero que se envíen. Cada jugador conserva s
 Protocolo: TCP, una línea de JSON por mensaje. La conexión no va cifrada: no escribas por el chat nada que
 no dirías en voz alta. Usa solo la biblioteca estándar.
 """
+from .i18n import tr
 import hashlib
 import hmac
 import json
@@ -25,8 +26,8 @@ PUERTO = 47810
 VERSION_RED = 1
 MAX_LINEA = 65536
 PREFIJO = "puertobravo://"
-AVISO_FILTROS = ("Si tú o tu amigo usáis AdGuard, un antivirus con protección de red o un cortafuegos, puede estar bloqueando la conexión: "
-                 "añade Puerto Bravo a sus excepciones, o desactiva el filtrado para este programa, y prueba otra vez.")
+AVISO_FILTROS = (tr("Si tú o tu amigo usáis AdGuard, un antivirus con protección de red o un cortafuegos, puede estar bloqueando la conexión: "
+                 "añade Puerto Bravo a sus excepciones, o desactiva el filtrado para este programa, y prueba otra vez."))
 
 
 def huella(clave):
@@ -103,7 +104,7 @@ class _Lineas:
     def leer(self):
         while b"\n" not in self.buf:
             if len(self.buf) > MAX_LINEA:
-                raise ValueError("mensaje demasiado largo")
+                raise ValueError(tr("mensaje demasiado largo"))
             trozo = self.sock.recv(4096)
             if not trozo:
                 return None
@@ -207,15 +208,15 @@ class Servidor:
                 return
             motivo = None
             if hola.get("v") != VERSION_RED:
-                motivo = "Tu versión del juego no es la misma que la del anfitrión."
+                motivo = tr("Tu versión del juego no es la misma que la del anfitrión.")
             elif self.huella and not hmac.compare_digest(str(hola.get("clave", "")), self.huella):
-                motivo = "La contraseña no es correcta."
+                motivo = tr("La contraseña no es correcta.")
             elif len(self.jugadores) >= self.max:
-                motivo = "La partida está llena."
+                motivo = tr("La partida está llena.")
             if motivo:
                 _enviar(conn, lock, {"t": "rechazo", "motivo": motivo})
                 return
-            nombre = "".join(c for c in str(hola.get("nombre", "")) if c.isprintable())[:24].strip() or "Invitado"
+            nombre = "".join(c for c in str(hola.get("nombre", "")) if c.isprintable())[:24].strip() or tr("Invitado")
             with self._lock:
                 usados = {j["nombre"].lower() for j in self.jugadores.values()}
                 base, n = nombre, 2
@@ -343,7 +344,7 @@ class Cliente:
             except OSError:
                 if intento + 1 < intentos and cortada:
                     continue
-                return False, ("No se pudo conectar. Comprueba la dirección, que tu amigo tenga la partida abierta y que su router deje pasar el puerto. "
+                return False, (tr("No se pudo conectar. Comprueba la dirección, que tu amigo tenga la partida abierta y que su router deje pasar el puerto. ")
                                + AVISO_FILTROS)
             cortada = False
             try:
@@ -363,14 +364,14 @@ class Cliente:
             except OSError:
                 pass
             if not cortada:
-                return False, "Lo que hay en esa dirección no es una partida de Puerto Bravo."
+                return False, tr("Lo que hay en esa dirección no es una partida de Puerto Bravo.")
         else:
-            return False, "La conexión se corta nada más empezar. " + AVISO_FILTROS
+            return False, tr("La conexión se corta nada más empezar. ") + AVISO_FILTROS
         if not r or r.get("t") not in ("ok", "rechazo"):
-            return False, "La conexión se corta nada más empezar. " + AVISO_FILTROS
+            return False, tr("La conexión se corta nada más empezar. ") + AVISO_FILTROS
         if r["t"] == "rechazo":
             s.close()
-            return False, str(r.get("motivo", "El anfitrión ha rechazado la conexión."))
+            return False, str(r.get("motivo", tr("El anfitrión ha rechazado la conexión.")))
         s.settimeout(None)
         self.sock, self.conectado, self.id, self.nombre = s, True, r.get("id"), r.get("nombre", nombre)
         self.host, self.puerto = host, puerto

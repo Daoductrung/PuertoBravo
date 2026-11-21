@@ -229,7 +229,7 @@ def test_la_misma_clasificacion_en_aprender_en_el_volumen_y_en_la_guia(app):
     app.cerrar(principal)
     # 3. la guía de sonidos
     import html as html_
-    guia = open(rutas.data("docs", "cambiar_sonidos.html"), encoding="utf-8").read().split("Lista completa de sonidos</h2>")[1]
+    guia = open(rutas.data("docs", "cambiar_sonidos_es.html"), encoding="utf-8").read().split("Lista completa de sonidos</h2>")[1]
     trozos = guia.split("<h3>")[1:]
     assert [(html_.unescape(x.split("</h3>")[0]), re.findall(r"<li><code>(\w+)</code>: ", x)) for x in trozos] == patron
     for titulo, lista in patron:
@@ -658,9 +658,9 @@ def test_ningun_sonido_queda_fuera_de_los_volumenes_de_opciones(app):
 
 
 def test_la_documentacion_cuenta_lo_de_los_sonidos():
-    manual = open(rutas.data("docs", "manual.html"), encoding="utf-8").read()
-    guia = open(rutas.data("docs", "cambiar_sonidos.html"), encoding="utf-8").read()
-    novedades = open(rutas.data("docs", "novedades.html"), encoding="utf-8").read()
+    manual = open(rutas.data("docs", "manual_es.html"), encoding="utf-8").read()
+    guia = open(rutas.data("docs", "cambiar_sonidos_es.html"), encoding="utf-8").read()
+    novedades = open(rutas.data("docs", "novedades_es.html"), encoding="utf-8").read()
     leeme = open(os.path.join(rutas.base(), "README.md"), encoding="utf-8").read()
     assert "Aprender los sonidos" in manual and "Los más importantes" in manual
     assert "BigSoundBank" in guia or "bigsoundbank" in guia
@@ -676,4 +676,4 @@ def test_la_documentacion_cuenta_lo_de_los_sonidos():
     for viejo in ("Firmas de los lugares", "Puertas, horas del día y vida honrada", "La compra y la cocina", "Jugar con amigos y en un servidor"):
         assert viejo not in manual and viejo not in guia and viejo not in leeme, viejo
     assert "Buscar un sonido" in guia and "Buscar un sonido" in novedades
-    assert "catalogo_sonidos" in leeme and "Suprimir" in open(rutas.data("docs", "teclas.html"), encoding="utf-8").read()
+    assert "catalogo_sonidos" in leeme and "Suprimir" in open(rutas.data("docs", "teclas_es.html"), encoding="utf-8").read()

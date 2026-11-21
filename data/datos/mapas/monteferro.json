@@ -14,7 +14,7 @@
   ],
   "bloques": {"5,4": "plaza", "5,0": "hierba"},
   "lugares": [
-    {"id": "mf_estacion", "nombre": "Estación de autobuses de Monteferro", "tipo": "estacion", "bloque": [3, 2], "lado": "S", "pos": 36, "precio": 30, "vehiculo": "autobus", "desc": "La estación de la sierra."},
+    {"id": "mf_estacion", "cajero": true, "nombre": "Estación de autobuses de Monteferro", "tipo": "estacion", "bloque": [3, 2], "lado": "S", "pos": 36, "precio": 30, "vehiculo": "autobus", "desc": "La estación de la sierra."},
     {"id": "mf_salida_sur", "nombre": "Salida sur, carretera de Villaseca", "tipo": "salida", "bloque": [2, 0], "lado": "S", "pos": 36, "a_mapa": "villaseca", "a_lugar": "vs_salida_norte", "km": 30, "horas": 0.7, "desc": "La carretera de montaña que baja a Villaseca."},
     {"id": "mf_salida_norte", "nombre": "Salida norte, carretera de Fuentefría", "tipo": "salida", "bloque": [3, 4], "lado": "N", "pos": 36, "a_mapa": "fuentefria", "a_lugar": "ff_salida", "km": 14, "horas": 0.4, "desc": "La carretera que sube al pueblo de Fuentefría."},
     {"id": "mf_helipuerto", "nombre": "Helipuerto de Monteferro", "tipo": "helipuerto", "bloque": [5, 4], "xy": [36, 36], "vehiculo": "helicoptero", "precio": 150, "desc": ""},
@@ -25,7 +25,7 @@
     {"id": "mf_mina", "nombre": "Mina La Esperanza", "tipo": "monumento", "bloque": [5, 0], "xy": [40, 40], "sonido": "lugar_mina", "desc": ""},
     {"id": "mf_taberna", "nombre": "Taberna del Sindicato", "tipo": "taberna", "bloque": [1, 2], "lado": "N", "pos": 36, "desc": "La taberna de los mineros. Carmela, la presidenta del sindicato, tiene aquí su despacho, que es una mesa junto a la estufa."},
     {"id": "mf_economato", "nombre": "Economato minero", "tipo": "tienda", "bloque": [2, 1], "lado": "O", "pos": 36, "desc": "La tienda de los mineros: barata y con de todo."},
-    {"id": "mf_gasolinera", "nombre": "Gasolinera de la Sierra", "tipo": "tienda", "surtidor": true, "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Gasolinera de montaña."},
+    {"id": "mf_gasolinera", "cajero": true, "nombre": "Gasolinera de la Sierra", "tipo": "tienda", "surtidor": true, "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Gasolinera de montaña."},
     {"id": "mf_casa", "nombre": "Casa del capataz", "tipo": "casa", "bloque": [3, 3], "lado": "S", "pos": 36, "precio": 9000, "garaje": 2, "desc": "Una casa de piedra con tejado de pizarra y garaje para dos vehículos."},
     {"id": "mf_chale", "nombre": "Chalé de la ladera", "tipo": "casa", "bloque": [5, 2], "lado": "O", "pos": 36, "precio": 20000, "garaje": 4, "desc": "Un chalé de montaña con chimenea y garaje para cuatro vehículos."},
     {"id": "mf_ferreteria", "nombre": "Ferretería El Yunque", "tipo": "negocio", "bloque": [4, 3], "lado": "S", "pos": 36, "precio": 16000, "ingresos": 480, "sonido": "lugar_tienda", "desc": "La ferretería de toda la sierra."},
@@ -36,7 +36,7 @@
     {"id": "mf_desguace", "nombre": "Desguace de la Sierra", "tipo": "desguace", "bloque": [0, 1], "lado": "E", "pos": 36, "vehiculo": "camion", "desc": "Compran vehículos al peso."},
     {"id": "mf_concesionario", "nombre": "Motor Sierra", "tipo": "concesionario", "bloque": [5, 1], "lado": "S", "pos": 36, "modelos": ["todoterreno", "pickup", "monster", "buggy", "quad", "caravana", "bici"], "desc": "Especialistas en vehículos de montaña."},
     {"id": "mf_cine", "nombre": "Cine Minero", "tipo": "cine", "bloque": [1, 3], "lado": "S", "pos": 36, "desc": "Un cine de barrio con sesión doble."},
-    {"id": "mf_parador", "nombre": "Parador de Monteferro", "tipo": "hotel", "bloque": [4, 3], "lado": "N", "pos": 36, "precio_noche": 80, "desc": "Un antiguo convento convertido en hotel."},
+    {"id": "mf_parador", "cajero": true, "nombre": "Parador de Monteferro", "tipo": "hotel", "bloque": [4, 3], "lado": "N", "pos": 36, "precio_noche": 80, "desc": "Un antiguo convento convertido en hotel."},
     {"id": "mf_taxi", "nombre": "Parada de taxis de Monteferro", "tipo": "taxi", "bloque": [3, 2], "lado": "N", "pos": 36, "vehiculo": "taxi", "desc": "La parada de taxis de la sierra."},
     {"id": "mf_loteria", "nombre": "Lotería La Veta de Oro", "tipo": "loteria", "bloque": [1, 0], "lado": "N", "pos": 36, "desc": "Administración de lotería."},
     {"id": "mf_ropa", "nombre": "Confecciones La Sierra", "tipo": "ropa", "bloque": [2, 2], "lado": "S", "pos": 36, "desc": "Ropa de abrigo y monos de trabajo."},
@@ -62,7 +62,7 @@
     {"id": "monteferro_tranvia_7", "nombre": "Parada de tranvía de Calle de la Estación, en La Ladera", "tipo": "tranvia", "bloque": [3, 3], "lado": "S", "pos": 62, "desc": "Una marquesina con un banco y el cartel de la línea. El tranvía recorre Monteferro parando en todos los barrios.", "orden": 4},
     {"id": "monteferro_tranvia_8", "nombre": "Parada de tranvía de Carretera de Fuentefría, en La Ladera", "tipo": "tranvia", "bloque": [5, 4], "lado": "N", "pos": 62, "desc": "Una marquesina con un banco y el cartel de la línea. El tranvía recorre Monteferro parando en todos los barrios.", "orden": 5},
     {"id": "monteferro_tren", "nombre": "Estación de tren de Monteferro", "tipo": "tren", "bloque": [3, 2], "lado": "N", "pos": 62, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
-    {"id": "monteferro_aeropuerto", "nombre": "Aeropuerto de Monteferro", "tipo": "aeropuerto", "bloque": [0, 4], "lado": "N", "pos": 45, "precio": 180, "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."}
+    {"id": "monteferro_aeropuerto", "cajero": true, "nombre": "Aeropuerto de Monteferro", "tipo": "aeropuerto", "bloque": [0, 4], "lado": "N", "pos": 45, "precio": 180, "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."}
   ],
   "tren_eje": "H",
   "tren_n": 3,

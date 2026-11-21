@@ -1,0 +1,80 @@
+<h3>Mods que vienen con el juego</h3>
+<p>El juego trae ocho mods completos, ya activados. Suman una ciudad, tres pueblos, una isla y muchas horas de juego:</p>
+<ul>
+<li>Bahía del Ocaso: una ciudad grande en la costa oeste, a la que se llega por la salida oeste de Puerto Bravo que lleva su nombre, en autobús, por mar o en helicóptero. Lleva tres años sin llover y el agua es el contrabando. Tiene seis barrios, más de cincuenta lugares y tres bandas: Los Aljibes, la Peña del Cobre y Los Vigías. Su historia son veintiuna misiones en cuatro capítulos, y empieza en Grúas y Cisternas Barral, en el barrio del Cauce Seco. Además: cuatro encargos honrados, un camión cisterna, un cupé rebajado, una ranchera, una moto de monte, un lanchón, tres armas, tres carreras, casas, dos negocios, dos personajes para elegir y, con el contenido para adultos, un club, dos personas y una misión.</li>
+<li>Costa Dorada: un pueblo pesquero al oeste de Puerto Bravo, al que se llega por la salida oeste, en autobús o por mar. Tiene su historia en cinco misiones, un encargo honrado, casi todos los tipos de lugar, tres armas, un buggy, una furgoneta de reparto, un velero y un autogiro, una carrera, comidas, peces y dos personajes para elegir. Con el contenido para adultos, además, un club, un proveedor, una persona, un regalo, un plan y una sustancia.</li>
+<li>Valdeolmos: un pueblo de viñas al norte, al que se llega por la salida noreste de Puerto Bravo o en autobús. Tres misiones sobre un fraude de vino, un encargo honrado, una carrera de tractores, pesca de río, una escopeta de caza, una hoz, un tractor con remolque y un personaje.</li>
+<li>Peñas Altas: un pueblo minero en lo alto de la sierra, al que se llega por la salida norte de Puerto Bravo que lleva su nombre, o en autobús. Cuatro misiones sobre una mina cerrada que alguien explota de noche, un encargo honrado, una carabina de monte, un pico y cartuchos de dinamita, un quad, una moto de trial y un volquete con el que hacer portes, una subida de montaña, pesca en el Lago Negro, búsqueda de tesoros en la escombrera y dos personajes. Con el contenido para adultos, un bar de copas, un proveedor, una persona y una historia.</li>
+<li>Isla de los Vientos: una isla mar adentro, al este, a la que solo se llega navegando o en helicóptero. Tres misiones contra unos raqueros que asaltan las barcas, un encargo honrado, una casa, unas salinas que dan dinero, pesca en la rompiente, tesoros en las dunas, un fusil de pesca submarina silencioso, un garfio, un catamarán, una moto de agua y un personaje marinero.</li>
+<li>Noches de neón: la noche de Puerto Bravo, en un barrio de locales al noreste. Una sala de conciertos, una churrería de madrugada, un hotel, un ático, una cooperativa de taxis nocturnos con su taxi para trabajar, una limusina, un scooter, una carrera nocturna, tres misiones de chófer y un personaje. Con el contenido para adultos, una sala de fiestas, dos personas a las que conocer, planes, regalos, un cóctel y dos historias.</li>
+<li>Oficios y recados: más vida honrada en Puerto Bravo, con un club de tiro deportivo, un banco de alimentos, una empresa de mensajería, un piso, una moto de reparto, un personaje y dos encargos.</li>
+<li>Motor y asfalto: para quien solo quiere conducir. Tres coches y una moto nuevos, la Escudería Viento Sur con su taller y su escuela de pilotos, tres carreras por Puerto Bravo, un piloto para elegir y dos misiones al volante.</li>
+</ul>
+<p>Para quitar uno, desactívalo en el editor con <kbd>Control M</kbd> o borra su archivo de <strong>data\mods</strong>. Para añadir un mod que te hayan pasado, copia su archivo, de extensión <strong>.pbm</strong>, en esa misma carpeta.</p>
+<h3>Traducir el juego a otro idioma</h3>
+<p>Cada idioma es una carpeta dentro de <strong>data\idiomas</strong>, con el código de dos letras del idioma: <strong>en</strong> es el inglés, <strong>it</strong> sería el italiano, <strong>fr</strong> el francés. Dentro está <strong>textos.json</strong>, que dice cómo se dice en ese idioma cada texto del juego, que se escribe siempre en español. Para traducirlo a un idioma nuevo:</p>
+<ol>
+<li>Copia la carpeta <strong>data\idiomas\en</strong> y ponle el código del idioma nuevo, por ejemplo <strong>data\idiomas\it</strong>.</li>
+<li>En su <strong>textos.json</strong>, cambia el texto de la derecha de cada línea por el de tu idioma. El de la izquierda, el español, no se toca. Lo que va entre llaves, como <code>{dinero}</code>, se deja tal cual: ahí pone el juego el dato. Un texto que dejes sin traducir sale en español.</li>
+<li>Abre el juego: ya lo reconoce por el código de la carpeta y sale en Opciones, Idioma. Si quieres que se llame de otra manera, añade en la carpeta un archivo <strong>idioma.json</strong> con <code>{"nombre": "Italiano"}</code>.</li>
+<li>Si traduces también las guías, guárdalas en <strong>data\docs</strong> con el código al final: <strong>manual_it.html</strong>, <strong>teclas_it.html</strong>. Las voces de las escenas van en <strong>data\voces</strong>, en una carpeta por historia con el código al final, como <strong>historia_principal_it</strong>, y con los mismos nombres de archivo que las españolas.</li>
+</ol>
+<p>Si nos mandas tu traducción, la publicamos como componente, y a todos les llega desde Opciones, Actualizaciones, Componentes, sin esperar a una versión nueva del juego.</p>
+<p>Los textos de un mod se ven tal como los escribe su autor. Los de los mods que vienen con el juego están traducidos, como el resto del juego.</p>
+<h3>El editor de mods</h3>
+<p>Para crear tus propios mods está el programa <strong>EditorMods.exe</strong>, junto al juego. Es un editor accesible con lector de pantalla con el que se crea todo lo que admite un mod, rellenando formularios: lugares, misiones con todos sus pasos, armas, vehículos, carreras, comida, objetos, peces, personajes, mapas enteros, la gente de la calle, las bandas, los tipos de enemigo, la policía de cada nivel de búsqueda, las mejoras del taller, la caja de los locales y, para el modo adulto, personas, planes, regalos y sustancias. Comprueba el mod antes de guardarlo y lo deja en <strong>data\mods</strong>, listo para jugar. Con él puedes abrir también los mods que vienen con el juego para ver cómo están hechos. Su manual es <a href="editor_mods_es.html">editor_mods_es.html</a>, y se abre desde el propio editor con <kbd>F1</kbd>.</p>
+<p>Con el editor puedes crear tus propios vehículos, sin saber programar: coches, motos, camiones, barcos y aeronaves. En la sección Vehículos, pulsa Añadir y rellena el nombre, la velocidad máxima, la aceleración, la frenada, la resistencia, el sonido del motor y su tono, el claxon, la sirena si la lleva, si es una embarcación o si vuela, el depósito y el precio. Después dile al juego dónde sale: en los barrios por los que circula y aparca, en un concesionario o una náutica, que lo venden si le has puesto precio, o como vehículo de un trabajo o de una misión. Lo más rápido es traer uno del juego con el botón Copiar del juego original y cambiarle lo que quieras.</p>
+
+<h2>18. Tu personaje: quién eres y cómo vistes</h2>
+<p>Al empezar una partida nueva eliges personaje. La historia es la misma para todos, y los demás te llaman por el nombre del que elijas; cambian las ventajas con las que empiezas.</p>
+<ul>
+<li>Dani Roca: de todo un poco. Empieza con un botiquín y sin puntos débiles.</li>
+<li>Álex Montes: fue piloto de rallies. Empieza con la conducción al nivel cinco y tres juegos de ganzúas.</li>
+<li>Sam Ferrer: ocho años en el ejército. Empieza con la puntería al nivel cuatro, más salud, una navaja y dos botiquines.</li>
+<li>Cris Navarro: vendía seguros. Empieza con ochocientos euros, buen ánimo, algo de fama y el aprecio de los vecinos.</li>
+</ul>
+<h3>En masculino o en femenino</h3>
+<p>Después de elegir a uno de estos cuatro, el juego pregunta cómo quieres que te hablen: en masculino o en femenino. Cambia cómo te tratan los demás y cómo te habla el propio juego: bienvenido o bienvenida, el sobrino o la sobrina de Encarna, hijo o hija. La historia, las misiones y las ventajas son exactamente las mismas. Se guarda con la partida y no se cambia después.</p>
+<p>Los personajes que añaden algunos mods ya son él o ella, y con ellos no se pregunta.</p>
+<h3>Crear tu propio personaje</h3>
+<p>La última opción de la lista es Crear tu propio personaje. Es un menú con estos datos; se recorre con flecha arriba y flecha abajo:</p>
+<ul>
+<li>Nombre y apellido: <kbd>Intro</kbd> abre un cuadro para escribirlo. Valen letras, espacios y guiones, hasta veinte. El apellido puede quedarse vacío. En la historia te llamarán así.</li>
+<li>Te hablan: en masculino o en femenino. Se cambia con flecha izquierda, flecha derecha o <kbd>Intro</kbd>.</li>
+<li>Tu voz en las escenas: la de Dani, la de Álex, la de Sam o la de Cris. Es la voz con la que hablas tú en la historia; cada una tiene su versión de hombre y de mujer, y suena la que corresponde a cómo te hablan. Se cambia con flecha izquierda y derecha.</li>
+<li>Cómo se pronuncia tu nombre: de serie, igual que se escribe. Si al escucharlo no suena bien, <kbd>Intro</kbd> abre un cuadro para escribirlo como se dice, por ejemplo Yónatan en vez de Jonathan. En pantalla y en braille sigue saliendo como lo escribiste.</li>
+<li>Escuchar cómo te llamarán: genera una frase con tu nombre, dicha por un personaje de la historia. Tarda un momento.</li>
+<li>Escuchar tu voz: genera una frase dicha por ti, con la voz elegida.</li>
+<li>Conducción, puntería, resistencia y pesca: flecha derecha sube un nivel y flecha izquierda lo baja. Tienes ocho niveles para repartir, con cinco como mucho en cada habilidad. Cada opción dice cuántos te quedan. Después se sigue subiendo con la práctica y en las academias, hasta el diez.</li>
+<li>Ventaja de salida, a elegir una con flecha izquierda y derecha: ninguna; ahorros, ochocientos euros; fortaleza, más salud y dos botiquines; manos rápidas, tres juegos de ganzúas; una navaja y dos botiquines; o don de gentes, con buen ánimo, algo de fama y el aprecio de los vecinos.</li>
+<li>Empezar la partida. Hace falta haber puesto el nombre. Si te quedan niveles sin repartir, el juego avisa una vez y con un segundo <kbd>Intro</kbd> empieza igualmente.</li>
+</ul>
+<p><kbd>F1</kbd> explica cada dato. El nombre que escribas no se anota en el registro de la sesión. Las tres últimas opciones de voz, la de la pronunciación y las dos de escuchar, solo salen si tu equipo puede con el generador de voces.</p>
+<p>Al empezar, el juego prepara las voces que te nombran: se explica más adelante, en el apartado Las voces de tu propio personaje.</p>
+<p>Se pueden añadir personajes ya hechos con el editor de mods.</p>
+
+<h3>Ropa, complementos y protecciones</h3>
+<ul>
+<li>En las tiendas de ropa, la ropa está ordenada por estilos: de calle, deportiva, elegante, de trabajo, de fiesta, de playa, de abrigo y táctica. Hay más de treinta conjuntos, desde unos vaqueros con camiseta hasta un esmoquin o un vestido de noche, y <kbd>F1</kbd> describe cada uno.</li>
+<li>Calzado: zapatillas de calle, de marca o de correr, botas de montaña, de agua, de trabajo o militares, zapatos de vestir, mocasines, tacones, botines, sandalias y chanclas, cada uno con su estilo. Si el calzado es del mismo estilo que la ropa, vas conjuntado.</li>
+<li>Complementos: gafas, cadenas, anillos, relojes, gorras, pendientes, bolsos, cinturones, pulseras, bufandas, corbatas, perfumes y piercings, baratos y de marca. Se llevan además de la ropa, uno de cada clase. Estrenar uno sube el ánimo, más cuanto más caro.</li>
+<li>Lo que compras es tuyo para siempre. En la tienda, lo tuyo dice «ya es tuyo: te lo pones gratis»; y en el menú de tus casas, Vestirte reúne toda tu ropa, tu calzado y tus complementos para ponértelos o quitártelos sin pagar.</li>
+<li>El estilo cuenta. A cada persona de tu vida social le gusta un estilo: si vas así a una cita, se nota y os acerca algo más, y más aún si vas conjuntado. Después de un par de citas, su ficha te dice qué estilo le gusta. Vestir elegante ayuda a vender coches en el concesionario.</li>
+<li>Cambiarte de ropa, en una tienda o en casa, despista a la policía si te busca con uno o dos niveles y no hay agentes cerca.</li>
+<li>La tienda, el menú Vestirte y la tecla de estado dicen lo que llevas puesto, con el calzado. La ropa, el calzado y los complementos están en los datos del juego: con el editor de mods se cambian y se añaden, cada uno con su estilo y su descripción.</li>
+<li>Dos prendas llevan refuerzos: la ropa táctica y el uniforme de camuflaje. Al ponértelas, el blindaje sube a 40 o a 30 si llevabas menos.</li>
+<li>En las armerías, además del chaleco, que deja el blindaje en 100, están la pechera táctica, que lo deja en 150, y el equipo táctico completo, en 200.</li>
+</ul>
+<h2>19. La vida honrada</h2>
+<p>Se puede terminar el juego rico sin cometer un solo delito. Todo lo honrado sube tu prestigio entre los vecinos; los delitos lo bajan. Con buen prestigio cobras más en los trabajos y la policía te pasa por alto las faltas pequeñas. Y se puede ser las dos cosas: buena persona de día y delincuente de noche, con lo que eso trae. Lo cuenta el apartado Vida, reputación y consecuencias, un poco más abajo.</p>
+<ul>
+<li>Oficina de empleo, una en cada ciudad: reúne todos los trabajos. Las jornadas son trabajos sin vehículo: pasan ocho horas y cobras; solo una al día. En los oficios con vehículo, <kbd>Intro</kbd> marca en el GPS dónde hay uno aparcado; sube con <kbd>F</kbd> y pulsa <kbd>J</kbd>.</li>
+<li>Jornadas: camarero, reponedor, peón de descarga, carpintero, soldador, ayudante de mecánico y socorrista. Las más duras pagan más y cansan.</li>
+<li>Vendedor de coches: en cualquier concesionario puedes trabajar una jornada. Cobras un sueldo fijo y una comisión del dos por ciento de cada coche que vendas; vendes más con buena fama entre los vecinos, con experiencia y yendo bien arreglado. En el mismo sitio está la tentación: pedir las llaves para una prueba y no volver. Es un robo a la vista de todos y la policía sale a por ti con fuerza.</li>
+<li>Ascensos: cada ocho servicios en un oficio asciendes de rango y cobras un doce por ciento más. Suena una fanfarria corta.</li>
+<li>Academias y autoescuelas: un curso cuesta 250 euros y cuatro horas, y sube una habilidad mucho más deprisa que la práctica. Uno al día.</li>
+<li>Comedores sociales y bancos de alimentos: puedes donar dinero o hacer cuatro horas de voluntariado, que no se cobra pero sube mucho el ánimo y el prestigio.</li>
+<li>Sucesos callejeros: ayudar también cuenta.</li>
+<li>Tu carrera: en el móvil, resume tu vida honrada y tu vida delictiva, con tus rangos en cada oficio.</li>
+<li>Contratos fijos, estudios con título, negocios que crecen, créditos e hipotecas, y una historia propia sin delitos: todo eso está más abajo, en Vida, reputación y consecuencias.</li>
+</ul>

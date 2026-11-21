@@ -1504,15 +1504,15 @@ def test_las_opciones_los_datos_el_editor_y_la_documentacion(robot, datos_de_ser
     assert "hangar_precio" in {cp["k"] for cp in ESQUEMAS["lugar"]["campos"]}
     # la documentación
     docs = os.path.join(rutas.base(), "data", "docs")
-    manual = open(os.path.join(docs, "manual.html"), encoding="utf-8").read()
+    manual = open(os.path.join(docs, "manual_es.html"), encoding="utf-8").read()
     for trozo in ("Volar de verdad", "La travesía", "piloto automático", "Hangares", "Secuestrar un aparato", "el radar", "Piloto comercial", "Vuelo real", "Aterrizaje asistido",
                   "Tono de altitud", "tono de alineación", "tormenta", "Plan de vuelo", "la D sube y la A baja"):
         assert trozo in manual, trozo
-    teclas = open(os.path.join(docs, "teclas.html"), encoding="utf-8").read()
+    teclas = open(os.path.join(docs, "teclas_es.html"), encoding="utf-8").read()
     assert "la D sube y la A baja" in teclas and "En una travesía en vuelo" in teclas
-    editor = open(os.path.join(docs, "editor_mods.html"), encoding="utf-8").read()
+    editor = open(os.path.join(docs, "editor_mods_es.html"), encoding="utf-8").read()
     assert "Volar: números y frases" in editor and "Aeronaves" in editor and "Mapa del aire" in editor
-    novedades = open(os.path.join(docs, "novedades.html"), encoding="utf-8").read()
+    novedades = open(os.path.join(docs, "novedades_es.html"), encoding="utf-8").read()
     for trozo in ("Volar de verdad", "hangar", "Secuestrar", "piloto comercial", "Vuelo real"):
         assert trozo in novedades, trozo
     # los sonidos nuevos están en el catálogo, con nombre y explicación

@@ -1036,11 +1036,11 @@ def test_el_sonido_de_espera_esta_en_todos_los_packs_y_todo_esta_documentado():
     for pack in ("realista", "alternativo", "retro", "envolvente"):
         assert glob.glob(os.path.join(RAIZ, "data", "sonidos", pack, "espera_servidor.*")), pack
     docs = os.path.join(RAIZ, "data", "docs")
-    with open(os.path.join(docs, "manual.html"), encoding="utf-8") as f:
+    with open(os.path.join(docs, "manual_es.html"), encoding="utf-8") as f:
         manual = f.read()
     for trozo in ("Si el servidor se reinicia o se corta la conexión", "pantalla de espera", "Jugar en línea", "Si tienes un servidor abierto", "vuelve a arrancar solo"):
         assert trozo in manual, trozo
-    with open(os.path.join(docs, "servidor.html"), encoding="utf-8") as f:
+    with open(os.path.join(docs, "servidor_es.html"), encoding="utf-8") as f:
         guia = f.read()
     for trozo in ("<code>parada_aviso</code>", "<code>parada_espera</code>", "<code>actualizar</code>", "<code>reiniciar</code>", "--actualizar", "parar.txt",
                   "código 75", "Actualizar el servidor", "esperan y vuelven a entrar solos"):

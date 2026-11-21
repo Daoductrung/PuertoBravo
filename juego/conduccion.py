@@ -1,4 +1,5 @@
 """Vehículos: conducción del jugador (asistida o libre), tráfico, policía motorizada."""
+from .i18n import tr
 import math
 import random
 
@@ -47,7 +48,7 @@ class Conduccion:
         elif self.cfg["conduccion"] == "asistida" or self.chofer_conduce():
             self.libre_temp = not self._alinear(v)
             if self.libre_temp:
-                self.decir("Estás fuera de la calzada: conducción libre hasta que vuelvas a una calle.")
+                self.decir(tr("Estás fuera de la calzada: conducción libre hasta que vuelvas a una calle."))
         else:
             self.libre_temp = False
         v.aviso_cruce = None
@@ -186,10 +187,10 @@ class Conduccion:
                 self.son("frenazo", vol=0.6)
                 if abs(v.vel) > 30:
                     self.danar_vehiculo(v, 4)
-                    self.decir("¡Derrapas!")
+                    self.decir(tr("¡Derrapas!"))
                 v.vel *= 0.6
             via = m.avenidas[i] if cand in (0, 2) else m.calles[j]
-            self.decir(("Fin de la vía. " if forzado else "") + f"{via}, hacia el {M.NOMBRE_DIR[cand]}.")
+            self.decir((tr("Fin de la vía. ") if forzado else "") + tr('{via}, hacia el {v}.').format(via=(via), v=(M.NOMBRE_DIR[cand])))
         return cand
 
     def _parar_intermitente(self):
@@ -211,62 +212,62 @@ class Conduccion:
         j = self.j
         if self.mundo.tipo == "mar" and j.veh:
             if j.veh.modelo.get("vuela"):
-                self.decir("No puedes bajarte de un helicóptero sobre el mar." if not self.vuelo_real() else "No puedes posarte sobre el mar.", True)
+                self.decir(tr("No puedes bajarte de un helicóptero sobre el mar.") if not self.vuelo_real() else tr("No puedes posarte sobre el mar."), True)
                 return
             if abs(j.veh.vel) > 3:
-                self.decir("Frena antes de tirarte al agua.", True)
+                self.decir(tr("Frena antes de tirarte al agua."), True)
                 return
             self.salir_vehiculo()                               # te tiras al agua: el barco se queda donde está
-            self.empezar_a_nadar("Te tiras al agua.")
+            self.empezar_a_nadar(tr("Te tiras al agua."))
             return
         if j.veh:
             if j.veh.modelo.get("vuela") and self.vuelo_real() and self.vuelo_aterrizar(j.veh):
                 return                                           # en el aire: la F aterriza, y al tocar tierra te bajas
             if abs(j.veh.vel) > 3:
-                self.decir("Frena antes de bajarte.", True)
+                self.decir(tr("Frena antes de bajarte."), True)
                 return
             if j.veh.modelo.get("vuela") and not self.mundo.transitable(j.veh.x, j.veh.y):
-                self.decir("No puedes aterrizar aquí: debajo hay un edificio. Busca una calle o un espacio abierto; la tecla C te dice sobre qué estás.", True)
+                self.decir(tr("No puedes aterrizar aquí: debajo hay un edificio. Busca una calle o un espacio abierto; la tecla C te dice sobre qué estás."), True)
                 return
             self.salir_vehiculo()
             return
         if self.forzando:
             self.forzando["canal"].parar()
             self.forzando = None
-            self.decir("Dejas de forzar la cerradura.", True)
+            self.decir(tr("Dejas de forzar la cerradura."), True)
             return
         cerca = [v for v in self.vehiculos if not v.muerto and v.dist(j.x, j.y) <= 5.5 and not getattr(v, "volando", False)]
         if not cerca:
-            self.decir("No hay ningún vehículo a tu lado. Usa el radar con Tabulador para encontrar uno.", True)
+            self.decir(tr("No hay ningún vehículo a tu lado. Usa el radar con Tabulador para encontrar uno."), True)
             return
-        v = min(cerca, key=lambda v: (v.tag != "mision", v.dist(j.x, j.y)))
+        v = min(cerca, key=lambda v: (v.tag != "mision", not self._tuyo_para_subir(v), v.dist(j.x, j.y)))
         if v.ardiendo >= 0:
-            self.decir("¡Ese vehículo está ardiendo!", True)
+            self.decir(tr("¡Ese vehículo está ardiendo!"), True)
             return
         if self.sv_pedir_vehiculo(v):                            # lo dejó ahí otro jugador: el servidor dice quién se lo lleva
             return
         if v.ia == "policia" and not v.desplegado and v.ocupado:
-            self.decir("Ese coche patrulla está lleno de policías.", True)
+            self.decir(tr("Ese coche patrulla está lleno de policías."), True)
             return
         if v.ia == "enemigos" and v.ocupado:
-            self.decir("Ese vehículo está lleno de enemigos.", True)
+            self.decir(tr("Ese vehículo está lleno de enemigos."), True)
             return
         if v.ia == "ambulancia":
-            self.decir("Los sanitarios están trabajando y no te dejan subir.", True)
+            self.decir(tr("Los sanitarios están trabajando y no te dejan subir."), True)
             return
         if v.ia == "chofer":                                     # tu chófer, que todavía está llegando: para y te recoge
             self._chofer_llega(v)
         if v.ia in ("trafico", "huida") and v.ocupado:
             if abs(v.vel) > 6:
-                self.decir("Va demasiado rápido para abrir la puerta.", True)
+                self.decir(tr("Va demasiado rápido para abrir la puerta."), True)
                 return
             self.son_puerta(v, xy=(v.x, v.y))
-            p = Persona("civil", *self.mundo.punto_libre(v.x + 2, v.y + 2), nombre="Conductor")
+            p = Persona("civil", *self.mundo.punto_libre(v.x + 2, v.y + 2), nombre=tr("Conductor"))
             p.estado = "huye"
             p.t_estado = 12
             self.personas.append(p)
             self.voz_persona(p, "grito", vol=1.0)
-            self.delito(2, "robo de vehículo con violencia")
+            self.delito(2, tr("robo de vehículo con violencia"))
             v.ocupado = False
             self._subir(v, True)
             return
@@ -274,9 +275,15 @@ class Conduccion:
             con_ganzua = j.objetos.get("ganzua", 0) > 0
             self.forzando = {"veh": v, "t": 1.5 if con_ganzua else 3.5, "ganzua": con_ganzua,
                              "canal": self.son("ganzua", bucle=True, vol=0.7)}
-            self.decir(f"Fuerzas la cerradura de {v.nombre}" + (" con la ganzúa." if con_ganzua else ". No te muevas."), True)
+            self.decir(tr('Fuerzas la cerradura de {nombre}').format(nombre=(v.nombre)) + (tr(" con la ganzúa.") if con_ganzua else tr(". No te muevas.")), True)
             return
         self._subir(v, v.ia == "policia" or not getattr(v, "propio", False))
+
+    def _tuyo_para_subir(self, v):
+        """Con varios vehículos pegados, la F prefiere el tuyo, o al que te lleva el GPS, al de un desconocido."""
+        g = self.gps or {}
+        return (self.es_mio(v) or v is getattr(self, "ultimo_veh", None) or getattr(v, "traido", False) or getattr(v, "red_dueno", False)
+                or v is g.get("cosa") or v is g.get("sigue"))
 
     def son_puerta(self, v, xy=None):
         """Subir o bajar no suena igual en todo: una moto y una bici no tienen puerta, un barco es una cubierta,
@@ -308,10 +315,12 @@ class Conduccion:
             elif v.con_alarma:
                 v.alarma = self.son("alarma", bucle=True, xy=(v.x, v.y), ref=8, maxd=110, vol=0.8)
                 v.t_alarma = 18.0
-                self.decir("¡Salta la alarma!")
-                self.delito(1.2, "robo de vehículo", siempre=bool(v.tag))
+                self.decir(tr("¡Salta la alarma!"))
+                self.delito(1.2, tr("robo de vehículo"), siempre=bool(v.tag))
             else:
-                self.delito(0.5, "robo de vehículo")
+                self.delito(0.5, tr("robo de vehículo"))
+            if not v.tag:
+                self.moc_botin("guantera")                       # a veces hay algo en la guantera (mochila.py)
             self._subir(v, True)
 
     def _subir(self, v, robado, callar=False):
@@ -330,7 +339,7 @@ class Conduccion:
             self.plazas_activas.pop(v.plaza, None)
             v.plaza = None
         if v.ia == "policia":
-            self.delito(3, "robo de un coche patrulla", siempre=True)
+            self.delito(3, tr("robo de un coche patrulla"), siempre=True)
         v.ia = None
         v.ocupado = False
         v.vel = 0.0
@@ -365,14 +374,22 @@ class Conduccion:
         if con_chofer:
             self.decir(self.chofer_texto_subir(v), True)
             return
-        suyo = f", tu {v.modelo['nombre']}" if v.nombre != v.modelo["nombre"] and getattr(v, "mio", False) else ""      # con nombre propio: se dice también qué es
-        txt = f"Subes a {v.nombre}{suyo}. Estado {int(100 * v.salud / v.salud_max)} por ciento. Miras al {M.cardinal(v.rumbo)}."
+        suyo = tr(', tu {nombre}').format(nombre=(v.modelo['nombre'])) if v.nombre != v.modelo["nombre"] and getattr(v, "mio", False) else ""      # con nombre propio: se dice también qué es
+        txt = tr('Subes a {nombre}{suyo}. Estado {int} por ciento. Miras al {cardinal}.').format(nombre=(v.nombre), suyo=(suyo), int=(int(100 * v.salud / v.salud_max)), cardinal=(M.cardinal(v.rumbo)))
         if v.modelo.get("trabajo"):
-            txt += " Pulsa J para trabajar con este vehículo."
+            txt += tr(" Pulsa J para trabajar con este vehículo.")
         if v.modelo.get("sirena"):
-            txt += " La tecla P enciende la sirena."
+            txt += tr(" La tecla P enciende la sirena.")
         if v.modelo.get("vuela"):
-            txt += self.vuelo_texto_subir(v) if self.vuelo_real() else " Vuelas por encima de todo: izquierda y derecha giran, arriba acelera. Para bajarte, detente sobre una calle o un espacio abierto."
+            txt += self.vuelo_texto_subir(v) if self.vuelo_real() else tr(" Vuelas por encima de todo: izquierda y derecha giran, arriba acelera. Para bajarte, detente sobre una calle o un espacio abierto.")
+        elif self.cfg["piloto_gps"] and not v.modelo.get("barco") and self.mundo.tipo != "mar":
+            # el piloto se puede dejar puesto en Opciones: que se sepa por qué no arranca solo
+            if not self.modo_asistido():
+                txt += tr(" Tienes el piloto del GPS puesto, pero solo conduce en conducción asistida, y ahora vas en libre.")
+            elif self.gps:
+                txt += tr(' El piloto del GPS te lleva a {nombre}: no toques las flechas.').format(nombre=(self.gps['nombre']))
+            else:
+                txt += tr(" El piloto del GPS está puesto: marca un destino y te lleva solo.")
         self.decir(txt, True)
         if self.app.radio.id_actual() != "apagada":
             self.decir(r)
@@ -397,7 +414,7 @@ class Conduccion:
         radio = self.app.radio
         if not j.objetos.get("walkman"):
             self.app.son("error")
-            self.decir("No tienes reproductor con auriculares. Se compra en las tiendas.", True)
+            self.decir(tr("No tienes reproductor con auriculares. Se compra en las tiendas."), True)
             return
         self._hilo = False
         if not j.walkman:
@@ -411,9 +428,9 @@ class Conduccion:
         texto = radio.sintonizar(self.cfg["emisora"])
         if radio.id_actual() == "apagada":
             j.walkman = False
-            self.decir("Reproductor apagado. Te quitas los auriculares.", True)
+            self.decir(tr("Reproductor apagado. Te quitas los auriculares."), True)
         else:
-            self.decir("Auriculares puestos. " + texto, True)
+            self.decir(tr("Auriculares puestos. ") + texto, True)
 
     def walkman_al_empezar(self):
         """Al cargar una partida en la que ibas con los auriculares puestos, sigue sonando."""
@@ -479,7 +496,7 @@ class Conduccion:
         j.rumbo = v.rumbo
         self.libre_temp = False
         if self.trabajo and self.trabajo.get("veh") is v:
-            self.terminar_trabajo("Dejas el vehículo de trabajo: se acaba el servicio." + (" La carga se queda sin entregar. Para volver a empezar, sube al camión y pulsa J." if self.trabajo.get("tipo") == "camion" else ""))
+            self.terminar_trabajo(tr("Dejas el vehículo de trabajo: se acaba el servicio.") + (tr(" La carga se queda sin entregar. Para volver a empezar, sube al camión y pulsa J.") if self.trabajo.get("tipo") == "camion" else ""))
         if not v.tag and not v.muerto:
             self.ultimo_veh = v
             self.veh_fuera = None                                # el que cuenta es el último del que te bajas
@@ -488,7 +505,7 @@ class Conduccion:
         self.sv_bajado(v)
         if not forzado:
             self.son_puerta(v)
-            self.decir(f"Te bajas. {self.mundo.describir(j.x, j.y)}.", True)
+            self.decir(tr('Te bajas. {describir}.').format(describir=(self.mundo.describir(j.x, j.y))), True)
 
     # ------------------------------------------------------ teclas al volante
     def tecla_coche(self, ev, mayus):
@@ -501,22 +518,22 @@ class Conduccion:
             self._parar_intermitente()
             if v.giro == g:
                 v.giro = 0
-                self.decir("Intermitente quitado. Seguirás recto.", True)
+                self.decir(tr("Intermitente quitado. Seguirás recto."), True)
             else:
                 v.giro = g
                 self.intermitente = self.son("intermitente", bucle=True, pan=0.7 * g, vol=0.6)
-                self.decir("Girarás a la " + ("derecha" if g > 0 else "izquierda") + " en el próximo cruce.", True)
+                self.decir(tr("Girarás a la ") + ("derecha" if g > 0 else "izquierda") + tr(" en el próximo cruce."), True)
         elif k == pygame.K_u:
             if abs(v.vel) > 6:
-                self.decir("Frena para dar media vuelta.", True)
+                self.decir(tr("Frena para dar media vuelta."), True)
             elif self.modo_asistido():
                 v.dir = (v.dir + 2) % 4
                 v.rumbo = v.dir * 90.0
                 v.aviso_cruce = None
-                self.decir(f"Media vuelta. Ahora vas hacia el {M.NOMBRE_DIR[v.dir]}.", True)
+                self.decir(tr('Media vuelta. Ahora vas hacia el {v}.').format(v=(M.NOMBRE_DIR[v.dir])), True)
             else:
                 v.rumbo = (v.rumbo + 180) % 360
-                self.decir(f"Media vuelta. Vas hacia el {M.cardinal(v.rumbo)}.", True)
+                self.decir(tr('Media vuelta. Vas hacia el {cardinal}.').format(cardinal=(M.cardinal(v.rumbo))), True)
         elif k == pygame.K_h:
             self.son(v.modelo.get("claxon", "claxon"), vol=0.8)
             self.enviar_evento("claxon")
@@ -537,21 +554,26 @@ class Conduccion:
         elif k == pygame.K_e:
             if not self.modo_asistido():
                 v.rumbo = round(v.rumbo / 90.0) * 90 % 360
-                self.decir(f"Enderezas hacia el {M.cardinal(v.rumbo)}.", True)
+                self.decir(tr('Enderezas hacia el {cardinal}.').format(cardinal=(M.cardinal(v.rumbo))), True)
         elif k == pygame.K_j:
             self.alternar_trabajo()
         elif k == pygame.K_w:
-            self.decir(f"{int(abs(v.vel) * 3.6)} kilómetros por hora.", True)
+            self.decir(tr('{int} kilómetros por hora.').format(int=(int(abs(v.vel) * 3.6))), True)
         elif k == pygame.K_y:
             self.cfg["piloto_gps"] = not self.cfg["piloto_gps"]
             if not self.cfg["piloto_gps"]:
-                self.decir("Piloto del GPS desactivado.", True)
+                self.decir(tr("Piloto del GPS desactivado."), True)
+            elif v.modelo.get("barco") or self.mundo.tipo == "mar":
+                self.decir(tr("Piloto del GPS activado, pero en el agua no conduce: solo en tierra."), True)
+            elif v.modelo.get("vuela"):
+                self.decir(tr("Piloto del GPS activado para cuando conduzcas en tierra. En el aire no lleva los mandos")
+                           + (tr(": para eso está el piloto automático del vuelo.") if self.vuelo_real() else "."), True)
             elif not self.modo_asistido():
-                self.decir("Piloto del GPS activado, pero solo funciona en conducción asistida. Cámbiala en Opciones, Movimiento y conducción.", True)
+                self.decir(tr("Piloto del GPS activado, pero solo funciona en conducción asistida. Cámbiala en Opciones, Movimiento y conducción."), True)
             elif not self.gps:
-                self.decir("Piloto del GPS activado. Marca un destino en el GPS y el coche irá solo: acelera, frena, gira y para en los semáforos.", True)
+                self.decir(tr("Piloto del GPS activado. Marca un destino en el GPS y el coche irá solo: acelera, frena, gira y para en los semáforos."), True)
             else:
-                self.decir(f"Piloto del GPS activado: el coche va solo hasta {self.gps['nombre']}. Con cualquier flecha o el espacio mandas tú.", True)
+                self.decir(tr('Piloto del GPS activado: el coche va solo hasta {nombre}. Con cualquier flecha o el espacio mandas tú.').format(nombre=(self.gps['nombre'])), True)
 
     def piloto_puesto(self):
         """El piloto del GPS está activado, o conduce tu chófer, que usa el mismo piloto."""
@@ -570,13 +592,15 @@ class Conduccion:
             return
         dx, dy = self.gps["dest"]
         dist = math.hypot(dx - v.x, dy - v.y)
-        # Con prisa (la sirena puesta, o una misión o un trabajo contra el reloj) el piloto corre más y no espera en rojo.
-        prisa = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None) \
-            or bool(self.trabajo and self.trabajo.get("limite") is not None)
+        # Con prisa (la sirena puesta, o una misión o un trabajo contra el reloj) el piloto corre más. Solo se salta los
+        # semáforos con la sirena o en una misión: en un trabajo (el autobús, el taxi, el reparto) te costaría multas y
+        # puntos del carné, así que espera en rojo como cualquiera, aunque vaya más deprisa.
+        salta = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None)
+        prisa = salta or bool(self.trabajo and self.trabajo.get("limite") is not None)
         objetivo = min(mo["vel_max"] * 0.85, 21.0) if prisa else min(mo["vel_max"] * 0.6, 14.0)
-        quien = self.chofer["nombre"].split(",")[0] if self.chofer_conduce() else "El piloto"
+        quien = self.chofer["nombre"].split(",")[0] if self.chofer_conduce() else tr("El piloto")
         if prisa and not getattr(self, "_piloto_prisa", False):
-            self.decir(f"Vas con prisa: {'el piloto' if quien == 'El piloto' else quien} corre más y no espera en los semáforos.")
+            self.decir(tr('Vas con prisa: {v} corre más').format(v=(tr('el piloto') if quien in ('El piloto', tr('El piloto')) else quien)) + (tr(" y no espera en los semáforos.") if salta else tr(", pero espera en los semáforos.")))
         self._piloto_prisa = prisa
         ruta = self.gps.get("ruta") or []
         if ruta and self.modo_asistido():                        # el destino ha quedado atrás (te has pasado, o el que persigues ha girado): media vuelta
@@ -591,7 +615,7 @@ class Conduccion:
                 v.aviso_cruce = None
                 if self.t - getattr(self, "t_piloto_vuelta", -99) > 5:
                     self.t_piloto_vuelta = self.t
-                    self.decir(f"{quien} da media vuelta. Ahora vas hacia el {M.NOMBRE_DIR[v.dir]}.")
+                    self.decir(tr('{quien} da media vuelta. Ahora vas hacia el {v}.').format(quien=(quien), v=(M.NOMBRE_DIR[v.dir])))
                 return
         if self.gps.get("sigue") is None:                        # a un sitio se llega y se para; a quien persigues, no
             radio = self.gps.get("radio") or 16
@@ -605,16 +629,20 @@ class Conduccion:
                     self._piloto_parado = True
                     if self.chofer_conduce():
                         self.son("llegada", cat="interfaz", vol=0.6)
-                        self._chofer_dice("chofer_frases_llegada", f"{self.gps['nombre']}. Con F te bajas, y te espera.")
+                        self._chofer_dice("chofer_frases_llegada", tr('{nombre}. Con F te bajas, y te espera.').format(nombre=(self.gps['nombre'])))
                     else:
-                        self.decir(f"El piloto se detiene: has llegado a {self.gps['nombre']}.")
+                        self.decir(tr('El piloto se detiene: has llegado a {nombre}.').format(nombre=(self.gps['nombre'])))
             else:
                 self._piloto_parado = False
-        if not prisa and self._semaforo_rojo(v):
-            objetivo = 0.0
+        hasta_linea = None if salta else self._piloto_semaforo(v, freno)
+        if hasta_linea is not None:
+            # frena para quedarse en la línea, sea cual sea el vehículo: un autobús frena peor que un turismo y antes se metía en el cruce
+            objetivo = min(objetivo, math.sqrt(2.0 * max(1.0, freno * 0.8) * max(0.0, hasta_linea - 0.6)))
+            if objetivo < 0.8:
+                objetivo = 0.0
             if self.t - getattr(self, "t_aviso_rojo", -99) > 20:
                 self.t_aviso_rojo = self.t
-                self.decir(f"Semáforo en rojo. {quien} espera.")
+                self.decir(tr('Semáforo en rojo. {quien} espera.').format(quien=(quien)))
         if v.vel < objetivo:
             v.vel = min(objetivo, v.vel + mo["acel"] * 0.8 * dt)
         elif v.vel > objetivo:
@@ -640,7 +668,7 @@ class Conduccion:
             if not con_motor and pygame.K_UP in t and self.t - getattr(self, "t_aviso_seco", -99) > 6:
                 self.t_aviso_seco = self.t
                 self.son("motor_seco", cat="interfaz")
-                self.decir("El motor no arranca: no queda combustible.")
+                self.decir(tr("El motor no arranca: no queda combustible."))
         elif pygame.K_UP in t:
             v.vel += mo["acel"] * sistemas.factor_aceleracion(v) * dt * (2.5 if v.vel < 0 else 1.0)
         elif pygame.K_DOWN in t:
@@ -714,7 +742,7 @@ class Conduccion:
             self.t_atasco = getattr(self, "t_atasco", 0.0) + dt
             if self.t_atasco > 2.5 and self.t - getattr(self, "t_aviso_atasco", -99) > 25:
                 self.t_aviso_atasco = self.t
-                self.decir("Tráfico detenido delante. Espera, o mantén pulsada la A para adelantar por la izquierda.")
+                self.decir(tr("Tráfico detenido delante. Espera, o mantén pulsada la A para adelantar por la izquierda."))
         else:
             self.t_atasco = 0.0
 
@@ -738,11 +766,11 @@ class Conduccion:
             if self.cfg["anunciar_cruces"]:
                 via = m.calles[idx] if dx == 0 else m.avenidas[idx]
                 i, jj = (m._idx(v.x, m.NX), idx) if dx == 0 else (idx, m._idx(v.y, m.NY))
-                txt = f"Cruce con {via}"
+                txt = tr('Cruce con {via}').format(via=(via))
                 if v.giro:
-                    txt += ", girarás a la " + ("derecha" if v.giro > 0 else "izquierda")
+                    txt += tr(", girarás a la ") + ("derecha" if v.giro > 0 else "izquierda")
                 elif not m.dir_valida(i, jj, v.dir):
-                    txt += ", fin de la vía"
+                    txt += tr(", fin de la vía")
                 self.son("cruce", cat="interfaz", vol=0.5)
                 self.decir(txt + ".")
 
@@ -764,7 +792,7 @@ class Conduccion:
                     self.vuelo_borde(v)
                     return
                 v.vel = 0.0
-                self.decir("Fin del mapa. Da la vuelta, o usa un helipuerto para volar a otra localidad.")
+                self.decir(tr("Fin del mapa. Da la vuelta, o usa un helipuerto para volar a otra localidad."))
                 return
             v.x, v.y = nx, ny
             v.dir = M.dir_de_rumbo(v.rumbo)
@@ -775,7 +803,7 @@ class Conduccion:
                 if imp > 2:
                     self.son("choque" if imp > 8 else "choque_leve")
                     self.danar_vehiculo(v, imp * 1.2 * self._golpe(v))
-                    self.decir("¡Encallas en la arena de una isla!" if s == "arena" else "Fin del mapa: aquí empieza el océano abierto. Da la vuelta.")
+                    self.decir(tr("¡Encallas en la arena de una isla!") if s == "arena" else tr("Fin del mapa: aquí empieza el océano abierto. Da la vuelta."))
                 v.vel = -v.vel * 0.2
                 return
             v.x, v.y = nx, ny
@@ -790,7 +818,7 @@ class Conduccion:
                 if imp > 12:
                     self.danar_jugador(imp * 0.6 * fg, None)
                 self.app.vibrar(min(1.0, imp / 12.0), 0.6, 350)
-                self.decir("¡Te estrellas contra una pared!" if s == "pared" else "Fin de la ciudad.")
+                self.decir(tr("¡Te estrellas contra una pared!") if s == "pared" else tr("Fin de la ciudad."))
             v.vel = -v.vel * 0.25
             return
         v.x, v.y = nx, ny
@@ -815,7 +843,7 @@ class Conduccion:
                 self.libre_temp = False
                 self._alinear(v)
                 v.aviso_cruce = None
-                self.decir(f"De nuevo en {self.mundo.nombre_via(t_, idx)}. Conducción asistida.")
+                self.decir(tr('De nuevo en {nombre_via}. Conducción asistida.').format(nombre_via=(self.mundo.nombre_via(t_, idx))))
 
     def _sonar(self, v, dt):
         """Sensor de proximidad: pita más rápido cuanto más cerca está el obstáculo de delante."""
@@ -893,6 +921,37 @@ class Conduccion:
             if 0.5 < a < alcance and lat < 2.4:
                 return True
         return False
+
+    def _piloto_semaforo(self, v, freno):
+        """El piloto ante el próximo cruce: los metros hasta la línea de parada si tiene que parar, o None si puede pasar.
+        Para si está en rojo, y también si se pondrá en rojo antes de cruzarlo y le da para frenar (en el juego no hay
+        ámbar). Mira tan lejos como haga falta para frenar a tiempo con lo que frena ese vehículo."""
+        m = self.mundo
+        dx, dy = M.DIRS[v.dir]
+        a = v.y if dx == 0 else v.x
+        s = dy if dx == 0 else dx
+        idx = math.floor(a / M.B) + 1 if s > 0 else math.ceil(a / M.B) - 1
+        if not (0 <= idx < (m.NY if dx == 0 else m.NX)):
+            return None
+        d = abs(idx * M.B - a)
+        linea = d - 8.0                                          # la línea de parada, antes de la calzada que se cruza
+        vel = max(0.0, v.vel)
+        decel = max(1.0, freno * 0.8)
+        parar = vel * vel / (2.0 * decel)
+        if linea < -0.5 or d > max(17.0, parar + 12.0):
+            return None
+        if dx == 0:
+            verde = m.verde_vertical(m._idx(v.x, m.NX), idx, self.t)
+        else:
+            verde = not m.verde_vertical(idx, m._idx(v.y, m.NY), self.t)
+        if not verde:
+            return max(0.0, linea) if linea > 0.5 or vel < 3 else None      # ya en la línea y lanzado: mejor despejar el cruce
+        if vel < 1 or linea <= parar + 1.0:
+            return None                                          # verde y sin sitio para parar con suavidad: pasa
+        falta = 14.0 - ((self.t + getattr(m, "desfase_luces", 0.0)) % 14.0)
+        if (d + 9.0) / vel > falta:                              # se pondrá en rojo antes de cruzarlo: se queda
+            return linea
+        return None
 
     def _semaforo_rojo(self, v):
         m = self.mundo
@@ -1006,7 +1065,7 @@ class Conduccion:
                 v.t_choque = self.t + 1.5
                 self.son("golpe")
                 self.danar_jugador(v.vel * 2.2, (v.x, v.y))
-                self.decir("¡Te ha atropellado un vehículo!")
+                self.decir(tr("¡Te ha atropellado un vehículo!"))
                 v.vel *= 0.3
 
     def _ia_patrulla(self, v, d, dt):
@@ -1068,7 +1127,7 @@ class Conduccion:
         if pos is None:
             return None
         v = Vehiculo(mo, pos[0], pos[1], pos[2], "enemigos")
-        v.nombre = f"{mo['nombre']} con {len(gente)} enemigos" if len(gente) > 1 else f"{mo['nombre']} de {gente[0].nombre}"
+        v.nombre = tr('{nombre} con {len} enemigos').format(nombre=(mo['nombre']), len=(len(gente))) if len(gente) > 1 else tr('{nombre} de {nombre2}').format(nombre=(mo['nombre']), nombre2=(gente[0].nombre))
         v.ocupado = v.hostil = True
         v.vel = 11.0
         v.tag = "enemigos"
@@ -1097,7 +1156,7 @@ class Conduccion:
         if not gente:
             return
         self.son("puerta_coche", xy=(v.x, v.y))
-        self.decir(f"{'Se baja uno' if len(gente) == 1 else f'Se bajan {len(gente)}'} de {v.modelo['nombre']}. {self.situar(v.x, v.y, 'Está')}. Pulsa Q para fijar al más cercano.")
+        self.decir(tr('{v} de {nombre}. {situar}. Pulsa Q para fijar al más cercano.').format(v=(tr('Se baja uno') if len(gente) == 1 else tr('Se bajan {len}').format(len=(len(gente)))), nombre=(v.modelo['nombre']), situar=(self.situar(v.x, v.y, tr('Está')))))
         if self.cfg["punteria"] == "completa":
             self.fijar(callar=True)
 

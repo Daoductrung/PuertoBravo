@@ -5,6 +5,7 @@ tienen delante a un jugador o a otro coche, y en cada cruce deciden al azar por 
 hay jugadores. A un coche de estos se le puede parar poniéndose delante, sacar al conductor y llevárselo: desde ese
 momento es un vehículo más de los jugadores. También se le puede destrozar.
 """
+from .idioma import es
 import math
 
 B = 90.0            # separación entre calles, la misma del juego
@@ -88,12 +89,12 @@ class Trafico:
 
     def trafico_pensar(self):
         """Una vez por segundo: cuántos coches hay en cada localidad con gente, y fuera los que ya no ve nadie."""
-        tr, po = self._tr_activo(), self._po_activo()
-        if not tr and not po:
+        trab, po = self._tr_activo(), self._po_activo()
+        if not trab and not po:
             if self.trafico:
                 self.trafico.clear()
             return
-        if not tr:                                             # sin tráfico común solo quedan las patrullas que persiguen
+        if not trab:                                             # sin tráfico común solo quedan las patrullas que persiguen
             for ident in [i for i, c in self.trafico.items() if not c.get("poli")]:
                 del self.trafico[ident]
         import time
@@ -120,7 +121,7 @@ class Trafico:
             if total > 0:
                 quiere = min(quiere, max(base, total))
             hay = sum(1 for c in self.trafico.values() if c["m"] == mapa and not c.get("poli"))
-            if tr and hay < quiere:
+            if trab and hay < quiere:
                 if len(zonas) == 1:
                     self._tr_nuevo(mapa, self.rng.choice(lista))
                 else:                                          # donde menos coches hay, y varios a la vez si faltan muchos
@@ -133,7 +134,7 @@ class Trafico:
                     for z in sorted(zonas, key=lambda z: cuenta.get(z, 0))[:max(1, min(quiere - hay, len(zonas)))]:
                         self._tr_nuevo(mapa, self.rng.choice(zonas[z]))
             # las patrullas del servidor: rondan como un coche más, y acuden a por quien va buscado y les pasa cerca
-            if tr and int(m.get("policia", 1)) and sum(1 for c in self.trafico.values() if c["m"] == mapa and c.get("poli") and c.get("obj") is None) < int(self.cfg["patrullas"]):
+            if trab and int(m.get("policia", 1)) and sum(1 for c in self.trafico.values() if c["m"] == mapa and c.get("poli") and c.get("obj") is None) < int(self.cfg["patrullas"]):
                 self._tr_nuevo(mapa, self.rng.choice(lista), poli=True)
             for c in [c for c in self.trafico.values() if c["m"] == mapa and c.get("poli") and c.get("obj") is None and not c.get("desp")]:
                 x, y, rumbo = self.tr_pos(c)
@@ -218,14 +219,14 @@ class Trafico:
         """Sacar al conductor de un coche del tráfico y llevárselo: tiene que estar casi parado y al lado."""
         c = self.trafico.get(m.get("id"))
         if c is None or c["m"] != j.mapa or j.veh:
-            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": "Ese vehículo ya no está."})
+            return self._enviar(j, {"t": "veh_no", "id": m.get("id"), "motivo": es("Ese vehículo ya no está.")})
         if c.get("poli") and not c.get("desp"):                # con los agentes fuera, sí se la pueden llevar
-            return self._enviar(j, {"t": "veh_no", "id": c["id"], "motivo": "Ese coche patrulla está lleno de policías."})
+            return self._enviar(j, {"t": "veh_no", "id": c["id"], "motivo": es("Ese coche patrulla está lleno de policías.")})
         x, y, rumbo = self.tr_pos(c)
         if math.hypot(x - j.x, y - j.y) > 9:
-            return self._enviar(j, {"t": "veh_no", "id": c["id"], "motivo": "Estás demasiado lejos."})
+            return self._enviar(j, {"t": "veh_no", "id": c["id"], "motivo": es("Estás demasiado lejos.")})
         if c["vel"] > 6:
-            return self._enviar(j, {"t": "veh_no", "id": c["id"], "motivo": "Va demasiado rápido para abrir la puerta."})
+            return self._enviar(j, {"t": "veh_no", "id": c["id"], "motivo": es("Va demasiado rápido para abrir la puerta.")})
         del self.trafico[c["id"]]
         if j.vid is not None and j.vid in self.vehiculos:
             self._soltar_vehiculo(j, self.vehiculos[j.vid])

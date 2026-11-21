@@ -118,7 +118,7 @@ def test_amueblar_la_casa(robot):
     j.dinero = 5000
     sistemas.menu_muebles(p, casa, Menu, Opcion)
     m = app.pila[-1]
-    assert len([o for o in m.opciones if "euros" in (o.texto() if callable(o.texto) else o.texto)]) == 6
+    assert len([o for o in m.opciones if "euros" in (o.texto() if callable(o.texto) else o.texto)]) == len(sistemas.MUEBLES)      # seis de antes, más la caja fuerte y la alarma
     _opcion(m, "Un sofá grande")
     robot.tecla(pygame.K_RETURN)
     assert j.dinero == 4400 and sistemas.muebles_de(j, casa) == ["sofa"]

@@ -2339,6 +2339,7 @@
    "id": "oc_garrafa",
    "nombre": "Garrafa incendiaria",
    "tipo": "explosivo",
+   "unidad": "cóctel|cócteles",
    "dano": 70,
    "alcance": 22,
    "cadencia": 1.2,

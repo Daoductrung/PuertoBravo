@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Changing the sounds and music of Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 54em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+a { color: #8fd0ff; }
+code { color: #9fe89f; }
+kbd { border: 1px solid #aaa; border-radius: 4px; padding: 0 .35em; background: #2a2a2a; }
+li { margin-bottom: .3em; }
+</style>
+</head>
+<body>
+<h1>Changing the sounds and music of Puerto Bravo</h1>
+<p>All the game's sounds are ordinary files in the <code>data</code> folder, next to the program. You can replace any of them with a recording of your own. This document explains how, and describes every file. It is organised by headings: with your screen reader you can jump from one to the next with the H key.</p>
+
+<h2>1. Where everything is</h2>
+<ul>
+<li><code>data\sonidos</code>: all the sound effects, spread over subfolders.</li>
+<li><code>data\sonidos\por_defecto</code>: the standard sounds, one file per sound. There are 279 files. If one is missing or you delete it, the game creates it again.</li>
+<li><code>data\radio</code>: the music of the radio stations, one file per station.</li>
+<li><code>data\radio\mi_musica</code>: your own station. Copy here the songs you want.</li>
+<li><code>data\musica</code>: the ambient music, with one folder per situation and several pieces in each.</li>
+<li><code>data\sonidos\realista</code>, <code>data\sonidos\alternativo</code>, <code>data\sonidos\retro</code> and the other subfolders: the sound packs, one per folder. You choose them in Options.</li>
+</ul>
+
+<h2>2. How to change a sound effect</h2>
+<ol>
+<li>Find in the list at the end the name of the sound you want to change, for example <code>claxon</code>.</li>
+<li>Prepare your recording and give it exactly that name: <code>claxon.wav</code>.</li>
+<li>Copy it into <code>data\sonidos\por_defecto</code>. You don't need to delete the game's file, which is called <code>claxon.flac</code>: if there are two with the same name, yours is the one that plays.</li>
+<li>Close the game and open it again. Sounds are loaded at startup.</li>
+</ol>
+<h3>Supported formats</h3>
+<ul>
+<li>WAV, OGG, FLAC and MP3. The sounds that come with the game are FLAC. If there are two files with the same name and a different extension, the one that is not FLAC is used, which is yours. To go back to the game's sound, delete yours.</li>
+<li>Why FLAC: it compresses without loss. Reading it gives exactly the same samples as a WAV, but it takes less than half the space. Up to version 1.6.1 the game's sounds were WAV; when updating, the game deletes the old WAV files that are identical to the new ones and keeps the ones you have changed. OGG and MP3 take even less space, but lose some quality: they are fine for your recordings if you don't mind, and the game only uses them where the original already came that way, which is the music, the radio, the voices and the long ambiences of the Surround pack.</li>
+<li>Any sample rate: the game converts it to 44100 hertz.</li>
+<li>Mono or stereo. Effects are always turned into mono, because it is the game that places each sound to your left, to your right, in front or behind.</li>
+</ul>
+<h3>Getting an original sound back</h3>
+<p>Delete the file. The next time it starts, the game will create the original sound again. To get them all back, delete the whole <code>data\sonidos\por_defecto</code> folder.</p>
+<h3>Tips so it sounds right</h3>
+<ul>
+<li>Trim the silence at the start: if the sound takes a moment to begin, the game will seem to respond late.</li>
+<li>Keep a length similar to the original's, above all for footsteps, alerts and beacons. The list gives the length of each one.</li>
+<li>Don't leave it at full volume. The originals peak between 30 and 90 percent depending on how important they are. If yours sounds too loud or too soft, adjust it in your editor.</li>
+<li>Avoid long reverb on orientation sounds: it blurs the direction they come from.</li>
+<li>Sounds marked as a loop repeat without stopping. The end must join the start with no click or jump: cut at a zero crossing or use a crossfade.</li>
+<li>Engines are recorded at idle and at a steady speed. The game raises the pitch as you accelerate, up to a little more than double.</li>
+</ul>
+<h3>The volume evens out on its own</h3>
+<p>Every recording comes at a different volume. So that this doesn't spoil the game's balance, when it loads a sound you have changed the game brings it to the same level the original had: it measures the loudest stretch of your file, compares it with the original sound's and raises or lowers it as needed, without letting it clip. That way some footsteps can't end up louder than a gunshot, or a beacon inaudible. You can turn this off in Options, Sound and music, Even out the volume of the changed sounds.</p>
+<p>If a particular sound still seems loud or soft to you, go to Options, Sound and music, Adjust the volume of each sound. They are all there, in the same groups as the list at the end of this document: Enter plays it and the left and right arrows lower or raise it, from 30 to 200 percent. Search for a sound finds it by a word of its name, without having to know which group it is in. The menu says how many sounds you have changed, in total and in each group, and lets you return a single one, a whole group or all of them to their standard volume. The setting is saved with your options and goes by the file name, so it isn't lost when you update the game.</p>
+<h3>Listening to any sound inside the game</h3>
+<p>In the main menu and the pause menu, Learn the sounds has the game's 279 sounds: first the group The most important, then Search for a sound and then all of them, in the same groups as the list at the end of this document and in the same order. Go into a group and press Enter on a sound: the game says what it is called and what it means, and plays it on its own, with the pack you have chosen. With Search for a sound you type a word, for example siren, and you get all the ones that have it in their name or in their explanation. It is useful to check how one of your recordings turned out without having to trigger the sound while playing.</p>
+
+<h2>3. Sound packs</h2>
+<p>A pack is a folder with files named the same as the game's sounds. Packs go inside <code>data\sonidos</code>, each in its own subfolder, next to <code>por_defecto</code>, and you choose them inside the game in Options, Sound and music, Sound pack, with the left and right arrows. The change is heard at once and doesn't touch your files in <code>data\sonidos\por_defecto</code>: to go back, choose «default».</p>
+<ul>
+<li>A pack of yours doesn't have to bring them all: the sounds it doesn't bring keep playing with the original.</li>
+<li>The volume of each sound in the pack is evened out to the original's, as explained above.</li>
+<li>The packs that come with the game bring exactly the same files as <code>por_defecto</code>, with the same names: not one more and not one less. Their recordings are public domain (CC0 licence) and come from kenney.nl, opengameart.org, freesound.org and bigsoundbank.com.</li>
+<li>The tones of the role-play channels (<code>chat_personaje</code>, <code>chat_fuera</code> and <code>chat_accion</code>) and the one for waiting for the server (<code>espera_servidor</code>) are the standard ones in every pack, on purpose: they are a code of tones and it helps if they always sound the same.</li>
+<li>The packs installed as standard are «Alternativo», with 279 sounds, «Envolvente», with 279 sounds, «Realista», with 279 sounds, «Retro», with 279 sounds. Each one brings all the game's sounds: they replace with public domain recordings everything that is not orientation, and keep the original for the orientation sounds: beacons, tones, traffic lights, radar, locators and the sounds of places. Each pack's <code>CREDITOS.txt</code> file says where each sound comes from and which ones are original.</li>
+</ul>
+<h3>Making your own pack</h3>
+<ol>
+<li>Create a folder inside <code>data\sonidos</code> with the name of the pack, with no odd spaces: for example <code>mi_pack</code>.</li>
+<li>Copy your recordings into it with the exact name of the sound they replace: <code>claxon.wav</code>, <code>paso_acera0.ogg</code>. The list at the end of this document has every name.</li>
+<li>Open the game and choose the pack in Options.</li>
+</ol>
+<p>If you like, add a <code>pack.json</code> file with the name that will be read out in Options and a few settings:</p>
+<pre><code>{
+  "nombre": "Mi pack",
+  "descripcion": "Grabado en mi calle",
+  "autor": "Tu nombre",
+  "licencia": "CC0",
+  "igualar": true,
+  "volumenes": {"claxon": 0.8, "ladrido": 1.3}
+}</code></pre>
+<ul>
+<li><code>igualar</code>: with <code>false</code>, this pack's sounds come in as they are, without evening out the volume. Use it only if you have already levelled them yourself.</li>
+<li><code>volumenes</code>: a per-sound touch-up applied after evening out. 1 leaves it as it is, 0.8 lowers it by twenty percent.</li>
+</ul>
+<p>To share a pack, compress its folder. Whoever receives it unzips it inside their <code>data\sonidos</code>.</p>
+
+<h2>4. The radio</h2>
+<h3>Changing the music of a station</h3>
+<p>Each standard station has a file name in <code>data\radio</code>. Replace the file with another song with the same name and that one will play.</p>
+<p>A station can have several songs: every file named like the station, or like the station followed by an underscore and whatever you like, is one of its songs. For example <code>bravo.mp3</code>, <code>bravo_1.mp3</code> and <code>bravo_dos.ogg</code> are three songs of Bravo FM: they play at random and, when one ends, a different one comes on. With a single song, it repeats in a loop.</p>
+<ul>
+<li><code>bravo.mp3</code>: Bravo FM, road rock.</li>
+<li><code>latina.mp3</code>: Onda Caribe, Latin rhythms.</li>
+<li><code>neon.mp3</code>: Neón 84, synthesizers.</li>
+<li><code>calma.mp3</code>: Radio Bahía, relaxing music.</li>
+<li><code>hierro.mp3</code>: Radio Hierro, hard rock from Monteferro.</li>
+<li><code>club.mp3</code>: Lucero Club, electronic.</li>
+<li><code>tropical.mp3</code>: Costa Tropical, street party music.</li>
+</ul>
+<p>If you delete one of these files, the game composes the original music again. Songs are levelled automatically when loaded: it doesn't matter at what volume each file comes.</p>
+<h3>Adding new stations</h3>
+<p>Any other audio file you leave in <code>data\radio</code> is a new station, named after the file. For example, <code>radio_clasica.mp3</code> appears on the dial as «Radio clasica». Underscores are read as spaces.</p>
+<h3>My music</h3>
+<p>The files in <code>data\radio\mi_musica</code> make up the «My music» station. Inside the car, the R key goes from one song to the next before jumping to the next station.</p>
+
+<h2>5. The ambient music</h2>
+<p>Outside vehicles, or with the radio off, soft background music plays that changes with the situation. Each situation has several pieces: the game starts with one at random and, when it ends, moves on to a different one. When you turn on a vehicle's radio the ambient music goes quiet, and it comes back when you turn the radio off or get out.</p>
+<p>Each situation is a folder inside <code>data\musica</code>:</p>
+<ul>
+<li><code>data\musica\exploracion</code>: by day, exploring at ease. As standard it has 4 pieces, from <code>exploracion_1.mp3</code> to <code>exploracion_4.mp3</code>.</li>
+<li><code>data\musica\noche</code>: at night. As standard it has 3 pieces, from <code>noche_1.mp3</code> to <code>noche_3.mp3</code>.</li>
+<li><code>data\musica\mar</code>: at sea. As standard it has 3 pieces, from <code>mar_1.mp3</code> to <code>mar_3.mp3</code>.</li>
+<li><code>data\musica\tension</code>: with the police on your tail or enemies nearby. As standard it has 3 pieces, from <code>tension_1.mp3</code> to <code>tension_3.mp3</code>.</li>
+<li><code>data\musica\menu</code>: in the main menu. As standard it has 4 pieces, from <code>menu_1.mp3</code> to <code>menu_4.mp3</code>.</li>
+</ul>
+<ul>
+<li>To add your own music, copy audio files into the folder of the situation you want. Every file in the folder joins the rotation, however many there are: if you leave an <code>exploracion_5.wav</code> in <code>exploracion</code>, or twenty songs with any name, they are all used at random along with the ones already there. WAV, OGG, FLAC and MP3 are all fine.</li>
+<li>All music is levelled automatically when loaded: each ambient piece, each station, each new station and each song of My music end up at the same level, so none sounds louder than another. The only thing that changes the volume is what you choose in Options.</li>
+<li>To remove a standard piece so that it doesn't come back, replace it with another one with the same name. If you just delete it, the game composes it again.</li>
+<li>For only your music to play in a situation, replace all the standard pieces in its folder.</li>
+<li>Ambient music is turned on, turned off and has its volume set in Options, Sound and music.</li>
+</ul>
+
+<h2>6. Full list of sounds</h2>
+<p>The file name is the one at the start of each line, with the <code>.flac</code> extension for the ones the game brings. Yours can have any of the supported ones. After it comes the name the game says out loud and what hearing it means.</p>
+<p>The groups are the same, with the same names and in the same order, as in Learn the sounds and in Options, Sound and music, Adjust the volume of each sound. They follow what you do in the game. Inside each group, sounds are in alphabetical order of the name that is spoken. Each group is a heading: jump from one to the next with the H key, or search for a word with your browser's search.</p>
+
+<p>There are 20 groups:</p>
+<ol>
+<li>Orientation and GPS: 17 sounds.</li>
+<li>Sounds of places: 37 sounds.</li>
+<li>Moving on foot and swimming: 20 sounds.</li>
+<li>Vehicles and driving: 19 sounds.</li>
+<li>Breakdowns, repair shop, gas and vehicle theft: 10 sounds.</li>
+<li>Boats, helicopters, train, tram and plane: 16 sounds.</li>
+<li>Weapons, the shot of each one: 14 sounds.</li>
+<li>Combat, aim and wounds: 20 sounds.</li>
+<li>Police and emergency services: 12 sounds.</li>
+<li>People on the street and animals: 8 sounds.</li>
+<li>Home, kitchen and food: 8 sounds.</li>
+<li>Stores, money and items: 5 sounds.</li>
+<li>Menus, phone and game alerts: 17 sounds.</li>
+<li>Missions, work, reputation and mood: 14 sounds.</li>
+<li>Territories and gangs: 4 sounds.</li>
+<li>Online play and roleplay: 7 sounds.</li>
+<li>Fishing, casino and games: 12 sounds.</li>
+<li>Ambience and weather: 19 sounds.</li>
+<li>Relationships, only with adult content: 7 sounds.</li>
+<li>Substances and dealing, only with adult content: 13 sounds.</li>
+</ol>
+<h3>Orientation and GPS</h3>
+<p>17 sounds. They are the foundation of the game&#x27;s accessibility. If you change them, keep them short, clear and easy to locate in space. The locators loop from the position of an object or a mission.</p>
+<ul>
+<li><code>llegada</code>: Arrival. You have reached your destination or completed a mission step. It lasts 0.82 seconds.</li>
+<li><code>loc_casete</code>: Collectible. It sounds from one of the cassette tapes hidden around the city, or from another collectible. It plays in a loop. It lasts 1.60 seconds.</li>
+<li><code>bordillo</code>: Curb. In free driving, you run off the road on the side where it sounds. It lasts 0.12 seconds.</li>
+<li><code>baliza_destino</code>: Destination beacon. The GPS beacon switches to this sound when the next point is already your destination. It is also the tone that marks north. It lasts 0.53 seconds.</li>
+<li><code>baliza</code>: GPS beacon. It sounds in the direction of the next point on the route. The closer you are, the faster it repeats. It lasts 0.35 seconds.</li>
+<li><code>cruce</code>: Intersection. You walk into an intersection, or you approach one while driving. It lasts 0.39 seconds.</li>
+<li><code>loc_objeto</code>: Item you can pick up. It sounds from an object lying on the ground. Stand on it and pick it up. It plays in a loop. It lasts 1.20 seconds.</li>
+<li><code>cursor_mapa</code>: Map explorer cursor. The map explorer cursor has moved to the next intersection. It also sounds when you read a board inside a venue. It lasts 0.04 seconds.</li>
+<li><code>loc_mision</code>: Mission available. It sounds from a place where a mission is waiting for you. It plays in a loop. It lasts 1.50 seconds.</li>
+<li><code>loc_vehiculo</code>: Mission vehicle. It sounds from the vehicle the mission asks for, and from your driver&#x27;s vehicle while he waits for you. It plays in a loop. It lasts 1.80 seconds.</li>
+<li><code>loc_lugar</code>: Point of interest. It sounds from a point of interest that has no sound of its own. It plays in a loop. It lasts 2.00 seconds.</li>
+<li><code>sonar</code>: Proximity sensor. When driving, there is a vehicle ahead: it beeps faster and higher the closer it is. It is also the cold or hot beep when searching for treasure. It lasts 0.05 seconds.</li>
+<li><code>radar</code>: Radar. It sounds from the position of whatever the radar has just announced. It lasts 0.06 seconds.</li>
+<li><code>tono_libre</code>: Scanner, path clear. The directional scanner finds no wall in that direction. It lasts 0.08 seconds.</li>
+<li><code>tono_pared</code>: Scanner, wall. The directional scanner has found a wall. The closer it is, the higher the pitch. It lasts 0.15 seconds.</li>
+<li><code>semaforo_tic</code>: Traffic light, fast ticking. The cars on the street are stopped: you can cross the street, walking north or south. It lasts 0.03 seconds.</li>
+<li><code>semaforo_pio</code>: Traffic light, slow chirp. The cars on the avenue are stopped: you can cross the avenue, walking east or west. It lasts 0.09 seconds.</li>
+</ul>
+<h3>Sounds of places</h3>
+<p>37 sounds. Each type of place plays its sound in a loop so you can recognize it as you pass. They must be different from each other and not tiring: remember they are heard many times.</p>
+<ul>
+<li><code>lugar_academia</code>: Academy or driving school. You are next to an academy or a driving school: the class bell. It plays in a loop. It lasts 3.50 seconds.</li>
+<li><code>lugar_aeropuerto</code>: Airport. You are next to the airport: the loudspeaker announcement, three descending notes. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>lugar_protectora</code>: Animal shelter. You are next to the animal shelter, where you can adopt a dog: barking. It plays in a loop. It lasts 4.00 seconds.</li>
+<li><code>lugar_banco</code>: Bank or pawn shop. You are next to a bank or a pawn shop: the beeps of an ATM. It plays in a loop. It lasts 2.40 seconds.</li>
+<li><code>lugar_bar</code>: Bar, tavern or nightclub. You are next to a bar, a tavern, a nightclub or a business: deep bass music through the wall. It plays in a loop. It lasts 2.00 seconds.</li>
+<li><code>lugar_estacion</code>: Bus station. You are next to the bus station: air brakes and announcements over the loudspeaker. It plays in a loop. It lasts 4.00 seconds.</li>
+<li><code>lugar_casino</code>: Casino or fairground. You are next to a casino or a fairground: the little tune of the slot machines. It plays in a loop. It lasts 2.40 seconds.</li>
+<li><code>lugar_iglesia</code>: Church. You are next to a church: a bell. It plays in a loop. It lasts 3.50 seconds.</li>
+<li><code>lugar_cine</code>: Cinema. You are next to a cinema: the clatter of a projector. It plays in a loop. It lasts 1.92 seconds.</li>
+<li><code>lugar_boya</code>: Dock, buoy or fishing spot. You are next to a dock, a buoy, a fishing spot or a treasure at sea: a buoy bell among the waves. It plays in a loop. It lasts 3.50 seconds.</li>
+<li><code>puerta_entrar</code>: Enter a venue. You enter a venue: the door and its little bell. While you are inside, the sound of the place plays in the background. It lasts 1.10 seconds.</li>
+<li><code>lugar_fuente</code>: Fountain. You are next to a fountain: water falling. It plays in a loop. It lasts 2.94 seconds.</li>
+<li><code>lugar_armeria</code>: Gun shop. You are next to a gun shop: a weapon being cocked. It plays in a loop. It lasts 2.60 seconds.</li>
+<li><code>lugar_gimnasio</code>: Gym. You are next to a gym: weights clanking. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>lugar_helipuerto</code>: Heliport. You are next to a heliport: spinning blades and a control tower beep. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>lugar_hospital</code>: Hospital or pharmacy. You are next to a hospital or a pharmacy: the beep of a monitor. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>lugar_casa</code>: House. You are next to a home or a hotel, yours or one you can buy: wind chimes. It plays in a loop. It lasts 4.00 seconds.</li>
+<li><code>lugar_empleo</code>: Job center. You are next to the job center: keyboards and the queue number announcement. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>puerta_salir</code>: Leave a venue. You leave a venue: the little bell and the door closing. It lasts 0.70 seconds.</li>
+<li><code>lugar_mina</code>: Mine. You are next to a mine: pickaxes against rock. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>lugar_periodico</code>: Newspaper or bookstore. You are next to a newspaper or a bookstore: the tapping of typewriters. It plays in a loop. It lasts 2.00 seconds.</li>
+<li><code>lugar_club</code>: Nightclub, adult content. You are next to a nightclub: muffled music and clinking glasses. It plays in a loop. It lasts 1.96 seconds.</li>
+<li><code>lugar_embarcadero</code>: Pier or boat dealer. You are next to a pier: water against the docks and mooring lines creaking. It plays in a loop. It lasts 3.80 seconds.</li>
+<li><code>lugar_contacto</code>: Place with a contact. You are next to a place where someone is waiting for you with a job. It plays in a loop. It lasts 1.50 seconds.</li>
+<li><code>lugar_generico</code>: Place with no sound of its own. You are next to a place of a type that has no sound of its own. It plays in a loop. It lasts 2.00 seconds.</li>
+<li><code>lugar_comisaria</code>: Police station. You are next to a police station: a police radio. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>lugar_prision</code>: Prison. You are next to the prison: a gate clanging shut and a distant siren. It plays in a loop. It lasts 4.00 seconds.</li>
+<li><code>lugar_taller</code>: Repair shop, scrapyard or car dealership. You are next to a repair shop, a scrapyard or a car dealership: a pneumatic wrench. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>lugar_comida</code>: Restaurant, pizzeria or beach bar. You are next to a place where people eat: something frying. It plays in a loop. It lasts 1.94 seconds.</li>
+<li><code>lugar_rio</code>: River. You are next to a river: water running over stones. It plays in a loop. It lasts 3.80 seconds.</li>
+<li><code>lugar_salida</code>: Road exit. You are next to a city exit: cars passing quickly. This is the way to another town. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>lugar_ong</code>: Soup kitchen. You are next to a soup kitchen or a charity: plates and cutlery. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>lugar_tienda</code>: Store. You are next to a store: the door buzzer. It plays in a loop. It lasts 3.20 seconds.</li>
+<li><code>lugar_proveedor</code>: Supplier, adult content. You are next to a supplier, where product is bought and sold: two hisses and a metal shutter. It plays in a loop. It lasts 3.50 seconds.</li>
+<li><code>lugar_taxi</code>: Taxi stand or race start. You are next to a taxi stand or the finish of a race: two short honks. It plays in a loop. It lasts 2.50 seconds.</li>
+<li><code>lugar_tren</code>: Train station. You are next to the train station: the huffing of a locomotive. It plays in a loop. It lasts 2.40 seconds.</li>
+<li><code>lugar_tranvia</code>: Tram stop. You are next to a tram stop: two rings of the bell. It plays in a loop. It lasts 2.40 seconds.</li>
+</ul>
+<h3>Moving on foot and swimming</h3>
+<p>20 sounds. There are two variants of the footsteps for each surface, alternating left foot and right foot. They must last less than a quarter of a second.</p>
+<ul>
+<li><code>choque_pared</code>: Crash into a wall. You tried to walk into a wall. It lasts 0.12 seconds.</li>
+<li><code>agacharse</code>: Crouch. You crouch: you make less noise and are harder to see. It lasts 0.25 seconds.</li>
+<li><code>paso_plaza0</code>: Footsteps on a square, left foot. You walk on the paving stones of a square. It lasts 0.08 seconds.</li>
+<li><code>paso_plaza1</code>: Footsteps on a square, right foot. You walk on the paving stones of a square, with the other foot. It lasts 0.08 seconds.</li>
+<li><code>paso_hierba0</code>: Footsteps on grass, left foot. You walk on the grass of a park or in the countryside. It lasts 0.16 seconds.</li>
+<li><code>paso_hierba1</code>: Footsteps on grass, right foot. You walk on the grass, with the other foot. It lasts 0.16 seconds.</li>
+<li><code>paso_arena0</code>: Footsteps on sand, left foot. You walk on the sand of the beach. It lasts 0.20 seconds.</li>
+<li><code>paso_arena1</code>: Footsteps on sand, right foot. You walk on the sand, with the other foot. It lasts 0.20 seconds.</li>
+<li><code>paso_muelle0</code>: Footsteps on the pier, left foot. You walk on the planks of a pier. It lasts 0.14 seconds.</li>
+<li><code>paso_muelle1</code>: Footsteps on the pier, right foot. You walk on the planks of a pier, with the other foot. It lasts 0.14 seconds.</li>
+<li><code>paso_calzada0</code>: Footsteps on the roadway, left foot. You walk on the asphalt: watch out for cars. It lasts 0.10 seconds.</li>
+<li><code>paso_calzada1</code>: Footsteps on the roadway, right foot. You walk on the asphalt, where the cars go. It lasts 0.10 seconds.</li>
+<li><code>paso_acera0</code>: Footsteps on the sidewalk, left foot. You walk on the sidewalk. It lasts 0.09 seconds.</li>
+<li><code>paso_acera1</code>: Footsteps on the sidewalk, right foot. You walk on the sidewalk. Your two feet sound a little different. It lasts 0.09 seconds.</li>
+<li><code>paso_via0</code>: Footsteps on the tracks, left foot. You are in the middle of the tram or train tracks: a metallic clink from the rail, with gravel underneath. It lasts 0.20 seconds.</li>
+<li><code>paso_via1</code>: Footsteps on the tracks, right foot. You are still on the tram or train tracks: get off them. It lasts 0.20 seconds.</li>
+<li><code>levantarse</code>: Get up. You stand up after crouching. It lasts 0.25 seconds.</li>
+<li><code>salpicadura</code>: Splash. Someone or something falls in the water: you, a vehicle or what you throw into the sea. It lasts 0.90 seconds.</li>
+<li><code>brazada</code>: Swim stroke. It sounds with every stroke you swim. It lasts 0.45 seconds.</li>
+<li><code>bajo_agua</code>: Underwater. You are diving: a muffled rumble with bubbles. It plays in a loop. It lasts 3.00 seconds.</li>
+</ul>
+<h3>Vehicles and driving</h3>
+<p>19 sounds. Engines play in a loop and the game raises their pitch with speed. Record the engine at idle, at a constant rpm.</p>
+<ul>
+<li><code>motor_bici</code>: Bicycle. You are riding a bicycle: the click of the chain. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>claxon_bici</code>: Bicycle bell. A bicycle bell. It lasts 0.54 seconds.</li>
+<li><code>motor_coche</code>: Car engine. The engine of a car. It rises in pitch with speed. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>claxon</code>: Car horn. You honk the horn, or another driver honks at you. Your driver honks twice on arrival, and your mechanic when he drops off a vehicle. It lasts 0.45 seconds.</li>
+<li><code>choque</code>: Hard crash. A hard hit with the vehicle: it takes damage. It lasts 0.60 seconds.</li>
+<li><code>claxon_helados</code>: Ice cream van tune. The ice cream van plays its little tune instead of honking. It lasts 1.47 seconds.</li>
+<li><code>choque_leve</code>: Light crash. A scrape or a light bump with the vehicle. It lasts 0.30 seconds.</li>
+<li><code>motor_moto</code>: Motorcycle engine. The engine of a motorcycle. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>frenazo</code>: Screech of brakes. A vehicle brakes hard or skids. It lasts 0.90 seconds.</li>
+<li><code>motor_deportivo</code>: Sports car engine. The engine of a sports car, rougher than a normal car. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>arranque</code>: Start the engine. You start a vehicle&#x27;s engine. It lasts 0.90 seconds.</li>
+<li><code>radio_cambio</code>: Station change. You change station on a vehicle&#x27;s radio, or turn it off. It lasts 0.30 seconds.</li>
+<li><code>rodadura</code>: Tires on asphalt. The noise of your vehicle&#x27;s tires. The faster you go, the louder it gets. It plays in a loop. It lasts 1.44 seconds.</li>
+<li><code>motor_tractor</code>: Tractor engine. The engine of a tractor, slow and chugging. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>claxon_camion</code>: Truck horn. The horn of a truck or a bus. It lasts 0.70 seconds.</li>
+<li><code>motor_camion</code>: Truck or bus engine. The engine of a truck or a bus, deep and heavy. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>intermitente</code>: Turn signal. You have asked to turn at the next intersection. It sounds until you turn. It plays in a loop. It lasts 0.80 seconds.</li>
+<li><code>motor_furgoneta</code>: Van or off-roader engine. The engine of a van or an off-roader. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>puerta_coche</code>: Vehicle door. You get into a vehicle or out of it. It lasts 0.18 seconds.</li>
+</ul>
+<h3>Breakdowns, repair shop, gas and vehicle theft</h3>
+<p>10 sounds. What happens to a vehicle when you are simply not driving it.</p>
+<ul>
+<li><code>cristal</code>: Broken glass. Glass breaks: a car window or a shop window. It lasts 0.70 seconds.</li>
+<li><code>alarma</code>: Car alarm. The alarm of a vehicle or a venue has gone off. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>fuego</code>: Fire. A vehicle or a building is on fire. If it&#x27;s a vehicle, it is going to explode: get away. It plays in a loop. It lasts 1.94 seconds.</li>
+<li><code>pinchazo</code>: Flat tire. A tire bursts and the air escapes: the vehicle pulls to one side. It lasts 1.30 seconds.</li>
+<li><code>ganzua</code>: Lockpick. You are picking a vehicle&#x27;s lock. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>reserva</code>: Low fuel. Warning that the vehicle is low on fuel: find a gas station. It lasts 0.62 seconds.</li>
+<li><code>motor_seco</code>: Out of fuel. The engine coughs and dies: you have run out of fuel. It plays in a loop. It lasts 0.69 seconds.</li>
+<li><code>pintura</code>: Paint the vehicle. Your vehicle is being painted at a repair shop: the police stop recognizing it. It lasts 1.20 seconds.</li>
+<li><code>repostar</code>: Refuel. The pump is filling the tank. It lasts 1.60 seconds.</li>
+<li><code>reparar</code>: Repair at the repair shop. Your vehicle is being repaired at a repair shop. It lasts 0.75 seconds.</li>
+</ul>
+<h3>Boats, helicopters, train, tram and plane</h3>
+<p>16 sounds. The train, the tram and the plane cockpit play in a loop, just like the engines.</p>
+<ul>
+<li><code>tono_alineacion</code>: Alignment tone. While flying without autopilot, two clicks that sound on the side you need to steer toward. In the center and higher pitched, you are well lined up. It lasts 0.11 seconds.</li>
+<li><code>tono_altitud</code>: Altitude tone. While flying, a note that sounds every time your altitude changes: the higher the pitch, the higher you fly. It lasts 0.13 seconds.</li>
+<li><code>motor_barco</code>: Boat engine. The engine of a large boat: a fishing boat, a sailboat or a yacht. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>alarma_cabina</code>: Cockpit alarm. While flying, four urgent beeps: fuel is very low, there is an obstacle or traffic ahead, or the engine has stopped. It lasts 0.62 seconds.</li>
+<li><code>motor_helicoptero</code>: Helicopter. The blades of a helicopter you are riding in. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>aterrizaje</code>: Landing. The aircraft touches down: a thump, the screech of the wheels and the roll fading out. It lasts 1.25 seconds.</li>
+<li><code>motor_avioneta</code>: Light plane. The buzz of a light plane propeller. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>avion</code>: Passenger plane. You are on a plane trip: the hum of the cabin in flight. It plays in a loop. It lasts 3.00 seconds.</li>
+<li><code>avion_despegue</code>: Plane takeoff. The plane accelerates down the runway and takes off. It lasts 4.00 seconds.</li>
+<li><code>sirena_barco</code>: Ship horn. A ship sets sail. At sea, it also marks nightfall. It lasts 1.80 seconds.</li>
+<li><code>motor_lancha</code>: Speedboat engine. The engine of a speedboat or another fast watercraft. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>tren</code>: Train. You are on a train trip: the carriage rolling along, with the clatter of the rails. It plays in a loop. It lasts 2.00 seconds.</li>
+<li><code>tren_silbato</code>: Train whistle. The train leaves the station. It lasts 1.60 seconds.</li>
+<li><code>tranvia</code>: Tram. You are on a tram: an electric hum over rails. It plays in a loop. It lasts 2.00 seconds.</li>
+<li><code>tranvia_campana</code>: Tram bell. The tram pulls out: two rings of the bell. It lasts 0.90 seconds.</li>
+<li><code>turbulencia</code>: Turbulence. The aircraft shakes: there is turbulence, or you are flying through a storm. It lasts 1.30 seconds.</li>
+</ul>
+<h3>Weapons, the shot of each one</h3>
+<p>14 sounds. The shot of each weapon should be recognizable without looking: try to make sure they don&#x27;t sound alike.</p>
+<ul>
+<li><code>disparo_fusil</code>: Assault rifle shot. Someone fires an assault rifle. It lasts 0.30 seconds.</li>
+<li><code>disparo_rafaga</code>: Burst-fire pistol shot. A dry, very short shot, repeating very fast. It lasts 0.16 seconds.</li>
+<li><code>lanzagranadas</code>: Grenade launcher shot. A hollow thump, like a tube: a grenade is launched. It lasts 0.60 seconds.</li>
+<li><code>disparo_palanca</code>: Lever-action rifle shot. The shot and, right behind it, the lever loading the next round. It lasts 1.00 seconds.</li>
+<li><code>disparo_pistola</code>: Pistol shot. Someone fires a pistol. It lasts 0.35 seconds.</li>
+<li><code>disparo_corredera</code>: Pump-action shotgun shot. A deep boom and, right behind it, the slide. It lasts 1.10 seconds.</li>
+<li><code>disparo_revolver</code>: Revolver shot. Someone fires a revolver: deeper and more forceful than the pistol. It lasts 0.50 seconds.</li>
+<li><code>disparo_rifle</code>: Rifle shot. Someone fires a sniper rifle or a carbine: dry and with an echo. It lasts 0.80 seconds.</li>
+<li><code>cohete</code>: Rocket launcher shot. A rocket launches: the explosion will follow. It lasts 1.00 seconds.</li>
+<li><code>disparo_semiautomatico</code>: Semi-automatic rifle shot. Someone fires a semi-automatic rifle: single, loud shots. It lasts 0.42 seconds.</li>
+<li><code>disparo_escopeta</code>: Shotgun shot. Someone fires a shotgun: a broad boom. It lasts 0.70 seconds.</li>
+<li><code>disparo_silenciado</code>: Silenced pistol shot. A muffled shot: hardly anyone around hears it. It lasts 0.12 seconds.</li>
+<li><code>disparo_subfusil</code>: Submachine gun shot. Someone fires a submachine gun or a machine gun: fast bursts. It lasts 0.20 seconds.</li>
+<li><code>lanzar</code>: Throw. Someone throws a grenade or a Molotov cocktail, or fires a crossbow. It lasts 0.30 seconds.</li>
+</ul>
+<h3>Combat, aim and wounds</h3>
+<p>20 sounds. Reloads, impacts, hits, the aiming tones and what you hear when someone gets hurt.</p>
+<ul>
+<li><code>recoger_municion</code>: Ammo picked up. You pick up ammo or a weapon dropped by a fallen enemy: a magazine going in and the bolt. It lasts 0.50 seconds.</li>
+<li><code>hacha</code>: Axe strike. An axe strike: the whoosh and the dull thud of the blade. It lasts 0.42 seconds.</li>
+<li><code>bala_impacto</code>: Bullet impact. A bullet hits a wall, a vehicle or something else. It lasts 0.12 seconds.</li>
+<li><code>tono_objetivo</code>: Enemy locked on, in range. It sounds from where the locked-on enemy is: they are within range of your weapon. It lasts 0.07 seconds.</li>
+<li><code>tono_apuntado</code>: Enemy locked on, out of range. It sounds from where the locked-on enemy is: they are too far for your weapon. It lasts 0.04 seconds.</li>
+<li><code>explosion</code>: Explosion. A grenade, a rocket or a vehicle has exploded. It lasts 1.80 seconds.</li>
+<li><code>dolor_npc</code>: Groan of a man. You have hurt a man. It lasts 0.28 seconds.</li>
+<li><code>dolor_mujer</code>: Groan of a woman. You have hurt a woman. It lasts 0.30 seconds.</li>
+<li><code>curar</code>: Healing. You recover health, or an ambulance tends to the wounded. It lasts 0.78 seconds.</li>
+<li><code>latido</code>: Heartbeat. You have very little health left: heal up or take cover. It plays in a loop. It lasts 1.00 seconds.</li>
+<li><code>golpe</code>: Hit that lands. A punch, a bat swing or a hit-and-run that lands on someone. It lasts 0.10 seconds.</li>
+<li><code>navaja</code>: Knife slash. A slash of a knife, a machete or a katana. It lasts 0.12 seconds.</li>
+<li><code>bala_silbido</code>: Missed bullet. A shot has whizzed past you. It lasts 0.18 seconds.</li>
+<li><code>sin_balas</code>: Out of bullets. You pull the trigger and the weapon is empty: reload or switch weapons. It lasts 0.04 seconds.</li>
+<li><code>recarga</code>: Reload. You reload your weapon. It lasts 0.70 seconds.</li>
+<li><code>muerte_npc</code>: Someone falls. Someone is gunned down. It lasts 0.70 seconds.</li>
+<li><code>golpe_aire</code>: Swing and miss. A swing that hits no one. It lasts 0.15 seconds.</li>
+<li><code>amartillar</code>: They are going to shoot you. An enemy readies their weapon: half a second later they will fire. It also sounds when you switch weapons. It lasts 0.32 seconds.</li>
+<li><code>hospital_despertar</code>: Waking up in the hospital. You have passed out and wake up in the hospital. It lasts 2.60 seconds.</li>
+<li><code>dolor</code>: You have been hurt. You have taken damage. It lasts 0.30 seconds.</li>
+</ul>
+<h3>Police and emergency services</h3>
+<p>12 sounds. Wanted level alerts, sirens and the police helicopter.</p>
+<ul>
+<li><code>sirena_ambulancia</code>: Ambulance siren. An ambulance: yours, or the one that comes after a shooting or a hit-and-run. It plays in a loop. It lasts 1.60 seconds.</li>
+<li><code>celda</code>: Cell door. You have been arrested and locked up: the cell door. It lasts 0.90 seconds.</li>
+<li><code>multa</code>: Fine. You have been given a fine: the officer&#x27;s whistle. It lasts 0.76 seconds.</li>
+<li><code>esposas</code>: Handcuffs. You are arrested. It lasts 0.45 seconds.</li>
+<li><code>megafono</code>: Helicopter loudspeaker. The police helicopter speaks to you over the loudspeaker: a click and a metallic voice. What it says is read out next. It lasts 1.10 seconds.</li>
+<li><code>helicoptero_policia</code>: Police helicopter. At the highest wanted level, the police helicopter: you hear it arrive and circle overhead. It plays in a loop. It lasts 2.00 seconds.</li>
+<li><code>emisora</code>: Police radio. When you work as an officer: the click of the channel and two beeps. You go on duty, a call comes in or the shift ends. It lasts 0.75 seconds.</li>
+<li><code>sirena</code>: Police siren. A patrol car coming for you, or a fire truck. It plays in a loop. It lasts 2.00 seconds.</li>
+<li><code>policia_perdida</code>: Police thrown off your trail. They are no longer looking for you. It lasts 1.38 seconds.</li>
+<li><code>buscando</code>: They are looking for you. They are looking for you but can&#x27;t see you: keep it up for a few seconds and you will throw them off. Higher pitched, it is the helicopter that can&#x27;t see you. It lasts 0.12 seconds.</li>
+<li><code>estrella_baja</code>: Wanted level goes down. The police are looking for you with less zeal. It lasts 0.70 seconds.</li>
+<li><code>estrella_sube</code>: Wanted level goes up. The police are looking for you with more zeal. It lasts 0.40 seconds.</li>
+</ul>
+<h3>People on the street and animals</h3>
+<p>8 sounds. Voices without words, other people&#x27;s footsteps and the dog.</p>
+<ul>
+<li><code>paso_npc</code>: Another person&#x27;s footsteps. Someone is walking near you. It lasts 0.08 seconds.</li>
+<li><code>ladrido</code>: Bark. A dog barks. If it&#x27;s yours, it warns you of a nearby enemy or that it has sniffed something out. It lasts 1.00 seconds.</li>
+<li><code>murmullo</code>: Murmur. A pedestrian murmurs as they talk to you, or two passersby chat with each other. It lasts 0.35 seconds.</li>
+<li><code>grito</code>: Scream. A scream: yours to scare people off, or an enemy who has spotted you and alerts their friends. It lasts 0.75 seconds.</li>
+<li><code>grito_hombre</code>: Scream of a frightened man. A man yells in fright and runs off. It lasts 0.63 seconds.</li>
+<li><code>grito_mujer</code>: Scream of a frightened woman. A woman yells in fright and runs off. It lasts 0.72 seconds.</li>
+<li><code>evento</code>: Street event. Something is happening nearby: a robbery, some gang members or a lost briefcase. Helping is optional. It lasts 0.74 seconds.</li>
+<li><code>perro_olfatea</code>: The dog sniffs. Your dog sniffs out the nearest item. It lasts 0.36 seconds.</li>
+</ul>
+<h3>Home, kitchen and food</h3>
+<p>8 sounds. Eating, drinking, cooking at home and someone knocking at the door.</p>
+<ul>
+<li><code>cocina_freir</code>: Cooking, the frying pan. You cook in the frying pan: the oil sizzling. It lasts 2.40 seconds.</li>
+<li><code>cocina_cortar</code>: Cooking, the knife. You start cooking: the knife chopping on the board. It lasts 1.50 seconds.</li>
+<li><code>cocina_hervir</code>: Cooking, the pot. You cook in the pot: the water bubbling. It lasts 2.40 seconds.</li>
+<li><code>plato_servido</code>: Dish served. The dish is ready: china on the table and cutlery. It lasts 0.90 seconds.</li>
+<li><code>timbre</code>: Doorbell. Someone rings your doorbell: the food you ordered for delivery has arrived. Two notes, ding, dong. It lasts 1.30 seconds.</li>
+<li><code>beber</code>: Drinking. You take a few sips. It lasts 0.33 seconds.</li>
+<li><code>comer</code>: Eating. You eat something: you regain strength. It lasts 0.60 seconds.</li>
+<li><code>nevera</code>: Fridge. You open the fridge at home or put away the groceries: the door seal and the hum of the motor. It lasts 1.00 seconds.</li>
+</ul>
+<h3>Stores, money and items</h3>
+<p>5 sounds. Buying, getting paid and picking things up.</p>
+<ul>
+<li><code>caja</code>: Cash register. You pay for a purchase or make a transaction at the bank. It lasts 0.67 seconds.</li>
+<li><code>recoger</code>: Item picked up. You pick up an item from the ground. It lasts 0.18 seconds.</li>
+<li><code>dinero</code>: Money. You have earned money. It lasts 0.55 seconds.</li>
+<li><code>cesta</code>: Shopping basket. You toss a product into the basket: a dull thud and the wire trembling. Lower in pitch, you put it back on the shelf. It lasts 0.40 seconds.</li>
+<li><code>bolsa</code>: Stock market. You have bought shares on the stock market. It lasts 0.49 seconds.</li>
+</ul>
+<h3>Menus, phone and game alerts</h3>
+<p>17 sounds. Short interface sounds. They should be brief and discreet.</p>
+<ul>
+<li><code>nivel</code>: A skill goes up. You have improved in driving, shooting, stamina or fishing. It lasts 0.80 seconds.</li>
+<li><code>logro</code>: Achievement earned. You have earned one of the game&#x27;s achievements. It lasts 1.05 seconds.</li>
+<li><code>notificacion</code>: Alert. General alert: a new mission, a set destination or a message. What it is gets said right after. It lasts 0.54 seconds.</li>
+<li><code>reloj</code>: Countdown. Less than ten seconds left: it sounds every second. It lasts 0.03 seconds.</li>
+<li><code>gallo</code>: Dawn breaks. It is seven in the morning: a rooster crows. It lasts 1.10 seconds.</li>
+<li><code>error</code>: Error. You can&#x27;t do that right now. It lasts 0.22 seconds.</li>
+<li><code>guardado</code>: Game saved. The game has been saved. It lasts 0.67 seconds.</li>
+<li><code>pasan_horas</code>: Hours go by. Time jumps ahead: you sleep, hide or wait. It lasts 1.85 seconds.</li>
+<li><code>dialogo</code>: Line of dialogue. A line of dialogue begins. It lasts 0.05 seconds.</li>
+<li><code>menu_ajuste</code>: Menu, change a value. You change the value of an option with left or right. It lasts 0.03 seconds.</li>
+<li><code>menu_ok</code>: Menu, choose. You choose an option from a menu. It lasts 0.27 seconds.</li>
+<li><code>menu_atras</code>: Menu, go back. You go back in a menu. It lasts 0.27 seconds.</li>
+<li><code>menu_mover</code>: Menu, move to next option. You move from one option to another in a menu. It lasts 0.03 seconds.</li>
+<li><code>menu_borde</code>: Menu, start or end. You have reached the start or the end of a menu, or the edge of the map. It lasts 0.08 seconds.</li>
+<li><code>campanadas</code>: Midnight. A new day begins: you collect from your businesses and prices change. It lasts 4.20 seconds.</li>
+<li><code>buho</code>: Night falls. It is nine at night: an owl. It lasts 1.60 seconds.</li>
+<li><code>movil</code>: Phone. You open the phone, or a call or a message comes in. It lasts 0.22 seconds.</li>
+</ul>
+<h3>Missions, work, reputation and mood</h3>
+<p>14 sounds. What plays when you finish a mission, during honest work and when how people see you or how you feel changes.</p>
+<ul>
+<li><code>factura</code>: Bill, tax or fee. Your bills, taxes or loan payment have been charged: a receipt printer and a low note. It lasts 0.95 seconds.</li>
+<li><code>fama</code>: Changes your street reputation. Changes how you are seen on the street. It lasts 0.68 seconds.</li>
+<li><code>diploma</code>: Course finished. You have finished a course at an academy and a skill goes up. It lasts 1.38 seconds.</li>
+<li><code>jornada</code>: Day&#x27;s work. You put in a day&#x27;s work: the factory siren and the hours go by. It lasts 2.50 seconds.</li>
+<li><code>titulo</code>: Degree earned. You have finished studying for a degree: a short fanfare and a long chord. It lasts 1.50 seconds.</li>
+<li><code>despido</code>: Dismissal. You have been fired from your permanent job: a slammed door and three descending notes. It lasts 1.20 seconds.</li>
+<li><code>donativo</code>: Donation. You make a donation: coins falling. It lasts 0.90 seconds.</li>
+<li><code>inspeccion</code>: Inspection. An inspection has gone through one of your businesses: knuckles knocking on the door, papers and a stamp. If it found something, it is on your phone, under Life, reputation and consequences. It lasts 1.15 seconds.</li>
+<li><code>mision_ok</code>: Mission completed. You have completed a mission. It lasts 1.36 seconds.</li>
+<li><code>mision_fallo</code>: Mission failed. You have failed a mission, or you have gone down. It lasts 1.60 seconds.</li>
+<li><code>ascenso</code>: Promotion. You rank up in a trade and earn more, or you get promoted in your permanent job. It lasts 1.40 seconds.</li>
+<li><code>prestigio</code>: Standing with the neighbors. The neighbors think better of you. It lasts 0.83 seconds.</li>
+<li><code>animo_sube</code>: Your mood gets better. Your mood rises a level: you aim better. It lasts 0.48 seconds.</li>
+<li><code>animo_baja</code>: Your mood gets worse. Your mood drops a level: with very low mood you aim worse and run less. It lasts 0.57 seconds.</li>
+</ul>
+<h3>Territories and gangs</h3>
+<p>4 sounds. The alerts for the neighborhoods that are yours.</p>
+<ul>
+<li><code>barrio_defendido</code>: Neighborhood defended. You have fought off an assault, or you have wiped out a gang&#x27;s hideout: a drumroll and three rising notes. It lasts 1.25 seconds.</li>
+<li><code>barrio_perdido</code>: Neighborhood lost. A gang has taken a neighborhood from you: a deep bell and descending notes. It lasts 1.60 seconds.</li>
+<li><code>territorio</code>: Territory conquered. A neighborhood becomes yours. It lasts 1.56 seconds.</li>
+<li><code>amenaza_barrio</code>: Threat to one of your neighborhoods. A gang is preparing an assault on one of your neighborhoods, or has just started it: deep drums, ever more frequent, and two tense notes. Check the phone, under Territories. It lasts 1.15 seconds.</li>
+</ul>
+<h3>Online play and roleplay</h3>
+<p>7 sounds. Alerts from the shared game and from the server roleplay channels.</p>
+<ul>
+<li><code>chat_accion</code>: Character action. On a server, someone nearby describes what their character does, for example opening a door: a short rustle topped with a note. It lasts 0.45 seconds.</li>
+<li><code>amigo_entra</code>: Friend arrives. Playing with friends, someone joins the game, or you connect. Three rising notes. It lasts 0.77 seconds.</li>
+<li><code>amigo_sale</code>: Friend leaves. Playing with friends, someone leaves, or you disconnect. Three descending notes. It lasts 0.77 seconds.</li>
+<li><code>chat_personaje</code>: In-character message. On a server, someone nearby speaks as their character, or you do: two deep, warm notes, slower than the normal message ones. It lasts 0.64 seconds.</li>
+<li><code>chat</code>: Message. Playing with friends, a message arrives or is sent: two quick, high notes. It is read aloud next. It lasts 0.29 seconds.</li>
+<li><code>chat_fuera</code>: Out-of-character message. On a server, someone speaks as a player and not as their character: two dry wooden knocks. The whole server hears it. It lasts 0.30 seconds.</li>
+<li><code>espera_servidor</code>: Waiting for the server. On a server, the connection has dropped or the server is updating, and the game waits to rejoin on its own: two slow, weak notes, the second one lower. It repeats every few seconds. It lasts 1.64 seconds.</li>
+</ul>
+<h3>Fishing, casino and games</h3>
+<p>12 sounds. Fishing and the casino, fairground and gym games.</p>
+<ul>
+<li><code>campana_ring</code>: Boxing match bell. A fight starts in the gym. It lasts 1.20 seconds.</li>
+<li><code>dados</code>: Dice. The dice roll. It lasts 0.80 seconds.</li>
+<li><code>pez_pica</code>: Fishing, a bite. A fish has bitten the hook: pull right away, within a second. It lasts 0.60 seconds.</li>
+<li><code>pesca_lanzar</code>: Fishing, casting the hook. You cast the line: the hook falls into the water. It lasts 1.15 seconds.</li>
+<li><code>carrete</code>: Fishing, reeling in the line. You reel in the line with the reel. It lasts 0.90 seconds.</li>
+<li><code>simon_2</code>: Memory machine, down arrow. The lowest note of the sound memory game. It lasts 0.45 seconds.</li>
+<li><code>simon_3</code>: Memory machine, left arrow. The second lowest note of the sound memory game. It lasts 0.45 seconds.</li>
+<li><code>simon_1</code>: Memory machine, right arrow. The second highest note of the sound memory game. It lasts 0.45 seconds.</li>
+<li><code>simon_0</code>: Memory machine, up arrow. The highest note of the sound memory game. It lasts 0.45 seconds.</li>
+<li><code>ruleta</code>: Roulette. The casino roulette wheel spins. It lasts 2.40 seconds.</li>
+<li><code>diana</code>: Shooting range target. A target appears: shoot toward the side it sounds from. It lasts 0.25 seconds.</li>
+<li><code>diana_ok</code>: Target hit. You hit a target at the shooting gallery. It lasts 0.20 seconds.</li>
+</ul>
+<h3>Ambience and weather</h3>
+<p>19 sounds. Long loops that play in the background in each neighborhood, with rain and at night, and single sounds that appear now and then around you.</p>
+<ul>
+<li><code>amb_playa</code>: Beach ambience. You are at the beach: waves. It plays in a loop. It lasts 8.70 seconds.</li>
+<li><code>pajaro</code>: Bird. A bird, in parks and quiet neighborhoods. It lasts 0.90 seconds.</li>
+<li><code>amb_ciudad</code>: City ambience. You are downtown: distant traffic. It plays in a loop. It lasts 7.70 seconds.</li>
+<li><code>martillo</code>: Construction hammering. Construction work in the distance, at the harbor and in the industrial estates. It lasts 1.20 seconds.</li>
+<li><code>amb_campo</code>: Countryside ambience. You are in the countryside: birds and cowbells. It plays in a loop. It lasts 9.70 seconds.</li>
+<li><code>claxon_lejano</code>: Distant horn. A distant car horn, as ambience: it is not for you. It lasts 0.45 seconds.</li>
+<li><code>sirena_lejana</code>: Distant siren. A distant siren, as ambience: they are not coming for you. It lasts 2.00 seconds.</li>
+<li><code>amb_puerto</code>: Harbor ambience. You are at the harbor: waves and a distant ship&#x27;s horn. It plays in a loop. It lasts 8.70 seconds.</li>
+<li><code>amb_industrial</code>: Industrial estate ambience. You are in an industrial estate: machinery. It plays in a loop. It lasts 5.70 seconds.</li>
+<li><code>amb_montana</code>: Mountain ambience. You are in the mountains: wind. It plays in a loop. It lasts 9.70 seconds.</li>
+<li><code>multitud</code>: Murmur of a crowd. There are lots of people around. It plays in a loop. It lasts 5.70 seconds.</li>
+<li><code>amb_noche</code>: Night ambience. It is night: crickets. It plays in a loop. It lasts 5.80 seconds.</li>
+<li><code>amb_mar</code>: Open sea ambience. You are out at sea, far from the coast. It plays in a loop. It lasts 9.70 seconds.</li>
+<li><code>amb_parque</code>: Park ambience. You are in a park: birds. It plays in a loop. It lasts 9.70 seconds.</li>
+<li><code>amb_residencial</code>: Quiet neighborhood ambience. You are in a residential neighborhood. It plays in a loop. It lasts 7.70 seconds.</li>
+<li><code>lluvia</code>: Rain. It is raining: the ground is slipperier and you hear less well. It plays in a loop. It lasts 4.70 seconds.</li>
+<li><code>gaviota</code>: Seagulls. Seagulls, on the beach and at the harbor. It lasts 2.00 seconds.</li>
+<li><code>trueno</code>: Thunder. Thunder, when it rains. It lasts 3.50 seconds.</li>
+<li><code>viento_playa</code>: Wind. Wind in your face, when you are in a helicopter. It lasts 8.70 seconds.</li>
+</ul>
+<h3>Relationships, only with adult content</h3>
+<p>7 sounds. Love life.</p>
+<ul>
+<li><code>afinidad_baja</code>: Affinity goes down. Someone is upset with you. It lasts 1.40 seconds.</li>
+<li><code>afinidad_sube</code>: Affinity goes up. Someone likes you more, because of a chat, a date or a gift. It lasts 1.09 seconds.</li>
+<li><code>ruptura</code>: Breakup. A relationship ends. It lasts 2.60 seconds.</li>
+<li><code>cita</code>: Date. You have a date, or a moment of closeness with your partner. It lasts 1.30 seconds.</li>
+<li><code>regalo</code>: Gift. You hand over a gift: wrapping paper. It lasts 0.30 seconds.</li>
+<li><code>pareja</code>: New partner. You start a relationship: two heartbeats and an arpeggio. It lasts 1.60 seconds.</li>
+<li><code>noche_juntos</code>: Night together. You spend the night together. The scene fades out. It lasts 2.94 seconds.</li>
+</ul>
+<h3>Substances and dealing, only with adult content</h3>
+<p>13 sounds. Each substance has its own sound when you take it, so you can recognize it without looking.</p>
+<ul>
+<li><code>precio_ganga</code>: Bargain price. At the supplier, that substance is very cheap today. It lasts 0.51 seconds.</li>
+<li><code>bajon</code>: Crash. The effect of a substance wears off and the crash comes. It lasts 1.60 seconds.</li>
+<li><code>trato</code>: Deal closed. You have bought or sold product: bills and a package changing hands. It lasts 0.90 seconds.</li>
+<li><code>tomar_copa</code>: Have a drink. You drink alcohol: it is poured and you toast. It lasts 1.30 seconds.</li>
+<li><code>sobredosis</code>: Overdose. You overdid it: your heart slows, a continuous beep sounds and you end up in the hospital. It lasts 3.20 seconds.</li>
+<li><code>rechazo</code>: Rejection. That person is not interested in what you are offering. It lasts 0.22 seconds.</li>
+<li><code>precio_escasez</code>: Scarcity price. At the supplier, that substance is very expensive today. It lasts 0.51 seconds.</li>
+<li><code>tomar_cristal</code>: Take crystal. You take crystal: it crackles. It lasts 1.50 seconds.</li>
+<li><code>tomar_pastillas</code>: Take pills. You take a pill: the blister pack and a gulp. It lasts 0.90 seconds.</li>
+<li><code>tomar_hierba</code>: Take weed. You smoke weed: a lighter, a drag and smoke. It lasts 1.60 seconds.</li>
+<li><code>tomar_polvo</code>: Take white powder. You take white powder: a card and a sniff. It lasts 1.00 seconds.</li>
+<li><code>paisano</code>: Undercover cop. The buyer was an undercover cop. It lasts 1.10 seconds.</li>
+<li><code>abstinencia</code>: Withdrawal. Your body craves a substance you depend on: a tremor. It lasts 1.20 seconds.</li>
+</ul>
+</body>
+</html>

@@ -22,9 +22,17 @@ import sys
 import numpy as np
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_args = sys.argv[1:]
+IDIOMA = "es"
+if "--idioma" in _args:                              # --idioma en: las voces de otro idioma, de reparto_en.json, en
+    i = _args.index("--idioma")                      # data/phonon/voces_en y reparto_en.json; el modelo es el mismo
+    IDIOMA = _args[i + 1]
+    del _args[i:i + 2]
 DESTINO = os.path.join(RAIZ, "data", "phonon")
-MODELO = sys.argv[1] if len(sys.argv) > 1 else r"D:\Antigravity\PhononAndroid\modelo"
-REPARTO = sys.argv[2] if len(sys.argv) > 2 else os.path.join(RAIZ, "adjuntos", "voces_phonon", "reparto_final.json")
+VOCES = "voces" if IDIOMA == "es" else "voces_" + IDIOMA                 # las de otro idioma, aparte: voces_en, reparto_en.json
+REPARTO_SALIDA = "reparto.json" if IDIOMA == "es" else f"reparto_{IDIOMA}.json"
+MODELO = _args[0] if len(_args) > 0 else r"D:\Antigravity\PhononAndroid\modelo"
+REPARTO = _args[1] if len(_args) > 1 else os.path.join(RAIZ, "adjuntos", "voces_phonon", "reparto_final.json" if IDIOMA == "es" else f"reparto_{IDIOMA}.json")
 DANI = re.compile(r"\bDani\b")
 
 
@@ -59,9 +67,9 @@ def quienes_le_nombran():
 
 
 def main():
-    os.makedirs(os.path.join(DESTINO, "voces"), exist_ok=True)
+    os.makedirs(os.path.join(DESTINO, VOCES), exist_ok=True)
     apk = os.path.join(MODELO, "apk", "modelo")
-    for n in ("config.json", "tokenizer.json", "model.q8.gguf"):
+    for n in (("config.json", "tokenizer.json", "model.q8.gguf") if IDIOMA == "es" else ()):     # otro idioma usa el de data/phonon
         origen = next((p for p in (os.path.join(apk, n), os.path.join(MODELO, n)) if os.path.exists(p)), None)
         if origen is None:
             print("FALTA", n, "en", MODELO)
@@ -75,7 +83,7 @@ def main():
     salida = {"personajes": {}, "protagonista": {}}
 
     def poner(nombre_archivo, esp):
-        ruta = os.path.join(DESTINO, "voces", nombre_archivo + ".safetensors")
+        ruta = os.path.join(DESTINO, VOCES, nombre_archivo + ".safetensors")
         clave, t = leer_voz(os.path.join(MODELO, "voces", esp["id"] + ".safetensors"))
         if esp["tipo"] == "mezcla":
             _, b = leer_voz(os.path.join(MODELO, "voces", esp["con_id"] + ".safetensors"))
@@ -86,7 +94,7 @@ def main():
         poner("prota_" + k, esp)
         salida["protagonista"][k] = "prota_" + k
     try:                                             # quien ya tenía archivo lo conserva: si cambiara de nombre, a los jugadores se les
-        with open(os.path.join(DESTINO, "reparto.json"), encoding="utf-8") as f:      # volverían a generar frases que ya tienen hechas
+        with open(os.path.join(DESTINO, REPARTO_SALIDA), encoding="utf-8") as f:      # volverían a generar frases que ya tienen hechas
             antes = {q: a for q, a in json.load(f).get("personajes", {}).items() if re.fullmatch("voz_[0-9]+", str(a))}
     except (OSError, ValueError):
         antes = {}
@@ -105,15 +113,15 @@ def main():
                 archivo = "voz_%02d" % n
         poner(archivo, esp)
         salida["personajes"][quien] = archivo
-    sobran = set(os.listdir(os.path.join(DESTINO, "voces"))) - {v + ".safetensors" for v in list(salida["personajes"].values()) + list(salida["protagonista"].values())}
+    sobran = set(os.listdir(os.path.join(DESTINO, VOCES))) - {v + ".safetensors" for v in list(salida["personajes"].values()) + list(salida["protagonista"].values())}
     for s in sobran:
-        os.remove(os.path.join(DESTINO, "voces", s))
-    with open(os.path.join(DESTINO, "reparto.json"), "w", encoding="utf-8", newline="\n") as f:
+        os.remove(os.path.join(DESTINO, VOCES, s))
+    with open(os.path.join(DESTINO, REPARTO_SALIDA), "w", encoding="utf-8", newline="\n") as f:
         json.dump(salida, f, ensure_ascii=False, indent=1, sort_keys=True)
     lic = os.path.join(os.path.dirname(MODELO), "docs", "LICENCIA-MODELO.txt")
-    if os.path.exists(lic):
+    if os.path.exists(lic) and IDIOMA == "es":
         shutil.copy2(lic, os.path.join(DESTINO, "LICENCIA.txt"))
-    print("data/phonon listo:", len(salida["personajes"]), "voces de personajes y", len(salida["protagonista"]), "del protagonista")
+    print(os.path.relpath(os.path.join(DESTINO, VOCES), RAIZ), "listo:", len(salida["personajes"]), "voces de personajes y", len(salida["protagonista"]), "del protagonista")
     return 0
 
 

@@ -4,6 +4,7 @@ Coordenadas en metros: x crece hacia el este, y hacia el norte. Las avenidas
 van de sur a norte y las calles de oeste a este, separadas B metros.
 Los rumbos son grados en sentido horario desde el norte.
 """
+from .i18n import tr
 import heapq
 import json
 import math
@@ -18,10 +19,10 @@ ACERA = 9.0       # distancia del eje de la vía al final de la acera
 CARRIL = 3.0
 APARCA = 6.7       # distancia del eje a la que se aparca (pegado al bordillo, fuera del carril)
 DIRS = [(0, 1), (1, 0), (0, -1), (-1, 0)]       # norte, este, sur, oeste
-NOMBRE_DIR = ["norte", "este", "sur", "oeste"]
-CARDINAL8 = ["norte", "noreste", "este", "sureste", "sur", "suroeste", "oeste", "noroeste"]
-SUPERFICIE_TXT = {"via": "vías del tranvía", "via_tren": "vías del tren", "calzada": "calzada", "acera": "acera", "hierba": "césped", "arena": "arena",
-                  "plaza": "plaza", "muelle": "muelle", "pared": "pared", "fuera": "límite de la ciudad"}
+NOMBRE_DIR = [tr("norte"), tr("este"), tr("sur"), tr("oeste")]                     # solo se dicen
+CARDINAL8 = [tr("norte"), tr("noreste"), tr("este"), tr("sureste"), tr("sur"), tr("suroeste"), tr("oeste"), tr("noroeste")]
+SUPERFICIE_TXT = {"via": tr("vías del tranvía"), "via_tren": tr("vías del tren"), "calzada": "calzada", "acera": "acera", "hierba": "césped", "arena": "arena",
+                  "plaza": "plaza", "muelle": "muelle", "pared": "pared", "fuera": tr("límite de la ciudad")}
 
 
 def norm180(a):
@@ -47,22 +48,22 @@ def texto_relativo(rel):
     if a <= 22:
         return "delante"
     if a <= 67:
-        return "delante a la " + lado
+        return tr("delante a la ") + lado
     if a <= 112:
-        return "a la " + lado
+        return tr("a la ") + lado
     if a <= 157:
-        return "detrás a la " + lado
+        return tr("detrás a la ") + lado
     return "detrás"
 
 
 def texto_reloj(rel):
     h = int(round((rel % 360) / 30.0)) % 12
-    return "a las " + ("12" if h == 0 else str(h))
+    return tr("a las ") + ("12" if h == 0 else str(h))
 
 
 def metros(d):
     d = int(round(d))
-    return "1 metro" if d == 1 else f"{d} metros"
+    return tr("1 metro") if d == 1 else tr('{d} metros').format(d=(d))
 
 
 def _leer_json(ruta_archivo):
@@ -80,13 +81,14 @@ def _es_dato(nombre):
 
 
 SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas", "vehiculos_propios", "calle", "guerra_barrios",
-                  "carta_domicilio", "domicilio", "atracos", "pactos", "reconquista", "contratos", "reacciones", "planes_pareja", "convivencia", "policia_oficio", "avisos_policia",
+                  "carta_domicilio", "domicilio", "atracos", "pactos", "reconquista", "contratos", "reacciones", "planes_pareja", "convivencia", "alquiler", "desguace", "mochila", "objetos_valor", "encuentros", "horarios_locales", "calzado", "vestuario", "bolsa", "bolsa_empresas", "necesidades", "capo", "policia_oficio", "avisos_policia",
                   "pasillos", "productos", "tipos_tienda", "recetas", "cocina", "escolta_misiones", "persecuciones", "golpes", "papeles_golpe", "vuelo", "aeronaves", "mapa_aire",
                   "vida_honrada", "titulos", "empleos_fijos", "mejoras_negocio", "incidencias_trabajo", "buenas_acciones")
 
 
-def cargar_datos(con_mods=True):
-    """Lee datos/*.json y fusiona encima cualquier JSON de la carpeta mods."""
+def cargar_datos(con_mods=True, traducir=True):
+    """Lee datos/*.json y fusiona encima cualquier JSON de la carpeta mods. Con traducir, los textos quedan en el idioma
+    del juego (los datos se escriben en español); el editor y lo que se manda al servidor los quieren tal cual."""
     d = {}
     d["ciudad"] = _leer_json(os.path.join(rutas.DATOS, "ciudad.json"))
     arm = _leer_json(os.path.join(rutas.DATOS, "armas.json"))
@@ -146,7 +148,7 @@ def cargar_datos(con_mods=True):
             ruta_mod = os.path.join(rutas.MODS, nombre)
             if cifrado.COMPILADO and not cifrado.esta_cifrado(ruta_mod):
                 # en el juego que se reparte solo valen los mods guardados con el editor
-                d["errores_mods"].append(f"{nombre} está escrito a mano y no se ha cargado. Ábrelo con el editor de mods y guárdalo: el editor lo deja protegido y listo para usar")
+                d["errores_mods"].append(tr('{nombre} está escrito a mano y no se ha cargado. Ábrelo con el editor de mods y guárdalo: el editor lo deja protegido y listo para usar').format(nombre=(nombre)))
                 continue
             try:
                 mod = _leer_json(ruta_mod)
@@ -190,17 +192,24 @@ def cargar_datos(con_mods=True):
                 else:
                     lista[pos] = nuevo
             d["capitulos"].update(mod.get("capitulos", {}))
+    if traducir:
+        from . import i18n
+        i18n.traducir_datos(d)
     from . import calle, combustible, golpes, guerra, misvehiculos, realismo, sistemas, vuelo
     combustible.configurar(d)
     sistemas.configurar(d)
     realismo.configurar(d)
     gente.configurar(d)
     misvehiculos.configurar(d)
+    from . import bolsa, encuentros, mochila
+    mochila.configurar(d)
+    bolsa.configurar(d)
+    encuentros.configurar(d)
     calle.configurar(d)
     guerra.configurar(d)
     golpes.configurar(d)
     vuelo.configurar(d)
-    from . import agente, ajustes, atracos, compra, contratos, convivencia, domicilio, escolta, honrado, pactos, reacciones, reconquista      # noqa: F401  (cada uno apunta sus ajustes al cargarse)
+    from . import agente, ajustes, alquiler, atracos, compra, bolsa, capo, contratos, convivencia, desguace, domicilio, encuentros, mochila, necesidades, vestuario, escolta, honrado, pactos, reacciones, reconquista      # noqa: F401  (cada uno apunta sus ajustes al cargarse)
     ajustes.configurar_todos(d)
     return d
 
@@ -317,9 +326,9 @@ def completar_transporte(c):
             for (bi, bj), lado in esquinas:
                 n += 1
                 calle = c["calles"][bj if lado == "S" else bj + 1]
-                lugares.append({"id": f"{mid}_tranvia_{n}", "nombre": f"Parada de tranvía de {calle}, en {b['nombre']}", "tipo": "tranvia", "bloque": [bi, bj], "lado": lado,
+                lugares.append({"id": f"{mid}_tranvia_{n}", "nombre": tr('Parada de tranvía de {calle}, en {nombre}').format(calle=(calle), nombre=(b['nombre'])), "tipo": "tranvia", "bloque": [bi, bj], "lado": lado,
                                 "pos": _hueco(lugares, (bi, bj), lado, 62),
-                                "desc": f"Una marquesina con un banco y el cartel de la línea. El tranvía recorre {c['nombre']} parando en todos los barrios."})
+                                "desc": tr('Una marquesina con un banco y el cartel de la línea. El tranvía recorre {nombre} parando en todos los barrios.').format(nombre=(c['nombre']))})
         # el orden de la línea: dando la vuelta a la ciudad. Queda escrito en cada parada, para poder cambiarlo a mano
         nuevas = [l for l in lugares if l.get("tipo") == "tranvia"]
         pos = {l["id"]: (l["bloque"][0] * B + ACERA + l["pos"], l["bloque"][1] * B + (7.5 if l["lado"] == "S" else B - 7.5)) for l in nuevas}
@@ -331,23 +340,23 @@ def completar_transporte(c):
         bus = next((l for l in lugares if l.get("tipo") == "estacion" and "bloque" in l), None)
         bloque = tuple(bus["bloque"]) if bus else (0, 0)
         lado = {"S": "N", "N": "S", "E": "O", "O": "E"}.get(bus.get("lado", "S"), "N") if bus else "S"
-        lugares.append({"id": f"{mid}_tren", "nombre": f"Estación de tren de {c['nombre']}", "tipo": "tren", "bloque": list(bloque), "lado": lado,
+        lugares.append({"id": f"{mid}_tren", "nombre": tr('Estación de tren de {nombre}').format(nombre=(c['nombre'])), "tipo": "tren", "bloque": list(bloque), "lado": lado,
                         "pos": _hueco(lugares, bloque, lado, 45),
-                        "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."})
+                        "desc": tr("Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra.")})
     if ciudad and "aeropuerto" not in tipos:
         esquinas = [(0, 0), (nx - 1, 0), (0, ny - 1), (nx - 1, ny - 1)]
         bloque = min(esquinas, key=lambda e: sum(1 for l in lugares if tuple(l.get("bloque", (-1, -1))) == e))      # la esquina más despejada de las afueras
         lado = "S" if bloque[1] == 0 else "N"
-        lugares.append({"id": f"{mid}_aeropuerto", "nombre": f"Aeropuerto de {c['nombre']}", "tipo": "aeropuerto", "bloque": list(bloque), "lado": lado,
+        lugares.append({"id": f"{mid}_aeropuerto", "nombre": tr('Aeropuerto de {nombre}').format(nombre=(c['nombre'])), "tipo": "aeropuerto", "bloque": list(bloque), "lado": lado,
                         "pos": _hueco(lugares, bloque, lado, 45), "precio": 180,
-                        "desc": "En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros."})
+                        "desc": tr("En las afueras: una terminal pequeña, una pista y un hangar. Salen aviones de pasajeros a las otras ciudades, y se alquilan avionetas y helicópteros.")})
     if not ciudad and por_tierra and "aeropuerto" not in tipos:
         esquinas = [(0, 0), (nx - 1, 0), (0, ny - 1), (nx - 1, ny - 1)]
         bloque = min(esquinas, key=lambda e: sum(1 for l in lugares if tuple(l.get("bloque", (-1, -1))) == e))
         lado = "S" if bloque[1] == 0 else "N"
-        lugares.append({"id": f"{mid}_aerodromo", "nombre": f"Aeródromo de {c['nombre']}", "tipo": "aeropuerto", "aerodromo": True, "bloque": list(bloque), "lado": lado,
+        lugares.append({"id": f"{mid}_aerodromo", "nombre": tr('Aeródromo de {nombre}').format(nombre=(c['nombre'])), "tipo": "aeropuerto", "aerodromo": True, "bloque": list(bloque), "lado": lado,
                         "pos": _hueco(lugares, bloque, lado, 45), "precio": 120,
-                        "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas."})
+                        "desc": tr("A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas.")})
 
 
 def crear_mapas(datos):
@@ -358,7 +367,7 @@ def crear_mapas(datos):
             m = Mar(c) if c.get("tipo") == "mar" else Mundo(c)
             mapas[m.id] = m
         except (KeyError, ValueError, TypeError, IndexError) as e:
-            datos["errores_mods"].append(f"mapa {c.get('id', '?')}: {e}")
+            datos["errores_mods"].append(tr('mapa {get}: {e}').format(get=(c.get('id', '?')), e=(e)))
     return mapas
 
 
@@ -371,7 +380,7 @@ class Mundo:
         self.trafico = int(c.get("trafico", 7))
         self.peatones = int(c.get("peatones", 7))
         self.policia = bool(c.get("policia", True))
-        self.nombre_objeto = c.get("nombre_objeto", "Cinta de casete")
+        self.nombre_objeto = c.get("nombre_objeto", tr("Cinta de casete"))
         self.nombre = c["nombre"]
         self.avenidas = c["avenidas"]
         self.calles = c["calles"]
@@ -521,7 +530,7 @@ class Mundo:
         """Por dónde va la vía del tren, dicho con palabras."""
         if self.tren_eje is None:
             return ""
-        return f"{self.calles[self.tren_n]}, de oeste a este" if self.tren_eje == "H" else f"{self.avenidas[self.tren_n]}, de sur a norte"
+        return tr('{v}, de oeste a este').format(v=(self.calles[self.tren_n])) if self.tren_eje == "H" else tr('{v}, de sur a norte').format(v=(self.avenidas[self.tren_n]))
 
     def sobre_vias(self, x, y):
         """Qué vías pisa ese punto: "via" (tranvía), "via_tren" o None."""
@@ -639,22 +648,22 @@ class Mundo:
     def describir(self, x, y):
         c = self.cruce(x, y)
         if c:
-            return f"Cruce de {self.calles[c[1]]} con {self.avenidas[c[0]]}"
+            return tr('Cruce de {v} con {v2}').format(v=(self.calles[c[1]]), v2=(self.avenidas[c[0]]))
         i = self._idx(x, self.NX)
         j = self._idx(y, self.NY)
         dx = abs(x - i * B)
         dy = abs(y - j * B)
         bi, bj = self.bloque(x, y)
         if dy <= ACERA and dy <= dx:
-            lado = "" if dy <= CALZADA else (", acera norte" if y > j * B else ", acera sur")
-            return f"{self.calles[j]}{lado}, entre {self.avenidas[bi]} y {self.avenidas[bi + 1]}"
+            lado = "" if dy <= CALZADA else (tr(", acera norte") if y > j * B else tr(", acera sur"))
+            return tr('{v}{lado}, entre {v2} y {v3}').format(v=(self.calles[j]), lado=(lado), v2=(self.avenidas[bi]), v3=(self.avenidas[bi + 1]))
         if dx <= ACERA:
-            lado = "" if dx <= CALZADA else (", acera este" if x > i * B else ", acera oeste")
-            return f"{self.avenidas[i]}{lado}, entre {self.calles[bj]} y {self.calles[bj + 1]}"
+            lado = "" if dx <= CALZADA else (tr(", acera este") if x > i * B else tr(", acera oeste"))
+            return tr('{v}{lado}, entre {v2} y {v3}').format(v=(self.avenidas[i]), lado=(lado), v2=(self.calles[bj]), v3=(self.calles[bj + 1]))
         tipo = self.bloques.get((bi, bj), "pared")
-        que = {"hierba": "Zona verde", "arena": "Playa", "plaza": "Plaza", "muelle": "Muelle"}.get(tipo, "Interior de manzana")
+        que = {"hierba": tr("Zona verde"), "arena": tr("Playa"), "plaza": tr("Plaza"), "muelle": tr("Muelle")}.get(tipo, tr("Interior de manzana"))
         t, idx, _ = self.via_cercana(x, y)
-        return f"{que}, junto a {self.nombre_via(t, idx)}"
+        return tr('{que}, junto a {nombre_via}').format(que=(que), nombre_via=(self.nombre_via(t, idx)))
 
     # -------------------------------------------------------------------- rutas
     def ancla(self, x, y):
@@ -797,7 +806,7 @@ class Mar(Mundo):
         self.trafico = int(c.get("trafico", 4))
         self.peatones = 0
         self.policia = False
-        self.nombre_objeto = c.get("nombre_objeto", "Botella con mensaje")
+        self.nombre_objeto = c.get("nombre_objeto", tr("Botella con mensaje"))
         self.nombre = c["nombre"]
         self.avenidas = ["mar"]
         self.calles = ["mar"]
@@ -806,7 +815,7 @@ class Mar(Mundo):
         self.alto = float(c["alto"])
         self.islas = c.get("islas", [])
         self.barrios = [{"id": self.id, "nombre": self.nombre, "ambiente": "amb_mar", "vehiculos": c.get("barcos", ["lancha"]),
-                         "descripcion": c.get("descripcion", "Mar abierto.")}]
+                         "descripcion": c.get("descripcion", tr("Mar abierto."))}]
         self.bloques = {}
         self.lugares = {}
         for d in c["lugares"]:
@@ -855,8 +864,8 @@ class Mar(Mundo):
         l = min(self.lugares.values(), key=lambda l: math.hypot(l.x - x, l.y - y))
         d = math.hypot(l.x - x, l.y - y)
         if d < 25:
-            return f"{self.nombre}, junto a {l.nombre}"
-        return f"{self.nombre}, a {metros(d)} al {cardinal(rumbo_a(x - l.x, y - l.y))} de {l.nombre}"
+            return tr('{nombre}, junto a {nombre2}').format(nombre=(self.nombre), nombre2=(l.nombre))
+        return tr('{nombre}, a {metros} al {cardinal} de {nombre2}').format(nombre=(self.nombre), metros=(metros(d)), cardinal=(cardinal(rumbo_a(x - l.x, y - l.y))), nombre2=(l.nombre))
 
     def ancla(self, x, y):
         return (x, y), []

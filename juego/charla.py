@@ -8,6 +8,7 @@ Modo IA (opcional): si el jugador lo activa, lo que escriba se envía a una inte
 de internet) junto con la ficha de la persona, y la respuesta es libre. Sin eso, contesta el motor propio,
 sin conexión: las intenciones de este archivo y la base de respuestas por temas de respuestas.py.
 """
+from .i18n import tr
 import json
 import math
 import random
@@ -20,19 +21,19 @@ CARACTERES = G.CARACTERES
 SITIOS = {"comer": ("comida", "pizzeria", "taberna", "bar"), "curarme": ("hospital", "farmacia"), "dinero": ("banco", "empenos"), "armas": ("armeria",),
           "trabajo": ("empleo",), "dormir": ("hotel",), "taller": ("taller",), "policía": ("comisaria",), "comprar": ("tienda",), "fiesta": ("club", "casino", "bar")}
 PALABRAS = [
-    ("despedir", ("adiós", "adios", "hasta luego", "me voy", "chao", "nos vemos")),
-    ("amenazar", ("dame", "la cartera", "te mato", "te voy a", "amenaz", "o te")),
+    ("despedir", ("adiós", "adios", tr("hasta luego"), tr("me voy"), "chao", tr("nos vemos"))),
+    ("amenazar", ("dame", tr("la cartera"), tr("te mato"), tr("te voy a"), "amenaz", tr("o te"))),
     ("insultar", ("idiota", "imbécil", "imbecil", "gilipollas", "estúpid", "estupid", "cabr", "capull", "tont", "asco")),
-    ("ligar", ("guap", "ligar", "me gustas", "tomar algo conmigo", "cita", "tu número", "tu numero", "teléfono", "telefono", "cena conmigo", "salir conmigo")),
-    ("limosna", ("toma", "te doy", "quédate", "quedate", "para ti", "propina")),
-    ("invitar", ("invito", "un café", "un cafe", "una caña", "una cana", "tomar algo")),
-    ("chiste", ("chiste", "sabes aquel", "te cuento uno")),
-    ("cumplido", ("qué bien", "que bien", "me encanta", "bonit", "eleg", "simpátic", "simpatic", "majo", "maja", "genial")),
-    ("amistad", ("amigos", "amig", "quedar otro día", "quedar otro dia", "nos vemos más", "nos vemos mas")),
-    ("rumor", ("qué se cuenta", "que se cuenta", "novedad", "noticias", "qué pasa", "que pasa", "cotilleo", "rumor")),
-    ("barrio", ("barrio", "zona", "por aquí", "por aqui", "este sitio", "el pueblo", "la ciudad")),
-    ("trabajo_npc", ("a qué te dedicas", "a que te dedicas", "trabajas", "tu trabajo", "oficio")),
-    ("saludar", ("hola", "buenas", "buenos días", "buenos dias", "qué tal", "que tal", "saludos", "hey")),
+    ("ligar", ("guap", "ligar", tr("me gustas"), tr("tomar algo conmigo"), "cita", tr("tu número"), tr("tu numero"), "teléfono", "telefono", tr("cena conmigo"), tr("salir conmigo"))),
+    ("limosna", ("toma", tr("te doy"), "quédate", "quedate", tr("para ti"), "propina")),
+    ("invitar", ("invito", tr("un café"), tr("un cafe"), tr("una caña"), tr("una cana"), tr("tomar algo"))),
+    ("chiste", ("chiste", tr("sabes aquel"), tr("te cuento uno"))),
+    ("cumplido", (tr("qué bien"), tr("que bien"), tr("me encanta"), "bonit", "eleg", "simpátic", "simpatic", "majo", "maja", "genial")),
+    ("amistad", ("amigos", "amig", tr("quedar otro día"), tr("quedar otro dia"), tr("nos vemos más"), tr("nos vemos mas"))),
+    ("rumor", (tr("qué se cuenta"), tr("que se cuenta"), "novedad", "noticias", tr("qué pasa"), tr("que pasa"), "cotilleo", "rumor")),
+    ("barrio", ("barrio", "zona", tr("por aquí"), tr("por aqui"), tr("este sitio"), tr("el pueblo"), tr("la ciudad"))),
+    ("trabajo_npc", (tr("a qué te dedicas"), tr("a que te dedicas"), "trabajas", tr("tu trabajo"), "oficio")),
+    ("saludar", ("hola", "buenas", tr("buenos días"), tr("buenos dias"), tr("qué tal"), tr("que tal"), "saludos", "hey")),
 ]
 
 
@@ -61,7 +62,7 @@ def interpretar(texto):
     t = " " + (texto or "").lower().strip() + " "
     if not t.strip():
         return "nada", None
-    if any(x in t for x in ("dónde", "donde", "cómo llego", "como llego", "busco", "hay algún", "hay algun", "necesito")):
+    if any(x in t for x in ("dónde", "donde", tr("cómo llego"), tr("como llego"), "busco", tr("hay algún"), tr("hay algun"), "necesito")):
         for clave, tipos in SITIOS.items():
             if clave in t or any(tp in t for tp in tipos) or (clave == "comer" and any(x in t for x in ("restaurante", "hambre", "cenar", "bar"))) \
                     or (clave == "curarme" and any(x in t for x in ("médico", "medico", "herid"))) or (clave == "dinero" and "cajero" in t):
@@ -91,21 +92,26 @@ class Charla:
         if q is None and self.sv_hablar_cerca():                 # en un servidor: hablarle al jugador que tienes al lado
             return
         if q is None:
-            self.decir("No tienes a nadie al lado para hablar. Acércate a alguien: el radar, con Tabulador, te dice quién hay cerca.", True)
+            self.decir(tr("No tienes a nadie al lado para hablar. Acércate a alguien: el radar, con Tabulador, te dice quién hay cerca."), True)
             return
         f = ficha(q)
         if f["ofendido"]:
             self.son("rechazo", cat="interfaz")
             extra = self.insistir(q)                             # si insistes, según su carácter, puede acabar mal
-            self.decir(f"{f['nombre'] if f['presentado'] else 'Esa persona'} no quiere saber nada de ti." + (" " + extra if extra else ""), True)
+            self.decir(tr('{v} no quiere saber nada de ti.').format(v=(f['nombre'] if f['presentado'] else tr('Esa persona'))) + (" " + extra if extra else ""), True)
             return
         if q.estado == "huye":
-            self.decir("Está huyendo y no se para a hablar.", True)
+            self.decir(tr("Está huyendo y no se para a hablar."), True)
             return
         from . import menus_charla
         menus_charla.conversar(self, q)
 
     def _trato(self, f, n):
+        if n > 0 and self.apesta():                              # oliendo mal, la gente se acerca menos (necesidades.py)
+            n = n // 2
+            if random.random() < 0.3:
+                from .necesidades import AJ as NEC
+                self.decir(NEC.frase("frases_charla_sucio"))
         antes = f["confianza"]
         f["confianza"] = max(-100, min(100, f["confianza"] + n))
         if n and (f["confianza"] // 20) != (antes // 20):
@@ -113,7 +119,7 @@ class Charla:
 
     def confianza_txt(self, f):
         c = f["confianza"]
-        return ("te mira con desconfianza" if c < -10 else "apenas te conoce" if c < 15 else "le caes bien" if c < 40 else "te tiene confianza" if c < 70 else "te considera de los suyos")
+        return (tr("te mira con desconfianza") if c < -10 else tr("apenas te conoce") if c < 15 else tr("le caes bien") if c < 40 else tr("te tiene confianza") if c < 70 else tr("te considera de los suyos"))
 
     def presentacion(self, q):
         f = ficha(q)
@@ -121,7 +127,7 @@ class Charla:
             f["presentado"] = True
             q.nombre = f["nombre"]
             self.j.stats["charlas"] = self.j.stats.get("charlas", 0) + 1
-        return f"{f['nombre']}{' ' + f['apellido'] if f.get('apellido') else ''}, {f['edad']} años, {f['oficio']}. Te habla {G.caracter(f['caracter'])['desc']}"
+        return tr('{nombre}{v}, {edad} años, {oficio}. Te habla {desc}').format(nombre=(f['nombre']), v=(' ' + f['apellido'] if f.get('apellido') else ''), edad=(f['edad']), oficio=(f['oficio']), desc=(G.caracter(f['caracter'])['desc']))
 
     def responder(self, q, intencion, dato=None):
         """Lo que contesta una persona a una intención. Devuelve el texto y aplica las consecuencias."""
@@ -133,82 +139,82 @@ class Charla:
         self.son("murmullo", xy=(q.x, q.y), vol=0.5)
         if intencion == "saludar":
             self._trato(f, c["saludo"] if f["frases"] <= 2 else 1)
-            return random.choice([f"{nombre}: Hola, ¿qué tal? Aquí andamos.", f"{nombre}: Buenas. ¿Nos conocemos?", f"{nombre}: Hombre, muy buenas.", f"{nombre}: Hola. Soy {nombre}, {f['oficio']}."])
+            return random.choice([tr('{nombre}: Hola, ¿qué tal? Aquí andamos.').format(nombre=(nombre)), tr('{nombre}: Buenas. ¿Nos conocemos?').format(nombre=(nombre)), tr('{nombre}: Hombre, muy buenas.').format(nombre=(nombre)), tr('{nombre}: Hola. Soy {nombre}, {oficio}.').format(nombre=(nombre), oficio=(f['oficio']))])
         if intencion == "trabajo_npc":
             self._trato(f, 2)
-            return f"{nombre}: Soy {f['oficio']}. " + random.choice(["No me quejo.", "Se hace lo que se puede.", "Y con lo que pagan, ya ves.", "Me gusta, la verdad."])
+            return tr('{nombre}: Soy {oficio}. ').format(nombre=(nombre), oficio=(f['oficio'])) + random.choice([tr("No me quejo."), tr("Se hace lo que se puede."), tr("Y con lo que pagan, ya ves."), tr("Me gusta, la verdad.")])
         if intencion == "barrio":
             x, y = self.pos()
             b = self.mundo.barrio(x, y)
             self._trato(f, 3)
-            return f"{nombre}: Esto es {b['nombre']}. {self.barrio_desc(b)}".strip()
+            return tr('{nombre}: Esto es {nombre2}. {barrio_desc}').format(nombre=(nombre), nombre2=(b['nombre']), barrio_desc=(self.barrio_desc(b))).strip()
         if intencion == "rumor":
             self._trato(f, 2)
             return f"{nombre}: " + self.rumor()
         if intencion == "sitio":
             tipos = SITIOS.get(dato) if dato else None
             if not tipos:
-                return f"{nombre}: ¿Qué buscas exactamente? Dime si quieres comer, curarte, sacar dinero, trabajo, dormir, un taller, comprar o la policía."
+                return tr('{nombre}: ¿Qué buscas exactamente? Dime si quieres comer, curarte, sacar dinero, trabajo, dormir, un taller, comprar o la policía.').format(nombre=(nombre))
             x, y = self.pos()
             cand = [l for l in self.mundo.lugares.values() if l.tipo in tipos]
             if not cand:
-                return f"{nombre}: Aquí no hay nada de eso. Tendrás que ir a otra localidad."
+                return tr('{nombre}: Aquí no hay nada de eso. Tendrás que ir a otra localidad.').format(nombre=(nombre))
             l = min(cand, key=lambda l: math.hypot(l.x - x, l.y - y))
             self.gps_a_lugar(l, callar=True)
             self._trato(f, 2)
-            return f"{nombre}: Lo más cerca es {l.nombre}, {M.metros(math.hypot(l.x - x, l.y - y))}, {self.direccion_txt(l.x, l.y)}. Te lo marco en el GPS."
+            return tr('{nombre}: Lo más cerca es {nombre2}, {metros}, {direccion_txt}. Te lo marco en el GPS.').format(nombre=(nombre), nombre2=(l.nombre), metros=(M.metros(math.hypot(l.x - x, l.y - y))), direccion_txt=(self.direccion_txt(l.x, l.y)))
         if intencion == "cumplido":
             self._trato(f, c["cumplido"] if f["frases"] <= 6 else 1)
             self.cambiar_animo(1)
-            return random.choice([f"{nombre}: Vaya, muchas gracias. No me lo esperaba.", f"{nombre}: Qué cosas dices. Gracias.", f"{nombre}: Se agradece, que hoy no era mi día."])
+            return random.choice([tr('{nombre}: Vaya, muchas gracias. No me lo esperaba.').format(nombre=(nombre)), tr('{nombre}: Qué cosas dices. Gracias.').format(nombre=(nombre)), tr('{nombre}: Se agradece, que hoy no era mi día.').format(nombre=(nombre))])
         if intencion == "chiste":
             gracia = random.random() < 0.6 + c["chiste"] / 40.0
             self._trato(f, c["chiste"] if gracia else -2)
             if gracia:
                 self.cambiar_animo(2)
-            return f"{nombre}: " + (random.choice(["¡Ja! Ese no me lo sabía.", "Qué malo eres, pero me he reído.", "Buenísimo. Se lo cuento a mi cuñado."]) if gracia
-                                    else random.choice(["Ya. Muy gracioso.", "No lo pillo.", "Ese es más viejo que el puerto."]))
+            return f"{nombre}: " + (random.choice([tr("¡Ja! Ese no me lo sabía."), tr("Qué malo eres, pero me he reído."), tr("Buenísimo. Se lo cuento a mi cuñado.")]) if gracia
+                                    else random.choice([tr("Ya. Muy gracioso."), tr("No lo pillo."), tr("Ese es más viejo que el puerto.")]))
         if intencion == "invitar":
             if f["invitado"]:
-                return f"{nombre}: Ya me has invitado antes. Otro día me toca a mí."
+                return tr('{nombre}: Ya me has invitado antes. Otro día me toca a mí.').format(nombre=(nombre))
             if j.dinero < self.precio("cafe_invitar", 4):
-                return f"{nombre}: Si no llevas ni para ti. Déjalo."
+                return tr('{nombre}: Si no llevas ni para ti. Déjalo.').format(nombre=(nombre))
             j.dinero -= self.precio("cafe_invitar", 4)
             f["invitado"] = True
             self.son("caja", cat="interfaz", vol=0.5)
             self.pasar_horas(0.3)
             self._trato(f, 12)
             self.cambiar_animo(3)
-            return f"Le invitas a un café por {self.precio('cafe_invitar', 4)} euros. {nombre}: Pues mira, te lo acepto. " + random.choice(["Me cuenta su vida durante un rato.", "Habláis de todo un poco.", "Resulta que conoce a media ciudad."])
+            return tr('Le invitas a un café por {precio} euros. {nombre}: Pues mira, te lo acepto. ').format(precio=(self.precio('cafe_invitar', 4)), nombre=(nombre)) + random.choice([tr("Me cuenta su vida durante un rato."), tr("Habláis de todo un poco."), tr("Resulta que conoce a media ciudad.")])
         if intencion == "limosna":
             if j.dinero < self.precio("limosna", 10):
-                return f"{nombre}: Guárdate eso, que te hace más falta a ti."
+                return tr('{nombre}: Guárdate eso, que te hace más falta a ti.').format(nombre=(nombre))
             j.dinero -= self.precio("limosna", 10)
             self.son("donativo", cat="interfaz", vol=0.6)
             self._trato(f, 10 if not f["limosna"] else 2)
             if not f["limosna"]:
                 self.cambiar_ciudadania(1.5)
             f["limosna"] = True
-            return f"Le das {self.precio('limosna', 10)} euros. {nombre}: " + random.choice(["Gracias, de verdad. No hay mucha gente así.", "No hacía falta, pero gracias.", "Que te lo paguen con salud."])
+            return tr('Le das {precio} euros. {nombre}: ').format(precio=(self.precio('limosna', 10)), nombre=(nombre)) + random.choice([tr("Gracias, de verdad. No hay mucha gente así."), tr("No hacía falta, pero gracias."), tr("Que te lo paguen con salud.")])
         if intencion == "amistad":
             if any(k["nombre"] == nombre and k["oficio"] == f["oficio"] for k in j.conocidos):
-                return f"{nombre}: Si ya tienes mi número. Llámame cuando quieras."
+                return tr('{nombre}: Si ya tienes mi número. Llámame cuando quieras.').format(nombre=(nombre))
             if f["confianza"] < 30:
-                return f"{nombre}: Bueno, ya nos iremos viendo. Aún no te conozco tanto."
+                return tr('{nombre}: Bueno, ya nos iremos viendo. Aún no te conozco tanto.').format(nombre=(nombre))
             j.conocidos.append({"nombre": nombre, "genero": f["genero"], "edad": f["edad"], "oficio": f["oficio"], "caracter": f["caracter"], "mapa": self.mundo.id, "dia": self.dia, "ultimo": 0})
             del j.conocidos[:-30]
             self.son("pareja", cat="interfaz", vol=0.5)
             self.cambiar_animo(4)
-            return f"{nombre}: Venga, apunta mi número. Ya tienes a {nombre} entre tus conocidos, en el móvil."
+            return tr('{nombre}: Venga, apunta mi número. Ya tienes a {nombre} entre tus conocidos, en el móvil.').format(nombre=(nombre))
         if intencion == "insultar":
             self._trato(f, c["insulto"])
             f["ofendido"] = True
             self.cambiar_ciudadania(-1.0)
             if random.random() < c["valor"] * 0.5:
                 q.hostil, q.estado, q.tipo, q.arma = True, "ataca", "enemigo", None
-                return f"{nombre}: ¿Qué me has llamado? ¡Te vas a enterar! Se te echa encima."
+                return tr('{nombre}: ¿Qué me has llamado? ¡Te vas a enterar! Se te echa encima.').format(nombre=(nombre))
             q.estado, q.t_estado = "huye", 8
-            return f"{nombre}: " + random.choice(["Menudo personaje. Ahí te quedas.", "No tengo por qué aguantar esto.", "Vete a paseo."]) + " Se marcha."
+            return f"{nombre}: " + random.choice([tr("Menudo personaje. Ahí te quedas."), tr("No tengo por qué aguantar esto."), tr("Vete a paseo.")]) + tr(" Se marcha.")
         if intencion == "amenazar":
             f["ofendido"] = True
             self._trato(f, -60)
@@ -218,45 +224,45 @@ class Charla:
                 self.delito(1, "amenazas")
                 q.estado, q.t_estado = "huye", 12
                 self.son("grito", xy=(q.x, q.y), vol=0.6, tono=getattr(q, "tono", 1.0))
-                return f"{nombre}: ¡Socorro! ¡Policía! Sale corriendo dando voces."
+                return tr('{nombre}: ¡Socorro! ¡Policía! Sale corriendo dando voces.').format(nombre=(nombre))
             botin = random.randint(8, 45)
             j.dinero += botin
             q.atracado = True
             q.estado, q.t_estado = "huye", 12
             self.delito(1, "amenazas")
-            return f"{nombre}, con miedo, te tira {botin} euros y echa a correr."
+            return tr('{nombre}, con miedo, te tira {botin} euros y echa a correr.').format(nombre=(nombre), botin=(botin))
         if intencion == "despedir":
-            return f"{nombre}: " + random.choice(["Hasta luego.", "Venga, que te vaya bien.", "Nos vemos.", "Cuídate."])
-        return f"{nombre}: " + random.choice(["No sé qué decirte.", "Ya. Bueno.", "Puede ser, puede ser.", "Mira, de eso no entiendo.", "¿Tú crees?"])
+            return f"{nombre}: " + random.choice([tr("Hasta luego."), tr("Venga, que te vaya bien."), tr("Nos vemos."), tr("Cuídate.")])
+        return f"{nombre}: " + random.choice([tr("No sé qué decirte."), tr("Ya. Bueno."), tr("Puede ser, puede ser."), tr("Mira, de eso no entiendo."), tr("¿Tú crees?")])
 
     def rumor(self):
         """Algo que se cuenta por la calle: sale de lo que de verdad pasa en la partida."""
         j = self.j
-        ops = ["Dicen que va a cambiar el tiempo." if not self.lluvia else "Con esta lluvia no hay quien salga.",
-               f"Hoy es el día {self.dia} desde que volviste, que se dice pronto."]
+        ops = [tr("Dicen que va a cambiar el tiempo.") if not self.lluvia else tr("Con esta lluvia no hay quien salga."),
+               tr('Hoy es el día {dia} desde que volviste, que se dice pronto.').format(dia=(self.dia))]
         if self.dia_txt():
             ops += [self.dia_txt()] * 2
         if j.estrellas:
-            ops.append("La policía anda buscando a alguien por aquí. Yo no he visto nada.")
+            ops.append(tr("La policía anda buscando a alguien por aquí. Yo no he visto nada."))
         if len(self.completadas) >= 5:
-            ops.append("Se oye que hay alguien moviendo los hilos en el puerto. Gente nueva.")
+            ops.append(tr("Se oye que hay alguien moviendo los hilos en el puerto. Gente nueva."))
         if j.ciudadania >= 45:
-            ops.append("Hablan bien de ti en el barrio. Dicen que eres de fiar.")
+            ops.append(tr("Hablan bien de ti en el barrio. Dicen que eres de fiar."))
         if j.reputacion >= 40:
-            ops.append("Contigo no quiero líos, que ya sé quién eres.")
+            ops.append(tr("Contigo no quiero líos, que ya sé quién eres."))
         if j.territorios:
-            ops.append("Desde que cambió de manos el barrio, la cosa está más tranquila.")
+            ops.append(tr("Desde que cambió de manos el barrio, la cosa está más tranquila."))
         disp = self.misiones_disponibles()
         if disp:
             l = self.lugares.get(disp[0]["lugar"])
             if l is not None:
-                ops.append(f"En {self.nombre_lugar(l)} buscan a alguien para un trabajo. Yo no me metería.")
+                ops.append(tr('En {nombre_lugar} buscan a alguien para un trabajo. Yo no me metería.').format(nombre_lugar=(self.nombre_lugar(l))))
         return random.choice(ops)
 
     def llamar_conocido(self, k):
         """Un conocido te cuenta algo útil, una vez al día."""
         if k.get("ultimo") == self.dia:
-            return f"{k['nombre']} ya te ha contado hoy todo lo que sabía."
+            return tr('{nombre} ya te ha contado hoy todo lo que sabía.').format(nombre=(k['nombre']))
         k["ultimo"] = self.dia
         self.cambiar_animo(2)
         return f"{k['nombre']}: {self.rumor()}"
@@ -281,7 +287,7 @@ class Charla:
                 return f"{f['nombre']}: {r['respuesta']}" + (" " + hecho if hecho else "")
         intencion, dato = interpretar(texto)
         if intencion == "nada":
-            return "No has dicho nada."
+            return tr("No has dicho nada.")
         if intencion in ("otra", "saludar", "cumplido", "barrio", "invitar", "limosna"):
             # Sin modo IA: la base de respuestas. Si lo escrito toca un tema conocido, manda el tema antes que una intención floja.
             from . import respuestas
@@ -295,7 +301,7 @@ class Charla:
                     self._trato(f, cambio if f["frases"] <= 12 else 0)
                 return f"{f['nombre']}: {frase}"
         if intencion == "ligar":
-            return self.ligar(q) if self.modo_adulto() else f"{f['nombre']}: " + random.choice(["Gracias, pero no.", "Qué cosas tienes."])
+            return self.ligar(q) if self.modo_adulto() else f"{f['nombre']}: " + random.choice([tr("Gracias, pero no."), tr("Qué cosas tienes.")])
         return self.responder(q, intencion, dato)
 
 

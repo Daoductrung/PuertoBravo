@@ -5,6 +5,7 @@ import sys
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 os.environ["SDL_AUDIODRIVER"] = "dummy"
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+os.environ.setdefault("PUERTOBRAVO_IDIOMA", "es")          # las pruebas, en el idioma de origen: el inglés tiene las suyas
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pygame
@@ -13,6 +14,7 @@ import pytest
 os.startfile = lambda *a, **k: None      # las pruebas no abren el navegador ni carpetas
 
 from juego import menus_juego, rutas
+from juego.i18n import tr
 
 
 @pytest.fixture
@@ -66,14 +68,14 @@ class Robot:
         from juego.menus import Menu
         m = self.app.pila[-1]
         assert isinstance(m, Menu)
-        m.i = next(k for k, o in enumerate(m.opciones) if o.texto == "Nueva partida")
+        m.i = next(k for k, o in enumerate(m.opciones) if o.texto in ("Nueva partida", tr("Nueva partida")))
         self.tecla(pygame.K_RETURN)
         cima = self.app.pila[-1]
-        if isinstance(cima, Menu) and "personaje" in cima.titulo:
+        if isinstance(cima, Menu) and cima.titulo in ("Elige tu personaje", tr("Elige tu personaje")):
             cima.i = next((k for k, o in enumerate(cima.opciones) if o.texto.startswith(personaje)), 0)
             self.tecla(pygame.K_RETURN)
             cima = self.app.pila[-1]
-            if isinstance(cima, Menu) and "te hablen" in cima.titulo:          # los personajes sin género fijo lo preguntan
+            if isinstance(cima, Menu) and cima.titulo.startswith(tr("¿Cómo quieres que te hablen{v}?").split("{")[0]):          # los personajes sin género fijo lo preguntan
                 cima.i = 1 if genero == "m" else 0
                 self.tecla(pygame.K_RETURN)
         self.saltar_dialogos()

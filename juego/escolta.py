@@ -8,6 +8,7 @@ que solo hay que asustar, ni en un servidor en línea (allí los enemigos son de
 
 Los números y las frases salen de los datos (data/datos/vida.json, sección escolta_misiones).
 """
+from .i18n import tr
 import random
 
 from .ajustes import Ajustes
@@ -19,8 +20,8 @@ AJ = Ajustes("escolta_misiones", {
     "moderado_extra": 0.5, "moderado_extra_max": 50, "moderado_salud": 6, "moderado_salud_max": 40, "moderado_punteria": 3, "moderado_punteria_max": 15,
     "fuerte_extra": 1.0, "fuerte_extra_max": 100, "fuerte_salud": 10, "fuerte_salud_max": 80, "fuerte_punteria": 5, "fuerte_punteria_max": 30,
 }, {
-    "frases": ["Saben que vienes con {n} de escolta: te esperan más, y mejor preparados.", "Con {n} a tu lado se ha corrido la voz: han reforzado el sitio.",
-               "No te esperaban sol[o|a]: al ver llegar a {n} contigo, han llamado a más gente."],
+    "frases": [tr("Saben que vienes con {n} de escolta: te esperan más, y mejor preparados."), tr("Con {n} a tu lado se ha corrido la voz: han reforzado el sitio."),
+               tr("No te esperaban sol[o|a]: al ver llegar a {n} contigo, han llamado a más gente.")],
 }, cero=("aliados_gratis", "moderado_extra", "moderado_salud", "moderado_punteria", "fuerte_extra", "fuerte_salud", "fuerte_punteria"))
 
 
@@ -93,4 +94,4 @@ class Escolta:
         ms = self.mision
         if ms is not None and "escolta" not in ms.setdefault("avisos", set()):
             ms["avisos"].add("escolta")
-            self.decir(AJ.frase("frases", n=aj["n"]) + " Si prefieres que no cambie, está en Opciones, Combate y dificultad: Las misiones se ajustan a tu escolta.")
+            self.decir(AJ.frase("frases", n=aj["n"]) + tr(" Si prefieres que no cambie, está en Opciones, Combate y dificultad: Las misiones se ajustan a tu escolta."))

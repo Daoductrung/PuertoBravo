@@ -18,6 +18,7 @@ los mensajes del chat, el nombre que usas con tus amigos y los suyos, direccione
 de Windows, el nombre del equipo, las rutas de tus carpetas, los nombres de tu música ni el contenido de tus partidas.
 Antes de escribir cada línea se pasa un filtro que borra todo eso aunque llegue por descuido.
 """
+from .i18n import tr
 import contextlib
 import datetime
 import faulthandler
@@ -75,7 +76,7 @@ def limpiar(texto):
             t = re.sub(re.escape(ruta), lambda m: nombre, t, flags=re.I)
             t = re.sub(re.escape(ruta.replace("\\", "/")), lambda m: nombre, t, flags=re.I)
             t = re.sub(re.escape(ruta.replace("\\", "\\\\")), lambda m: nombre, t, flags=re.I)
-    t = _RE_UNIDAD.sub("<carpeta de usuario>", t)
+    t = _RE_UNIDAD.sub(tr("<carpeta de usuario>"), t)
     t = _RE_RUTA.sub("", t)
     t = _RE_URL.sub("<dirección>", t)
     t = _RE_CORREO.sub("<correo>", t)
@@ -159,7 +160,7 @@ def iniciar(programa="juego", raiz=None, version=None, graves=True):
         except Exception:
             _grave = None
     _escribir_leeme(carpeta)
-    info("sesion", f"Empieza la sesión de {programa}", version=version or VERSION, compilado=bool(getattr(sys, "frozen", False)),
+    info("sesion", tr('Empieza la sesión de {programa}').format(programa=(programa)), version=version or VERSION, compilado=bool(getattr(sys, "frozen", False)),
          fecha=ahora.strftime("%Y-%m-%d %H:%M:%S"))
     if graves:
         sys.excepthook = _gancho
@@ -179,7 +180,7 @@ def _preparar_filtro():
         pass
     casa = os.path.expanduser("~")
     if casa and casa != "~":
-        _rutas_ocultas.append((casa, "<carpeta de usuario>"))
+        _rutas_ocultas.append((casa, tr("<carpeta de usuario>")))
     for var in ("TEMP", "TMP", "APPDATA", "LOCALAPPDATA", "USERPROFILE"):
         v = os.environ.get(var)
         if v and len(v) > 3:
@@ -200,9 +201,9 @@ def _sin_inofensivas(lineas):
     """Quita los bloques de excepciones de Windows que no tiraron el programa."""
     fuera, salta = [], False
     for l in lineas:
-        if l.startswith("Windows fatal exception:"):
+        if l.startswith(tr("Windows fatal exception:")):
             salta = any(c in l.lower() for c in INOFENSIVAS)
-        elif l.startswith("Fatal Python error") or (l and not l[0].isspace() and not l.startswith(("Thread ", "Current thread ", "Stack ", "Extension modules"))):
+        elif l.startswith(tr("Fatal Python error")) or (l and not l[0].isspace() and not l.startswith((tr("Thread "), tr("Current thread "), tr("Stack "), tr("Extension modules")))):
             salta = False
         if not salta:
             fuera.append(l)
@@ -243,7 +244,7 @@ def _sanear_anteriores(raiz):
 
 
 def _escribir_leeme(carpeta):
-    texto = """REGISTRO DE UNA SESIÓN DE PUERTO BRAVO: LEY DEL ASFALTO
+    texto = tr("""REGISTRO DE UNA SESIÓN DE PUERTO BRAVO: LEY DEL ASFALTO
 
 Si el juego te ha dado un fallo, comprime esta carpeta entera en un ZIP y envíala a quien hace el juego.
 Con ella se puede ver qué pasó sin estar delante.
@@ -263,7 +264,7 @@ QUÉ NO CONTIENE
 
 Son archivos de texto: puedes abrirlos y leerlos antes de enviarlos.
 Se guardan las cinco últimas sesiones; las más antiguas se borran solas.
-"""
+""")
     try:
         with open(os.path.join(carpeta, "LEEME.txt"), "w", encoding="utf-8", newline="\r\n") as f:
             f.write(texto)
@@ -276,7 +277,7 @@ def cerrar():
     global _sesion, _log, _errores, _grave, _estado_fn
     if _sesion is None:
         return
-    info("sesion", "Fin de la sesión: cierre normal")
+    info("sesion", tr("Fin de la sesión: cierre normal"))
     with _candado:
         if _grave is not None:
             try:
@@ -334,7 +335,7 @@ def _partir():
         actual = os.path.join(_sesion, "sesion.log")
         os.replace(actual, os.path.join(_sesion, "sesion_anterior.log"))
         _log = open(actual, "w", encoding="utf-8", buffering=1)
-        _log.write("(continúa de sesion_anterior.log)\n")
+        _log.write(tr("(continúa de sesion_anterior.log)\n"))
     except OSError:
         _log = None
 
@@ -369,34 +370,34 @@ def error(cat, mensaje, traza=None, **datos):
                 _errores = open(os.path.join(_sesion, "errores.log"), "w", encoding="utf-8", buffering=1)
             f = _errores
             f.write("=" * 78 + "\n")
-            f.write(f"{datetime.datetime.now().strftime('%H:%M:%S')}  a los {time.perf_counter() - _t0:.1f} s  [{cat}] {limpiar(mensaje)}\n")
+            f.write(tr('{strftime}  a los {v:.1f} s  [{cat}] {limpiar}\n').format(strftime=(datetime.datetime.now().strftime('%H:%M:%S')), v=(time.perf_counter() - _t0), cat=(cat), limpiar=(limpiar(mensaje))))
             for k, v in datos.items():
                 f.write(f"  {k}: {limpiar(v)}\n")
             if traza:
-                f.write("\nTraza:\n")
+                f.write(tr("\nTraza:\n"))
                 for l in str(traza).rstrip().splitlines():
                     f.write("  " + limpiar(l) + "\n")
             estado = _foto()
             if estado:
-                f.write("\nEstado de la partida:\n")
+                f.write(tr("\nEstado de la partida:\n"))
                 for k, v in estado.items():
                     f.write(f"  {k}: {limpiar(v)}\n")
             if _teclas:
-                f.write("\nÚltimas teclas: " + " ".join(_teclas) + "\n")
+                f.write(tr("\nÚltimas teclas: ") + " ".join(_teclas) + "\n")
             if _sonidos:
-                f.write("Últimos sonidos: " + " ".join(_sonidos) + "\n")
+                f.write(tr("Últimos sonidos: ") + " ".join(_sonidos) + "\n")
             f.write("\n")
     except Exception:
         pass
 
 
-def excepcion(cat, mensaje="Error inesperado", **datos):
+def excepcion(cat, mensaje=tr("Error inesperado"), **datos):
     """Registra la excepción que se está tratando ahora mismo."""
     error(cat, mensaje, traceback.format_exc(), **datos)
 
 
 def _gancho(tipo, valor, tb):
-    error("python", f"Excepción sin tratar: {tipo.__name__}: {valor}", "".join(traceback.format_exception(tipo, valor, tb)))
+    error("python", tr('Excepción sin tratar: {__name__}: {valor}').format(__name__=(tipo.__name__), valor=(valor)), "".join(traceback.format_exception(tipo, valor, tb)))
     try:
         sys.__excepthook__(tipo, valor, tb)
     except Exception:
@@ -407,12 +408,12 @@ def _gancho_hilo(args):
     if args.exc_type is SystemExit:
         return
     nombre = getattr(args.thread, "name", "?")
-    error("hilo", f"Excepción en un hilo ({nombre}): {args.exc_type.__name__}: {args.exc_value}",
+    error("hilo", tr('Excepción en un hilo ({nombre}): {__name__}: {exc_value}').format(nombre=(nombre), __name__=(args.exc_type.__name__), exc_value=(args.exc_value)),
           "".join(traceback.format_exception(args.exc_type, args.exc_value, args.exc_traceback)))
 
 
 def _gancho_suelto(args):
-    error("python", f"Excepción al liberar un objeto: {getattr(args.exc_type, '__name__', '?')}: {args.exc_value}",
+    error("python", tr('Excepción al liberar un objeto: {getattr}: {exc_value}').format(getattr=(getattr(args.exc_type, '__name__', '?')), exc_value=(args.exc_value)),
           "".join(traceback.format_exception(args.exc_type, args.exc_value, args.exc_traceback)) if args.exc_traceback else None)
 
 
@@ -422,7 +423,7 @@ def voz(texto):
     if _sesion is None:
         return
     if _privado:
-        _linea("VOZ", "voz", "(texto privado, no se registra)")
+        _linea("VOZ", "voz", tr("(texto privado, no se registra)"))
     else:
         _linea("VOZ", "voz", texto)
 
@@ -431,7 +432,7 @@ def tecla(nombre, en_texto=False):
     if _sesion is None:
         return
     if en_texto or _privado:
-        nombre = "(tecla en un cuadro de texto)"
+        nombre = tr("(tecla en un cuadro de texto)")
     _teclas.append(nombre)
     _linea("TECLA", "tecla", nombre)
 
@@ -444,7 +445,7 @@ def sonido(nombre):
 def sonido_falta(nombre):
     if _sesion is not None and nombre not in _faltan:
         _faltan.add(nombre)
-        _linea("AVISO", "sonido", f"Se ha pedido un sonido que no existe: {nombre}")
+        _linea("AVISO", "sonido", tr('Se ha pedido un sonido que no existe: {nombre}').format(nombre=(nombre)))
 
 
 def pantalla(que, pantalla_):
@@ -461,7 +462,7 @@ def pantalla(que, pantalla_):
 
 def marca():
     """El jugador señala que aquí ha pasado algo raro."""
-    _linea("MARCA", "marca", "########## MARCA DEL JUGADOR: aquí ha pasado algo ##########")
+    _linea("MARCA", "marca", tr("########## MARCA DEL JUGADOR: aquí ha pasado algo ##########"))
     estado(forzar=True)
 
 
@@ -478,7 +479,7 @@ def _foto():
     try:
         return fn()
     except Exception as e:
-        return {"estado": f"no se pudo leer: {type(e).__name__}: {e}"}
+        return {"estado": tr('no se pudo leer: {__name__}: {e}').format(__name__=(type(e).__name__), e=(e))}
 
 
 def estado(forzar=False):
@@ -501,7 +502,7 @@ def _memoria():
         e = Estado()
         e.dwLength = ctypes.sizeof(Estado)
         ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(e))
-        return f"{e.ullTotalPhys / 2 ** 30:.1f} GB en total, {e.ullAvailPhys / 2 ** 30:.1f} GB libres"
+        return tr('{v:.1f} GB en total, {v2:.1f} GB libres').format(v=(e.ullTotalPhys / 2 ** 30), v2=(e.ullAvailPhys / 2 ** 30))
     except Exception:
         return "desconocida"
 
@@ -519,13 +520,13 @@ def escribir_sistema(secciones):
         return
     from . import VERSION
     from . import procesador
-    base = [("Programa", {"programa": _programa, "versión": VERSION, "compilado": "sí" if getattr(sys, "frozen", False) else "no, código fuente",
+    base = [(tr("Programa"), {"programa": _programa, "versión": VERSION, "compilado": "sí" if getattr(sys, "frozen", False) else tr("no, código fuente"),
                           "Python": platform.python_version()}),
-            ("Procesador", procesador.resumen()),
-            ("Equipo", {"sistema": platform.platform(), "arquitectura": platform.machine(), "procesadores": os.cpu_count(), "memoria": _memoria()})]
+            (tr("Procesador"), procesador.resumen()),
+            (tr("Equipo"), {"sistema": platform.platform(), "arquitectura": platform.machine(), "procesadores": os.cpu_count(), "memoria": _memoria()})]
     try:
         libre = shutil.disk_usage(rutas.DATA).free
-        base[1][1]["disco libre donde está el juego"] = f"{libre / 2 ** 30:.1f} GB"
+        base[1][1]["disco libre donde está el juego"] = tr('{v:.1f} GB').format(v=(libre / 2 ** 30))
     except OSError:
         pass
     try:
@@ -549,10 +550,10 @@ def datos_del_juego(app):
         motor += f" ({type(primero).__name__})"
     except Exception:
         pass
-    secciones.append(("Voz", {"salida": motor, "voz de Windows forzada": "sí" if app.cfg["voz_sapi"] else "no"}))
+    secciones.append((tr("Voz"), {"salida": motor, "voz de Windows forzada": "sí" if app.cfg["voz_sapi"] else "no"}))
     mez = app.mez
     envolvente = bool(getattr(mez, "envolvente", False))
-    sonido_ = {"motor": "envolvente, OpenAL Soft" + (", binaural" if getattr(mez, "binaural", False) else ", sin binaural") if envolvente else "clásico",
+    sonido_ = {"motor": tr("envolvente, OpenAL Soft") + (tr(", binaural") if getattr(mez, "binaural", False) else tr(", sin binaural")) if envolvente else "clásico",
                "abierto": "sí" if envolvente else "no" if mez.error or getattr(mez, "stream", None) is None else "sí", "error": mez.error or "ninguno",
                "sonidos cargados": len(mez.sonidos)}
     if envolvente:
@@ -561,7 +562,7 @@ def datos_del_juego(app):
         st = mez.stream
         sonido_["frecuencia"] = int(st.samplerate)
         sonido_["canales"] = st.channels
-        sonido_["latencia"] = f"{float(st.latency) * 1000:.0f} ms"
+        sonido_["latencia"] = tr('{v:.0f} ms').format(v=(float(st.latency) * 1000))
         sonido_["bloque"] = st.blocksize
     except Exception:
         pass
@@ -570,21 +571,21 @@ def datos_del_juego(app):
         sonido_["sistema de audio"] = sd.query_hostapis(sd.query_devices(mez.stream.device)["hostapi"])["name"]
     except Exception:
         pass
-    secciones.append(("Sonido", sonido_))
+    secciones.append((tr("Sonido"), sonido_))
     datos = app.datos
     mods = sorted(f for f in os.listdir(rutas.carpeta_data("mods")) if f.lower().endswith((".pbm", ".json")))
     packs = sorted(d for d in os.listdir(rutas.carpeta_data("sonidos")) if os.path.isdir(os.path.join(rutas.carpeta_data("sonidos"), d)))
     audio = (".mp3", ".ogg", ".wav", ".flac")
-    secciones.append(("Contenido", {
+    secciones.append((tr("Contenido"), {
         "mapas": len(app.mapas), "lugares": sum(len(m.lugares) for m in app.mapas.values()), "misiones": len(datos.get("misiones", [])),
         "vehículos": len(datos.get("vehiculos", [])), "armas": len(datos.get("armas", [])),
         "mods": ", ".join(mods) or "ninguno", "errores al cargar mods": len(datos.get("errores_mods", [])),
-        "packs de sonidos": ", ".join(packs), "pack elegido": app.cfg["pack_sonidos"] or "por defecto",
+        "packs de sonidos": ", ".join(packs), "pack elegido": app.cfg["pack_sonidos"] or tr("por defecto"),
         "archivos de radio": _contar(rutas.carpeta_data("radio"), audio), "archivos de música de ambiente": _contar(rutas.carpeta_data("musica"), audio),
-        "mando": getattr(getattr(app, "mando", None), "nombre_tipo", lambda: "")() if hasattr(getattr(app, "mando", None), "nombre_tipo") else "ver sesion.log",
+        "mando": getattr(getattr(app, "mando", None), "nombre_tipo", lambda: "")() if hasattr(getattr(app, "mando", None), "nombre_tipo") else tr("ver sesion.log"),
     }))
     opciones = {k: v for k, v in sorted(app.cfg.v.items()) if k not in OPCIONES_PRIVADAS}
     opciones["sonidos con volumen retocado"] = len(app.cfg.v.get("vol_sonidos") or {})
     opciones["nombre propio en la red"] = "sí" if app.cfg.v.get("red_nombre") else "no"
-    secciones.append(("Opciones", opciones))
+    secciones.append((tr("Opciones"), opciones))
     return secciones

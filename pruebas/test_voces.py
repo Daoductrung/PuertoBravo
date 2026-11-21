@@ -113,7 +113,7 @@ def test_voces_de_serie_y_preferencia_del_jugador(monkeypatch, tmp_path):
     """El juego trae voces para Bahía del Ocaso; si el jugador pone la suya con el mismo nombre, gana la suya."""
     voces.refrescar()
     de_serie = voces.buscar("oc01", 0, 0)
-    assert de_serie and os.path.join("voces", "bahia_del_ocaso") in de_serie
+    assert de_serie and os.path.join("voces", "bahia_del_ocaso_es") in de_serie
     import json
     from juego import cifrado, rutas
     mod = cifrado.leer_json(os.path.join(rutas.MODS, "bahia_del_ocaso.json"))
@@ -129,7 +129,7 @@ def test_voces_de_serie_y_preferencia_del_jugador(monkeypatch, tmp_path):
     try:
         _grabar(propia, "oc01_1_1")
         voces.refrescar()
-        assert voces.buscar("oc01", 0, 0).startswith(propia) and os.path.join("voces", "bahia_del_ocaso") in voces.buscar("oc01", 0, 1)
+        assert voces.buscar("oc01", 0, 0).startswith(propia) and os.path.join("voces", "bahia_del_ocaso_es") in voces.buscar("oc01", 0, 1)
     finally:
         shutil.rmtree(propia, ignore_errors=True)
     # la carpeta de las versiones anteriores ya no se usa: si queda, se borra al arrancar

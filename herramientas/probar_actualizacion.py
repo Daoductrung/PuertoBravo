@@ -220,8 +220,8 @@ def main():
     for nombre in ("PuertoBravo.exe", "EditorMods.exe", "PuertoBravoServidor.exe", "PuertoBravoServidorPanel.exe"):
         if not os.path.exists(os.path.join(copia, nombre)):
             fallos.append("falta " + nombre)
-    for relativa in ("servidor/documentacion.html", "servidor/servidor.conf.ejemplo", "servidor/otros_sistemas", "data/phonon/model.q8.gguf",
-                     "data/docs/manual.html", "data/docs/servidor.html", "data/datos", "lib/juego", "lib/servidor", "lib/panel_servidor"):
+    for relativa in ("servidor/documentacion_es.html", "servidor/servidor.conf.ejemplo", "servidor/otros_sistemas", "data/phonon/model.q8.gguf",
+                     "data/docs/manual_es.html", "data/docs/servidor_es.html", "data/docs/manual_en.html", "data/datos", "lib/juego", "lib/servidor", "lib/panel_servidor"):
         if not os.path.exists(os.path.join(copia, *relativa.split("/"))):
             fallos.append("falta " + relativa)
     voces = sum(len([f for f in fs if f.lower().endswith(".ogg")]) for _r, _d, fs in os.walk(os.path.join(copia, "data", "voces")))

@@ -807,22 +807,22 @@ def test_la_ayuda_del_juego_y_la_documentacion_cuentan_todo_lo_del_mando(robot):
     menus_juego.ayuda_teclas(robot.app, "pie")
     assert any("menú de acciones" in o.texto for o in robot.app.pila[-1].opciones)
     docs = os.path.join(rutas.base(), "data", "docs")
-    teclas = open(os.path.join(docs, "teclas.html"), encoding="utf-8").read()
+    teclas = open(os.path.join(docs, "teclas_es.html"), encoding="utf-8").read()
     assert "Mando, el menú de acciones" in teclas and "gatillo derecho: menú de acciones" in teclas
     for frase, *_ in mando.MENU_ACCIONES:
         assert frase.replace('"', "&quot;") in teclas, frase
     assert "X o Cuadrado dice lo que llevas en la cesta" in teclas and "Para escribir un texto con el mando" in teclas
-    manual = open(os.path.join(docs, "manual.html"), encoding="utf-8").read()
+    manual = open(os.path.join(docs, "manual_es.html"), encoding="utf-8").read()
     for trozo in ("El menú de acciones", "Escribir con el mando", "rueda de letras", "frases ya escritas", "nombres al azar", "X o Cuadrado: lo que llevas en la cesta",
                   "Gatillo derecho o R2: el menú de acciones", "Gatillo izquierdo o L2: rendirte"):
         assert trozo in manual, trozo
-    editor = open(os.path.join(docs, "editor_mods.html"), encoding="utf-8").read()
+    editor = open(os.path.join(docs, "editor_mods_es.html"), encoding="utf-8").read()
     assert "Frases ya escritas" in editor and "Nombres propuestos para los vehículos" in editor
 
 
 # ====================================================================== 11. la prueba vigilante: ninguna tecla sin mando
 _SUELTAS = {"intro": pygame.K_RETURN, "escape": pygame.K_ESCAPE, "espacio": pygame.K_SPACE, "tabulador": pygame.K_TAB, "retroceso": pygame.K_BACKSPACE,
-            "control": pygame.K_LCTRL, "flecha arriba": pygame.K_UP, "flecha abajo": pygame.K_DOWN, "flecha izquierda": pygame.K_LEFT, "flecha derecha": pygame.K_RIGHT}
+            "control": pygame.K_LCTRL, "re pág": pygame.K_PAGEUP, "av pág": pygame.K_PAGEDOWN, "flecha arriba": pygame.K_UP, "flecha abajo": pygame.K_DOWN, "flecha izquierda": pygame.K_LEFT, "flecha derecha": pygame.K_RIGHT}
 _ENTERAS = {"Flechas": [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT], "Flechas izquierda y derecha": [pygame.K_LEFT, pygame.K_RIGHT],
             "Mayúsculas izquierda con las flechas": [pygame.K_LSHIFT]}
 S, CT = pygame.KMOD_SHIFT, pygame.KMOD_CTRL

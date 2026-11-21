@@ -1,4 +1,5 @@
 """Entidades del mundo: jugador, vehículos, personas y objetos."""
+from .i18n import tr
 import math
 import random
 
@@ -20,7 +21,9 @@ class Jugador:
         self.lot_bote = 20000       # el bote del próximo sorteo
         self.lot_ultimo = -1        # último sorteo celebrado; -1, todavía sin poner en hora
         self.lot_botes = {}         # el bote que había en cada sorteo reciente, para pagar a quien lo acierte
-        self.ropa = "ropa de calle"
+        self.ropa = tr("ropa de calle")
+        self.calzado = tr("zapatillas de calle")
+        self.vestuario = {}              # lo que tienes: {"prendas", "calzado", "complementos"} (vestuario.py)
         self.walkman = False             # llevas el reproductor encendido: la radio suena también a pie
         self.accesorios = {}             # complementos que llevas: clase (gafas, cadena...) -> nombre
         self.guardaespaldas = 0
@@ -35,8 +38,8 @@ class Jugador:
         self.cajas = {}              # lo que espera en la caja de cada negocio cuando cobras yendo tú
         self.animo = 55.0
         self.personaje = "dani"
-        self.nombre = "Dani"
-        self.apellido = "Roca"
+        self.nombre = tr("Dani")
+        self.apellido = tr("Roca")
         self.genero = "h"            # cómo le hablan: "h" en masculino, "m" en femenino
         self.muebles = {}            # lo que has puesto en cada casa tuya: {id de la casa: [muebles]}
         self.voz = "dani"            # un personaje propio: con cuál de las voces de protagonista habla en las escenas
@@ -77,6 +80,9 @@ class Jugador:
         self.foco = 100.0            # medidor del tiempo lento
         self.dia_nevera = -1         # último día que comiste de la nevera de casa
         self.acciones = {}
+        self.coste_acciones = {}     # lo que te han costado las acciones que tienes de cada empresa (bolsa.py)
+        self.bolsa_ayer = {}         # los precios de ayer, para saber cuánto han cambiado
+        self.bolsa_noticias = []     # las últimas noticias de la bolsa
         self.bolsa = {}
         self.gimnasio_dia = 0
         self.blindaje = 0.0
@@ -103,6 +109,18 @@ class Jugador:
         self.hangares = {}           # tus plazas de hangar: {campo: {"propia", "naves": [fichas], "pagado": día, "debe": euros}} (vuelo.py)
         self.tributos = {}           # bandas que te pagan por dejarles estar: {banda: {"euros", "hasta"}}
         self.tratos = {}             # último día que negociaste cada cosa con cada banda: {"banda:asunto": día}
+        self.banda_paga = "normal"   # lo que cobra tu gente: baja, normal o alta (capo.py)
+        self.deposito_hoy = {}       # el efectivo ingresado hoy en el banco: {"dia", "n"}
+        self.casino_hoy = {}         # lo blanqueado hoy en fichas del casino
+        self.gestor_pend = []        # lo que tiene el gestor: [{"dia", "euros", "bruto", "estafa"}]
+        self.alquiladas = {}         # tus casas alquiladas: {casa: {"desde", "renta", "inquilino", "cobrado", "debe"}} (alquiler.py)
+        self.quedadas = []           # con quién has quedado, dónde y a qué hora (encuentros.py)
+        self.mochila = []            # lo que llevas en la mochila: [{"id", "robado"}] (mochila.py)
+        self.mochila_grande = False
+        self.almacen = {}            # el armario de cada casa tuya: {casa: {"objetos", "sust", "armas"}}
+        self.desguace = {}           # lo vendido en los desguaces: {"ventas": [[día, modelo]], "hoy": {desguace: [día, n]}} (desguace.py)
+        self.seguro_desde = 0        # el seguro de tus vehículos: desde qué día cubre; 0, sin contratar (misvehiculos.py)
+        self.seguro_pend = []        # lo que el seguro tiene en reparación: [{"ficha", "dia", "franquicia", "avisado"}]
         self.convive = ""            # la persona de tu vida social que vive contigo (contenido para adultos)
         self.convive_casa = ""       # y en cuál de tus casas
         self.convive_desde = 0
@@ -197,7 +215,7 @@ class Persona:
         Persona.n += 1
         self.id = Persona.n
         self.tipo = tipo            # civil, banda, policia, enemigo
-        self.nombre = nombre or {"civil": "Peatón", "banda": "Calavera", "policia": "Policía"}.get(tipo, "Enemigo")
+        self.nombre = nombre or {"civil": tr("Peatón"), "banda": tr("Calavera"), "policia": tr("Policía")}.get(tipo, tr("Enemigo"))
         self.x = x
         self.y = y
         self.salud = 50.0

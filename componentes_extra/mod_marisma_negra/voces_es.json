@@ -1,0 +1,961 @@
+{
+"mn01_1_1": {
+"texto": "Cuarenta años poniendo nasas en los caños y nunca me las habían tocado. Esta semana me las han cortado tres veces.",
+"quien": "Amador",
+"nota": 0.954,
+"oido": "40 años poniendo nasas en los caños y nunca me las habían tocado. Esta semana me las han cortado tres veces.",
+"guardada": true
+},
+"mn01_1_2": {
+"texto": "¿Y quién va a querer unas nasas de anguila?",
+"quien": "Dani",
+"nota": 0.988,
+"oido": "¿Y quién va a querer unas nasas de angila?",
+"guardada": true
+},
+"mn01_1_2@dani_m": {
+"texto": "¿Y quién va a querer unas nasas de anguila?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y quién va a querer unas nasas de anguila?",
+"guardada": true
+},
+"mn01_1_2@alex_h": {
+"texto": "¿Y quién va a querer unas nasas de anguila?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y quién va a querer unas nasas de anguila?",
+"guardada": true
+},
+"mn01_1_2@alex_m": {
+"texto": "¿Y quién va a querer unas nasas de anguila?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y quién va a querer unas nasas de ánguila?",
+"guardada": true
+},
+"mn01_1_2@sam_h": {
+"texto": "¿Y quién va a querer unas nasas de anguila?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y quién va a querer unas nasas de anguila?",
+"guardada": true
+},
+"mn01_1_2@sam_m": {
+"texto": "¿Y quién va a querer unas nasas de anguila?",
+"quien": "Dani",
+"nota": 0.963,
+"oido": "¿Y quién va a querer unas nasas de andila?",
+"guardada": true
+},
+"mn01_1_2@cris_h": {
+"texto": "¿Y quién va a querer unas nasas de anguila?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y quién va a querer unas nasas de anguila?",
+"guardada": true
+},
+"mn01_1_2@cris_m": {
+"texto": "¿Y quién va a querer unas nasas de anguila?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y quién va a querer unas nasas de anguila?",
+"guardada": true
+},
+"mn01_1_3": {
+"texto": "Nadie. Las cortan porque estorban. De noche pasa una barca con el motor apagado, a remo, y mis redes le cierran el paso.",
+"quien": "Amador",
+"nota": 0.991,
+"oido": "Nadie. Las cortan porque estorban. De noche pasa una barca con el motor apagado, arremo, y mis redes le cierran el paso.",
+"guardada": true
+},
+"mn01_1_4": {
+"texto": "Tú no eres de aquí, forastero, y eso me sirve: a ti no te conoce nadie. Sube a la Esclusa Vieja, junto a los arrozales, y mira qué hay.",
+"quien": "Amador",
+"nota": 0.984,
+"oido": "Tú no eres de aquí, forastero, y eso me sirve, a ti no te conoce nadie. Sube a la excluza vieja, junto a los arrozales, y mira qué hay.",
+"guardada": true
+},
+"mn01_1_4@m": {
+"texto": "Tú no eres de aquí, forastera, y eso me sirve: a ti no te conoce nadie. Sube a la Esclusa Vieja, junto a los arrozales, y mira qué hay.",
+"quien": "Amador",
+"nota": 0.984,
+"oido": "Tú no eres de aquí, forastera, y eso me sirve, a ti no te conoce nadie. Sube a la excluza vieja, junto a los arrozales, y mira qué hay.",
+"guardada": true
+},
+"mn01_4_1": {
+"texto": "La nasa está cortada a cuchillo. Del aro cuelga un precinto de plástico azul, de los que se ponen a los sacos.",
+"quien": "Narrador",
+"nota": 0.995,
+"oido": "La nasa está cortada a cuchillo. Delaró cuelga un precinto de plástico azul, de los que se ponen a los sacos.",
+"guardada": true
+},
+"mn01_4_2": {
+"texto": "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "sacos precintados en una marisma donde sólo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"guardada": true
+},
+"mn01_4_2@dani_m": {
+"texto": "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"quien": "Dani",
+"nota": 0.994,
+"oido": "Sacos pecintados en una marisma donde sólo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"guardada": true
+},
+"mn01_4_2@alex_h": {
+"texto": "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"quien": "Dani",
+"nota": 0.983,
+"oido": "Sacos precintados en una marisma donde solo hay arroz y andilas. Aquí se mueve otra cosa.",
+"guardada": true
+},
+"mn01_4_2@alex_m": {
+"texto": "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"quien": "Dani",
+"nota": 0.994,
+"oido": "Sacos pecintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"guardada": true
+},
+"mn01_4_2@sam_h": {
+"texto": "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"quien": "Dani",
+"nota": 0.977,
+"oido": "Sacos presentados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"guardada": true
+},
+"mn01_4_2@sam_m": {
+"texto": "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"guardada": true
+},
+"mn01_4_2@cris_h": {
+"texto": "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Sacos precintados en una marisma donde solo hay arroz y anguilas, aquí se mueve otra cosa.",
+"guardada": true
+},
+"mn01_4_2@cris_m": {
+"texto": "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"quien": "Dani",
+"nota": 0.977,
+"oido": "Sacos presentados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa.",
+"guardada": true
+},
+"mn01_6_1": {
+"texto": "Ese azul lo conozco. Era el de las Salinas de San Ginés, antes de que las cerraran. Llevan diez años muertas.",
+"quien": "Amador",
+"nota": 0.971,
+"oido": "ese azul lo conozco. Era el de las salinas de San Gines antes de que las cerraran. Llevan 10 años muertas.",
+"guardada": true
+},
+"mn01_6_2": {
+"texto": "Muertas de día, Amador. De noche hay luz en el almacén. Lo sabe medio pueblo y nadie dice nada.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "muertas de día amador. De noche hay luz en el almacén. Lo sabe medio pueblo y nadie dice nada.",
+"guardada": true
+},
+"mn01_6_3": {
+"texto": "Pues habla con Celia, la guarda de la laguna. Se pasa el día en el observatorio de aves y ve más que nadie.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "pues habla con Celia, la guarda de la laguna, se pasa el día en el observatorio de aves y ve más que nadie.",
+"guardada": true
+},
+"mn02_1_1": {
+"texto": "Así que tú eres el que anda preguntando por las salinas. Amador dice que te llamas Dani.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "Así que tú eres el que anda preguntando por las salinas. Amador dice que te llamas Dani.",
+"guardada": true
+},
+"mn02_1_1@dani_m": {
+"texto": "Así que tú eres la que anda preguntando por las salinas. Amador dice que te llamas Dani.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "Así que tú eres la que anda preguntando por las salinas. Amador dice que te llamas Dani.",
+"guardada": true
+},
+"mn02_1_1@alex_h": {
+"texto": "Así que tú eres el que anda preguntando por las salinas. Amador dice que te llamas Álex.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "Así que tú eres el que anda preguntando por las salinas. Amador dice que te llamas Alex.",
+"guardada": true
+},
+"mn02_1_1@alex_m": {
+"texto": "Así que tú eres la que anda preguntando por las salinas. Amador dice que te llamas Álex.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "Así que tú eres la que anda preguntando por las salinas. Amador dice que te llamas Alex.",
+"guardada": true
+},
+"mn02_1_1@sam_h": {
+"texto": "Así que tú eres el que anda preguntando por las salinas. Amador dice que te llamas Sam.",
+"quien": "Celia",
+"nota": 0.994,
+"oido": "Así que tú eres el que anda preguntando por las salinas. Amador dice que te llama Sam.",
+"guardada": true
+},
+"mn02_1_1@sam_m": {
+"texto": "Así que tú eres la que anda preguntando por las salinas. Amador dice que te llamas Sam.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "Así que tú eres la que anda preguntando por las salinas. Amador dice que te llamas Sam.",
+"guardada": true
+},
+"mn02_1_1@cris_h": {
+"texto": "Así que tú eres el que anda preguntando por las salinas. Amador dice que te llamas Cris.",
+"quien": "Celia",
+"nota": 0.994,
+"oido": "Así que tú eres el que anda preguntando por las salinas. Amador dice que te llamas Chris.",
+"guardada": true
+},
+"mn02_1_1@cris_m": {
+"texto": "Así que tú eres la que anda preguntando por las salinas. Amador dice que te llamas Cris.",
+"quien": "Celia",
+"nota": 0.994,
+"oido": "Así que tú eres la que anda preguntando por las salinas. Amador dice que te llamas Chris.",
+"guardada": true
+},
+"mn02_1_2": {
+"texto": "Y tú eres la que lo ve todo desde aquí arriba.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "y tú eres la que lo ve todo desde aquí arriba.",
+"guardada": true
+},
+"mn02_1_2@dani_m": {
+"texto": "Y tú eres la que lo ve todo desde aquí arriba.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "y tú eres la que lo ve todo desde aquí arriba.",
+"guardada": true
+},
+"mn02_1_2@alex_h": {
+"texto": "Y tú eres la que lo ve todo desde aquí arriba.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Y tú eres la que lo ve todo desde aquí arriba.",
+"guardada": true
+},
+"mn02_1_2@alex_m": {
+"texto": "Y tú eres la que lo ve todo desde aquí arriba.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Y tú eres la que lo ve todo desde aquí arriba.",
+"guardada": true
+},
+"mn02_1_2@sam_h": {
+"texto": "Y tú eres la que lo ve todo desde aquí arriba.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Y tú eres la que lo ve todo desde aquí arriba.",
+"guardada": true
+},
+"mn02_1_2@sam_m": {
+"texto": "Y tú eres la que lo ve todo desde aquí arriba.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "y tú eres la que lo ve todo desde aquí arriba.",
+"guardada": true
+},
+"mn02_1_2@cris_h": {
+"texto": "Y tú eres la que lo ve todo desde aquí arriba.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "y tú eres la que lo ve todo desde aquí arriba.",
+"guardada": true
+},
+"mn02_1_2@cris_m": {
+"texto": "Y tú eres la que lo ve todo desde aquí arriba.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "y tú eres la que lo ve todo desde aquí arriba.",
+"guardada": true
+},
+"mn02_1_3": {
+"texto": "Veo garzas, flamencos y, desde hace un mes, una barca sin luces que entra por el caño grande cada dos noches.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "Veo garzas flamencos y desde hace un mes una barca sin luces que entra por el caño grande cada dos noches.",
+"guardada": true
+},
+"mn02_1_4": {
+"texto": "He dado tres partes a la Guardia Civil y no ha venido nadie. Acércate a las salinas y vigila el almacén. Sin dejarte ver.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "He dado tres partes a la Guardia Civil y no ha venido nadie. Acércate a las salinas y vigila el almacén, sin dejarte ver.",
+"guardada": true
+},
+"mn02_4_1": {
+"texto": "El hombre de la gorra entra en la lonja por la puerta de atrás y saluda al encargado como a un viejo amigo.",
+"quien": "Narrador",
+"nota": 1.0,
+"oido": "El hombre de la gorra entra en la lonja por la puerta de atrás y saluda al encargado como a un viejo amigo.",
+"guardada": true
+},
+"mn02_4_2": {
+"texto": "Dos noches más y vaciamos el almacén. Y que nadie vuelva a tocar las nasas de ese viejo, que luego habla.",
+"quien": "Ruano",
+"nota": 1.0,
+"oido": "dos noches más y vaciamos el almacén. Y que nadie vuelva a tocar las nasas de ese viejo, que luego habla.",
+"guardada": true
+},
+"mn02_6_1": {
+"texto": "Salvador Ruano. Fue capataz de las salinas hasta que cerraron, y por lo visto se quedó con las llaves.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "Salvador Ruano, fue capataz de las salinas hasta que cerraron y por lo visto se quedó con las llaves.",
+"guardada": true
+},
+"mn02_6_2": {
+"texto": "Ha llamado viejo a Amador. Se conocen.",
+"quien": "Dani",
+"nota": 0.971,
+"oido": "ha llamado viejo amador, se conocen.",
+"guardada": true
+},
+"mn02_6_2@dani_m": {
+"texto": "Ha llamado viejo a Amador. Se conocen.",
+"quien": "Dani",
+"nota": 0.971,
+"oido": "ha llamado viejo amador, se conocen.",
+"guardada": true
+},
+"mn02_6_2@alex_h": {
+"texto": "Ha llamado viejo a Amador. Se conocen.",
+"quien": "Dani",
+"nota": 0.971,
+"oido": "ha llamado viejo amador. Se conocen.",
+"guardada": true
+},
+"mn02_6_2@alex_m": {
+"texto": "Ha llamado viejo a Amador. Se conocen.",
+"quien": "Dani",
+"nota": 0.971,
+"oido": "ha llamado viejo amador. Se conocen.",
+"guardada": true
+},
+"mn02_6_2@sam_h": {
+"texto": "Ha llamado viejo a Amador. Se conocen.",
+"quien": "Dani",
+"nota": 0.971,
+"oido": "ha llamado viejo amador, se conocen.",
+"guardada": true
+},
+"mn02_6_2@sam_m": {
+"texto": "Ha llamado viejo a Amador. Se conocen.",
+"quien": "Dani",
+"nota": 0.971,
+"oido": "ha llamado viejo amador. Se conocen.",
+"guardada": true
+},
+"mn02_6_2@cris_h": {
+"texto": "Ha llamado viejo a Amador. Se conocen.",
+"quien": "Dani",
+"nota": 0.971,
+"oido": "ha llamado viejo amador, se conocen.",
+"guardada": true
+},
+"mn02_6_2@cris_m": {
+"texto": "Ha llamado viejo a Amador. Se conocen.",
+"quien": "Dani",
+"nota": 0.971,
+"oido": "ha llamado viejo amador. Se conocen.",
+"guardada": true
+},
+"mn02_6_3": {
+"texto": "Desde críos. No sé qué guarda en esos sacos, pero sal no es. Ve con Amador: él sabrá por dónde entrarle.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "desde críos. No sé qué guarda en esos sacos, pero Sal no es. Ve con Amador. Él sabrá por dónde entrarle.",
+"guardada": true
+},
+"mn03_1_1": {
+"texto": "Salvador Ruano... Fuimos juntos a la escuela. Ya entonces vendía lo que no era suyo.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "Salvador Ruano. Fuimos juntos a la escuela. Ya entonces vendía lo que no era suyo.",
+"guardada": true
+},
+"mn03_1_2": {
+"texto": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"guardada": true
+},
+"mn03_1_2@dani_m": {
+"texto": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"guardada": true
+},
+"mn03_1_2@alex_h": {
+"texto": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"guardada": true
+},
+"mn03_1_2@alex_m": {
+"texto": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"guardada": true
+},
+"mn03_1_2@sam_h": {
+"texto": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"guardada": true
+},
+"mn03_1_2@sam_m": {
+"texto": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"guardada": true
+},
+"mn03_1_2@cris_h": {
+"texto": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"guardada": true
+},
+"mn03_1_2@cris_m": {
+"texto": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo.",
+"guardada": true
+},
+"mn03_1_3": {
+"texto": "Entonces no esperes. Esta noche duermen allí cuatro de los suyos, gente de fuera que no sabe ni dónde pisa.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "Entonces no esperes. Esta noche duermen allí cuatro de los suyos, gente de fuera que no sabe ni dónde pisa.",
+"guardada": true
+},
+"mn03_1_4": {
+"texto": "Llévate mi escopeta de puesto y la fisga. La escopeta, para lejos; la fisga, si se te echan encima.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "Llévate mi escopeta de puesto y la fisga, la escopeta para lejos, la fisga, si se te echan encima.",
+"guardada": true
+},
+"mn03_1_5": {
+"texto": "Y vuelve entero, Dani, que la cuenta de la taberna no te la perdona nadie.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "Y vuelve entero, Dani, que la cuenta de la taberna no te la perdona nadie.",
+"guardada": true
+},
+"mn03_1_5@dani_m": {
+"texto": "Y vuelve entera, Dani, que la cuenta de la taberna no te la perdona nadie.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "Y vuelve entera, Dani, que la cuenta de la taberna no te la perdona nadie.",
+"guardada": true
+},
+"mn03_1_5@alex_h": {
+"texto": "Y vuelve entero, Álex, que la cuenta de la taberna no te la perdona nadie.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "Y vuelve entero, Álex, que la cuenta de la taberna no te la perdona nadie.",
+"guardada": true
+},
+"mn03_1_5@alex_m": {
+"texto": "Y vuelve entera, Álex, que la cuenta de la taberna no te la perdona nadie.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "y vuelve entera, Álex, que la cuenta de la taberna no te la perdona nadie.",
+"guardada": true
+},
+"mn03_1_5@sam_h": {
+"texto": "Y vuelve entero, Sam, que la cuenta de la taberna no te la perdona nadie.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "Y vuelve entero, Sam, que la cuenta de la taberna no te la perdona nadie.",
+"guardada": true
+},
+"mn03_1_5@sam_m": {
+"texto": "Y vuelve entera, Sam, que la cuenta de la taberna no te la perdona nadie.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "Y vuelve entera, Sam, que la cuenta de la taberna no te la perdona nadie.",
+"guardada": true
+},
+"mn03_1_5@cris_h": {
+"texto": "Y vuelve entero, Cris, que la cuenta de la taberna no te la perdona nadie.",
+"quien": "Toñi",
+"nota": 0.979,
+"oido": "Y vuelve entero, Chris, que la cuenta de la taberna no te la perdona a nadie.",
+"guardada": true
+},
+"mn03_1_5@cris_m": {
+"texto": "Y vuelve entera, Cris, que la cuenta de la taberna no te la perdona nadie.",
+"quien": "Toñi",
+"nota": 0.993,
+"oido": "Y vuelve entera, Chris, que la cuenta de la taberna no te la perdona nadie.",
+"guardada": true
+},
+"mn03_7_1": {
+"texto": "Los sacos no llevan sal: llevan cartones de tabaco y relojes sin marca, envueltos en plástico para que aguanten el agua.",
+"quien": "Narrador",
+"nota": 1.0,
+"oido": "Los sacos no llevan sal, llevan cartones de tabaco y relojes sin marca, envueltos en plástico para que aguanten el agua.",
+"guardada": true
+},
+"mn03_7_2": {
+"texto": "El cuaderno apunta cada marea alta del mes y, al lado, una matrícula de furgoneta y una sola palabra: ciudad.",
+"quien": "Narrador",
+"nota": 0.991,
+"oido": "El cuaderno apunta a cada marea alta del mes y al lado, una matrícula de furgoneta y una sola palabra ciudad.",
+"guardada": true
+},
+"mn03_7_3": {
+"texto": "Lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano.",
+"quien": "Dani",
+"nota": 0.989,
+"oido": "Los sacan por los caños con la marea y los suben a Puerto Bravo por carretera. ¡Bien pensado, Ruano!",
+"guardada": true
+},
+"mn03_7_3@dani_m": {
+"texto": "Lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano.",
+"quien": "Dani",
+"nota": 0.984,
+"oido": "Los sacan por los caños con la marea y los suben a Puerto Bravo por carretera. Bien pensado, Ruan.",
+"guardada": true
+},
+"mn03_7_3@alex_h": {
+"texto": "Lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano.",
+"quien": "Dani",
+"nota": 0.979,
+"oido": "Los sacan por los caños con la marea y los suben a Puerto Gravo por carretera. ¡Bien pensado, Ruano!",
+"guardada": true
+},
+"mn03_7_3@alex_m": {
+"texto": "Lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano.",
+"quien": "Dani",
+"nota": 0.989,
+"oido": "Los sacan por los caños con la marea y los suben a Puerto Bravo por carretera. ¡Bien pensado, Ruano!",
+"guardada": true
+},
+"mn03_7_3@sam_h": {
+"texto": "Lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "lo sacan por los caños con la marea y lo suben a puerto bravo por carretera. Bien pensado, Ruano.",
+"guardada": true
+},
+"mn03_7_3@sam_m": {
+"texto": "Lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano.",
+"guardada": true
+},
+"mn03_7_3@cris_h": {
+"texto": "Lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano.",
+"quien": "Dani",
+"nota": 0.989,
+"oido": "Los sacan por los caños con la marea y los suben a puerto bravo por carretera. ¡Bien pensado, Ruano!",
+"guardada": true
+},
+"mn03_7_3@cris_m": {
+"texto": "Lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano.",
+"quien": "Dani",
+"nota": 0.989,
+"oido": "Los sacan por los caños con la marea y los suben a Puerto Bravo por carretera. ¡Bien pensado, Ruano!",
+"guardada": true
+},
+"mn04_1_1": {
+"texto": "Ruano sabe que fuiste tú. Ha cargado lo que le quedaba en la furgoneta frigorífica de la lonja y se va esta noche a la ciudad.",
+"quien": "Amador",
+"nota": 0.992,
+"oido": "Ruan no sabe que fuiste tú, ha cargado lo que le quedaba en la furgoneta frigorífica de la lonja y se va esta noche a la ciudad.",
+"guardada": true
+},
+"mn04_1_2": {
+"texto": "He vuelto a llamar a la Guardia Civil. Llegan en una hora, y en una hora Ruano ya está en Puerto Bravo.",
+"quien": "Celia",
+"nota": 0.99,
+"oido": "he vuelto a llamar a la Guardia Civil. Llegan en una hora. Y en una hora a Ruano ya está en Puerto Bravo.",
+"guardada": true
+},
+"mn04_1_3": {
+"texto": "Pues no llega. ¿Por dónde sale?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "pues no llega. ¿Por dónde sale?",
+"guardada": true
+},
+"mn04_1_3@dani_m": {
+"texto": "Pues no llega. ¿Por dónde sale?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "pues no llega. ¿Por dónde sale?",
+"guardada": true
+},
+"mn04_1_3@alex_h": {
+"texto": "Pues no llega. ¿Por dónde sale?",
+"quien": "Dani",
+"nota": 0.964,
+"oido": "Pues no lleva. ¿Por dónde sale?",
+"guardada": true
+},
+"mn04_1_3@alex_m": {
+"texto": "Pues no llega. ¿Por dónde sale?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "pues no llega. ¿Por dónde sale?",
+"guardada": true
+},
+"mn04_1_3@sam_h": {
+"texto": "Pues no llega. ¿Por dónde sale?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Pues no llega. ¿Por dónde sale?",
+"guardada": true
+},
+"mn04_1_3@sam_m": {
+"texto": "Pues no llega. ¿Por dónde sale?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "pues no llega. ¿Por dónde sale?",
+"guardada": true
+},
+"mn04_1_3@cris_h": {
+"texto": "Pues no llega. ¿Por dónde sale?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "pues no llega. ¿Por dónde sale?",
+"guardada": true
+},
+"mn04_1_3@cris_m": {
+"texto": "Pues no llega. ¿Por dónde sale?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Pues no llega. ¿Por dónde sale?",
+"guardada": true
+},
+"mn04_1_4": {
+"texto": "Por la carretera de la costa, que es la única. Párale antes de que salga del pueblo, Dani. Toma más cartuchos.",
+"quien": "Amador",
+"nota": 0.99,
+"oido": "por la carretera de la costa, que es la única, para leantes de que salga del pueblo, Dani, toma más cartuchos.",
+"guardada": true
+},
+"mn04_1_4@alex": {
+"texto": "Por la carretera de la costa, que es la única. Párale antes de que salga del pueblo, Álex. Toma más cartuchos.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "por la carretera de la costa, que es la única. Parale antes de que salga del pueblo, Alex. Toma más cartuchos.",
+"guardada": true
+},
+"mn04_1_4@sam": {
+"texto": "Por la carretera de la costa, que es la única. Párale antes de que salga del pueblo, Sam. Toma más cartuchos.",
+"quien": "Amador",
+"nota": 0.99,
+"oido": "por la carretera de la costa, que es la única, para leantes de que salga del pueblo, Sam, toma más cartuchos.",
+"guardada": true
+},
+"mn04_1_4@cris": {
+"texto": "Por la carretera de la costa, que es la única. Párale antes de que salga del pueblo, Cris. Toma más cartuchos.",
+"quien": "Amador",
+"nota": 0.995,
+"oido": "por la carretera de la costa, que es la única. Parale antes de que salga del pueblo, Chris, toma más cartuchos.",
+"guardada": true
+},
+"mn04_5_1": {
+"texto": "Esto no es mío, forastero. Yo solo lo guardo. Los que pagan están en la ciudad, y no les va a gustar.",
+"quien": "Ruano",
+"nota": 1.0,
+"oido": "Esto no es mío, forastero. Yo solo lo guardo. Los que pagan están en la ciudad y no les va a gustar.",
+"guardada": true
+},
+"mn04_5_1@m": {
+"texto": "Esto no es mío, forastera. Yo solo lo guardo. Los que pagan están en la ciudad, y no les va a gustar.",
+"quien": "Ruano",
+"nota": 1.0,
+"oido": "Esto no es mío, forastera. Yo solo lo guardo. Los que pagan están en la ciudad y no les va a gustar.",
+"guardada": true
+},
+"mn04_5_2": {
+"texto": "Pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"quien": "Dani",
+"nota": 0.975,
+"oido": "pues que vengan a buscarlo al amarisma. Ya sabemos el camino.",
+"guardada": true
+},
+"mn04_5_2@dani_m": {
+"texto": "Pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"quien": "Dani",
+"nota": 0.975,
+"oido": "pues que vengan a buscarlo al amarisma. Ya sabemos el camino.",
+"guardada": true
+},
+"mn04_5_2@alex_h": {
+"texto": "Pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"guardada": true
+},
+"mn04_5_2@alex_m": {
+"texto": "Pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"guardada": true
+},
+"mn04_5_2@sam_h": {
+"texto": "Pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"quien": "Dani",
+"nota": 0.975,
+"oido": "pues que vengan a buscarlo al amarisma. Ya sabemos el camino.",
+"guardada": true
+},
+"mn04_5_2@sam_m": {
+"texto": "Pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"guardada": true
+},
+"mn04_5_2@cris_h": {
+"texto": "Pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"quien": "Dani",
+"nota": 0.975,
+"oido": "pues que vengan a buscarlo al amarisma. Ya sabemos el camino.",
+"guardada": true
+},
+"mn04_5_2@cris_m": {
+"texto": "Pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "pues que vengan a buscarlo a la marisma. Ya sabemos el camino.",
+"guardada": true
+},
+"mn04_5_3": {
+"texto": "Ruano se aleja cojeando hacia los pinos y no se vuelve a mirar atrás.",
+"quien": "Narrador",
+"nota": 0.978,
+"oido": "Ruanos se aleja cogeando hacia los pinos y no se vuelve a mirar atrás.",
+"guardada": true
+},
+"mn04_8_1": {
+"texto": "Con este cuaderno no hay quien mire para otro lado. Mañana la laguna estará llena de uniformes, y por una vez me alegro.",
+"quien": "Celia",
+"nota": 1.0,
+"oido": "Con este cuaderno no hay quien mire para otro lado, mañana la laguna estará llena de uniformes y por una vez me alegro.",
+"guardada": true
+},
+"mn04_9_1": {
+"texto": "¿Y el cuaderno? No, no me lo digas. Al menos Ruano no vuelve por aquí.",
+"quien": "Celia",
+"nota": 0.977,
+"oido": "¿Y el cuaderno? No, no me lo digas. Al menos, Juan no vuelve por aquí.",
+"guardada": true
+},
+"mn04_10_1": {
+"texto": "Esta noche las anguilas entran por el caño grande sin que nadie les corte el paso.",
+"quien": "Amador",
+"nota": 0.994,
+"oido": "Esta noche las sanguilas entran por el caño grande sin que nadie les corte el paso.",
+"guardada": true
+},
+"mn04_10_2": {
+"texto": "La barca de mi padre es tuya, Dani. Cala poco y pasa por donde no pasa nadie. Está amarrada aquí mismo.",
+"quien": "Amador",
+"nota": 1.0,
+"oido": "La barca de mi padre es tuya, Dani. Cala poco y pasa por donde no pasa nadie. Está amarrada aquí mismo.",
+"guardada": true
+},
+"mn04_10_2@alex": {
+"texto": "La barca de mi padre es tuya, Álex. Cala poco y pasa por donde no pasa nadie. Está amarrada aquí mismo.",
+"quien": "Amador",
+"nota": 0.99,
+"oido": "La barca de mi padre es tuya, Alex. Cada poco y pasa por donde no pasa nadie. Está amarrada aquí mismo.",
+"guardada": true
+},
+"mn04_10_2@sam": {
+"texto": "La barca de mi padre es tuya, Sam. Cala poco y pasa por donde no pasa nadie. Está amarrada aquí mismo.",
+"quien": "Amador",
+"nota": 0.99,
+"oido": "La barca de mi padre es tuya, Sam. Cada poco y pasa por donde no pasa nadie. Está amarrada aquí mismo.",
+"guardada": true
+},
+"mn04_10_2@cris": {
+"texto": "La barca de mi padre es tuya, Cris. Cala poco y pasa por donde no pasa nadie. Está amarrada aquí mismo.",
+"quien": "Amador",
+"nota": 0.995,
+"oido": "La barca de mi padre es tuya, Chris. Cala poco y pasa por donde no pasa nadie. Está amarrada aquí mismo.",
+"guardada": true
+},
+"mn04_10_3": {
+"texto": "Y en la taberna tienes plato de arroz para todo el invierno. Bienvenido a Marisma Negra.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "Y en la taberna tienes plato de arroz para todo el invierno. Bienvenido a Marisma Negra.",
+"guardada": true
+},
+"mn04_10_3@m": {
+"texto": "Y en la taberna tienes plato de arroz para todo el invierno. Bienvenida a Marisma Negra.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "Y en la taberna tienes plato de arroz para todo el invierno. Bienvenida a Marisma Negra.",
+"guardada": true
+},
+"mn05_1_1": {
+"texto": "Los jueves cierro la taberna y echo una mano en el comedor de la Cofradía. Hoy no tenemos ni arroz ni pescado.",
+"quien": "Toñi",
+"nota": 0.982,
+"oido": "Los jueves cierro la taberna y he hecho una mano en el comedor de la cofradía. Hoy no tenemos ni arroz ni pescado.",
+"guardada": true
+},
+"mn05_1_2": {
+"texto": "La cooperativa nos regala diez sacos. Coge su ranchera, que está abierta, y tráela aquí sin volcar nada.",
+"quien": "Toñi",
+"nota": 0.965,
+"oido": "la cooperativa nos regala 10 sacos, coge su ranchera que está abierta y trae la aquí sin volcar nada.",
+"guardada": true
+},
+"mn05_1_3": {
+"texto": "¿Y el pescado?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y el pescado?",
+"guardada": true
+},
+"mn05_1_3@dani_m": {
+"texto": "¿Y el pescado?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y el pescado?",
+"guardada": true
+},
+"mn05_1_3@alex_h": {
+"texto": "¿Y el pescado?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y el pescado?",
+"guardada": true
+},
+"mn05_1_3@alex_m": {
+"texto": "¿Y el pescado?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y el pescado?",
+"guardada": true
+},
+"mn05_1_3@sam_h": {
+"texto": "¿Y el pescado?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y el pescado?",
+"guardada": true
+},
+"mn05_1_3@sam_m": {
+"texto": "¿Y el pescado?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y el pescado?",
+"guardada": true
+},
+"mn05_1_3@cris_h": {
+"texto": "¿Y el pescado?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y el pescado?",
+"guardada": true
+},
+"mn05_1_3@cris_m": {
+"texto": "¿Y el pescado?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y el pescado?",
+"guardada": true
+},
+"mn05_1_4": {
+"texto": "Eso después, en la lonja. Pregunta por la caja del comedor, que ya lo saben.",
+"quien": "Toñi",
+"nota": 1.0,
+"oido": "eso después, en la lonja. Pregunta por la caja del comedor, que ya lo saben.",
+"guardada": true
+},
+"mn05_6_1": {
+"texto": "Justo a tiempo. Hoy comen treinta personas gracias a ti.",
+"quien": "Toñi",
+"nota": 0.913,
+"oido": "justo a tiempo. Hoy comen 30 personas gracias a ti.",
+"guardada": true
+},
+"mn05_6_2": {
+"texto": "Guárdame un plato, que huele que alimenta.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Guárdame un plato, que huele que alimenta.",
+"guardada": true
+},
+"mn05_6_2@dani_m": {
+"texto": "Guárdame un plato, que huele que alimenta.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Guárdame un plato, que huele que alimenta.",
+"guardada": true
+},
+"mn05_6_2@alex_h": {
+"texto": "Guárdame un plato, que huele que alimenta.",
+"quien": "Dani",
+"nota": 0.975,
+"oido": "Guáranme un plato, que huele que alimenta.",
+"guardada": true
+},
+"mn05_6_2@alex_m": {
+"texto": "Guárdame un plato, que huele que alimenta.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Guárdame un plato, que huele que alimenta.",
+"guardada": true
+},
+"mn05_6_2@sam_h": {
+"texto": "Guárdame un plato, que huele que alimenta.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Guárdame un plato, que huele que alimenta.",
+"guardada": true
+},
+"mn05_6_2@sam_m": {
+"texto": "Guárdame un plato, que huele que alimenta.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Guárdame un plato, que huele que alimenta.",
+"guardada": true
+},
+"mn05_6_2@cris_h": {
+"texto": "Guárdame un plato, que huele que alimenta.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Guárdame un plato, que huele que alimenta.",
+"guardada": true
+},
+"mn05_6_2@cris_m": {
+"texto": "Guárdame un plato, que huele que alimenta.",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "Guárdame un plato, que huele que alimenta.",
+"guardada": true
+}
+}

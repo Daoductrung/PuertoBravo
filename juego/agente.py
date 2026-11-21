@@ -13,6 +13,7 @@ cualquiera. Abatir a quien podías detener se paga peor y también cuenta.
 Todo es original de este juego. Los avisos están en los datos (vida.json, avisos_policia) y los números, los rangos y
 las frases, en la sección policia_oficio. Solo en solitario.
 """
+from .i18n import tr
 import math
 import random
 
@@ -24,51 +25,51 @@ AJ = Ajustes("policia_oficio", {
     "ciudadania_minima": 30, "curso_horas": 8, "ascenso_cada": 6, "rango_extra": 15, "espera_min": 12, "espera_max": 35,
     "llegada_base": 70, "llegada_por_metro": 0.25, "rendicion_salud": 45, "alto_prob": 45, "alto_arma": 20, "pelea_alto_prob": 60,
     "temerario_obedece": 70, "temerario_segundos": 3, "persecucion_salud": 55, "multa_importe": 120, "multa_comision": 25,
-    "apercibimientos": 3, "expulsion_dias": 7, "bono_rapidez": 40, "radio_fuerza": 120, "abandono_metros": 170,
+    "apercibimientos": 3, "expulsion_dias": 7, "bono_rapidez": 40, "radio_fuerza": 120, "radio_fuerza_vehiculo": 300, "abandono_metros": 170,
 }, {
-    "rangos": ["agente en prácticas", "agente", "oficial", "subinspector[|a]", "inspector[|a]", "comisari[o|a]"],
-    "frases_ingreso": ["Firmas, juras y te dan una placa que pesa más de lo que parece. Ya eres agente en prácticas.",
-                       "Ocho horas de teoría, tiro y normas. Al salir llevas placa y un número de agente."],
-    "frases_turno": ["Central a todas las unidades: {nombre} entra de servicio. Buen turno.", "Fichas, coges las llaves y la emisora cruje: estás de servicio.",
-                     "El sargento te tira las llaves: «El de la puerta es el tuyo. Y devuélvelo entero»."],
-    "frases_fin": ["Central: recibido. Fin del turno.", "Dejas las llaves en el mostrador de guardia. Turno terminado."],
-    "frases_tarde": ["Central: otra unidad se ha hecho cargo. Vuelva a la ronda.", "Central: ya no hace falta que vaya. Ha llegado tarde."],
-    "frases_abandono": ["Central: ha abandonado el aviso. Otra unidad se hace cargo.", "Central: le hemos perdido en el aviso. Mandamos a otra unidad."],
-    "frases_alto": ["¡Alto, policía!", "¡Policía! ¡Quieto ahí!", "¡Alto! ¡Las manos donde yo las vea!"],
-    "frases_se_rinde": ["{nombre} levanta las manos: ¡Vale, vale! ¡No dispares!", "{nombre} tira lo que lleva y se queda inmóvil: se rinde.",
-                        "{nombre} se deja caer de rodillas con las manos en la nuca."],
-    "frases_no_obedece": ["{nombre} no obedece.", "{nombre} hace como que no te ha oído.", "{nombre} te mira y echa a correr más deprisa."],
-    "frases_detenido": ["Le pones las esposas. Una unidad se lo lleva a comisaría.", "Esposado y leído. Llega un furgón y se hace cargo.", "Detenido. La central manda a alguien a recogerlo."],
-    "frases_abatido": ["Central: sospechoso abatido. Tendrá que hacer el informe.", "Lo comunicas por la emisora: ha caído. No era lo que se esperaba de usted."],
-    "frases_excesivo": ["Asuntos internos abre expediente: has usado más fuerza de la debida.", "Te llaman al despacho: eso no era necesario, y queda apuntado."],
-    "frases_escapa": ["Central: el sospechoso se ha perdido. Vuelva a la ronda.", "Se te ha escapado. La central anota la descripción y sigue."],
-    "frases_pelea_calma": ["Se separan refunfuñando y cada uno se va por su lado.", "Uno pide perdón, el otro se sacude la ropa. Aquí no ha pasado nada.",
-                           "Bajan los puños. Les tomas el nombre y los mandas a casa."],
-    "frases_pelea_bronca": ["Uno de ellos se revuelve contra ti: «¡Tú no te metas!».", "El más grande decide que ahora la pelea es contigo."],
-    "frases_para": ["El conductor ve las luces, pone el intermitente y se arrima a la acera. Acércate y pulsa Intro.",
-                    "Frena y para a la derecha. Te espera con las manos en el volante: acércate y pulsa Intro."],
-    "frases_no_para": ["¡No para! Acelera y se salta el cruce: ahora es una persecución. Embístele hasta que se detenga.",
-                       "Mira por el retrovisor y pisa a fondo. Persecución: hay que pararle a golpes."],
-    "frases_vehiculo_rinde": ["El vehículo echa humo y se queda cruzado en la calzada. Acércate y pulsa Intro.", "Se acabó: se le cala y no arranca. Acércate y pulsa Intro."],
-    "frases_conductor_corre": ["¡El conductor abre la puerta y sale corriendo! Dale el alto con la H o alcánzale.", "Salta del coche y echa a correr. ¡A por él!"],
-    "frases_multa": ["Firma la multa de mala gana: {euros} euros.", "Le entregas el boletín: {euros} euros y puntos. Protesta, pero firma."],
-    "frases_aviso": ["Le dejas ir con un aviso. Te da las gracias tres veces.", "Por esta vez, un aviso. Arranca despacio, como si llevara huevos."],
-    "frases_apercibimiento": ["Apercibimiento: {motivo}, estando de servicio. Llevas {n} de {tope}.", "La central toma nota: {motivo}. Apercibimiento {n} de {tope}."],
-    "frases_expulsion": ["Asuntos internos te quita la placa: {motivo}. Estás fuera del cuerpo.", "Se acabó: {motivo}. Entregas la placa y vacías la taquilla."],
-    "frases_ascenso": ["¡Ascenso! Desde hoy eres {rango}: cobras un {extra} por ciento más por aviso.", "El comisario te llama al despacho: te ascienden a {rango}."],
+    "rangos": [tr("agente en prácticas"), "agente", "oficial", "subinspector[|a]", "inspector[|a]", "comisari[o|a]"],
+    "frases_ingreso": [tr("Firmas, juras y te dan una placa que pesa más de lo que parece. Ya eres agente en prácticas."),
+                       tr("Ocho horas de teoría, tiro y normas. Al salir llevas placa y un número de agente.")],
+    "frases_turno": [tr("Central a todas las unidades: {nombre} entra de servicio. Buen turno."), tr("Fichas, coges las llaves y la emisora cruje: estás de servicio."),
+                     tr("El sargento te tira las llaves: «El de la puerta es el tuyo. Y devuélvelo entero».")],
+    "frases_fin": [tr("Central: recibido. Fin del turno."), tr("Dejas las llaves en el mostrador de guardia. Turno terminado.")],
+    "frases_tarde": [tr("Central: otra unidad se ha hecho cargo. Vuelva a la ronda."), tr("Central: ya no hace falta que vaya. Ha llegado tarde.")],
+    "frases_abandono": [tr("Central: ha abandonado el aviso. Otra unidad se hace cargo."), tr("Central: le hemos perdido en el aviso. Mandamos a otra unidad.")],
+    "frases_alto": [tr("¡Alto, policía!"), tr("¡Policía! ¡Quieto ahí!"), tr("¡Alto! ¡Las manos donde yo las vea!")],
+    "frases_se_rinde": [tr("{nombre} levanta las manos: ¡Vale, vale! ¡No dispares!"), tr("{nombre} tira lo que lleva y se queda inmóvil: se rinde."),
+                        tr("{nombre} se deja caer de rodillas con las manos en la nuca.")],
+    "frases_no_obedece": [tr("{nombre} no obedece."), tr("{nombre} hace como que no te ha oído."), tr("{nombre} te mira y echa a correr más deprisa.")],
+    "frases_detenido": [tr("Le pones las esposas. Una unidad se lo lleva a comisaría."), tr("Esposado y leído. Llega un furgón y se hace cargo."), tr("Detenido. La central manda a alguien a recogerlo.")],
+    "frases_abatido": [tr("Central: sospechoso abatido. Tendrá que hacer el informe."), tr("Lo comunicas por la emisora: ha caído. No era lo que se esperaba de usted.")],
+    "frases_excesivo": [tr("Asuntos internos abre expediente: has usado más fuerza de la debida."), tr("Te llaman al despacho: eso no era necesario, y queda apuntado.")],
+    "frases_escapa": [tr("Central: el sospechoso se ha perdido. Vuelva a la ronda."), tr("Se te ha escapado. La central anota la descripción y sigue.")],
+    "frases_pelea_calma": [tr("Se separan refunfuñando y cada uno se va por su lado."), tr("Uno pide perdón, el otro se sacude la ropa. Aquí no ha pasado nada."),
+                           tr("Bajan los puños. Les tomas el nombre y los mandas a casa.")],
+    "frases_pelea_bronca": [tr("Uno de ellos se revuelve contra ti: «¡Tú no te metas!»."), tr("El más grande decide que ahora la pelea es contigo.")],
+    "frases_para": [tr("El conductor ve las luces, pone el intermitente y se arrima a la acera. Acércate y pulsa Intro."),
+                    tr("Frena y para a la derecha. Te espera con las manos en el volante: acércate y pulsa Intro.")],
+    "frases_no_para": [tr("¡No para! Acelera y se salta el cruce: ahora es una persecución. Embístele hasta que se detenga."),
+                       tr("Mira por el retrovisor y pisa a fondo. Persecución: hay que pararle a golpes.")],
+    "frases_vehiculo_rinde": [tr("El vehículo echa humo y se queda cruzado en la calzada. Acércate y pulsa Intro."), tr("Se acabó: se le cala y no arranca. Acércate y pulsa Intro.")],
+    "frases_conductor_corre": [tr("¡El conductor abre la puerta y sale corriendo! Dale el alto con la H o alcánzale."), tr("Salta del coche y echa a correr. ¡A por él!")],
+    "frases_multa": [tr("Firma la multa de mala gana: {euros} euros."), tr("Le entregas el boletín: {euros} euros y puntos. Protesta, pero firma.")],
+    "frases_aviso": [tr("Le dejas ir con un aviso. Te da las gracias tres veces."), tr("Por esta vez, un aviso. Arranca despacio, como si llevara huevos.")],
+    "frases_apercibimiento": [tr("Apercibimiento: {motivo}, estando de servicio. Llevas {n} de {tope}."), tr("La central toma nota: {motivo}. Apercibimiento {n} de {tope}.")],
+    "frases_expulsion": [tr("Asuntos internos te quita la placa: {motivo}. Estás fuera del cuerpo."), tr("Se acabó: {motivo}. Entregas la placa y vacías la taquilla.")],
+    "frases_ascenso": [tr("¡Ascenso! Desde hoy eres {rango}: cobras un {extra} por ciento más por aviso."), tr("El comisario te llama al despacho: te ascienden a {rango}.")],
 }, cero=("bono_rapidez", "alto_arma", "multa_comision", "rango_extra", "llegada_por_metro"))
 
 AVISOS = [
-    {"id": "robo_local", "tipo": "robo", "nombre": "Robo en un local", "peso": 3, "paga": 160, "sospechoso": "atracador", "n_min": 1, "n_max": 2,
-     "frases": ["Central a patrulla: alarma de robo en {lugar}. Acuda.", "Central: nos avisan de un atraco en curso en {lugar}. Unidad más cercana, acuda."]},
-    {"id": "pelea_calle", "tipo": "pelea", "nombre": "Pelea en la calle", "peso": 3, "paga": 110, "sospechoso": "maton",
-     "frases": ["Central a patrulla: pelea en la vía pública junto a {lugar}.", "Central: dos individuos a golpes delante de {lugar}. Vaya a poner orden."]},
-    {"id": "temerario", "tipo": "temerario", "nombre": "Conductor temerario", "peso": 3, "paga": 130, "modelos": ["sedan", "utilitario", "deportivo", "furgoneta", "pickup"],
-     "frases": ["Central a patrulla: un {modelo} circulando de forma temeraria cerca de {lugar}. Dele el alto: póngase detrás con la sirena.",
-                "Central: varios avisos de un {modelo} saltándose semáforos por {lugar}. Párelo."]},
-    {"id": "persecucion", "tipo": "persecucion", "nombre": "Persecución", "peso": 2, "paga": 240, "sospechoso": "atracador", "modelos": ["deportivo", "sedan", "todoterreno"],
-     "frases": ["Central a todas las unidades: {modelo} a la fuga tras un atraco, visto junto a {lugar}. Intercéptelo.",
-                "Central: vehículo robado, un {modelo}, huyendo desde {lugar}. No lo pierda."]},
+    {"id": "robo_local", "tipo": "robo", "nombre": tr("Robo en un local"), "peso": 3, "paga": 160, "sospechoso": "atracador", "n_min": 1, "n_max": 2,
+     "frases": [tr("Central a patrulla: alarma de robo en {lugar}. Acuda."), tr("Central: nos avisan de un atraco en curso en {lugar}. Unidad más cercana, acuda.")]},
+    {"id": "pelea_calle", "tipo": "pelea", "nombre": tr("Pelea en la calle"), "peso": 3, "paga": 110, "sospechoso": "maton",
+     "frases": [tr("Central a patrulla: pelea en la vía pública junto a {lugar}."), tr("Central: dos individuos a golpes delante de {lugar}. Vaya a poner orden.")]},
+    {"id": "temerario", "tipo": "temerario", "nombre": tr("Conductor temerario"), "peso": 3, "paga": 130, "modelos": ["sedan", "utilitario", "deportivo", "furgoneta", "pickup"],
+     "frases": [tr("Central a patrulla: un {modelo} circulando de forma temeraria cerca de {lugar}. Dele el alto: póngase detrás con la sirena."),
+                tr("Central: varios avisos de un {modelo} saltándose semáforos por {lugar}. Párelo.")]},
+    {"id": "persecucion", "tipo": "persecucion", "nombre": tr("Persecución"), "peso": 2, "paga": 240, "sospechoso": "atracador", "modelos": ["deportivo", "sedan", "todoterreno"],
+     "frases": [tr("Central a todas las unidades: {modelo} a la fuga tras un atraco, visto junto a {lugar}. Intercéptelo."),
+                tr("Central: vehículo robado, un {modelo}, huyendo desde {lugar}. No lo pierda.")]},
 ]
 TIPOS = ("robo", "pelea", "temerario", "persecucion")
 
@@ -106,17 +107,17 @@ class Agente:
         j = self.j
         pol = j.policia
         if not self.policia_activa():
-            return "El oficio de policía está desactivado. Se activa en Opciones, La calle."
+            return tr("El oficio de policía está desactivado. Se activa en Opciones, La calle.")
         if pol.get("alta"):
-            return "Ya eres agente."
+            return tr("Ya eres agente.")
         if int(pol.get("expulsado", 0)) >= self.dia:
-            return f"Te quitaron la placa. No puedes volver a presentarte hasta el día {int(pol['expulsado']) + 1}."
+            return tr('Te quitaron la placa. No puedes volver a presentarte hasta el día {v}.').format(v=(int(pol['expulsado']) + 1))
         if j.estrellas:
-            return "Con la policía buscándote, lo de ingresar en el cuerpo va a ser que no."
+            return tr("Con la policía buscándote, lo de ingresar en el cuerpo va a ser que no.")
         if j.ciudadania < AJ("ciudadania_minima"):
-            return "No te admiten: los vecinos no hablan lo bastante bien de ti. Sube tu prestigio con trabajo honrado, cursos, donativos o ayudando en los sucesos."
+            return tr("No te admiten: los vecinos no hablan lo bastante bien de ti. Sube tu prestigio con trabajo honrado, cursos, donativos o ayudando en los sucesos.")
         if self.hon_antecedentes():
-            return "No te admiten: tienes antecedentes penales en vigor. Espera a que caduquen, o atenúalos con servicios a la comunidad o con un abogado; lo tienes en el móvil, en Vida, reputación y consecuencias."
+            return tr("No te admiten: tienes antecedentes penales en vigor. Espera a que caduquen, o atenúalos con servicios a la comunidad o con un abogado; lo tienes en el móvil, en Vida, reputación y consecuencias.")
         return ""
 
     def ingresar_policia(self):
@@ -132,7 +133,7 @@ class Agente:
         self.pasar_horas(AJ("curso_horas"))
         self.son("diploma", cat="interfaz")
         self.cambiar_ciudadania(3.0)
-        self.decir(AJ.frase("frases_ingreso") + f" Son las {self.hora_txt()}. Para trabajar, empieza el turno en una comisaría.", True)
+        self.decir(AJ.frase("frases_ingreso") + tr(' Son las {hora_txt}. Para trabajar, empieza el turno en una comisaría.').format(hora_txt=(self.hora_txt())), True)
         return True
 
     def dejar_policia(self):
@@ -140,19 +141,19 @@ class Agente:
         if self.de_servicio():
             self.terminar_trabajo(None)
         self.j.policia = {}
-        self.decir("Entregas la placa. Ya no eres agente. Si cambias de idea, puedes volver a presentarte.", True)
+        self.decir(tr("Entregas la placa. Ya no eres agente. Si cambias de idea, puedes volver a presentarte."), True)
 
     # ------------------------------------------------------------------ el turno
     def turno_motivo(self):
         j = self.j
         if not self.es_agente():
-            return "No eres agente de policía."
+            return tr("No eres agente de policía.")
         if self.mision or self.guerra:
-            return "Termina antes lo que tienes entre manos."
+            return tr("Termina antes lo que tienes entre manos.")
         if j.estrellas:
-            return "Con la policía buscándote no puedes entrar de servicio."
+            return tr("Con la policía buscándote no puedes entrar de servicio.")
         if self.mundo.tipo in ("mar", "isla") or not self.mundo.policia:
-            return "Aquí no hay servicio de patrulla."
+            return tr("Aquí no hay servicio de patrulla.")
         return ""
 
     def empezar_turno(self, comisaria=None, veh=None):
@@ -173,15 +174,15 @@ class Agente:
         if patrulla is None and comisaria is not None and "patrulla" in self.modelos and not j.veh:
             x, y, d = self.mundo.plaza_junto_a(comisaria)
             self._despejar_plaza(x, y)
-            patrulla = self.crear_vehiculo("patrulla", x, y, d, "aparcado", "Tu coche patrulla", "servicio")
+            patrulla = self.crear_vehiculo("patrulla", x, y, d, "aparcado", tr("Tu coche patrulla"), "servicio")
             patrulla.sirena = self.son("loc_vehiculo", bucle=True, xy=(x, y), ref=5, maxd=70)
             patrulla.propio = True                               # te lo han dado: subirte no es robarlo
         self.trabajo = {"tipo": "policia", "patrulla": patrulla, "prestada": veh is None and patrulla is not None, "hechas": 0, "ganado": 0, "limite": None,
-                        "aviso": None, "espera": AJ.entre("espera_min", "espera_max") * 0.5, "texto": "Estás de servicio: a la espera de un aviso de la emisora."}
+                        "aviso": None, "espera": AJ.entre("espera_min", "espera_max") * 0.5, "texto": tr("Estás de servicio: a la espera de un aviso de la emisora.")}
         self.son("emisora", cat="interfaz")
-        donde = f" Tu coche patrulla está aparcado ahí mismo: {self.situar(patrulla.x, patrulla.y, 'está')}. Sube con F." if patrulla is not None and veh is None else ""
-        self.decir(AJ.frase("frases_turno", nombre=j.nombre) + donde + " La emisora te pasará los avisos. La P enciende la sirena; la H, a pie, da el alto. "
-                   "Para terminar el turno, pulsa J en el coche patrulla o vuelve a una comisaría.")
+        donde = tr(' Tu coche patrulla está aparcado ahí mismo: {situar}. Sube con F.').format(situar=(self.situar(patrulla.x, patrulla.y, 'está'))) if patrulla is not None and veh is None else ""
+        self.decir(AJ.frase("frases_turno", nombre=j.nombre) + donde + tr(" La emisora te pasará los avisos. La P enciende la sirena; la H, a pie, da el alto. "
+                   "Para terminar el turno, pulsa J en el coche patrulla o vuelve a una comisaría."))
         return True
 
     def fin_turno_limpieza(self, t):
@@ -211,6 +212,8 @@ class Agente:
         if any(not s.muerto and s.dist(x, y) < radio for s in a.get("sospechosos", [])):
             return True
         v = a.get("veh")
+        if v is not None and a.get("fase") == "seguir" and (a.get("tipo") == "persecucion" or a.get("huyo")):
+            radio = max(radio, AJ("radio_fuerza_vehiculo"))      # huye en coche: se aleja deprisa, y pararlo a tiros o a golpes es lo que toca
         return v is not None and not v.muerto and v.dist(x, y) < radio
 
     def delito_de_servicio(self, puntos, texto):
@@ -221,7 +224,7 @@ class Agente:
             return False
         if texto in (None, "disparos en la vía pública") and self._sospechoso_cerca():
             return True
-        motivo = texto or "uso indebido de la fuerza"
+        motivo = texto or tr("uso indebido de la fuerza")
         if puntos >= 2:
             self.expulsar_policia(motivo)
             return False
@@ -273,9 +276,9 @@ class Agente:
         self.voz_persona(p, "dolor")
         if frase:
             if getattr(p, "intimidar", False):
-                self.decir(f"{p.nombre} suelta lo que lleva y se encoge: " + random.choice(["¡Ya, ya! ¡Mañana tiene su dinero!", "¡Basta! ¡Pago, pago!", "¡Vale! ¡Lo he entendido!"]) + " Ya está: no le toques más.")
+                self.decir(tr('{nombre} suelta lo que lleva y se encoge: ').format(nombre=(p.nombre)) + random.choice([tr("¡Ya, ya! ¡Mañana tiene su dinero!"), tr("¡Basta! ¡Pago, pago!"), tr("¡Vale! ¡Lo he entendido!")]) + tr(" Ya está: no le toques más."))
             else:
-                self.decir(AJ.frase("frases_se_rinde", nombre=p.nombre) + " Acércate y pulsa Intro para detenerle.")
+                self.decir(AJ.frase("frases_se_rinde", nombre=p.nombre) + tr(" Acércate y pulsa Intro para detenerle."))
 
     # ------------------------------------------------------------------ dar el alto
     def dar_alto(self):
@@ -343,15 +346,15 @@ class Agente:
         a = {"def": d, "tipo": d["tipo"], "lugar": l, "lugar_xy": (l.x, l.y), "fase": "ir", "sospechosos": [], "veh": None, "modelo": modelo,
              "limite": AJ("llegada_base") + dist * AJ("llegada_por_metro"), "plazo": AJ("llegada_base") + dist * AJ("llegada_por_metro"), "t0": self.t, "detenidos": 0, "abatidos": 0, "escapados": 0, "excesos": 0, "extra": 0, "pacifico": False}
         t["aviso"] = a
-        frases = [str(f) for f in (d.get("frases") or []) if str(f).strip()] or ["Central a patrulla: aviso en {lugar}."]
+        frases = [str(f) for f in (d.get("frases") or []) if str(f).strip()] or [tr("Central a patrulla: aviso en {lugar}.")]
         texto = random.choice(frases).replace("{lugar}", l.nombre).replace("{modelo}", self.modelos[modelo]["nombre"])
-        t["texto"] = f"{d.get('nombre', 'Aviso')}: {l.nombre}."
+        t["texto"] = f"{d.get('nombre', tr('Aviso'))}: {l.nombre}."
         self.son("emisora", cat="interfaz")
         if d["tipo"] in ("temerario", "persecucion"):
             self._aviso_vehiculo(a)
         else:
             self.gps_a_lugar(l, auto=True, callar=True)
-        self.decir(texto + f" {self.situar(l.x, l.y, 'Está')}. Tienes {int(a['limite'])} segundos para llegar.")
+        self.decir(texto + tr(' {situar}. Tienes {int} segundos para llegar.').format(situar=(self.situar(l.x, l.y, tr('Está'))), int=(int(a['limite']))))
         if self.gps:
             self.repetir_gps_suave()
 
@@ -360,7 +363,7 @@ class Agente:
         x, y, d = m.plaza_junto_a(l)
         x, y = (x, m.carril("H", m._idx(y, m.NY), d)) if d in (1, 3) else (m.carril("V", m._idx(x, m.NX), d), y)
         mo = self.modelos[a["modelo"]]
-        v = self.crear_vehiculo(mo["id"], x, y, d, "huida", f"{mo['nombre']} {'a la fuga' if a['tipo'] == 'persecucion' else 'del conductor temerario'}", "objetivo")
+        v = self.crear_vehiculo(mo["id"], x, y, d, "huida", f"{mo['nombre']} {tr('a la fuga') if a['tipo'] == 'persecucion' else tr('del conductor temerario')}", "objetivo")
         v.ocupado = True
         v.hostil = a["tipo"] == "persecucion"
         v.vel_obj = min(mo["vel_max"] * (0.6 if a["tipo"] == "persecucion" else 0.45), 20.0 if a["tipo"] == "persecucion" else 15.0)
@@ -368,6 +371,8 @@ class Agente:
         a["limite"] = a["plazo"] = max(a["limite"], 150.0)
         self.objetivo = v
         self.fijar_gps(v.x, v.y, v.nombre, sigue=v, auto=True, callar=True)
+        if a["tipo"] == "persecucion":
+            self.agente_como_parar()
 
     def _aviso_limpiar(self, a):
         if not a:
@@ -397,13 +402,13 @@ class Agente:
         self._aviso_limpiar(a)
         t["aviso"] = None
         t["espera"] = AJ.entre("espera_min", "espera_max")
-        t["texto"] = "Estás de servicio: a la espera de un aviso de la emisora."
+        t["texto"] = tr("Estás de servicio: a la espera de un aviso de la emisora.")
         if texto:
             self.decir(texto)
         if a["excesos"]:
             self.son("multa", cat="interfaz")
             self.decir(AJ.frase("frases_excesivo"))
-            if self.apercibir("uso excesivo de la fuerza"):
+            if self.apercibir(tr("uso excesivo de la fuerza")):
                 return
         if parte <= 0:
             return
@@ -415,7 +420,7 @@ class Agente:
         pol["avisos"] = int(pol.get("avisos", 0)) + 1
         j.stats["serv_policia"] = int(j.stats.get("serv_policia", 0)) + 1
         j.stats["servicios"] = j.stats.get("servicios", 0) + 1
-        self.dar_dinero(paga, "Aviso resuelto")
+        self.dar_dinero(paga, tr("Aviso resuelto"))
         self.cambiar_ciudadania(0.8)
         if self.rango_policia() > antes:
             self.son("ascenso", cat="interfaz")
@@ -492,14 +497,14 @@ class Agente:
             self.son("esposas", cat="interfaz")
             self.j.policia["detenciones"] = int(self.j.policia.get("detenciones", 0)) + 1
             self.j.stats["detenidos"] = self.j.stats.get("detenidos", 0) + 1
-            cerrar("El conductor: " + AJ.frase("frases_detenido"), detenidos=1, excesos=0 if huyo else 1, extra=40 if huyo else 0)
-        ops = [Opcion(f"Ponerle una multa de {euros} euros", multar, ayuda="Lo que toca por conducir así. Te llevas una parte como gratificación."),
-               Opcion("Dejarlo en un aviso", avisar, ayuda="Sin multa. A los vecinos les gusta un agente con mano izquierda: sube tu prestigio.")]
-        ops.insert(0, Opcion("Detener al conductor", detener, ayuda="Ha huido de la policía: procede la detención." if huyo
-                             else "Solo conducía mal y ha parado cuando se lo has pedido: detenerle es pasarse, y te lo apuntarán."))
+            cerrar(tr("El conductor: ") + AJ.frase("frases_detenido"), detenidos=1, excesos=0 if huyo else 1, extra=40 if huyo else 0)
+        ops = [Opcion(tr('Ponerle una multa de {euros} euros').format(euros=(euros)), multar, ayuda=tr("Lo que toca por conducir así. Te llevas una parte como gratificación.")),
+               Opcion(tr("Dejarlo en un aviso"), avisar, ayuda=tr("Sin multa. A los vecinos les gusta un agente con mano izquierda: sube tu prestigio."))]
+        ops.insert(0, Opcion(tr("Detener al conductor"), detener, ayuda=tr("Ha huido de la policía: procede la detención.") if huyo
+                             else tr("Solo conducía mal y ha parado cuando se lo has pedido: detenerle es pasarse, y te lo apuntarán.")))
         if not huyo:
             ops.append(ops.pop(0))
-        m = Menu(app, "El conductor baja la ventanilla" + (": «Vale, me ha pillado»" if huyo else ": «¿He hecho algo, agente?»"), ops, escapable=False)
+        m = Menu(app, tr("El conductor baja la ventanilla") + (tr(": «Vale, me ha pillado»") if huyo else tr(": «¿He hecho algo, agente?»")), ops, escapable=False)
         app.abrir(m)
 
     # ------------------------------------------------------------------ cada fotograma
@@ -510,9 +515,9 @@ class Agente:
         j = self.j
         if j.estrellas or self.mundo.tipo in ("mar", "isla") or not self.mundo.policia:
             if j.estrellas and j.policia.get("alta"):
-                self.expulsar_policia("te busca la policía")
+                self.expulsar_policia(tr("te busca la policía"))
             else:
-                self.terminar_trabajo("Aquí no hay servicio de patrulla. Fin del turno.")
+                self.terminar_trabajo(tr("Aquí no hay servicio de patrulla. Fin del turno."))
             return
         a = t.get("aviso")
         if a is None:
@@ -531,7 +536,7 @@ class Agente:
             antes = a["limite"]
             a["limite"] -= dt
             if antes > 30 >= a["limite"]:
-                self.decir("Central: le quedan treinta segundos.")
+                self.decir(tr("Central: le quedan treinta segundos."))
             if a["limite"] <= 0:
                 self._aviso_fin(AJ.frase("frases_tarde" if a["fase"] == "ir" else "frases_escapa"), pagar=False)
                 return
@@ -555,15 +560,15 @@ class Agente:
                 self.quitar_gps_auto()
             clase = d.get("sospechoso") or "atracador"
             if a["tipo"] == "pelea":
-                a["sospechosos"] = [self._sospechoso(clase, l.x, l.y, n) for n in random.sample(["El de la camisa rota", "El grandullón", "El del chándal", "El de la gorra", "El borracho"], 2)]
+                a["sospechosos"] = [self._sospechoso(clase, l.x, l.y, n) for n in random.sample([tr("El de la camisa rota"), tr("El grandullón"), tr("El del chándal"), tr("El de la gorra"), tr("El borracho")], 2)]
                 for s in a["sospechosos"]:
                     s.arma = None
                 a["fase"], a["t_golpe"] = "pelea", 0.0
-                self.decir(f"Ahí están: dos tipos pegándose delante de {l.nombre}. Bájate, acércate y da el alto con la H, o sepáralos como puedas.")
+                self.decir(tr('Ahí están: dos tipos pegándose delante de {nombre}. Bájate, acércate y da el alto con la H, o sepáralos como puedas.').format(nombre=(l.nombre)))
                 return
             n = random.randint(*sorted((int(d.get("n_min", 1) or 1), int(d.get("n_max", 1) or 1))))
             for k in range(n):
-                s = self._sospechoso(clase, l.x, l.y, "Atracador" if n == 1 else f"Atracador {k + 1}")
+                s = self._sospechoso(clase, l.x, l.y, tr("Atracador") if n == 1 else tr('Atracador {v}').format(v=(k + 1)))
                 r = random.random()
                 if r < 0.25:
                     s.plan = "entrega"
@@ -574,7 +579,7 @@ class Agente:
                 a["sospechosos"].append(s)
             a["fase"] = "actuar"
             self.son("alarma", xy=(l.x, l.y), ref=10, maxd=120, vol=0.5)
-            self.decir(("Sale un tipo" if n == 1 else f"Salen {n} tipos") + f" de {l.nombre} con la caja. Bájate del coche: da el alto con la H, y si no obedecen, redúcelos. Q para fijar.")
+            self.decir((tr("Sale un tipo") if n == 1 else tr('Salen {n} tipos').format(n=(n))) + tr(' de {nombre} con la caja. Bájate del coche: da el alto con la H, y si no obedecen, redúcelos. Q para fijar.').format(nombre=(l.nombre)))
             return
         if a["tipo"] == "pelea" and a["fase"] == "pelea":
             a["t_golpe"] -= dt
@@ -602,14 +607,14 @@ class Agente:
                 if s in self.personas:
                     self.personas.remove(s)
                 a["escapados"] += 1
-                self.decir(f"{s.nombre} se ha perdido de vista.")
+                self.decir(tr('{nombre} se ha perdido de vista.').format(nombre=(s.nombre)))
         if not a["sospechosos"]:
             if a["abatidos"] and not a["detenidos"]:
                 self._aviso_fin(AJ.frase("frases_abatido"))
             elif a["escapados"] and not a["detenidos"] and not a["abatidos"]:
                 self._aviso_fin(AJ.frase("frases_escapa"), pagar=False)
             else:
-                self._aviso_fin("Central: recibido. Aviso resuelto.")
+                self._aviso_fin(tr("Central: recibido. Aviso resuelto."))
 
     def _pelea_alto(self, a):
         if random.random() * 100 < AJ("pelea_alto_prob"):
@@ -625,7 +630,7 @@ class Agente:
         a["sospechosos"] = [bronca]
         bronca.hostil, bronca.estado, bronca.ha_resistido, bronca.arma = True, "ataca", True, None
         a["fase"] = "actuar"
-        self.decir(AJ.frase("frases_pelea_bronca") + " Redúcele: Q para fijarle. Cuando se rinda, Intro.")
+        self.decir(AJ.frase("frases_pelea_bronca") + tr(" Redúcele: Q para fijarle. Cuando se rinda, Intro."))
 
     def _aviso_rodado(self, a, x, y, dt):
         v = a.get("veh")
@@ -637,7 +642,7 @@ class Agente:
                 j.policia["bajas"] = int(j.policia.get("bajas", 0)) + 1
                 if a["fase"] == "parado" or (a["tipo"] != "persecucion" and not a.get("huyo")):
                     a["excesos"] += 1                            # ya había parado, o solo conducía mal: no era para tanto
-                self._aviso_fin("El vehículo ha quedado destrozado, con el conductor dentro. " + AJ.frase("frases_abatido"))
+                self._aviso_fin(tr("El vehículo ha quedado destrozado, con el conductor dentro. ") + AJ.frase("frases_abatido"))
                 return
             if v.ardiendo >= 0:                                  # está ardiendo: ya no hay nada que hacer hasta que reviente
                 return
@@ -653,7 +658,7 @@ class Agente:
                 a["t_detras"] = a["t_detras"] + dt if detras else max(0.0, a["t_detras"] - dt)
                 if d < 30 and j.veh is not None and self.sirena_propia is None and not a.get("dicho_sirena"):
                     a["dicho_sirena"] = True
-                    self.decir("Lo tienes delante. Enciende la sirena con la P y mantente detrás.")
+                    self.decir(tr("Lo tienes delante. Enciende la sirena con la P y mantente detrás."))
                 if a["t_detras"] >= AJ("temerario_segundos"):
                     if random.random() * 100 < AJ("temerario_obedece") and v.salud > v.salud_max * 0.5:
                         self._parar_vehiculo(a, AJ.frase("frases_para"))
@@ -663,6 +668,7 @@ class Agente:
                         v.vel_obj = min(v.modelo["vel_max"] * 0.62, 21.0)
                         a["limite"] = max(a["limite"], 160.0)
                         self.decir(AJ.frase("frases_no_para"))
+                        self.agente_como_parar()
                     return
             if v.salud <= v.salud_max * AJ("persecucion_salud") / 100.0 and (a["tipo"] == "persecucion" or a.get("huyo") or v.salud <= v.salud_max * 0.5):
                 if a["tipo"] == "temerario" and not a.get("huyo"):
@@ -674,7 +680,7 @@ class Agente:
                     if v.canal:
                         v.canal.parar()
                         v.canal = None
-                    s = self._sospechoso(a["def"].get("sospechoso") or "atracador", v.x, v.y, "Conductor fugado")
+                    s = self._sospechoso(a["def"].get("sospechoso") or "atracador", v.x, v.y, tr("Conductor fugado"))
                     s.estado, s.t_estado, s.arma, s.ha_resistido = "huye", 60.0, None, True
                     a["sospechosos"], a["veh"], a["fase"] = [s], None, "actuar"
                     if self.gps:
@@ -684,6 +690,13 @@ class Agente:
             return
         if a["fase"] == "actuar":
             self._aviso_a_pie(a, x, y, dt)
+
+    def agente_como_parar(self):
+        """La primera persecución en coche de servicio: cómo se para a quien huye sin que el delito sea tuyo."""
+        if "agente_persecucion" in self.j.recordado:
+            return
+        self.j.recordado.append("agente_persecucion")
+        self.decir(tr('Cómo parar a quien huye en coche: síguele con el GPS, que ya lo lleva marcado, y embístele, o dispárale al vehículo con la Q para fijarlo. Mientras huye, y a menos de {entero} metros, no es delito. Cuando el vehículo está muy tocado, se para o el conductor sale corriendo. Lo que sí cuenta es darle a la gente o a otros coches: cada falta es un apercibimiento, y al tercero te quitan la placa.').format(entero=(AJ.entero('radio_fuerza_vehiculo'))))
 
     def _parar_vehiculo(self, a, frase):
         v = a["veh"]
@@ -706,25 +719,25 @@ def opciones_comisaria(p, l, Menu, Opcion, refrescar=None):
     j = p.j
     pol = j.policia
     if not pol.get("alta"):
-        return [Opcion(lambda: f"Ingresar en la policía: curso de {p.precio('academia_policia', 400)} euros y {AJ.entero('curso_horas')} horas", lambda: (p.ingresar_policia(), refrescar and refrescar()),
-                       ayuda="Te haces agente. Hace falta que los vecinos te aprecien algo y que no te busque nadie. Después, en cualquier comisaría empiezas el turno: "
-                             "te dan un coche patrulla y la emisora te pasa avisos. Cada aviso resuelto se paga, y con ellos asciendes. Si delinques, te quitan la placa.")]
+        return [Opcion(lambda: tr('Ingresar en la policía: curso de {precio} euros y {entero} horas').format(precio=(p.precio('academia_policia', 400)), entero=(AJ.entero('curso_horas'))), lambda: (p.ingresar_policia(), refrescar and refrescar()),
+                       ayuda=tr("Te haces agente. Hace falta que los vecinos te aprecien algo y que no te busque nadie. Después, en cualquier comisaría empiezas el turno: "
+                             "te dan un coche patrulla y la emisora te pasa avisos. Cada aviso resuelto se paga, y con ellos asciendes. Si delinques, te quitan la placa."))]
 
     def estado():
-        return (f"Eres {p.rango_policia_txt()}: {j.stats.get('serv_policia', 0)} avisos resueltos, {pol.get('detenciones', 0)} detenciones, {pol.get('multas', 0)} multas. "
-                f"Apercibimientos: {pol.get('apercibimientos', 0)} de {AJ.entero('apercibimientos')}")
+        return (tr('Eres {rango_policia_txt}: {get} avisos resueltos, {get2} detenciones, {get3} multas. Apercibimientos: {get4} de {entero}').format(rango_policia_txt=(p.rango_policia_txt()), get=(j.stats.get('serv_policia', 0)), get2=(pol.get('detenciones', 0)), get3=(pol.get('multas', 0)), get4=(pol.get('apercibimientos', 0)), entero=(AJ.entero('apercibimientos'))))
 
     def dejar():
-        mm = Menu(app, "¿Entregas la placa? Podrás volver a ingresar pagando el curso",
-                  [Opcion("No", lambda: app.cerrar(mm)), Opcion("Sí, dejar la policía", lambda: (app.cerrar(mm), p.dejar_policia(), refrescar and refrescar()))])
+        mm = Menu(app, tr("¿Entregas la placa? Podrás volver a ingresar pagando el curso"),
+                  [Opcion(tr("No"), lambda: app.cerrar(mm)), Opcion(tr("Sí, dejar la policía"), lambda: (app.cerrar(mm), p.dejar_policia(), refrescar and refrescar()),
+                                                     ayuda=tr("Entregas la placa sin castigo y dejas de recibir avisos. Si estás de servicio, el turno se acaba."))])
         app.abrir(mm)
-    ops = [Opcion(estado, ayuda=f"Cada {AJ.entero('ascenso_cada')} avisos resueltos asciendes y cobras un {AJ.entero('rango_extra')} por ciento más. "
-                                "Los apercibimientos llegan por faltas pequeñas estando de servicio o por usar más fuerza de la debida; con el último, pierdes la placa.")]
+    ops = [Opcion(estado, ayuda=tr('Cada {entero} avisos resueltos asciendes y cobras un {entero2} por ciento más. Los apercibimientos llegan por faltas pequeñas estando de servicio o por usar más fuerza de la debida; con el último, pierdes la placa.').format(entero=(AJ.entero('ascenso_cada')), entero2=(AJ.entero('rango_extra'))))]
     if p.de_servicio():
-        ops.append(Opcion("Terminar el turno", lambda: ([app.cerrar(x) for x in list(app.pila) if x is not p], p.terminar_turno())))
+        ops.append(Opcion(tr("Terminar el turno"), lambda: ([app.cerrar(x) for x in list(app.pila) if x is not p], p.terminar_turno()),
+                          ayuda=tr("Devuelves el coche patrulla y dejas el aviso que tuvieras a medias. Sigues siendo agente: el próximo turno lo empiezas en cualquier comisaría.")))
     else:
-        ops.append(Opcion("Empezar el turno", lambda: p.empezar_turno(l),
-                          ayuda="Te dan un coche patrulla, que te espera en la puerta. La emisora te pasa avisos: acude antes de que se acabe el tiempo. A pie, la H da el alto; "
-                                "a quien se resista, redúcele sin matarle, y cuando se rinda, Intro para detenerle. Al conductor temerario se le para poniéndose detrás con la sirena, que es la P."))
-    ops.append(Opcion("Dejar la policía", dejar))
+        ops.append(Opcion(tr("Empezar el turno"), lambda: p.empezar_turno(l),
+                          ayuda=tr("Te dan un coche patrulla, que te espera en la puerta. La emisora te pasa avisos: acude antes de que se acabe el tiempo. A pie, la H da el alto; "
+                                "a quien se resista, redúcele sin matarle, y cuando se rinda, Intro para detenerle. Al conductor temerario se le para poniéndose detrás con la sirena, que es la P.")))
+    ops.append(Opcion(tr("Dejar la policía"), dejar, ayuda=tr("Cuelgas la placa por tu cuenta, sin castigo. Antes te pide que lo confirmes. Para volver, hay que pagar otra vez el curso.")))
     return ops

@@ -1,0 +1,1217 @@
+{
+ "info": {
+  "nombre": "Marisma Negra",
+  "autor": "Puerto Bravo",
+  "version": "1.0",
+  "descripcion": "Un pueblo de marisma en la costa, al sureste de Puerto Bravo: arrozales, una laguna con aves, anguileros y unas salinas cerradas que alguien usa de noche. Cuatro misiones contra unos contrabandistas de los caños, con una decisión al final, un encargo honrado, una escopeta de puesto, una fisga de anguilero, una barca de caños, la ranchera de la cooperativa, una carrera por los arrozales, pesca en la laguna, búsqueda de tesoros y un personaje."
+ },
+ "lugares": [
+  {
+   "id": "mn_pb_salida",
+   "nombre": "Salida sureste, carretera de Marisma Negra",
+   "tipo": "salida",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    9,
+    1
+   ],
+   "lado": "E",
+   "pos": 36,
+   "desc": "La carretera de la costa, que baja entre pinos y arrozales hasta Marisma Negra.",
+   "sonido": "lugar_salida",
+   "a_mapa": "marisma_negra",
+   "a_lugar": "mn_salida",
+   "km": 27,
+   "horas": 0.7
+  },
+  {
+   "id": "mn_mar_muelle",
+   "nombre": "Bocana de los Caños de Marisma Negra, desde el mar",
+   "tipo": "muelle",
+   "mapa": "mar",
+   "xy": [
+    1000,
+    1440
+   ],
+   "desc": "La entrada del caño grande de Marisma Negra, en la costa, entre Puerto Bravo y Cala Brava.",
+   "sonido": "lugar_boya",
+   "a_mapa": "marisma_negra",
+   "a_lugar": "mn_embarcadero"
+  }
+ ],
+ "misiones": [
+  {
+   "id": "mn01",
+   "titulo": "Nasas cortadas",
+   "capitulo": 47,
+   "contacto": "Amador",
+   "lugar": "mn_taberna",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En la Taberna El Anguilero, un viejo anguilero dice que alguien le corta las redes de noche.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amador",
+       "Cuarenta años poniendo nasas en los caños y nunca me las habían tocado. Esta semana me las han cortado tres veces."
+      ],
+      [
+       "Dani",
+       "¿Y quién va a querer unas nasas de anguila?"
+      ],
+      [
+       "Amador",
+       "Nadie. Las cortan porque estorban. De noche pasa una barca con el motor apagado, a remo, y mis redes le cierran el paso."
+      ],
+      [
+       "Amador",
+       "Tú no eres de aquí, foraster[o|a], y eso me sirve: a ti no te conoce nadie. Sube a la Esclusa Vieja, junto a los arrozales, y mira qué hay."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Ve a la Compuerta de la Esclusa Vieja, al noreste del pueblo, entre los arrozales.",
+     "lugar": "mn_esclusa",
+     "radio": 14
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la nasa que se ha quedado enganchada en la compuerta.",
+     "lugar": "mn_esclusa",
+     "objeto": "una nasa cortada con un precinto de plástico"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "La nasa está cortada a cuchillo. Del aro cuelga un precinto de plástico azul, de los que se ponen a los sacos."
+      ],
+      [
+       "Dani",
+       "Sacos precintados en una marisma donde solo hay arroz y anguilas. Aquí se mueve otra cosa."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a la Taberna El Anguilero y enséñale a Amador lo que has encontrado.",
+     "lugar": "mn_taberna"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amador",
+       "Ese azul lo conozco. Era el de las Salinas de San Ginés, antes de que las cerraran. Llevan diez años muertas."
+      ],
+      [
+       "Toñi",
+       "Muertas de día, Amador. De noche hay luz en el almacén. Lo sabe medio pueblo y nadie dice nada."
+      ],
+      [
+       "Amador",
+       "Pues habla con Celia, la guarda de la laguna. Se pasa el día en el observatorio de aves y ve más que nadie."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 250
+   }
+  },
+  {
+   "id": "mn02",
+   "titulo": "La guarda de la laguna",
+   "capitulo": 47,
+   "contacto": "Celia",
+   "lugar": "mn_observatorio",
+   "requiere": [
+    "mn01"
+   ],
+   "resumen": "Celia, la guarda de la laguna, ve entrar una barca sin luces por el caño grande cada dos noches.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Celia",
+       "Así que tú eres [el|la] que anda preguntando por las salinas. Amador dice que te llamas Dani."
+      ],
+      [
+       "Dani",
+       "Y tú eres la que lo ve todo desde aquí arriba."
+      ],
+      [
+       "Celia",
+       "Veo garzas, flamencos y, desde hace un mes, una barca sin luces que entra por el caño grande cada dos noches."
+      ],
+      [
+       "Celia",
+       "He dado tres partes a la Guardia Civil y no ha venido nadie. Acércate a las salinas y vigila el almacén. Sin dejarte ver."
+      ]
+     ]
+    },
+    {
+     "tipo": "vigilar",
+     "texto": "Vigila las Salinas de San Ginés sin que te vean. Cuando oigas pasos, quédate quiet[o|a] o agáchate con la X.",
+     "lugar": "mn_salinas",
+     "radio": 25,
+     "segundos": 45,
+     "resultado": "Tres hombres sacan sacos precintados del almacén de las salinas y los bajan por el caño hasta una barca sin luces. Uno de ellos, con gorra, da las órdenes."
+    },
+    {
+     "tipo": "seguir",
+     "texto": "Sigue al hombre de la gorra sin que te descubra. Guíate por sus pasos.",
+     "lugar": "mn_salinas",
+     "destino": "mn_lonja",
+     "persona": "el hombre de la gorra"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "El hombre de la gorra entra en la lonja por la puerta de atrás y saluda al encargado como a un viejo amigo."
+      ],
+      [
+       "Ruano",
+       "Dos noches más y vaciamos el almacén. Y que nadie vuelva a tocar las nasas de ese viejo, que luego habla."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve al Observatorio de aves y cuéntale a Celia lo que has oído.",
+     "lugar": "mn_observatorio"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Celia",
+       "Salvador Ruano. Fue capataz de las salinas hasta que cerraron, y por lo visto se quedó con las llaves."
+      ],
+      [
+       "Dani",
+       "Ha llamado viejo a Amador. Se conocen."
+      ],
+      [
+       "Celia",
+       "Desde críos. No sé qué guarda en esos sacos, pero sal no es. Ve con Amador: él sabrá por dónde entrarle."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 450
+   }
+  },
+  {
+   "id": "mn03",
+   "titulo": "Sal gorda",
+   "capitulo": 47,
+   "contacto": "Amador",
+   "lugar": "mn_taberna",
+   "requiere": [
+    "mn02"
+   ],
+   "resumen": "Los hombres de Ruano duermen en el almacén de las salinas, junto a la carga.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amador",
+       "Salvador Ruano... Fuimos juntos a la escuela. Ya entonces vendía lo que no era suyo."
+      ],
+      [
+       "Dani",
+       "Dice que en dos noches vacían el almacén. Si esperamos, se van con todo."
+      ],
+      [
+       "Amador",
+       "Entonces no esperes. Esta noche duermen allí cuatro de los suyos, gente de fuera que no sabe ni dónde pisa."
+      ],
+      [
+       "Amador",
+       "Llévate mi escopeta de puesto y la fisga. La escopeta, para lejos; la fisga, si se te echan encima."
+      ],
+      [
+       "Toñi",
+       "Y vuelve enter[o|a], Dani, que la cuenta de la taberna no te la perdona nadie."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "arma": "mn_escopeta",
+     "balas": 12
+    },
+    {
+     "tipo": "dar",
+     "arma": "mn_fisga"
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve a las Salinas de San Ginés y acaba con los hombres de Ruano.",
+     "lugar": "mn_salinas",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Estibador de Ruano",
+       "arma": "mn_fisga",
+       "salud": 55
+      },
+      {
+       "n": 1,
+       "tipo": "Capataz de Ruano",
+       "arma": "pistola",
+       "salud": 85
+      }
+     ]
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge el cuaderno de mareas que hay sobre la mesa del almacén.",
+     "lugar": "mn_salinas",
+     "objeto": "el cuaderno de mareas de Ruano"
+    },
+    {
+     "tipo": "policia",
+     "texto": "Los tiros se han oído hasta en el pueblo. Despista a la patrulla de la Guardia Civil.",
+     "nivel": 1
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Narrador",
+       "Los sacos no llevan sal: llevan cartones de tabaco y relojes sin marca, envueltos en plástico para que aguanten el agua."
+      ],
+      [
+       "Narrador",
+       "El cuaderno apunta cada marea alta del mes y, al lado, una matrícula de furgoneta y una sola palabra: ciudad."
+      ],
+      [
+       "Dani",
+       "Lo sacan por los caños con la marea y lo suben a Puerto Bravo por carretera. Bien pensado, Ruano."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 800,
+    "arma": "mn_escopeta",
+    "balas": 10
+   }
+  },
+  {
+   "id": "mn04",
+   "titulo": "La última marea",
+   "capitulo": 47,
+   "contacto": "Amador",
+   "lugar": "mn_taberna",
+   "requiere": [
+    "mn03"
+   ],
+   "resumen": "Ruano ha cargado lo que le queda y se va esta noche a la ciudad por la carretera de la costa.",
+   "final_titulo": "Marisma Negra: los caños vuelven a ser de los anguileros",
+   "final": "Esa noche las anguilas entran por el caño grande sin que nadie les corte el paso. En la taberna se brinda por la barca de Amador, que ahora es tuya, y Celia vuelve a contar garzas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amador",
+       "Ruano sabe que fuiste tú. Ha cargado lo que le quedaba en la furgoneta frigorífica de la lonja y se va esta noche a la ciudad."
+      ],
+      [
+       "Celia",
+       "He vuelto a llamar a la Guardia Civil. Llegan en una hora, y en una hora Ruano ya está en Puerto Bravo."
+      ],
+      [
+       "Dani",
+       "Pues no llega. ¿Por dónde sale?"
+      ],
+      [
+       "Amador",
+       "Por la carretera de la costa, que es la única. Párale antes de que salga del pueblo, Dani. Toma más cartuchos."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "balas": 10,
+     "balas_arma": "mn_escopeta"
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y destroza la furgoneta frigorífica de Ruano antes de cinco minutos.",
+     "lugar": "mn_salida",
+     "limite": 300,
+     "modelo": "furgoneta",
+     "nombre": "la furgoneta frigorífica de Ruano",
+     "salud": 240
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge la llave del almacén, que ha saltado de la furgoneta.",
+     "objeto": "la llave del almacén de las salinas",
+     "aqui": true
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Ruano",
+       "Esto no es mío, foraster[o|a]. Yo solo lo guardo. Los que pagan están en la ciudad, y no les va a gustar."
+      ],
+      [
+       "Dani",
+       "Pues que vengan a buscarlo a la marisma. Ya sabemos el camino."
+      ],
+      [
+       "Narrador",
+       "Ruano se aleja cojeando hacia los pinos y no se vuelve a mirar atrás."
+      ]
+     ]
+    },
+    {
+     "tipo": "decision",
+     "clave": "mn_cuaderno",
+     "pregunta": "Tienes el cuaderno de mareas de Ruano, con fechas y matrículas. En el arcén para un coche oscuro y un hombre bien vestido te ofrece dinero por él. ¿Qué haces?",
+     "opciones": [
+      {
+       "texto": "Dárselo a Celia para la Guardia Civil",
+       "ayuda": "Lo justo. Ganas fama en Marisma Negra y no cobras nada.",
+       "dice": "Le dices al hombre del coche que el cuaderno ya tiene dueña. Se va sin despedirse.",
+       "fama": 4
+      },
+      {
+       "texto": "Vendérselo al hombre del coche por 900 euros",
+       "ayuda": "Cobras bien, y los que pagaban a Ruano seguirán usando los caños.",
+       "dice": "El hombre cuenta los billetes sobre el capó sin quitarse los guantes.",
+       "dinero": 900,
+       "fama": -3
+      }
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Ve al Embarcadero de los Caños, donde te esperan Amador y Celia.",
+     "lugar": "mn_embarcadero"
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "mn_cuaderno",
+     "si_opcion": 1,
+     "lineas": [
+      [
+       "Celia",
+       "Con este cuaderno no hay quien mire para otro lado. Mañana la laguna estará llena de uniformes, y por una vez me alegro."
+      ]
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "si_clave": "mn_cuaderno",
+     "si_opcion": 2,
+     "lineas": [
+      [
+       "Celia",
+       "¿Y el cuaderno? No, no me lo digas. Al menos Ruano no vuelve por aquí."
+      ]
+     ]
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Amador",
+       "Esta noche las anguilas entran por el caño grande sin que nadie les corte el paso."
+      ],
+      [
+       "Amador",
+       "La barca de mi padre es tuya, Dani. Cala poco y pasa por donde no pasa nadie. Está amarrada aquí mismo."
+      ],
+      [
+       "Toñi",
+       "Y en la taberna tienes plato de arroz para todo el invierno. Bienvenid[o|a] a Marisma Negra."
+      ]
+     ]
+    },
+    {
+     "tipo": "dar",
+     "dinero": 400
+    }
+   ],
+   "recompensa": {
+    "dinero": 1800,
+    "chaleco": true,
+    "barco": {
+     "modelo": "mn_barca",
+     "en": "mn_embarcadero"
+    }
+   }
+  },
+  {
+   "id": "mn05",
+   "titulo": "Arroz para el comedor",
+   "capitulo": 48,
+   "contacto": "Toñi",
+   "lugar": "mn_ong",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "Trabajo honrado: el Comedor de la Cofradía se ha quedado sin arroz y sin pescado.",
+   "vehiculo_libre": true,
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Toñi",
+       "Los jueves cierro la taberna y echo una mano en el comedor de la Cofradía. Hoy no tenemos ni arroz ni pescado."
+      ],
+      [
+       "Toñi",
+       "La cooperativa nos regala diez sacos. Coge su ranchera, que está abierta, y tráela aquí sin volcar nada."
+      ],
+      [
+       "Dani",
+       "¿Y el pescado?"
+      ],
+      [
+       "Toñi",
+       "Eso después, en la lonja. Pregunta por la caja del comedor, que ya lo saben."
+      ]
+     ]
+    },
+    {
+     "tipo": "robar",
+     "texto": "Recoge la ranchera junto a la Cooperativa Arrocera La Espiga. Está abierta.",
+     "lugar": "mn_cooperativa",
+     "modelo": "mn_ranchera",
+     "nombre": "la ranchera de la cooperativa",
+     "abierto": true
+    },
+    {
+     "tipo": "entregar",
+     "texto": "Lleva la ranchera con los sacos al Comedor de la Cofradía en cuatro minutos y sin golpes.",
+     "lugar": "mn_ong",
+     "limite": 240,
+     "salud_min": 60
+    },
+    {
+     "tipo": "recoger",
+     "texto": "Recoge en la Lonja de la Anguila la caja de pescado del comedor.",
+     "lugar": "mn_lonja",
+     "objeto": "la caja de pescado del comedor"
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve al Comedor de la Cofradía antes de que abran las puertas. Tienes dos minutos y medio.",
+     "lugar": "mn_ong",
+     "limite": 150
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "Toñi",
+       "Justo a tiempo. Hoy comen treinta personas gracias a ti."
+      ],
+      [
+       "Dani",
+       "Guárdame un plato, que huele que alimenta."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 280
+   }
+  }
+ ],
+ "armas": [
+  {
+   "id": "mn_escopeta",
+   "nombre": "Escopeta de puesto",
+   "tipo": "fuego",
+   "dano": 56,
+   "alcance": 24,
+   "cadencia": 1.0,
+   "precision": 0.95,
+   "cargador": 2,
+   "sonido": "disparo_escopeta",
+   "ruido": 3,
+   "precio": 880,
+   "balas": 12,
+   "precio_balas": 70,
+   "desc": "La escopeta de los cazadores de patos de la marisma: larga, pesada y con un tiro que se oye en toda la laguna."
+  },
+  {
+   "id": "mn_fisga",
+   "nombre": "Fisga de anguilero",
+   "tipo": "cuerpo",
+   "dano": 30,
+   "alcance": 2.8,
+   "cadencia": 0.7,
+   "precision": 0.92,
+   "sonido": "navaja",
+   "ruido": 0,
+   "precio": 40,
+   "desc": "Un tridente corto de hierro con mango de caña. Sirve para clavar anguilas en el fango, y para mantener a alguien a distancia."
+  }
+ ],
+ "vehiculos": [
+  {
+   "id": "mn_barca",
+   "nombre": "Barca de caños",
+   "vel_max": 12,
+   "acel": 4.0,
+   "freno": 5,
+   "salud": 110,
+   "motor": "motor_lancha",
+   "tono": 0.9,
+   "valor": 600,
+   "precio": 7500,
+   "trabajo": "mensajeria",
+   "barco": true,
+   "desc": "Una barca de fondo plano con un fuera borda que casi no hace ruido. Cala tan poco que pasa por los caños más estrechos. Con la tecla J haces mensajería entre muelles."
+  },
+  {
+   "id": "mn_ranchera",
+   "nombre": "Ranchera de la cooperativa",
+   "vel_max": 24,
+   "acel": 6.0,
+   "freno": 12,
+   "salud": 170,
+   "motor": "motor_furgoneta",
+   "tono": 1.1,
+   "valor": 800,
+   "precio": 6400,
+   "trabajo": "paqueteria",
+   "desc": "Una ranchera con la caja llena de sacos de arroz y barro hasta los retrovisores. Con la tecla J haces el reparto."
+  }
+ ],
+ "carreras": [
+  {
+   "id": "mn_c1",
+   "nombre": "Vuelta a los arrozales",
+   "mapa": "marisma_negra",
+   "premio": 340,
+   "tiempo": 85,
+   "puntos": [
+    [
+     2,
+     1
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ]
+  }
+ ],
+ "mapas": [
+  {
+   "id": "marisma_negra",
+   "nombre": "Marisma Negra",
+   "tipo": "pueblo",
+   "avenidas": [
+    "Camino de la Barra",
+    "Calle de los Anguileros",
+    "Calle de la Acequia",
+    "Calle del Secadero",
+    "Camino de la Esclusa"
+   ],
+   "calles": [
+    "Paseo de los Caños",
+    "Calle de la Sal",
+    "Calle de la Ermita",
+    "Carretera de Puerto Bravo"
+   ],
+   "barrios": [
+    {
+     "id": "mn_canos",
+     "nombre": "Los Caños",
+     "i": [
+      0,
+      3
+     ],
+     "j": [
+      0,
+      0
+     ],
+     "ambiente": "amb_playa",
+     "vehiculos": [
+      "bici",
+      "utilitario"
+     ],
+     "descripcion": "Los Caños: canales de agua salobre entre juncos, barcas de fondo plano varadas en el fango y, al fondo, las Salinas de San Ginés, cerradas hace diez años. De noche solo se oyen las ranas y, a veces, un remo."
+    },
+    {
+     "id": "mn_pueblo",
+     "nombre": "Marisma Negra",
+     "i": [
+      0,
+      1
+     ],
+     "j": [
+      1,
+      2
+     ],
+     "ambiente": "amb_campo",
+     "vehiculos": [
+      "utilitario",
+      "pickup",
+      "mn_ranchera",
+      "bici"
+     ],
+     "descripcion": "Marisma Negra, un pueblo de casas bajas encaladas con zócalo negro de alquitrán, para que no suba la humedad. Huele a arroz tostado, a fango y a anguila ahumada."
+    },
+    {
+     "id": "mn_arrozales",
+     "nombre": "Los Arrozales",
+     "i": [
+      2,
+      3
+     ],
+     "j": [
+      1,
+      2
+     ],
+     "ambiente": "amb_parque",
+     "vehiculos": [
+      "tractor",
+      "mn_ranchera",
+      "pickup"
+     ],
+     "descripcion": "Los Arrozales: tablas de agua quieta hasta donde alcanza la vista, acequias, garzas y la cooperativa arrocera. En el extremo, la compuerta de la Esclusa Vieja separa el agua dulce de la salada."
+    }
+   ],
+   "bloques": {
+    "0,0": "muelle",
+    "1,0": "arena",
+    "2,0": "hierba",
+    "3,0": "arena",
+    "1,1": "plaza",
+    "3,1": "hierba",
+    "2,2": "hierba",
+    "3,2": "hierba"
+   },
+   "trafico": 1,
+   "peatones": 3,
+   "nombre_objeto": "Pluma de garza",
+   "casetes": [
+    [
+     30,
+     150
+    ],
+    [
+     250,
+     60
+    ],
+    [
+     330,
+     240
+    ]
+   ],
+   "tren_eje": "H",
+   "tren_n": 2,
+   "lugares": [
+    {
+     "id": "mn_salida",
+     "nombre": "Salida norte, carretera de Puerto Bravo",
+     "tipo": "salida",
+     "bloque": [
+      1,
+      2
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "La carretera de la costa, que sube entre pinos y arrozales hasta Puerto Bravo.",
+     "sonido": "lugar_salida",
+     "a_mapa": "puerto_bravo",
+     "a_lugar": "mn_pb_salida",
+     "km": 27,
+     "horas": 0.7
+    },
+    {
+     "id": "mn_estacion",
+     "nombre": "Parada del autobús de Marisma Negra",
+     "tipo": "estacion",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "N",
+     "pos": 20,
+     "desc": "Una marquesina de chapa con un banco y un horario que nadie cumple.",
+     "sonido": "lugar_estacion",
+     "precio": 20
+    },
+    {
+     "id": "mn_tren",
+     "nombre": "Apeadero de Marisma Negra",
+     "tipo": "tren",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "N",
+     "pos": 52,
+     "desc": "Un andén corto entre eucaliptos y una taquilla abierta dos horas al día. De aquí salen los trenes a las demás localidades a las que se llega por tierra.",
+     "sonido": "lugar_tren"
+    },
+    {
+     "id": "mn_taberna",
+     "nombre": "Taberna El Anguilero",
+     "tipo": "taberna",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Anguila ahumada colgada sobre la barra, dados, vino de garrafa y un tablón con encargos. La lleva Toñi y aquí se sienta Amador.",
+     "sonido": "lugar_bar"
+    },
+    {
+     "id": "mn_tienda",
+     "nombre": "Ultramarinos La Garza",
+     "tipo": "tienda",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "De todo un poco, botas de agua de todas las tallas y un surtidor de gasolina en la puerta.",
+     "sonido": "lugar_tienda",
+     "surtidor": true
+    },
+    {
+     "id": "mn_banco",
+     "nombre": "Caja Rural de la Marisma",
+     "tipo": "banco",
+     "bloque": [
+      0,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Una ventanilla, un cajero y un calendario de la cooperativa de hace tres años.",
+     "sonido": "lugar_banco"
+    },
+    {
+     "id": "mn_plaza",
+     "nombre": "Plaza de la Ermita",
+     "tipo": "monumento",
+     "bloque": [
+      1,
+      1
+     ],
+     "xy": [
+      30,
+      30
+     ],
+     "desc": "Una plaza de tierra con cuatro moreras y una fuente de agua dulce, la única del pueblo que no sabe a sal.",
+     "sonido": "lugar_fuente",
+     "fuente": true
+    },
+    {
+     "id": "mn_iglesia",
+     "nombre": "Iglesia de Nuestra Señora de los Caños",
+     "tipo": "monumento",
+     "bloque": [
+      1,
+      1
+     ],
+     "xy": [
+      52,
+      58
+     ],
+     "desc": "Una iglesia blanca con una cigüeña en la espadaña. Dentro cuelgan exvotos de barcas que volvieron de una riada.",
+     "sonido": "lugar_iglesia"
+    },
+    {
+     "id": "mn_casa",
+     "nombre": "Casa del anguilero",
+     "tipo": "casa",
+     "bloque": [
+      0,
+      2
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Una casa baja con patio de parra, ahumadero en el corral y cochera para dos vehículos.",
+     "sonido": "lugar_casa",
+     "precio": 4600,
+     "garaje": 2
+    },
+    {
+     "id": "mn_consultorio",
+     "nombre": "Consultorio médico de Marisma Negra",
+     "tipo": "hospital",
+     "bloque": [
+      0,
+      2
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "El consultorio del pueblo. La médica viene tres días a la semana y el resto, la enfermera, que sabe más que muchos médicos.",
+     "sonido": "lugar_hospital"
+    },
+    {
+     "id": "mn_armeria",
+     "nombre": "Caza y Pesca El Somormujo",
+     "tipo": "armeria",
+     "bloque": [
+      0,
+      2
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Escopetas de puesto para los patos, fisgas, cartuchos y reclamos de madera tallados a mano.",
+     "sonido": "lugar_armeria"
+    },
+    {
+     "id": "mn_farmacia",
+     "nombre": "Botica de la Marisma",
+     "tipo": "farmacia",
+     "bloque": [
+      0,
+      2
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Repelente de mosquitos en todas sus formas, tiritas y botiquines.",
+     "sonido": "lugar_hospital"
+    },
+    {
+     "id": "mn_taller",
+     "nombre": "Taller y Motores Juncal",
+     "tipo": "taller",
+     "bloque": [
+      1,
+      2
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Arreglan motores fuera borda, tractores y lo que les lleves, aunque esté lleno de barro.",
+     "sonido": "lugar_taller"
+    },
+    {
+     "id": "mn_ong",
+     "nombre": "Comedor de la Cofradía",
+     "tipo": "ong",
+     "bloque": [
+      1,
+      2
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "La Cofradía de anguileros da de comer a quien lo necesita. Los jueves cocina Toñi. Siempre faltan manos.",
+     "sonido": "lugar_ong"
+    },
+    {
+     "id": "mn_hostal",
+     "nombre": "Hostal La Lisa",
+     "tipo": "hotel",
+     "bloque": [
+      1,
+      2
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Seis habitaciones con mosquitera y desayuno de tostadas con aceite.",
+     "sonido": "lugar_casa",
+     "precio_noche": 32
+    },
+    {
+     "id": "mn_cooperativa",
+     "nombre": "Cooperativa Arrocera La Espiga",
+     "tipo": "negocio",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "La cooperativa del arroz, en venta desde que se jubiló la junta entera. Da dinero cada medianoche. En la puerta está siempre su ranchera: súbete y pulsa J para hacer el reparto.",
+     "sonido": "lugar_taller",
+     "vehiculo": "mn_ranchera",
+     "precio": 21000,
+     "ingresos": 480
+    },
+    {
+     "id": "mn_empleo",
+     "nombre": "Comunidad de Regantes, bolsa de trabajo",
+     "tipo": "empleo",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "O",
+     "pos": 36,
+     "desc": "Jornadas en los arrozales, en la siega y en las compuertas.",
+     "sonido": "lugar_empleo"
+    },
+    {
+     "id": "mn_arroceria",
+     "nombre": "Arrocería Los Caños",
+     "tipo": "comida",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Arroz de marisma en paella de leña y anguila de la laguna. Mesas largas y sobremesas más largas.",
+     "sonido": "lugar_comida"
+    },
+    {
+     "id": "mn_circuito",
+     "nombre": "Salida de la carrera de los arrozales",
+     "tipo": "carrera",
+     "bloque": [
+      2,
+      1
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "En fiestas se corre por los caminos de las acequias. Gana quien no acaba dentro de una tabla de arroz.",
+     "sonido": "lugar_taxi"
+    },
+    {
+     "id": "mn_arrozal",
+     "nombre": "Arrozal de la Acequia Mayor",
+     "tipo": "monumento",
+     "bloque": [
+      3,
+      1
+     ],
+     "xy": [
+      36,
+      36
+     ],
+     "desc": "Una tabla de arroz enorme, con garzas quietas como estatuas y el rumor del agua por la acequia.",
+     "sonido": "pajaro"
+    },
+    {
+     "id": "mn_secadero",
+     "nombre": "Secadero de arroz",
+     "tipo": "monumento",
+     "bloque": [
+      2,
+      2
+     ],
+     "xy": [
+      36,
+      36
+     ],
+     "desc": "Una era de cemento donde se seca el arroz en septiembre. El resto del año juegan aquí los críos.",
+     "sonido": "lugar_generico"
+    },
+    {
+     "id": "mn_esclusa",
+     "nombre": "Compuerta de la Esclusa Vieja",
+     "tipo": "monumento",
+     "bloque": [
+      3,
+      2
+     ],
+     "xy": [
+      40,
+      40
+     ],
+     "desc": "Una compuerta de hierro oxidado que separa los arrozales del caño grande. Cuando sube la marea, el agua salada empuja y la compuerta cruje.",
+     "sonido": "lugar_rio"
+    },
+    {
+     "id": "mn_aerodromo",
+     "nombre": "Aeródromo de Marisma Negra",
+     "tipo": "aeropuerto",
+     "bloque": [
+      3,
+      2
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Una pista de tierra apisonada entre arrozales, que usan sobre todo las avionetas que fumigan. Llegan y salen avionetas de línea, y se alquilan avionetas.",
+     "sonido": "lugar_aeropuerto",
+     "precio": 120,
+     "aerodromo": true
+    },
+    {
+     "id": "mn_embarcadero",
+     "nombre": "Embarcadero de los Caños",
+     "tipo": "embarcadero",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "S",
+     "pos": 36,
+     "desc": "Un muelle de tablones sobre pilotes. Por el caño grande se sale a mar abierto.",
+     "sonido": "lugar_embarcadero",
+     "a_mapa": "mar",
+     "a_lugar": "mn_mar_muelle"
+    },
+    {
+     "id": "mn_nautica",
+     "nombre": "Varadero de los Caños",
+     "tipo": "nautica",
+     "bloque": [
+      0,
+      0
+     ],
+     "lado": "E",
+     "pos": 36,
+     "desc": "Venden y reparan barcas. Las dejan amarradas en el embarcadero.",
+     "sonido": "lugar_embarcadero",
+     "embarcadero": "mn_embarcadero"
+    },
+    {
+     "id": "mn_lonja",
+     "nombre": "Lonja de la Anguila",
+     "tipo": "pescaderia",
+     "bloque": [
+      1,
+      0
+     ],
+     "lado": "N",
+     "pos": 36,
+     "desc": "Aquí se subasta la anguila al amanecer. Compran todo lo que saques de la laguna o del mar.",
+     "sonido": "gaviota"
+    },
+    {
+     "id": "mn_barra",
+     "nombre": "Playa de la Barra",
+     "tipo": "tesoro",
+     "bloque": [
+      1,
+      0
+     ],
+     "xy": [
+      40,
+      20
+     ],
+     "desc": "Una lengua de arena entre el mar y la marisma. Las riadas dejan aquí de todo.",
+     "sonido": "viento_playa"
+    },
+    {
+     "id": "mn_laguna",
+     "nombre": "Orilla de la Laguna Negra",
+     "tipo": "pesca",
+     "bloque": [
+      2,
+      0
+     ],
+     "xy": [
+      40,
+      40
+     ],
+     "desc": "Agua oscura y quieta, y debajo, anguilas y lisas.",
+     "sonido": "lugar_rio"
+    },
+    {
+     "id": "mn_observatorio",
+     "nombre": "Observatorio de aves",
+     "tipo": "monumento",
+     "bloque": [
+      2,
+      0
+     ],
+     "xy": [
+      15,
+      60
+     ],
+     "desc": "Una caseta de madera sobre pilotes con mirillas hacia la laguna. Aquí pasa los días Celia, la guarda.",
+     "sonido": "pajaro"
+    },
+    {
+     "id": "mn_salinas",
+     "nombre": "Salinas de San Ginés",
+     "tipo": "monumento",
+     "bloque": [
+      3,
+      0
+     ],
+     "xy": [
+      40,
+      30
+     ],
+     "desc": "Unas salinas cerradas hace diez años: balsas secas, montones de sal gris y un almacén con el tejado de uralita. Dicen que está vacío.",
+     "sonido": "viento_playa"
+    }
+   ]
+  }
+ ],
+ "comidas": [
+  {
+   "nombre": "Arroz de marisma con pato",
+   "precio": 14,
+   "salud": 46
+  },
+  {
+   "nombre": "Anguila ahumada con pan de pueblo",
+   "precio": 8,
+   "salud": 26
+  }
+ ],
+ "peces": [
+  {
+   "nombre": "una anguila de los caños",
+   "valor": 42,
+   "peso": 14
+  },
+  {
+   "nombre": "una lisa de la laguna",
+   "valor": 16,
+   "peso": 20
+  }
+ ],
+ "capitulos": {
+  "47": "Marisma Negra",
+  "48": "Marisma Negra: vida honrada"
+ },
+ "personajes": [
+  {
+   "id": "mn_jacinta",
+   "nombre": "Jacinta",
+   "apellido": "Juncal",
+   "genero": "m",
+   "desc": "Hija y nieta de anguileros de Marisma Negra. Empieza con la pesca al nivel cuatro, algo de resistencia, una fisga, ciento sesenta euros y buen nombre entre los vecinos.",
+   "dinero": 160,
+   "ciudadania": 30,
+   "resistencia": 2,
+   "pesca": 4,
+   "arma": "mn_fisga",
+   "botiquines": 1
+  }
+ ]
+}

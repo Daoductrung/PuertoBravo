@@ -25,6 +25,7 @@ Cómo funciona:
 Lo que nunca se toca: partidas, opciones, tu música, tus mods. Solo se admiten direcciones https.
 No se envía ningún dato del jugador: son descargas normales.
 """
+from .i18n import tr
 import base64
 import hashlib
 import hmac
@@ -50,7 +51,7 @@ URL_GITHUB = f"https://github.com/{REPOSITORIO_GITHUB}/releases/latest/download/
 CLAVES_PUBLICAS = ("2793c73fefcdb5518570569e41e9ae291373c41126b30d4b3fb99359b09ca23f",)
 
 FUENTES = ("servidor", "github", "ambas", "personalizada")
-NOMBRE_FUENTE = {"servidor": "el servidor del juego", "github": "GitHub", "ambas": "el servidor del juego y GitHub", "personalizada": "una dirección personalizada"}
+NOMBRE_FUENTE = {"servidor": tr("el servidor del juego"), "github": "GitHub", "ambas": tr("el servidor del juego y GitHub"), "personalizada": tr("una dirección personalizada")}
 CAMPO_FIRMA = "firma_ed25519"
 ARG_TRAS_ACTUALIZAR = "--tras-actualizar"
 ARG_RELANZAR = "--relanzar-servidores"          # el instalador llama así al juego para que vuelva a arrancar los servidores que había
@@ -76,7 +77,7 @@ def de_windows(nombre):
     """Una utilidad de Windows (tasklist.exe, cmd.exe) con su ruta entera, para no depender del PATH: con Git Bash o Cygwin
     por delante, «find» o «tasklist» pueden ser otros programas."""
     for raiz in (os.environ.get("SystemRoot"), os.environ.get("windir")):
-        ruta = os.path.join(raiz, "System32", nombre) if raiz else ""
+        ruta = os.path.join(raiz, tr("System32"), nombre) if raiz else ""
         if ruta and os.path.isfile(ruta):
             return ruta
     return nombre
@@ -115,7 +116,7 @@ def clave_version(texto):
     for trozo in str(texto).strip().lstrip("vV").split("."):
         digitos = "".join(c for c in trozo if c.isdigit())
         if not digitos:
-            raise ValueError(f"Versión no válida: {texto!r}")
+            raise ValueError(tr('Versión no válida: {texto!r}').format(texto=(texto)))
         partes.append(int(digitos))
     while len(partes) < 3:
         partes.append(0)
@@ -137,11 +138,11 @@ def verificar_firma(manifiesto, claves=None):
     claves = CLAVES_PUBLICAS if claves is None else claves
     firma_b64 = manifiesto.get(CAMPO_FIRMA)
     if not isinstance(firma_b64, str) or not firma_b64:
-        raise ErrorFirma("La información de la versión no está firmada.")
+        raise ErrorFirma(tr("La información de la versión no está firmada."))
     try:
         firma = base64.b64decode(firma_b64, validate=True)
     except ValueError:
-        raise ErrorFirma("La firma de la versión está dañada.") from None
+        raise ErrorFirma(tr("La firma de la versión está dañada.")) from None
     mensaje = serializar_canonico(manifiesto)
     for clave in claves:
         try:
@@ -150,16 +151,16 @@ def verificar_firma(manifiesto, claves=None):
             continue
         if ed25519.verificar(pub, mensaje, firma):
             return
-    raise ErrorFirma("La firma de la versión no es válida. No se actualiza.")
+    raise ErrorFirma(tr("La firma de la versión no es válida. No se actualiza."))
 
 
 # ------------------------------------------------------------------------ red
 def comprobar_url(url):
     p = urllib.parse.urlsplit(str(url))
     if p.scheme != "https" or not p.hostname:
-        raise ErrorActualizacion("La dirección tiene que empezar por https.")
+        raise ErrorActualizacion(tr("La dirección tiene que empezar por https."))
     if p.username or p.password:
-        raise ErrorActualizacion("La dirección no puede llevar usuario ni contraseña.")
+        raise ErrorActualizacion(tr("La dirección no puede llevar usuario ni contraseña."))
 
 
 class _SoloHttps(urllib.request.HTTPRedirectHandler):
@@ -182,30 +183,27 @@ def abrir_red(url, tiempo=TIEMPO, desde=0):
 
 REINTENTOS = 5          # veces que se retoma una descarga cortada, por cada dirección
 PAGINA_DESCARGAS = f"https://github.com/{REPOSITORIO_GITHUB}/releases/latest"       # de donde se baja el ZIP para actualizar a mano
-BLOQUEO_RED = ("Si tu conexión funciona para lo demás, puede que un filtro de red como AdGuard, un antivirus o un cortafuegos esté bloqueando al juego: "
-               "añade Puerto Bravo a sus excepciones, o prueba la otra fuente en Actualizar desde.")
-A_MANO = "Si no hay manera, se puede actualizar a mano: lo explica Opciones, Actualizaciones, Actualizar a mano."
+BLOQUEO_RED = (tr("Si tu conexión funciona para lo demás, puede que un filtro de red como AdGuard, un antivirus o un cortafuegos esté bloqueando al juego: "
+               "añade Puerto Bravo a sus excepciones, o prueba la otra fuente en Actualizar desde."))
+A_MANO = tr("Si no hay manera, se puede actualizar a mano: lo explica Opciones, Actualizaciones, Actualizar a mano.")
 
 
 class ErrorDisco(ErrorActualizacion):
     """No se ha podido escribir en el disco: no es cosa de la conexión."""
 
 
-def error_de_disco(e, que="guardar la descarga"):
+def error_de_disco(e, que=tr("guardar la descarga")):
     """Un fallo de Windows al escribir, dicho para quien juega: carpeta protegida, disco lleno, antivirus u otro programa."""
     cod = getattr(e, "winerror", None)
     if cod in _SIN_SITIO or getattr(e, "errno", None) == 28:
-        return ErrorDisco(f"El disco se ha llenado y no se ha podido {que}. Libera espacio y vuelve a intentarlo.")
+        return ErrorDisco(tr('El disco se ha llenado y no se ha podido {que}. Libera espacio y vuelve a intentarlo.').format(que=(que)))
     if cod in _ANTIVIRUS:
-        return ErrorDisco(f"El antivirus ha bloqueado un archivo y no se ha podido {que}. Añade la carpeta del juego a las excepciones del antivirus y vuelve a intentarlo. " + A_MANO)
+        return ErrorDisco(tr('El antivirus ha bloqueado un archivo y no se ha podido {que}. Añade la carpeta del juego a las excepciones del antivirus y vuelve a intentarlo. ').format(que=(que)) + A_MANO)
     if cod in _EN_USO:
-        return ErrorDisco(f"No se ha podido {que} porque otro programa estaba usando el archivo. Suele ser el antivirus, que lo está examinando, o el juego abierto dos veces. "
-                          "Cierra las demás ventanas de Puerto Bravo, espera un momento y vuelve a intentarlo.")
+        return ErrorDisco(tr('No se ha podido {que} porque otro programa estaba usando el archivo. Suele ser el antivirus, que lo está examinando, o el juego abierto dos veces. Cierra las demás ventanas de Puerto Bravo, espera un momento y vuelve a intentarlo.').format(que=(que)))
     if isinstance(e, PermissionError) or cod in _DENEGADO:
-        return ErrorDisco(f"Windows no deja escribir en la carpeta del juego y no se ha podido {que}. Suele pasar si el juego está en una carpeta protegida, como Archivos de programa, "
-                          "o si un antivirus o el acceso controlado a carpetas lo impiden. Mueve el juego a otra carpeta, por ejemplo dentro de Documentos, "
-                          "o añade una excepción en el antivirus. " + A_MANO)
-    return ErrorDisco(f"No se ha podido {que}: Windows dio el error {cod or getattr(e, 'errno', None) or type(e).__name__}. Puede ser el antivirus. " + A_MANO)
+        return ErrorDisco(tr('Windows no deja escribir en la carpeta del juego y no se ha podido {que}. Suele pasar si el juego está en una carpeta protegida, como Archivos de programa, o si un antivirus o el acceso controlado a carpetas lo impiden. Mueve el juego a otra carpeta, por ejemplo dentro de Documentos, o añade una excepción en el antivirus. ').format(que=(que)) + A_MANO)
+    return ErrorDisco(tr('No se ha podido {que}: Windows dio el error {v}. Puede ser el antivirus. ').format(que=(que), v=(cod or getattr(e, 'errno', None) or type(e).__name__)) + A_MANO)
 
 
 def _abrir_desde(abrir, url, desde):
@@ -227,17 +225,17 @@ def _leer_manifiesto(url, nombre, abrir):
     except ErrorActualizacion:
         raise
     except urllib.error.HTTPError as e:
-        raise ErrorRed(f"Al consultar {nombre}, respondió con el error {e.code}.") from None
+        raise ErrorRed(tr('Al consultar {nombre}, respondió con el error {code}.').format(nombre=(nombre), code=(e.code))) from None
     except (OSError, ValueError) as e:
-        raise ErrorRed(f"No se pudo conectar con {nombre}. Comprueba la conexión a internet. Si usas AdGuard, un antivirus o un cortafuegos, puede estar bloqueando al juego.") from e
+        raise ErrorRed(tr('No se pudo conectar con {nombre}. Comprueba la conexión a internet. Si usas AdGuard, un antivirus o un cortafuegos, puede estar bloqueando al juego.').format(nombre=(nombre))) from e
     if len(crudo) > MAX_MANIFIESTO:
-        raise ErrorFirma(f"La información de versión de {nombre} es demasiado grande.")
+        raise ErrorFirma(tr('La información de versión de {nombre} es demasiado grande.').format(nombre=(nombre)))
     try:
         m = json.loads(crudo.decode("utf-8-sig"))
     except (ValueError, UnicodeDecodeError):
-        raise ErrorFirma(f"La información de versión de {nombre} está dañada.") from None
+        raise ErrorFirma(tr('La información de versión de {nombre} está dañada.').format(nombre=(nombre))) from None
     if not isinstance(m, dict):
-        raise ErrorFirma(f"La información de versión de {nombre} está dañada.")
+        raise ErrorFirma(tr('La información de versión de {nombre} está dañada.').format(nombre=(nombre)))
     return m
 
 
@@ -249,7 +247,7 @@ def fuentes_a_consultar(fuente, url_personalizada=""):
     if fuente == "personalizada":
         url = str(url_personalizada or "").strip()
         if not url:
-            raise ErrorActualizacion("Has elegido una dirección personalizada, pero no has escrito ninguna. Escríbela en Opciones, Actualizaciones.")
+            raise ErrorActualizacion(tr("Has elegido una dirección personalizada, pero no has escrito ninguna. Escríbela en Opciones, Actualizaciones."))
         comprobar_url(url)
         return [("personalizada", url)]
     return [("servidor", URL_SERVIDOR)]
@@ -262,11 +260,11 @@ def _info(m, url_manifiesto, fuente, ambas):
     tamano = m.get("size")
     clave_version(version)
     if not archivo or os.path.basename(archivo) != archivo or not archivo.lower().endswith(".zip"):
-        raise ErrorFirma("El nombre del archivo de la versión no es válido.")
+        raise ErrorFirma(tr("El nombre del archivo de la versión no es válido."))
     if len(sha) != 64 or any(c not in "0123456789abcdef" for c in sha):
-        raise ErrorFirma("La huella del archivo de la versión no es válida.")
+        raise ErrorFirma(tr("La huella del archivo de la versión no es válida."))
     if not isinstance(tamano, int) or isinstance(tamano, bool) or not 0 < tamano <= MAX_DESCARGA:
-        raise ErrorFirma("El tamaño del archivo de la versión no es válido.")
+        raise ErrorFirma(tr("El tamaño del archivo de la versión no es válido."))
     junto = urllib.parse.urljoin(url_manifiesto, urllib.parse.quote(archivo))
     principal = str(m.get("url") or "")
     espejos = m.get("espejos") if isinstance(m.get("espejos"), dict) else {}
@@ -286,7 +284,7 @@ def _info(m, url_manifiesto, fuente, ambas):
             except ErrorActualizacion:
                 pass
     if not urls:
-        raise ErrorFirma("La versión no indica de dónde descargarla.")
+        raise ErrorFirma(tr("La versión no indica de dónde descargarla."))
     return Info(version, archivo, sha, tamano, urls, str(m.get("novedades") or ""), fuente)
 
 
@@ -310,7 +308,7 @@ def comprobar(fuente="servidor", url_personalizada="", abrir=None, claves=None, 
     if not encontradas:
         if len(errores) > 1:
             grave = next((e for e in errores if isinstance(e, ErrorFirma)), errores[0])
-            raise type(grave)("No se pudo comprobar en ninguna de las dos fuentes. " + " ".join(str(e) for e in errores))
+            raise type(grave)(tr("No se pudo comprobar en ninguna de las dos fuentes. ") + " ".join(str(e) for e in errores))
         raise errores[0]
     mejor = max(encontradas, key=lambda i: clave_version(i.version))
     return mejor if es_mas_nueva(mejor.version, actual) else None
@@ -357,13 +355,13 @@ def descargar(info, carpeta=None, progreso=None, cancelado=None, abrir=None):
                     with r, f:
                         while True:
                             if cancelado and cancelado():
-                                raise Cancelado("Descarga cancelada.")
+                                raise Cancelado(tr("Descarga cancelada."))
                             bloque = r.read(256 * 1024)
                             if not bloque:
                                 break
                             hecho += len(bloque)
                             if hecho > info.tamano:
-                                raise ErrorFirma("El archivo descargado es más grande de lo que debería.")
+                                raise ErrorFirma(tr("El archivo descargado es más grande de lo que debería."))
                             try:
                                 f.write(bloque)
                             except OSError as e:           # el disco, no la red: no tiene sentido reintentar ni culpar a la conexión
@@ -378,14 +376,14 @@ def descargar(info, carpeta=None, progreso=None, cancelado=None, abrir=None):
                 if hecho >= info.tamano or (hecho <= antes and intento >= 2):
                     break
             if hecho != info.tamano:
-                raise ErrorRed("La descarga se ha cortado antes de terminar, y no se ha podido retomar. Prueba otra vez dentro de un rato. " + BLOQUEO_RED)
+                raise ErrorRed(tr("La descarga se ha cortado antes de terminar, y no se ha podido retomar. Prueba otra vez dentro de un rato. ") + BLOQUEO_RED)
             try:
                 suma = sha256_de(destino + ".parcial")
             except OSError as e:                           # estaba entero y ya no se puede leer: lo ha retirado o lo retiene otro programa
-                raise ErrorDisco("La descarga terminó, pero el archivo ha desaparecido o no se deja leer: casi siempre es el antivirus, que lo ha apartado. "
-                                 "Añade la carpeta del juego a sus excepciones y vuelve a intentarlo. " + A_MANO) from e
+                raise ErrorDisco(tr("La descarga terminó, pero el archivo ha desaparecido o no se deja leer: casi siempre es el antivirus, que lo ha apartado. "
+                                 "Añade la carpeta del juego a sus excepciones y vuelve a intentarlo. ") + A_MANO) from e
             if not hmac.compare_digest(suma, info.sha256):
-                raise ErrorFirma("El archivo descargado no coincide con el que se publicó. No se instala.")
+                raise ErrorFirma(tr("El archivo descargado no coincide con el que se publicó. No se instala."))
             try:
                 os.replace(destino + ".parcial", destino)
             except OSError as e:
@@ -400,10 +398,10 @@ def descargar(info, carpeta=None, progreso=None, cancelado=None, abrir=None):
         except ErrorActualizacion as e:
             ultimo = e
         except (OSError, ValueError) as e:
-            ultimo = ErrorRed("No se pudo descargar la versión nueva. Comprueba la conexión a internet. " + BLOQUEO_RED)
+            ultimo = ErrorRed(tr("No se pudo descargar la versión nueva. Comprueba la conexión a internet. ") + BLOQUEO_RED)
             ultimo.__cause__ = e
         _quitar(destino + ".parcial")
-    raise ultimo or ErrorRed("No se pudo descargar la versión nueva.")
+    raise ultimo or ErrorRed(tr("No se pudo descargar la versión nueva."))
 
 
 def _quitar(ruta):
@@ -420,7 +418,7 @@ def extraer(ruta_zip, carpeta):
     try:
         os.makedirs(carpeta, exist_ok=True)
     except OSError as e:
-        raise error_de_disco(e, "preparar la versión nueva") from e
+        raise error_de_disco(e, tr("preparar la versión nueva")) from e
     raiz = os.path.realpath(carpeta)
     traia_el_juego = False
     try:
@@ -428,15 +426,15 @@ def extraer(ruta_zip, carpeta):
             miembros = z.infolist()
             traia_el_juego = any(m.filename.replace("\\", "/").strip("/") == EJECUTABLE for m in miembros)
             if len(miembros) > MAX_MIEMBROS or sum(m.file_size for m in miembros) > MAX_EXPANDIDO:
-                raise ErrorFirma("El paquete de la versión es demasiado grande.")
+                raise ErrorFirma(tr("El paquete de la versión es demasiado grande."))
             for m in miembros:
                 nombre = m.filename.replace("\\", "/")
                 partes = [p for p in nombre.split("/") if p]
                 if nombre.startswith("/") or ":" in nombre or ".." in partes or (m.external_attr >> 16) & 0o170000 == 0o120000:
-                    raise ErrorFirma("El paquete de la versión contiene rutas no permitidas. No se instala.")
+                    raise ErrorFirma(tr("El paquete de la versión contiene rutas no permitidas. No se instala."))
                 destino = os.path.realpath(os.path.join(raiz, *partes))
                 if destino != raiz and not destino.startswith(raiz + os.sep):
-                    raise ErrorFirma("El paquete de la versión contiene rutas no permitidas. No se instala.")
+                    raise ErrorFirma(tr("El paquete de la versión contiene rutas no permitidas. No se instala."))
                 if m.is_dir():
                     os.makedirs(destino, exist_ok=True)
                     continue
@@ -444,16 +442,16 @@ def extraer(ruta_zip, carpeta):
                 with z.open(m) as origen, open(destino, "wb") as f:
                     shutil.copyfileobj(origen, f, 1024 * 1024)
     except zipfile.BadZipFile:
-        raise ErrorFirma("El paquete de la versión está dañado.") from None
+        raise ErrorFirma(tr("El paquete de la versión está dañado.")) from None
     except ErrorActualizacion:
         raise
     except OSError as e:
-        raise error_de_disco(e, "preparar la versión nueva") from e
+        raise error_de_disco(e, tr("preparar la versión nueva")) from e
     if not os.path.isfile(os.path.join(raiz, EJECUTABLE)):
         if traia_el_juego:                                 # venía en el paquete y, recién sacado, ya no está: alguien lo ha quitado
-            raise ErrorDisco("El programa del juego venía en la descarga, pero ha desaparecido nada más sacarlo: casi siempre es el antivirus, que lo ha puesto en cuarentena. "
-                             "Añade la carpeta del juego a las excepciones del antivirus y vuelve a intentarlo. " + A_MANO)
-        raise ErrorFirma("El paquete de la versión no contiene el juego.")
+            raise ErrorDisco(tr("El programa del juego venía en la descarga, pero ha desaparecido nada más sacarlo: casi siempre es el antivirus, que lo ha puesto en cuarentena. "
+                             "Añade la carpeta del juego a las excepciones del antivirus y vuelve a intentarlo. ") + A_MANO)
+        raise ErrorFirma(tr("El paquete de la versión no contiene el juego."))
     for base, dirs, _ in os.walk(raiz):               # por si acaso: lo personal no viaja en una versión
         for d in list(dirs):
             if d in INTOCABLES and os.path.basename(base) in ("data", "radio"):
@@ -478,11 +476,11 @@ def carpeta_programa():
 
 REGISTRO_INSTALADOR = "actualizacion.log"
 # Los pasos del instalador, como se apuntan en su registro y como se le cuentan al jugador.
-PASOS = {"esperar_cierre": "esperar a que el juego se cerrara", "esperar_programas": "esperar a que se cerraran los demás programas del juego",
-         "copia_seguridad": "guardar una copia de la versión que tenías", "copiar_nueva": "copiar la versión nueva",
-         "copiar_lib": "copiar el programa nuevo", "copiar_datos": "copiar los datos nuevos del juego", "restaurar": "volver a dejar la versión anterior"}
+PASOS = {"esperar_cierre": tr("esperar a que el juego se cerrara"), "esperar_programas": tr("esperar a que se cerraran los demás programas del juego"),
+         "copia_seguridad": tr("guardar una copia de la versión que tenías"), "copiar_nueva": tr("copiar la versión nueva"),
+         "copiar_lib": tr("copiar el programa nuevo"), "copiar_datos": tr("copiar los datos nuevos del juego"), "restaurar": tr("volver a dejar la versión anterior")}
 # Los otros programas del juego: con uno abierto, Windows no deja sustituir su archivo.
-OTROS_PROGRAMAS = {"EditorMods.exe": "el editor de mods", "PuertoBravoServidor.exe": "el servidor en línea", "PuertoBravoServidorPanel.exe": "el panel del servidor en línea"}
+OTROS_PROGRAMAS = {"EditorMods.exe": tr("el editor de mods"), "PuertoBravoServidor.exe": tr("el servidor en línea"), "PuertoBravoServidorPanel.exe": tr("el panel del servidor en línea")}
 PROGRAMAS_SERVIDOR = ("PuertoBravoServidor.exe", "PuertoBravoServidorPanel.exe")
 MARGEN_DISCO = 48 * 1024 ** 2
 
@@ -528,98 +526,98 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
     pid = os.getpid() if pid is None else pid
     for ruta in (nueva, programa):
         if any(c in ruta for c in '%"!^&'):
-            raise ErrorActualizacion("El juego está en una carpeta con símbolos especiales en el nombre y no se puede actualizar solo. Descarga la versión nueva a mano.")
+            raise ErrorActualizacion(tr("El juego está en una carpeta con símbolos especiales en el nombre y no se puede actualizar solo. Descarga la versión nueva a mano."))
     trabajo = os.path.dirname(nueva)
     copia = os.path.join(trabajo, "anterior")
     excluir = " ".join(INTOCABLES + VIVO_SERVIDOR)           # lo vivo de un servidor no lo trae una versión; si lo trajera, no se copia
-    callado = '/njh /njs /ndl /nfl /np /log+:"%REG%"'        # robocopy no lista lo que va bien: en el registro solo quedan los errores
+    callado = tr('/njh /njs /ndl /nfl /np /log+:"%REG%"')        # robocopy no lista lo que va bien: en el registro solo quedan los errores
     # Las utilidades de Windows, con su ruta entera: con otro «find» por delante en el PATH (Git Bash, Cygwin), las esperas no esperaban.
     robocopy, tasklist, find, ping = ('"%SYS%\\' + n + '"' for n in ("robocopy.exe", "tasklist.exe", "find.exe", "ping.exe"))
 
     def apunta(texto):
-        return f'>>"%REG%" echo {texto}'
+        return tr('>>"%REG%" echo {texto}').format(texto=(texto))
 
     def paso(nombre, orden, vital=True, si=None):
         """Un paso con robocopy: se apunta que empieza, se hace, y se apunta el código con el que termina (8 o más es fallo)."""
-        lineas = [f"set PASO={nombre}", apunta(f"PASO {nombre}"), orden, "set RC=%errorlevel%", apunta(f"RESULTADO {nombre} codigo=%RC%")]
+        lineas = [tr('set PASO={nombre}').format(nombre=(nombre)), apunta(tr('PASO {nombre}').format(nombre=(nombre))), orden, tr("set RC=%errorlevel%"), apunta(tr('RESULTADO {nombre} codigo=%RC%').format(nombre=(nombre)))]
         if vital:
-            lineas.append("if %RC% geq 8 goto fallo")
+            lineas.append(tr("if %RC% geq 8 goto fallo"))
         if si:                                               # solo si existe esa carpeta en la versión nueva
             salto = f"sin_{nombre}"
-            lineas = [f'if not exist "{si}" goto {salto}'] + lineas + [f":{salto}"]
+            lineas = [tr('if not exist "{si}" goto {salto}').format(si=(si), salto=(salto))] + lineas + [f":{salto}"]
         return lineas
 
     lineas = [
-        "@echo off", "setlocal", 'set "SYS=%SystemRoot%\\System32"', 'if not exist "%SYS%\\robocopy.exe" set "SYS=%windir%\\System32"',
+        tr("@echo off"), "setlocal", 'set "SYS=%SystemRoot%\\System32"', 'if not exist "%SYS%\\robocopy.exe" set "SYS=%windir%\\System32"',
         '"%SYS%\\chcp.com" 65001 >nul',
-        f'set "APP={programa}"', f'set "NUEVA={nueva}"', f'set "COPIA={copia}"', f'set "NOTA={os.path.join(trabajo, NOTA_SERVIDORES)}"',
-        'set "REG=%APP%\\data\\logs\\' + REGISTRO_INSTALADOR + '"', "set PASO=empezar", "set RC=0",
+        tr('set "APP={programa}"').format(programa=(programa)), tr('set "NUEVA={nueva}"').format(nueva=(nueva)), tr('set "COPIA={copia}"').format(copia=(copia)), tr('set "NOTA={join}"').format(join=(os.path.join(trabajo, NOTA_SERVIDORES))),
+        'set "REG=%APP%\\data\\logs\\' + REGISTRO_INSTALADOR + '"', tr("set PASO=empezar"), tr("set RC=0"),
         'if not exist "%APP%\\data\\logs" mkdir "%APP%\\data\\logs"',
-        f'>"%REG%" echo Instalador de Puerto Bravo. Actualizacion a la version {version}.',
+        tr('>"%REG%" echo Instalador de Puerto Bravo. Actualizacion a la version {version}.').format(version=(version)),
         apunta("EMPIEZA %date% %time%"),
-        f"echo Actualizando Puerto Bravo a la version {version}. No cierres esta ventana.",
-        "set PASO=esperar_cierre", apunta("PASO esperar_cierre"),
-        "set /a N=0", ":espera",
-        f'{tasklist} /fi "PID eq {pid}" 2>nul | {find} " {pid} " >nul',
-        "if errorlevel 1 goto programas",
-        "set /a N+=1", "if %N% geq 90 goto no_cierra",
-        f"{ping} -n 2 127.0.0.1 >nul", "goto espera",
+        tr('echo Actualizando Puerto Bravo a la version {version}. No cierres esta ventana.').format(version=(version)),
+        tr("set PASO=esperar_cierre"), apunta(tr("PASO esperar_cierre")),
+        tr("set /a N=0"), ":espera",
+        tr('{tasklist} /fi "PID eq {pid}" 2>nul | {find} " {pid} " >nul').format(tasklist=(tasklist), pid=(pid), find=(find)),
+        tr("if errorlevel 1 goto programas"),
+        tr("set /a N+=1"), tr("if %N% geq 90 goto no_cierra"),
+        tr('{ping} -n 2 127.0.0.1 >nul').format(ping=(ping)), tr("goto espera"),
         # Si el editor de mods, el servidor en línea o su panel están en marcha, sus programas no se pueden sustituir: se
         # espera a que se cierren, y si no se cierran, no se actualiza a medias.
         ":programas",
-        "set PASO=esperar_programas", apunta("PASO esperar_programas"), "set /a N=0",
+        tr("set PASO=esperar_programas"), apunta(tr("PASO esperar_programas")), tr("set /a N=0"),
         ":mirar",
     ]
     for exe in OTROS_PROGRAMAS:
         # En CSV (/fo csv): en su tabla de siempre, tasklist recorta el nombre del programa a 25 letras, y con eso el panel
         # del servidor (PuertoBravoServidorPanel.exe, 28) no se encontraba nunca: se copiaba con él todavía abierto.
-        lineas += [f'{tasklist} /fi "IMAGENAME eq {exe}" /fo csv /nh 2>nul | {find} /i "{exe}" >nul', "if not errorlevel 1 goto ocupado"]
+        lineas += [tr('{tasklist} /fi "IMAGENAME eq {exe}" /fo csv /nh 2>nul | {find} /i "{exe}" >nul').format(tasklist=(tasklist), exe=(exe), find=(find)), tr("if not errorlevel 1 goto ocupado")]
     lineas += [
-        "goto copiar",
+        tr("goto copiar"),
         ":ocupado",
-        "if %N%==0 echo Esperando a que se cierren el servidor en linea o el editor de mods de Puerto Bravo. El servidor avisa a los jugadores y se cierra solo.",
-        "set /a N+=1", "if %N% geq 180 goto no_cierra",
-        f"{ping} -n 2 127.0.0.1 >nul", "goto mirar",
+        tr("if %N%==0 echo Esperando a que se cierren el servidor en linea o el editor de mods de Puerto Bravo. El servidor avisa a los jugadores y se cierra solo."),
+        tr("set /a N+=1"), tr("if %N% geq 180 goto no_cierra"),
+        tr('{ping} -n 2 127.0.0.1 >nul').format(ping=(ping)), tr("goto mirar"),
         ":no_cierra",
-        apunta("FALLO paso=%PASO% codigo=0 motivo=sigue_abierto"),
-        "goto abrir",
+        apunta(tr("FALLO paso=%PASO% codigo=0 motivo=sigue_abierto")),
+        tr("goto abrir"),
         ":copiar",
-        'if exist "%COPIA%" rmdir /s /q "%COPIA%"',
+        tr('if exist "%COPIA%" rmdir /s /q "%COPIA%"'),
     ]
     # La copia de seguridad: solo programa, y solo lo que la versión nueva va a sustituir (plan_copia). De data, los datos del
     # juego, los mods y los manuales. No entran data\sonidos, musica, radio ni phonon, y es a propósito: son cientos de megas,
     # llevan archivos de quien juega que no se tocan jamás, y son solo audio y modelos de voz, que se cargan por su nombre y
     # con tolerancia (un sonido de otra versión suena igual, y los originales que falten se vuelven a crear). Si la instalación
     # falla, la versión anterior funciona con ellos, y la siguiente actualización que salga bien los deja al día.
-    lineas += ["set PASO=copia_seguridad", apunta("PASO copia_seguridad"), "set RC=0"]
+    lineas += [tr("set PASO=copia_seguridad"), apunta(tr("PASO copia_seguridad")), tr("set RC=0")]
     copias = []
     for sub_, archivos in plan_copia(nueva):
-        origen, destino = ("%APP%\\" + sub_, "%COPIA%\\" + sub_) if sub_ else ("%APP%", "%COPIA%")
+        origen, destino = ("%APP%\\" + sub_, tr("%COPIA%\\") + sub_) if sub_ else ("%APP%", tr("%COPIA%"))
         if archivos is None:
-            copias.append(f'if exist "{origen}\\" {robocopy} "{origen}" "{destino}" /e /r:2 /w:1 {callado}')
+            copias.append(tr('if exist "{origen}\\" {robocopy} "{origen}" "{destino}" /e /r:2 /w:1 {callado}').format(origen=(origen), robocopy=(robocopy), destino=(destino), callado=(callado)))
         for k in range(0, len(archivos or ()), 12):          # por tandas: una línea de .bat no puede ser muy larga
             nombres = " ".join(f'"{n}"' for n in archivos[k:k + 12])
-            copias.append(f'{robocopy} "{origen}" "{destino}" {nombres} /r:2 /w:1 {callado}')
+            copias.append(tr('{robocopy} "{origen}" "{destino}" {nombres} /r:2 /w:1 {callado}').format(robocopy=(robocopy), origen=(origen), destino=(destino), nombres=(nombres), callado=(callado)))
     copias += [f'if exist "%APP%\\data\\{sub_}\\" {robocopy} "%APP%\\data\\{sub_}" "%COPIA%\\data\\{sub_}" /e /r:2 /w:1 {callado}' for sub_ in ("datos", "mods", "docs")]
     for orden in copias:
-        lineas += [orden, "if %errorlevel% gtr %RC% set RC=%errorlevel%"]
-    lineas.append(apunta("RESULTADO copia_seguridad codigo=%RC%"))
+        lineas += [orden, tr("if %errorlevel% gtr %RC% set RC=%errorlevel%")]
+    lineas.append(apunta(tr("RESULTADO copia_seguridad codigo=%RC%")))
     lineas += paso("copiar_nueva", f'{robocopy} "%NUEVA%" "%APP%" /e /xd {excluir} /xf {" ".join(ARCHIVOS_VIVOS_SERVIDOR)} /r:3 /w:1 {callado}')
-    lineas += paso("copiar_lib", f'{robocopy} "%NUEVA%\\lib" "%APP%\\lib" /mir /r:3 /w:1 {callado}', si="%NUEVA%\\lib")
+    lineas += paso("copiar_lib", f'{robocopy} "%NUEVA%\\lib" "%APP%\\lib" /mir /r:3 /w:1 {callado}', si=tr("%NUEVA%\\lib"))
     lineas += paso("copiar_datos", f'{robocopy} "%NUEVA%\\data\\datos" "%APP%\\data\\datos" /mir /r:3 /w:1 {callado}', si="%NUEVA%\\data\\datos")
     lineas += [
         'if exist "%APP%\\data\\voces_serie" rmdir /s /q "%APP%\\data\\voces_serie"',     # las voces van ahora en data\voces
-        'rmdir /s /q "%NUEVA%"',
-        'rmdir /s /q "%COPIA%"',
+        tr('rmdir /s /q "%NUEVA%"'),
+        tr('rmdir /s /q "%COPIA%"'),
         apunta("TERMINADA bien %date% %time%"),
         # Si antes de actualizar había un servidor en línea abierto, se vuelve a arrancar igual que estaba. Lo hace el
         # propio juego, ya actualizado, que sabe leer la nota y lo apunta en este mismo registro.
         f'if exist "%NOTA%" start "" /wait "%APP%\\{EJECUTABLE}" {ARG_RELANZAR} "%NOTA%"',
         f'start "" "%APP%\\{EJECUTABLE}" {ARG_TRAS_ACTUALIZAR}',
-        "goto fin",
+        tr("goto fin"),
         ":fallo",
-        apunta("FALLO paso=%PASO% codigo=%RC% motivo=copia"),
-        "echo La actualizacion ha fallado. Se restaura la version anterior.",
+        apunta(tr("FALLO paso=%PASO% codigo=%RC% motivo=copia")),
+        tr("echo La actualizacion ha fallado. Se restaura la version anterior."),
     ]
     # Se devuelve lo que se guardó, que es solo programa: lo que el servidor guardó al cerrarse se queda como lo dejó.
     lineas += paso("restaurar", f'{robocopy} "%COPIA%" "%APP%" /e /r:3 /w:1 {callado}', vital=False)
@@ -631,7 +629,7 @@ def escribir_instalador(nueva, programa=None, pid=None, version=""):
         f'start "" "%APP%\\{EJECUTABLE}" --actualizacion-fallida',
         ":fin",
         "endlocal",
-        '(goto) 2>nul & del "%~f0"',
+        tr('(goto) 2>nul & del "%~f0"'),
     ]
     ruta = os.path.join(trabajo, "instalar_actualizacion.bat")
     with open(ruta, "w", encoding="utf-8", newline="\r\n") as f:
@@ -661,7 +659,7 @@ def _texto_registro(ruta):
         return "\n".join(_linea_de_windows(l) for l in crudo.replace(b"\r\n", b"\n").split(b"\n"))
 
 
-_LETRAS = "áéíóúüñÁÉÍÓÚÜÑ¿¡"
+_LETRAS = tr("áéíóúüñÁÉÍÓÚÜÑ¿¡")
 
 
 def _linea_de_windows(crudo):
@@ -724,11 +722,11 @@ def leer_registro_instalador(ruta=None):
     paso_actual = ""
     for linea in texto.splitlines():
         linea = linea.strip()
-        if linea.startswith("PASO "):
+        if linea.startswith(tr("PASO ")):
             paso_actual = linea[5:].strip()
-        elif linea.startswith("TERMINADA "):
+        elif linea.startswith(tr("TERMINADA ")):
             r["bien"] = linea.split()[1] == "bien"
-        elif linea.startswith("SERVIDOR "):
+        elif linea.startswith(tr("SERVIDOR ")):
             # «SERVIDOR relanzado tipo=consola» o «SERVIDOR sin_relanzar tipo=panel motivo=servicio»
             m = re.search(r"SERVIDOR (\S+)\s+tipo=(\S+)(?:\s+motivo=(\S+))?", linea)
             if m and m.group(1) == "relanzado":
@@ -737,7 +735,7 @@ def leer_registro_instalador(ruta=None):
                     r["parados"] = r.get("parados", 0) + 1
             elif m:
                 r["sin_relanzar"].append((m.group(2), m.group(3) or ""))
-        elif linea.startswith("FALLO "):
+        elif linea.startswith(tr("FALLO ")):
             m = re.search(r"paso=(\S+)\s+codigo=(-?\d+)(?:\s+motivo=(\S+))?", linea)
             if m:
                 r["paso"], r["codigo"], r["motivo"] = m.group(1), int(m.group(2)), m.group(3) or ""
@@ -755,34 +753,31 @@ def motivo_del_fallo(ruta=None):
     """Por qué no se instaló la última actualización, dicho para quien juega, a partir del registro del instalador."""
     r = leer_registro_instalador(ruta)
     if not r["existe"]:
-        return "El instalador no dejó apuntado el motivo."
-    que = f"el archivo {r['archivo']}" if r["archivo"] else "un archivo del juego"
+        return tr("El instalador no dejó apuntado el motivo.")
+    que = tr('el archivo {archivo}').format(archivo=(r['archivo'])) if r["archivo"] else tr("un archivo del juego")
     paso = PASOS.get(r["paso"] or r.get("paso_error", ""), "")
     if r["motivo"] == "sigue_abierto":
         if r["paso"] == "esperar_cierre":
-            texto = "El juego no terminó de cerrarse a tiempo. Vuelve a intentarlo, y si se repite, reinicia el ordenador antes."
+            texto = tr("El juego no terminó de cerrarse a tiempo. Vuelve a intentarlo, y si se repite, reinicia el ordenador antes.")
         else:
-            texto = ("El editor de mods, el servidor en línea o su panel seguían abiertos, y Windows no deja sustituir un programa en marcha. "
-                     "Ciérralos y vuelve a intentarlo.")
+            texto = (tr("El editor de mods, el servidor en línea o su panel seguían abiertos, y Windows no deja sustituir un programa en marcha. "
+                     "Ciérralos y vuelve a intentarlo."))
     elif r["error"] in _EN_USO:
-        texto = (f"No se pudo sustituir {que} porque lo estaba usando otro programa. Cierra el editor de mods, el servidor en línea y cualquier otra "
-                 "ventana de Puerto Bravo, y vuelve a intentarlo. Si no tienes nada abierto, puede ser el antivirus, que lo estaba examinando.")
+        texto = (tr('No se pudo sustituir {que} porque lo estaba usando otro programa. Cierra el editor de mods, el servidor en línea y cualquier otra ventana de Puerto Bravo, y vuelve a intentarlo. Si no tienes nada abierto, puede ser el antivirus, que lo estaba examinando.').format(que=(que)))
     elif r["error"] in _DENEGADO:
-        texto = (f"Windows no dejó escribir {que}: acceso denegado. Suele pasar si el juego está en una carpeta protegida, como Archivos de programa, "
-                 "si está activado el acceso controlado a carpetas de Windows, o si un antivirus lo impide. Mueve el juego a otra carpeta, por ejemplo "
-                 "dentro de Documentos, o añade una excepción en el antivirus.")
+        texto = (tr('Windows no dejó escribir {que}: acceso denegado. Suele pasar si el juego está en una carpeta protegida, como Archivos de programa, si está activado el acceso controlado a carpetas de Windows, o si un antivirus lo impide. Mueve el juego a otra carpeta, por ejemplo dentro de Documentos, o añade una excepción en el antivirus.').format(que=(que)))
     elif r["error"] in _SIN_SITIO:
-        texto = "No había sitio suficiente en el disco. Libera espacio y vuelve a intentarlo."
+        texto = tr("No había sitio suficiente en el disco. Libera espacio y vuelve a intentarlo.")
     elif r["error"] in _ANTIVIRUS:
-        texto = f"El antivirus bloqueó {que}. Añade la carpeta del juego a las excepciones del antivirus y vuelve a intentarlo."
+        texto = tr('El antivirus bloqueó {que}. Añade la carpeta del juego a las excepciones del antivirus y vuelve a intentarlo.').format(que=(que))
     elif r["error"]:
-        texto = f"No se pudo copiar {que}: Windows dio el error {r['error']}."
+        texto = tr('No se pudo copiar {que}: Windows dio el error {error}.').format(que=(que), error=(r['error']))
     elif paso:
-        texto = f"Falló el paso de {paso}, y el instalador no apuntó con qué archivo."
+        texto = tr('Falló el paso de {paso}, y el instalador no apuntó con qué archivo.').format(paso=(paso))
     else:
-        texto = "El instalador no llegó a apuntar en qué paso falló."
+        texto = tr("El instalador no llegó a apuntar en qué paso falló.")
     if paso and (r["error"] or r["motivo"] == "sigue_abierto"):
-        texto += f" Fue al {paso}."
+        texto += tr(' Fue al {paso}.').format(paso=(paso))
     return texto
 
 
@@ -832,7 +827,7 @@ def programas_abiertos(programa=None, tareas=None, salvo=()):
         ejecutables = []
     for n in ejecutables:
         ruta = os.path.join(programa, n)
-        nombre = OTROS_PROGRAMAS.get(n, f"el programa {n}")
+        nombre = OTROS_PROGRAMAS.get(n, tr('el programa {n}').format(n=(n)))
         if os.path.normcase(os.path.abspath(ruta)) == propio or nombre in abiertos or n.lower() in salvo:
             continue
         try:
@@ -924,7 +919,7 @@ def espacio_libre(ruta):
 def megas_txt(n):
     """«850 megas» o «1,6 gigas»."""
     m = n / 1024 ** 2
-    return f"{m / 1024:.1f} gigas".replace(".", ",") if m >= 1000 else f"{max(1, int(round(m)))} megas"
+    return tr('{v:.1f} gigas').format(v=(m / 1024)).replace(".", ",") if m >= 1000 else tr('{max} megas').format(max=(max(1, int(round(m)))))
 
 
 def _falta_sitio(hace_falta, programa, libre=None):
@@ -932,13 +927,12 @@ def _falta_sitio(hace_falta, programa, libre=None):
     if libre is None or libre >= hace_falta:
         return ""
     disco = os.path.splitdrive(os.path.abspath(programa))[0].rstrip(":").upper()
-    return (f"No hay sitio suficiente en el disco{' ' + disco if disco else ''}: hacen falta {megas_txt(hace_falta)} libres y hay {megas_txt(libre)}. "
-            f"Libera al menos {megas_txt(hace_falta - libre)} y vuelve a intentarlo.")
+    return (tr('No hay sitio suficiente en el disco{v}: hacen falta {megas_txt} libres y hay {megas_txt2}. Libera al menos {megas_txt3} y vuelve a intentarlo.').format(v=(' ' + disco if disco else ''), megas_txt=(megas_txt(hace_falta)), megas_txt2=(megas_txt(libre)), megas_txt3=(megas_txt(hace_falta - libre))))
 
 
-SIN_PERMISO = ("Windows no deja escribir en la carpeta del juego. Suele pasar si está en una carpeta protegida, como Archivos de programa, "
+SIN_PERMISO = (tr("Windows no deja escribir en la carpeta del juego. Suele pasar si está en una carpeta protegida, como Archivos de programa, "
                "o si un antivirus o el acceso controlado a carpetas lo impiden. Mueve el juego a otra carpeta, por ejemplo dentro de Documentos, "
-               "o añade una excepción en el antivirus.")
+               "o añade una excepción en el antivirus."))
 
 
 def copias_del_juego(tareas=None):
@@ -970,23 +964,21 @@ def problemas_para_instalar(nueva, programa=None, libre=None, tareas=None, servi
     controlados = {os.path.basename(f["exe"]) for f in servidores}
     problemas = []
     if (copias_del_juego() if copias is None else copias) > 1:
-        problemas.append("El juego está abierto dos veces. Windows no deja sustituir un programa en marcha: cierra la otra ventana de Puerto Bravo antes de actualizar.")
+        problemas.append(tr("El juego está abierto dos veces. Windows no deja sustituir un programa en marcha: cierra la otra ventana de Puerto Bravo antes de actualizar."))
     if not carpeta_escribible(programa):
         problemas.append(SIN_PERMISO)
     else:
         abiertos = programas_abiertos(programa, tareas, salvo=controlados)
         if abiertos:
-            lista = abiertos[0] if len(abiertos) == 1 else ", ".join(abiertos[:-1]) + " y " + abiertos[-1]
-            problemas.append(f"Está abierto {lista}. Windows no deja sustituir un programa en marcha: ciérralo antes de actualizar."
-                             if len(abiertos) == 1 else f"Están abiertos {lista}. Windows no deja sustituir un programa en marcha: ciérralos antes de actualizar.")
+            lista = abiertos[0] if len(abiertos) == 1 else ", ".join(abiertos[:-1]) + tr(" y ") + abiertos[-1]
+            problemas.append(tr('Está abierto {lista}. Windows no deja sustituir un programa en marcha: ciérralo antes de actualizar.').format(lista=(lista))
+                             if len(abiertos) == 1 else tr('Están abiertos {lista}. Windows no deja sustituir un programa en marcha: ciérralos antes de actualizar.').format(lista=(lista)))
     falta = _falta_sitio(espacio_para_instalar(nueva, programa), programa, libre)
     if falta:
         problemas.append(falta)
     mal = datos_en_zona_de_programa(servidores, nueva, programa)
     if mal:
-        problemas.append(f"La carpeta de datos del servidor en línea está dentro de la carpeta {mal}, que es del programa y la actualización sustituye: "
-                         "podría borrar lo que hay guardado. Cierra el servidor, mueve su carpeta de datos a otro sitio, por ejemplo dentro de la carpeta servidor, "
-                         "cambia la carpeta de datos en la configuración del servidor y vuelve a arrancarlo.")
+        problemas.append(tr('La carpeta de datos del servidor en línea está dentro de la carpeta {mal}, que es del programa y la actualización sustituye: podría borrar lo que hay guardado. Cierra el servidor, mueve su carpeta de datos a otro sitio, por ejemplo dentro de la carpeta servidor, cambia la carpeta de datos en la configuración del servidor y vuelve a arrancarlo.').format(mal=(mal)))
     return problemas
 
 
@@ -1009,7 +1001,7 @@ def datos_en_zona_de_programa(fichas, nueva, programa=None):
 
 # ------------------------------------- los servidores en línea abiertos: pararlos y volver a arrancarlos
 TIPO_DE = {"PuertoBravoServidor.exe": "consola", "PuertoBravoServidorPanel.exe": "panel"}
-NOMBRE_TIPO = {"consola": "el servidor en línea", "panel": "el panel del servidor en línea"}
+NOMBRE_TIPO = {"consola": tr("el servidor en línea"), "panel": tr("el panel del servidor en línea")}
 
 
 def carpeta_fichas(programa=None):
@@ -1033,7 +1025,7 @@ def proceso_vivo(pid, exe=""):
     """¿Sigue en marcha ese proceso, y es ese programa? Se pregunta a Windows por su número."""
     try:
         sin_ventana = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-        salida = subprocess.run([de_windows("tasklist.exe"), "/fi", f"PID eq {int(pid)}", "/fo", "csv", "/nh"], capture_output=True, timeout=10,
+        salida = subprocess.run([de_windows("tasklist.exe"), "/fi", 'PID eq {int}'.format(int=(int(pid))), "/fo", "csv", "/nh"], capture_output=True, timeout=10,
                                 creationflags=sin_ventana).stdout.decode("utf-8", "replace").lower()
     except (OSError, subprocess.SubprocessError, ValueError):
         return False
@@ -1089,10 +1081,10 @@ def texto_servidores(fichas):
     for f in fichas:
         t = NOMBRE_TIPO[f["tipo"]]
         if f["tipo"] == "panel" and not f["activo"]:
-            t += ", con el servidor parado"
+            t += tr(", con el servidor parado")
         if t not in partes:
             partes.append(t)
-    return partes[0] if len(partes) == 1 else ", ".join(partes[:-1]) + " y " + partes[-1] if partes else ""
+    return partes[0] if len(partes) == 1 else ", ".join(partes[:-1]) + tr(" y ") + partes[-1] if partes else ""
 
 
 def sin_servidor_en_marcha(fichas):
@@ -1117,8 +1109,8 @@ def pedir_parada_servidores(fichas, trabajo=None):
                 pass
         if not f.get("datos") or not os.path.isdir(f["datos"]):
             que = NOMBRE_TIPO[f["tipo"]]
-            raise ErrorActualizacion("No encuentro la carpeta de datos " + ("del" + que[2:] if que.startswith("el ") else "de " + que)
-                                     + " para pedirle que se cierre. Ciérralo tú y vuelve a intentarlo.")
+            raise ErrorActualizacion(tr("No encuentro la carpeta de datos ") + ("del" + que[2:] if que.startswith(tr("el ")) else tr("de ") + que)
+                                     + tr(" para pedirle que se cierre. Ciérralo tú y vuelve a intentarlo."))
     nota = os.path.join(trabajo, NOTA_SERVIDORES)
     with open(nota, "w", encoding="utf-8") as fo:
         json.dump({"version": 1, "momento": int(time.time()), "servidores": fichas}, fo, ensure_ascii=False, indent=1)
@@ -1133,7 +1125,7 @@ def pedir_parada_servidores(fichas, trabajo=None):
         for ruta in hechas:
             _quitar(ruta)
         _quitar(nota)
-        raise ErrorActualizacion("No se pudo dejar al servidor en línea la orden de cerrarse. Ciérralo tú y vuelve a intentarlo.") from e
+        raise ErrorActualizacion(tr("No se pudo dejar al servidor en línea la orden de cerrarse. Ciérralo tú y vuelve a intentarlo.")) from e
     return nota
 
 
@@ -1198,7 +1190,7 @@ def relanzar_servidores(nota, programa=None, lanzar=None, vivo=None, registro=No
             os.makedirs(os.path.dirname(registro), exist_ok=True)
             with open(registro, "a", encoding="utf-8", newline="\r\n") as f:
                 for tipo, bien, motivo in hecho:
-                    f.write(f"SERVIDOR {'relanzado' if bien else 'sin_relanzar'} tipo={tipo}" + (f" {'estado' if bien else 'motivo'}={motivo}" if motivo else "") + "\n")
+                    f.write(tr('SERVIDOR {v} tipo={tipo}').format(v=(tr('relanzado') if bien else tr('sin_relanzar')), tipo=(tipo)) + (f" {'estado' if bien else 'motivo'}={motivo}" if motivo else "") + "\n")
     except OSError:
         pass
     _quitar(nota)
@@ -1206,10 +1198,10 @@ def relanzar_servidores(nota, programa=None, lanzar=None, vivo=None, registro=No
 
 
 MOTIVO_SIN_RELANZAR = {
-    "servicio": "lo había arrancado un servicio o una tarea programada de Windows, y desde aquí no se puede arrancar igual: si no ha vuelto solo, arráncalo como lo tengas montado",
-    "sigue_abierto": "no llegó a cerrarse y sigue en marcha",
-    "no_esta": "no se encuentra su programa",
-    "ajeno": "no era un programa del servidor de esta carpeta",
+    "servicio": tr("lo había arrancado un servicio o una tarea programada de Windows, y desde aquí no se puede arrancar igual: si no ha vuelto solo, arráncalo como lo tengas montado"),
+    "sigue_abierto": tr("no llegó a cerrarse y sigue en marcha"),
+    "no_esta": tr("no se encuentra su programa"),
+    "ajeno": tr("no era un programa del servidor de esta carpeta"),
 }
 
 
@@ -1218,14 +1210,14 @@ def texto_relanzados(r):
     partes = []
     if r.get("relanzados") and r.get("parados", 0) >= len(r["relanzados"]):
         # Solo había paneles con el servidor parado: no hay jugadores esperando ni servidor que haya arrancado.
-        partes.append("El panel del servidor en línea que tenías abierto ha vuelto a abrirse, con el servidor parado, como estaba.")
+        partes.append(tr("El panel del servidor en línea que tenías abierto ha vuelto a abrirse, con el servidor parado, como estaba."))
     elif r.get("relanzados"):
         tipos = sorted(set(r["relanzados"]))
-        que = " y ".join(NOMBRE_TIPO.get(t, "el servidor") for t in tipos)
-        partes.append(f"{que[0].upper()}{que[1:]} que tenías {'abierto ha vuelto' if len(tipos) == 1 else 'abiertos han vuelto'} a arrancar solo: los jugadores que estaban esperando volverán a entrar.")
+        que = tr(" y ").join(NOMBRE_TIPO.get(t, tr("el servidor")) for t in tipos)
+        partes.append(tr('{upper}{v} que tenías {v2} a arrancar solo: los jugadores que estaban esperando volverán a entrar.').format(upper=(que[0].upper()), v=(que[1:]), v2=(tr('abierto ha vuelto') if len(tipos) == 1 else tr('abiertos han vuelto'))))
     for tipo, motivo in r.get("sin_relanzar") or []:
-        que = NOMBRE_TIPO.get(tipo, "el servidor en línea")
-        partes.append(f"{que[0].upper()}{que[1:]} no se ha vuelto a arrancar: " + MOTIVO_SIN_RELANZAR.get(motivo, "no se pudo abrir su programa: ábrelo tú") + ".")
+        que = NOMBRE_TIPO.get(tipo, tr("el servidor en línea"))
+        partes.append(tr('{upper}{v} no se ha vuelto a arrancar: ').format(upper=(que[0].upper()), v=(que[1:])) + MOTIVO_SIN_RELANZAR.get(motivo, tr("no se pudo abrir su programa: ábrelo tú")) + ".")
     return " ".join(partes)
 
 

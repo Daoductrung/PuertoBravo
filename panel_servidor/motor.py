@@ -7,16 +7,18 @@ propio servidor deja preparado cada segundo.
 Este módulo no usa wxPython: se puede probar sin ventanas. Quien lo usa decide cómo llevar los avisos a la interfaz
 (la ventana lo hace con ``wx.CallAfter``).
 """
+from juego.i18n import tr
 import asyncio
 import os
 import threading
 import time
 
 from servidor import copias, enmarcha, opciones
+from servidor.idioma import es           # lo que oyen los jugadores va en español: lo traduce el juego de cada uno
 from servidor.nucleo import ARCHIVO_ORDEN, Servidor
 
 PARADO, ARRANCANDO, EN_MARCHA, PARANDO = "parado", "arrancando", "en_marcha", "parando"
-TEXTO_ESTADO = {PARADO: "Parado", ARRANCANDO: "Arrancando", EN_MARCHA: "En marcha", PARANDO: "Parando"}
+TEXTO_ESTADO = {PARADO: tr("Parado"), ARRANCANDO: tr("Arrancando"), EN_MARCHA: tr("En marcha"), PARANDO: tr("Parando")}
 
 
 class Motor:
@@ -133,7 +135,7 @@ class Motor:
             srv.ruta_conf = self.ruta_conf if os.path.exists(self.ruta_conf) else None
             srv.log = self._linea
             for a in avisos:
-                self._linea("Configuración: " + a)
+                self._linea(tr("Configuración: ") + a)
             loop.run_until_complete(srv.iniciar())
         except Exception as e:
             if srv is not None:
@@ -142,12 +144,12 @@ class Motor:
                 except Exception:
                     pass
             if isinstance(e, OSError):
-                texto = ("No se ha podido abrir el puerto %s: %s. Puede que el servidor ya esté en marcha en otra ventana, "
-                         "o que otro programa esté usando ese puerto." % (cfg.get("puerto"), e))
+                texto = (tr("No se ha podido abrir el puerto %s: %s. Puede que el servidor ya esté en marcha en otra ventana, "
+                         "o que otro programa esté usando ese puerto.") % (cfg.get("puerto"), e))
             elif isinstance(e, RuntimeError):
                 texto = str(e)
             else:
-                texto = "El servidor no ha podido arrancar: %s: %s" % (type(e).__name__, e)
+                texto = tr("El servidor no ha podido arrancar: %s: %s") % (type(e).__name__, e)
             self.ultimo_error = texto
             self._linea(texto)
             loop.close()
@@ -156,9 +158,9 @@ class Motor:
             return
         self.srv, self.loop, self.cfg = srv, loop, cfg
         self.foto = srv.resumen()
-        self._linea("Datos del mundo: versión %s, huella %s. %d localidades." % (srv.mundo.get("version"), srv.mundo.get("huella"), len(srv.mundo["mapas"])))
+        self._linea(tr("Datos del mundo: versión %s, huella %s. %d localidades.") % (srv.mundo.get("version"), srv.mundo.get("huella"), len(srv.mundo["mapas"])))
         if srv.huella_cert:
-            self._linea("Huella del certificado: %s" % srv.huella_cert)
+            self._linea(tr("Huella del certificado: %s") % srv.huella_cert)
         self._poner_estado(EN_MARCHA)
 
         async def vigilar():
@@ -172,7 +174,7 @@ class Motor:
         try:
             loop.run_until_complete(vigilar())
         except Exception as e:
-            self._linea("El servidor se ha parado por un error: %s: %s" % (type(e).__name__, e))
+            self._linea(tr("El servidor se ha parado por un error: %s: %s") % (type(e).__name__, e))
             try:
                 loop.run_until_complete(srv.detener())
             except Exception:
@@ -190,11 +192,11 @@ class Motor:
             loop.close()
             self.causa_parada = getattr(srv, "causa_parada", None)
             self.srv, self.loop, self.foto = None, None, None
-            self._linea("Servidor parado. Todo guardado.")
+            self._linea(tr("Servidor parado. Todo guardado."))
             self._poner_estado(PARADO)
 
     # ------------------------------------------------------------------- parar
-    def parar(self, motivo="Quien administra el servidor lo ha parado.", causa="apagado"):
+    def parar(self, motivo=es("Quien administra el servidor lo ha parado."), causa="apagado"):
         """Para el servidor con orden: avisa a los jugadores y lo guarda todo. Vuelve enseguida. Con ``causa`` «reinicio»,
         los juegos esperan y vuelven a entrar solos cuando el servidor arranque otra vez."""
         with self._candado:
@@ -245,5 +247,5 @@ class Motor:
     def restaurar(self, ruta_zip, con_conf=False):
         """Restaura una copia. El servidor tiene que estar parado. Se llama desde un hilo de trabajo."""
         if self.estado != PARADO:
-            raise RuntimeError("Para restaurar una copia hay que parar antes el servidor.")
+            raise RuntimeError(tr("Para restaurar una copia hay que parar antes el servidor."))
         return copias.restaurar(ruta_zip, self.carpeta_datos(), conf=self.ruta_conf, con_conf=con_conf)

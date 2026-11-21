@@ -10,15 +10,17 @@ Todo va con azar: ni salen siempre los mismos, ni hacen dos veces lo mismo.
 import math
 import time
 
-NOMBRES = ["el Chato", "la Rubia", "Manolo el Largo", "la Toñi", "el Pecas", "Charo", "el Legionario", "la Moños", "Paquito", "el Gallego",
-           "la Chispa", "el Mudo", "Encarni", "el Niño", "la Gata", "Curro", "el Tieso", "la Seca", "Ramiro", "el Zurdo"]
+from .idioma import es        # los nombres y las frases van a los jugadores en español: los traduce su juego
+
+NOMBRES = [es("el Chato"), es("la Rubia"), es("Manolo el Largo"), es("la Toñi"), es("el Pecas"), es("Charo"), es("el Legionario"), es("la Moños"), es("Paquito"), es("el Gallego"),
+           es("la Chispa"), es("el Mudo"), es("Encarni"), es("el Niño"), es("la Gata"), es("Curro"), es("el Tieso"), es("la Seca"), es("Ramiro"), es("el Zurdo")]
 CLASES = ("paseante", "paseante", "ratero", "pistolero", "ladron", "atracador")
 FRASES = {
-    "paseante": ["Buenas.", "Vaya día.", "¿Tienes hora?", "Hoy el puerto huele a tormenta.", "Cuidado por ahí, que andan robando.", "Hasta luego."],
-    "ratero": ["¿Tienes fuego?", "Bonito reloj.", "No te había visto por aquí."],
-    "pistolero": ["Tú y yo tenemos algo pendiente.", "Hay quien paga bien por algunos."],
-    "ladron": ["Buen coche el de ahí.", "Yo no he visto nada."],
-    "atracador": ["Hoy va a ser un buen día.", "¿Ese negocio de quién es?"],
+    "paseante": [es("Buenas."), es("Vaya día."), es("¿Tienes hora?"), es("Hoy el puerto huele a tormenta."), es("Cuidado por ahí, que andan robando."), es("Hasta luego.")],
+    "ratero": [es("¿Tienes fuego?"), es("Bonito reloj."), es("No te había visto por aquí.")],
+    "pistolero": [es("Tú y yo tenemos algo pendiente."), es("Hay quien paga bien por algunos.")],
+    "ladron": [es("Buen coche el de ahí."), es("Yo no he visto nada.")],
+    "atracador": [es("Hoy va a ser un buen día."), es("¿Ese negocio de quién es?")],
 }
 ARMA = {"paseante": "punos", "ratero": "navaja", "pistolero": "pistola", "ladron": "bate", "atracador": "pistola"}
 

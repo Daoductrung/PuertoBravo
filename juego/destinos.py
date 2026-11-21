@@ -10,6 +10,7 @@
 
 El modelo de destinos del GPS (un destino y, debajo, el que espera) está en `Partida.fijar_gps`.
 """
+from .i18n import tr
 import math
 import time
 
@@ -26,9 +27,9 @@ AJ = Ajustes("persecuciones", {
     "seguir_aviso": 5, "seguir_lejos": 55, "ayuda_seguir_aviso": 3.5, "ayuda_seguir_lejos": 65, "ayuda_seguir_aguante": 5,
     "doble_o": 1.5,
 }, {
-    "frases_empieza": ["Es una persecución en vehículo: a pie no le alcanzas, y con un vehículo lento, tampoco. El GPS y la baliza le siguen a él. "
-                       "La O te dice dónde está y hacia dónde va, y la Q lo fija para oírlo. Cada poco te digo por dónde va."],
-    "frases_a_pie": ["Vas a pie: sube cuanto antes a un vehículo rápido, con F junto a uno, o pide el tuyo en el móvil, en Mis vehículos."],
+    "frases_empieza": [tr("Es una persecución en vehículo: a pie no le alcanzas, y con un vehículo lento, tampoco. El GPS y la baliza le siguen a él. "
+                       "La O te dice dónde está y hacia dónde va, y la Q lo fija para oírlo. Cada poco te digo por dónde va.")],
+    "frases_a_pie": [tr("Vas a pie: sube cuanto antes a un vehículo rápido, con F junto a uno, o pide el tuyo en el móvil, en Mis vehículos.")],
 }, cero=("ayuda_tiempo", "ayuda_seguir_aguante"))
 
 
@@ -51,9 +52,9 @@ class Destinos:
         if not self.j.veh:
             t += " " + AJ.frase("frases_a_pie")
         if self.ayuda_persecucion():
-            t += " Llevas puesta la ayuda en las persecuciones: te digo cada giro, y si te quedas atrás afloja antes."
+            t += tr(" Llevas puesta la ayuda en las persecuciones: te digo cada giro, y si te quedas atrás afloja antes.")
         else:
-            t += " Si se te resisten, en Opciones, Combate y dificultad, está la ayuda en las persecuciones."
+            t += tr(" Si se te resisten, en Opciones, Combate y dificultad, está la ayuda en las persecuciones.")
         self.decir(t)
 
     def _calle_de(self, x, y):
@@ -67,14 +68,14 @@ class Destinos:
     def pers_donde(self, vo):
         """Dónde está y hacia dónde va un vehículo: «a 80 metros, al norte, por Calle de la Sal, va hacia el este»."""
         x, y = self.pos()
-        t = f"a {int(vo.dist(x, y))} metros, {self.direccion_txt(vo.x, vo.y)}"
+        t = tr('a {int} metros, {direccion_txt}').format(int=(int(vo.dist(x, y))), direccion_txt=(self.direccion_txt(vo.x, vo.y)))
         calle = self._calle_de(vo.x, vo.y)
         if calle:
-            t += f", por {calle}"
+            t += tr(', por {calle}').format(calle=(calle))
         if abs(vo.vel) > 1.0:
-            t += f", va hacia el {M.cardinal(vo.rumbo)}"
+            t += tr(', va hacia el {cardinal}').format(cardinal=(M.cardinal(vo.rumbo)))
         elif getattr(vo, "ia", None):
-            t += ", parado"
+            t += tr(", parado")
         return t
 
     def pers_giros(self, ms, vo, dt):
@@ -89,26 +90,26 @@ class Destinos:
             ms["rumbo_obj"] = rumbo
             ms["t_giro"] = AJ("ayuda_giros_cada")
             calle = self._calle_de(vo.x, vo.y)
-            self.decir(f"Gira hacia el {rumbo}" + (f" por {calle}" if calle else "") + f". A {int(vo.dist(*self.pos()))} metros, {self.direccion_txt(vo.x, vo.y)}.")
+            self.decir(tr('Gira hacia el {rumbo}').format(rumbo=(rumbo)) + (tr(' por {calle}').format(calle=(calle)) if calle else "") + tr('. A {int} metros, {direccion_txt}.').format(int=(int(vo.dist(*self.pos()))), direccion_txt=(self.direccion_txt(vo.x, vo.y))))
             ms["t_canta"] = max(ms.get("t_canta", 0.0), self.pers("canta_cada") * 0.6)
 
     # ------------------------------------------------------------------ dónde está el objetivo
-    def _donde_lugar(self, q, pre="Destino"):
+    def _donde_lugar(self, q, pre=tr("Destino")):
         if q.mapa != self.mundo.id:
             con = self.conexion_hacia(q.mapa)
-            t = f"{pre}: {q.nombre}, en {self.mapas[q.mapa].nombre}."
+            t = tr('{pre}: {nombre}, en {nombre2}.').format(pre=(pre), nombre=(q.nombre), nombre2=(self.mapas[q.mapa].nombre))
             if con is not None:
-                t += f" Para ir: {self.situar(con.x, con.y, con.nombre)}."
+                t += tr(' Para ir: {situar}.').format(situar=(self.situar(con.x, con.y, con.nombre)))
                 return {"texto": t, "x": con.x, "y": con.y, "cosa": con}
             return {"texto": t, "x": None, "y": None, "cosa": None}
         calle = self._calle_de(q.x, q.y)
-        return {"texto": f"{pre}: {self.situar(q.x, q.y, q.nombre)}" + (f", en {calle}" if calle and math.hypot(q.x - self.pos()[0], q.y - self.pos()[1]) > 25 else "") + ".",
+        return {"texto": f"{pre}: {self.situar(q.x, q.y, q.nombre)}" + (tr(', en {calle}').format(calle=(calle)) if calle and math.hypot(q.x - self.pos()[0], q.y - self.pos()[1]) > 25 else "") + ".",
                 "x": q.x, "y": q.y, "cosa": q}
 
     def _donde_cosa(self, c, nombre=None, pre=""):
         calle = self._calle_de(c.x, c.y)
         lejos = math.hypot(c.x - self.pos()[0], c.y - self.pos()[1]) > 25
-        return {"texto": f"{pre}{self.situar(c.x, c.y, nombre or c.nombre)}" + (f", en {calle}" if calle and lejos else "") + ".", "x": c.x, "y": c.y, "cosa": c}
+        return {"texto": f"{pre}{self.situar(c.x, c.y, nombre or c.nombre)}" + (tr(', en {calle}').format(calle=(calle)) if calle and lejos else "") + ".", "x": c.x, "y": c.y, "cosa": c}
 
     def objetivo_donde(self):
         """Dónde está ahora mismo lo que pide la misión: {"texto", "x", "y", "cosa", "urgente"}, o None si no hay nada
@@ -131,18 +132,18 @@ class Destinos:
             o = ms["movil"]
             nombre = o["nombre"].capitalize()
             if not o.get("visto", True) and l is not None:
-                d = self._donde_lugar(l, f"{nombre} te espera en")
+                d = self._donde_lugar(l, tr('{nombre} te espera en').format(nombre=(nombre)))
             else:
-                t = f"{nombre} va a {int(math.hypot(o['x'] - x, o['y'] - y))} metros, {self.direccion_txt(o['x'], o['y'])}"
+                t = tr('{nombre} va a {int} metros, {direccion_txt}').format(nombre=(nombre), int=(int(math.hypot(o['x'] - x, o['y'] - y))), direccion_txt=(self.direccion_txt(o['x'], o['y'])))
                 calle = self._calle_de(o["x"], o["y"])
                 if calle:
-                    t += f", por {calle}"
+                    t += tr(', por {calle}').format(calle=(calle))
                 if o["espera"] > 0:
-                    t += ", todavía parado"
+                    t += tr(", todavía parado")
                 elif o["i"] < len(o["ruta"]):
                     tx, ty = o["ruta"][o["i"]]
                     if math.hypot(tx - o["x"], ty - o["y"]) > 1:
-                        t += f", camina hacia el {M.cardinal(M.rumbo_a(tx - o['x'], ty - o['y']))}"
+                        t += tr(', camina hacia el {cardinal}').format(cardinal=(M.cardinal(M.rumbo_a(tx - o['x'], ty - o['y']))))
                 d = {"texto": t + ".", "x": o["x"], "y": o["y"], "cosa": None}
                 urgente = True
         elif tipo == "escoltar" and ms.get("escolta"):
@@ -151,19 +152,19 @@ class Destinos:
             if e["contigo"]:
                 dest = self.lugares.get(p.get("destino", ""))
                 d = self._donde_lugar(dest) if dest is not None else {"texto": "", "x": None, "y": None, "cosa": None}
-                d["texto"] = (d["texto"] + f" {nombre} va contigo, a {int(math.hypot(e['x'] - x, e['y'] - y))} metros, {self.direccion_txt(e['x'], e['y'])}.").strip()
+                d["texto"] = (d["texto"] + tr(' {nombre} va contigo, a {int} metros, {direccion_txt}.').format(nombre=(nombre), int=(int(math.hypot(e['x'] - x, e['y'] - y))), direccion_txt=(self.direccion_txt(e['x'], e['y'])))).strip()
                 urgente = True
             elif l is not None:
-                d = self._donde_lugar(l, f"{nombre} te espera en")
+                d = self._donde_lugar(l, tr('{nombre} te espera en').format(nombre=(nombre)))
         elif tipo in ("robar", "entregar") and v is not None and not v.muerto and self.j.veh is not v:
-            d = self._donde_cosa(v, pre="El vehículo: ")
+            d = self._donde_cosa(v, pre=tr("El vehículo: "))
         elif tipo == "recoger" and ms.get("objeto") is not None and not ms["recogido"]:
-            d = self._donde_cosa(ms["objeto"], self.txt(p.get("objeto") or ms["objeto"].nombre), pre="Hay que recoger: ")
+            d = self._donde_cosa(ms["objeto"], self.txt(p.get("objeto") or ms["objeto"].nombre), pre=tr("Hay que recoger: "))
         elif tipo == "eliminar" and ms.get("generado"):
             vivos = [e for e in ms["enemigos"] if not e.muerto and not getattr(e, "rendido", False)]
             if vivos:
                 e = min(vivos, key=lambda e: e.dist(x, y))
-                d = self._donde_cosa(e, pre="El más cercano: ")
+                d = self._donde_cosa(e, pre=tr("El más cercano: "))
             elif l is not None:
                 d = self._donde_lugar(l)
         elif tipo == "sigilo" and l is not None:
@@ -171,12 +172,12 @@ class Destinos:
             gs = ms.get("guardias") or []
             if gs:
                 g = min(gs, key=lambda g: math.hypot(g["x"] - x, g["y"] - y))
-                d["texto"] += f" Hay {len(gs)} vigilantes; el más cercano, a {int(math.hypot(g['x'] - x, g['y'] - y))} metros, {self.direccion_txt(g['x'], g['y'])}."
+                d["texto"] += tr(' Hay {len} vigilantes; el más cercano, a {int} metros, {direccion_txt}.').format(len=(len(gs)), int=(int(math.hypot(g['x'] - x, g['y'] - y))), direccion_txt=(self.direccion_txt(g['x'], g['y'])))
         elif tipo == "ruta" or (tipo == "carrera" and (ms.get("carrera") or {}).get("fase") == "corre"):
             puntos = p.get("puntos", [])
             q = self.lugares.get(puntos[ms.get("ruta_i", 0)]) if ms.get("ruta_i", 0) < len(puntos) else None
             if q is not None:
-                d = self._donde_lugar(q, f"Punto {ms.get('ruta_i', 0) + 1} de {len(puntos)}")
+                d = self._donde_lugar(q, tr('Punto {v} de {len}').format(v=(ms.get('ruta_i', 0) + 1), len=(len(puntos))))
             urgente = urgente or tipo == "carrera"
         elif tipo in ("ir", "entregar", "eliminar", "vigilar", "carrera", "robar") and l is not None:
             if not (tipo == "vigilar" and (ms.get("vigia") or {}).get("dentro")):
@@ -192,9 +193,9 @@ class Destinos:
         if d is None or d.get("x") is None:
             return ""
         if g is None:
-            return " El GPS no lo tiene marcado: con Mayúsculas O vuelves a él."
+            return tr(" El GPS no lo tiene marcado: con Mayúsculas O vuelves a él.")
         if not g["auto"]:
-            return f" El GPS está en un desvío a {g['nombre']}: con Mayúsculas O vuelves al objetivo."
+            return tr(' El GPS está en un desvío a {nombre}: con Mayúsculas O vuelves al objetivo.').format(nombre=(g['nombre']))
         return ""
 
     def objetivo_posicion_txt(self):
@@ -215,10 +216,10 @@ class Destinos:
             return
         t = d["texto"] + self._nota_gps(d)
         if ms.get("limite") is not None:
-            t += f" Te quedan {int(ms['limite'])} segundos."
+            t += tr(' Te quedan {int} segundos.').format(int=(int(ms['limite'])))
         if "o_doble" not in ms["avisos"]:
             ms["avisos"].add("o_doble")
-            t += " Pulsa O dos veces seguidas para oír la explicación de la misión."
+            t += tr(" Pulsa O dos veces seguidas para oír la explicación de la misión.")
         self.decir(t, True)
 
     # ------------------------------------------------------------------ volver al objetivo
@@ -240,7 +241,7 @@ class Destinos:
             idx2 = next((k for k, e in enumerate(propia) if e[3] is cosa), None)
             if idx2 is None:
                 self.cfg["radar_filtro"] = "todo"                # con el filtro puesto no saldría: se quita, y se dice
-                self.decir("Radar: todo.")
+                self.decir(tr("Radar: todo."))
             else:
                 lista, idx = propia, idx2
         self.radar_lista, self.radar_idx = lista, idx
@@ -252,7 +253,7 @@ class Destinos:
         ms = self.mision
         if not ms and not self.trabajo:
             self.app.son("error")
-            self.decir("No tienes ninguna misión ni ningún trabajo en curso. " + self.objetivo_txt().replace("No tienes ninguna misión en curso. ", ""), True)
+            self.decir(tr("No tienes ninguna misión ni ningún trabajo en curso. ") + self.objetivo_txt().replace("No tienes ninguna misión en curso. ", ""), True)
             return False
         g = self.gps
         if g is not None and not g["auto"]:                      # estabas en un desvío, o con un destino tuyo: se aparta
@@ -272,12 +273,12 @@ class Destinos:
         d = self.objetivo_donde()
         self.app.son("notificacion")
         if d is None:
-            self.decir("Vuelves al objetivo. " + self.objetivo_txt() + ("" if self.gps else " Ahora mismo no hay ningún sitio que marcar en el GPS."), True)
+            self.decir(tr("Vuelves al objetivo. ") + self.objetivo_txt() + ("" if self.gps else tr(" Ahora mismo no hay ningún sitio que marcar en el GPS.")), True)
             if self.gps:
                 self.repetir_gps_suave()
             return bool(self.gps)
         en_radar = self._radar_enfocar(d.get("cosa"))
-        self.decir("Vuelves al objetivo. " + d["texto"] + (" Marcado en el GPS" + (" y elegido en el radar." if en_radar else ".") if self.gps else ""), True)
+        self.decir(tr("Vuelves al objetivo. ") + d["texto"] + (tr(" Marcado en el GPS") + (tr(" y elegido en el radar.") if en_radar else ".") if self.gps else ""), True)
         if self.gps:
             self.repetir_gps_suave()
         return True
@@ -296,20 +297,20 @@ class Destinos:
         if g is None:
             self.app.son("error")
             c = getattr(self, "gps_cancelado", None)
-            self.decir("No hay ningún destino marcado." + (f" Con Control G recuperas el último que quitaste: {c['nombre']}." if c else ""), True)
+            self.decir(tr("No hay ningún destino marcado.") + (tr(' Con Control G recuperas el último que quitaste: {nombre}.').format(nombre=(c['nombre'])) if c else ""), True)
             return None
         self._recordar_cancelado(g)
         if g.get("anterior") is not None:
             self.app.son("menu_atras")
-            self._volver_del_desvio(f"Dejas el desvío a {g['nombre']}.")
-            self.decir("Con Control G lo recuperas.")
+            self._volver_del_desvio(tr('Dejas el desvío a {nombre}.').format(nombre=(g['nombre'])))
+            self.decir(tr("Con Control G lo recuperas."))
             return "desvio"
         self.gps = None
         self.app.son("menu_atras")
-        t = f"GPS cancelado: ya no te guía a {g['nombre']}. Con Control G lo recuperas."
+        t = tr('GPS cancelado: ya no te guía a {nombre}. Con Control G lo recuperas.').format(nombre=(g['nombre']))
         if self.mision and g["auto"]:
             self.mision["gps_callado"] = True                    # lo has quitado tú: la misión no lo vuelve a poner sola
-            t = f"GPS cancelado: ya no te guía a {g['nombre']}. Con la G vuelves a marcar la misión."
+            t = tr('GPS cancelado: ya no te guía a {nombre}. Con la G vuelves a marcar la misión.').format(nombre=(g['nombre']))
         self.decir(t, True)
         return "destino"
 
@@ -319,14 +320,14 @@ class Destinos:
         c = getattr(self, "gps_cancelado", None)
         if not c:
             self.app.son("error")
-            self.decir("No has quitado ningún destino que se pueda recuperar.", True)
+            self.decir(tr("No has quitado ningún destino que se pueda recuperar."), True)
             return False
         cosa = c.get("cosa") if c.get("cosa") is not None else c.get("sigue")
         if isinstance(cosa, Vehiculo) and (cosa.muerto or cosa not in self.vehiculos or cosa is self.j.veh) or \
                 isinstance(cosa, Persona) and (cosa.muerto or cosa not in self.personas) or isinstance(cosa, Objeto) and cosa not in self.objetos:
             self.gps_cancelado = None
             self.app.son("error")
-            self.decir(f"{c['nombre']} ya no está: no se puede recuperar ese destino.", True)
+            self.decir(tr('{nombre} ya no está: no se puede recuperar ese destino.').format(nombre=(c['nombre'])), True)
             return False
         antes = self.gps
         if c.get("auto") and (self.mision or (self.trabajo and self.trabajo.get("lugar") is not None)):       # era lo de la misión o lo del trabajo: se vuelve a ello
@@ -335,24 +336,24 @@ class Destinos:
         if c.get("auto") and not self.trabajo:                   # era de una misión o de un trabajo que ya se acabó
             self.gps_cancelado = None
             self.app.son("error")
-            self.decir(f"{c['nombre']} era de una misión o de un trabajo que ya no tienes en curso.", True)
+            self.decir(tr('{nombre} era de una misión o de un trabajo que ya no tienes en curso.').format(nombre=(c['nombre'])), True)
             return False
         lugar = self.lug(c["lugar"]) if c.get("lugar") else None
         if lugar is not None:
             self.gps_a_lugar(lugar, auto=bool(c.get("auto")), callar=True, desvio=not c.get("auto"))
         elif c.get("mapa") != self.mundo.id:
             self.app.son("error")
-            self.decir(f"{c['nombre']} quedó en {self.mapas[c['mapa']].nombre if c.get('mapa') in self.mapas else 'otra localidad'}: márcalo de nuevo cuando vuelvas.", True)
+            self.decir(tr('{nombre} quedó en {v}: márcalo de nuevo cuando vuelvas.').format(nombre=(c['nombre']), v=(self.mapas[c['mapa']].nombre if c.get('mapa') in self.mapas else tr('otra localidad'))), True)
             return False
         else:
             self.fijar_gps(c["dest"][0], c["dest"][1], c["nombre"], sigue=c.get("sigue"), auto=bool(c.get("auto")), radio=c.get("radio"), callar=True, desvio=not c.get("auto"), cosa=c.get("cosa"))
         if self.gps is None or self.gps is antes:
             self.app.son("error")
-            self.decir(f"No se ha podido recuperar {c['nombre']}.", True)
+            self.decir(tr('No se ha podido recuperar {nombre}.').format(nombre=(c['nombre'])), True)
             return False
         self.gps_cancelado = None
         self.app.son("notificacion")
         base = self.gps.get("anterior")
-        self.decir(f"Recuperado: el GPS vuelve a guiarte a {c['nombre']}." + (f" Al acabar, vuelve a {base['nombre']}." if base is not None else ""), True)
+        self.decir(tr('Recuperado: el GPS vuelve a guiarte a {nombre}.').format(nombre=(c['nombre'])) + (tr(' Al acabar, vuelve a {nombre}.').format(nombre=(base['nombre'])) if base is not None else ""), True)
         self.repetir_gps_suave()
         return True

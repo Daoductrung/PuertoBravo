@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Puerto Bravo mod editor manual</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 54em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+a { color: #8fd0ff; }
+code { color: #9fe89f; }
+kbd { border: 1px solid #aaa; border-radius: 4px; padding: 0 .35em; background: #2a2a2a; }
+li { margin-bottom: .3em; }
+</style>
+</head>
+<body>
+<h1>Puerto Bravo mod editor manual</h1>
+<p>The mod editor is a separate program, with normal Windows windows and controls, designed to be used with a screen reader and a keyboard. With it you create everything a mod supports without writing a single line by hand. This manual is organized by headings.</p>
+
+<h2>1. Opening the editor</h2>
+<ul>
+<li>Run <strong>EditorMods.exe</strong>, which is next to <strong>PuertoBravo.exe</strong>.</li>
+</ul>
+<p>The editor saves mods in the <code>data\mods</code> folder, which is where the game reads them from. A mod is a single file, with the <code>.pbm</code> extension.</p>
+<p>The mods the editor saves are protected, with the <code>.pbm</code> extension: the file is encrypted and signed, and it cannot be read or edited with a text editor. The editor opens protected mods, including the ones that come with the game; when it saves, it always protects them.</p>
+<p>The editor appears in the game's language: the one you choose in Options, Languages, or, in automatic mode, the one of your Windows. The texts of your mod, on the other hand, appear in the game exactly as you write them, in whatever language they are.</p>
+<p>If someone gives you an unprotected mod, in a <code>.json</code> file, the game does not load it: open it here with <kbd>Control O</kbd> and save it with <kbd>Control S</kbd>. The editor checks it, turns it into a <code>.pbm</code>, ready to use, and keeps the original file with the ending <code>.json.original</code>.</p>
+
+<h2>2. The main window</h2>
+<p>It has two lists and a row of buttons. With <kbd>Tab</kbd> you move from one to the other.</p>
+<ul>
+<li>Sections: the types of content. As you move through it with the arrow keys, the second list changes.</li>
+<li>Items: what your mod has in the chosen section.</li>
+<li>Buttons: Add, Edit, Duplicate, Delete, Move up, Move down and Copy from the original game.</li>
+</ul>
+<p>Each list and each button has its access letter: press <kbd>Alt</kbd> and the letter your screen reader announces to jump to it.</p>
+<h3>Sections</h3>
+<ul>
+<li>Places: stores, homes, businesses, banks, job centers, academies, soup kitchens and all the other types, with their position, their sound and their options.</li>
+<li>Missions: with their starting place, their requirements, their reward and all their steps.</li>
+<li>Weapons, vehicles and races.</li>
+<li>Meals, items and fish.</li>
+<li>Characters to choose from at the start of the game.</li>
+<li>Clothing: the garments in the clothing stores, with their price and, if they have reinforcements, the armor they give.</li>
+<li>Accessories: glasses, chains, rings, watches and whatever you invent. Each one has its class; you can wear only one of each class.</li>
+<li>Gun shop protections: what is sold besides the vest, with the armor it leaves you at.</li>
+<li>Workdays: the jobs without a vehicle at the job center, with their pay and how much they wear you out.</li>
+<li>Gym fights: boxing, mixed martial arts and any you add. How many rounds, the names of the opponents, how much they can take and what you get paid. The It is a sports match checkbox comes checked: knocking down the opponents is not a crime and does not lower your standing. Uncheck it only if you want an illegal fight, in which each opponent who goes down counts as an assault if someone sees it.</li>
+<li>Home furniture: its name, its price and its texts.</li>
+<li>Repair shop upgrades: their name, their price, how many levels they have, what they improve and how much each level gives. You can change the game's seven or add others.</li>
+<li>People on the street: people's first names, surnames, trades and phrases, the nicknames of contract targets, dog names and other names the game picks at random.</li>
+<li>People's personalities: the ways of being of the people you talk to.</li>
+<li>Gangs: the gangs of the region and which enemies each one fights with.</li>
+<li>Enemy types: the catalog of enemies, with their name, their weapon, their health, their aim, their phrases and, if they have one, their vehicle.</li>
+<li>Police per wanted level: which type of officer comes out at each level.</li>
+<li>Businesses' cash: how much money there is in the till of each type of venue and who guards it.</li>
+<li>Home delivery, in two sections: the menu, with each dish and each drink, its price and how much hunger and thirst it takes away; and the times and phrases.</li>
+<li>Shopping and cooking, in five sections: Food shop products, Shop aisles, Types of food shop, Cooking recipes, and the numbers and phrases for shopping, the pantry and the kitchen.</li>
+<li>Business robberies and supplier raids: how many days a robbed venue remembers you, and everything about raids on suppliers and their consequences.</li>
+<li>Heists, in two sections: Roles in a heist, with each role, what it does, what it depends on and what share of the loot it takes; and the numbers and the radio phrases.</li>
+<li>Flying, in three sections: Flying: numbers and phrases; Aircraft: how each one flies; and Air map: where each town is.</li>
+<li>Negotiate with the gangs: what is paid to give back, buy or collect tribute, what a truce costs, and the phrases for each answer.</li>
+<li>Reconquest of neighborhoods: everything about the defeated gangs that try to win back the player's neighborhoods: pace, warnings, assaults, defense, loyalty and phrases.</li>
+<li>Contracts from the board: the kinds of job posted on the board in the taverns.</li>
+<li>People act and join your gang: when someone goes with you, hits you or reports you, the favors and the conditions for recruiting.</li>
+<li>The police officer trade and Police radio alerts: the ranks, the pay, the warnings and the alerts that dispatch sends out.</li>
+<li>Couple's plans and Living together as a couple, for adult content: the plans with their scenes, and the numbers and phrases for living together.</li>
+<li>Fares and prices: what services, tickets, admissions, rentals, fines and bribes cost, and what jobs and fixed prizes pay. For each one you can change the price and the name; the identifier is what the game uses to find it and must not be changed. Where the price comes from a calculation, for example the bribe for each wanted level, the fare is the base.</li>
+<li>The street: reactions, police and helicopter: what the game says when people run away, how often people talk as they pass, the ammunition enemies drop, how many patrols do the rounds, the ambulances, what surrendering costs and everything about the police helicopter.</li>
+<li>Neighborhood war on the street: how many gang members walk around their neighborhood, how many waves there are, what you win and the phrases. In the Pick a fight tab, the numbers and phrases of the fights the player picks with a gang without conquering anything.</li>
+<li>Missions adjust to your escort: how much a mission's opposition goes up for each person accompanying the player, at moderate and strong, with their caps, and the phrases used to warn about it.</li>
+<li>Chases and the objective key: every how many seconds the game says where the person fleeing is going and from what distance, at how many meters they ease off and by how much, the same numbers with the Chase assist option on, how long you can keep it up when following someone on foot, the timing of the objective double press and the phrases that explain the chase when it starts.</li>
+<li>My vehicles and driver: how many of the player's vehicles fit on the street, how long the gang's driver takes to arrive, which vehicles they come in and the phrases they say.</li>
+<li>Radio on foot and in venues: in which types of venue background music plays and at what volume, and the volume of the music player with headphones. Each place can also ask for the music or remove it on its own.</li>
+<li>Realism: the numbers for thirst, hygiene, breakdowns and traffic rules: how often you get a flat tire, how much a fine costs, how many points the license has.</li>
+<li>Fuel: the price per liter, how far a tank goes, when the reserve warning comes on, the fuel can, roadside assistance and the liters in the tank according to the engine.</li>
+<li>Chapters of the story.</li>
+<li>Maps: entire towns, with their neighborhoods, their streets and their islands.</li>
+<li>For adult content: people, activities, gifts and substances.</li>
+</ul>
+
+<h2>3. Keys</h2>
+<h3>Anywhere in the editor</h3>
+<ul>
+<li><kbd>Control H</kbd>: says the name and the explanation of the control you are on. Use it whenever you are not sure what a field is for.</li>
+<li><kbd>F1</kbd>: opens this manual.</li>
+<li><kbd>Alt</kbd>: goes to the menu bar.</li>
+</ul>
+<h3>File menu</h3>
+<ul>
+<li><kbd>Control N</kbd>: new mod.</li>
+<li><kbd>Control O</kbd>: open a mod from the mods folder.</li>
+<li><kbd>Control S</kbd>: save.</li>
+<li><kbd>Control Shift S</kbd>: save as.</li>
+<li><kbd>Control Q</kbd>: exit. If there are unsaved changes, it asks first.</li>
+</ul>
+<h3>Mod menu</h3>
+<ul>
+<li><kbd>Control D</kbd>: mod details: name, author, version and description.</li>
+<li><kbd>F5</kbd>: check the mod.</li>
+<li><kbd>Control M</kbd>: activate or deactivate mods, to choose which ones the game loads.</li>
+<li><kbd>Control B</kbd>: open the mods folder in File Explorer.</li>
+<li><kbd>F9</kbd>: save, check and open the game to test the mod.</li>
+<li><kbd>Control G</kbd>: write the mod's voice script, to record the lines of the missions.</li>
+<li><kbd>Control Shift V</kbd>: open the voices folder.</li>
+</ul>
+<h3>In the item lists</h3>
+<ul>
+<li><kbd>Arrow keys</kbd>: move through the list.</li>
+<li><kbd>Enter</kbd>: edit the chosen item.</li>
+<li><kbd>Delete</kbd>: delete it. It asks for confirmation.</li>
+</ul>
+<h3>In the forms</h3>
+<ul>
+<li><kbd>Tab</kbd> and <kbd>Shift Tab</kbd>: next and previous field.</li>
+<li><kbd>Alt</kbd> plus the field's letter: jump to that field.</li>
+<li><kbd>Control Tab</kbd>: in forms with tabs, go to the next tab.</li>
+<li><kbd>Enter</kbd>: accept. <kbd>Escape</kbd>: cancel without saving the changes to the form.</li>
+</ul>
+
+<h2>4. Creating an item</h2>
+<ol>
+<li>Choose the section.</li>
+<li>Press Add. A form opens with the fields for that type of content.</li>
+<li>Fill in the fields. The required ones say so in their name. <kbd>Control H</kbd> explains each one.</li>
+<li>Accept. If something required is missing, the editor takes you to the field and tells you what is missing.</li>
+</ol>
+<p>Long forms are split into tabs. Only the fields that make sense appear: for example, when you choose the place type "academy", the field for the courses it teaches appears.</p>
+<h3>Fields that are lists</h3>
+<p>Some fields contain a list of their own: the steps of a mission, the lines of a dialogue, the enemies of a step or the neighborhoods of a map. They are edited with a button that opens another window with its list and its Add, Edit, Duplicate, Delete, Move up and Move down buttons. The order matters: the steps of a mission are played from top to bottom.</p>
+<h3>Fields that choose something from the game</h3>
+<p>Wherever you have to give a place, a weapon, a vehicle, a sound or a mission, the editor offers a drop-down list with everything that exists: what is in the game, what is in the other mods and what is in your own mod. You do not have to remember identifiers.</p>
+<h3>Copy from the original game</h3>
+<p>The Copy from the original game button brings a copy of an original item into your mod so you can modify it. If you leave it the same identifier, it replaces the original; if you change it, it is added as a new one. It is the quickest way to learn: copy a mission you like and see how it is made.</p>
+
+<h3>Creating your own vehicle</h3>
+<p>A new vehicle is just one more item: you do not need to program anything. In the Vehicles section, press Add, or bring in a similar one with Copy from the original game and change its identifier. Fill in the name, the top speed, the acceleration, the braking and the toughness; choose the engine sound and its pitch, which sounds higher with a bigger number; and, if you want, the horn, the siren, the liters in the tank and the job that can be done with it. Check whether it is a boat or whether it flies. To make it appear in the game: add it to the vehicles of a neighborhood so that it drives around and parks there, give it a price so that dealerships or boat dealers sell it, or use it in a mission step.</p>
+<h3>Learning from the example mods</h3>
+<p>In the mods folder there are eight complete mods: Bahía del Ocaso, which is a whole city with a long story, Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos, Neon Nights, Trades and Errands, and Engine and Asphalt. Open them with <kbd>Control O</kbd>: <code>costa_dorada</code> has an example of everything that can be created, including an entire map and missions with all nine step types.</p>
+
+<h2>5. Missions</h2>
+<p>A mission is a list of steps. Each step has a type:</p>
+<ul>
+<li>Dialogue: lines that each character says.</li>
+<li>Go: reach a place, on foot or in a vehicle, with or without a time limit.</li>
+<li>Give: the game gives you a weapon, money or an item.</li>
+<li>Steal: get hold of a specific vehicle.</li>
+<li>Deliver: take the vehicle to a place, with a maximum damage allowed.</li>
+<li>Eliminate: take out some enemies.</li>
+<li>Pick up: pick up one or more items.</li>
+<li>Police: gives you a wanted level, or asks you to lose it.</li>
+<li>Chase: catch a fleeing vehicle.</li>
+</ul>
+<p>In the texts you can write Dani: the game replaces it with the name of the character the player has chosen.</p>
+<h3>Missions with a vehicle: whether they require their own</h3>
+<p>A mission with a step to steal a vehicle requires, by default, that vehicle: the player has to get into it and deliver it. If what matters in your mission is carrying something and it does not matter in what, check the Can be done with the player's vehicle checkbox in the mission. Then the player can drive their own vehicle to where the mission's vehicle is, stop next to it and do the mission with their own; on delivery, they keep it. Their vehicle has to be of the same class as the mission's: if the mission's vehicle flies, theirs must too. Do not check it when the vehicle is the job itself, as in a theft. The game tells the player, in the mission summary and before they accept it, whether they are given a vehicle, whether they have to take a specific one or whether their own will do: you do not need to write it yourself.</p>
+<h3>My vehicles and driver</h3>
+<p>In the My vehicles and driver section there is a single, general item. In it you decide how many of the player's vehicles fit on the street before the oldest one goes to a garage by itself, between how many seconds the gang's driver takes to arrive, at what wanted level they stop coming, which gang vehicles they can turn up in and the phrases they say at each moment: when setting off, on arrival, when they have no destination, when one is set for them, on reaching the destination, when you get out and when you dismiss them. If you leave a list of phrases empty, the game's phrases are used. In the same section there is the list Suggested names for vehicles: these are the ones the game offers, a few at random each time, when the player names a vehicle and does not want to type a name, with Tab or with a gamepad button. What it costs to call the driver is in Fares and prices, under Your gang's driver.</p>
+<h3>The street: reactions, police and helicopter</h3>
+<p>In The street section there is a single, general item, split across six tabs. These are the numbers and phrases for what happens on the street without the player looking for it. Whether each thing is on or off is decided by each player in their options; here you decide what it is like when it is on.</p>
+<ul>
+<li>General: every how many seconds the game can say that someone is running away, how many of those running away shout, and the phrases. In the phrases, where you write quien in curly braces it will say "A man", "A woman" or the person's name if the player already knows them; and where you write n in curly braces, how many people there are.</li>
+<li>People who talk: how many pedestrians walk in pairs, every how many seconds a conversation is heard with each player setting, how the phrase is introduced and what topics they talk about. The phrases themselves are those of the game's conversation base.</li>
+<li>Loot and patrols: how many fallen enemies drop ammunition and how much, how many drop their weapon with the difficulty option, how many patrols do the rounds by day and by night, and how often a patrol comes out when the player is attacked. With zero patrols there are none.</li>
+<li>Ambulances and surrender: how often an ambulance comes, how long it takes and how long it stays; and what surrendering costs: the fine per level, the percentage of money, the hours in a cell and from what level all weapons are lost.</li>
+<li>Helicopter: at what wanted level it comes out, how long it takes, how much it can take, at what height and at what distance it circles, what minimum damage a weapon needs to do anything to it and what shooting it down costs.</li>
+<li>Lose the helicopter: how many seconds you have to stay out of its sight, how long it searches, how long it takes to recognize the player and to come back, what it says over the loudspeaker and which types of place have no roof.</li>
+</ul>
+<p>A tip: if you raise the helicopter's radius a lot, check that one of your heavy weapons can reach it, or it will not be possible to shoot it down.</p>
+<h3>Neighborhood war on the street</h3>
+<p>This is also a single, general item, and it only counts for players who have that mode turned on in their options. You decide how many pedestrians in a gang's neighborhood belong to the gang, with how many casualties it declares war, how many waves have to be beaten to conquer and to defend, how many enemies the first one brings, the breather between waves, how long you can be out of the neighborhood, the prizes and the phrases. In the phrases, banda in curly braces is the name of the gang and barrio in curly braces, the name of the neighborhood.</p>
+<p>Who fights in each wave comes from the Gangs section: the gang's enemy types, and their reinforcements with a vehicle in the last wave. The ones walking the street are of the type the gang has set in the Enemy type of their people walking the street field; if it has none, of the first of its types. And which gang rules a neighborhood, if you want to set it yourself, is stated in the neighborhood itself, in the Gang that rules the neighborhood field; neighborhoods that have none are given one by the mode, always the same one in each game.</p>
+<h3>Stories that cross over</h3>
+<p>A decision opens a branch: with Only appears if the decision was made, a mission or a step only applies to players who chose a particular option. For a branch to remember what was decided in another, or to bring several together, there are three more fields, in missions and in steps:</p>
+<ul>
+<li>Only appears if these decisions are combined: several decisions at once, each one as its name, a colon and the option number, separated by commas. For example, concejal:1, trono:3. On its own, all of them are needed.</li>
+<li>How many of them are needed at minimum, and how many at most: for counting. With a list of the honest options, a minimum of three is the ending for someone who did everything right, a maximum of zero the ending for someone who did nothing right, and from one to two, the one in between.</li>
+<li>In missions, And at least one from each group: for a mission that comes after a fork. You write the missions of each branch separated by spaces, and the groups by semicolons: fd2 fd3 fd4; vd2 vd3. It appears when one from each group has been completed.</li>
+</ul>
+<p>A dialogue step with one of these conditions, placed at the end of a mission, is the simplest way for a character to comment on what the player did in another story. If that decision has not been made yet, the step is skipped.</p>
+<p>The player can be a man or a woman. When a phrase changes depending on who it is said to, write both forms in square brackets, first the masculine and then the feminine, separated by a vertical bar. The game keeps only the one that applies. The examples are in Spanish, where words change with gender:</p>
+<ul>
+<li>Bienvenid[o|a] al pueblo: bienvenido or bienvenida.</li>
+<li>Tú eres [el nuevo|la nueva]: it also works for several words.</li>
+<li>Buen[|a] vecin[o|a]: one of the two forms can be empty.</li>
+</ul>
+<p>It works in any text: dialogues, step texts, decision options, endings and descriptions. If you do not use square brackets, the phrase is said as it is to everyone, so the easiest thing is to write phrases that work for anyone and use the brackets only where there is no other way.</p>
+<p>In the characters to choose from there is a field, They talk to them. If you leave it without a value, the player decides at the start whether they are spoken to in the masculine or the feminine. Set it only when your character has to be a he or a she.</p>
+
+<h3>Steps for playing by ear</h3>
+<p>Besides the usual nine step types, there are six designed for the ear:</p>
+<ul>
+<li>Follow someone on foot without being noticed. Place holds the starting point, Destination place where the person is going, and Who they are, what the game calls them: the accountant, your cousin.</li>
+<li>Escort someone to a place. Place holds where they are picked up and Destination place where they have to be taken.</li>
+<li>Reach a watched point without being heard. You choose the place, how many guards walk around it and, if you want, the name of the item obtained on arrival.</li>
+<li>Pass through several places, in order. You mark the places; the time limit, if you set one, applies to the whole route.</li>
+<li>Watch a place for a while without being seen. You choose the place, how many seconds you have to watch, how many meters away you have to stay and, if you want, what the player discovers at the end.</li>
+<li>Vehicle race against rivals. Place holds the start; Places you must pass through holds the route, whose last place is the finish. You choose how many rivals race, from one to four, and their speed in meters per second: ten is easy and fifteen, hard. All the places have to be in the same town.</li>
+</ul>
+<p>In the Bahía del Ocaso mod, missions ocs1 to ocs6 are an example of each one.</p>
+<h3>Tutorials and practice dummies</h3>
+<p>A mission can be marked as a tutorial: while it lasts, the police do not respond, whatever the player does. And in a group of enemies, the It doesn't attack checkbox turns them into practice dummies: they can be locked on to and knocked down, but they do not move or do any damage. With both things you can make a combat tutorial that cannot be failed.</p>
+<p>For a tutorial to check what the player does, and not be completed just by reaching a place, there is the Tutorial practice step type. It is met when the player actually does one of these things: cast off, steer for a number of meters and degrees of turn that you set, dock at a pier, start working with a work vehicle, or complete a service in that job. And a step to go to a place has the Besides arriving, also requires field: with it, the step is not met on arrival if the player has not used the radar first. During the cast off, steering and docking practices, the piers lend a free motorboat; and during the work practices the work key can be used even if a mission is in progress.</p>
+<p>The It is a briefing checkbox turns a mission into something that is not played: it appears on the phone with the word Briefing in front and, when chosen, the lines of its dialogue steps are read one after another, with their voices if it has any. It is used to explain something that cannot be checked, like playing with friends.</p>
+<p>And in a group of enemies, the You don't have to kill them checkbox makes that enemy surrender when they have less than half their health left: it counts as resolved, and if the player kills them, the mission fails. This is what the contracts to teach someone a lesson use.</p>
+<h3>People on the street</h3>
+<p>The People on the street section has a single element, with several lists spread across three tabs. In almost all of them you write one name or one phrase per line:</p>
+<p>The Ready-made phrases group holds the ones the game offers to players who don't want to type, or who play with a controller, when sending a message to other players: chat phrases, phrases for speaking in character, roleplay actions, which are written in lowercase and without the name in front because the game adds it, and phrases for speaking out of character. The player goes through them with Tab or with a controller button.</p>
+<ul>
+<li>Men's names, women's names and last names: those of the people you talk to on the street.</li>
+<li>Nicknames of the contract targets, with their article: el Chato, la Culebra.</li>
+<li>Dog names: the ones the animal shelter offers.</li>
+<li>Trades: each one with its feminine form, if it changes, the ages between which people have it and how common it is. That way nobody is studying at sixty or retiring at twenty.</li>
+<li>Random phrases: what someone says when you press Enter next to them.</li>
+<li>Names for the player's gang, names of the rivals in mission races and names of the characters on an online server.</li>
+<li>Characters on a server: what the characters run by an online server say from time to time, with a list for each class: strollers, pickpockets, gunmen, car thieves and robbers. If you leave a list empty, the server uses the phrases it comes with. They apply to the server that someone joins with this data.</li>
+</ul>
+<p>What you write is added to what the game already has: if you put three new names, people will be called what they were called before and, in addition, those three names. If you want only yours to exist, for example for a mod set in another country, check the box My lists replace the game's lists: then each list you fill in takes the place of the game's, and the ones you leave empty stay as the game's. With the Copy from the original game button you bring in the complete lists, to look at them or to trim them.</p>
+<p>The People's personalities section has the game's five personality types: friendly, talkative, curt, shy and cocky. For each one you can change how they talk to you and how much trust they gain or lose with a greeting, a compliment, a joke or an insult, and their courage, which decides whether they run away or stand up to you. You can add new personalities; since the game only has written phrases for those five, each new personality says which of them it borrows its phrases from.</p>
+<h3>Enemy types</h3>
+<p>An enemy type is a profile you write once and use in many places. It states the name, the weapon, or several weapons so that each enemy comes out with a random one, the health, the aim, the voice, the phrases they shout when they see the player, and whether they are on foot or in a vehicle. It's used by:</p>
+<ul>
+<li>The eliminate steps of missions: in each group of enemies you choose the type and how many there are. The group's other fields, which are the name, the weapon, the health, the aim and the vehicle, are there to change something about that type only in that group. The usual way still works: a group without a type, with its name and its weapon.</li>
+<li>The gangs: each gang states which types it fights with when one of its neighborhoods is being conquered, which is the type of its reinforcements and which is the type of its members who walk the street.</li>
+<li>The police: the Police per wanted level section states which types of officer appear at each level.</li>
+<li>The businesses' cash: the type of whoever guards it.</li>
+</ul>
+<p>If a type is in a vehicle, its enemies arrive in it: they appear about two hundred meters away, come down the street toward the player, stop nearby and get out. The How many fit in the vehicle field splits a large group into several vehicles. At sea, and when playing on a server, they are on foot.</p>
+<p>If you give a type the identifier of one from the game, you change it throughout the game. That's how the standard enemies are changed: the identifiers agente, agente_subfusil, agente_escopeta and asalto are the police ones; guardaespaldas and objetivo_contrato, the contract ones; vigilante and vigilante_armado, the bank ones; pandillero, pandillero_duro and pandillero_motorizado, the gang ones. With the Copy from the original game button you see them all.</p>
+<p>In the phrases, what changes depending on whether the protagonist is male or female is written in square brackets, as in the rest of the game: Get [him|her]!</p>
+<h3>The police at each wanted level</h3>
+<p>In the Police per wanted level section there are five elements, one per level, with the identifiers nivel_1 to nivel_5. Each one marks the types of officer that can appear: each patrol that comes after the player brings officers of one of those types, chosen at random. The type decides the weapon, the health, the patrol vehicle and how many officers get out of it. The Alert field is a phrase spoken when that level is reached; the game uses it at level 5 to announce its assault unit. For tougher police, create new officer types and mark them at the high levels.</p>
+<h3>The businesses' cash</h3>
+<p>Each element of the Businesses' cash section applies to one type of place: stores, banks, repair shops, gyms, gun shops and the rest. It states how much money is in the till, between a minimum and a maximum, how many people guard it, what enemy type they are and what wanted level you get for robbing it. Each day the game picks a different amount for each place. It's used by robberies of any place, by bank robberies and by supplier raids.</p>
+<h3>Business robberies and supplier raids</h3>
+<p>Any place whose type has a till in the Businesses' cash section can be robbed from its menu: if you give a till to a type of place that didn't have one, that type becomes robbable; if you remove it, it no longer can be. With a guard, you have to take them out first. The Business robberies and supplier raids section, which has a single element, covers the rest: how many days the place remembers you, how many out of a hundred call the police when they see you come back instead of shutting the door on you, which types of place don't remember you, what the person serving in each one is called, and the phrases. Its other tabs hold the supplier raid: the reinforcements, the merchandise the player takes and the three consequences, each with its weight; with a weight of zero, that consequence never comes up.</p>
+<h3>Prepared heists and roles in a heist</h3>
+<p>The Roles in a heist section has one element per role. Each one states its name, what it does, what determines how well it does it, which can be marksmanship, driving, nerve or loyalty, what share of the loot it takes, and the explanation read in the game. What it does is chosen from a closed list of five things: wait outside with the vehicle running, hold off the police, keep the people in check, open the safe, or shoot from the vehicle. You can change the game's roles, using the same identifier, remove some or add others with another name and another share. If your mod includes this section, the roles are its own and only its own.</p>
+<p>The Prepared heists: numbers and phrases section, which has a single element, covers the rest, spread across tabs: how good newly recruited people are and how much they learn; how long the safe takes depending on the type of place; how long the lookout holds off the police, the driver's head start and the shooter's aim; the probability of each thing that can go wrong; what happens to those arrested; the cap on the split; and all the phrases, those of the five phases and those each one says over the radio. A probability of zero turns that part off.</p>
+<p>In addition, two new fields work in the missions of any mod. In a Pick up step, Seconds it takes to open or be taken: with more than zero, the item isn't taken instantly; the player presses Enter, hears it progress and has to stay next to it. In a Police step, Seconds it takes the police to arrive: the player has that much time to get away before they start looking for them.</p>
+<h3>Flying: numbers and phrases, Aircraft and Air map</h3>
+<p>The Aircraft: how each one flies section has one element for each vehicle that flies: its cruising speed and altitude, its ceiling, its range with a full tank, how much it climbs per second and whether it needs a runway to land. With the identifier of an aircraft from the game you change how that one flies; for a flying vehicle of your own that isn't on the list, the game works out something reasonable from its speed.</p>
+<p>The Air map: where each town is section says where each one lies in the region, in kilometers east and north of Puerto Bravo. The distances and headings of the flights come from there. If your mod adds a town with a heliport or an airport and you don't put it here, the game places it itself by looking at how it's reached: an island, where its pier is out at sea; a town with a road, a few kilometers from its neighbor, on the side where that road leaves. If you want it in a specific spot, put it here.</p>
+<p>The Flying: numbers and phrases section, which has a single element, carries the rest, by tabs: altitudes and emergency landing; fuel; the flight, with how much it is sped up and the wind; the approach; events and their weights, where a weight of zero removes that event; storms and the obstacles of low flying; radar and hijacking; hangars and commercial flights; and all the phrases, the control tower's and the rest. Places of the heliport or airport type have a new field, Hangar space price. The prices of fuel, hangar rental and transfers are in the Fares and prices section, and the pilot's license is in the qualifications one.</p>
+<h3>Home delivery</h3>
+<p>The Home delivery: the menu section has one element per dish or drink: its name, its price, the hunger and thirst it takes away, from zero to one hundred, and the health it gives. With an identifier from the game you change that dish; with a new one, you add another to the menu. The Home delivery: times and phrases section has a single element: how long the order takes, between a minimum and a maximum in game minutes, how much longer if it's raining, how many things fit, how long the delivery person waits if the player isn't there, and the phrases, with the names of the places that deliver. The delivery charge is in Fares and prices.</p>
+<h3>Shopping and cooking: products, aisles, stores and recipes</h3>
+<p>Five sections that go together. With them a mod can add products and recipes, open a new aisle or invent a new kind of store.</p>
+<ul>
+<li>Food shop products: one element per product, with its name, its price, the aisle it's in, whether at home it's kept in the fridge or the pantry, and how many days it lasts; empty or zero, it doesn't expire. If it can be eaten without cooking, fill in, in the If eaten without cooking tab, the hunger and thirst it takes away, the health and mood it gives, and mark whether it's a drink. If you leave it all empty, it's just an ingredient.</li>
+<li>Shop aisles: its name, with the article in front and in lowercase, as the game says it when you arrive, and its description.</li>
+<li>Types of food shop: which aisles each kind of store has and how expensive it is, as a percentage. The game decides what kind each store is like this: first it looks at the place's own What kind of food shop it is field; if that's empty, the type's list of stores; then, the words in the name, and the first type on the list that fits wins; and finally the type marked as valid for all the rest. A type without aisles is a store that doesn't sell food to take home.</li>
+<li>Cooking recipes: its name, its ingredients, which are chosen from the list of products and of which one unit of each is used, the game minutes it takes, the portions it makes, how many days they last in the fridge and how it's made: no heat, in the frying pan or in the pot, which decides what you hear and whether it can burn. In the Each portion tab, the hunger and thirst it takes away, and the health and mood it gives. Make sure it's clearly more filling than packaged food.</li>
+<li>Shopping, pantry and kitchen, numbers and phrases: a single element. What fits in the pantry, in the fridge and on top of it; how many days in advance you are warned that something is about to expire; how many products are missing each day and the discount on the special offer; how easy it is to be seen leaving without paying and what happens then; how often a dish burns or comes out excellent, how much what it provides changes, what each practice dish gives and how much practice and an equipped kitchen help; and the phrases of the shopkeeper and of the kitchen.</li>
+</ul>
+<p>A new product appears in every store that has its aisle. A new recipe appears in the recipe book of every kitchen.</p>
+<h3>Reconquest of neighborhoods</h3>
+<p>The Reconquest of neighborhoods section has all the numbers and phrases for what happens when the player already holds a whole city, or many neighborhoods, and the defeated gangs try to win them back. Only the first element is used; leave it with the identifier general. It's spread across tabs:</p>
+<ul>
+<li>The first: the days of calm, with how many neighborhoods the mild version starts, and the pace of each phase.</li>
+<li>Gangs: the strength they start with, how much they grow each day and at each intensity, the strength at which they decide to attack, and alliances.</li>
+<li>Objective: how much each reason weighs when choosing a neighborhood: that it used to be theirs, that it's poorly defended, that it's neglected or that it's the most profitable, and how much randomness there is.</li>
+<li>Assault: the days of preparation, the hours at which it starts, the deadline to respond and the rest period at each intensity, and the hours that are always left when you wake up.</li>
+<li>In person and Send people: the waves, and the strength-against-defense calculation when the player doesn't go.</li>
+<li>Defense and Loyalty: guards, reinforcements and informants with their prices, and how a neighborhood's loyalty rises and falls.</li>
+<li>Consequences, and Heist and outsiders: street reputation, morale, when a gang is dismantled, the hit on hideouts and the names of the outsider gangs.</li>
+<li>Four phrase tabs: the initial warning, the threats, the results, and loyalty and truce. Each phrase says in its help which placeholders it accepts, such as {banda} or {barrio}.</li>
+</ul>
+<p>The truce numbers, since it's negotiated like the other deals, are in the Negotiate with the gangs section, Truce tab.</p>
+<h3>Life, reputation and consequences</h3>
+<p>Six sections hold everything about the honest life, the double life and their consequences.</p>
+<ul>
+<li>Life, reputation and consequences: numbers and phrases. A single element; leave it with the identifier general. It's spread across tabs: Shops, with discounts, surcharges and credit; Witnesses and police; The street; Criminal record, with the days each severity lasts and what community service and the lawyer take off; Career, with the days of each period, the evaluation grades, the warnings and the promotions; Company; Inspections and front; Taxes and bills; Bank; Double life; Extortion and good deeds; Partner; and six phrase tabs. Each phrase says in its help which placeholders it accepts, such as {jefe}, {euros} or {negocio}. The easy and demanding levels are derived from the normal one with the two percentages on the first tab.</li>
+<li>Qualifications. Each qualification has a name, how many sessions it takes, what each one costs and how long it lasts, the minimum standing to enroll, the qualification you need to have first, if any, and a text saying what it unlocks.</li>
+<li>Permanent jobs and their positions. Each job has its company, whether it's a position of trust, which jobs count as a shift and its positions, from the first to the highest. In Jobs that count as a shift you write one per line: the word jornada, a colon and the identifier of a day job from the Workdays section, or the word oficio, a colon and a trade with a vehicle, such as taxi or ambulancia. Each position has a name, pay per period, shifts it requires, the qualification and standing it demands, and whether it brings decisions of responsibility.</li>
+<li>Business upgrades. Each one takes the business to a level, from two upward, and states what it costs and what it raises, both as a percentage of the price and of what the business brings in, and the qualification and standing it requires. The game accepts as many levels as you put in.</li>
+<li>Decisions of the positions with responsibility. A situation and from two to four options; each one adds to or subtracts from the quality of the shift, which counts in the evaluation.</li>
+<li>Street situations: help or take advantage. A situation and up to four options. Each option can require an item, money or hours, and has what happens if it goes well and, if you set a probability of it going wrong, what happens then: standing, street reputation, money, mood and health, and what is told. Go on your way is always added by the game.</li>
+</ul>
+<p>Missions have new fields for stories like the one about the right path: It's part of the right path, which makes the mission give standing instead of street reputation and makes it not start on its own when you reach its place, but appear as one more option in that place's menu; What it asks of the player's life, which makes it wait until the player has a contract, some shifts worked, qualifications, standing, businesses or a clean record; and Epilogues, so that the last mission closes the story with one ending or another depending on what was decided. In a decision's options there is also Standing it gives or takes away.</p>
+<h3>Negotiating with the gangs</h3>
+<p>A single element with the figures for the three deals: what they pay for giving a neighborhood back to them, what they ask for selling one, and the daily tribute, which the game adjusts according to the player's strength and their relationship with each gang. Also the days a tribute lasts, the days you have to wait to negotiate the same thing again, what you gain by haggling, and the phrases for each answer, in three tabs. The gangs are those of the Gangs section.</p>
+<h3>Contracts from the board</h3>
+<p>Each element is a kind of job from the taverns. The main thing is the What the job is like field, which has eight values: eliminate the target and their bodyguards; the same with part of the escort arriving in a vehicle; a target who flees in a vehicle; one holed up in a place; follow their runner to the hideout; teach them a lesson without killing them; recover an item; or protect someone and take them somewhere safe. When you choose one, its fields appear: the enemy types of the target, of the escort and of the reinforcements, which come from the Enemy types section; the vehicles they can flee in; the types of place; the items, or the people to protect.</p>
+<p>Also: how common it is, how many contracts must have been completed for it to appear, the base pay and the extra pay for each enemy in the escort, and the text it's announced with on the board, which accepts the target's nickname, the place, how many are with them and the rest; the field's help says how each one is written. The game posts three different jobs every day. The targets' nicknames are in the People on the street section.</p>
+<h3>People act and join your gang</h3>
+<p>A single element. On the first tab, with what trust and how many times out of a hundred someone keeps the player company for a while, how long it lasts, how many times someone who has been offended hits them, how many times they report them, and how much trust is needed for a favor. On the Recruit tab, the conditions for someone from the street to join the gang: trust, street reputation, their personality's courage, maximum age and the bonus, which is a percentage of the recruiting fee. The other tabs are phrases. The courage of each personality is changed in People's personalities.</p>
+<h3>The police officer trade and the radio alerts</h3>
+<p>The section called The police officer trade has a single element, in several tabs: the standing needed to join, the ranks, every how many calls you get promoted and how much more you earn, the reprimands, the time between calls and to arrive, how many obey when ordered to stop, how many drivers pull over for the siren, the fine and what the officer pockets, and all the phrases. The price of the course is in Fares and prices.</p>
+<p>The Police radio alerts section has one element per alert. Its class is one of four: robbery at a place, fight on the street, reckless driver or chase. Each one states how common it is, what it pays, the suspects' enemy type, how many there are, the vehicles they can have, and what the radio says, with the place and the vehicle. You can change the game's four or add others of those same classes.</p>
+<h3>Couple's plans and living together as a couple</h3>
+<p>These are adult content. Each plan in the Couple's plans section has its price, the hours it lasts, the affinity and mood it gives, the type of place that must exist in the town, if it requires one, and its scenes: each time the plan is done two are told, and they don't repeat until all of them have been heard, so it's best to write four or more. In the scenes, the partner's name is written as the field's help says, and they have to be worded so that they work whether the partner is a man or a woman.</p>
+<p>The Living together as a couple section has a single element: with what affinity and how many dates the partner agrees to move in, how many people out of a hundred never move in, what eating together gives, how often they ask for something and what is gained or lost, and the phrases. In the People section, each person also has the Whether they would move in with the player field, to set it by hand: easily, when the relationship is going very well, or never.</p>
+<h3>Repair shop upgrades</h3>
+<p>Each upgrade states what it improves, from a list of seven effects the game knows how to apply: engine, brakes, armor, tires, suspension, exhaust and tank. It also states how many levels it has, from one to five, how much each level gives as a percentage and how much the first one costs; each level costs that price multiplied by its number. With the identifier of an upgrade from the game you change it; with a new one you add another line to the repair shop menu. An upgrade without an effect can be bought and is described, but it doesn't change anything.</p>
+<h3>Weapons: where they are bought</h3>
+<p>A weapon's Where it is bought field chooses the type of place that sells it: gun shops, stores or pawnshops. With no value, it's sold in gun shops. Ammunition is also bought in gun shops, wherever the weapon is sold. The Doesn't accept a silencer box removes that upgrade for that weapon. And every weapon should have its sound: choose one from the game or put your own in the sounds folder, as the section on sounds explains.</p>
+<h3>Neighborhoods and gangs</h3>
+<p>A neighborhood's description tells what it's like, not who it belongs to. If a gang runs your neighborhood, write its name in the Gang that rules the neighborhood field, and leave the description without phrases like "territory of such-and-such gang". The game adds on its own the phrase that fits at each moment: that gang's territory while it runs it, the player's territory when they conquer it, at war while it's being fought over, and the territory of the gang that takes it from the player if they don't defend it. If you write the gang in the description, the neighborhood will keep saying it's theirs when it no longer is. Whoever conquers that neighborhood will fight the gang you set; if you don't set any, a random one. The gangs are in the Gangs section: you can add your own, with their name and their enemy types, and write that name in your neighborhoods.</p>
+<p>If you still want the neighborhood's description to talk about the people who run it or who are seen on its streets, also fill in Description when the neighborhood changes hands: the game uses that other one when the neighborhood becomes the player's or another gang's. Places have the same thing, in More options: Name when the neighborhood changes hands and Description when the neighborhood changes hands. They are useful for a hideout, a place the gang controls or any spot whose name or description says who runs it: for example, "Los Calaveras Hideout" can become "Former hideout of Los Calaveras". If you leave them empty, the place doesn't change.</p>
+<p>Two places can't be at the same point, because the player could only enter one. If you put a place on a building front and a position already taken by another, also one from another mod or from the game, the game moves it on its own to a free spot on that same building front. It's better to choose a free position yourself.</p>
+<h3>Gas stations and fuel</h3>
+<p>So that players can refuel in your town, create a place of the Store type and check It is a gas station: it has a pump. You can give it its own price per liter. Put at least one in each town with cars: whoever plays with fuel turned on is going to need it. For each vehicle you can write the liters of its tank, or mark that it doesn't use fuel if it has no engine.</p>
+<h3>Tram, train and airport in your towns</h3>
+<p>In the game data and in the mods that come with it, the tram stops, the train station, the airport and the tracks are written like everything else, and they are edited the same way:</p>
+<ul>
+<li>Each stop, station and airport is a place, with its type: Tram stop, Train station or Airport. You can change its name, description, block, facade and position, or delete it.</li>
+<li>Each stop also has its Order on the tram line: the tram goes through them from lowest to highest and returns to the first.</li>
+<li>An airport can be an airfield: check It is an airfield, with a short runway. Scheduled light aircraft arrive at airfields, not large planes, and only light aircraft can be rented there. It's what suits a village.</li>
+<li>The town has the fields The train line runs along, and Number of that street or avenue. The train line crosses the town from side to side, in a straight line: along a street, from west to east, or along an avenue, from south to north. The trains run along it and stop at the station. If you leave them without a value, the line runs in front of the train station. Without a train station there is no line.</li>
+<li>The town has the field Route of the tram tracks: the list of intersections they pass through, in order. It's enough to enter the intersections where they turn. Each stop is at the point on the tracks closest to it.</li>
+<li>The town also has the field Add the public transport that is missing. With yes, if your town is missing any of these things, the game adds it when loading it: stops in every neighborhood and an airport if it's a city, and a train station if it has a road exit. With no, it only has what you give it.</li>
+</ul>
+<p>If you create a new town and don't add anything, it works the same: the game adds whatever is missing. If you add the stops yourself, it doesn't add any more. The Check button warns you if an intersection on the tracks doesn't exist, if two stops have the same order, or if a stop is more than sixty meters from the tracks.</p>
+<h3>Decisions, branches and endings</h3>
+<p>Each option of a decision can also leave an income: money the player receives, or pays, every midnight, forever.</p>
+<p>The step type A decision by the player opens a menu with the options you write, from two to four. Each option has the text the player chooses, an explanation for F1, what is told when it's chosen, and its consequences: money, reputation, mood and relationship with a gang.</p>
+<ul>
+<li>Give the decision a name, one word with no spaces. With that name, other missions and other steps can depend on what was chosen.</li>
+<li>In a mission, Only appears if the decision was made and Number of the chosen option make that mission exist only in one branch of the story. The first option is 1.</li>
+<li>In a step, the same two fields make that step play only in one branch; in the others it's skipped.</li>
+<li>In a mission, Text of the story's ending turns it into an ending: when it's completed, that text is read out and recorded in the diary. With several missions like this, each one after a different option, the story has several endings.</li>
+</ul>
+<p>In the main story, missions fd1 to fd4 are an example: a decision with three options and an ending for each one.</p>
+
+<h3>Giving the characters a voice</h3>
+<p>The dialogue lines are read by the player's screen reader. If you want them to play with recorded voices, you don't have to change anything in the mod: just put the recordings in the game's voices folder.</p>
+<ol>
+<li>Save the mod and press <kbd>Control G</kbd>, or choose Voice script for recording in the Mod menu. The editor writes a text file with all the lines of all the missions and opens it in Notepad.</li>
+<li>In the script, each line has above it the name its recording must have, for example <strong>oc01_1_2</strong>: mission, step number and line number. At the end it says how many lines each character has, so you can share them out among several people.</li>
+<li>Record each line in a separate file, in WAV, OGG, FLAC or MP3, with that name.</li>
+<li>Some lines change with the protagonist: those that say their name, those that have a masculine and a feminine form in square brackets, and those the protagonist says themselves. The script points this out under each one and gives the name of its other forms, with an at sign: <strong>oc01_1_2@alex</strong>, <strong>oc01_1_2@m</strong>, <strong>oc01_1_2@alex_m</strong>. The file with nothing after it is the one for Dani as a man. You can record just that one: for someone playing with another protagonist, that line will be read by their screen reader, never someone else's recording.</li>
+<li>Put the files in the voices folder, which opens with <kbd>Control Shift V</kbd>. They can be in subfolders.</li>
+<li>Press <kbd>Control G</kbd> again whenever you like: the lines that already have a file are marked with the word RECORDED.</li>
+</ol>
+<p>Lines without a recording are still read by the screen reader, so you can record little by little. If you later change the order of the steps or of the lines in a mission, their numbers change: generate the script again and rename the files.</p>
+<p>To share a mod with voices, give out the mod file and, separately, a folder with the recordings to copy into <strong>data\voces\propias</strong>. Use your own voices or synthetic voices you have permission to use: not voices cloned from real people or taken from other games or films.</p>
+
+<h2>6. Sounds</h2>
+<p>Everything you add must make a sound. Each place has a sound field, which is what you hear when passing its door and in the background when you go inside. Choose one of the game's sounds from the drop-down list. If you want a new one, copy your file into <code>data\sonidos\por_defecto</code> with whatever name you like and it will appear in the list the next time you open the editor. The guide <a href="cambiar_sonidos_en.html">cambiar_sonidos_en.html</a> describes all the sounds.</p>
+
+<h2>7. Checking and testing</h2>
+<p><kbd>F5</kbd> checks the mod and lists what it finds: references to things that don't exist, places outside the map or on top of a building, missions without steps, repeated identifiers and inconsistent steps. Each warning says which element it's in. Fix them and check again until none are left.</p>
+<p><kbd>F9</kbd> saves, checks and opens the game. Start a new game or load one, and go and see your content.</p>
+
+<h2>8. Enabling and disabling mods</h2>
+<p>With <kbd>Control M</kbd> a checklist opens with all the mods in the folder. The checked ones are the ones the game loads. A disabled mod isn't deleted: its file changes extension and the game ignores it.</p>
+
+<h2>9. Sharing a mod</h2>
+<p>Send the <code>.pbm</code> file from the <code>data\mods</code> folder. Whoever receives it just has to copy it into their <code>data\mods</code> folder. If your mod uses new sounds, send those files too, which go in <code>data\sonidos\por_defecto</code>.</p>
+
+<h2>10. Common problems</h2>
+<ul>
+<li>The screen reader doesn't say the name of a field: press <kbd>Control H</kbd>.</li>
+<li>The game doesn't show my content: check with <kbd>Control M</kbd> that the mod is enabled and with <kbd>F5</kbd> that it has no errors. Places with adult content only appear with that option turned on in the game.</li>
+<li>I've broken a mod: the game's originals are never touched. Disable or delete the mod file and the game goes back to how it was.</li>
+</ul>
+
+</body>
+</html>

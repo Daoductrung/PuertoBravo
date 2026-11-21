@@ -12,6 +12,7 @@
 
 Mientras funciona, se le pueden escribir órdenes: ayuda las dice todas.
 """
+from .idioma import tr
 import asyncio
 import os
 import signal
@@ -41,23 +42,23 @@ def pedir_parada(cfg, espera=20.0, orden="parar"):
     Con ``orden`` «actualizar» o «reiniciar», el servidor avisa antes a los jugadores de que vuelve enseguida."""
     ruta = os.path.join(cfg["datos"], ARCHIVO_PARAR)
     if not os.path.isdir(cfg["datos"]):
-        print("No existe la carpeta de datos «%s»: ahí no hay ningún servidor que parar." % cfg["datos"])
+        print(tr("No existe la carpeta de datos «%s»: ahí no hay ningún servidor que parar.") % cfg["datos"])
         return False
     with open(ruta, "w", encoding="utf-8") as f:
         f.write(orden + "\n")
     fin = time.time() + espera
     while time.time() < fin:
         if not os.path.exists(ruta):
-            print("El servidor ha recogido la orden: avisa a los jugadores, lo guarda todo y se para." if orden == "parar" else
-                  "El servidor ha recogido la orden: avisa a los jugadores con una cuenta atrás, lo guarda todo y se para. "
-                  "Los juegos esperarán y volverán a entrar solos cuando lo arranques otra vez.")
+            print(tr("El servidor ha recogido la orden: avisa a los jugadores, lo guarda todo y se para.") if orden == "parar" else
+                  tr("El servidor ha recogido la orden: avisa a los jugadores con una cuenta atrás, lo guarda todo y se para. "
+                     "Los juegos esperarán y volverán a entrar solos cuando lo arranques otra vez."))
             return True
         time.sleep(0.5)
     try:
         os.remove(ruta)
     except OSError:
         pass
-    print("Nadie ha recogido la orden: no parece que haya un servidor en marcha con esa carpeta de datos.")
+    print(tr("Nadie ha recogido la orden: no parece que haya un servidor en marcha con esa carpeta de datos."))
     return False
 
 
@@ -87,11 +88,11 @@ def main(args=None):
     ruta = next((a for a in args if not a.startswith("--")), "servidor.conf")
     if "--ejemplo" in args:
         if os.path.exists(ruta):
-            print("Ya hay un %s en esta carpeta. No lo toco." % os.path.basename(ruta))
+            print(tr("Ya hay un %s en esta carpeta. No lo toco.") % os.path.basename(ruta))
             return 1
         with open(ruta, "w", encoding="utf-8", newline="\n") as f:
             f.write(EJEMPLO)
-        print("Escrito %s. Ábrelo con un editor de texto, cámbialo a tu gusto y arranca el servidor." % os.path.basename(ruta))
+        print(tr("Escrito %s. Ábrelo con un editor de texto, cámbialo a tu gusto y arranca el servidor.") % os.path.basename(ruta))
         return 0
     if "--opciones" in args:
         print(EJEMPLO)
@@ -105,11 +106,11 @@ def main(args=None):
             if k in CONFIG:
                 valor, error = opciones.validar_valor(k, v)
                 if error:
-                    avisos.append("--%s: %s. No se le hace caso." % (k, error))
+                    avisos.append(tr("--%s: %s. No se le hace caso.") % (k, error))
                 else:
                     cfg[k] = valor
             else:
-                avisos.append("--%s: no existe ninguna opción con ese nombre." % k)
+                avisos.append(tr("--%s: no existe ninguna opción con ese nombre.") % k)
     if "--parar" in args:
         return 0 if pedir_parada(cfg) else 1
     for bandera, orden in (("--actualizar", "actualizar"), ("--reiniciar", "reiniciar")):
@@ -117,39 +118,39 @@ def main(args=None):
             return 0 if pedir_parada(cfg, orden=orden) else 1
     if "--comprobar" in args:
         if not os.path.exists(ruta):
-            print("No hay ningún archivo %s. Con --ejemplo se escribe uno." % ruta)
+            print(tr("No hay ningún archivo %s. Con --ejemplo se escribe uno.") % ruta)
             return 1
         for a in avisos:
             print(a)
-        print("La configuración tiene %d problemas." % len(avisos) if avisos else "La configuración está bien.")
+        print(tr("La configuración tiene %d problemas.") % len(avisos) if avisos else tr("La configuración está bien."))
         return 1 if avisos else 0
     try:
         srv = Servidor(cfg)
     except Exception as e:                                   # la carpeta de datos no se puede crear, la base está dañada...
-        print("No se puede arrancar con la carpeta de datos «%s»: %s: %s" % (cfg["datos"], type(e).__name__, e))
+        print(tr("No se puede arrancar con la carpeta de datos «%s»: %s: %s") % (cfg["datos"], type(e).__name__, e))
         return 2
     srv.ruta_conf = os.path.abspath(ruta) if os.path.exists(ruta) else None
     srv.log = lambda t: print("%s  %s" % (_hora(), t), flush=True)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     for a in avisos:
-        srv.log("Configuración: " + a)
+        srv.log(tr("Configuración: %s") % a)
     try:
         loop.run_until_complete(srv.iniciar())
     except OSError as e:
-        print("No se pudo abrir el puerto %s: %s. Puede que el servidor ya esté en marcha, o que otro programa use ese puerto." % (cfg["puerto"], e))
+        print(tr("No se pudo abrir el puerto %s: %s. Puede que el servidor ya esté en marcha, o que otro programa use ese puerto.") % (cfg["puerto"], e))
         return 2
     except RuntimeError as e:
         print(str(e))
         return 2
     if not os.path.exists(ruta):
-        srv.log("No hay archivo de configuración: uso los valores de serie. Con --ejemplo se escribe uno.")
-    srv.log("Datos del mundo: versión %s, huella %s. %d localidades." % (srv.mundo.get("version"), srv.mundo.get("huella"), len(srv.mundo["mapas"])))
+        srv.log(tr("No hay archivo de configuración: uso los valores de serie. Con --ejemplo se escribe uno."))
+    srv.log(tr("Datos del mundo: versión %s, huella %s. %d localidades.") % (srv.mundo.get("version"), srv.mundo.get("huella"), len(srv.mundo["mapas"])))
     tope = int(srv.cfg["max_jugadores"])
-    srv.log("Caben %s." % (("%d jugadores a la vez" % tope) if tope > 0 else "todos los jugadores que entren: no hay límite"))
+    srv.log((tr("Caben %d jugadores a la vez.") % tope) if tope > 0 else tr("Caben todos los jugadores que entren: no hay límite."))
     if srv.huella_cert:
-        srv.log("Huella del certificado: %s" % srv.huella_cert)
-    srv.log("Escribe ayuda para ver las órdenes.")
+        srv.log(tr("Huella del certificado: %s") % srv.huella_cert)
+    srv.log(tr("Escribe ayuda para ver las órdenes."))
 
     def consola():
         try:
@@ -194,9 +195,9 @@ def main(args=None):
     except KeyboardInterrupt:
         loop.run_until_complete(srv.detener())
     enmarcha.quitar()
-    print("%s  Servidor parado. Todo guardado." % _hora(), flush=True)
+    print("%s  %s" % (_hora(), tr("Servidor parado. Todo guardado.")), flush=True)
     if srv.codigo_salida:
-        print("%s  Se ha parado para volver: el programa termina con el código %d." % (_hora(), srv.codigo_salida), flush=True)
+        print("%s  %s" % (_hora(), tr("Se ha parado para volver: el programa termina con el código %d.") % srv.codigo_salida), flush=True)
     parado.set()
     if _vigilancia is not None:                              # ya no hay nada que vigilar: se retira
         try:

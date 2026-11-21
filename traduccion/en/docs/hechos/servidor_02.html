@@ -1,0 +1,218 @@
+<h3>Without Docker, with the NAS's own Python</h3>
+<ol>
+<li>Install the Python 3 package from Package Center, if you don't have it.</li>
+<li>Copy the content of <code>otros_sistemas</code> to a folder on the NAS, for example <code>puertobravo</code> inside a shared folder.</li>
+<li>In Control Panel, Task Scheduler, create a Triggered Task of type User-defined script, with the Boot-up event and with your user, not with the system administrator.</li>
+<li>In the script, type <code>sh</code>, a space and the full path of <code>arrancar.sh</code>. For example, <code>sh /volume1/docker/puertobravo/arrancar.sh</code>.</li>
+<li>To start it right away, without restarting the NAS, select the task and press Run.</li>
+<li>To stop it, create another task just like it, with no event, with <code>parar.sh</code>, and run it when needed.</li>
+</ol>
+
+<h2 id="direccion">13. The address you give your people, and how to connect from outside your home</h2>
+<h3>What the address looks like</h3>
+<ul>
+<li>It's <code>puertobravo://</code>, the machine's address, a colon and the port. For example, <code>puertobravo://192.168.1.50:47820</code>.</li>
+<li>In the game you add it in Play on a server, Add a server.</li>
+<li>If you haven't changed the port, which is 47820 by default, you can give the address without the colon and the port.</li>
+</ul>
+<h3>For people playing in your own home</h3>
+<ul>
+<li>The machine's address on your network works; it usually starts with 192.168. The panel tells you on the Status tab and copies it with the Copy the address button.</li>
+<li>On Windows you can also find it by opening a command window and typing <code>ipconfig</code>: it's the IPv4 Address line. On Linux, with <code>hostname -I</code>.</li>
+<li>If the server is on the same computer you play on, you can join with <code>puertobravo://127.0.0.1</code>.</li>
+</ul>
+<h3>For people playing from outside: opening the port on the router</h3>
+<p>From the internet, only your router can be seen. You have to tell it to pass whatever arrives at the server port to the machine where the server is. This is called opening a port, redirecting a port or port forwarding.</p>
+<ol>
+<li>Give the server machine a fixed address on your network. On the router it's usually in the local network or DHCP section, with a name like address reservation or static DHCP.</li>
+<li>Go into the router settings from your browser. The address is usually <code>192.168.1.1</code> or <code>192.168.0.1</code>, and the username and password are on a sticker on the router itself.</li>
+<li>Look for the ports section. Depending on the brand it's called Ports, Port redirection, NAT, Virtual server or Port forwarding.</li>
+<li>Add a rule: TCP protocol, external port 47820, internal port 47820 and, as the destination, the address of the server machine on your network.</li>
+<li>Save. Some routers ask to restart.</li>
+<li>Find out your public address: the router shows it on its status page, with a name like internet IP address or WAN. That one, with <code>puertobravo://</code> in front, is the one you give your people.</li>
+</ol>
+<h3>Opening it automatically, with UPnP</h3>
+<ul>
+<li>Many routers let a program on your network ask them to open a port. This mechanism is called UPnP.</li>
+<li>In the panel, with the server running, go to the Manage menu and choose Open the port on the router with UPnP. If the router allows it, the port is opened and the panel tells you; when you stop the server it closes by itself.</li>
+<li>If the router doesn't answer or refuses, it has UPnP turned off or doesn't support it. You can turn it on in its settings, or open the port by hand as explained above.</li>
+<li>The console server and the Linux one don't open the port by themselves: there you have to do it by hand.</li>
+</ul>
+<h3>If your public address changes: dynamic DNS</h3>
+<ul>
+<li>In many homes the public address changes from time to time. So you don't have to tell your people every time, you use a name that always points to your current address. That's dynamic DNS.</li>
+<li>There are free services that provide it. Many routers and NAS devices have a section called DDNS or dynamic DNS to keep it up to date by themselves.</li>
+<li>With the name, the address for your people becomes, for example, <code>puertobravo://minombre.ejemplo.net:47820</code>.</li>
+</ul>
+<h3>If you can't open ports</h3>
+<ul>
+<li>Some providers don't give each home its own public address: several homes share one. This is called CG-NAT. You can tell because the WAN address your router shows doesn't match the one shown by the websites that tell you your address. In that case opening the port doesn't help. You can ask your provider to take you off CG-NAT, or use a private network.</li>
+<li>A private network, like the ones Tailscale or ZeroTier create, connects the computers you choose over the internet as if they were in the same home, without opening any port. You and each person who is going to play install the program and join the same network. Each computer gets an address inside that network.</li>
+<li>The address for your people is then <code>puertobravo://</code> and the address the private network gives the server machine. With Tailscale it starts with 100.</li>
+<li>Only people on your private network can join: it's also a way to have a server just for your group.</li>
+<li>Another way out is to rent a small server, which has its own public address: section 7.</li>
+</ul>
+
+<h2 id="cifrado">14. Encryption and certificate</h2>
+<ul>
+<li>By default, with <code>cifrado = auto</code>, the connection is encrypted. The server creates its own certificate the first time it starts. You don't need to install anything, on Windows either.</li>
+<li>The certificate and its key are kept in the data folder, in <code>certificado.pem</code> and <code>llave.pem</code>.</li>
+<li>When it starts, the server says its certificate's fingerprint, and the panel shows it on the Status tab. It's a string of letters and numbers that identifies it.</li>
+<li>Each player's game remembers the server's certificate the first time it joins. If one day the server presents a different certificate, the game warns and doesn't join without permission: someone might be pretending to be your server.</li>
+<li>That's why, if you move the server to another machine, take <code>certificado.pem</code> and <code>llave.pem</code> with the data: that way nobody sees a warning. Backups include them.</li>
+<li>If you really do change the certificate, tell your people that the game will ask them, and that they should accept the new one.</li>
+<li>If you have your own certificate, put the paths of its files in the <code>certificado</code> and <code>llave</code> options. It's not necessary: the game doesn't check the certificate's name, only that it's always the same one.</li>
+<li>With <code>cifrado = si</code>, the server doesn't start if it can't encrypt. With <code>cifrado = no</code>, it never encrypts: that only makes sense for tests in your own home.</li>
+<li>The certificate key is secret. Don't share <code>llave.pem</code> or your backups.</li>
+</ul>
+
+<h2 id="entrada">15. Who can join</h2>
+<ul>
+<li>Each player has an identity that their game creates and that never leaves their computer. The server recognizes them by it: there are no account passwords to remember or to steal.</li>
+<li>The <code>entrada</code> option decides who can create a new character. Anyone who already has a character can always come back in.</li>
+<li><code>abierta</code>: anyone who has the address.</li>
+<li><code>clave</code>: you need to know the entry password, which you set in the <code>clave</code> option. The game asks for it the first time.</li>
+<li><code>invitacion</code>: you need a single-use code. You create them in the panel with Control+I, or with the <code>invitar</code> command. Each code is good for one character only.</li>
+<li>The <code>max_jugadores</code> option says how many people fit at once. With 0 there's no limit. Admins get in even if it's full.</li>
+<li>To keep someone out: in the panel, the Ban button; through text, the <code>vetar</code> command and their name. You lift it with Pardon the ban or with the <code>perdonar</code> command. There's also a list of banned names in the configuration, in the <code>vetados</code> option.</li>
+<li>To free up space on full servers, the <code>inactividad_minutos</code> option removes anyone who has spent that long doing nothing. Their character stays saved.</li>
+</ul>
+
+<h2 id="administrar">16. Running the server</h2>
+<h3>Who runs it</h3>
+<ul>
+<li>The first account that joins a new server is the admin. Normally that's you: join first.</li>
+<li>You appoint more with the panel's Make admin button, with the <code>admin</code> command and the name, or by putting their names in the <code>admins</code> option, separated by commas.</li>
+<li>You take it away with the Remove admin rights button, on the Accounts tab, or with the <code>quitaradmin</code> command.</li>
+</ul>
+<h3>Where you give commands from</h3>
+<ul>
+<li>From the panel: with its buttons and menus, or by typing them in the Command for the server field, on the Log tab.</li>
+<li>From the console: by typing them in the server window.</li>
+<li>From the game, if you're an admin: in the general chat, which opens with F10, with a slash in front. For example, <code>/jugadores</code> or <code>/aviso Gang war tonight</code>. The game tells the answer to you alone. This is how you run a server that has no console: a service, a container or a NAS.</li>
+</ul>
+<h3>The commands</h3>
+<!-- ORDENES:INICIO -->
+<ul>
+<li><code>ayuda</code>: lists all the commands.</li>
+<li><code>estado</code>: how the server is doing: port, encryption, world, uptime and how many people are on.</li>
+<li><code>jugadores</code>: who is on and where.</li>
+<li><code>cuentas</code>: all the accounts on the server, with the banned ones and the admins.</li>
+<li><code>aviso text</code>: says something to everyone who is on.</li>
+<li><code>decir name: text</code>: says something to one player only.</li>
+<li><code>expulsar name</code>: kicks a player; they can join again. After a colon you can tell them the reason.</li>
+<li><code>vetar name</code>: kicks a player and doesn't let them back in.</li>
+<li><code>perdonar name</code>: lifts the ban.</li>
+<li><code>admin name</code>: makes a player an admin.</li>
+<li><code>quitaradmin name</code>: removes their admin rights.</li>
+<li><code>borrarcuenta name</code>: deletes an account with its character, its properties and its place in the gang; it can't be undone.</li>
+<li><code>invitar</code>: creates a single-use invitation code; with a number after it, it creates several.</li>
+<li><code>invitaciones</code>: the existing invitations, free and used.</li>
+<li><code>anular code</code>: cancels an invitation nobody has used yet.</li>
+<li><code>mensaje text</code>: changes the message of the day; without text, it removes it.</li>
+<li><code>hora number</code>: sets the game time, from 0 to 23.</li>
+<li><code>bandas</code>: the gangs, with their people and their funds.</li>
+<li><code>guardar</code>: saves everything now.</li>
+<li><code>copia</code>: makes a backup.</li>
+<li><code>copias</code>: the existing backups.</li>
+<li><code>recargar</code>: reads servidor.conf again and applies what can be changed without restarting.</li>
+<li><code>actualizar</code>: tells everyone the server is restarting to update, waits for the countdown, saves everything and stops it; the games wait and rejoin by themselves when you start it again. You can put the seconds of warning after it.</li>
+<li><code>reiniciar</code>: the same, but saying it's for maintenance. You can put the seconds of warning after it.</li>
+<li><code>apagar</code>: warns everyone, saves everything and stops the server.</li>
+</ul>
+<!-- ORDENES:FIN -->
+<p>Player names are typed as they are, with their spaces. For example, <code>expulsar Ana la Rápida</code> or <code>decir Ana la Rápida: turn the music down</code>.</p>
+
+<h2 id="versiones">17. Playing with different versions of the game</h2>
+<p>People with different versions of the game can play together on your server. Nobody is kicked for being behind or ahead: someone is only refused because of their version if you ask for it, with the minimum version. And from there, everyone is kept as even as possible.</p>
+<h3>The world is brought by the first one to join</h3>
+<p>The server manages, but the content comes from the game. The world, with its places, its weapons, its vehicles and its missions, isn't tied to the server: it's given by the game of whoever joins.</p>
+<ul>
+<li>The server that ships with the game already includes the world of its version. If you set it up without it, or delete it, it starts empty and takes the world of the first one to join.</li>
+<li>If the first one to join has an older version and later someone arrives with a newer one, the server switches to the world of the newer version, without restarting and without kicking anyone. It announces it to whoever is on. It only does this if that world is signed by the game's publisher, so nobody can sneak a modified world into it.</li>
+<li>If it's the other way around, and someone arrives with a version older than the server's, the server keeps its world, which is the newest, and that person joins anyway.</li>
+<li>The server knows the world of the already released versions out of the box, and it remembers the ones it checks along the way: it asks nothing of anyone who arrives with one of them.</li>
+<li>If the server is empty and the first one to join has mods, or plays with an unsigned copy, their world is taken for the time being, a warning goes in the log, and it's replaced by the first signed one that arrives.</li>
+</ul>
+<h3>What happens when not everyone has the same thing</h3>
+<ul>
+<li><strong>Damage, range, rate of fire and money are decided by the server</strong>, with the figures of its world, the same for someone shooting with one version and someone getting hit with another. Having the new version gives no advantage.</li>
+<li><strong>A weapon someone's game doesn't have</strong> reaches them as the closest thing their game knows: they hear the shot of one of their own weapons of the same class and take the damage the server sets. For example, for someone playing with 1.7.0, the 1.7.1 pump-action shotgun sounds like one of their shotguns.</li>
+<li><strong>A vehicle they don't have</strong> is heard going by and seen parked as the closest one of theirs, with the name its owner gave it. On the server it's still what it is.</li>
+<li><strong>Giving a weapon</strong> to someone who doesn't have it in their version isn't possible: the server gives it back to whoever was giving it, and tells them.</li>
+<li><strong>The roleplay channels</strong> reach an older game through the usual chat, with a few words in front saying what they are.</li>
+<li><strong>Restart warnings</strong> reach them as a normal warning, and the shutdown, with a text their game reads as it is. Their character is saved all the same.</li>
+<li><strong>If the server's world is from an older version</strong> (because you don't want new worlds, or because nobody with the new one has joined yet), the new weapons of whoever has them count against other players as bare hands, their new vehicles are seen as a compact car, and in a new town nobody sees them. That person is told.</li>
+<li><strong>When joining</strong>, anyone who doesn't have the same data as the server is told, by name, which weapons and which vehicles don't match and what they'll notice. It's also on the game's phone, Online, Data and rules of this server.</li>
+</ul>
+<h3>The character, from one version to another</h3>
+<p>The character is saved on the server in full, including what the server doesn't know. If someone plays with a new version and one day joins with an older one, they lose nothing:</p>
+<ul>
+<li>Their old game receives the character without the weapons or vehicles it doesn't know. They're still saved on the server, and the player is told.</li>
+<li>When that game saves, the server puts back everything the old version can't save. Whatever they've earned, spent or obtained while playing with the old one counts.</li>
+<li>When they join again with the new version, they have everything again.</li>
+</ul>
+<h3>What you decide</h3>
+<ul>
+<li><code>version_minima</code>: the oldest version that can join. Empty, which is the default, any version. It's the only way to refuse someone because of their version.</li>
+<li><code>mundo_distinto</code>: what to do with someone who brings data that can't be checked, which is almost always someone with mods that change the world. With <code>admitir</code>, the default, they join and play with what's shared: they're told what doesn't match, and whatever their mod changes or adds doesn't count against the others. With <code>rechazar</code>, they don't get in.</li>
+<li><code>actualizar_mundo</code>: who can bring a new world. With <code>firmado</code>, the default, anyone, if it's from a real version. With <code>admin</code>, also an admin without a signature: that's what you need for your whole server to play with a mod. With <code>no</code>, the server keeps the world it has.</li>
+<li><code>versiones</code>: with <code>compatibles</code>, the default, everything in this section. With <code>iguales</code>, only someone with exactly the same data as the server gets in.</li>
+<li><code>comprobar_datos = no</code> lets anyone in without checking anything, and the server doesn't update to new worlds. You don't need it to play with different versions.</li>
+</ul>
+<h3>Good to know</h3>
+<ul>
+<li>In the panel, the player list says which version each person joined with.</li>
+<li>You don't need to update the server every time a version of the game comes out. A 1.7.0 server accepts 1.7.1 games, but it can't give each game the closest match or restore the character: anyone who joins it with a version older than the server's won't hear the others' new weapons. Update it when you can.</li>
+<li>To make your whole server play with a mod, set <code>actualizar_mundo = admin</code> and have an admin join first with the mod enabled. Anyone who joins without the mod will play anyway, with what they have in common.</li>
+<li>What only exists in the new version and doesn't go through the server (a new mission, a new shop, a new trade) is available to whoever has that version, like any other new feature of the game. Whatever gives money goes through the server's caps, whatever the version.</li>
+<li>If a new version moves the streets of a town that already existed, anyone still on the older one will see the server's traffic moving where there's no longer a street, until they update.</li>
+</ul>
+
+<h3>What's new on the street in version 1.7.1, on a server</h3>
+<p>Since version 1.7.1, for solo play, the game has patrols that do their rounds without looking for anyone, an optional police helicopter and the option to surrender with your hands up. With shared police, which is the <code>policia</code> option set to <code>si</code>, none of that is turned on in each player's game: the patrols are the server's, and there's no helicopter and no surrendering. With that option set to <code>no</code>, each player has them according to their own options, and only they see them. The ambulances that come after a shootout and the neighborhood war mode on the street don't count on a server either. Self-defense does: if someone defends themselves from a gang member who attacked them first, their game doesn't record the crime.</p>
+<h2 id="dinero">18. Players' money: the hourly cap and the jobs</h2>
+<p>With the <code>economia</code> option set to <code>si</code>, which is how it comes, the server keeps track of each player's money so nobody can make it up with a hacked game. Spending is always allowed. Earning depends on where the money comes from.</p>
+<h3>What the server accepts with no limit</h3>
+<ul>
+<li>What the server itself gives: loot between players, sales of houses and businesses, the gang's funds, the pay for helping in a group mission.</li>
+<li>What another player gives.</li>
+<li>The reward for each story mission, only once.</li>
+</ul>
+<h3>Repeatable jobs</h3>
+<p>Board contracts, gym fights, bank and store robberies and car jobs can be done again and again. The server recognizes them without using up the hourly earnings, with two limits:</p>
+<ul>
+<li><code>encargos_hora</code>: how many are recognized per hour, of each type. By default, 6.</li>
+<li><code>encargo_max</code>: the most that is accepted from the pay of a single one. By default, 15,000 euros. On top of that, the server knows from the game data the most each type of job can pay, and doesn't recognize more than that.</li>
+</ul>
+<p>A player who goes over that number in an hour is warned, and that job counts as ordinary earnings. Anyone playing with a version older than 1.7.1 doesn't tell the server about their jobs: for that person, everything counts against the hourly earnings, as before, until they update.</p>
+<h3>Everything else: the hourly earnings</h3>
+<p>Everything else you earn playing on your own (jobs, sales, gambling, street loot) has a cap per clock hour, the <code>ganancia_hora</code> option, which is 30,000 euros by default. Whatever goes over the cap is taken away, and the player is told with figures: how much they earned, how much is accepted, what the cap is, and at what rate they get margin back.</p>
+<ul>
+<li>Unused margin builds up, up to the hours set by <code>ganancia_acumula</code>, which is 3 by default. That way, someone who hasn't earned anything for a while can have a whole good run without losing money. It also builds up while the player is away.</li>
+<li>Someone joining for the first time starts with a quarter of an hour of margin. Leaving and joining again doesn't refill it.</li>
+<li>The player can check how it's going on their phone: Online, Data and rules of this server.</li>
+</ul>
+<h3>Permanent contracts and their paychecks</h3>
+<p>Since version 1.7.1 the game has permanent contracts: you sign them at the job center, they ask for a number of shifts every seven game days and they pay a paycheck at the end of each period. On a server, the paycheck is paid by the server, so nobody can make it up:</p>
+<ul>
+<li>The server counts the shifts, keeps the calendar and sets the amount, which comes from the game data. What each player's game says about how much they earn doesn't count.</li>
+<li>The paycheck doesn't use up the hourly earnings. What you earn for each shift does, like any job.</li>
+<li><code>nominas</code>: with <code>no</code>, there are no permanent contracts on your server. By default, there are.</li>
+<li><code>nomina_max</code>: the most you pay for a paycheck. By default, 1,500 euros, which doesn't cut any of the game's paychecks; it's there so a mod can't make them skyrocket.</li>
+<li><code>nomina_turnos_dia</code>: how many shifts you count for each player in one game day. By default, 3.</li>
+<li>Asking to be paid early, repeating it, or leaving and joining again gives nothing: the contract and its pay date are saved on the server.</li>
+<li>The server's world must be from 1.7.1 or later. Anyone playing with 1.7.0 has no permanent contracts, neither here nor playing solo.</li>
+</ul>
+<p>Of the rest of the game's honest life, on a server you have the academy diplomas, which only cost money; the criminal record, which counts for jobs of trust; and, if you leave <code>trato_prestigio</code> set to <code>si</code>, a small discount in shops for those with a good name and a surcharge for those with a very bad one, the same for everyone. Loans, mortgages, taxes and business management don't exist: they create or move money the server can't check. The game tells the player.</p>
+<h3>What to set on your server</h3>
+<ul>
+<li>Among trusted friends: raise <code>ganancia_hora</code> without fear, to 100,000 or more, or turn off money tracking with <code>economia = no</code>. The cap is there for servers open to strangers, not to spoil things for your people.</li>
+<li>On an open server: leave the default cap and, if your people live off contracts or robberies and complain, raise <code>encargos_hora</code> before <code>ganancia_hora</code>.</li>
+<li>If someone tells you the server is taking money from them, ask them what the game told them: since 1.7.1 it gives them the figures. The server log shows a line each time, with what was taken away and the cap.</li>
+<li>All these options can be changed with the server running.</li>
+</ul>
+<h3>If the connection drops right after buying</h3>
+<p>The character is saved on the server every three quarters of a minute and, since 1.7.1, a few seconds after a purchase: two or three seconds after the first one and, if the player keeps spending, at most every twelve. If even so someone's connection drops before their game saves, the server puts back into their balance what they spent since the last save: what they bought isn't on their character, but the money isn't lost either. A line appears in the log. It can't be used to make money: what was given to another player, what the server charged and houses bought don't come back.</p>
+
+<h2 id="rol">19. Text roleplay, voice and vehicle radio</h2>

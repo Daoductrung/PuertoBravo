@@ -97,7 +97,7 @@ def test_las_opciones_nuevas_estan_descritas_y_salen_en_el_panel_y_en_la_guia():
             libre = next((ch.lower() for ch in o.etiqueta if ch.lower() in letras and ch.lower() not in usadas), None)
             assert libre is not None, (ident, o.clave)
             usadas.add(libre)
-    with open(os.path.join(os.path.dirname(os.path.dirname(nucleo.__file__)), "data", "docs", "servidor.html"), encoding="utf-8") as f:
+    with open(os.path.join(os.path.dirname(os.path.dirname(nucleo.__file__)), "data", "docs", "servidor_es.html"), encoding="utf-8") as f:
         guia = f.read()
     for palabra in ("<code>rol</code>", "<code>rol_metros</code>", "<code>radio_coches</code>", "<code>ganancia_acumula</code>", "<code>encargos_hora</code>",
                     "programa de voz", "barra yo", "encargos repetibles"):

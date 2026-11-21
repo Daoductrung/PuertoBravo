@@ -11,6 +11,7 @@
 
 Los números salen de los datos del juego (data/datos/vida.json, sección realismo), que un mod puede cambiar.
 """
+from .i18n import tr
 import random
 
 AJUSTES = {
@@ -61,7 +62,7 @@ class Realismo:
         if int(antes // rev) < int(v.km // rev) and not getattr(v, "revision_debida", False):
             v.revision_debida = True
             self.son("reserva", cat="interfaz")
-            self.decir(f"{v.nombre} lleva {int(v.km)} kilómetros: le toca revisión. Si no la pasas en un taller, los frenos irán a peor.")
+            self.decir(tr('{nombre} lleva {int} kilómetros: le toca revisión. Si no la pasas en un taller, los frenos irán a peor.').format(nombre=(v.nombre), int=(int(v.km))))
         if not getattr(v, "pinchada", False) and abs(v.vel) > 4 and random.random() < metros / (aj("pinchazo_km") * 1000.0) * self._riesgo_pinchazo(v):
             self.pinchar(v)
 
@@ -75,9 +76,9 @@ class Realismo:
         v.pinchada = True
         self.son("pinchazo", xy=(v.x, v.y))
         if v is self.j.veh:
-            self.decir("¡Has pinchado! El coche tira hacia un lado y no corre. " +
-                       ("Llevas rueda de repuesto: párate y cámbiala desde el móvil, en Servicios." if self.j.objetos.get("rueda")
-                        else "Ve despacio a un taller, o llama a la asistencia en carretera desde el móvil, en Servicios."))
+            self.decir(tr("¡Has pinchado! El coche tira hacia un lado y no corre. ") +
+                       (tr("Llevas rueda de repuesto: párate y cámbiala desde el móvil, en Servicios.") if self.j.objetos.get("rueda")
+                        else tr("Ve despacio a un taller, o llama a la asistencia en carretera desde el móvil, en Servicios.")))
 
     def factor_averia_velocidad(self, v):
         return 0.45 if self._con_averias(v) and getattr(v, "pinchada", False) else 1.0
@@ -96,22 +97,22 @@ class Realismo:
         j = self.j
         v = v or j.veh or self.tu_vehiculo(12)
         if v is None or not getattr(v, "pinchada", False):
-            self.decir("No tienes ninguna rueda pinchada.", True)
+            self.decir(tr("No tienes ninguna rueda pinchada."), True)
             return False
         if abs(v.vel) > 1:
             self.app.son("error")
-            self.decir("Para el vehículo primero.", True)
+            self.decir(tr("Para el vehículo primero."), True)
             return False
         if not gratis:
             if not j.objetos.get("rueda"):
                 self.app.son("error")
-                self.decir("No llevas rueda de repuesto. Se compran en los talleres y en las gasolineras.", True)
+                self.decir(tr("No llevas rueda de repuesto. Se compran en los talleres y en las gasolineras."), True)
                 return False
             j.objetos["rueda"] -= 1
         v.pinchada = False
         self.pasar_horas(0.25)
         self.son("reparar", cat="interfaz")
-        self.decir(f"Un cuarto de hora de gato y llave: rueda cambiada. {v.nombre} vuelve a rodar bien.", True)
+        self.decir(tr('Un cuarto de hora de gato y llave: rueda cambiada. {nombre} vuelve a rodar bien.').format(nombre=(v.nombre)), True)
         return True
 
     def pasar_revision(self, v):
@@ -122,11 +123,11 @@ class Realismo:
     def averias_txt(self, v):
         if not self._con_averias(v):
             return ""
-        t = f" Lleva {int(getattr(v, 'km', 0.0))} kilómetros."
+        t = tr(' Lleva {int} kilómetros.').format(int=(int(getattr(v, 'km', 0.0))))
         if getattr(v, "pinchada", False):
-            t += " Tiene una rueda pinchada."
+            t += tr(" Tiene una rueda pinchada.")
         if getattr(v, "revision_debida", False):
-            t += " Le toca revisión."
+            t += tr(" Le toca revisión.")
         return t
 
     def averias_a_dict(self, v, d):
@@ -181,14 +182,14 @@ class Realismo:
         antes = j.carne_puntos
         j.carne_puntos = max(0, j.carne_puntos - int(puntos))
         self.son("multa", cat="interfaz")
-        t = f"Multa por {motivo}: {importe} euros y {int(puntos)} puntos del carné."
+        t = tr('Multa por {motivo}: {importe} euros y {int} puntos del carné.').format(motivo=(motivo), importe=(importe), int=(int(puntos)))
         if resto:
-            t += f" No te llega: quedan {resto} euros a deber, y eso no gusta entre los vecinos."
+            t += tr(' No te llega: quedan {resto} euros a deber, y eso no gusta entre los vecinos.').format(resto=(resto))
             self.cambiar_ciudadania(-1.0)
         if j.carne_puntos <= 0 and antes > 0:
-            t += " Te has quedado sin puntos: te retiran el carné. Si un agente te ve conducir, irá a por ti. Se recupera con un curso en una academia."
+            t += tr(" Te has quedado sin puntos: te retiran el carné. Si un agente te ve conducir, irá a por ti. Se recupera con un curso en una academia.")
         else:
-            t += f" Te quedan {j.carne_puntos}."
+            t += tr(' Te quedan {carne_puntos}.').format(carne_puntos=(j.carne_puntos))
         self.decir(t)
 
     def infraccion_semaforo(self, v, i, jj):
@@ -202,7 +203,7 @@ class Realismo:
         if not self._policia_mirando():
             return False
         self.t_multa = self.t
-        self.multar("saltarte un semáforo en rojo", aj("multa_semaforo"), aj("puntos_semaforo"))
+        self.multar(tr("saltarte un semáforo en rojo"), aj("multa_semaforo"), aj("puntos_semaforo"))
         return True
 
     def vigilar_velocidad(self, v, dt):
@@ -213,7 +214,7 @@ class Realismo:
             return
         if self.j.carne_puntos <= 0 and abs(v.vel) > 2 and self.t - getattr(self, "t_sin_carne", -99) > 60 and self._policia_mirando(60):
             self.t_sin_carne = self.t
-            self.delito(2, "Un agente te reconoce: conduces sin carné.", siempre=True)
+            self.delito(2, tr("Un agente te reconoce: conduces sin carné."), siempre=True)
             return
         limite = aj("limite_ciudad") * (1.0 + aj("margen_velocidad") / 100.0) / 3.6
         if abs(v.vel) <= limite:
@@ -223,25 +224,25 @@ class Realismo:
         if self.t_exceso > 4.0 and self.t - getattr(self, "t_multa", -99) > 30 and self._policia_mirando():
             self.t_exceso = 0.0
             self.t_multa = self.t
-            self.multar(f"exceso de velocidad, a {int(abs(v.vel) * 3.6)} por hora donde el límite es {int(aj('limite_ciudad'))}", aj("multa_velocidad"), aj("puntos_velocidad"))
+            self.multar(tr('exceso de velocidad, a {int} por hora donde el límite es {int2}').format(int=(int(abs(v.vel) * 3.6)), int2=(int(aj('limite_ciudad')))), aj("multa_velocidad"), aj("puntos_velocidad"))
 
     def carne_txt(self):
         if not self.normas_activas():
             return ""
         p = self.j.carne_puntos
-        return " Te han retirado el carné de conducir." if p <= 0 else f" Carné de conducir: {p} puntos."
+        return tr(" Te han retirado el carné de conducir.") if p <= 0 else tr(' Carné de conducir: {v} puntos.').format(v=(p))
 
     def recuperar_carne(self):
         """El curso de recuperación de puntos, en una academia."""
         j = self.j
         tope = int(aj("puntos_carne"))
         if j.carne_puntos >= tope:
-            self.decir("Tienes todos los puntos del carné.", True)
+            self.decir(tr("Tienes todos los puntos del carné."), True)
             return False
         if not self.pagar(int(aj("precio_carne"))):
             return False
         j.carne_puntos = min(tope, max(j.carne_puntos, 0) + int(aj("puntos_curso")))
         self.pasar_horas(4)
         self.son("jornada", cat="interfaz")
-        self.decir(f"Cuatro horas de clase y un examen. Vuelves a tener {j.carne_puntos} puntos en el carné.", True)
+        self.decir(tr('Cuatro horas de clase y un examen. Vuelves a tener {carne_puntos} puntos en el carné.').format(carne_puntos=(j.carne_puntos)), True)
         return True

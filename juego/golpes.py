@@ -13,6 +13,7 @@ Nada de esto es obligatorio: sin banda, o sin prepararlo, el atraco es el de sie
 
 Los papeles, los números y las frases están en los datos (vida.json, secciones «golpes» y «papeles_golpe»).
 """
+from .i18n import tr
 import math
 import random
 
@@ -31,64 +32,69 @@ AJ = Ajustes("golpes", {
     "fallo_base": 30, "herido_prob": 18, "herido_dias_min": 2, "herido_dias_max": 5, "detenido_prob": 25,
     "delata_lealtad": 40, "delata_busqueda": 1, "tarde_min": 10, "tarde_max": 25,
     "reparto_tope": 60, "lealtad_exito": 3, "lealtad_fracaso": 6,
+    "charla_lealtad": 2, "invitar_precio": 30, "invitar_lealtad": 4, "paga_precio": 150, "paga_lealtad": 8,
 }, {
+    "frases_charla_banda": [tr("{nombre} te cuenta que su madre quiere que deje esto y se saque el carné de camión. Se ríe, pero no del todo."), tr("{nombre} te pregunta si de verdad te fías de todos los de la banda. Dice que de ti, sí."), tr("Habláis de fútbol. {nombre} es del equipo que siempre pierde, y lo defiende como si le fuera la vida."), tr("{nombre} te enseña una foto de cuando era crío, en la playa del puerto. Nadie diría que es la misma persona."), tr("{nombre} dice que está ahorrando para irse un año fuera cuando esto se calme. No dice adónde."), tr("{nombre} te cuenta, bajando la voz, que el último golpe le quitó el sueño dos noches.")],
+    "frases_invitar_banda": [tr("Invitas a {nombre} a una cerveza en la barra. Acaba siendo una ronda, y luego otra."), tr("Le pagas a {nombre} un bocadillo y un café. Dice que así da gusto currar contigo.")],
+    "frases_paga_banda": [tr("Le das a {nombre} {euros} euros, aparte de su parte. No dice nada, pero se le nota."), tr("{nombre} se guarda los {euros} euros sin contarlos: «Esto no se me olvida».")],
+    "frases_echar_banda": [tr("{nombre} recoge sus cosas y se va sin mirar atrás. Ya no es de la banda."), tr("«Tú sabrás», dice {nombre}. Deja la banda y se pierde calle abajo.")],
     "tiempos_caja": ["banco=26", "proveedor=14", "casino=20", "empenos=14", "armeria=14", "concesionario=16", "hotel=14"],
-    "frases_entrada": ["Fase uno, entrada. Cada uno a su sitio.", "Fase uno, entrada. Relojes en hora: empezamos."],
-    "frases_control": ["Fase dos, control. Que nadie se mueva hasta que no quede guardia en pie.", "Fase dos, control. Primero, los que van armados."],
-    "frases_control_sin_guardia": ["Fase dos, control. Aquí no hay guardia: todo el mundo al suelo y nadie se hace el valiente.",
-                                   "Fase dos, control. Sin guardia a la vista: la gente, quieta y callada."],
-    "frases_caja": ["Fase tres, la caja.", "Fase tres: a por la caja."],
-    "frases_salida": ["Fase cuatro, salida. Fuera de aquí con lo que llevas.", "Fase cuatro, salida. Ya lo tienes: a la calle."],
-    "frases_huida": ["Fase cinco, huida. Despista a la policía y el botín es vuestro.", "Fase cinco, huida. Ahora toca desaparecer."],
-    "radio_conductor_listo": ["En la puerta, con el motor en marcha.", "Aparcado delante y sin apagar el motor. Cuando salgáis, arranco."],
-    "radio_conductor_tarde": ["Voy con retraso, hay un atasco. Aguantad un poco.", "Me he tenido que dar una vuelta: había una patrulla. Llego enseguida."],
-    "radio_conductor_llega": ["Ya estoy en la puerta. ¡Vamos, vamos!", "Aquí estoy. Subid ya."],
-    "radio_conductor_ventaja": ["Agárrate: me sé un callejón por el que no nos sigue nadie.", "Salgo por detrás del mercado. Ahí nos pierden."],
-    "radio_conductor_sin_ventaja": ["Se me ha calado. Ya está, ya arranca. Hemos perdido la ventaja.", "Me tiemblan las manos. Salimos, pero nos han visto salir."],
-    "radio_conductor_tu": ["El motor está en marcha. Conduces tú: yo voy mirando atrás.", "Todo tuyo, ya está arrancado. Yo te canto por dónde vienen."],
-    "radio_vigilante_listo": ["En mi sitio. Desde aquí veo las dos esquinas.", "Colocado. Si viene alguien, os enteráis antes que ellos."],
-    "radio_vigilante_alarma": ["Ha saltado la alarma. Calculo {segundos} segundos hasta que lleguen.", "Los han avisado. Tenéis unos {segundos} segundos, ni uno más."],
-    "radio_vigilante_cerca": ["¡Ya se oyen las sirenas! Os quedan {segundos} segundos.", "Vienen por la avenida. {segundos} segundos y los tenéis encima."],
-    "radio_vigilante_llegan": ["¡Ya están aquí! Me quito de en medio.", "¡Policía en la puerta! Salid como podáis."],
-    "radio_vigilante_falla": ["No... no he visto venir nada. ¡Los tenéis encima!", "Se me ha pasado. ¡Están ahí mismo!"],
-    "frases_vigilante_detenido": ["A {nombre} lo han cogido en la esquina: se lo llevan esposado.", "{nombre} no ha corrido lo bastante: la policía lo tiene."],
-    "frases_delata": ["{nombre} no ha aguantado ni el primer interrogatorio: ha dado tu nombre.", "{nombre} ha cantado para salvarse. La policía sabe quién ha sido."],
-    "frases_no_delata": ["{nombre} no ha dicho ni una palabra. De esos quedan pocos.", "{nombre} se come el marrón sin dar un solo nombre."],
-    "radio_escolta_control": ["Yo me ocupo de la gente. Tú a lo tuyo.", "Los tengo a todos contra la pared. Nadie se mueve."],
-    "radio_escolta_heroe": ["Uno quería hacerse el héroe. Ya no quiere.", "Quieto ahí. Le he quitado las ganas a uno que iba a por ti."],
-    "radio_escolta_alarma": ["Una mano iba hacia el botón de la alarma. No ha llegado.", "Casi pulsan la alarma. Casi."],
-    "frases_escolta_herido": ["¡A {nombre} le han dado! Se arrastra hacia la puerta: está fuera del golpe.", "{nombre} cae herido y sale como puede. No cuentes con él para lo que queda."],
-    "frases_heroe": ["¡Uno de los que estaban en el suelo se levanta y va a por ti!", "¡Cuidado! Alguien ha sacado un arma de debajo del mostrador."],
-    "frases_alarma": ["¡Alguien ha pulsado la alarma antes de tiempo!", "Se oye un timbre al fondo: han dado la alarma mientras abrías."],
-    "radio_caja_empieza": ["Me pongo con ella. Dame {segundos} segundos.", "Esta la conozco. {segundos} segundos y es nuestra."],
-    "radio_caja_ayuda": ["Yo sujeto, tú gira. Así va más deprisa.", "Déjame la cerradura a mí, tú vigila la puerta de la cámara."],
-    "radio_caja_mitad": ["Va por la mitad.", "Ya cede. Un poco más."],
-    "radio_caja_hecho": ["¡Abierta!", "¡Ya está! Todo dentro de la bolsa."],
-    "radio_caja_nervios": ["No... no atino. Me sudan las manos. Va a tardar más.", "Se me ha partido la ganzúa. Empiezo otra vez."],
-    "radio_caja_solo": ["Si no me cubres, no sigo. Vuelve aquí.", "No abro con la espalda al aire. Acércate."],
-    "radio_tirador_dispara": ["¡Los tengo detrás! Disparo.", "Baja la ventanilla, que les voy a dar."],
-    "radio_tirador_acierta": ["¡Le he dado!", "¡Ese ya no nos sigue igual!", "¡Tocado!"],
-    "frases_reparto": ["Reparto: {partes}. Para ti quedan {neto} euros de {botin}.", "Cada uno lo suyo: {partes}. A ti te quedan {neto} de los {botin} euros."],
-    "frases_se_va": ["{nombre} se harta de golpes que salen mal y deja la banda.", "{nombre} dice que contigo solo se gana cárcel, y se va."],
+    "frases_entrada": [tr("Fase uno, entrada. Cada uno a su sitio."), tr("Fase uno, entrada. Relojes en hora: empezamos.")],
+    "frases_control": [tr("Fase dos, control. Que nadie se mueva hasta que no quede guardia en pie."), tr("Fase dos, control. Primero, los que van armados.")],
+    "frases_control_sin_guardia": [tr("Fase dos, control. Aquí no hay guardia: todo el mundo al suelo y nadie se hace el valiente."),
+                                   tr("Fase dos, control. Sin guardia a la vista: la gente, quieta y callada.")],
+    "frases_caja": [tr("Fase tres, la caja."), tr("Fase tres: a por la caja.")],
+    "frases_salida": [tr("Fase cuatro, salida. Fuera de aquí con lo que llevas."), tr("Fase cuatro, salida. Ya lo tienes: a la calle.")],
+    "frases_huida": [tr("Fase cinco, huida. Despista a la policía y el botín es vuestro."), tr("Fase cinco, huida. Ahora toca desaparecer.")],
+    "radio_conductor_listo": [tr("En la puerta, con el motor en marcha."), tr("Aparcado delante y sin apagar el motor. Cuando salgáis, arranco.")],
+    "radio_conductor_tarde": [tr("Voy con retraso, hay un atasco. Aguantad un poco."), tr("Me he tenido que dar una vuelta: había una patrulla. Llego enseguida.")],
+    "radio_conductor_llega": [tr("Ya estoy en la puerta. ¡Vamos, vamos!"), tr("Aquí estoy. Subid ya.")],
+    "radio_conductor_ventaja": [tr("Agárrate: me sé un callejón por el que no nos sigue nadie."), tr("Salgo por detrás del mercado. Ahí nos pierden.")],
+    "radio_conductor_sin_ventaja": [tr("Se me ha calado. Ya está, ya arranca. Hemos perdido la ventaja."), tr("Me tiemblan las manos. Salimos, pero nos han visto salir.")],
+    "radio_conductor_tu": [tr("El motor está en marcha. Conduces tú: yo voy mirando atrás."), tr("Todo tuyo, ya está arrancado. Yo te canto por dónde vienen.")],
+    "radio_vigilante_listo": [tr("En mi sitio. Desde aquí veo las dos esquinas."), tr("Colocado. Si viene alguien, os enteráis antes que ellos.")],
+    "radio_vigilante_alarma": [tr("Ha saltado la alarma. Calculo {segundos} segundos hasta que lleguen."), tr("Los han avisado. Tenéis unos {segundos} segundos, ni uno más.")],
+    "radio_vigilante_cerca": [tr("¡Ya se oyen las sirenas! Os quedan {segundos} segundos."), tr("Vienen por la avenida. {segundos} segundos y los tenéis encima.")],
+    "radio_vigilante_llegan": [tr("¡Ya están aquí! Me quito de en medio."), tr("¡Policía en la puerta! Salid como podáis.")],
+    "radio_vigilante_falla": [tr("No... no he visto venir nada. ¡Los tenéis encima!"), tr("Se me ha pasado. ¡Están ahí mismo!")],
+    "frases_vigilante_detenido": [tr("A {nombre} lo han cogido en la esquina: se lo llevan esposado."), tr("{nombre} no ha corrido lo bastante: la policía lo tiene.")],
+    "frases_delata": [tr("{nombre} no ha aguantado ni el primer interrogatorio: ha dado tu nombre."), tr("{nombre} ha cantado para salvarse. La policía sabe quién ha sido.")],
+    "frases_no_delata": [tr("{nombre} no ha dicho ni una palabra. De esos quedan pocos."), tr("{nombre} se come el marrón sin dar un solo nombre.")],
+    "radio_escolta_control": [tr("Yo me ocupo de la gente. Tú a lo tuyo."), tr("Los tengo a todos contra la pared. Nadie se mueve.")],
+    "radio_escolta_heroe": [tr("Uno quería hacerse el héroe. Ya no quiere."), tr("Quieto ahí. Le he quitado las ganas a uno que iba a por ti.")],
+    "radio_escolta_alarma": [tr("Una mano iba hacia el botón de la alarma. No ha llegado."), tr("Casi pulsan la alarma. Casi.")],
+    "frases_escolta_herido": [tr("¡A {nombre} le han dado! Se arrastra hacia la puerta: está fuera del golpe."), tr("{nombre} cae herido y sale como puede. No cuentes con él para lo que queda.")],
+    "frases_heroe": [tr("¡Uno de los que estaban en el suelo se levanta y va a por ti!"), tr("¡Cuidado! Alguien ha sacado un arma de debajo del mostrador.")],
+    "frases_alarma": [tr("¡Alguien ha pulsado la alarma antes de tiempo!"), tr("Se oye un timbre al fondo: han dado la alarma mientras abrías.")],
+    "radio_caja_empieza": [tr("Me pongo con ella. Dame {segundos} segundos."), tr("Esta la conozco. {segundos} segundos y es nuestra.")],
+    "radio_caja_ayuda": [tr("Yo sujeto, tú gira. Así va más deprisa."), tr("Déjame la cerradura a mí, tú vigila la puerta de la cámara.")],
+    "radio_caja_mitad": [tr("Va por la mitad."), tr("Ya cede. Un poco más.")],
+    "radio_caja_hecho": [tr("¡Abierta!"), tr("¡Ya está! Todo dentro de la bolsa.")],
+    "radio_caja_nervios": [tr("No... no atino. Me sudan las manos. Va a tardar más."), tr("Se me ha partido la ganzúa. Empiezo otra vez.")],
+    "radio_caja_solo": [tr("Si no me cubres, no sigo. Vuelve aquí."), tr("No abro con la espalda al aire. Acércate.")],
+    "radio_tirador_dispara": [tr("¡Los tengo detrás! Disparo."), tr("Baja la ventanilla, que les voy a dar.")],
+    "radio_tirador_acierta": [tr("¡Le he dado!"), tr("¡Ese ya no nos sigue igual!"), tr("¡Tocado!")],
+    "frases_reparto": [tr("Reparto: {partes}. Para ti quedan {neto} euros de {botin}."), tr("Cada uno lo suyo: {partes}. A ti te quedan {neto} de los {botin} euros.")],
+    "frases_se_va": [tr("{nombre} se harta de golpes que salen mal y deja la banda."), tr("{nombre} dice que contigo solo se gana cárcel, y se va.")],
     "vehiculos": [],
 }, cero=("caja_ayuda", "caja_nervios", "vigilante_retraso", "vigilante_aviso", "conductor_ventaja", "conductor_nivel", "heroe_prob", "heroe_escolta", "alarma_prob",
          "alarma_escolta", "fallo_base", "herido_prob", "detenido_prob", "delata_lealtad", "delata_busqueda", "reparto_tope", "lealtad_exito", "lealtad_fracaso",
          "exp_bono", "exp_max", "tirador_dano"))
 
 EFECTOS = ("conductor", "vigilante", "escolta", "caja", "tirador")
-ATRIBUTOS = {"punteria": "puntería", "conduccion": "conducción", "nervios": "nervios", "lealtad": "lealtad"}
+ATRIBUTOS = {"punteria": tr("puntería"), "conduccion": tr("conducción"), "nervios": tr("nervios"), "lealtad": tr("lealtad")}
 # Los papeles de serie; los datos (vida.json, papeles_golpe) pueden cambiarlos, quitarlos o añadir otros con los mismos efectos.
 PAPELES_SERIE = [
-    {"id": "conductor", "nombre": "Conductor", "efecto": "conductor", "atributo": "conduccion", "parte": 10,
-     "desc": "Espera fuera, con el motor en marcha, en el vehículo que elijas. Al salir subes de pasajero, o al volante con el coche ya arrancado, y la huida empieza con ventaja."},
-    {"id": "vigilante", "nombre": "Vigilante", "efecto": "vigilante", "atributo": "nervios", "parte": 8,
-     "desc": "Se queda fuera. Cuando salta la alarma, entretiene a la policía un rato y te va diciendo por la radio cuánto falta para que llegue."},
-    {"id": "escolta", "nombre": "Escolta dentro", "efecto": "escolta", "atributo": "punteria", "parte": 8,
-     "desc": "Entra contigo y tiene a raya a la gente y a los guardias: es mucho más difícil que alguien se haga el héroe o pulse la alarma antes de tiempo."},
-    {"id": "caja", "nombre": "El de la caja", "efecto": "caja", "atributo": "nervios", "parte": 10,
-     "desc": "Sabe de cerraduras: contigo, la caja se abre bastante antes; y si eliges cubrirle, la abre él mientras tú vigilas."},
-    {"id": "tirador", "nombre": "Tirador", "efecto": "tirador", "atributo": "punteria", "parte": 8,
-     "desc": "Va en el vehículo de la huida y dispara por la ventanilla a los que os persiguen."},
+    {"id": "conductor", "nombre": tr("Conductor"), "efecto": "conductor", "atributo": "conduccion", "parte": 10,
+     "desc": tr("Espera fuera, con el motor en marcha, en el vehículo que elijas. Al salir subes de pasajero, o al volante con el coche ya arrancado, y la huida empieza con ventaja.")},
+    {"id": "vigilante", "nombre": tr("Vigilante"), "efecto": "vigilante", "atributo": "nervios", "parte": 8,
+     "desc": tr("Se queda fuera. Cuando salta la alarma, entretiene a la policía un rato y te va diciendo por la radio cuánto falta para que llegue.")},
+    {"id": "escolta", "nombre": tr("Escolta dentro"), "efecto": "escolta", "atributo": "punteria", "parte": 8,
+     "desc": tr("Entra contigo y tiene a raya a la gente y a los guardias: es mucho más difícil que alguien se haga el héroe o pulse la alarma antes de tiempo.")},
+    {"id": "caja", "nombre": tr("El de la caja"), "efecto": "caja", "atributo": "nervios", "parte": 10,
+     "desc": tr("Sabe de cerraduras: contigo, la caja se abre bastante antes; y si eliges cubrirle, la abre él mientras tú vigilas.")},
+    {"id": "tirador", "nombre": tr("Tirador"), "efecto": "tirador", "atributo": "punteria", "parte": 8,
+     "desc": tr("Va en el vehículo de la huida y dispara por la ventanilla a los que os persiguen.")},
 ]
 PAPELES = [dict(x) for x in PAPELES_SERIE]
 
@@ -125,7 +131,7 @@ def _tiempo_caja(tipo):
 
 def _lista_txt(cosas):
     cosas = list(cosas)
-    return cosas[0] if len(cosas) == 1 else ", ".join(cosas[:-1]) + " y " + cosas[-1] if cosas else ""
+    return cosas[0] if len(cosas) == 1 else ", ".join(cosas[:-1]) + tr(" y ") + cosas[-1] if cosas else ""
 
 
 class Golpes:
@@ -146,7 +152,7 @@ class Golpes:
         return {"id": max([int(f.get("id", 0)) for f in j.banda_gente if isinstance(f, dict)] or [0]) + 1, "n": nombre, "g": genero,
                 "punteria": random.randint(a, b), "conduccion": random.randint(a, b),
                 "nervios": int(nervios) if nervios is not None else random.randint(a, b),
-                "lealtad": int(lealtad) if lealtad is not None else random.randint(max(a, 40), max(b, 60)), "exp": 0, "baja": 0}
+                "lealtad": int(lealtad) if lealtad is not None else random.randint(max(a, 40), max(b, 60)), "exp": 0, "baja": 0, "alta": self.dia}
 
     def banda_fichas(self):
         """La gente de tu banda, uno por uno, con su nombre y lo que vale. Siempre tantos como diga la banda: una partida
@@ -229,7 +235,7 @@ class Golpes:
                 continue
             e.bid = f["id"]
             usados.add(f["id"])
-            e.nombre = f"{f['n']}, de {self.j.banda_nombre or 'tu banda'}"
+            e.nombre = tr('{n}, de {v}').format(n=(f['n']), v=(self.j.banda_nombre or tr('tu banda')))
             pares.append((e, f))
         return pares
 
@@ -241,22 +247,23 @@ class Golpes:
         return max(0.05, min(1.0, v / 100.0))
 
     def ficha_banda_txt(self, f):
-        t = f"{f['n']}: puntería {f['punteria']}, conducción {f['conduccion']}, nervios {f['nervios']} y lealtad {f['lealtad']}, de 100. "
-        t += "Aún no ha dado ningún golpe contigo" if not f.get("exp") else "Lleva un golpe contigo" if f["exp"] == 1 else f"Lleva {f['exp']} golpes contigo"
+        t = tr('{n}: puntería {punteria}, conducción {conduccion}, nervios {nervios} y lealtad {lealtad}, de 100. ').format(n=(f['n']), punteria=(f['punteria']), conduccion=(f['conduccion']), nervios=(f['nervios']), lealtad=(f['lealtad']))
+        t += tr("Aún no ha dado ningún golpe contigo") if not f.get("exp") else tr("Lleva un golpe contigo") if f["exp"] == 1 else tr('Lleva {exp} golpes contigo').format(exp=(f['exp']))
         if f.get("baja", 0) >= self.dia:
             dias = f["baja"] - self.dia + 1
-            t += f". Está de baja, herido: le queda{'n' if dias != 1 else ''} {dias} día{'s' if dias != 1 else ''}"
+            t += tr('. Está {v}: le queda{v2} {dias} día{v3}').format(v=(tr('detenido') if f.get('detenido') else tr('de baja, herido')), v2=(tr('n') if dias != 1 else ''), dias=(dias), v3=(tr('s') if dias != 1 else ''))
+        t += f". {self.estado_animo_banda(f).capitalize()}. {self.tarea_txt(f)}"      # cómo está y qué hace (capo.py)
         return t
 
     # ------------------------------------------------------------------ ¿se puede preparar?
     def golpe_bloqueo(self):
         """Por qué no se puede preparar un golpe ahora, o una cadena vacía."""
         if self.en_servidor:
-            return "En un servidor en línea los golpes no se preparan con la banda: allí tu gente son los demás jugadores, y el botín y la policía los lleva el servidor. El atraco de siempre sigue funcionando."
+            return tr("En un servidor en línea los golpes no se preparan con la banda: allí tu gente son los demás jugadores, y el botín y la policía los lleva el servidor. El atraco de siempre sigue funcionando.")
         if self.online_activo():
-            return "Jugando con amigos los golpes no se preparan con la banda. El atraco de siempre sigue funcionando."
+            return tr("Jugando con amigos los golpes no se preparan con la banda. El atraco de siempre sigue funcionando.")
         if not self.j.banda:
-            return "Para preparar un golpe necesitas gente en tu banda. Se recluta en el móvil, en Territorios, Tu banda, o hablando con la gente de la calle."
+            return tr("Para preparar un golpe necesitas gente en tu banda. Se recluta en el móvil, en Territorios, Tu banda, o hablando con la gente de la calle.")
         return ""
 
     def golpe_presentes(self):
@@ -273,10 +280,10 @@ class Golpes:
             if v.muerto or v.tag or v.ardiendo >= 0 or v.ia not in (None, "aparcado") or v.modelo.get("barco") or v.modelo.get("vuela") or getattr(v, "con_chofer", False):
                 continue
             if (self.es_mio(v) or v is u or v is self.j.veh) and v.dist(x, y) <= AJ("radio_vehiculo"):
-                ops.append(("veh", v, f"{v.nombre}, que está a {int(v.dist(x, y))} metros"))
+                ops.append(("veh", v, tr('{nombre}, que está a {int} metros').format(nombre=(v.nombre), int=(int(v.dist(x, y))))))
         modelos = [m for m in AJ.lista("vehiculos") if m in self.modelos and not self.modelos[m].get("barco") and not self.modelos[m].get("vuela")] or self.chofer_modelos()
         for m in modelos:
-            ops.append(("modelo", m, f"{self.modelos[m]['nombre']} de {self.j.banda_nombre or 'tu banda'}"))
+            ops.append(("modelo", m, tr('{nombre} de {v}').format(nombre=(self.modelos[m]['nombre']), v=(self.j.banda_nombre or tr('tu banda')))))
         return ops
 
     # ------------------------------------------------------------------ empezar
@@ -339,7 +346,7 @@ class Golpes:
     def _golpe_radio(self, r, cual, **kw):
         """Uno de los tuyos habla por la radio."""
         self.son("emisora", cat="interfaz", vol=0.5)
-        self.decir(f"{r['ficha']['n']}, por la radio: {AJ.frase(cual, **kw)}")
+        self.decir(tr('{n}, por la radio: {frase}').format(n=(r['ficha']['n']), frase=(AJ.frase(cual, **kw))))
 
     def _golpe_fallo(self, r, base=None):
         """¿Le pueden los nervios? Cuanto más temple y más golpes a la espalda, menos."""
@@ -418,7 +425,7 @@ class Golpes:
             g["veh_tuyo"] = True
         else:
             modelo = plan.get("modelo") if plan.get("modelo") in self.modelos else random.choice(self.chofer_modelos())
-            v = self.crear_vehiculo(modelo, px, py, d, None, f"{self.modelos[modelo]['nombre']} de {self.j.banda_nombre or 'tu banda'}", "banda")
+            v = self.crear_vehiculo(modelo, px, py, d, None, tr('{nombre} de {v}').format(nombre=(self.modelos[modelo]['nombre']), v=(self.j.banda_nombre or tr('tu banda'))), "banda")
             v.propio = True
         v.cerrado = False
         v.en_marcha = True
@@ -433,10 +440,10 @@ class Golpes:
             self.despedir_chofer(callar=True)
         if g["pasajero"]:
             self.chofer = {"estado": "aqui", "t": 0.0, "garaje": None, "ficha": None, "modelo": v.modelo["id"], "veh": v, "propio": g["veh_tuyo"],
-                           "nombre": f"{con['ficha']['n']}, de {self.j.banda_nombre or 'tu banda'}", "intentos": 0, "sin_destino": 0.0, "golpe": True}
+                           "nombre": tr('{n}, de {v}').format(n=(con['ficha']['n']), v=(self.j.banda_nombre or tr('tu banda'))), "intentos": 0, "sin_destino": 0.0, "golpe": True}
             v.con_chofer = True
         self._golpe_radio(con, "radio_conductor_llega" if llega else "radio_conductor_listo")
-        self.decir(f"{self.situar(v.x, v.y, v.nombre)}." + (" Irás de pasajero." if g["pasajero"] else " Conducirás tú."))
+        self.decir(f"{self.situar(v.x, v.y, v.nombre)}." + (tr(" Irás de pasajero.") if g["pasajero"] else tr(" Conducirás tú.")))
 
     # ------------------------------------------------------------------ las fases
     def _golpe_fase(self, fase):
@@ -452,11 +459,11 @@ class Golpes:
 
     def golpe_fase_txt(self):
         g = self.golpe
-        nombres = {"entrada": "entrada", "control": "control", "caja": "la caja", "salida": "salida", "huida": "huida"}
+        nombres = {"entrada": "entrada", "control": "control", "caja": tr("la caja"), "salida": "salida", "huida": "huida"}
         orden = ["entrada", "control", "caja", "salida", "huida"]
         if not g or g["fase"] not in nombres:
             return ""
-        return f"Golpe preparado, fase {orden.index(g['fase']) + 1} de 5: {nombres[g['fase']]}."
+        return tr('Golpe preparado, fase {v} de 5: {v2}.').format(v=(orden.index(g['fase']) + 1), v2=(nombres[g['fase']]))
 
     def golpe_caja(self):
         """Cómo se abre la caja en este golpe: cuánto se alarga o se acorta, a qué distancia vale estar, y si la abre uno de
@@ -543,13 +550,13 @@ class Golpes:
             self.banda_echar(f["id"])
             self.j.stats["banda_detenidos"] = self.j.stats.get("banda_detenidos", 0) + 1
             if delata:
-                self.decir(AJ.frase("frases_delata", nombre=f["n"]) + f" Quedáis {self.j.banda} en la banda.")
+                self.decir(AJ.frase("frases_delata", nombre=f["n"]) + tr(' Quedáis {banda} en la banda.').format(banda=(self.j.banda)))
                 if AJ("delata_busqueda") >= 1 and g["nivel"]:
                     self.poner_busqueda(min(5, g["nivel"] + AJ.entero("delata_busqueda")))
-                self.hon_antecedente(2, f"señalado por un detenido tras el atraco a {g['lugar'].nombre if g['lugar'] else 'un local'}")
+                self.hon_antecedente(2, tr('señalado por un detenido tras el atraco a {v}').format(v=(g['lugar'].nombre if g['lugar'] else tr('un local'))))
                 self.j.stats["banda_delaciones"] = self.j.stats.get("banda_delaciones", 0) + 1
             else:
-                self.decir(AJ.frase("frases_no_delata", nombre=f["n"]) + f" Quedáis {self.j.banda} en la banda.")
+                self.decir(AJ.frase("frases_no_delata", nombre=f["n"]) + tr(' Quedáis {banda} en la banda.').format(banda=(self.j.banda)))
 
     def actualizar_golpe(self, dt):
         g = self.golpe
@@ -630,7 +637,7 @@ class Golpes:
         self.son("dolor_npc", xy=(e.x, e.y), ref=6, tono=e.tono)
         if e in self.personas:
             self.personas.remove(e)
-        self.decir(AJ.frase("frases_escolta_herido", nombre=f["n"]) + f" Estará de baja {dias} días.")
+        self.decir(AJ.frase("frases_escolta_herido", nombre=f["n"]) + tr(' Estará de baja {dias} días.').format(dias=(dias)))
         # sin él, lo que tenía a raya puede volver a pasar
         if g["evitado"].get("heroe"):
             g["evitado"]["heroe"], g["heroe"] = False, random.uniform(0.2, 0.7)
@@ -640,14 +647,14 @@ class Golpes:
     def _golpe_heroe(self, g):
         x, y = self.pos()
         pos = self._punto_cercano(7, 14, acera=False) or self.mundo.punto_libre(x + random.uniform(-10, 10), y + random.uniform(-10, 10))
-        e = Persona("enemigo", pos[0], pos[1], "El que se hace el héroe")
+        e = Persona("enemigo", pos[0], pos[1], tr("El que se hace el héroe"))
         e.salud, e.arma = 55.0, "pistola"
         e.hostil, e.estado, e.activo, e.tag = True, "ataca", True, "golpe"
         e.t_disparo = random.uniform(1.5, 2.5)
         self.personas.append(e)
         g["heroe_persona"] = e
         self.son("grito", xy=pos, vol=0.6)
-        self.decir(AJ.frase("frases_heroe") + " Pulsa Q para fijarlo.")
+        self.decir(AJ.frase("frases_heroe") + tr(" Pulsa Q para fijarlo."))
 
     def _golpe_subes(self, g):
         """Subes al vehículo de la huida: el motor ya estaba en marcha, y el conductor te da ventaja."""
@@ -663,7 +670,7 @@ class Golpes:
             g["llegan"] += extra
             g["avisado_cerca"] = False
             self._golpe_radio(con, "radio_conductor_ventaja")
-            self.decir(f"Ventaja: la policía tardará unos {int(round(extra))} segundos más en dar contigo.")
+            self.decir(tr('Ventaja: la policía tardará unos {int} segundos más en dar contigo.').format(int=(int(round(extra)))))
         elif j.estrellas > 1 and random.random() * 100 < AJ("conductor_nivel") * (0.4 + 0.6 * apt):
             from .combate import UMBRAL
             j.puntos_busqueda = float(UMBRAL[j.estrellas - 2])
@@ -671,13 +678,13 @@ class Golpes:
             self.sv_busqueda(j.estrellas)
             self._golpe_radio(con, "radio_conductor_ventaja")
             self.son("estrella_baja", cat="interfaz")
-            self.decir(f"Ventaja: sale por donde no os esperan. Nivel de búsqueda {j.estrellas}.")
+            self.decir(tr('Ventaja: sale por donde no os esperan. Nivel de búsqueda {estrellas}.').format(estrellas=(j.estrellas)))
         elif not g["pasajero"]:
             self._golpe_radio(con, "radio_conductor_tu")
         if g["pasajero"] and self.chofer_conduce() and not self.gps:
             dest = self._destino_azar(280, 700, g["lugar"])
             self.gps_a_lugar(dest, callar=True)
-            self.decir(f"{con['ficha']['n']} pone rumbo a {dest.nombre}, lejos de aquí. Con la L eliges tú otro destino.")
+            self.decir(tr('{n} pone rumbo a {nombre}, lejos de aquí. Con la L eliges tú otro destino.').format(n=(con['ficha']['n']), nombre=(dest.nombre)))
 
     def _golpe_tirador(self, g, dt):
         r = self._golpe_de("tirador")
@@ -767,7 +774,7 @@ class Golpes:
                 self.son("dinero", cat="interfaz", vol=0.5)
                 self.decir(AJ.frase("frases_reparto", partes=_lista_txt(f"{n}, {e} euros" for n, _, e in lista), neto=neto, botin=botin))
             if g["heridos"] and not callar:
-                self.decir(f"{_lista_txt(g['heridos'])} cobra igual, pero no podrá trabajar hasta que se cure.")
+                self.decir(tr('{_lista_txt} cobra igual, pero no podrá trabajar hasta que se cure.').format(_lista_txt=(_lista_txt(g['heridos']))))
             return
         if m is not None and g["botin"]:
             m.setdefault("recompensa", {})["dinero"] = int(g["botin"])       # un reintento empieza con el botín entero
@@ -779,7 +786,7 @@ class Golpes:
         for f in se_van:
             self.banda_echar(f["id"])
             if not callar:
-                self.decir(AJ.frase("frases_se_va", nombre=f["n"]) + f" Quedáis {self.j.banda}.")
+                self.decir(AJ.frase("frases_se_va", nombre=f["n"]) + tr(' Quedáis {banda}.').format(banda=(self.j.banda)))
         self.j.stats["golpes_fallidos"] = self.j.stats.get("golpes_fallidos", 0) + 1
 
     def golpe_estado_txt(self):
@@ -792,7 +799,7 @@ class Golpes:
         if quien:
             t += " " + _lista_txt(quien) + "."
         if g["alarma"] is not None and not g["llegado"]:
-            t += f" La policía llega en unos {max(1, int(g['llegan'] - self.t))} segundos."
+            t += tr(' La policía llega en unos {max} segundos.').format(max=(max(1, int(g['llegan'] - self.t))))
         return t
 
 
@@ -802,41 +809,152 @@ def como_funciona(p):
     from .menus import Menu, Opcion
     app = p.app
     lineas = [
-        "Qué es. Un atraco de los de siempre, a un banco, a un local con caja o a un proveedor, lo puedes preparar antes si tienes a gente de tu banda al lado. No es obligatorio: sin prepararlo, el atraco es el de siempre.",
-        "Antes de empezar repartes los papeles: eliges a cada uno de los tuyos y le das uno. A quien no le des ninguno, viene contigo y pelea a tu lado, como siempre. Quien tiene un papel está en lo suyo.",
+        tr("Qué es. Un atraco de los de siempre, a un banco, a un local con caja o a un proveedor, lo puedes preparar antes si tienes a gente de tu banda al lado. No es obligatorio: sin prepararlo, el atraco es el de siempre."),
+        tr("Antes de empezar repartes los papeles: eliges a cada uno de los tuyos y le das uno. A quien no le des ninguno, viene contigo y pelea a tu lado, como siempre. Quien tiene un papel está en lo suyo."),
     ]
     for x in PAPELES:
-        lineas.append(f"{x['nombre']}. {x['desc']} Rinde según su {ATRIBUTOS[x['atributo']]}. Se lleva el {int(x['parte'])} por ciento del botín.")
+        lineas.append(tr('{nombre}. {desc} Rinde según su {v}. Se lleva el {int} por ciento del botín.').format(nombre=(x['nombre']), desc=(x['desc']), v=(ATRIBUTOS[x['atributo']]), int=(int(x['parte']))))
     lineas += [
-        "Tu papel. Dentro, o abres tú la caja, o cubres a quien la abre y te ocupas de lo que venga. En la huida, o conduces tú, o vas de pasajero y disparas con la Q y Control.",
-        f"Las fases. Un golpe preparado tiene cinco, y el juego las dice: entrada, control, caja, salida y huida. La tecla O te dice en cuál vas. La caja ya no se coge al momento: tarda entre {AJ.entero('caja_min')} y "
-        f"{AJ.entero('caja_max')} segundos según el local, y más en un banco. Se oye cómo avanza. Si te apartas, se para.",
-        "Lo que vale cada uno. Cada persona de tu banda tiene puntería, conducción, nervios y lealtad, de 0 a 100, distintas en cada partida. Las ves en el móvil, en Territorios, Tu banda, Tu gente. Con cada golpe que sale bien aprenden y te son más leales.",
-        "Lo que puede salir mal. A quien le fallan los nervios llega tarde, no avisa o tarda más con la caja. Al de dentro le pueden herir y está de baja unos días. Al vigilante lo pueden detener, y si su lealtad es baja, da tu nombre: "
-        "sube la búsqueda y te queda un antecedente. Si el golpe fracasa, todos pierden confianza en ti, y quien se queda sin ninguna se va.",
-        f"El reparto. Cada uno cobra su parte del botín al acabar; entre todos, como mucho el {AJ.entero('reparto_tope')} por ciento. Lo demás es tuyo. Antes de empezar, el menú te dice cuánto te va a quedar.",
-        "En un servidor en línea y jugando con amigos los golpes no se preparan con la banda: el atraco de siempre sigue funcionando.",
+        tr("Tu papel. Dentro, o abres tú la caja, o cubres a quien la abre y te ocupas de lo que venga. En la huida, o conduces tú, o vas de pasajero y disparas con la Q y Control."),
+        tr('Las fases. Un golpe preparado tiene cinco, y el juego las dice: entrada, control, caja, salida y huida. La tecla O te dice en cuál vas. La caja ya no se coge al momento: tarda entre {entero} y {entero2} segundos según el local, y más en un banco. Se oye cómo avanza. Si te apartas, se para.').format(entero=(AJ.entero('caja_min')), entero2=(AJ.entero('caja_max'))),
+        tr("Lo que vale cada uno. Cada persona de tu banda tiene puntería, conducción, nervios y lealtad, de 0 a 100, distintas en cada partida. Las ves en el móvil, en Territorios, Tu banda, Tu gente. Con cada golpe que sale bien aprenden y te son más leales."),
+        tr("Lo que puede salir mal. A quien le fallan los nervios llega tarde, no avisa o tarda más con la caja. Al de dentro le pueden herir y está de baja unos días. Al vigilante lo pueden detener, y si su lealtad es baja, da tu nombre: "
+        "sube la búsqueda y te queda un antecedente. Si el golpe fracasa, todos pierden confianza en ti, y quien se queda sin ninguna se va."),
+        tr('El reparto. Cada uno cobra su parte del botín al acabar; entre todos, como mucho el {entero} por ciento. Lo demás es tuyo. Antes de empezar, el menú te dice cuánto te va a quedar.').format(entero=(AJ.entero('reparto_tope'))),
+        tr("En un servidor en línea y jugando con amigos los golpes no se preparan con la banda: el atraco de siempre sigue funcionando."),
     ]
-    ops = [Opcion(t.rstrip(".")) for t in lineas]
-    ops.append(Opcion("Volver", lambda: app.cerrar(m)))
-    m = Menu(app, "Golpes preparados: cómo funciona. Recorre la explicación con las flechas", ops)
+    ops = [Opcion(t.rstrip("."), ayuda=tr("Una parte de la explicación. Las demás, con las flechas arriba y abajo.")) for t in lineas]
+    ops.append(Opcion(tr("Volver"), lambda: app.cerrar(m)))
+    m = Menu(app, tr("Golpes preparados: cómo funciona. Recorre la explicación con las flechas"), ops)
     app.abrir(m)
 
 
 def menu_gente(p):
-    """Tu gente, uno por uno: lo que vale cada cual."""
+    """Tu gente, uno por uno: lo que vale cada cual. Intro sobre alguien abre lo que puedes hacer con esa persona."""
     from .menus import Menu, Opcion
     app = p.app
     p.banda_ligar()
 
     def ops():
-        lista = [Opcion(p.ficha_banda_txt(f), ayuda="Puntería, para disparar y tener a raya a la gente; conducción, para la huida; nervios, para no fallar cuando aprieta; lealtad, para no delatarte si lo detienen. "
-                        "Suben con cada golpe preparado que sale bien.") for f in p.banda_fichas()]
-        return lista or [Opcion("Todavía no hay nadie en tu banda")]
-    app.abrir(Menu(app, lambda: f"Tu gente: {p.j.banda} en {p.j.banda_nombre or 'tu banda'}", ops))
+        lista = [Opcion((lambda f=f: p.ficha_banda_txt(f)), (lambda f=f: menu_miembro(p, f, lambda: m.refrescar(False))),
+                        ayuda=tr("Intro para hablar con esta persona, invitarla, darle una paga o echarla. Puntería, para disparar y tener a raya a la gente; conducción, para la huida; "
+                              "nervios, para no fallar cuando aprieta; lealtad, para no delatarte si lo detienen. Suben con cada golpe preparado que sale bien.")) for f in p.banda_fichas()]
+        return lista or [Opcion(tr("Todavía no hay nadie en tu banda"), ayuda=tr("Se recluta gente en Territorios, Tu banda. Hace falta tener al menos un territorio."))]
+    m = Menu(app, lambda: tr('Tu gente: {banda} en {v}').format(banda=(p.j.banda), v=(p.j.banda_nombre or tr('tu banda'))), ops, intro=tr("Intro sobre alguien para tratar con esa persona"))
+    app.abrir(m)
 
 
-def preparar(p, l, empezar, que="el golpe"):
+def menu_miembro(p, f, al_cambiar=None):
+    """Tratar con alguien de tu banda, por su nombre: hablar, invitarle, darle una paga o echarle. Lo que le das le hace más leal."""
+    from .menus import Menu, Opcion
+    app = p.app
+    n = f["n"]
+
+    def hoy(que):
+        return f.get("trato", {}).get(que) == p.dia
+
+    def apuntar(que):
+        f.setdefault("trato", {})[que] = p.dia
+
+    def leal(puntos):
+        f["lealtad"] = max(0, min(100, int(f.get("lealtad", 50)) + int(puntos)))
+
+    def hecho(texto):
+        app.decir(texto + tr(' Lealtad {lealtad} de 100.').format(lealtad=(f['lealtad'])), True)
+        mm.refrescar(False)
+        if al_cambiar:
+            al_cambiar()
+
+    def hablar():
+        if hoy("charla"):
+            return app.decir(tr('Hoy ya has hablado un rato con {n}.').format(n=(n)), True)
+        apuntar("charla")
+        leal(AJ("charla_lealtad"))
+        p.pasar_horas(0.5)
+        hecho(AJ.frase("frases_charla_banda", nombre=n))
+
+    def invitar():
+        if hoy("invitar"):
+            return app.decir(tr('Hoy ya has invitado a {n}.').format(n=(n)), True)
+        if not p.pagar(AJ.entero("invitar_precio")):
+            return
+        apuntar("invitar")
+        leal(AJ("invitar_lealtad"))
+        p.cambiar_animo(2)
+        p.pasar_horas(1)
+        hecho(AJ.frase("frases_invitar_banda", nombre=n))
+
+    def paga():
+        if hoy("paga"):
+            return app.decir(tr('Hoy ya le has dado una paga a {n}.').format(n=(n)), True)
+        euros = AJ.entero("paga_precio")
+        if not p.pagar(euros):
+            return
+        apuntar("paga")
+        leal(AJ("paga_lealtad"))
+        p.son("dinero", cat="interfaz")
+        hecho(AJ.frase("frases_paga_banda", nombre=n, euros=euros))
+
+    def echar():
+        def si():
+            app.cerrar(conf)
+            app.cerrar(mm)
+            p.banda_echar(f["id"])
+            app.decir(AJ.frase("frases_echar_banda", nombre=n), True)
+            if al_cambiar:
+                al_cambiar()
+        conf = Menu(app, tr('¿Echas a {n} de la banda? No vuelve').format(n=(n)), [Opcion(tr("No, que se quede"), lambda: app.cerrar(conf)), Opcion(tr('Sí, echar a {n}').format(n=(n)), si, ayuda=tr("Se va de la banda para siempre y deja de cobrar su paga."))])
+        app.abrir(conf)
+    ops = [Opcion(lambda: p.ficha_banda_txt(f), ayuda=tr("Puntería, para disparar; conducción, para la huida; nervios, para no fallar cuando aprieta; lealtad, para no delatarte si lo detienen. Lo que le das aquí le hace más leal.")),
+           Opcion(tr('Hablar un rato con {n}').format(n=(n)), hablar, ayuda=tr("Media hora de charla: te cuenta cosas suyas y gana algo de lealtad. Una vez al día.")),
+           Opcion(tr('Invitar a {n} a algo: {entero} euros').format(n=(n), entero=(AJ.entero('invitar_precio'))), invitar, ayuda=tr("Una cerveza, un café, un bocadillo. Gana más lealtad que hablando. Una vez al día.")),
+           Opcion(tr('Darle una paga extra a {n}: {entero} euros').format(n=(n), entero=(AJ.entero('paga_precio'))), paga,
+                  ayuda=tr("Dinero aparte de lo que se lleva en los golpes. Es lo que más lealtad da, y alguien leal no te delata si lo detienen. Una vez al día.")),
+           Opcion(lambda: tr('Tarea: {tarea_txt}. Intro para cambiarla').format(tarea_txt=(p.tarea_txt(f))), lambda: menu_tarea(p, f, lambda: mm.refrescar(False)),
+                  ayuda=tr("Vender en la calle la mercancía que guardas en el armario de tus casas, o cocinar en uno de tus laboratorios con el material que tengas. "
+                        "Al final del día te traen lo vendido, menos su parte. A un camello lo pueden detener, y uno poco leal se queda con algo más.")),
+           Opcion(tr('Echar a {n} de la banda').format(n=(n)), echar, ayuda=tr("Se va y no vuelve. Tu banda tiene una persona menos.")),
+           Opcion(tr("Volver"), lambda: app.cerrar(mm))]
+    mm = Menu(app, n, ops)
+    app.abrir(mm)
+
+
+def menu_tarea(p, f, al_cambiar=None):
+    """La tarea de uno de tu banda: ninguna, vender tu mercancía o cocinar en uno de tus laboratorios (capo.py)."""
+    from .menus import Menu, Opcion
+    from . import capo
+    app, j = p.app, p.j
+
+    def poner(t, texto):
+        def g():
+            f["tarea"] = t
+            app.cerrar(m)
+            app.decir(texto, True)
+            if al_cambiar:
+                al_cambiar()
+        return g
+    ops = [Opcion(tr("Ninguna: que solo te acompañe cuando le llames"), poner("", tr('{n} deja lo que hacía.').format(n=(f['n']))),
+                  ayuda=tr("Deja de vender o de cocinar. Sigue en tu banda y viene contigo cuando llamas a los tuyos."))]
+    if p.modo_adulto() and p.capo_activo():
+        tt = capo.tareas()
+        if "vender" in tt:
+            ops.append(Opcion(tt["vender"].capitalize(), poner("vender", tr('{n} saldrá cada día a vender lo que guardas en el armario de tus casas. Al final del día te trae lo suyo.').format(n=(f['n']))),
+                              ayuda=tr("Coge la mercancía de los armarios de tus casas. Sin mercancía guardada, no hay nada que vender.")))
+        if "cocinar" in tt:
+            for cid in j.laboratorios:
+                l = p.lug(cid)
+                if l is not None:
+                    ops.append(Opcion(tr('{capitalize}: el de {nombre_lugar}').format(capitalize=(tt['cocinar'].capitalize()), nombre_lugar=(p.nombre_lugar(l))), poner("cocinar:" + cid, tr('{n} cocinará cada día en {nombre_lugar}, mientras haya material.').format(n=(f['n']), nombre_lugar=(p.nombre_lugar(l)))),
+                                      ayuda=tr("Cada día gasta una tanda de material, que se compra a un proveedor, y deja la mercancía en el armario de esa casa. Puede salir mal.")))
+    else:
+        ops.append(Opcion(tr("Las tareas de vender y cocinar necesitan el contenido para adultos, y no hay en un servidor"),
+                          ayuda=tr("El contenido para adultos se activa en Opciones, en una partida que no sea en un servidor.")))
+    ops.append(Opcion(tr("Volver"), lambda: app.cerrar(m)))
+    m = Menu(app, tr('Tarea para {n}').format(n=(f['n'])), ops)
+    app.abrir(m)
+
+
+def preparar(p, l, empezar, que=tr("el golpe")):
     """El menú «Preparar el golpe»: quién hace qué, tu papel, el vehículo y empezar. `empezar(plan)` lanza el atraco de
     ese sitio con el plan; devuelve True si ha empezado."""
     from .menus import Menu, Opcion
@@ -869,8 +987,8 @@ def preparar(p, l, empezar, que="el golpe"):
         tope = AJ("reparto_tope")
         total = min(total, tope)
         if not plan["papeles"]:
-            return "Reparto: nadie tiene papel todavía, así que todo el botín sería para ti"
-        return f"Reparto: tu gente se lleva el {int(total)} por ciento y tú el {int(100 - total)}" + (f". Hoy, de unos {botin} euros, te quedarían {int(botin * (100 - total) / 100)}" if botin else "")
+            return tr("Reparto: nadie tiene papel todavía, así que todo el botín sería para ti")
+        return tr('Reparto: tu gente se lleva el {int} por ciento y tú el {int2}').format(int=(int(total)), int2=(int(100 - total))) + (tr('. Hoy, de unos {botin} euros, te quedarían {int}').format(botin=(botin), int=(int(botin * (100 - total) / 100))) if botin else "")
 
     def elegir_papel(f):
         def abrir():
@@ -885,22 +1003,22 @@ def preparar(p, l, empezar, que="el golpe"):
                         plan["papeles"][f["id"]] = pid
                     limpiar()
                     app.cerrar(sub)
-                    app.decir(f"{f['n']}: {papel(pid)['nombre'].lower() if pid else 'sin papel, viene contigo'}.", True)
+                    app.decir(f"{f['n']}: {papel(pid)['nombre'].lower() if pid else tr('sin papel, viene contigo')}.", True)
                 return h
-            ops = [Opcion(f"{x['nombre']}. {f['n']} tiene {f[x['atributo']]} de 100 en {ATRIBUTOS[x['atributo']]}", poner(x["id"]),
-                          ayuda=f"{x['desc']} Se lleva el {int(x['parte'])} por ciento del botín.") for x in PAPELES]
-            ops.append(Opcion("Sin papel: viene contigo y pelea a tu lado, como siempre", poner(None), ayuda="No cobra parte del botín."))
-            sub = Menu(app, f"Papel de {f['n']}. {p.ficha_banda_txt(f)}", ops)
+            ops = [Opcion(tr('{nombre}. {n} tiene {v} de 100 en {v2}').format(nombre=(x['nombre']), n=(f['n']), v=(f[x['atributo']]), v2=(ATRIBUTOS[x['atributo']])), poner(x["id"]),
+                          ayuda=tr('{desc} Se lleva el {int} por ciento del botín.').format(desc=(x['desc']), int=(int(x['parte'])))) for x in PAPELES]
+            ops.append(Opcion(tr("Sin papel: viene contigo y pelea a tu lado, como siempre"), poner(None), ayuda=tr("No cobra parte del botín.")))
+            sub = Menu(app, tr('Papel de {n}. {ficha_banda_txt}').format(n=(f['n']), ficha_banda_txt=(p.ficha_banda_txt(f))), ops)
             app.abrir(sub)
         return abrir
 
     def texto_miembro(f):
-        return lambda: f"{f['n']}: " + (papel(plan["papeles"][f["id"]])["nombre"].lower() if papel(plan["papeles"].get(f["id"])) else "sin papel, viene contigo")
+        return lambda: f"{f['n']}: " + (papel(plan["papeles"][f["id"]])["nombre"].lower() if papel(plan["papeles"].get(f["id"])) else tr("sin papel, viene contigo"))
 
     def cambiar_dentro():
         if not any(papel(x) and papel(x)["efecto"] == "caja" for x in plan["papeles"].values()):
             app.son("error")
-            app.decir("Para cubrir tiene que haber alguien que abra la caja: dale ese papel a uno de los tuyos.", True)
+            app.decir(tr("Para cubrir tiene que haber alguien que abra la caja: dale ese papel a uno de los tuyos."), True)
             return
         plan["yo"]["dentro"] = "cubrir" if plan["yo"]["dentro"] == "caja" else "caja"
         m.refrescar()
@@ -908,7 +1026,7 @@ def preparar(p, l, empezar, que="el golpe"):
     def cambiar_huida():
         if not any(papel(x) and papel(x)["efecto"] == "conductor" for x in plan["papeles"].values()):
             app.son("error")
-            app.decir("Para ir de pasajero tiene que haber conductor: dale ese papel a uno de los tuyos.", True)
+            app.decir(tr("Para ir de pasajero tiene que haber conductor: dale ese papel a uno de los tuyos."), True)
             return
         plan["yo"]["huida"] = "pasajero" if plan["yo"]["huida"] == "conducir" else "conducir"
         m.refrescar()
@@ -917,9 +1035,9 @@ def preparar(p, l, empezar, que="el golpe"):
         if plan["veh_id"] is not None:
             v = next((x for x in p.vehiculos if getattr(x, "id_golpe", None) == plan["veh_id"] and not x.muerto), None)
             if v is not None:
-                return f"Vehículo de la huida: {v.nombre}"
+                return tr('Vehículo de la huida: {nombre}').format(nombre=(v.nombre))
             plan["veh_id"] = None
-        return f"Vehículo de la huida: {p.modelos[plan['modelo']]['nombre']} de la banda" if plan["modelo"] in p.modelos else "Vehículo de la huida: el que tenga la banda a mano"
+        return tr('Vehículo de la huida: {nombre} de la banda').format(nombre=(p.modelos[plan['modelo']]['nombre'])) if plan["modelo"] in p.modelos else tr("Vehículo de la huida: el que tenga la banda a mano")
 
     def elegir_veh():
         def poner(tipo, cosa):
@@ -932,8 +1050,10 @@ def preparar(p, l, empezar, que="el golpe"):
                 app.cerrar(sub)
                 app.decir(veh_txt() + ".", True)
             return h
-        ops = [Opcion(t, poner(tipo, cosa)) for tipo, cosa, t in p.golpe_vehiculos()]
-        sub = Menu(app, "Con qué vehículo espera el conductor", ops, intro="Los tuyos que estén cerca y los de la banda")
+        ops = [Opcion(t, poner(tipo, cosa), ayuda=tr("El conductor lo arrima a la puerta y te espera en él con el motor en marcha.") if tipo == "veh"
+                      else tr("Lo trae la banda: no tiene que ser tuyo ni estar cerca. El conductor te espera en él con el motor en marcha."))
+               for tipo, cosa, t in p.golpe_vehiculos()]
+        sub = Menu(app, tr("Con qué vehículo espera el conductor"), ops, intro=tr("Los tuyos que estén cerca y los de la banda"))
         app.abrir(sub)
 
     def llamar():
@@ -948,7 +1068,7 @@ def preparar(p, l, empezar, que="el golpe"):
         limpiar()
         if not plan["papeles"]:
             app.son("error")
-            app.decir("Nadie tiene papel todavía. Da al menos uno, o vuelve atrás y empieza el atraco de siempre.", True)
+            app.decir(tr("Nadie tiene papel todavía. Da al menos uno, o vuelve atrás y empieza el atraco de siempre."), True)
             return
         copia = {"papeles": {str(b): pid for b, pid in plan["papeles"].items()}, "yo": dict(plan["yo"]), "veh_id": plan["veh_id"], "modelo": plan["modelo"]}
         empezar(copia)
@@ -956,23 +1076,24 @@ def preparar(p, l, empezar, que="el golpe"):
     def ops():
         limpiar()
         pres = presentes()
-        lista = [Opcion("Cómo funciona esto: los papeles, las fases y el reparto", lambda: como_funciona(p),
-                        ayuda="La explicación entera de los golpes preparados, con sus números.")]
+        lista = [Opcion(tr("Cómo funciona esto: los papeles, las fases y el reparto"), lambda: como_funciona(p),
+                        ayuda=tr("La explicación entera de los golpes preparados, con sus números."))]
         for _, f in pres:
-            lista.append(Opcion(texto_miembro(f), elegir_papel(f), ayuda=p.ficha_banda_txt(f) + ". Intro para darle un papel o quitárselo."))
+            lista.append(Opcion(texto_miembro(f), elegir_papel(f), ayuda=p.ficha_banda_txt(f) + tr(". Intro para darle un papel o quitárselo.")))
         if len(pres) < len([f for f in p.banda_fichas() if f.get("baja", 0) < p.dia]):
-            lista.append(Opcion("Llamar a los de tu banda que faltan", llamar, ayuda="Acuden a donde estés. Los que están de baja, heridos, no vienen."))
+            lista.append(Opcion(tr("Llamar a los de tu banda que faltan"), llamar, ayuda=tr("Acuden a donde estés. Los que están de baja, heridos, no vienen.")))
         if not pres:
-            lista.append(Opcion("No tienes a nadie de tu banda al lado: llámalos"))
-        lista.append(Opcion(lambda: "Tú, dentro: " + ("cubres a quien abre la caja" if plan["yo"]["dentro"] == "cubrir" else "abres tú la caja"), cambiar_dentro,
-                            ayuda="Intro cambia. Si abres tú, tienes que estar junto a la caja hasta que ceda. Si cubres, la abre el de la caja y tú te quedas cerca, libre para pelear."))
-        lista.append(Opcion(lambda: "Tú, en la huida: " + ("vas de pasajero" if plan["yo"]["huida"] == "pasajero" else "conduces tú"), cambiar_huida,
-                            ayuda="Intro cambia. De pasajero conduce el conductor y tú disparas con la Q y Control. Si conduces tú, te encuentras el motor en marcha."))
+            lista.append(Opcion(tr("No tienes a nadie de tu banda al lado: llámalos"),
+                                ayuda=tr("Solo se les puede dar papel a los que están contigo. Llámalos desde este menú o desde Territorios, Tu banda.")))
+        lista.append(Opcion(lambda: tr("Tú, dentro: ") + (tr("cubres a quien abre la caja") if plan["yo"]["dentro"] == "cubrir" else tr("abres tú la caja")), cambiar_dentro,
+                            ayuda=tr("Intro cambia. Si abres tú, tienes que estar junto a la caja hasta que ceda. Si cubres, la abre el de la caja y tú te quedas cerca, libre para pelear.")))
+        lista.append(Opcion(lambda: tr("Tú, en la huida: ") + (tr("vas de pasajero") if plan["yo"]["huida"] == "pasajero" else tr("conduces tú")), cambiar_huida,
+                            ayuda=tr("Intro cambia. De pasajero conduce el conductor y tú disparas con la Q y Control. Si conduces tú, te encuentras el motor en marcha.")))
         if any(papel(x) and papel(x)["efecto"] == "conductor" for x in plan["papeles"].values()):
-            lista.append(Opcion(veh_txt, elegir_veh, ayuda="El conductor lo arrima a la puerta y te espera con el motor en marcha. Vale un vehículo tuyo que esté cerca, o uno de la banda."))
-        lista.append(Opcion(partes_txt, ayuda="Cada uno cobra su parte al acabar, si el golpe sale bien. A quien detienen no cobra."))
-        lista.append(Opcion(f"Empezar {que}", lanzar, ayuda="Con el plan como está. Hace falta que al menos uno de los tuyos tenga papel."))
+            lista.append(Opcion(veh_txt, elegir_veh, ayuda=tr("El conductor lo arrima a la puerta y te espera con el motor en marcha. Vale un vehículo tuyo que esté cerca, o uno de la banda.")))
+        lista.append(Opcion(partes_txt, ayuda=tr("Cada uno cobra su parte al acabar, si el golpe sale bien. A quien detienen no cobra.")))
+        lista.append(Opcion(tr('Empezar {que}').format(que=(que)), lanzar, ayuda=tr("Con el plan como está. Hace falta que al menos uno de los tuyos tenga papel.")))
         return lista
-    m = Menu(app, lambda: f"Preparar {que}: {l.nombre}. Tienes al lado a {len(presentes())} de {p.j.banda_nombre or 'tu banda'}", ops,
-             intro="Da un papel a cada uno. A quien no le des ninguno, viene contigo")
+    m = Menu(app, lambda: tr('Preparar {que}: {nombre}. Tienes al lado a {len} de {v}').format(que=(que), nombre=(l.nombre), len=(len(presentes())), v=(p.j.banda_nombre or tr('tu banda'))), ops,
+             intro=tr("Da un papel a cada uno. A quien no le des ninguno, viene contigo"))
     app.abrir(m)

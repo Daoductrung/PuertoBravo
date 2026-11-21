@@ -8,6 +8,7 @@ algo que recuperar, o alguien a quien proteger y poner a salvo.
 Los tipos de contrato están en los datos (vida.json, contratos) y el editor los edita: un mod puede cambiar los que
 hay o añadir otros con cualquiera de las situaciones que el juego sabe montar.
 """
+from .i18n import tr
 import random
 
 from . import gente as G
@@ -15,27 +16,27 @@ from . import gente as G
 SITUACIONES = ("eliminar", "escolta_vehiculo", "huye", "local", "seguir", "intimidar", "recuperar", "proteger")
 
 CONTRATOS = [
-    {"id": "clasico", "nombre": "Quitar de en medio", "situacion": "eliminar", "peso": 3, "paga": 600, "paga_escolta": 380, "objetivo": "objetivo_contrato", "escolta": "guardaespaldas",
-     "resumen": "{quien} anda por {lugar} con {n} guardaespaldas. Alguien paga por que no vuelva a casa."},
-    {"id": "motorizada", "nombre": "Objetivo con escolta motorizada", "situacion": "escolta_vehiculo", "peso": 2, "desde": 2, "paga": 800, "paga_escolta": 420,
+    {"id": "clasico", "nombre": tr("Quitar de en medio"), "situacion": "eliminar", "peso": 3, "paga": 600, "paga_escolta": 380, "objetivo": "objetivo_contrato", "escolta": "guardaespaldas",
+     "resumen": tr("{quien} anda por {lugar} con {n} guardaespaldas. Alguien paga por que no vuelva a casa.")},
+    {"id": "motorizada", "nombre": tr("Objetivo con escolta motorizada"), "situacion": "escolta_vehiculo", "peso": 2, "desde": 2, "paga": 800, "paga_escolta": 420,
      "objetivo": "objetivo_contrato", "escolta": "guardaespaldas", "refuerzo": "escolta_motorizada",
-     "resumen": "{quien} está en {lugar}. Lleva {n} de escolta, y parte ronda la zona en un vehículo: llegarán cuando empiece el jaleo."},
-    {"id": "fuga", "nombre": "Objetivo a la fuga", "situacion": "huye", "peso": 2, "desde": 1, "paga": 900, "paga_escolta": 150, "salud_vehiculo": 130,
+     "resumen": tr("{quien} está en {lugar}. Lleva {n} de escolta, y parte ronda la zona en un vehículo: llegarán cuando empiece el jaleo.")},
+    {"id": "fuga", "nombre": tr("Objetivo a la fuga"), "situacion": "huye", "peso": 2, "desde": 1, "paga": 900, "paga_escolta": 150, "salud_vehiculo": 130,
      "modelos": ["sedan", "deportivo", "todoterreno", "utilitario"],
-     "resumen": "{quien} se ha enterado de que le buscan y sale de {lugar} en un {modelo}. Hay que alcanzarle y dejarle sin vehículo: ve con algo que corra."},
-    {"id": "madriguera", "nombre": "En su madriguera", "situacion": "local", "peso": 2, "paga": 700, "paga_escolta": 380, "objetivo": "objetivo_contrato", "escolta": "maton",
+     "resumen": tr("{quien} se ha enterado de que le buscan y sale de {lugar} en un {modelo}. Hay que alcanzarle y dejarle sin vehículo: ve con algo que corra.")},
+    {"id": "madriguera", "nombre": tr("En su madriguera"), "situacion": "local", "peso": 2, "paga": 700, "paga_escolta": 380, "objetivo": "objetivo_contrato", "escolta": "maton",
      "locales": ["bar", "taberna", "comida", "gimnasio", "casino", "hotel", "club"],
-     "resumen": "{quien} no sale de {lugar}, y dentro tiene a {n} de los suyos. Hay que entrar a buscarle."},
-    {"id": "sombra", "nombre": "Tras el recadero", "situacion": "seguir", "peso": 2, "desde": 2, "paga": 950, "paga_escolta": 300, "objetivo": "objetivo_contrato", "escolta": "guardaespaldas",
-     "resumen": "Nadie sabe dónde se esconde {quien}. Su recadero sale de {lugar}: síguele a pie sin que te vea y te llevará hasta él."},
-    {"id": "aviso", "nombre": "Un aviso", "situacion": "intimidar", "peso": 2, "paga": 550, "paga_escolta": 250, "objetivo": "maton", "escolta": "maton",
-     "resumen": "{quien} debe dinero a quien no debe. Está en {lugar} con {n} más. A él no hay que matarle: dale un escarmiento hasta que se rinda. Mejor con los puños o un arma de mano."},
-    {"id": "recobro", "nombre": "Recuperar lo robado", "situacion": "recuperar", "peso": 2, "desde": 1, "paga": 750, "paga_escolta": 350, "objetivo": "atracador", "escolta": "maton",
-     "objetos": ["un maletín con documentos", "una bolsa con joyas", "una caja con relojes", "un sobre con fotografías", "un disco duro"],
-     "resumen": "{quien} se llevó {objeto} que no era suyo. Lo guarda en {lugar}, con {n} hombres. Quítaselo y tráelo."},
-    {"id": "custodia", "nombre": "Proteger a un testigo", "situacion": "proteger", "peso": 2, "desde": 3, "paga": 1000, "paga_escolta": 300, "escolta": "pandillero", "refuerzo": "pandillero_motorizado",
-     "personas": ["la testigo", "el contable", "el periodista", "la abogada", "el chivato"],
-     "resumen": "Van a por {persona}, que te espera en {lugar}. Llegan {n} en un vehículo: acaba con ellos y llévale a pie o en coche hasta {destino}."},
+     "resumen": tr("{quien} no sale de {lugar}, y dentro tiene a {n} de los suyos. Hay que entrar a buscarle.")},
+    {"id": "sombra", "nombre": tr("Tras el recadero"), "situacion": "seguir", "peso": 2, "desde": 2, "paga": 950, "paga_escolta": 300, "objetivo": "objetivo_contrato", "escolta": "guardaespaldas",
+     "resumen": tr("Nadie sabe dónde se esconde {quien}. Su recadero sale de {lugar}: síguele a pie sin que te vea y te llevará hasta él.")},
+    {"id": "aviso", "nombre": tr("Un aviso"), "situacion": "intimidar", "peso": 2, "paga": 550, "paga_escolta": 250, "objetivo": "maton", "escolta": "maton",
+     "resumen": tr("{quien} debe dinero a quien no debe. Está en {lugar} con {n} más. A él no hay que matarle: dale un escarmiento hasta que se rinda. Mejor con los puños o un arma de mano.")},
+    {"id": "recobro", "nombre": tr("Recuperar lo robado"), "situacion": "recuperar", "peso": 2, "desde": 1, "paga": 750, "paga_escolta": 350, "objetivo": "atracador", "escolta": "maton",
+     "objetos": [tr("un maletín con documentos"), tr("una bolsa con joyas"), tr("una caja con relojes"), tr("un sobre con fotografías"), tr("un disco duro")],
+     "resumen": tr("{quien} se llevó {objeto} que no era suyo. Lo guarda en {lugar}, con {n} hombres. Quítaselo y tráelo.")},
+    {"id": "custodia", "nombre": tr("Proteger a un testigo"), "situacion": "proteger", "peso": 2, "desde": 3, "paga": 1000, "paga_escolta": 300, "escolta": "pandillero", "refuerzo": "pandillero_motorizado",
+     "personas": [tr("la testigo"), tr("el contable"), tr("el periodista"), tr("la abogada"), tr("el chivato")],
+     "resumen": tr("Van a por {persona}, que te espera en {lugar}. Llegan {n} en un vehículo: acaba con ellos y llévale a pie o en coche hasta {destino}.")},
 ]
 
 
@@ -89,14 +90,14 @@ class Contratos:
             modelos = [m for m in _lista(c, "modelos", ["sedan"]) if m in self.modelos] or ["sedan"]
             o["modelo"] = rng.choice(modelos)
         if sit == "recuperar":
-            o["objeto"] = rng.choice(_lista(c, "objetos", ["un maletín"]))
+            o["objeto"] = rng.choice(_lista(c, "objetos", [tr("un maletín")]))
         if sit in ("proteger", "seguir"):
             otros = [x for x in lugares if x is not dest and 120 <= ((x.x - dest.x) ** 2 + (x.y - dest.y) ** 2) ** 0.5 <= 450] or [x for x in lugares if x is not dest]
             if not otros:
                 return None
             o["destino"] = rng.choice(otros)
-            o["persona"] = rng.choice(_lista(c, "personas", ["la testigo"])) if sit == "proteger" else "el recadero de " + o["quien"]
-        o["resumen"] = self._contrato_txt(c.get("resumen") or "{quien}, en {lugar}.", o)
+            o["persona"] = rng.choice(_lista(c, "personas", [tr("la testigo")])) if sit == "proteger" else tr("el recadero de ") + o["quien"]
+        o["resumen"] = self._contrato_txt(c.get("resumen") or tr("{quien}, en {lugar}."), o)
         return o
 
     def _contrato_txt(self, texto, o):
@@ -114,9 +115,9 @@ class Contratos:
         armas = ["pistola", "pistola", "subfusil", "escopeta", "navaja"]
 
         def objetivo(**extra):
-            return dict(G.grupo(clase_obj, arma="pistola", salud=95), tipo=f"Objetivo, {quien}", **extra)
+            return dict(G.grupo(clase_obj, arma="pistola", salud=95), tipo=tr('Objetivo, {quien}').format(quien=(quien)), **extra)
 
-        def escolta(cuantos, nombre="Guardaespaldas"):
+        def escolta(cuantos, nombre=tr("Guardaespaldas")):
             return [G.grupo(clase_esc, tipo=nombre, arma=random.choice(armas), salud=70) for _ in range(max(0, cuantos))]
 
         def en_vehiculo(cuantos):
@@ -125,47 +126,47 @@ class Contratos:
             if not t or t.get("vehiculo") not in self.modelos or cuantos <= 0:
                 return []
             return [{"n": cuantos, "clase": c["refuerzo"]}]
-        cobrar = {"tipo": "ir", "lugar": l.id, "texto": f"Hecho. Vuelve a {l.nombre} a cobrar."}
+        cobrar = {"tipo": "ir", "lugar": l.id, "texto": tr('Hecho. Vuelve a {nombre} a cobrar.').format(nombre=(l.nombre))}
         if sit == "eliminar":
-            pasos = [{"tipo": "eliminar", "lugar": dest.id, "texto": f"El objetivo, {quien}, está en {dest.nombre} con {n} guardaespaldas. Ve allí y cumple el contrato.",
+            pasos = [{"tipo": "eliminar", "lugar": dest.id, "texto": tr('El objetivo, {quien}, está en {nombre} con {n} guardaespaldas. Ve allí y cumple el contrato.').format(quien=(quien), nombre=(dest.nombre), n=(n)),
                       "enemigos": [objetivo()] + escolta(n)}]
         elif sit == "escolta_vehiculo":
             coche = en_vehiculo(max(1, min(n, 3)))
             llegan = sum(g["n"] for g in coche)
             pasos = [{"tipo": "eliminar", "lugar": dest.id,
-                      "texto": f"El objetivo, {quien}, está en {dest.nombre} con {n} de escolta." + (f" {llegan} de ellos rondan la zona en un vehículo y llegarán en cuanto empiece." if llegan else ""),
+                      "texto": tr('El objetivo, {quien}, está en {nombre} con {n} de escolta.').format(quien=(quien), nombre=(dest.nombre), n=(n)) + (tr(' {llegan} de ellos rondan la zona en un vehículo y llegarán en cuanto empiece.').format(llegan=(llegan)) if llegan else ""),
                       "enemigos": [objetivo()] + escolta(n - llegan) + coche}]
         elif sit == "huye":
             mo = self.modelos[o["modelo"]]
-            pasos = [{"tipo": "perseguir", "lugar": dest.id, "modelo": mo["id"], "nombre": f"{mo['nombre']} de {quien}", "salud": int(c.get("salud_vehiculo", 130)),
-                      "texto": f"{quien} huye en un {mo['nombre']} desde {dest.nombre}. Alcánzale con un vehículo y destrózaselo: embístele, o fíjalo con la Q y dispara con Control."}]
+            pasos = [{"tipo": "perseguir", "lugar": dest.id, "modelo": mo["id"], "nombre": tr('{nombre} de {quien}').format(nombre=(mo['nombre']), quien=(quien)), "salud": int(c.get("salud_vehiculo", 130)),
+                      "texto": tr('{quien} huye en un {nombre} desde {nombre2}. Alcánzale con un vehículo y destrózaselo: embístele, o fíjalo con la Q y dispara con Control.').format(quien=(quien), nombre=(mo['nombre']), nombre2=(dest.nombre))}]
         elif sit == "local":
-            pasos = [{"tipo": "ir", "lugar": dest.id, "radio": 9, "texto": f"{quien} está dentro de {dest.nombre}, con {n} de los suyos. Llega hasta la puerta, a pie."},
-                     {"tipo": "eliminar", "lugar": dest.id, "ya": True, "texto": f"Empujas la puerta de {dest.nombre} y se acaba la música. {quien} te ha reconocido.",
-                      "enemigos": [objetivo()] + escolta(n, "Hombre de " + quien)}]
+            pasos = [{"tipo": "ir", "lugar": dest.id, "radio": 9, "texto": tr('{quien} está dentro de {nombre}, con {n} de los suyos. Llega hasta la puerta, a pie.').format(quien=(quien), nombre=(dest.nombre), n=(n))},
+                     {"tipo": "eliminar", "lugar": dest.id, "ya": True, "texto": tr('Empujas la puerta de {nombre} y se acaba la música. {quien} te ha reconocido.').format(nombre=(dest.nombre), quien=(quien)),
+                      "enemigos": [objetivo()] + escolta(n, tr("Hombre de ") + quien)}]
         elif sit == "seguir":
             guarida = o["destino"]
             pasos = [{"tipo": "seguir", "lugar": dest.id, "destino": guarida.id, "persona": o["persona"],
-                      "texto": f"El recadero de {quien} sale de {dest.nombre}. Ve allí y síguele a pie, de oído, sin pegarte a él y sin perderle: te llevará a la guarida."},
-                     {"tipo": "eliminar", "lugar": guarida.id, "ya": True, "texto": f"El recadero entra en {guarida.nombre}: ahí se esconde {quien}, con {n} guardaespaldas. Ahora, a por él.",
+                      "texto": tr('El recadero de {quien} sale de {nombre}. Ve allí y síguele a pie, de oído, sin pegarte a él y sin perderle: te llevará a la guarida.').format(quien=(quien), nombre=(dest.nombre))},
+                     {"tipo": "eliminar", "lugar": guarida.id, "ya": True, "texto": tr('El recadero entra en {nombre}: ahí se esconde {quien}, con {n} guardaespaldas. Ahora, a por él.').format(nombre=(guarida.nombre), quien=(quien), n=(n)),
                       "enemigos": [objetivo()] + escolta(n)}]
         elif sit == "intimidar":
             pasos = [{"tipo": "eliminar", "lugar": dest.id,
-                      "texto": f"{quien} está en {dest.nombre} con {n} más. A él no le mates: pégale hasta que se rinda. A los demás, como veas.",
-                      "enemigos": [dict(G.grupo(clase_obj, arma="bate", salud=120), tipo=f"Moroso, {quien}", intimidar=True, salud=120, arma="bate")] + escolta(n, "Amigo de " + quien)}]
+                      "texto": tr('{quien} está en {nombre} con {n} más. A él no le mates: pégale hasta que se rinda. A los demás, como veas.').format(quien=(quien), nombre=(dest.nombre), n=(n)),
+                      "enemigos": [dict(G.grupo(clase_obj, arma="bate", salud=120), tipo=tr('Moroso, {quien}').format(quien=(quien)), intimidar=True, salud=120, arma="bate")] + escolta(n, tr("Amigo de ") + quien)}]
         elif sit == "recuperar":
-            pasos = [{"tipo": "eliminar", "lugar": dest.id, "texto": f"{quien} guarda {o['objeto']} en {dest.nombre}, con {n} hombres. Acaba con ellos.",
-                      "enemigos": [dict(G.grupo(clase_obj, arma="pistola", salud=85), tipo=f"Ladrón, {quien}")] + escolta(n, "Hombre de " + quien)},
-                     {"tipo": "recoger", "lugar": dest.id, "objeto": o["objeto"][:1].upper() + o["objeto"][1:], "texto": f"Ya no lo guarda nadie. Busca {o['objeto']} y cógelo."}]
-            cobrar = {"tipo": "ir", "lugar": l.id, "texto": f"Lo tienes. Llévalo a {l.nombre} y cobra."}
+            pasos = [{"tipo": "eliminar", "lugar": dest.id, "texto": tr('{quien} guarda {objeto} en {nombre}, con {n} hombres. Acaba con ellos.').format(quien=(quien), objeto=(o['objeto']), nombre=(dest.nombre), n=(n)),
+                      "enemigos": [dict(G.grupo(clase_obj, arma="pistola", salud=85), tipo=tr("Ladrón, {quien}").format(quien=quien))] + escolta(n, tr("Hombre de ") + quien)},
+                     {"tipo": "recoger", "lugar": dest.id, "objeto": o["objeto"][:1].upper() + o["objeto"][1:], "texto": tr('Ya no lo guarda nadie. Busca {objeto} y cógelo.').format(objeto=(o['objeto']))}]
+            cobrar = {"tipo": "ir", "lugar": l.id, "texto": tr('Lo tienes. Llévalo a {nombre} y cobra.').format(nombre=(l.nombre))}
         else:                                                    # proteger
             refugio = o["destino"]
-            atacan = en_vehiculo(max(1, min(n + 1, 4))) or escolta(n + 1, "Sicario")
-            pasos = [{"tipo": "ir", "lugar": dest.id, "texto": f"{o['persona'].capitalize()} te espera en {dest.nombre}. Llega antes que quienes van a por {o['persona'].split()[0]}."},
-                     {"tipo": "eliminar", "lugar": dest.id, "ya": True, "texto": f"Ya están aquí: vienen a por {o['persona']}. Que no pasen.", "enemigos": atacan},
+            atacan = en_vehiculo(max(1, min(n + 1, 4))) or escolta(n + 1, tr("Sicario"))
+            pasos = [{"tipo": "ir", "lugar": dest.id, "texto": tr('{capitalize} te espera en {nombre}. Llega antes que quienes van a por {v}.').format(capitalize=(o['persona'].capitalize()), nombre=(dest.nombre), v=(o['persona'].split()[0]))},
+                     {"tipo": "eliminar", "lugar": dest.id, "ya": True, "texto": tr('Ya están aquí: vienen a por {persona}. Que no pasen.').format(persona=(o['persona'])), "enemigos": atacan},
                      {"tipo": "escoltar", "lugar": dest.id, "destino": refugio.id, "persona": o["persona"],
-                      "texto": f"Despejado. Acércate a {o['persona']}, que sigue en {dest.nombre}, y llévale hasta {refugio.nombre}: te sigue a pie y sube al vehículo que cojas."}]
-        self._empezar_repetible({"id": "contrato", "titulo": f"{c.get('nombre', 'Contrato')}: {quien}", "lugar": l.id, "contador": "contratos", "clase_contrato": c.get("id"),
+                      "texto": tr('Despejado. Acércate a {persona}, que sigue en {nombre}, y llévale hasta {nombre2}: te sigue a pie y sube al vehículo que cojas.').format(persona=(o['persona']), nombre=(dest.nombre), nombre2=(refugio.nombre))}]
+        self._empezar_repetible({"id": "contrato", "titulo": f"{c.get('nombre', tr('Contrato'))}: {quien}", "lugar": l.id, "contador": "contratos", "clase_contrato": c.get("id"),
                                  "pasos": pasos + [cobrar], "recompensa": {"dinero": int(o["paga"])}})
         return True
 
@@ -179,18 +180,18 @@ def menu_contratos(p, l):
         def f():
             if p.mision or p.trabajo or p.guerra:
                 app.son("error")
-                return app.decir("Termina antes lo que tienes entre manos.", True)
+                return app.decir(tr("Termina antes lo que tienes entre manos."), True)
             if p.de_servicio():
                 app.son("error")
-                return app.decir("Estás de servicio. Estos encargos no son para quien lleva placa.", True)
+                return app.decir(tr("Estás de servicio. Estos encargos no son para quien lleva placa."), True)
             p.empezar_contrato_de(l, o)
         return f
 
     def ops():
-        lista = [Opcion(f"{o['tipo'].get('nombre', 'Contrato')}, {o['paga']} euros. {o['resumen']}", aceptar(o),
-                        ayuda="Intro acepta este encargo. Al cumplirlo se cobra aquí mismo, y el tablón cambia. Cada contrato cumplido hace los siguientes más difíciles y mejor pagados.")
+        lista = [Opcion(tr('{get}, {paga} euros. {resumen}').format(get=(o['tipo'].get('nombre', tr('Contrato'))), paga=(o['paga']), resumen=(o['resumen'])), aceptar(o),
+                        ayuda=tr("Intro acepta este encargo. Al cumplirlo se cobra aquí mismo, y el tablón cambia. Cada contrato cumplido hace los siguientes más difíciles y mejor pagados."))
                  for o in p.ofertas_contrato(l)]
-        return (lista or [Opcion("Hoy el tablón está vacío")]) + [Opcion("Volver", lambda: app.cerrar(m))]
-    m = Menu(app, f"Tablón de encargos de {l.nombre}. Llevas {p.j.stats.get('contratos', 0)} contratos cumplidos", ops,
-             intro="Hay varios encargos, cada uno de una manera. Elige uno con Intro")
+        return (lista or [Opcion(tr("Hoy el tablón está vacío"), ayuda=tr("Cada día cuelgan encargos nuevos. Vuelve mañana."))]) + [Opcion(tr("Volver"), lambda: app.cerrar(m))]
+    m = Menu(app, tr('Tablón de encargos de {nombre}. Llevas {get} contratos cumplidos').format(nombre=(l.nombre), get=(p.j.stats.get('contratos', 0))), ops,
+             intro=tr("Hay varios encargos, cada uno de una manera. Elige uno con Intro"))
     app.abrir(m)

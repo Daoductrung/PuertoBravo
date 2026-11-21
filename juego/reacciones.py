@@ -11,6 +11,7 @@ hay dinero ni objetos, así que nada de lo que escriba el jugador puede sacarle 
 
 Los números y las frases están en los datos (vida.json, sección reacciones).
 """
+from .i18n import tr
 import random
 
 from . import gente as G
@@ -22,29 +23,29 @@ AJ = Ajustes("reacciones", {
     "pegar_prob": 55, "pegar_dano": 9, "denuncia_prob": 35, "denuncia_puntos": 1,
     "favor_confianza": 50, "recluta_confianza": 40, "recluta_fama": 15, "recluta_valor": 25, "recluta_prima": 60, "recluta_edad_max": 62,
 }, {
-    "frases_sigue": ["{nombre}: Oye, voy para allá también. Te acompaño un rato.", "{nombre}: No tengo prisa. ¿Te importa si voy contigo un trecho?",
-                     "{nombre}: Venga, te acompaño, que así estiro las piernas.", "{nombre} echa a andar a tu lado sin preguntar."],
-    "frases_sigue_fin": ["{nombre}: Bueno, yo me quedo aquí. Ya nos veremos.", "{nombre}: Hasta aquí llego. Cuídate.", "{nombre} se despide con la mano y sigue su camino."],
-    "frases_sigue_susto": ["{nombre} da media vuelta: contigo así no quiere ir.", "{nombre}: Yo de esto no quiero saber nada. Me voy."],
-    "frases_comentario": ["{nombre}: Pues se está bien hoy.", "{nombre} silba algo por lo bajo mientras camina.", "{nombre}: Este barrio ya no es lo que era.",
-                          "{nombre}: Hacía tiempo que no paseaba con nadie.", "{nombre}: ¿Tú vienes mucho por aquí?"],
-    "frases_pega": ["{nombre} no aguanta más: te suelta un puñetazo.", "{nombre}: ¡Que me dejes en paz! Te da un empujón y un golpe.",
-                    "A {nombre} se le acaba la paciencia y te cruza la cara."],
-    "frases_pelea": ["{nombre} se arremanga: quiere pelea.", "{nombre}: ¡Ven aquí, que te lo explico de otra manera!"],
-    "frases_denuncia": ["{nombre} se aleja con el móvil en la oreja: está dando tu descripción a la policía.",
-                        "Oyes a {nombre} decir «sí, agente, aquí mismo». Te ha denunciado.", "{nombre} para a un vecino y te señala. Alguien ha llamado ya a la policía."],
-    "frases_favor_tapa": ["{nombre}: Métete en mi portal, corre. Yo no he visto a nadie.", "{nombre}: Ven, por aquí. Cuando pregunten, pasaste hace una hora y hacia el otro lado."],
-    "frases_favor_cura": ["{nombre}: Tienes mala cara. Toma, come algo, y siéntate un momento.", "{nombre} saca agua y una gasa del bolso y te apaña lo peor."],
-    "frases_favor_pista": ["{nombre}: Ya que preguntas, he visto algo raro tirado cerca de aquí. Te digo dónde.", "{nombre}: Por ahí hay una cosa que no es de nadie. Igual te interesa."],
-    "frases_favor_barrio": ["{nombre}: Descuida, que en el barrio voy a hablar bien de ti.", "{nombre}: Si alguien pregunta por ti, sabrá que eres de fiar."],
-    "frases_favor_no": ["{nombre}: ¿Un favor? Si casi no te conozco.", "{nombre}: Otro día, cuando haya más confianza.", "{nombre}: No me pidas cosas, anda."],
-    "frases_favor_hoy": ["{nombre}: Hoy ya te he echado una mano. No abuses."],
-    "frases_recluta_si": ["{nombre}: ¿Con {banda}? Llevaba tiempo esperando algo así. Cuenta conmigo.", "{nombre} te estrecha la mano: desde hoy es de {banda}.",
-                          "{nombre}: Total, peor que mi trabajo no va a ser. Me apunto."],
-    "frases_recluta_no_confianza": ["{nombre}: ¿Meterme en una banda con alguien a quien acabo de conocer? Ni loc[o|a].", "{nombre}: Primero tendré que saber quién eres."],
-    "frases_recluta_no_caracter": ["{nombre}: Yo no valgo para eso. Me tiemblan las piernas solo de pensarlo.", "{nombre}: No, no. Yo quiero una vida tranquila."],
-    "frases_recluta_no_fama": ["{nombre}: ¿Y tú quién eres para tener banda? No te conoce nadie.", "{nombre}: Cuando tu nombre suene en la calle, hablamos."],
-    "frases_recluta_no_edad": ["{nombre}: A mi edad, lo único que persigo es el autobús.", "{nombre} se ríe: ya no está para esos trotes."],
+    "frases_sigue": [tr("{nombre}: Oye, voy para allá también. Te acompaño un rato."), tr("{nombre}: No tengo prisa. ¿Te importa si voy contigo un trecho?"),
+                     tr("{nombre}: Venga, te acompaño, que así estiro las piernas."), tr("{nombre} echa a andar a tu lado sin preguntar.")],
+    "frases_sigue_fin": [tr("{nombre}: Bueno, yo me quedo aquí. Ya nos veremos."), tr("{nombre}: Hasta aquí llego. Cuídate."), tr("{nombre} se despide con la mano y sigue su camino.")],
+    "frases_sigue_susto": [tr("{nombre} da media vuelta: contigo así no quiere ir."), tr("{nombre}: Yo de esto no quiero saber nada. Me voy.")],
+    "frases_comentario": [tr("{nombre}: Pues se está bien hoy."), tr("{nombre} silba algo por lo bajo mientras camina."), tr("{nombre}: Este barrio ya no es lo que era."),
+                          tr("{nombre}: Hacía tiempo que no paseaba con nadie."), tr("{nombre}: ¿Tú vienes mucho por aquí?")],
+    "frases_pega": [tr("{nombre} no aguanta más: te suelta un puñetazo."), tr("{nombre}: ¡Que me dejes en paz! Te da un empujón y un golpe."),
+                    tr("A {nombre} se le acaba la paciencia y te cruza la cara.")],
+    "frases_pelea": [tr("{nombre} se arremanga: quiere pelea."), tr("{nombre}: ¡Ven aquí, que te lo explico de otra manera!")],
+    "frases_denuncia": [tr("{nombre} se aleja con el móvil en la oreja: está dando tu descripción a la policía."),
+                        tr("Oyes a {nombre} decir «sí, agente, aquí mismo». Te ha denunciado."), tr("{nombre} para a un vecino y te señala. Alguien ha llamado ya a la policía.")],
+    "frases_favor_tapa": [tr("{nombre}: Métete en mi portal, corre. Yo no he visto a nadie."), tr("{nombre}: Ven, por aquí. Cuando pregunten, pasaste hace una hora y hacia el otro lado.")],
+    "frases_favor_cura": [tr("{nombre}: Tienes mala cara. Toma, come algo, y siéntate un momento."), tr("{nombre} saca agua y una gasa del bolso y te apaña lo peor.")],
+    "frases_favor_pista": [tr("{nombre}: Ya que preguntas, he visto algo raro tirado cerca de aquí. Te digo dónde."), tr("{nombre}: Por ahí hay una cosa que no es de nadie. Igual te interesa.")],
+    "frases_favor_barrio": [tr("{nombre}: Descuida, que en el barrio voy a hablar bien de ti."), tr("{nombre}: Si alguien pregunta por ti, sabrá que eres de fiar.")],
+    "frases_favor_no": [tr("{nombre}: ¿Un favor? Si casi no te conozco."), tr("{nombre}: Otro día, cuando haya más confianza."), tr("{nombre}: No me pidas cosas, anda.")],
+    "frases_favor_hoy": [tr("{nombre}: Hoy ya te he echado una mano. No abuses.")],
+    "frases_recluta_si": [tr("{nombre}: ¿Con {banda}? Llevaba tiempo esperando algo así. Cuenta conmigo."), tr("{nombre} te estrecha la mano: desde hoy es de {banda}."),
+                          tr("{nombre}: Total, peor que mi trabajo no va a ser. Me apunto.")],
+    "frases_recluta_no_confianza": [tr("{nombre}: ¿Meterme en una banda con alguien a quien acabo de conocer? Ni loc[o|a]."), tr("{nombre}: Primero tendré que saber quién eres.")],
+    "frases_recluta_no_caracter": [tr("{nombre}: Yo no valgo para eso. Me tiemblan las piernas solo de pensarlo."), tr("{nombre}: No, no. Yo quiero una vida tranquila.")],
+    "frases_recluta_no_fama": [tr("{nombre}: ¿Y tú quién eres para tener banda? No te conoce nadie."), tr("{nombre}: Cuando tu nombre suene en la calle, hablamos.")],
+    "frases_recluta_no_edad": [tr("{nombre}: A mi edad, lo único que persigo es el autobús."), tr("{nombre} se ríe: ya no está para esos trotes.")],
 }, cero=("seguir_prob", "pegar_prob", "denuncia_prob", "denuncia_puntos", "recluta_fama", "recluta_valor", "recluta_prima"))
 
 # Lo que el modelo de IA puede proponer, y nada más. Lo decide el juego.
@@ -147,14 +148,14 @@ class Reacciones:
             q.hostil, q.estado, q.tipo, q.arma = True, "ataca", "enemigo", None
             return AJ.frase("frases_pega", nombre=f["nombre"]) + " " + AJ.frase("frases_pelea", nombre=f["nombre"])
         q.estado, q.t_estado = "huye", 8
-        return AJ.frase("frases_pega", nombre=f["nombre"]) + " Y se marcha."
+        return AJ.frase("frases_pega", nombre=f["nombre"]) + tr(" Y se marcha.")
 
     def denunciar(self, q):
         from .charla import ficha
         f = ficha(q)
         self.j.stats["denuncias"] = self.j.stats.get("denuncias", 0) + 1
         if AJ("denuncia_puntos") > 0:
-            self.delito(AJ("denuncia_puntos"), "insultos y amenazas", siempre=True)
+            self.delito(AJ("denuncia_puntos"), tr("insultos y amenazas"), siempre=True)
         return AJ.frase("frases_denuncia", nombre=f["nombre"])
 
     def pedir_favor(self, q):
@@ -177,17 +178,17 @@ class Reacciones:
         if 1 <= j.estrellas <= 2 and not cerca_poli and not self.sv_policia_comun():
             self.pasar_horas(0.5)
             self._fin_persecucion()
-            return AJ.frase("frases_favor_tapa", nombre=n) + " Media hora después, la policía ha dejado de buscarte."
+            return AJ.frase("frases_favor_tapa", nombre=n) + tr(" Media hora después, la policía ha dejado de buscarte.")
         if j.salud < j.salud_max * 0.6:
             j.salud = min(j.salud_max, j.salud + 25)
             self.ha_comido(20)
             self.mez.sonar("curar", cat="interfaz")
-            return AJ.frase("frases_favor_cura", nombre=n) + f" Salud {int(j.salud)}."
+            return AJ.frase("frases_favor_cura", nombre=n) + tr(' Salud {int}.').format(int=(int(j.salud)))
         cosas = [o for o in self.objetos if o.tipo == "casete"]
         if cosas:
             o = min(cosas, key=lambda o: o.dist(x, y))
             self.fijar_gps(o.x, o.y, o.nombre, radio=3, callar=True)
-            return AJ.frase("frases_favor_pista", nombre=n) + f" {self.situar(o.x, o.y, 'Está')}. Te lo marco en el GPS."
+            return AJ.frase("frases_favor_pista", nombre=n) + tr(' {situar}. Te lo marco en el GPS.').format(situar=(self.situar(o.x, o.y, tr('Está'))))
         self.cambiar_ciudadania(2.0)
         self.cambiar_animo(2)
         return AJ.frase("frases_favor_barrio", nombre=n)
@@ -202,11 +203,11 @@ class Reacciones:
         j = self.j
         f = ficha(q)
         if self.en_servidor:
-            return "x", "En un servidor en línea la banda es de jugadores: no se recluta a la gente de la calle."
+            return "x", tr("En un servidor en línea la banda es de jugadores: no se recluta a la gente de la calle.")
         if not j.territorios:
-            return "frases_recluta_no_fama", "Para tener banda necesitas un territorio. Conquista o compra un barrio primero."
+            return "frases_recluta_no_fama", tr("Para tener banda necesitas un territorio. Conquista o compra un barrio primero.")
         if j.banda >= sistemas.cupo(j):
-            return "x", f"Con {len(j.territorios)} territorios no puedes mantener a más de {sistemas.cupo(j)}."
+            return "x", tr('Con {len} territorios no puedes mantener a más de {cupo}.').format(len=(len(j.territorios)), cupo=(sistemas.cupo(j)))
         if f["edad"] > AJ("recluta_edad_max"):
             return "frases_recluta_no_edad", ""
         if G.caracter(f["caracter"])["valor"] * 100 < AJ("recluta_valor"):
@@ -232,7 +233,7 @@ class Reacciones:
             return False, AJ.frase(clave, nombre=n) + (" " + explicacion if explicacion else "")
         prima = self.prima_recluta() if cobrar else 0
         if j.dinero < prima:
-            return False, f"{n} se uniría, pero quiere una prima de {prima} euros para dejar lo que tiene, y no te llega."
+            return False, tr('{n} se uniría, pero quiere una prima de {prima} euros para dejar lo que tiene, y no te llega.').format(n=(n), prima=(prima))
         j.dinero -= prima
         j.banda += 1
         if not j.banda_nombre:
@@ -240,7 +241,7 @@ class Reacciones:
         j.stats["reclutados_calle"] = j.stats.get("reclutados_calle", 0) + 1
         # deja de ser un peatón: desde ahora es de los tuyos, con su nombre
         q.tipo, q.estado, q.hostil, q.de_banda = "aliado", "sigue", False, True
-        q.nombre = f"{n}, de {j.banda_nombre}"
+        q.nombre = tr('{n}, de {banda_nombre}').format(n=(n), banda_nombre=(j.banda_nombre))
         q.salud = max(q.salud, 95.0)
         q.arma = random.choice(["pistola", "pistola", "bate", "navaja"])
         q.sigue_hasta = None
@@ -248,7 +249,7 @@ class Reacciones:
         q.bid = nuevo["id"] if nuevo else None
         self.son("pareja", cat="interfaz", vol=0.5)
         return True, (AJ.frase("frases_recluta_si", nombre=n, banda=j.banda_nombre)
-                      + (f" Le das {prima} euros de prima." if prima else "") + f" Ya sois {j.banda} además de ti. Cobra {self.precio('sueldo_banda', sistemas.SUELDO)} euros cada medianoche, como los demás.")
+                      + (tr(' Le das {prima} euros de prima.').format(prima=(prima)) if prima else "") + tr(' Ya sois {banda} además de ti. Cobra {precio} euros cada medianoche, como los demás.').format(banda=(j.banda), precio=(self.precio('sueldo_banda', sistemas.SUELDO))))
 
     # ------------------------------------------------------------------ lo que propone la IA, decidido por el juego
     def ia_acciones(self):

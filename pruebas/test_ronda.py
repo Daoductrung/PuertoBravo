@@ -307,7 +307,7 @@ def test_partida_larga_con_el_tiempo_acelerado(robot):
         antes = j.dinero
         robot.tecla(pygame.K_RETURN)
         if isinstance(app.pila[-1], Menu):
-            _elegir(robot, "Jornada de")
+            _elegir(robot, p.datos["jornadas"][0]["nombre"])           # «Jornada de...», en el idioma que sea
             while app.pila[-1] is not p:
                 robot.tecla(pygame.K_ESCAPE)
         assert j.dinero >= antes, f"{donde}: trabajar no puede costar dinero"

@@ -1,12 +1,13 @@
 """Salida de voz y braille mediante el lector de pantalla (NVDA, JAWS...) o SAPI."""
+from .i18n import tr
 import re
 from collections import deque
 
-from . import genero, registro
+from . import genero, palabras, registro
 
 
 # Con poco detalle se quitan las frases que solo explican qué tecla pulsar: quien ya conoce el juego no las necesita.
-_INSTRUCCION = re.compile(r"^(Pulsa |Usa las flechas|Abre el móvil|Con la tecla|Intro para|Escape para|Flechas |F1 |Cámbialo|Elige |Para |Puedes |Recuerda)", re.I)
+_INSTRUCCION = re.compile(tr(r"^(Pulsa |Usa las flechas|Abre el móvil|Con la tecla|Intro para|Escape para|Flechas |F1 |Cámbialo|Elige |Para |Puedes |Recuerda)"), re.I)
 
 
 def resumir(texto):
@@ -67,14 +68,14 @@ class Voz:
         if not texto:
             return
         texto = genero.resolver(str(texto))          # «Bienvenid[o|a]» queda como le corresponde al protagonista
+        texto = palabras.pulir(texto)                # en otro idioma, ninguna palabra suelta en español
         if self.detalle == "poco":
             texto = resumir(texto)
         registro.voz(texto)
         if self.al_hablar is not None:
             self.al_hablar(texto)
         if guardar:
-            self.historial.append(texto)
-            self.cursor = len(self.historial) - 1
+            self._guardar(texto)
         if self.muda:
             self.registro.append(texto)
             if len(self.registro) > 2000:
@@ -95,8 +96,7 @@ class Voz:
         """Para cuando suena una voz grabada: el texto no se lee, pero va al braille, al historial y al registro."""
         texto = genero.resolver(str(texto))
         registro.voz(texto)
-        self.historial.append(texto)
-        self.cursor = len(self.historial) - 1
+        self._guardar(texto)
         if self.muda:
             self.registro.append(texto)
             return
@@ -114,10 +114,30 @@ class Voz:
             except Exception:
                 pass
 
+    def _guardar(self, texto):
+        """Un mensaje al historial. Con la opción de seguir al final (la de siempre), el repaso salta a él; si no, y
+        estabas repasando, te quedas en el mismo mensaje."""
+        al_final = self.cursor >= len(self.historial) - 1
+        lleno = len(self.historial) == self.historial.maxlen
+        self.historial.append(texto)
+        cfg = getattr(self, "cfg", None)
+        if al_final or cfg is None or cfg["historial_al_final"]:
+            self.cursor = len(self.historial) - 1
+        elif lleno:
+            self.cursor = max(0, self.cursor - 1)               # el más antiguo se ha ido: el tuyo está un puesto antes
+
+    def repasar_extremo(self, al_final):
+        """Control Re Pág y Control Av Pág: el primer mensaje del historial, o el último."""
+        if not self.historial:
+            self.decir(tr("No hay mensajes."), True, False)
+            return
+        self.cursor = len(self.historial) - 1 if al_final else 0
+        self.decir((tr("Último. ") if al_final else tr("Primero. ")) + self.historial[self.cursor], True, False)
+
     def repasar(self, delta):
         """Recorre el historial de mensajes (delta -1 anterior, +1 siguiente, 0 repetir)."""
         if not self.historial:
-            self.decir("No hay mensajes.", True, False)
+            self.decir(tr("No hay mensajes."), True, False)
             return
         self.cursor = max(0, min(len(self.historial) - 1, self.cursor + delta))
         self.decir(self.historial[self.cursor], True, False)

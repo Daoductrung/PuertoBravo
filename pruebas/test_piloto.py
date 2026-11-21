@@ -176,7 +176,7 @@ def test_acerca_de(robot, monkeypatch):
     robot.tecla(pygame.K_RETURN)
     assert abiertos == ["https://www.paypal.com/paypalme/hjbcdonaciones"] and "donaciones" in robot.dicho()
     for texto, trozo in (("Página del proyecto en GitHub", "github.com/hxebolax/PuertoBravo"), ("Avisar de un fallo o proponer una mejora", "/issues"),
-                         ("Mastodon del autor", "comunidad.nvda.es"), ("Novedades de esta versión", "novedades.html")):
+                         ("Mastodon del autor", "comunidad.nvda.es"), ("Novedades de esta versión", "novedades_es.html")):
         m.i = lineas.index(texto)
         robot.tecla(pygame.K_RETURN)
         assert trozo in abiertos[-1]

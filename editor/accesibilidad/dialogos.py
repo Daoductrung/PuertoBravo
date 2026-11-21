@@ -19,6 +19,7 @@ PLANTILLA del agente «accesibilidad-wx».
 
 from __future__ import annotations
 
+from juego.i18n import tr
 import builtins
 import ctypes
 from collections.abc import Sequence
@@ -39,14 +40,14 @@ _CB_GETDROPPEDSTATE = 0x0157
 
 # Etiquetas en español de los botones estándar.
 ETIQUETAS = {
-	wx.ID_OK: "&Aceptar",
-	wx.ID_CANCEL: "&Cancelar",
-	wx.ID_YES: "&Sí",
-	wx.ID_NO: "&No",
-	wx.ID_APPLY: "A&plicar",
-	wx.ID_CLOSE: "C&errar",
-	wx.ID_HELP: "A&yuda",
-	wx.ID_SAVE: "&Guardar",
+	wx.ID_OK: tr("&Aceptar"),
+	wx.ID_CANCEL: tr("&Cancelar"),
+	wx.ID_YES: tr("&Sí"),
+	wx.ID_NO: tr("&No"),
+	wx.ID_APPLY: tr("A&plicar"),
+	wx.ID_CLOSE: tr("C&errar"),
+	wx.ID_HELP: tr("A&yuda"),
+	wx.ID_SAVE: tr("&Guardar"),
 }
 
 
@@ -148,12 +149,12 @@ def _cuerpo_mensaje(padre: wx.Window, mensaje: str, nombre: str) -> tuple[wx.Win
 	etiqueta, el sizer que hay que añadir en su lugar.
 	"""
 	if "\n" in mensaje or len(mensaje) > 200:
-		etiqueta = wx.StaticText(padre, label=_("&Mensaje:"))
+		etiqueta = wx.StaticText(padre, label=_(tr("&Mensaje:")))
 		campo = wx.TextCtrl(
 			padre, value=mensaje, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
 			size=(460, 180), name=nombre,
 		)
-		campo.SetHelpText(_("Texto del mensaje. Recórralo con las flechas; puede copiarlo."))
+		campo.SetHelpText(_(tr("Texto del mensaje. Recórralo con las flechas; puede copiarlo.")))
 		columna = wx.BoxSizer(wx.VERTICAL)
 		columna.Add(etiqueta, 0, wx.BOTTOM, 4)
 		columna.Add(campo, 1, wx.EXPAND)
@@ -166,7 +167,7 @@ def _cuerpo_mensaje(padre: wx.Window, mensaje: str, nombre: str) -> tuple[wx.Win
 def es_etiqueta_de_cancelar(etiqueta: str) -> bool:
 	"""«&Cancelar», «Cerrar»... (sin el acelerador ni mayúsculas)."""
 	limpia = etiqueta.replace("&", "").strip().rstrip(".").lower()
-	return limpia in {_("Cancelar").lower(), _("Cerrar").lower(), "cancelar", "cerrar"}
+	return limpia in {_(tr("Cancelar")).lower(), _(tr("Cerrar")).lower(), "cancelar", "cerrar"}
 
 
 class DialogoMensaje(wx.Dialog):
@@ -186,7 +187,7 @@ class DialogoMensaje(wx.Dialog):
 		opciones: Sequence[str] = (),
 		icono: int = 0,
 	) -> None:
-		super().__init__(padre, title=titulo or " ", style=wx.DEFAULT_DIALOG_STYLE, name=titulo or _("Mensaje"))
+		super().__init__(padre, title=titulo or " ", style=wx.DEFAULT_DIALOG_STYLE, name=titulo or _(tr("Mensaje")))
 		panel = wx.Panel(self)
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		fila = wx.BoxSizer(wx.HORIZONTAL)
@@ -194,7 +195,7 @@ class DialogoMensaje(wx.Dialog):
 			arte = {wx.ICON_ERROR: wx.ART_ERROR, wx.ICON_WARNING: wx.ART_WARNING,
 					wx.ICON_QUESTION: wx.ART_QUESTION}.get(icono, wx.ART_INFORMATION)
 			fila.Add(wx.StaticBitmap(panel, bitmap=wx.ArtProvider.GetBitmap(arte, wx.ART_MESSAGE_BOX)), 0, wx.ALL, 10)
-		self.cuerpo, columna = _cuerpo_mensaje(panel, mensaje, titulo or _("Mensaje"))
+		self.cuerpo, columna = _cuerpo_mensaje(panel, mensaje, titulo or _(tr("Mensaje")))
 		fila.Add(columna or self.cuerpo, 1, wx.EXPAND | wx.ALL, 10)
 		sizer.Add(fila, 1, wx.EXPAND)
 
@@ -246,12 +247,12 @@ def _mostrar(dialogo: wx.Dialog) -> int:
 
 def mostrar_mensaje(padre: wx.Window | None, mensaje: str, titulo: str = "", icono: int = wx.ICON_INFORMATION) -> None:
 	"""Mensaje informativo con un botón «Aceptar»."""
-	_mostrar(DialogoMensaje(padre, mensaje, titulo or _("Información"), wx.OK, icono=icono))
+	_mostrar(DialogoMensaje(padre, mensaje, titulo or _(tr("Información")), wx.OK, icono=icono))
 
 
 def mostrar_error(padre: wx.Window | None, mensaje: str, titulo: str = "") -> None:
 	"""Mensaje de error con un botón «Aceptar»."""
-	mostrar_mensaje(padre, mensaje, titulo or _("Error"), icono=wx.ICON_ERROR)
+	mostrar_mensaje(padre, mensaje, titulo or _(tr("Error")), icono=wx.ICON_ERROR)
 
 
 def confirmar(
@@ -264,7 +265,7 @@ def confirmar(
 	"""
 	banderas = wx.YES | wx.NO | (wx.CANCEL if con_cancelar else 0)
 	dialogo = DialogoMensaje(
-		padre, mensaje, titulo or _("Confirmación"), banderas,
+		padre, mensaje, titulo or _(tr("Confirmación")), banderas,
 		predeterminado=wx.ID_NO if peligroso else wx.ID_YES, icono=wx.ICON_QUESTION,
 	)
 	return _mostrar(dialogo)
@@ -339,11 +340,11 @@ def dialogo_nativo(padre: wx.Window | None, mensaje: str, titulo: str, estilo: i
 	dialogo = wx.MessageDialog(padre, mensaje, titulo, estilo)
 	if estilo & wx.YES_NO:
 		if estilo & wx.CANCEL:
-			dialogo.SetYesNoCancelLabels(_("&Sí"), _("&No"), _("&Cancelar"))
+			dialogo.SetYesNoCancelLabels(_(tr("&Sí")), _(tr("&No")), _(tr("&Cancelar")))
 		else:
-			dialogo.SetYesNoLabels(_("&Sí"), _("&No"))
+			dialogo.SetYesNoLabels(_(tr("&Sí")), _(tr("&No")))
 	elif estilo & wx.CANCEL:
-		dialogo.SetOKCancelLabels(_("&Aceptar"), _("&Cancelar"))
+		dialogo.SetOKCancelLabels(_(tr("&Aceptar")), _(tr("&Cancelar")))
 	else:
-		dialogo.SetOKLabel(_("&Aceptar"))
+		dialogo.SetOKLabel(_(tr("&Aceptar")))
 	return _mostrar(dialogo)

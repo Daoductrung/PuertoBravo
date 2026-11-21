@@ -1,0 +1,11 @@
+{
+"1 kilobyte": "1 kilobyte",
+"Componentes para instalar o actualizar: {n}": "Components to install or update: {n}",
+"Descarga e instala, uno tras otro, todos los componentes de esta lista.": "Downloads and installs, one after another, every component in this list.",
+"Instalar todo: {n} componentes, {tamano}": "Install all: {n} components, {tamano}",
+"Tienes todos los componentes al día: no hay nada que instalar ni que actualizar.": "All your components are up to date: there is nothing to install or update.",
+"{n} kilobytes": "{n} kilobytes",
+"{n} megas": "{n} megabytes",
+"{tipo}: {nombre}, actualización a la versión {version}, {tamano}": "{tipo}: {nombre}, update to version {version}, {tamano}",
+"{tipo}: {nombre}, nuevo, {tamano}": "{tipo}: {nombre}, new, {tamano}"
+}

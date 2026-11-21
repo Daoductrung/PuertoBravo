@@ -4,6 +4,7 @@ Se siguen las pautas de accesibilidad para wxPython: cada etiqueta se crea justo
 y con el mismo padre, todos los controles son nativos, cada campo tiene letra de acceso sin repetir,
 los botones dicen su acción en español y Ctrl+H explica el campo enfocado.
 """
+from juego.i18n import tr
 import copy
 
 import wx
@@ -13,8 +14,14 @@ from .accesibilidad.dialogos import confirmar, crear_botonera, enfocar, mostrar_
 from .accesibilidad.nombres import crear_campo
 from .esquema import ESQUEMAS
 
-SIN_VALOR = "(sin valor)"
+SIN_VALOR = tr("(sin valor)")
 LETRAS = "abcdefghijklmnopqrstuvwxyz"
+
+
+def letra_de(etiqueta):
+    """La letra de acceso de una etiqueta con «&»: «&Aceptar» da «a»."""
+    i = etiqueta.find("&")
+    return etiqueta[i + 1].lower() if 0 <= i < len(etiqueta) - 1 else ""
 
 
 def con_letra(etiqueta, usadas):
@@ -48,7 +55,7 @@ def _texto_numero(v):
 class PanelElementos(wx.Panel):
     """Lista de elementos con sus botones: añadir, editar, duplicar, borrar, subir y bajar."""
 
-    def __init__(self, padre, nombre_esq, elementos, cat, mod, al_cambiar=None, usadas=None, etiqueta="Lista", extra=()):
+    def __init__(self, padre, nombre_esq, elementos, cat, mod, al_cambiar=None, usadas=None, etiqueta=tr("Lista"), extra=()):
         super().__init__(padre)
         self.nombre_esq = nombre_esq
         self.elementos = elementos
@@ -58,12 +65,12 @@ class PanelElementos(wx.Panel):
         usadas = usadas if usadas is not None else set()
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.etiqueta, self.lista = crear_campo(self, con_letra(etiqueta, usadas) + ":", wx.ListBox, style=wx.LB_SINGLE, size=(520, 200),
-                                                ayuda="Flechas para recorrer la lista. Intro edita el elemento y Suprimir lo borra.", sizer=sizer)
+                                                ayuda=tr("Flechas para recorrer la lista. Intro edita el elemento y Suprimir lo borra."), sizer=sizer)
         fila = wx.BoxSizer(wx.HORIZONTAL)
         self.botones = {}
-        for clave, texto, ayuda in (("anadir", "Añadir", "Crea un elemento nuevo al final de la lista."), ("editar", "Editar", "Abre el formulario del elemento elegido."),
-                                    ("duplicar", "Duplicar", "Crea una copia del elemento elegido."), ("borrar", "Borrar", "Borra el elemento elegido."),
-                                    ("subir", "Subir", "Mueve el elemento un puesto hacia arriba."), ("bajar", "Bajar", "Mueve el elemento un puesto hacia abajo.")) + tuple(extra):
+        for clave, texto, ayuda in (("anadir", tr("Añadir"), tr("Crea un elemento nuevo al final de la lista.")), ("editar", tr("Editar"), tr("Abre el formulario del elemento elegido.")),
+                                    ("duplicar", tr("Duplicar"), tr("Crea una copia del elemento elegido.")), ("borrar", tr("Borrar"), tr("Borra el elemento elegido.")),
+                                    ("subir", tr("Subir"), tr("Mueve el elemento un puesto hacia arriba.")), ("bajar", tr("Bajar"), tr("Mueve el elemento un puesto hacia abajo."))) + tuple(extra):
             b = wx.Button(self, label=con_letra(texto, usadas))
             b.SetHelpText(ayuda)
             self.botones[clave] = b
@@ -122,7 +129,7 @@ class PanelElementos(wx.Panel):
             dlg.Destroy()
 
     def anadir(self):
-        nuevo = self._formulario(modelo.nuevo_elemento(self.nombre_esq), "Nuevo: " + ESQUEMAS[self.nombre_esq]["titulo"].lower())
+        nuevo = self._formulario(modelo.nuevo_elemento(self.nombre_esq), tr("Nuevo: ") + ESQUEMAS[self.nombre_esq]["titulo"].lower())
         if nuevo is not None:
             self.elementos.append(nuevo)
             self._cambio(len(self.elementos) - 1)
@@ -133,7 +140,7 @@ class PanelElementos(wx.Panel):
         s = self._sel()
         if s is None:
             return
-        cambiado = self._formulario(self.elementos[s], "Editar: " + modelo.resumen(self.nombre_esq, self.elementos[s]))
+        cambiado = self._formulario(self.elementos[s], tr("Editar: ") + modelo.resumen(self.nombre_esq, self.elementos[s]))
         if cambiado is not None:
             self.elementos[s] = cambiado
             self._cambio(s)
@@ -154,7 +161,7 @@ class PanelElementos(wx.Panel):
         s = self._sel()
         if s is None:
             return
-        if confirmar(wx.GetTopLevelParent(self), f"¿Borrar «{modelo.resumen(self.nombre_esq, self.elementos[s])}»?", "Borrar", peligroso=True) == wx.ID_YES:
+        if confirmar(wx.GetTopLevelParent(self), tr('¿Borrar «{resumen}»?').format(resumen=(modelo.resumen(self.nombre_esq, self.elementos[s]))), tr("Borrar"), peligroso=True) == wx.ID_YES:
             del self.elementos[s]
             self._cambio(s)
         else:
@@ -174,7 +181,7 @@ class DialogoLista(wx.Dialog):
     def __init__(self, padre, titulo, nombre_esq, elementos, cat, mod):
         super().__init__(padre, title=titulo, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, name=titulo)
         self.elementos = copy.deepcopy(elementos)
-        usadas = {"a", "c"}
+        usadas = {letra_de(tr("&Aceptar")), letra_de(tr("&Cancelar"))}
         marco = wx.BoxSizer(wx.VERTICAL)
         self.panel = PanelElementos(self, nombre_esq, self.elementos, cat, mod, usadas=usadas)
         marco.Add(self.panel, 1, wx.EXPAND | wx.ALL, 5)
@@ -223,13 +230,13 @@ class DialogoFormulario(wx.Dialog):
             visibles = self._visibles()
             grupos = []
             for cp in visibles:
-                g = cp.get("grupo", "General")
+                g = cp.get("grupo", tr("General"))
                 if g not in grupos:
                     grupos.append(g)
-            reparto = [(g, [cp for cp in visibles if cp.get("grupo", "General") == g]) for g in grupos]
+            reparto = [(g, [cp for cp in visibles if cp.get("grupo", tr("General")) == g]) for g in grupos]
             if len(grupos) == 1 and len(visibles) > 11:
                 # formulario largo sin pestañas definidas: se reparte para que cada página tenga pocas letras de acceso
-                reparto = [("General" if n == 0 else "Más datos" if n == 10 else f"Más datos, {n // 10}", visibles[n:n + 10]) for n in range(0, len(visibles), 10)]
+                reparto = [(tr("General") if n == 0 else tr("Más datos") if n == 10 else tr('Más datos, {v}').format(v=(n // 10)), visibles[n:n + 10]) for n in range(0, len(visibles), 10)]
             if len(reparto) > 1:
                 self.cuerpo = wx.Notebook(self)
                 for g, campos in reparto:
@@ -262,7 +269,7 @@ class DialogoFormulario(wx.Dialog):
         panel = wx.ScrolledWindow(padre, style=wx.TAB_TRAVERSAL)
         panel.SetScrollRate(0, 20)
         sizer = wx.BoxSizer(wx.VERTICAL)
-        usadas = {"a", "c"}                    # Aceptar y Cancelar
+        usadas = {letra_de(tr("&Aceptar")), letra_de(tr("&Cancelar"))}       # las de Aceptar y Cancelar, en el idioma que sea
         for cp in campos:
             self._campo(panel, sizer, cp, usadas)
         panel.SetSizer(sizer)
@@ -278,7 +285,7 @@ class DialogoFormulario(wx.Dialog):
         v = self.datos.get(k)
         ayuda = cp.get("ayuda") or ""
         if cp.get("req"):
-            ayuda = (ayuda + " Obligatorio.").strip()
+            ayuda = (ayuda + tr(" Obligatorio.")).strip()
         etq = con_letra(cp["e"], usadas)
         if t in ("texto", "largo", "textos", "entero", "decimal"):
             if t == "textos":
@@ -298,7 +305,7 @@ class DialogoFormulario(wx.Dialog):
         elif t == "si_no":
             ctrl = wx.CheckBox(panel, label=etq)
             ctrl.SetValue(bool(v) if v is not None else bool(cp.get("defecto", False)))
-            ctrl.SetHelpText(ayuda or "Casilla de verificación. Espacio la marca o la desmarca.")
+            ctrl.SetHelpText(ayuda or tr("Casilla de verificación. Espacio la marca o la desmarca."))
             sizer.Add(ctrl, 0, wx.ALL, 5)
             self.lectores[k] = lambda c=ctrl: bool(c.GetValue())
         elif t in ("opcion", "ref"):
@@ -310,7 +317,7 @@ class DialogoFormulario(wx.Dialog):
                 textos.insert(0, SIN_VALOR)
             if v not in (None, "") and v not in valores:
                 valores.append(v)
-                textos.append(f"{v}, no existe")
+                textos.append(tr('{v}, no existe').format(v=(v)))
             _, ctrl = crear_campo(panel, etq + ":", wx.Choice, choices=textos, ayuda=ayuda, sizer=sizer)
             ctrl.SetSelection(valores.index(v) if v in valores else 0)
             self.lectores[k] = lambda c=ctrl, vs=valores: vs[c.GetSelection()] if 0 <= c.GetSelection() < len(vs) else None
@@ -320,14 +327,14 @@ class DialogoFormulario(wx.Dialog):
             ops = self._opciones(cp)
             valores = [o[0] for o in ops]
             _, ctrl = crear_campo(panel, etq + ":", wx.CheckListBox, choices=[o[1] for o in ops], size=(560, 110),
-                                  ayuda=(ayuda + " Lista de casillas: Espacio marca o desmarca cada una.").strip(), sizer=sizer)
+                                  ayuda=(ayuda + tr(" Lista de casillas: Espacio marca o desmarca cada una.")).strip(), sizer=sizer)
             ctrl.SetCheckedItems([valores.index(x) for x in (v or []) if x in valores])
             if valores:
                 ctrl.SetSelection(0)
             self.lectores[k] = lambda c=ctrl, vs=valores: [vs[i] for i in c.GetCheckedItems()]
         elif t == "par":
             par = v if isinstance(v, (list, tuple)) and len(v) == 2 else (None, None)
-            nombres = cp.get("etiquetas", (cp["e"] + ", primero", cp["e"] + ", segundo"))
+            nombres = cp.get("etiquetas", (cp["e"] + tr(", primero"), cp["e"] + tr(", segundo")))
             ctrls = []
             for n, nombre in enumerate(nombres):
                 _, c1 = crear_campo(panel, con_letra(nombre, usadas) + ":", wx.TextCtrl, value=_texto_numero(par[n]), ayuda=ayuda, sizer=sizer)
@@ -345,7 +352,7 @@ class DialogoFormulario(wx.Dialog):
             self.lectores[k] = leer
         elif t in ("lista", "objeto"):
             ctrl = wx.Button(panel, label=self._texto_boton(cp, etq))
-            ctrl.SetHelpText((ayuda + " Pulsa Intro para abrirlo.").strip())
+            ctrl.SetHelpText((ayuda + tr(" Pulsa Intro para abrirlo.")).strip())
             ctrl.Bind(wx.EVT_BUTTON, lambda e, c=cp, b=ctrl, et=etq: self._abrir(c, b, et))
             sizer.Add(ctrl, 0, wx.ALL, 5)
             self.lectores[k] = lambda clave=k: self.datos.get(clave)
@@ -357,8 +364,8 @@ class DialogoFormulario(wx.Dialog):
         v = self.datos.get(cp["k"])
         if cp["t"] == "lista":
             n = len(v or [])
-            return f"{etq}: {'vacío' if n == 0 else '1 elemento' if n == 1 else f'{n} elementos'}..."
-        return f"{etq}: {'sin definir' if not v else 'definido'}..."
+            return f"{etq}: {tr('vacío') if n == 0 else tr('1 elemento') if n == 1 else tr('{n} elementos').format(n=(n))}..."
+        return f"{etq}: {tr('sin definir') if not v else 'definido'}..."
 
     def _abrir(self, cp, boton, etq):
         k = cp["k"]
@@ -387,19 +394,19 @@ class DialogoFormulario(wx.Dialog):
                 v = self.lectores[k]()
             except ValueError:
                 if error is None:
-                    error = (k, f"«{cp['e']}» tiene que ser un número" + ("." if cp["t"] != "par" else ", y hay que rellenar los dos valores o ninguno."))
+                    error = (k, tr('«{e}» tiene que ser un número').format(e=(cp['e'])) + ("." if cp["t"] != "par" else tr(", y hay que rellenar los dos valores o ninguno.")))
                 continue
             if v in modelo.VACIOS:
                 self.datos.pop(k, None)
                 if estricto and cp.get("req") and error is None:
-                    error = (k, f"Falta «{cp['e']}».")
+                    error = (k, tr('Falta «{e}».').format(e=(cp['e'])))
             else:
                 self.datos[k] = v
                 if estricto and isinstance(v, (int, float)) and not isinstance(v, bool) and error is None:
                     if "minimo" in cp and v < cp["minimo"]:
-                        error = (k, f"«{cp['e']}» no puede ser menor que {cp['minimo']}.")
+                        error = (k, tr('«{e}» no puede ser menor que {minimo}.').format(e=(cp['e']), minimo=(cp['minimo'])))
                     elif "maximo" in cp and v > cp["maximo"]:
-                        error = (k, f"«{cp['e']}» no puede ser mayor que {cp['maximo']}.")
+                        error = (k, tr('«{e}» no puede ser mayor que {maximo}.').format(e=(cp['e']), maximo=(cp['maximo'])))
         return error
 
     def _recargar(self, clave):
@@ -411,7 +418,7 @@ class DialogoFormulario(wx.Dialog):
         error = self._recoger(True)
         if error:
             k, mensaje = error
-            mostrar_error(self, mensaje, "Revisa el formulario")
+            mostrar_error(self, mensaje, tr("Revisa el formulario"))
             ctrl = self.controles.get(k)
             if ctrl is not None:
                 if isinstance(self.cuerpo, wx.Notebook):

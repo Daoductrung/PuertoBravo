@@ -10,6 +10,7 @@ consecuencias: ese proveedor deja de venderte unos días, o te sube los precios,
 
 Los números y las frases están en los datos (vida.json, sección atracos).
 """
+from .i18n import tr
 import random
 
 from . import gente as G
@@ -25,30 +26,30 @@ AJ = Ajustes("atracos", {
 }, {
     "sin_recuerdo": ["banco"],
     "no_atracables": ["banco", "proveedor"],
-    "encargados": ["tienda=El dependiente", "taller=El mecánico", "gimnasio=El monitor", "armeria=El armero", "farmacia=La farmacéutica", "comida=El camarero",
-                   "pizzeria=El pizzero", "bar=La camarera", "taberna=El tabernero", "ropa=La dependienta", "empenos=El prestamista", "casino=El cajero",
-                   "loteria=La lotera", "pescaderia=El pescadero", "cine=La taquillera", "hotel=El recepcionista", "concesionario=El vendedor", "club=El encargado"],
-    "frases_atraco": ["¡Manos arriba! {quien} vacía la caja sin rechistar: {botin} euros. ¡Ha pulsado la alarma, lárgate!",
-                      "¡Esto es un atraco! {quien} te mira, traga saliva y te da lo que hay: {botin} euros. Al salir oyes la alarma.",
-                      "Enseñas el arma y no hace falta decir más. {quien} llena una bolsa: {botin} euros. Ya suena la alarma."],
-    "frases_guardia": ["¡Esto es un atraco! Pero aquí la caja tiene quien la guarde: acaba con {guardia}.",
-                       "Sacas el arma y {quien} se echa al suelo. Quien no se echa al suelo es {guardia}.",
-                       "¡Todo el mundo quieto! {guardia} no piensa lo mismo: a por ti."],
-    "frases_cerrado": ["{lugar}. Te reconocen desde dentro y echan el cierre: después del atraco, aquí no entras en {dias}.",
-                       "{lugar}. {quien} te ve venir y cierra la puerta con llave. Vuelve dentro de {dias}, a ver si se le ha pasado.",
-                       "{lugar}. Hay un cartel nuevo en la puerta, con tu descripción. No te abren: prueba dentro de {dias}."],
-    "frases_hostil": ["{lugar}. Entras, y {quien} te reconoce: descuelga el teléfono sin quitarte ojo. Has salido justo cuando marcaba el número de la policía.",
-                      "{lugar}. En cuanto cruzas la puerta, {quien} grita que eres tú, el del atraco, y alguien llama a la policía. Sales por donde has venido.",
-                      "{lugar}. {quien} no te dice nada, pero pisa algo bajo el mostrador. Cuando oyes la alarma ya estás en la calle."],
-    "frases_asalto": ["Tiras la mesa de una patada y sacas el arma. Los de {lugar} no se lo esperaban, pero se rehacen deprisa.",
-                      "¡Nadie se mueve! En {lugar} se mueve todo el mundo, y todos hacia sus armas.",
-                      "Entras en {lugar} disparando al techo. Los que guardan la mercancía contestan sin preguntar."],
-    "frases_veto": ["Se ha corrido la voz: en {lugar} no te venden nada durante {dias}.", "Los de {lugar} han jurado no tratar contigo: {dias} sin poder comprarles."],
-    "frases_caro": ["Los de {lugar} seguirán tratando contigo, pero se lo cobran: {dias} con los precios por las nubes.",
-                    "En {lugar} han decidido que lo que te llevaste lo vas a pagar tú, poco a poco: precios más altos durante {dias}."],
-    "frases_represalia_aviso": ["Los de {lugar} no olvidan: han puesto precio a darte un escarmiento. Anda con ojo las próximas horas.",
-                                "Alguien te avisa de que los de {lugar} han mandado gente a buscarte. No tardarán."],
-    "frases_represalia_llega": ["¡{quienes} te han encontrado! Vienen {n} a por ti.", "{quienes} no olvidan: {n} de los suyos vienen a cobrárselo."],
+    "encargados": [tr("tienda=El dependiente"), tr("taller=El mecánico"), tr("gimnasio=El monitor"), tr("armeria=El armero"), tr("farmacia=La farmacéutica"), tr("comida=El camarero"),
+                   tr("pizzeria=El pizzero"), tr("bar=La camarera"), tr("taberna=El tabernero"), tr("ropa=La dependienta"), tr("empenos=El prestamista"), tr("casino=El cajero"),
+                   tr("loteria=La lotera"), tr("pescaderia=El pescadero"), tr("cine=La taquillera"), tr("hotel=El recepcionista"), tr("concesionario=El vendedor"), tr("club=El encargado")],
+    "frases_atraco": [tr("¡Manos arriba! {quien} vacía la caja sin rechistar: {botin} euros. ¡Ha pulsado la alarma, lárgate!"),
+                      tr("¡Esto es un atraco! {quien} te mira, traga saliva y te da lo que hay: {botin} euros. Al salir oyes la alarma."),
+                      tr("Enseñas el arma y no hace falta decir más. {quien} llena una bolsa: {botin} euros. Ya suena la alarma.")],
+    "frases_guardia": [tr("¡Esto es un atraco! Pero aquí la caja tiene quien la guarde: acaba con {guardia}."),
+                       tr("Sacas el arma y {quien} se echa al suelo. Quien no se echa al suelo es {guardia}."),
+                       tr("¡Todo el mundo quieto! {guardia} no piensa lo mismo: a por ti.")],
+    "frases_cerrado": [tr("{lugar}. Te reconocen desde dentro y echan el cierre: después del atraco, aquí no entras en {dias}."),
+                       tr("{lugar}. {quien} te ve venir y cierra la puerta con llave. Vuelve dentro de {dias}, a ver si se le ha pasado."),
+                       tr("{lugar}. Hay un cartel nuevo en la puerta, con tu descripción. No te abren: prueba dentro de {dias}.")],
+    "frases_hostil": [tr("{lugar}. Entras, y {quien} te reconoce: descuelga el teléfono sin quitarte ojo. Has salido justo cuando marcaba el número de la policía."),
+                      tr("{lugar}. En cuanto cruzas la puerta, {quien} grita que eres tú, el del atraco, y alguien llama a la policía. Sales por donde has venido."),
+                      tr("{lugar}. {quien} no te dice nada, pero pisa algo bajo el mostrador. Cuando oyes la alarma ya estás en la calle.")],
+    "frases_asalto": [tr("Tiras la mesa de una patada y sacas el arma. Los de {lugar} no se lo esperaban, pero se rehacen deprisa."),
+                      tr("¡Nadie se mueve! En {lugar} se mueve todo el mundo, y todos hacia sus armas."),
+                      tr("Entras en {lugar} disparando al techo. Los que guardan la mercancía contestan sin preguntar.")],
+    "frases_veto": [tr("Se ha corrido la voz: en {lugar} no te venden nada durante {dias}."), tr("Los de {lugar} han jurado no tratar contigo: {dias} sin poder comprarles.")],
+    "frases_caro": [tr("Los de {lugar} seguirán tratando contigo, pero se lo cobran: {dias} con los precios por las nubes."),
+                    tr("En {lugar} han decidido que lo que te llevaste lo vas a pagar tú, poco a poco: precios más altos durante {dias}.")],
+    "frases_represalia_aviso": [tr("Los de {lugar} no olvidan: han puesto precio a darte un escarmiento. Anda con ojo las próximas horas."),
+                                tr("Alguien te avisa de que los de {lugar} han mandado gente a buscarte. No tardarán.")],
+    "frases_represalia_llega": [tr("¡{quienes} te han encontrado! Vienen {n} a por ti."), tr("{quienes} no olvidan: {n} de los suyos vienen a cobrárselo.")],
     "represalia_tipos": ["pandillero_motorizado", "pandillero_duro", "maton"],
     "refuerzo_tipos": ["pandillero_motorizado", "pandillero_motero"],
 }, cero=("hostil_prob", "hostil_busqueda", "proveedor_refuerzos", "peso_veto", "peso_caro", "peso_represalia", "proveedor_caro"))
@@ -56,7 +57,7 @@ AJ = Ajustes("atracos", {
 
 def _dias(n):
     n = int(n)
-    return "un día" if n == 1 else f"{n} días"
+    return tr("un día") if n == 1 else tr('{n} días').format(n=(n))
 
 
 def encargado(tipo):
@@ -64,7 +65,7 @@ def encargado(tipo):
         k, _, v = linea.partition("=")
         if k.strip() == tipo and v.strip():
             return v.strip()
-    return "El encargado"
+    return tr("El encargado")
 
 
 class Atracos:
@@ -78,7 +79,7 @@ class Atracos:
             clase = "maton" if G.tipo_enemigo("maton") else next(iter(G.TIPOS), None)
         gente = []
         for _ in range(max(1, int(n))):
-            f = G.enemigo(G.grupo(clase, tipo=nombre or "Matón", arma="pistola", salud=70))
+            f = G.enemigo(G.grupo(clase, tipo=nombre or tr("Matón"), arma="pistola", salud=70))
             e = G.vestir(Persona("enemigo", *self.pos(), nombre or f["nombre"]), f)
             e.hostil, e.estado, e.activo, e.tag = True, "ataca", True, tag
             e.agresor = True
@@ -106,14 +107,14 @@ class Atracos:
 
     def atraco_motivo(self, l, golpe=None):
         if self.arma()["tipo"] != "fuego":
-            return "Para atracar tienes que empuñar un arma de fuego."
+            return tr("Para atracar tienes que empuñar un arma de fuego.")
         if self.atracadas.get(l.id) == self.dia:
-            return "La caja está vacía: ya la atracaste hoy."
+            return tr("La caja está vacía: ya la atracaste hoy.")
         if self.de_servicio():
-            return "Estás de servicio. Si atracas esto, se acabó la placa."
+            return tr("Estás de servicio. Si atracas esto, se acabó la placa.")
         c = G.caja_local(l.tipo)
         if ((c and c.get("guardias") and c.get("guardia")) or golpe) and (self.mision or self.trabajo or self.guerra):
-            return "Termina antes lo que tienes entre manos: " + ("un golpe preparado pide toda tu atención." if golpe else "aquí la caja tiene guardia.")
+            return tr("Termina antes lo que tienes entre manos: ") + (tr("un golpe preparado pide toda tu atención.") if golpe else tr("aquí la caja tiene guardia."))
         return ""
 
     def atracar_local(self, l, golpe=None):
@@ -148,13 +149,13 @@ class Atracos:
             return True
         n = int(caja["guardias"] or 0)
         tipo = G.tipo_enemigo(caja["guardia"]) or {}
-        guardia = (f"{n} de guardia" if n > 1 else "el de guardia") if not tipo.get("nombre") else (f"{n} con pinta de {tipo['nombre'].lower()}" if n > 1 else f"un {tipo['nombre'].lower()}")
+        guardia = (tr('{n} de guardia').format(n=(n)) if n > 1 else tr("el de guardia")) if not tipo.get("nombre") else (tr('{n} con pinta de {lower}').format(n=(n), lower=(tipo['nombre'].lower())) if n > 1 else tr('un {lower}').format(lower=(tipo['nombre'].lower())))
         self.son("grito", vol=0.5)
         pasos = [{"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": AJ.frase("frases_guardia", quien=quien, guardia=guardia), "enemigos": caja["enemigos"]}] if caja["enemigos"] else []
-        pasos += [{"tipo": "recoger", "lugar": l.id, "objeto": f"La caja de {l.nombre}",
-                   "texto": "Ya no la guarda nadie. Coge la caja." if caja["enemigos"] else f"{quien} levanta las manos y se aparta de la caja. Ve a por ella."},
-                  {"tipo": "policia", "nivel": nivel, "texto": "¡Alguien ha avisado a la policía! Despístala para quedarte lo de la caja."}]
-        m = {"id": "atraco_local", "titulo": f"Atraco a {l.nombre}", "lugar": l.id, "contador": "atracos_con_guardia" if caja["enemigos"] else "atracos_preparados",
+        pasos += [{"tipo": "recoger", "lugar": l.id, "objeto": tr('La caja de {nombre}').format(nombre=(l.nombre)),
+                   "texto": tr("Ya no la guarda nadie. Coge la caja.") if caja["enemigos"] else tr('{quien} levanta las manos y se aparta de la caja. Ve a por ella.').format(quien=(quien))},
+                  {"tipo": "policia", "nivel": nivel, "texto": tr("¡Alguien ha avisado a la policía! Despístala para quedarte lo de la caja.")}]
+        m = {"id": "atraco_local", "titulo": tr('Atraco a {nombre}').format(nombre=(l.nombre)), "lugar": l.id, "contador": "atracos_con_guardia" if caja["enemigos"] else "atracos_preparados",
              "pasos": pasos, "recompensa": {"dinero": botin}}
         if golpe:
             self.golpe_adaptar(m, l, golpe)
@@ -211,16 +212,16 @@ class Atracos:
 
     def asalto_motivo(self, l):
         if not self.modo_adulto():
-            return "Eso es del contenido para adultos."
+            return tr("Eso es del contenido para adultos.")
         if self.en_servidor:
-            return "En un servidor en línea no se asalta a los proveedores."
+            return tr("En un servidor en línea no se asalta a los proveedores.")
         if self.mision or self.trabajo or self.guerra:
-            return "Termina antes lo que tienes entre manos."
+            return tr("Termina antes lo que tienes entre manos.")
         if self.arma()["tipo"] not in ("fuego", "explosivo"):
-            return "Para asaltar a esta gente tienes que empuñar un arma de fuego."
+            return tr("Para asaltar a esta gente tienes que empuñar un arma de fuego.")
         e = self.j.proveedores.get(l.id, {})
         if e.get("asaltado") and self.dia - int(e["asaltado"]) < AJ("proveedor_descanso"):
-            return "Después de lo de la otra vez, aquí no han vuelto a traer género: no hay nada que llevarse todavía."
+            return tr("Después de lo de la otra vez, aquí no han vuelto a traer género: no hay nada que llevarse todavía.")
         return ""
 
     def asaltar_proveedor(self, l, golpe=None):
@@ -230,8 +231,8 @@ class Atracos:
             self.decir(motivo, True)
             return False
         j = self.j
-        caja = self.caja_de_local(l) or {"dinero": random.randint(1200, 4000), "enemigos": [G.grupo("pandillero", 3, tipo="Matón del proveedor", arma="pistola", salud=75)]}
-        enemigos = list(caja["enemigos"]) or [G.grupo("pandillero", 3, tipo="Matón del proveedor", arma="pistola", salud=75)]
+        caja = self.caja_de_local(l) or {"dinero": random.randint(1200, 4000), "enemigos": [G.grupo("pandillero", 3, tipo=tr("Matón del proveedor"), arma="pistola", salud=75)]}
+        enemigos = list(caja["enemigos"]) or [G.grupo("pandillero", 3, tipo=tr("Matón del proveedor"), arma="pistola", salud=75)]
         n_ref = AJ.entero("proveedor_refuerzos")
         ref = next((c for c in AJ.lista("refuerzo_tipos") if G.tipo_enemigo(c) and G.tipo_enemigo(c).get("vehiculo") in self.modelos), None)
         if n_ref > 0 and ref and random.random() < 0.7:
@@ -263,7 +264,7 @@ class Atracos:
 
         def hecho():
             ilegales = [s for s in self.dato_adulto("sustancias") if not s.get("legal")]
-            hueco = max(0, 100 - self.carga())
+            hueco = self.hueco_mercancia()                       # el tope de cien y el sitio de la mochila (mochila.py)
             cuanto = min(hueco, random.randint(*sorted((AJ.entero("proveedor_mercancia_min"), AJ.entero("proveedor_mercancia_max")))))
             cogido = {}
             for _ in range(cuanto if ilegales else 0):
@@ -273,9 +274,9 @@ class Atracos:
                 j.sustancias[ident] = j.sustancias.get(ident, 0) + n
             if cogido:
                 self.son("trato", cat="interfaz")
-                self.decir("Te llevas la mercancía: " + ", ".join(f"{n} de {self.sustancia(i)['nombre'].lower()}" for i, n in cogido.items()) + f". Llevas {self.carga()} de 100 unidades.")
+                self.decir(tr("Te llevas la mercancía: ") + ", ".join(tr('{n} de {lower}').format(n=(n), lower=(self.sustancia(i)['nombre'].lower())) for i, n in cogido.items()) + tr('. Llevas {carga} de 100 unidades.').format(carga=(self.carga())))
             elif ilegales:
-                self.decir("La mercancía no te cabe: llevas la mochila llena.")
+                self.decir(tr("La mercancía no te cabe: llevas la mochila llena."))
             self.cambiar_reputacion(3)
             self.decir(aviso)
         while len(self.app.pila) > 1 and self.app.pila[-1] is not self:
@@ -283,10 +284,10 @@ class Atracos:
         self.app.teclas.clear()
         self.salir_interior(silencio=True)
         self.son("grito", vol=0.5)
-        m = {"id": "asalto_proveedor", "titulo": f"Asalto a {l.nombre}", "lugar": l.id, "contador": "asaltos_proveedor", "al_completar": hecho,
+        m = {"id": "asalto_proveedor", "titulo": tr('Asalto a {nombre}').format(nombre=(l.nombre)), "lugar": l.id, "contador": "asaltos_proveedor", "al_completar": hecho,
              "pasos": [
                  {"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": AJ.frase("frases_asalto", lugar=l.nombre), "enemigos": enemigos},
-                 {"tipo": "recoger", "lugar": l.id, "objeto": f"La mercancía y la caja de {l.nombre}", "texto": "Ya no queda nadie en pie. Coge la mercancía y la caja."}],
+                 {"tipo": "recoger", "lugar": l.id, "objeto": tr('La mercancía y la caja de {nombre}').format(nombre=(l.nombre)), "texto": tr("Ya no queda nadie en pie. Coge la mercancía y la caja.")}],
              "recompensa": {"dinero": int(caja["dinero"])}}
         if golpe:
             self.golpe_adaptar(m, l, golpe)
@@ -312,14 +313,14 @@ class Atracos:
         clase = next((c for c in AJ.lista("represalia_tipos") if G.tipo_enemigo(c)), "maton")
         gente = self.mandar_enemigos(clase, int(r.get("n", 2)), tag="represalia")
         self.son("evento", cat="interfaz")
-        de = str(r.get("lugar") or "el proveedor")
-        quienes = de if de.startswith(("Los ", "Las ")) else f"Los de {de}"          # una banda ya lleva su artículo
-        self.decir(AJ.frase("frases_represalia_llega", quienes=quienes, lugar=de, n=len(gente)) + " Pulsa Q para fijarlos cuando los oigas.")
+        de = str(r.get("lugar") or tr("el proveedor"))
+        quienes = de if de.startswith((tr("Los "), tr("Las "))) else tr('Los de {de}').format(de=(de))          # una banda ya lleva su artículo
+        self.decir(AJ.frase("frases_represalia_llega", quienes=quienes, lugar=de, n=len(gente)) + tr(" Pulsa Q para fijarlos cuando los oigas."))
 
 
-TEXTO_GOLPE = "Preparar el golpe con tu banda: repartir los papeles antes de atracar"
-AYUDA_GOLPE = ("Con gente de tu banda al lado, cada uno hace un papel: conductor con el motor en marcha, vigilante que entretiene a la policía, escolta que tiene a raya a la gente, "
-               "el de la caja y tirador para la huida. La caja tarda en abrirse y cada uno se lleva su parte. Dentro, la primera opción lo explica. El atraco de siempre sigue en su opción.")
+TEXTO_GOLPE = tr("Preparar el golpe con tu banda: repartir los papeles antes de atracar")
+AYUDA_GOLPE = (tr("Con gente de tu banda al lado, cada uno hace un papel: conductor con el motor en marcha, vigilante que entretiene a la policía, escolta que tiene a raya a la gente, "
+               "el de la caja y tirador para la huida. La caja tarda en abrirse y cada uno se lleva su parte. Dentro, la primera opción lo explica. El atraco de siempre sigue en su opción."))
 
 
 def con_atraco(p, lugar, menu, Opcion):
@@ -330,15 +331,15 @@ def con_atraco(p, lugar, menu, Opcion):
     from .menus import SALIDAS
     caja = G.caja_local(lugar.tipo) or {}
     n = int(caja.get("guardias") or 0)
-    ayuda = "Necesitas un arma de fuego en la mano. " + (
-        f"La caja tiene guardia: {n} {'personas' if n > 1 else 'persona'}. Hay que acabar con ella, coger la caja y despistar a la policía. "
-        if n and caja.get("guardia") else "Aquí no hay guardia: la caja se vacía en el acto, y salta la alarma. ") + \
-        f"La policía te buscará con nivel {max(1, int(caja.get('busqueda') or 1))}. Una vez al día, y el local te recuerda: durante unos días no te dejan entrar, o llaman a la policía en cuanto te ven."
-    texto = "Atracar la tienda" if lugar.tipo == "tienda" else f"Atracar este local: {lugar.nombre}"
+    ayuda = tr("Necesitas un arma de fuego en la mano. ") + (
+        tr('La caja tiene guardia: {n} {v}. Hay que acabar con ella, coger la caja y despistar a la policía. ').format(n=(n), v=(tr('personas') if n > 1 else tr('persona')))
+        if n and caja.get("guardia") else tr("Aquí no hay guardia: la caja se vacía en el acto, y salta la alarma. ")) + \
+        tr('La policía te buscará con nivel {max}. Una vez al día, y el local te recuerda: durante unos días no te dejan entrar, o llaman a la policía en cuanto te ven.').format(max=(max(1, int(caja.get('busqueda') or 1))))
+    texto = tr("Atracar la tienda") if lugar.tipo == "tienda" else tr('Atracar este local: {nombre}').format(nombre=(lugar.nombre))
 
     def preparar():
         from . import golpes
-        golpes.preparar(p, lugar, lambda plan: p.atracar_local(lugar, plan), "el golpe")
+        golpes.preparar(p, lugar, lambda plan: p.atracar_local(lugar, plan), tr("el golpe"))
 
     def ops():
         lista = list(fuente() if callable(fuente) else fuente)

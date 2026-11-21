@@ -70,7 +70,7 @@ def firmar(manifiesto, semilla):
 def novedades():
     """El primer apartado de data/docs/novedades.html, en texto."""
     try:
-        with open(os.path.join(RAIZ, "data", "docs", "novedades.html"), encoding="utf-8") as f:
+        with open(os.path.join(RAIZ, "data", "docs", "novedades_es.html"), encoding="utf-8") as f:
             pagina = f.read()
     except OSError:
         return ""

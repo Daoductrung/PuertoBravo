@@ -11,6 +11,7 @@ Reglas de esta ventana:
 - La voz directa se usa solo para lo que el lector no puede saber: que el servidor ha terminado de arrancar o de
   parar y el resultado de una orden que se da con un botón.
 """
+from juego.i18n import tr
 import os
 import socket
 import threading
@@ -25,6 +26,7 @@ from editor.accesibilidad.dialogos import (confirmar, crear_botonera, elegir_opc
 from editor.accesibilidad.nombres import crear_campo
 from editor.accesibilidad.teclado import vincular_menu_contextual
 from servidor import copias, enmarcha, opciones
+from servidor.idioma import es           # lo que oyen los jugadores va en español: lo traduce el juego de cada uno
 
 from . import CONF, NOMBRE, abierto_sin_activar, carpeta_servidor, ruta_documentacion
 from .configuracion import DialogoConfiguracion
@@ -52,11 +54,11 @@ def hace(momento):
     if not momento:
         return "nunca"
     s = max(0, int(time.time() - float(momento)))
-    for cuanto, uno, varios in ((86400, "día", "días"), (3600, "hora", "horas"), (60, "minuto", "minutos")):
+    for cuanto, uno, varios in ((86400, tr("día"), tr("días")), (3600, tr("hora"), tr("horas")), (60, tr("minuto"), tr("minutos"))):
         if s >= cuanto:
             n = s // cuanto
             return "hace %d %s" % (n, uno if n == 1 else varios)
-    return "hace un momento"
+    return tr("hace un momento")
 
 
 def duracion(segundos):
@@ -67,32 +69,32 @@ def duracion(segundos):
 
 
 def texto_jugador(g):
-    partes = [g["nombre"], ("en " + g["mapa"]) if g.get("mapa") else ("en una localidad que el servidor no conoce" if g.get("fuera") else "sin situar todavía")]
+    partes = [g["nombre"], (tr("en ") + g["mapa"]) if g.get("mapa") else (tr("en una localidad que el servidor no conoce") if g.get("fuera") else tr("sin situar todavía"))]
     if g.get("admin"):
         partes.append("administra")
     if g.get("juego"):
-        partes.append("juego " + g["juego"] + ("" if g.get("mismo_mundo", True) else ", con datos de otra versión"))
+        partes.append(tr("juego ") + g["juego"] + ("" if g.get("mismo_mundo", True) else tr(", con datos de otra versión")))
     if g.get("ip"):
-        partes.append("dirección " + g["ip"])
+        partes.append(tr("dirección ") + g["ip"])
     return ", ".join(partes)
 
 
 def texto_cuenta(c):
     partes = [c["nombre"]]
     if c.get("dentro"):
-        partes.append("dentro ahora")
+        partes.append(tr("dentro ahora"))
     if c.get("admin"):
         partes.append("administra")
     if c.get("vetado"):
         partes.append("vetada")
-    partes.append("vista " + hace(c.get("visto")))
+    partes.append(tr("vista ") + hace(c.get("visto")))
     if c.get("juego"):
-        partes.append("juego " + c["juego"])
+        partes.append(tr("juego ") + c["juego"])
     return ", ".join(partes)
 
 
 def texto_invitacion(i):
-    return "%s, %s" % (i["codigo"], ("usada por " + (i["por"] or "una cuenta que ya no existe")) if i["usada"] else "libre")
+    return "%s, %s" % (i["codigo"], (tr("usada por ") + (i["por"] or tr("una cuenta que ya no existe"))) if i["usada"] else "libre")
 
 
 def texto_estado(estado, foto, cfg, local, ultimo_error=""):
@@ -101,28 +103,28 @@ def texto_estado(estado, foto, cfg, local, ultimo_error=""):
     lineas = []
     if estado == EN_MARCHA and foto:
         gente, tope = foto["jugadores"], foto["max_jugadores"]
-        lineas += ["Servidor en marcha desde hace %s." % duracion(time.time() - (foto.get("inicio") or time.time())),
-                   "Nombre: %s." % foto["nombre"],
-                   "Jugadores dentro: %d%s." % (len(gente), (" de %d" % tope) if tope > 0 else ", sin límite"),
-                   "Personajes que lleva el servidor: %d." % foto.get("personajes", 0),
-                   "Puerto: %s." % puerto,
-                   ("Dirección para quien juegue en tu misma casa: %s:%s." % (local, puerto)) if local else "No he podido saber la dirección de este ordenador en tu red.",
-                   "Para quien juegue desde fuera: tu dirección pública o tu nombre de DNS dinámico, dos puntos y el puerto %s. "
-                   "Hay que abrir ese puerto en el router; la guía lo explica paso a paso, con F1." % puerto,
-                   ("Conexión cifrada. Huella del certificado: %s." % foto["huella_cert"]) if foto.get("cifrado") else "Conexión sin cifrar.",
-                   "Mundo: versión %s del juego, huella %s, %d localidades." % (foto.get("mundo_version"), foto.get("mundo_huella"), foto.get("localidades", 0)),
-                   "Quién puede crear un personaje: %s." % {"abierta": "cualquiera que tenga la dirección", "clave": "quien sepa la contraseña de entrada",
-                                                             "invitacion": "quien tenga un código de invitación"}.get(foto.get("entrada"), foto.get("entrada"))]
+        lineas += [tr("Servidor en marcha desde hace %s.") % duracion(time.time() - (foto.get("inicio") or time.time())),
+                   tr("Nombre: %s.") % foto["nombre"],
+                   "Jugadores dentro: %d%s." % (len(gente), (" de %d" % tope) if tope > 0 else tr(", sin límite")),
+                   tr("Personajes que lleva el servidor: %d.") % foto.get("personajes", 0),
+                   tr("Puerto: %s.") % puerto,
+                   (tr("Dirección para quien juegue en tu misma casa: %s:%s.") % (local, puerto)) if local else tr("No he podido saber la dirección de este ordenador en tu red."),
+                   tr("Para quien juegue desde fuera: tu dirección pública o tu nombre de DNS dinámico, dos puntos y el puerto %s. "
+                   "Hay que abrir ese puerto en el router; la guía lo explica paso a paso, con F1.") % puerto,
+                   (tr("Conexión cifrada. Huella del certificado: %s.") % foto["huella_cert"]) if foto.get("cifrado") else tr("Conexión sin cifrar."),
+                   tr("Mundo: versión %s del juego, huella %s, %d localidades.") % (foto.get("mundo_version"), foto.get("mundo_huella"), foto.get("localidades", 0)),
+                   tr("Quién puede crear un personaje: %s.") % {"abierta": tr("cualquiera que tenga la dirección"), "clave": tr("quien sepa la contraseña de entrada"),
+                                                             "invitacion": tr("quien tenga un código de invitación")}.get(foto.get("entrada"), foto.get("entrada"))]
     else:
-        lineas += [{PARADO: "Servidor parado.", ARRANCANDO: "El servidor está arrancando. La primera vez tarda unos segundos, porque crea su certificado.",
-                    PARANDO: "El servidor está parando y guardándolo todo."}.get(estado, "Servidor parado."),
-                   "Nombre: %s." % cfg.get("nombre", ""),
-                   "Puerto: %s." % puerto]
+        lineas += [{PARADO: tr("Servidor parado."), ARRANCANDO: tr("El servidor está arrancando. La primera vez tarda unos segundos, porque crea su certificado."),
+                    PARANDO: tr("El servidor está parando y guardándolo todo.")}.get(estado, tr("Servidor parado.")),
+                   tr("Nombre: %s.") % cfg.get("nombre", ""),
+                   tr("Puerto: %s.") % puerto]
         if estado == PARADO:
-            lineas.append("Para arrancarlo pulsa F5 o el botón Arrancar.")
+            lineas.append(tr("Para arrancarlo pulsa F5 o el botón Arrancar."))
         if ultimo_error and estado == PARADO:
-            lineas.append("La última vez no arrancó: " + ultimo_error)
-    lineas.append("Carpeta del servidor: %s." % carpeta_servidor())
+            lineas.append(tr("La última vez no arrancó: ") + ultimo_error)
+    lineas.append(tr("Carpeta del servidor: %s.") % carpeta_servidor())
     return "\n".join(lineas)
 
 
@@ -130,21 +132,21 @@ class DialogoCopias(wx.Dialog):
     """Elige qué copia de seguridad restaurar."""
 
     def __init__(self, padre, lista):
-        super().__init__(padre, title="Restaurar una copia de seguridad", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, name="Restaurar una copia de seguridad")
+        super().__init__(padre, title=tr("Restaurar una copia de seguridad"), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, name=tr("Restaurar una copia de seguridad"))
         self.lista_copias = list(lista)
         self.otra = None
         sizer = wx.BoxSizer(wx.VERTICAL)
-        textos = ["%s, del %s, %d KB%s" % (os.path.basename(r), time.strftime("%d/%m/%Y a las %H:%M", time.localtime(m)), max(1, t // 1024), ", automática" if auto else "")
+        textos = ["%s, del %s, %d KB%s" % (os.path.basename(r), time.strftime("%d/%m/%Y a las %H:%M", time.localtime(m)), max(1, t // 1024), tr(", automática") if auto else "")
                   for r, m, t, auto in self.lista_copias]
-        _, self.lista = crear_campo(self, "Copias de &seguridad, la más nueva primero:", wx.ListBox, choices=textos, style=wx.LB_SINGLE, size=(560, 220),
-                                    ayuda="Elige la copia que quieres restaurar. Antes de restaurar se guarda lo que hay ahora en otra copia, por si acaso.", sizer=sizer)
+        _, self.lista = crear_campo(self, tr("Copias de &seguridad, la más nueva primero:"), wx.ListBox, choices=textos, style=wx.LB_SINGLE, size=(560, 220),
+                                    ayuda=tr("Elige la copia que quieres restaurar. Antes de restaurar se guarda lo que hay ahora en otra copia, por si acaso."), sizer=sizer)
         if textos:
             self.lista.SetSelection(0)
-        self.con_conf = wx.CheckBox(self, label="Restaurar &también la configuración que va en la copia", name="Restaurar también la configuración")
-        self.con_conf.SetHelpText("Si lo marcas, servidor.conf se cambia por el que se guardó en la copia. Si no, se queda la configuración de ahora.")
+        self.con_conf = wx.CheckBox(self, label=tr("Restaurar &también la configuración que va en la copia"), name=tr("Restaurar también la configuración"))
+        self.con_conf.SetHelpText(tr("Si lo marcas, servidor.conf se cambia por el que se guardó en la copia. Si no, se queda la configuración de ahora."))
         sizer.Add(self.con_conf, 0, wx.ALL, 6)
-        self.boton_otra = wx.Button(self, label="Elegir &otro archivo...")
-        self.boton_otra.SetHelpText("Para restaurar una copia que tienes guardada en otra carpeta o en otro disco.")
+        self.boton_otra = wx.Button(self, label=tr("Elegir &otro archivo..."))
+        self.boton_otra.SetHelpText(tr("Para restaurar una copia que tienes guardada en otra carpeta o en otro disco."))
         self.boton_otra.Bind(wx.EVT_BUTTON, self._otra)
         sizer.Add(self.boton_otra, 0, wx.ALL, 6)
         sizer.Add(crear_botonera(self, wx.OK | wx.CANCEL, predeterminado=wx.ID_CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, 10)
@@ -153,7 +155,7 @@ class DialogoCopias(wx.Dialog):
         self.CentreOnParent()
 
     def _otra(self, evento):
-        with wx.FileDialog(self, "Elegir una copia de seguridad", wildcard="Copias de seguridad (*.zip)|*.zip", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as dlg:
+        with wx.FileDialog(self, tr("Elegir una copia de seguridad"), wildcard=tr("Copias de seguridad (*.zip)|*.zip"), style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as dlg:
             if dlg.ShowModal() == wx.ID_OK:
                 self.otra = dlg.GetPath()
                 self.EndModal(wx.ID_OK)
@@ -192,9 +194,9 @@ class VentanaPanel(wx.Frame):
         self.Bind(wx.EVT_TIMER, lambda e: self.refrescar(), self.reloj)
         self.reloj.Start(1000)
         for a in avisos:
-            self._linea("Configuración: " + a)
+            self._linea(tr("Configuración: ") + a)
         if not os.path.exists(self.motor.ruta_conf):
-            self._linea("Todavía no hay archivo de configuración: se usan los valores de serie. Se crea al guardar la configuración.")
+            self._linea(tr("Todavía no hay archivo de configuración: se usan los valores de serie. Se crea al guardar la configuración."))
         self.refrescar(todo=True)
         self.Centre()
         if self._foco_pendiente:
@@ -221,40 +223,40 @@ class VentanaPanel(wx.Frame):
     def _menus(self):
         barra = wx.MenuBar()
         m = wx.Menu()
-        self.m_arrancar = self._item(m, "&Arrancar\tF5", "Pone el servidor en marcha.", self.arrancar)
-        self.m_parar = self._item(m, "&Parar\tShift+F5", "Avisa a los jugadores, lo guarda todo y para el servidor.", self.parar)
-        self.m_reiniciar = self._item(m, "&Reiniciar\tCtrl+F5", "Para el servidor y lo vuelve a arrancar: así valen los cambios que piden reinicio.", self.reiniciar)
+        self.m_arrancar = self._item(m, tr("&Arrancar\tF5"), tr("Pone el servidor en marcha."), self.arrancar)
+        self.m_parar = self._item(m, tr("&Parar\tShift+F5"), tr("Avisa a los jugadores, lo guarda todo y para el servidor."), self.parar)
+        self.m_reiniciar = self._item(m, tr("&Reiniciar\tCtrl+F5"), tr("Para el servidor y lo vuelve a arrancar: así valen los cambios que piden reinicio."), self.reiniciar)
         m.AppendSeparator()
-        self._item(m, "&Configuración...\tCtrl+P", "Todas las opciones del servidor, por pestañas.", self.configurar)
+        self._item(m, tr("&Configuración...\tCtrl+P"), tr("Todas las opciones del servidor, por pestañas."), self.configurar)
         m.AppendSeparator()
-        self._item(m, "&Salir\tCtrl+Q", "Cierra el panel. Si el servidor está en marcha, lo para antes.", lambda: self.Close())
-        barra.Append(m, "&Servidor")
+        self._item(m, tr("&Salir\tCtrl+Q"), tr("Cierra el panel. Si el servidor está en marcha, lo para antes."), lambda: self.Close())
+        barra.Append(m, tr("&Servidor"))
         m = wx.Menu()
-        self.m_anuncio = self._item(m, "&Anuncio a todos...\tCtrl+N", "Dice algo a todos los jugadores que están dentro.", self.anuncio)
-        self.m_privado = self._item(m, "&Mensaje al jugador elegido...\tCtrl+M", "Dice algo solo al jugador elegido en la lista de jugadores.", self.mensaje_privado)
-        self.m_expulsar = self._item(m, "&Expulsar al jugador elegido...\tCtrl+E", "Saca del servidor al jugador elegido. Puede volver a entrar.", self.expulsar)
-        self.m_invitar = self._item(m, "Crear una &invitación\tCtrl+I", "Crea un código de invitación de un solo uso y lo copia al portapapeles.", self.invitar)
-        self.m_mensaje = self._item(m, "Mensaje del &día...\tCtrl+D", "Cambia el aviso que oye cada jugador al entrar.", self.mensaje_dia)
-        self.m_router = self._item(m, "Abrir el puerto en el &router con UPnP", "Pide al router de tu casa que abra el puerto del servidor, para que entren desde fuera. "
-                                   "Se cierra al parar el servidor. No todos los routers lo permiten.", self.abrir_router)
-        self.m_orden = self._item(m, "Escribir una &orden...\tCtrl+O", "Lleva el foco al campo de órdenes, en la pestaña Registro.", self.ir_a_orden)
+        self.m_anuncio = self._item(m, tr("&Anuncio a todos...\tCtrl+N"), tr("Dice algo a todos los jugadores que están dentro."), self.anuncio)
+        self.m_privado = self._item(m, tr("&Mensaje al jugador elegido...\tCtrl+M"), tr("Dice algo solo al jugador elegido en la lista de jugadores."), self.mensaje_privado)
+        self.m_expulsar = self._item(m, tr("&Expulsar al jugador elegido...\tCtrl+E"), tr("Saca del servidor al jugador elegido. Puede volver a entrar."), self.expulsar)
+        self.m_invitar = self._item(m, tr("Crear una &invitación\tCtrl+I"), tr("Crea un código de invitación de un solo uso y lo copia al portapapeles."), self.invitar)
+        self.m_mensaje = self._item(m, tr("Mensaje del &día...\tCtrl+D"), tr("Cambia el aviso que oye cada jugador al entrar."), self.mensaje_dia)
+        self.m_router = self._item(m, tr("Abrir el puerto en el &router con UPnP"), tr("Pide al router de tu casa que abra el puerto del servidor, para que entren desde fuera. "
+                                   "Se cierra al parar el servidor. No todos los routers lo permiten."), self.abrir_router)
+        self.m_orden = self._item(m, tr("Escribir una &orden...\tCtrl+O"), tr("Lleva el foco al campo de órdenes, en la pestaña Registro."), self.ir_a_orden)
         m.AppendSeparator()
-        self._item(m, "Ac&tualizar las listas\tF6", "Vuelve a leer el estado, los jugadores, las cuentas y las invitaciones.", lambda: self.refrescar(todo=True, forzar=True))
-        barra.Append(m, "&Gestión")
+        self._item(m, tr("Ac&tualizar las listas\tF6"), tr("Vuelve a leer el estado, los jugadores, las cuentas y las invitaciones."), lambda: self.refrescar(todo=True, forzar=True))
+        barra.Append(m, tr("&Gestión"))
         m = wx.Menu()
-        self.m_guardar = self._item(m, "&Guardar ahora\tCtrl+S", "Guarda en disco todo lo del servidor.", self.guardar_ahora)
-        self._item(m, "&Copia de seguridad ahora\tCtrl+B", "Hace una copia de seguridad de los datos en la carpeta copias.", self.copia)
-        self._item(m, "&Restaurar una copia...\tCtrl+R", "Deja los datos como estaban en una copia de seguridad. Hay que parar el servidor.", self.restaurar)
+        self.m_guardar = self._item(m, tr("&Guardar ahora\tCtrl+S"), tr("Guarda en disco todo lo del servidor."), self.guardar_ahora)
+        self._item(m, tr("&Copia de seguridad ahora\tCtrl+B"), tr("Hace una copia de seguridad de los datos en la carpeta copias."), self.copia)
+        self._item(m, tr("&Restaurar una copia...\tCtrl+R"), tr("Deja los datos como estaban en una copia de seguridad. Hay que parar el servidor."), self.restaurar)
         m.AppendSeparator()
-        self._item(m, "Abrir la carpeta de &datos", "Abre en el Explorador la carpeta donde se guarda todo.", self.abrir_datos)
-        self._item(m, "Abrir la carpeta de las c&opias", "Abre en el Explorador la carpeta de las copias de seguridad.", self.abrir_copias)
-        self._item(m, "Guardar el registro en un arc&hivo...\tCtrl+G", "Guarda en un archivo de texto lo que hay en el registro.", self.guardar_registro)
-        barra.Append(m, "&Datos")
+        self._item(m, tr("Abrir la carpeta de &datos"), tr("Abre en el Explorador la carpeta donde se guarda todo."), self.abrir_datos)
+        self._item(m, tr("Abrir la carpeta de las c&opias"), tr("Abre en el Explorador la carpeta de las copias de seguridad."), self.abrir_copias)
+        self._item(m, tr("Guardar el registro en un arc&hivo...\tCtrl+G"), tr("Guarda en un archivo de texto lo que hay en el registro."), self.guardar_registro)
+        barra.Append(m, tr("&Datos"))
         m = wx.Menu()
-        self._item(m, "&Guía del servidor\tF1", "Abre en el navegador la guía completa para montar y llevar un servidor.", self.guia)
-        self._item(m, "&Teclas del panel", "Dice los atajos de teclado de esta ventana.", self.teclas)
-        self._item(m, "&Acerca de...", "Qué es este programa.", self.acerca)
-        barra.Append(m, "A&yuda")
+        self._item(m, tr("&Guía del servidor\tF1"), tr("Abre en el navegador la guía completa para montar y llevar un servidor."), self.guia)
+        self._item(m, tr("&Teclas del panel"), tr("Dice los atajos de teclado de esta ventana."), self.teclas)
+        self._item(m, tr("&Acerca de..."), tr("Qué es este programa."), self.acerca)
+        barra.Append(m, tr("A&yuda"))
         self.SetMenuBar(barra)
 
     def _item(self, menu, texto, ayuda, accion):
@@ -280,82 +282,82 @@ class VentanaPanel(wx.Frame):
     def _contenido(self):
         marco = wx.Panel(self)
         exterior = wx.BoxSizer(wx.VERTICAL)
-        self.cuaderno = wx.Notebook(marco, name="Apartados del panel")
+        self.cuaderno = wx.Notebook(marco, name=tr("Apartados del panel"))
         exterior.Add(self.cuaderno, 1, wx.EXPAND | wx.ALL, 6)
         marco.SetSizer(exterior)
         # Las letras de acceso de cada pestaña no se repiten dentro de ella ni chocan con las de los menús: S, G, D e Y.
         # ---- Estado
-        p, col = self._pagina("Estado")
-        _, self.estado = crear_campo(p, "&Estado del servidor:", wx.TextCtrl, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(780, 300),
-                                     ayuda="Cómo está el servidor: si está en marcha, cuánta gente hay, el puerto, la dirección para tus amigos, el cifrado y "
-                                           "el mundo con el que trabaja. Una cosa por línea. Se pone al día solo cuando cambia algo; F6 lo pone al día en el momento.", sizer=col)
+        p, col = self._pagina(tr("Estado"))
+        _, self.estado = crear_campo(p, tr("&Estado del servidor:"), wx.TextCtrl, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(780, 300),
+                                     ayuda=tr("Cómo está el servidor: si está en marcha, cuánta gente hay, el puerto, la dirección para tus amigos, el cifrado y "
+                                           "el mundo con el que trabaja. Una cosa por línea. Se pone al día solo cuando cambia algo; F6 lo pone al día en el momento."), sizer=col)
         col.Detach(self.estado)
         col.Add(self.estado, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
         fila = wx.BoxSizer(wx.HORIZONTAL)
-        self.b_arrancar = self._boton(p, fila, "&Arrancar", "Pone el servidor en marcha. También con F5.", self.arrancar)
-        self.b_parar = self._boton(p, fila, "&Parar", "Avisa a los jugadores, lo guarda todo y para el servidor. También con Mayúsculas+F5.", self.parar)
-        self.b_reiniciar = self._boton(p, fila, "&Reiniciar", "Para el servidor y lo vuelve a arrancar. También con Control+F5.", self.reiniciar)
-        self.b_copiar = self._boton(p, fila, "&Copiar la dirección", "Copia al portapapeles la dirección de este servidor en tu red, para dársela a quien juegue en tu misma casa.", self.copiar_direccion)
-        self.b_config = self._boton(p, fila, "Con&figuración...", "Abre todas las opciones del servidor. También con Control+P.", self.configurar)
+        self.b_arrancar = self._boton(p, fila, tr("&Arrancar"), tr("Pone el servidor en marcha. También con F5."), self.arrancar)
+        self.b_parar = self._boton(p, fila, tr("&Parar"), tr("Avisa a los jugadores, lo guarda todo y para el servidor. También con Mayúsculas+F5."), self.parar)
+        self.b_reiniciar = self._boton(p, fila, tr("&Reiniciar"), tr("Para el servidor y lo vuelve a arrancar. También con Control+F5."), self.reiniciar)
+        self.b_copiar = self._boton(p, fila, tr("&Copiar la dirección"), tr("Copia al portapapeles la dirección de este servidor en tu red, para dársela a quien juegue en tu misma casa."), self.copiar_direccion)
+        self.b_config = self._boton(p, fila, tr("Con&figuración..."), tr("Abre todas las opciones del servidor. También con Control+P."), self.configurar)
         col.Add(fila, 0, wx.ALL, 2)
         # ---- Jugadores
-        p, col = self._pagina("Jugadores")
-        _, self.lista_jugadores = crear_campo(p, "&Jugadores que están dentro:", wx.ListBox, style=wx.LB_SINGLE, size=(780, 300),
-                                              ayuda="Quién está dentro ahora, dónde y con qué versión del juego. La tecla Aplicaciones abre las acciones sobre el jugador elegido.", sizer=col)
+        p, col = self._pagina(tr("Jugadores"))
+        _, self.lista_jugadores = crear_campo(p, tr("&Jugadores que están dentro:"), wx.ListBox, style=wx.LB_SINGLE, size=(780, 300),
+                                              ayuda=tr("Quién está dentro ahora, dónde y con qué versión del juego. La tecla Aplicaciones abre las acciones sobre el jugador elegido."), sizer=col)
         col.Detach(self.lista_jugadores)
         col.Add(self.lista_jugadores, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
         fila = wx.BoxSizer(wx.HORIZONTAL)
-        self.b_expulsar = self._boton(p, fila, "&Expulsar...", "Saca del servidor al jugador elegido. Puede volver a entrar. También con Control+E.", self.expulsar)
-        self.b_vetar = self._boton(p, fila, "&Vetar...", "Saca al jugador elegido y no le deja volver a entrar.", self.vetar)
-        self.b_admin = self._boton(p, fila, "Hacer &administrador", "El jugador elegido pasa a administrar el servidor: puede dar órdenes desde el chat del juego.", self.hacer_admin)
-        self.b_privado = self._boton(p, fila, "&Mensaje...", "Dice algo solo al jugador elegido. También con Control+M.", self.mensaje_privado)
-        self.b_anuncio = self._boton(p, fila, "A&nuncio a todos...", "Dice algo a todos los que están dentro. También con Control+N.", self.anuncio)
+        self.b_expulsar = self._boton(p, fila, tr("&Expulsar..."), tr("Saca del servidor al jugador elegido. Puede volver a entrar. También con Control+E."), self.expulsar)
+        self.b_vetar = self._boton(p, fila, tr("&Vetar..."), tr("Saca al jugador elegido y no le deja volver a entrar."), self.vetar)
+        self.b_admin = self._boton(p, fila, tr("Hacer &administrador"), tr("El jugador elegido pasa a administrar el servidor: puede dar órdenes desde el chat del juego."), self.hacer_admin)
+        self.b_privado = self._boton(p, fila, tr("&Mensaje..."), tr("Dice algo solo al jugador elegido. También con Control+M."), self.mensaje_privado)
+        self.b_anuncio = self._boton(p, fila, tr("A&nuncio a todos..."), tr("Dice algo a todos los que están dentro. También con Control+N."), self.anuncio)
         col.Add(fila, 0, wx.ALL, 2)
         vincular_menu_contextual(self.lista_jugadores, self._menu_jugador)
         # ---- Cuentas
-        p, col = self._pagina("Cuentas")
-        _, self.lista_cuentas = crear_campo(p, "&Cuentas del servidor:", wx.ListBox, style=wx.LB_SINGLE, size=(780, 300),
-                                            ayuda="Todas las cuentas que han entrado alguna vez: si administran, si están vetadas y cuándo se las vio. "
-                                                  "La tecla Aplicaciones abre las acciones sobre la cuenta elegida. Con el servidor parado no se pueden ver.", sizer=col)
+        p, col = self._pagina(tr("Cuentas"))
+        _, self.lista_cuentas = crear_campo(p, tr("&Cuentas del servidor:"), wx.ListBox, style=wx.LB_SINGLE, size=(780, 300),
+                                            ayuda=tr("Todas las cuentas que han entrado alguna vez: si administran, si están vetadas y cuándo se las vio. "
+                                                  "La tecla Aplicaciones abre las acciones sobre la cuenta elegida. Con el servidor parado no se pueden ver."), sizer=col)
         col.Detach(self.lista_cuentas)
         col.Add(self.lista_cuentas, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
         fila = wx.BoxSizer(wx.HORIZONTAL)
-        self.b_c_vetar = self._boton(p, fila, "&Vetar...", "La cuenta elegida no podrá volver a entrar. Si está dentro, se la saca.", lambda: self.vetar(de_cuentas=True))
-        self.b_c_perdonar = self._boton(p, fila, "&Perdonar el veto", "La cuenta elegida puede volver a entrar.", self.perdonar)
-        self.b_c_admin = self._boton(p, fila, "Hacer &administrador", "La cuenta elegida pasa a administrar el servidor.", lambda: self.hacer_admin(de_cuentas=True))
-        self.b_c_quitar = self._boton(p, fila, "&Quitar la administración", "La cuenta elegida deja de administrar el servidor.", self.quitar_admin)
-        self.b_c_borrar = self._boton(p, fila, "&Borrar la cuenta...", "Borra la cuenta elegida con su personaje, sus propiedades y su sitio en la banda. No se puede deshacer.", self.borrar_cuenta)
-        self.b_c_actualizar = self._boton(p, fila, "Ac&tualizar", "Vuelve a leer la lista de cuentas. También con F6.", lambda: self.refrescar(todo=True, forzar=True))
+        self.b_c_vetar = self._boton(p, fila, tr("&Vetar..."), tr("La cuenta elegida no podrá volver a entrar. Si está dentro, se la saca."), lambda: self.vetar(de_cuentas=True))
+        self.b_c_perdonar = self._boton(p, fila, tr("&Perdonar el veto"), tr("La cuenta elegida puede volver a entrar."), self.perdonar)
+        self.b_c_admin = self._boton(p, fila, tr("Hacer &administrador"), tr("La cuenta elegida pasa a administrar el servidor."), lambda: self.hacer_admin(de_cuentas=True))
+        self.b_c_quitar = self._boton(p, fila, tr("&Quitar la administración"), tr("La cuenta elegida deja de administrar el servidor."), self.quitar_admin)
+        self.b_c_borrar = self._boton(p, fila, tr("&Borrar la cuenta..."), tr("Borra la cuenta elegida con su personaje, sus propiedades y su sitio en la banda. No se puede deshacer."), self.borrar_cuenta)
+        self.b_c_actualizar = self._boton(p, fila, tr("Ac&tualizar"), tr("Vuelve a leer la lista de cuentas. También con F6."), lambda: self.refrescar(todo=True, forzar=True))
         col.Add(fila, 0, wx.ALL, 2)
         vincular_menu_contextual(self.lista_cuentas, self._menu_cuenta)
         self.cuaderno.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._cambio_pestana)
         # ---- Invitaciones
-        p, col = self._pagina("Invitaciones")
-        _, self.lista_invitaciones = crear_campo(p, "&Invitaciones:", wx.ListBox, style=wx.LB_SINGLE, size=(780, 300),
-                                                 ayuda="Los códigos de invitación, los más nuevos primero: los libres y los que ya ha usado alguien. Sirven cuando la entrada "
-                                                       "del servidor es por invitación. Cada código vale para crear un solo personaje.", sizer=col)
+        p, col = self._pagina(tr("Invitaciones"))
+        _, self.lista_invitaciones = crear_campo(p, tr("&Invitaciones:"), wx.ListBox, style=wx.LB_SINGLE, size=(780, 300),
+                                                 ayuda=tr("Los códigos de invitación, los más nuevos primero: los libres y los que ya ha usado alguien. Sirven cuando la entrada "
+                                                       "del servidor es por invitación. Cada código vale para crear un solo personaje."), sizer=col)
         col.Detach(self.lista_invitaciones)
         col.Add(self.lista_invitaciones, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
         fila = wx.BoxSizer(wx.HORIZONTAL)
-        self.b_i_crear = self._boton(p, fila, "&Crear una invitación", "Crea un código nuevo, de un solo uso, y lo copia al portapapeles. También con Control+I.", self.invitar)
-        self.b_i_copiar = self._boton(p, fila, "Co&piar el código", "Copia al portapapeles el código elegido, para mandárselo a quien quieras invitar.", self.copiar_invitacion)
-        self.b_i_anular = self._boton(p, fila, "&Anular", "Anula el código elegido, si todavía no lo ha usado nadie.", self.anular_invitacion)
-        self.b_i_actualizar = self._boton(p, fila, "Ac&tualizar", "Vuelve a leer la lista de invitaciones. También con F6.", lambda: self.refrescar(todo=True, forzar=True))
+        self.b_i_crear = self._boton(p, fila, tr("&Crear una invitación"), tr("Crea un código nuevo, de un solo uso, y lo copia al portapapeles. También con Control+I."), self.invitar)
+        self.b_i_copiar = self._boton(p, fila, tr("Co&piar el código"), tr("Copia al portapapeles el código elegido, para mandárselo a quien quieras invitar."), self.copiar_invitacion)
+        self.b_i_anular = self._boton(p, fila, tr("&Anular"), tr("Anula el código elegido, si todavía no lo ha usado nadie."), self.anular_invitacion)
+        self.b_i_actualizar = self._boton(p, fila, tr("Ac&tualizar"), tr("Vuelve a leer la lista de invitaciones. También con F6."), lambda: self.refrescar(todo=True, forzar=True))
         col.Add(fila, 0, wx.ALL, 2)
         # ---- Registro
-        p, col = self._pagina("Registro")
-        _, self.registro = crear_campo(p, "&Registro de lo que pasa:", wx.TextCtrl, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP, size=(780, 260),
-                                       ayuda="Lo que va diciendo el servidor: quién entra y sale, los avisos y las respuestas a tus órdenes. Lo más nuevo, al final.", sizer=col)
+        p, col = self._pagina(tr("Registro"))
+        _, self.registro = crear_campo(p, tr("&Registro de lo que pasa:"), wx.TextCtrl, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP, size=(780, 260),
+                                       ayuda=tr("Lo que va diciendo el servidor: quién entra y sale, los avisos y las respuestas a tus órdenes. Lo más nuevo, al final."), sizer=col)
         col.Detach(self.registro)
         col.Add(self.registro, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
-        _, self.campo_orden = crear_campo(p, "&Orden para el servidor:", wx.TextCtrl, style=wx.TE_PROCESS_ENTER,
-                                          ayuda="Escribe una orden de las de la consola y pulsa Intro: ayuda las dice todas. Por ejemplo jugadores, aviso y un texto, "
-                                                "expulsar y un nombre, invitar, guardar o copia. La respuesta sale en el registro.", sizer=col)
+        _, self.campo_orden = crear_campo(p, tr("&Orden para el servidor:"), wx.TextCtrl, style=wx.TE_PROCESS_ENTER,
+                                          ayuda=tr("Escribe una orden de las de la consola y pulsa Intro: ayuda las dice todas. Por ejemplo jugadores, aviso y un texto, "
+                                                "expulsar y un nombre, invitar, guardar o copia. La respuesta sale en el registro."), sizer=col)
         self.campo_orden.Bind(wx.EVT_TEXT_ENTER, lambda e: self.enviar_orden())
         fila = wx.BoxSizer(wx.HORIZONTAL)
-        self.b_orden = self._boton(p, fila, "E&nviar la orden", "Manda al servidor la orden escrita. Es lo mismo que pulsar Intro en el campo.", self.enviar_orden)
-        self.b_vaciar = self._boton(p, fila, "&Vaciar el registro", "Borra lo que hay en esta ventana. No borra nada del servidor.", self.vaciar_registro)
-        self.b_guardar_reg = self._boton(p, fila, "Guardar en un arc&hivo...", "Guarda en un archivo de texto lo que hay en el registro. También con Control+G.", self.guardar_registro)
+        self.b_orden = self._boton(p, fila, tr("E&nviar la orden"), tr("Manda al servidor la orden escrita. Es lo mismo que pulsar Intro en el campo."), self.enviar_orden)
+        self.b_vaciar = self._boton(p, fila, tr("&Vaciar el registro"), tr("Borra lo que hay en esta ventana. No borra nada del servidor."), self.vaciar_registro)
+        self.b_guardar_reg = self._boton(p, fila, tr("Guardar en un arc&hivo..."), tr("Guarda en un archivo de texto lo que hay en el registro. También con Control+G."), self.guardar_registro)
         col.Add(fila, 0, wx.ALL, 2)
 
     # ---------------------------------------------------------------- registro
@@ -394,7 +396,7 @@ class VentanaPanel(wx.Frame):
             return
         if que == "error":
             self.refrescar(todo=True, forzar=True)
-            mostrar_error(self, dato, "El servidor no ha arrancado")
+            mostrar_error(self, dato, tr("El servidor no ha arrancado"))
             return
         # Que ha terminado de arrancar o de parar no lo puede saber el lector de pantalla: se dice. Al registro ya lo
         # ha apuntado el propio servidor.
@@ -403,14 +405,14 @@ class VentanaPanel(wx.Frame):
         if dato == PARADO and self.motor.causa_parada == "actualizacion" and not self._cerrar_al_parar:
             # Lo ha pedido la actualización del juego (o la orden actualizar): el panel se cierra para que se pueda
             # sustituir su programa. Al terminar, la actualización lo vuelve a abrir y el servidor arranca solo.
-            self._linea("%s  El panel se cierra para que el juego se pueda actualizar." % time.strftime("%H:%M:%S"))
+            self._linea(tr("%s  El panel se cierra para que el juego se pueda actualizar.") % time.strftime("%H:%M:%S"))
             self._cerrar_al_parar = True
         elif dato == PARADO and self.motor.causa_parada == "reinicio" and not self._cerrar_al_parar and not self._tras_parar:
             self._reiniciar_al_parar = True                    # reiniciar por mantenimiento: vuelve a arrancar solo
         if dato == EN_MARCHA:
-            self.anunciar("Servidor en marcha en el puerto %s." % ((self.motor.foto or {}).get("puerto") or self.cfg.get("puerto")))
+            self.anunciar(tr("Servidor en marcha en el puerto %s.") % ((self.motor.foto or {}).get("puerto") or self.cfg.get("puerto")))
         elif dato == PARADO and not self.motor.ultimo_error and not self._cerrar_al_parar:
-            self.anunciar("Servidor parado. Todo guardado.")
+            self.anunciar(tr("Servidor parado. Todo guardado."))
         self.refrescar(todo=True, forzar=True)
         if dato == PARADO:
             self._cerrar_router(esperar=self._cerrar_al_parar)     # al cerrar el panel, antes de irse
@@ -499,7 +501,7 @@ class VentanaPanel(wx.Frame):
         if self.motor.estado != PARADO:
             return
         self.motor.ultimo_error = ""
-        self.SetStatusText("Arrancando el servidor...")
+        self.SetStatusText(tr("Arrancando el servidor..."))
         self.motor.arrancar()
         self.refrescar(forzar=True)
 
@@ -508,9 +510,9 @@ class VentanaPanel(wx.Frame):
             return False
         n = len(self.jugadores)
         if preguntar and n and confirmar(self, "Hay %d %s. Si paras el servidor se les avisa, se guarda todo y se les desconecta. ¿Lo paras?" % (
-                n, "jugador dentro" if n == 1 else "jugadores dentro"), "Parar el servidor", peligroso=True) != wx.ID_YES:
+                n, tr("jugador dentro") if n == 1 else tr("jugadores dentro")), tr("Parar el servidor"), peligroso=True) != wx.ID_YES:
             return False
-        self.SetStatusText("Parando el servidor y guardándolo todo...")
+        self.SetStatusText(tr("Parando el servidor y guardándolo todo..."))
         self.motor.parar(causa=causa)
         self.refrescar(forzar=True)
         return True
@@ -528,15 +530,15 @@ class VentanaPanel(wx.Frame):
             return
         if evento.CanVeto() and not self._cerrar_al_parar:
             n = len(self.jugadores)
-            pregunta = "El servidor está en marcha" + ((", con %d %s" % (n, "jugador dentro" if n == 1 else "jugadores dentro")) if n else "") + \
-                ". Si cierras el panel, se avisa a los jugadores, se guarda todo y el servidor se para. ¿Cierras?"
-            if confirmar(self, pregunta, "Cerrar el panel", peligroso=True) != wx.ID_YES:
+            pregunta = tr("El servidor está en marcha") + ((tr(", con %d %s") % (n, tr("jugador dentro") if n == 1 else tr("jugadores dentro"))) if n else "") + \
+                tr(". Si cierras el panel, se avisa a los jugadores, se guarda todo y el servidor se para. ¿Cierras?")
+            if confirmar(self, pregunta, tr("Cerrar el panel"), peligroso=True) != wx.ID_YES:
                 evento.Veto()
                 return
         self._cerrar_al_parar = True
         if self.motor.estado == EN_MARCHA:
-            self.SetStatusText("Parando el servidor y guardándolo todo antes de cerrar...")
-            self.motor.parar("Quien administra el servidor lo ha cerrado.")
+            self.SetStatusText(tr("Parando el servidor y guardándolo todo antes de cerrar..."))
+            self.motor.parar(es("Quien administra el servidor lo ha cerrado."))
         if evento.CanVeto():
             evento.Veto()                                      # se cierra sola en cuanto el servidor termina de guardar
         else:                                                  # Windows se apaga: no hay más remedio que esperar aquí
@@ -555,10 +557,10 @@ class VentanaPanel(wx.Frame):
         if not self:
             return
         if error == "parado":
-            self.decir("El servidor está parado: arráncalo con F5 para poder hacer eso.")
+            self.decir(tr("El servidor está parado: arráncalo con F5 para poder hacer eso."))
             return
         if error:
-            self.decir("No se ha podido hacer: " + error)
+            self.decir(tr("No se ha podido hacer: ") + error)
             return
         if not callar:
             self.decir(str(r))
@@ -569,21 +571,21 @@ class VentanaPanel(wx.Frame):
     def _necesita_marcha(self):
         if self.motor.estado == EN_MARCHA:
             return True
-        self.decir("El servidor está parado: arráncalo con F5 para poder hacer eso.")
+        self.decir(tr("El servidor está parado: arráncalo con F5 para poder hacer eso."))
         return False
 
     def _jugador(self):
         i = self.lista_jugadores.GetSelection()
         if 0 <= i < len(self.jugadores):
             return self.jugadores[i]
-        self.decir("Elige antes a un jugador en la lista de jugadores." if self.jugadores else "No hay ningún jugador dentro.")
+        self.decir(tr("Elige antes a un jugador en la lista de jugadores.") if self.jugadores else tr("No hay ningún jugador dentro."))
         return None
 
     def _cuenta(self):
         i = self.lista_cuentas.GetSelection()
         if 0 <= i < len(self.cuentas):
             return self.cuentas[i]
-        self.decir("Elige antes una cuenta en la lista de cuentas." if self.cuentas else "No hay ninguna cuenta en la lista.")
+        self.decir(tr("Elige antes una cuenta en la lista de cuentas.") if self.cuentas else tr("No hay ninguna cuenta en la lista."))
         return None
 
     def _elegido(self, de_cuentas):
@@ -592,10 +594,10 @@ class VentanaPanel(wx.Frame):
     def anuncio(self):
         if not self._necesita_marcha():
             return
-        t = pedir_texto(self, "&Anuncio para todos los jugadores:", "Anuncio a todos", max_caracteres=300,
-                        ayuda="Lo oirán todos los que están dentro ahora mismo, con «Aviso del servidor» delante.")
+        t = pedir_texto(self, tr("&Anuncio para todos los jugadores:"), tr("Anuncio a todos"), max_caracteres=300,
+                        ayuda=tr("Lo oirán todos los que están dentro ahora mismo, con «Aviso del servidor» delante."))
         if t and t.strip():
-            self._orden("aviso " + " ".join(t.split()))
+            self._orden(tr("aviso ") + " ".join(t.split()))
 
     def mensaje_privado(self):
         if not self._necesita_marcha():
@@ -603,9 +605,9 @@ class VentanaPanel(wx.Frame):
         g = self._jugador()
         if g is None:
             return
-        t = pedir_texto(self, "&Mensaje para %s:" % g["nombre"], "Mensaje a un jugador", max_caracteres=300, ayuda="Solo lo oirá ese jugador.")
+        t = pedir_texto(self, tr("&Mensaje para %s:") % g["nombre"], tr("Mensaje a un jugador"), max_caracteres=300, ayuda=tr("Solo lo oirá ese jugador."))
         if t and t.strip():
-            self._orden("decir %s: %s" % (g["nombre"], " ".join(t.split())))
+            self._orden(tr("decir %s: %s") % (g["nombre"], " ".join(t.split())))
 
     def expulsar(self):
         if not self._necesita_marcha():
@@ -613,12 +615,12 @@ class VentanaPanel(wx.Frame):
         g = self._jugador()
         if g is None:
             return
-        motivo = pedir_texto(self, "&Motivo que se le dirá a %s, si quieres decirle alguno:" % g["nombre"], "Expulsar a " + g["nombre"], max_caracteres=200,
-                             ayuda="Se le saca del servidor, pero puede volver a entrar. Deja el motivo vacío si no quieres decirle nada. Cancelar no le expulsa.")
+        motivo = pedir_texto(self, tr("&Motivo que se le dirá a %s, si quieres decirle alguno:") % g["nombre"], tr("Expulsar a ") + g["nombre"], max_caracteres=200,
+                             ayuda=tr("Se le saca del servidor, pero puede volver a entrar. Deja el motivo vacío si no quieres decirle nada. Cancelar no le expulsa."))
         if motivo is None:
             return
         motivo = " ".join(motivo.replace(":", ",").split())
-        self._orden("expulsar %s%s" % (g["nombre"], (": " + motivo) if motivo else ""))
+        self._orden(tr("expulsar %s%s") % (g["nombre"], (": " + motivo) if motivo else ""))
 
     def vetar(self, de_cuentas=False):
         if not self._necesita_marcha():
@@ -626,16 +628,16 @@ class VentanaPanel(wx.Frame):
         g = self._elegido(de_cuentas)
         if g is None:
             return
-        if elegir_opcion(self, "%s no podrá volver a entrar en este servidor hasta que le perdones el veto, en la pestaña Cuentas. Si está dentro, se le saca ahora." % g["nombre"],
-                         "Vetar a " + g["nombre"], ["&Vetar", "&No vetar"]) == 0:
-            self._orden("vetar " + g["nombre"])
+        if elegir_opcion(self, tr("%s no podrá volver a entrar en este servidor hasta que le perdones el veto, en la pestaña Cuentas. Si está dentro, se le saca ahora.") % g["nombre"],
+                         tr("Vetar a ") + g["nombre"], [tr("&Vetar"), tr("&No vetar")]) == 0:
+            self._orden(tr("vetar ") + g["nombre"])
 
     def perdonar(self):
         if not self._necesita_marcha():
             return
         c = self._cuenta()
         if c is not None:
-            self._orden("perdonar " + c["nombre"])
+            self._orden(tr("perdonar ") + c["nombre"])
 
     def hacer_admin(self, de_cuentas=False):
         if not self._necesita_marcha():
@@ -643,16 +645,16 @@ class VentanaPanel(wx.Frame):
         g = self._elegido(de_cuentas)
         if g is None:
             return
-        if elegir_opcion(self, "%s podrá dar órdenes al servidor desde el chat del juego: expulsar, vetar, avisar, crear invitaciones y apagarlo." % g["nombre"],
-                         "Hacer administrador a " + g["nombre"], ["&Hacer administrador", "&No hacerlo"]) == 0:
-            self._orden("admin " + g["nombre"])
+        if elegir_opcion(self, tr("%s podrá dar órdenes al servidor desde el chat del juego: expulsar, vetar, avisar, crear invitaciones y apagarlo.") % g["nombre"],
+                         tr("Hacer administrador a ") + g["nombre"], [tr("&Hacer administrador"), tr("&No hacerlo")]) == 0:
+            self._orden(tr("admin ") + g["nombre"])
 
     def quitar_admin(self):
         if not self._necesita_marcha():
             return
         c = self._cuenta()
         if c is not None:
-            self._orden("quitaradmin " + c["nombre"])
+            self._orden(tr("quitaradmin ") + c["nombre"])
 
     def borrar_cuenta(self):
         if not self._necesita_marcha():
@@ -660,10 +662,10 @@ class VentanaPanel(wx.Frame):
         c = self._cuenta()
         if c is None:
             return
-        if elegir_opcion(self, "Se va a borrar la cuenta de %s con su personaje, sus casas y negocios y su sitio en la banda. No se puede deshacer.\n\n"
-                               "Si esa persona vuelve a entrar, empezará de cero. Para que no vuelva, lo que hay que hacer es vetarla." % c["nombre"],
-                         "Borrar la cuenta de " + c["nombre"], ["&Borrar la cuenta", "&No borrarla"]) == 0:
-            self._orden("borrarcuenta " + c["nombre"])
+        if elegir_opcion(self, tr("Se va a borrar la cuenta de %s con su personaje, sus casas y negocios y su sitio en la banda. No se puede deshacer.\n\n"
+                               "Si esa persona vuelve a entrar, empezará de cero. Para que no vuelva, lo que hay que hacer es vetarla.") % c["nombre"],
+                         tr("Borrar la cuenta de ") + c["nombre"], [tr("&Borrar la cuenta"), tr("&No borrarla")]) == 0:
+            self._orden(tr("borrarcuenta ") + c["nombre"])
 
     def invitar(self):
         if not self._necesita_marcha():
@@ -672,22 +674,22 @@ class VentanaPanel(wx.Frame):
         def tras(respuesta):
             codigo = respuesta.rsplit(":", 1)[-1].strip()
             self._al_portapapeles(codigo)
-            mostrar_mensaje(self, "Código de invitación, de un solo uso:\n%s\n\nYa está copiado en el portapapeles: pégalo en un mensaje para quien quieras invitar.\n"
-                                  "Solo hace falta si la entrada del servidor es por invitación; se elige en Configuración, pestaña Acceso y administración." % codigo, "Invitación creada")
+            mostrar_mensaje(self, tr("Código de invitación, de un solo uso:\n%s\n\nYa está copiado en el portapapeles: pégalo en un mensaje para quien quieras invitar.\n"
+                                  "Solo hace falta si la entrada del servidor es por invitación; se elige en Configuración, pestaña Acceso y administración.") % codigo, tr("Invitación creada"))
         self._orden("invitar", tras=tras)
 
     def _invitacion(self):
         i = self.lista_invitaciones.GetSelection()
         if 0 <= i < len(self.invitaciones):
             return self.invitaciones[i]
-        self.decir("Elige antes una invitación en la lista." if self.invitaciones else "No hay ninguna invitación. Crea una con Control+I.")
+        self.decir(tr("Elige antes una invitación en la lista.") if self.invitaciones else tr("No hay ninguna invitación. Crea una con Control+I."))
         return None
 
     def copiar_invitacion(self):
         i = self._invitacion()
         if i is not None:
             self._al_portapapeles(i["codigo"])
-            self.decir("Código %s copiado al portapapeles." % i["codigo"])
+            self.decir(tr("Código %s copiado al portapapeles.") % i["codigo"])
 
     def anular_invitacion(self):
         if not self._necesita_marcha():
@@ -696,25 +698,25 @@ class VentanaPanel(wx.Frame):
         if i is None:
             return
         if i["usada"]:
-            self.decir("Esa invitación ya la ha usado alguien: no hay nada que anular.")
+            self.decir(tr("Esa invitación ya la ha usado alguien: no hay nada que anular."))
             return
-        self._orden("anular " + i["codigo"])
+        self._orden(tr("anular ") + i["codigo"])
 
     def mensaje_dia(self):
         actual = str(self.cfg.get("mensaje_dia", ""))
-        t = pedir_texto(self, "Mensaje del &día, el aviso que oye cada jugador al entrar. Vacío, ninguno:", "Mensaje del día", valor=actual, max_caracteres=300,
-                        ayuda="Se guarda en la configuración y, si el servidor está en marcha, lo oyen también los que están dentro.")
+        t = pedir_texto(self, tr("Mensaje del &día, el aviso que oye cada jugador al entrar. Vacío, ninguno:"), tr("Mensaje del día"), valor=actual, max_caracteres=300,
+                        ayuda=tr("Se guarda en la configuración y, si el servidor está en marcha, lo oyen también los que están dentro."))
         if t is None:
             return
         valor, error = opciones.validar_valor("mensaje_dia", " ".join(t.split()))
         if error:
-            mostrar_error(self, "El mensaje del día " + error + ".")
+            mostrar_error(self, tr("El mensaje del día ") + error + ".")
             return
         self.cfg["mensaje_dia"] = valor
         self._guardar_config(self.cfg, preguntar_reinicio=False)
         if self.motor.estado == EN_MARCHA:
-            self._orden("mensaje " + valor, callar=True)
-        self.decir("Mensaje del día cambiado y guardado." if valor else "Mensaje del día quitado.")
+            self._orden(tr("mensaje ") + valor, callar=True)
+        self.decir(tr("Mensaje del día cambiado y guardado.") if valor else tr("Mensaje del día quitado."))
 
     def ir_a_orden(self):
         self.cuaderno.SetSelection(4)
@@ -723,7 +725,7 @@ class VentanaPanel(wx.Frame):
     def enviar_orden(self):
         texto = " ".join(self.campo_orden.GetValue().split())
         if not texto:
-            self.decir("Escribe antes una orden. La orden ayuda las dice todas.")
+            self.decir(tr("Escribe antes una orden. La orden ayuda las dice todas."))
             return
         if not self._necesita_marcha():
             return
@@ -755,11 +757,11 @@ class VentanaPanel(wx.Frame):
     def copiar_direccion(self):
         puerto = (self.motor.foto or {}).get("puerto") or self.cfg.get("puerto")
         if not self.local:
-            self.decir("No he podido saber la dirección de este ordenador en tu red. Mírala en la configuración de red de Windows.")
+            self.decir(tr("No he podido saber la dirección de este ordenador en tu red. Mírala en la configuración de red de Windows."))
             return
         direccion = "%s:%s" % (self.local, puerto)
         self._al_portapapeles(direccion)
-        self.decir("Copiada la dirección %s. Vale para quien juegue en tu misma casa; para quien juegue desde fuera, mira la guía con F1." % direccion)
+        self.decir(tr("Copiada la dirección %s. Vale para quien juegue en tu misma casa; para quien juegue desde fuera, mira la guía con F1.") % direccion)
 
     # ------------------------------------------------------------------ router
     def abrir_router(self):
@@ -768,29 +770,29 @@ class VentanaPanel(wx.Frame):
             return
         puerto = (self.motor.foto or {}).get("puerto") or self.cfg.get("puerto")
         if self._router:
-            if elegir_opcion(self, "El puerto %s ya está abierto en tu router. Se cerrará solo al parar el servidor." % puerto, "Puerto del router",
-                             ["&Cerrar el puerto ahora", "&Dejarlo abierto"]) == 0:
+            if elegir_opcion(self, tr("El puerto %s ya está abierto en tu router. Se cerrará solo al parar el servidor.") % puerto, tr("Puerto del router"),
+                             [tr("&Cerrar el puerto ahora"), tr("&Dejarlo abierto")]) == 0:
                 self._cerrar_router(decir=True)
             return
 
         def trabajo():
             from juego import upnp
-            return upnp.abrir(puerto, "Servidor de Puerto Bravo", buscar=self.buscar_router or upnp.descubrir)
+            return upnp.abrir(puerto, tr("Servidor de Puerto Bravo"), buscar=self.buscar_router or upnp.descubrir)
 
         def hecho(r, error):
             if error or not r:
-                self.decir("No he podido hablar con el router: %s. La guía explica cómo abrir el puerto a mano, con F1." % (error or "no ha contestado"))
+                self.decir(tr("No he podido hablar con el router: %s. La guía explica cómo abrir el puerto a mano, con F1.") % (error or tr("no ha contestado")))
                 return
             conseguido, datos, motivo = r
             if conseguido:
                 self._router = datos
-                self.decir("He abierto el puerto %s en tu router: quien juegue desde fuera de tu casa ya puede entrar con tu dirección pública. "
-                           "Se cerrará al parar el servidor." % puerto)
+                self.decir(tr("He abierto el puerto %s en tu router: quien juegue desde fuera de tu casa ya puede entrar con tu dirección pública. "
+                           "Se cerrará al parar el servidor.") % puerto)
             else:
-                self.decir("No he podido abrir el puerto en el router: %s. La guía explica cómo abrirlo a mano, con F1." % {
-                    "no_responde": "el router no responde a la petición; puede que tenga UPnP desactivado",
-                    "no_permite": "tu router no lo permite"}.get(motivo, "el router ha rechazado la petición"))
-        self.SetStatusText("Pidiendo al router que abra el puerto...")
+                self.decir(tr("No he podido abrir el puerto en el router: %s. La guía explica cómo abrirlo a mano, con F1.") % {
+                    "no_responde": tr("el router no responde a la petición; puede que tenga UPnP desactivado"),
+                    "no_permite": tr("tu router no lo permite")}.get(motivo, tr("el router ha rechazado la petición")))
+        self.SetStatusText(tr("Pidiendo al router que abra el puerto..."))
         self._en_segundo_plano(trabajo, hecho)
 
     def _cerrar_router(self, decir=False, esperar=False):
@@ -809,7 +811,7 @@ class VentanaPanel(wx.Frame):
         if esperar:
             hilo.join(5)
         if decir:
-            self.decir("He pedido al router que cierre el puerto.")
+            self.decir(tr("He pedido al router que cierre el puerto."))
 
     # ---------------------------------------------------------- menús de lista
     def _menu_de(self, acciones):
@@ -822,14 +824,14 @@ class VentanaPanel(wx.Frame):
     def _menu_jugador(self):
         if not self.jugadores:
             return None
-        return self._menu_de((("&Mensaje...", self.mensaje_privado), ("&Expulsar...", self.expulsar), ("&Vetar...", self.vetar), ("Hacer &administrador", self.hacer_admin)))
+        return self._menu_de(((tr("&Mensaje..."), self.mensaje_privado), (tr("&Expulsar..."), self.expulsar), (tr("&Vetar..."), self.vetar), (tr("Hacer &administrador"), self.hacer_admin)))
 
     def _menu_cuenta(self):
         if not self.cuentas:
             return None
-        return self._menu_de((("&Vetar...", lambda: self.vetar(de_cuentas=True)), ("&Perdonar el veto", self.perdonar),
-                              ("Hacer &administrador", lambda: self.hacer_admin(de_cuentas=True)), ("&Quitar la administración", self.quitar_admin),
-                              ("&Borrar la cuenta...", self.borrar_cuenta)))
+        return self._menu_de(((tr("&Vetar..."), lambda: self.vetar(de_cuentas=True)), (tr("&Perdonar el veto"), self.perdonar),
+                              (tr("Hacer &administrador"), lambda: self.hacer_admin(de_cuentas=True)), (tr("&Quitar la administración"), self.quitar_admin),
+                              (tr("&Borrar la cuenta..."), self.borrar_cuenta)))
 
     # ----------------------------------------------------------- configuración
     def configurar(self):
@@ -844,12 +846,12 @@ class VentanaPanel(wx.Frame):
         try:
             self.motor.guardar_config(valores)
         except OSError as e:
-            mostrar_error(self, "No se ha podido guardar la configuración en %s.\n%s" % (self.motor.ruta_conf, e), "Error al guardar")
+            mostrar_error(self, tr("No se ha podido guardar la configuración en %s.\n%s") % (self.motor.ruta_conf, e), tr("Error al guardar"))
             return False
         self.cfg = dict(valores)
         if self.motor.estado != EN_MARCHA:
             if preguntar_reinicio:
-                self.decir("Configuración guardada. Valdrá en cuanto arranques el servidor.")
+                self.decir(tr("Configuración guardada. Valdrá en cuanto arranques el servidor."))
             return True
 
         def al_terminar(r, error):
@@ -865,11 +867,11 @@ class VentanaPanel(wx.Frame):
         if not preguntar_reinicio:
             return
         if not con_reinicio:
-            self.decir("Configuración guardada y aplicada." + ((" Ha cambiado: %s." % nombres(al_momento)) if al_momento else " No había nada que cambiar."))
+            self.decir(tr("Configuración guardada y aplicada.") + ((tr(" Ha cambiado: %s.") % nombres(al_momento)) if al_momento else tr(" No había nada que cambiar.")))
             return
-        texto = ("Configuración guardada.\n" + (("Ya se ha aplicado: %s.\n" % nombres(al_momento)) if al_momento else "") +
-                 "\nEstos cambios no valen hasta que reinicies el servidor: %s.\n\nReiniciar desconecta un momento a los jugadores; su personaje queda guardado." % nombres(con_reinicio))
-        if elegir_opcion(wx.GetActiveWindow() or self, texto, "Hay cambios que piden reiniciar", ["&Reiniciar ahora", "&Más tarde"]) == 0:
+        texto = (tr("Configuración guardada.\n") + ((tr("Ya se ha aplicado: %s.\n") % nombres(al_momento)) if al_momento else "") +
+                 tr("\nEstos cambios no valen hasta que reinicies el servidor: %s.\n\nReiniciar desconecta un momento a los jugadores; su personaje queda guardado.") % nombres(con_reinicio))
+        if elegir_opcion(wx.GetActiveWindow() or self, texto, tr("Hay cambios que piden reiniciar"), [tr("&Reiniciar ahora"), tr("&Más tarde")]) == 0:
             if self.motor.estado == EN_MARCHA:
                 self._reiniciar_al_parar = True
                 self.motor.parar(causa="reinicio")
@@ -879,7 +881,7 @@ class VentanaPanel(wx.Frame):
     def _en_segundo_plano(self, trabajo, al_terminar):
         """Hace algo lento fuera del hilo de la interfaz y vuelve con el resultado."""
         if self._ocupada:
-            self.decir("Espera a que termine lo que se está haciendo.")
+            self.decir(tr("Espera a que termine lo que se está haciendo."))
             return
 
         def correr():
@@ -901,16 +903,16 @@ class VentanaPanel(wx.Frame):
             self._orden("copia")
         elif self.motor.estado == PARADO:
             if not os.path.exists(os.path.join(self.motor.carpeta_datos(), copias.BASE)):
-                self.decir("Todavía no hay datos que copiar: el servidor no ha arrancado nunca con esta carpeta de datos.")
+                self.decir(tr("Todavía no hay datos que copiar: el servidor no ha arrancado nunca con esta carpeta de datos."))
                 return
-            self.SetStatusText("Haciendo la copia de seguridad...")
-            self._en_segundo_plano(self.motor.copia_parado, lambda r, error: self.decir(("No se ha podido hacer la copia: " + error) if error else "Copia hecha en " + r))
+            self.SetStatusText(tr("Haciendo la copia de seguridad..."))
+            self._en_segundo_plano(self.motor.copia_parado, lambda r, error: self.decir((tr("No se ha podido hacer la copia: ") + error) if error else tr("Copia hecha en ") + r))
         else:
-            self.decir("Espera a que el servidor termine de arrancar o de parar.")
+            self.decir(tr("Espera a que el servidor termine de arrancar o de parar."))
 
     def restaurar(self):
         if self.motor.estado in (ARRANCANDO, PARANDO):
-            self.decir("Espera a que el servidor termine de arrancar o de parar.")
+            self.decir(tr("Espera a que el servidor termine de arrancar o de parar."))
             return
         lista = copias.listar(self.motor.carpeta_datos())
         dlg = DialogoCopias(self, lista)
@@ -920,28 +922,28 @@ class VentanaPanel(wx.Frame):
         if not ruta:
             return
         en_marcha = self.motor.estado == EN_MARCHA
-        aviso = ("Se van a cambiar los datos del servidor por los de la copia %s. Lo que hay ahora se guarda antes en otra copia, por si acaso.%s" % (
-            os.path.basename(ruta), "\n\nEl servidor está en marcha: se parará, se restaurará la copia y tendrás que arrancarlo tú después." if en_marcha else ""))
-        if elegir_opcion(self, aviso, "Restaurar una copia de seguridad", ["&Restaurar", "&No restaurar"]) != 0:
+        aviso = (tr("Se van a cambiar los datos del servidor por los de la copia %s. Lo que hay ahora se guarda antes en otra copia, por si acaso.%s") % (
+            os.path.basename(ruta), tr("\n\nEl servidor está en marcha: se parará, se restaurará la copia y tendrás que arrancarlo tú después.") if en_marcha else ""))
+        if elegir_opcion(self, aviso, tr("Restaurar una copia de seguridad"), [tr("&Restaurar"), tr("&No restaurar")]) != 0:
             return
 
         def hacer():
-            self.SetStatusText("Restaurando la copia...")
+            self.SetStatusText(tr("Restaurando la copia..."))
             self._en_segundo_plano(lambda: self.motor.restaurar(ruta, con_conf), hecho)
 
         def hecho(r, error):
             if error:
-                self.decir("No se ha podido restaurar: " + error, voz_tambien=False)
-                mostrar_error(self, error, "No se ha restaurado la copia")
+                self.decir(tr("No se ha podido restaurar: ") + error, voz_tambien=False)
+                mostrar_error(self, error, tr("No se ha restaurado la copia"))
                 return
             previa, restaurados = r
             self.cfg, _ = self.motor.leer_config()
-            self.decir("Copia restaurada: %s." % ", ".join(restaurados) + ((" Lo que había queda en %s." % os.path.basename(previa)) if previa else "") +
-                       " Arranca el servidor con F5.")
+            self.decir(tr("Copia restaurada: %s.") % ", ".join(restaurados) + ((tr(" Lo que había queda en %s.") % os.path.basename(previa)) if previa else "") +
+                       tr(" Arranca el servidor con F5."))
             self.refrescar(forzar=True)
         if en_marcha:
             self._tras_parar = hacer
-            self.motor.parar("El servidor se para un momento para restaurar una copia de seguridad.")
+            self.motor.parar(es("El servidor se para un momento para restaurar una copia de seguridad."))
             self.refrescar(forzar=True)
         else:
             hacer()
@@ -960,16 +962,16 @@ class VentanaPanel(wx.Frame):
         try:
             os.startfile(ruta)
         except (OSError, AttributeError) as e:
-            mostrar_error(self, "No se ha podido abrir %s.\n%s" % (ruta, e))
+            mostrar_error(self, tr("No se ha podido abrir %s.\n%s") % (ruta, e))
 
     def vaciar_registro(self):
         self.lineas = []
         self.registro.SetValue("")
-        self.SetStatusText("Registro vaciado.")
+        self.SetStatusText(tr("Registro vaciado."))
 
     def guardar_registro(self):
-        with wx.FileDialog(self, "Guardar el registro", defaultFile="registro_servidor_%s.txt" % time.strftime("%Y%m%d_%H%M"),
-                           wildcard="Texto (*.txt)|*.txt", style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as dlg:
+        with wx.FileDialog(self, tr("Guardar el registro"), defaultFile="registro_servidor_%s.txt" % time.strftime("%Y%m%d_%H%M"),
+                           wildcard=tr("Texto (*.txt)|*.txt"), style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as dlg:
             if dlg.ShowModal() != wx.ID_OK:
                 return
             ruta = dlg.GetPath()
@@ -977,29 +979,29 @@ class VentanaPanel(wx.Frame):
             with open(ruta, "w", encoding="utf-8-sig", newline="\r\n") as f:
                 f.write("\n".join(self.lineas) + "\n")
         except OSError as e:
-            mostrar_error(self, "No se ha podido guardar el registro.\n%s" % e, "Error al guardar")
+            mostrar_error(self, tr("No se ha podido guardar el registro.\n%s") % e, tr("Error al guardar"))
             return
-        self.decir("Registro guardado en " + ruta)
+        self.decir(tr("Registro guardado en ") + ruta)
 
     # ------------------------------------------------------------------- ayuda
     def guia(self):
         ruta = ruta_documentacion()
         if ruta is None:
-            mostrar_error(self, "No encuentro la guía del servidor. Debería estar en la carpeta servidor, con el nombre documentacion.html, "
-                                "o en data, docs, servidor.html.")
+            mostrar_error(self, tr("No encuentro la guía del servidor. Debería estar en la carpeta servidor, con el nombre documentacion_es.html, "
+                                "o en data, docs, servidor_es.html."))
             return
         self._abrir(ruta)
 
     def teclas(self):
-        mostrar_mensaje(self, TECLAS, "Teclas del panel")
+        mostrar_mensaje(self, TECLAS, tr("Teclas del panel"))
 
     def acerca(self):
-        mostrar_mensaje(self, "%s.\n\nPone en marcha y administra un servidor en línea de Puerto Bravo: Ley del Asfalto en este ordenador, sin usar la consola.\n\n"
+        mostrar_mensaje(self, tr("%s.\n\nPone en marcha y administra un servidor en línea de Puerto Bravo: Ley del Asfalto en este ordenador, sin usar la consola.\n\n"
                               "Es el mismo servidor que se arranca por consola, con la misma configuración (servidor.conf) y los mismos datos.\n\n"
-                              "Software libre con licencia MIT. Control+H explica el control en el que estás. F1 abre la guía." % NOMBRE, "Acerca del panel")
+                              "Software libre con licencia MIT. Control+H explica el control en el que estás. F1 abre la guía.") % NOMBRE, tr("Acerca del panel"))
 
 
-TECLAS = """Teclas del panel del servidor
+TECLAS = tr("""Teclas del panel del servidor
 
 F5: arrancar el servidor.
 Mayúsculas+F5: parar el servidor.
@@ -1024,7 +1026,7 @@ F1: guía del servidor.
 Control+H: explica el control en el que estás.
 Control+Tabulador y Control+Mayúsculas+Tabulador: cambiar de pestaña.
 Alt más la letra subrayada: ir a un control de la pestaña o abrir un menú.
-Tecla Aplicaciones o Mayúsculas+F10 en las listas de jugadores y de cuentas: acciones sobre lo elegido."""
+Tecla Aplicaciones o Mayúsculas+F10 en las listas de jugadores y de cuentas: acciones sobre lo elegido.""")
 
 
 def ejecutar(ruta_conf=None, arrancar=False, sin_foco=None):

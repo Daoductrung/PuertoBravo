@@ -1,0 +1,455 @@
+<h3>Acceso y administración</h3>
+<p>Quién puede entrar, quién manda y a quién no se deja pasar.</p>
+<h4>Quién puede crear un personaje: <code>entrada</code></h4>
+<p>Solo afecta a quien entra por primera vez: quien ya tiene personaje vuelve a entrar siempre.</p>
+<ul>
+<li>Valores:<ul>
+<li><code>abierta</code>: cualquiera que tenga la dirección.</li>
+<li><code>clave</code>: hay que saber la contraseña de entrada.</li>
+<li><code>invitacion</code>: hace falta un código de un solo uso.</li>
+</ul></li>
+<li>De serie: <code>abierta</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Contraseña de entrada: <code>clave</code></h4>
+<p>La contraseña que hay que saber para crear un personaje cuando la entrada es con clave.</p>
+<ul>
+<li>Un texto de hasta 60 letras. Se guarda tal cual en el archivo: no lo enseñes.</li>
+<li>De serie: vacío.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Administradores: <code>admins</code></h4>
+<p>Nombres de jugador que administran el servidor, separados por comas. Se suman a los que se nombran con la orden admin.</p>
+<ul>
+<li>Un texto de hasta 600 letras.</li>
+<li>De serie: vacío.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>La primera cuenta es administradora: <code>primer_admin</code></h4>
+<p>Con si, la primera cuenta que se crea en el servidor es administradora: lo normal es que seas tú.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Nombres vetados: <code>vetados</code></h4>
+<p>Nombres de jugador que no pueden entrar, separados por comas. Se suman a las cuentas vetadas con la orden vetar.</p>
+<ul>
+<li>Un texto de hasta 600 letras.</li>
+<li>De serie: vacío.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Expulsar por inactividad, en minutos: <code>inactividad_minutos</code></h4>
+<p>Minutos sin moverse ni hacer nada tras los que se saca a un jugador, para dejar sitio. Con 0, nunca. A los administradores no se les saca.</p>
+<ul>
+<li>Un número entero entre 0 y 1440.</li>
+<li>De serie: <code>0</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Permitir dos sesiones con la misma identidad: <code>varias_sesiones</code></h4>
+<p>Solo para pruebas. De serie, no: si alguien entra con su personaje desde otro sitio, la sesión anterior se cierra.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>no</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Versiones del juego</h3>
+<p>Qué versiones del juego pueden jugar juntas en este servidor.</p>
+<h4>Comprobar los datos del juego de quien entra: <code>comprobar_datos</code></h4>
+<p>Con si, el servidor mira si el mundo que trae el juego de quien entra es el suyo, el de otra versión de verdad o uno cambiado con mods, y actúa según las opciones siguientes. Con no, no mira nada: entra cualquiera con lo que traiga, y el servidor no se pone al día con el mundo de las versiones nuevas.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Qué hacer con quien trae datos que no se pueden comprobar: <code>mundo_distinto</code></h4>
+<p>Quien juega con mods que cambian el mundo, o con una versión cuyos datos el servidor no puede comprobar. Con una versión de verdad distinta de la del servidor se entra siempre, pongas lo que pongas aquí.</p>
+<ul>
+<li>Valores:<ul>
+<li><code>admitir</code>: entra y juega en lo que tiene en común con el servidor; se le dice qué no coincide, y lo que afecta a los demás lo decide el servidor con su mundo.</li>
+<li><code>rechazar</code>: no entra: solo se juega con los datos de una versión de verdad.</li>
+</ul></li>
+<li>De serie: <code>admitir</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Versiones que pueden jugar juntas: <code>versiones</code></h4>
+<p>El servidor trabaja con el mundo de la versión más nueva que ha visto, y a cada juego le habla de lo que su versión conoce: un arma o un vehículo que no tiene le llegan como el más parecido de los suyos.</p>
+<ul>
+<li>Valores:<ul>
+<li><code>compatibles</code>: pueden jugar juntos quienes tengan versiones distintas del juego, cada uno con lo que su versión conoce.</li>
+<li><code>iguales</code>: solo entra quien tenga exactamente los mismos datos que el servidor.</li>
+</ul></li>
+<li>De serie: <code>compatibles</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Versión mínima del juego: <code>version_minima</code></h4>
+<p>La versión más antigua del juego con la que se puede entrar, por ejemplo 1.7.0. Vacío, cualquiera.</p>
+<ul>
+<li>Un texto de hasta 20 letras.</li>
+<li>De serie: vacío.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Quién puede traer un mundo nuevo: <code>actualizar_mundo</code></h4>
+<p>El mundo del juego (lugares, armas, misiones) no va atado al servidor: se lo trae el juego de quien entra. Un servidor sin mundo toma el del primero que entra; si ese no viene firmado, lo cambia por el primero firmado que llegue.</p>
+<ul>
+<li>Valores:<ul>
+<li><code>firmado</code>: el de una versión más nueva se acepta de cualquiera si lo firma quien publica el juego.</li>
+<li><code>admin</code>: además, sin firma, de un administrador: para servidores con mods.</li>
+<li><code>no</code>: nunca: el servidor se queda con el mundo que tiene.</li>
+</ul></li>
+<li>De serie: <code>firmado</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Datos y copias de seguridad</h3>
+<p>Dónde se guarda todo, cada cuánto y cuántas copias se conservan.</p>
+<h4>Carpeta de datos: <code>datos</code></h4>
+<p>La carpeta donde se guarda todo: personajes, bandas, territorios, vehículos, el certificado y las copias de seguridad.</p>
+<ul>
+<li>Un texto de hasta 260 letras.</li>
+<li>De serie: <code>datos_servidor</code>.</li>
+<li>Necesita reiniciar el servidor.</li>
+</ul>
+<h4>Guardar cada tantos minutos: <code>guardado_minutos</code></h4>
+<p>Cada cuántos minutos se guarda todo en disco. Al parar el servidor se guarda siempre.</p>
+<ul>
+<li>Un número entero entre 1 y 120.</li>
+<li>De serie: <code>1</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Copia de seguridad automática, cada tantas horas: <code>copia_auto_horas</code></h4>
+<p>Cada cuántas horas hace el servidor una copia de seguridad en la carpeta copias, dentro de la de datos. Con 0, no hace ninguna.</p>
+<ul>
+<li>Un número entero entre 0 y 720.</li>
+<li>De serie: <code>24</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Copias de seguridad que se conservan: <code>copias_guardar</code></h4>
+<p>Cuántas copias automáticas se conservan: al hacer una nueva se borran las más antiguas. Las que haces tú a mano con otro nombre no se tocan.</p>
+<ul>
+<li>Un número entero entre 1 y 365.</li>
+<li>De serie: <code>7</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Guardar el registro en un archivo: <code>registro_archivo</code></h4>
+<p>Con si, lo que va diciendo el servidor se escribe también en registro.txt, dentro de la carpeta de datos.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>no</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Combate entre jugadores</h3>
+<p>Las reglas de las peleas, los atracos y las recompensas.</p>
+<h4>Combate entre jugadores: <code>pvp</code></h4>
+<p>Con no, los jugadores no pueden herirse, atracarse ni robarse entre sí.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Zonas seguras: <code>zonas_seguras</code></h4>
+<p>Con si, en hospitales, comisarías, casas y dentro de los locales nadie puede herir a nadie.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Permitir el modo pasivo: <code>modo_pasivo</code></h4>
+<p>Con si, cada jugador puede ponerse en modo pasivo: ni hiere a otros jugadores ni le hieren.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Segundos de protección al llegar: <code>proteccion</code></h4>
+<p>Segundos sin poder herir ni ser herido al entrar y al reaparecer.</p>
+<ul>
+<li>Un número entero entre 0 y 600.</li>
+<li>De serie: <code>20</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Botín al tumbar a otro jugador, en tanto por ciento: <code>botin</code></h4>
+<p>El tanto por ciento del dinero de bolsillo que pierde quien cae ante otro jugador.</p>
+<ul>
+<li>Un número entero entre 0 y 100.</li>
+<li>De serie: <code>10</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Botín máximo: <code>botin_max</code></h4>
+<p>Lo más que se puede perder al caer ante otro jugador, en euros.</p>
+<ul>
+<li>Un número entero entre 0 y 100000000.</li>
+<li>De serie: <code>5000</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Atraco a otro jugador, en tanto por ciento: <code>atraco</code></h4>
+<p>El tanto por ciento del dinero de bolsillo que se lleva quien atraca a otro jugador.</p>
+<ul>
+<li>Un número entero entre 0 y 100.</li>
+<li>De serie: <code>15</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Atraco máximo: <code>atraco_max</code></h4>
+<p>Lo más que se puede quitar en un atraco a otro jugador, en euros.</p>
+<ul>
+<li>Un número entero entre 0 y 100000000.</li>
+<li>De serie: <code>1000</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Segundos para atracar un negocio: <code>robo_segundos</code></h4>
+<p>Los segundos que hay que aguantar en la puerta para vaciar la caja del negocio de otro jugador. Al dueño le salta el aviso.</p>
+<ul>
+<li>Un número entero entre 1 y 600.</li>
+<li>De serie: <code>20</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Recompensa por tumbar a un inocente: <code>recompensa</code></h4>
+<p>Lo que sube, en euros, la recompensa por la cabeza de quien tumba a quien no se defendía.</p>
+<ul>
+<li>Un número entero entre 0 y 100000000.</li>
+<li>De serie: <code>500</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Mundo vivo</h3>
+<p>El tráfico, la gente de la calle, la policía y los personajes que lleva el servidor.</p>
+<h4>Tráfico común: <code>trafico</code></h4>
+<p>Con si, los coches que circulan los lleva el servidor y son los mismos para todos. Con no, cada jugador ve su propio tráfico.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Coches por zona con jugadores: <code>trafico_max</code></h4>
+<p>Cuántos coches lleva el servidor, como mucho, por cada zona de una localidad en la que hay jugadores. Para unos amigos que van juntos es el total de coches de la localidad.</p>
+<ul>
+<li>Un número entero entre 0 y 200.</li>
+<li>De serie: <code>8</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Coches por localidad, como mucho: <code>trafico_total</code></h4>
+<p>El tope de coches en una misma localidad cuando hay jugadores repartidos por muchas zonas. Con 0 no hay tope.</p>
+<ul>
+<li>Un número entero entre 0 y 5000.</li>
+<li>De serie: <code>60</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Coches patrulla por localidad: <code>patrullas</code></h4>
+<p>Coches patrulla del servidor que rondan por cada localidad con jugadores. Con 0, ninguno.</p>
+<ul>
+<li>Un número entero entre 0 y 50.</li>
+<li>De serie: <code>1</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Policía común: <code>policia</code></h4>
+<p>Con si, la búsqueda, la persecución y la detención las lleva el servidor, y las ve y las oye todo el que esté cerca. Con no, las lleva el juego de cada jugador.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Gente de la calle común: <code>peatones</code></h4>
+<p>Con si, los peatones los lleva el servidor y son los mismos para todos.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Peatones por zona con jugadores: <code>peatones_max</code></h4>
+<p>Cuántos peatones lleva el servidor, como mucho, por cada zona de una localidad en la que hay jugadores.</p>
+<ul>
+<li>Un número entero entre 0 y 200.</li>
+<li>De serie: <code>10</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Peatones por localidad, como mucho: <code>peatones_total</code></h4>
+<p>El tope de peatones en una misma localidad cuando hay jugadores repartidos por muchas zonas. Con 0 no hay tope.</p>
+<ul>
+<li>Un número entero entre 0 y 5000.</li>
+<li>De serie: <code>80</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Personajes que lleva el servidor: <code>personajes</code></h4>
+<p>Paseantes, rateros, pistoleros, ladrones de coches y atracadores que lleva el servidor y son los mismos para todos. Salen solo donde hay jugadores. Con 0, ninguno.</p>
+<ul>
+<li>Un número entero entre 0 y 200.</li>
+<li>De serie: <code>6</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Metros a los que se sigue a los demás al detalle: <code>radio_detalle</code></h4>
+<p>A cada jugador se le cuenta diez veces por segundo dónde están los que tiene a menos de esta distancia, y una vez por segundo por dónde andan los demás de su localidad. Es lo que más red y procesador ahorra en servidores con mucha gente. Con 0, a todos al detalle y siempre, que solo conviene con poca gente.</p>
+<ul>
+<li>Un número entero entre 0 y 100000.</li>
+<li>De serie: <code>150</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Economía y propiedades</h3>
+<p>El dinero que reconoce el servidor, las casas, los negocios y los vehículos.</p>
+<h4>El servidor lleva la cuenta del dinero: <code>economia</code></h4>
+<p>Con si, el servidor lleva la cuenta del dinero de cada jugador y no da por bueno lo que no puede justificar.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Ganancia máxima por hora: <code>ganancia_hora</code></h4>
+<p>Lo más que se puede ganar en una hora de reloj con trabajos, ventas, juego y botín de la calle, en euros. Lo que da el propio servidor no cuenta.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>30000</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Horas de ganancia que se pueden acumular: <code>ganancia_acumula</code></h4>
+<p>La ganancia por hora que un jugador no usa no se pierde: se le guarda hasta este número de horas, también mientras está fuera, para que una buena racha quepa entera. Con 1, nunca tiene más margen que el de una hora.</p>
+<ul>
+<li>Un número entero entre 1 y 48.</li>
+<li>De serie: <code>3</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Encargos repetibles reconocidos por hora, de cada tipo: <code>encargos_hora</code></h4>
+<p>Los contratos, los combates del gimnasio, los atracos y los encargos de coches que se cumplen de verdad no gastan la ganancia por hora: el servidor los da por buenos, hasta este número por hora de cada tipo. Con 0 no reconoce ninguno y todos cuentan contra la ganancia por hora.</p>
+<ul>
+<li>Un número entero entre 0 y 1000.</li>
+<li>De serie: <code>6</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Paga máxima reconocida por un encargo repetible: <code>encargo_max</code></h4>
+<p>Lo más que se da por bueno de la paga de un solo encargo repetible, en euros. Lo que pase de ahí cuenta contra la ganancia por hora.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>15000</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Dinero inicial máximo: <code>saldo_inicial</code></h4>
+<p>Lo más con que puede empezar un personaje nuevo, en euros.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>5000</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Venta al mercado, en tanto por ciento: <code>venta_mercado</code></h4>
+<p>El tanto por ciento del precio que recupera quien vende su casa o su negocio al mercado.</p>
+<ul>
+<li>Un número entero entre 0 y 100.</li>
+<li>De serie: <code>70</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Días sin entrar para perder las propiedades: <code>propiedad_dias</code></h4>
+<p>Días de verdad sin entrar tras los que las propiedades de un jugador vuelven al mercado. Se le guarda su parte.</p>
+<ul>
+<li>Un número entero entre 1 y 3650.</li>
+<li>De serie: <code>30</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Horas que dura un vehículo en la calle: <code>vehiculos_horas</code></h4>
+<p>Horas de verdad que un vehículo dejado en la calle sigue ahí.</p>
+<ul>
+<li>Un número entero entre 1 y 8760.</li>
+<li>De serie: <code>12</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Vehículos aparcados por jugador: <code>vehiculos_por_jugador</code></h4>
+<p>Cuántos vehículos puede tener aparcados en la calle cada jugador. Al dejar uno más, desaparece el más antiguo.</p>
+<ul>
+<li>Un número entero entre 1 y 100.</li>
+<li>De serie: <code>3</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Bandas y territorios</h3>
+<p>Lo que cuesta fundar una banda, reclamar un barrio y declarar una guerra.</p>
+<h4>Precio de fundar una banda: <code>precio_banda</code></h4>
+<p>En euros.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>2000</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Precio de reclamar un barrio: <code>precio_barrio</code></h4>
+<p>En euros, de la caja de la banda.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>3000</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Renta diaria de cada barrio: <code>renta_barrio</code></h4>
+<p>Lo que deja cada barrio en la caja de la banda a medianoche, en euros.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>300</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Precio de declarar una guerra: <code>precio_guerra</code></h4>
+<p>En euros, de la caja de la banda.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>1000</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Minutos hasta que empieza una guerra: <code>guerra_espera</code></h4>
+<p>Minutos de verdad entre declarar una guerra y que empiece.</p>
+<ul>
+<li>Un número entero entre 1 y 10080.</li>
+<li>De serie: <code>20</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Minutos que dura una guerra: <code>guerra_dura</code></h4>
+<p>Minutos de verdad.</p>
+<ul>
+<li>Un número entero entre 1 y 1440.</li>
+<li>De serie: <code>10</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Rol y convivencia</h3>
+<p>Los canales de chat para interpretar a tu personaje y lo que se oye de los demás jugadores.</p>
+<h4>Canales de rol: <code>rol</code></h4>
+<p>Con si, los jugadores tienen un canal para hablar en personaje, que solo oye quien está cerca, otro para hablar fuera de personaje, que oye todo el servidor, una orden para describir lo que hace su personaje y una frase de ficha que los demás pueden leer. Con no, solo queda el chat de siempre.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Metros a los que llega lo dicho en personaje: <code>rol_metros</code></h4>
+<p>A qué distancia se oye lo que un jugador dice en personaje y las acciones que describe. Lo dicho fuera de personaje llega siempre a todo el servidor.</p>
+<ul>
+<li>Un número entero entre 5 y 2000.</li>
+<li>De serie: <code>30</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Radio de los coches de otros jugadores: <code>radio_coches</code></h4>
+<p>Con si, quien está cerca del vehículo de otro jugador oye, floja, la emisora del juego que lleva puesta. Solo se cuenta qué emisora del juego es: nunca viaja música ni nada personal. Con no, no se oye la radio de nadie.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h3>Vida honrada</h3>
+<p>Los contratos fijos con su nómina y el trato de las tiendas según el prestigio de cada jugador.</p>
+<h4>Nóminas de los contratos fijos: <code>nominas</code></h4>
+<p>Con si, quien firma un contrato fijo en la oficina de empleo cobra su nómina al acabar cada periodo. La paga el servidor: él cuenta los turnos y pone la cifra, que sale de los datos del juego y no gasta la ganancia por hora. Con no, en este servidor no hay contratos fijos. Hace falta que el mundo del servidor sea el de la versión 1.7.1 o posterior.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Paga máxima por nómina: <code>nomina_max</code></h4>
+<p>Lo más que paga el servidor por la nómina de un periodo, en euros, diga lo que diga el mundo del juego o un mod.</p>
+<ul>
+<li>Un número entero entre 0 y 1000000000.</li>
+<li>De serie: <code>1500</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Turnos de contrato que cuentan cada día: <code>nomina_turnos_dia</code></h4>
+<p>Cuántos turnos de un contrato fijo cuenta el servidor a un jugador en un mismo día del juego.</p>
+<ul>
+<li>Un número entero entre 1 y 50.</li>
+<li>De serie: <code>3</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Rebajas por prestigio en las tiendas: <code>trato_prestigio</code></h4>
+<p>Con si, a quien tiene buen nombre entre los vecinos las tiendas le rebajan un poco, y a quien lo tiene muy malo le recargan, como al jugar sin conexión con el nivel suave. Solo lo nota quien juega con la versión 1.7.1 o posterior. Con no, todos pagan lo mismo.</p>
+<ul>
+<li>Valores: si o no.</li>
+<li>De serie: <code>si</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<!-- OPCIONES:FIN -->
+</body>
+</html>

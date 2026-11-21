@@ -1938,7 +1938,7 @@ def test_los_sonidos_nuevos_estan_en_las_cinco_carpetas_con_su_grupo_y_su_descri
         assert set(nuevos) <= archivos and len(archivos) == 279, carpeta
     grupo = {s: t for t, lista in menus_juego.grupos_de_sonidos(sorted(S)) for s in lista}
     aprender = {x[0] for x in ayuda.SONIDOS}
-    guia = open(rutas.data("docs", "cambiar_sonidos.html"), encoding="utf-8").read()
+    guia = open(rutas.data("docs", "cambiar_sonidos_es.html"), encoding="utf-8").read()
     for n in nuevos:
         assert 0.5 < len(S[n]) / sintesis.SR < 2.0 and grupo[n] == "Misiones, trabajo, reputación y ánimo" and n in aprender and cat.DESCRIPCIONES[n] if hasattr(cat, "DESCRIPCIONES") else True
         assert f"<code>{n}</code>" in guia
@@ -1987,9 +1987,9 @@ def test_un_mod_cambia_los_numeros_y_anade_un_titulo(robot, datos_de_serie):
 
 
 def test_la_documentacion_lo_cuenta(robot):
-    manual = open(rutas.data("docs", "manual.html"), encoding="utf-8").read()
-    editor = open(rutas.data("docs", "editor_mods.html"), encoding="utf-8").read()
-    novedades = open(rutas.data("docs", "novedades.html"), encoding="utf-8").read()
+    manual = open(rutas.data("docs", "manual_es.html"), encoding="utf-8").read()
+    editor = open(rutas.data("docs", "editor_mods_es.html"), encoding="utf-8").read()
+    novedades = open(rutas.data("docs", "novedades_es.html"), encoding="utf-8").read()
     for trozo in ("Vida, reputación y consecuencias", "Antecedentes penales", "contrato fijo", "Estudios con título", "hipoteca", "Impuestos y facturas",
                   "El buen camino", "doble vida", "tapadera", "Nivel de consecuencias", "servicios a la comunidad", "Vida sentimental", "embargo"):
         assert trozo in manual, trozo

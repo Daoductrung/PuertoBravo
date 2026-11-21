@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>What's new in Puerto Bravo: Ley del Asfalto</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 54em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+a { color: #8fd0ff; }
+li { margin-bottom: .3em; }
+</style>
+</head>
+<body>
+<h1>What's new in Puerto Bravo: Ley del Asfalto</h1>
+<p>What changes in each version, from the newest to the oldest.</p>
+
+<h2>Version 1.7.2</h2>
+<p>Made with what you told us in the forum thread and on GitHub after 1.7.1. Saved games load as before.</p>
+<h3>Fixed</h3>
+<ul>
+<li>F1 now explains every option of every menu. Almost five hundred options only said how to move around the menus; now each one says what it does, what it costs or how long it takes, and when it can't be done. The ones that leave say that they leave the menu.</li>
+<li>The game no longer closes with an error when you press G to repeat the directions just as what you were looking for with the GPS had been reached: when you picked up an item, such as the money enemies drop, or when you got into your own vehicle that you had marked, including the one your mechanic had just brought you.</li>
+<li>The game no longer closes suddenly, without saying anything, while it generates your own character's voices in the background. It happened on some computers with the downloaded game, for example when joining a server.</li>
+<li>On a server, the vehicle your mechanic brings you from the garage is no longer lost. Before, it was not recorded as yours: Shift L and Services could not find it, it disappeared when you moved away, and it did not go back to the garage either. Now the server saves it as yours, just as if you had got out of it.</li>
+<li>The vehicle they bring you no longer appears on top of another parked one, and with several vehicles close together, F picks yours, or the one the GPS is taking you to, instead of starting to force the lock of the one next to it.</li>
+<li>The GPS autopilot no longer runs red lights with the vehicles that brake worse, like the bus or a truck: it brakes in time up to the line, and if the light is going to turn red before it crosses, it stops. In timed jobs, like the bus, the taxi or a delivery, it no longer runs any red light: before, it cost you fines, license points and the police on your tail.</li>
+<li>With the GPS autopilot turned on in Options, when you get into a vehicle the game says whether it drives itself and, if not, why: because you are in free driving or because no destination is set. And Y says that on the water and in the air it does not take the controls.</li>
+<li>When you type your character's name, or any text, the accented vowels from the accent key and the Windows input methods also work. With some keyboards, the box stayed empty.</li>
+<li>On duty as a police officer, shooting or ramming the fleeing vehicle in a chase no longer costs you your badge for having gone too far: it is allowed up to three hundred meters. In the first chase, the game explains how to stop someone fleeing by car.</li>
+<li>When you finish a qualification, the game says which permanent contract it is useful for and that it is signed at the Job center. Before, it said it opened a position, and some people went looking for a business to open.</li>
+<li>When you open your game to your friends, the game tries a bit harder if the connection with the router drops halfway, instead of treating it as refused on the first try.</li>
+<li>The server no longer fails to start if its configuration file was saved with an editor that does not use UTF-8, as happened on Linux after editing it or copying it from Windows: it reads it anyway and warns in the log that it is best to save it in UTF-8.</li>
+<li>With realistic life, hygiene really counts. Before, being dirty only lowered your mood a little. Now, without showering, a date brings you less close, you do less well at work and you sell fewer cars; and if you smell bad, people trust you less, there are no kisses or nights together, and the club and the casino won't let you in. Being very hungry, very thirsty or dirty keeps lowering your mood.</li>
+<li>The grenade and the other explosives now say grenades, cocktails or rockets, not bullets. They could already be thrown: you choose them with the comma or the I key and throw them with Space, or with Control at the wheel.</li>
+<li>What you earn selling drugs is now dirty money, like the money from robberies.</li>
+<li>The stock market now tells you what is happening. Before, prices moved, but nothing said so and it seemed that owning shares was useless. Now, every midnight, if you have shares, the game tells you what they are worth and how much you gain or lose; some companies pay dividends every week; there is news that makes a company go up or down; and the menu says the change since yesterday, what you paid and how much you gain or lose.</li>
+<li>If you are arrested, the game now says everything they confiscate: besides firearms, the merchandise and the stolen goods you are carrying. And if you carry something like that, the officer who stops you frisks you: you can no longer pay the fine on the spot and keep the merchandise in your pocket.</li>
+</ul>
+
+<h3>New</h3>
+<ul>
+<li>Puerto Bravo in English. The whole game is translated: the menus, the story, the places, the items, the keys, the mod editor, the server panel and all the guides. When it opens, it checks the language of your Windows: Spanish if it is any variant of Spanish, and English otherwise. You can choose it in Options, on the first line, Language.</li>
+<li>The story scenes also have recorded voices in English, each character with their own, with American and British accents. And if you play in English with a character you made yourself, the lines that say your name are generated with English voices.</li>
+<li>The game can be translated into any language: each one is a folder in data, idiomas, named with the language code, and the game recognizes it by itself. The manual explains how, in the mods section. The guides go by language, like manual_es and manual_en, and the voices in one folder per story and language.</li>
+<li>Your saved games work in any language: one saved in Spanish loads in English, and the other way around.</li>
+<li>Components: languages, voices, guides, sound packs and mods can be published separately from the game, without waiting for a new version. They are in Options, Updates, Components, they are looked for in the same source as the versions and they install without closing the game. When it starts, the game tells you if there are new components.</li>
+<li>Gangs and good people: if your standing with the neighbors reaches 40, a gang's members will often let you through their neighborhood with a scowl, and defending yourself from the ones who do attack you costs you nothing with their gang and does not start a neighborhood war. The police also come sooner to help you. And for everyone, knocking down in self-defense someone who attacked you first takes away much less reputation with their gang.</li>
+<li>Renting out your houses: a house of yours that you don't use can be rented out from its menu. Every midnight you collect the rent, different each day, with some damage or a late payment now and then, and you get it back whenever you want by returning the deposit. Not on servers.</li>
+<li>Your partner and your homes: if you have several houses, you choose which one you live in when you ask them, and you can move together to another one, also in another town. And you can give them money to buy themselves something: the next day they tell you what they bought. Sometimes they are the one who asks you.</li>
+<li>Your people, by name: in Your gang, Enter on someone lets you talk to that person, invite them, give them a bonus or kick them out. What you give them makes them more loyal.</li>
+<li>The message history: Control Page Up goes to the first one and Control Page Down to the last. And a new option, in Options, Voice, so that new messages don't pull you away from where you are reviewing.</li>
+<li>The life of a boss. Your crew are paid according to the pay you choose, low, normal or high, and their loyalty goes up or down every day; if you forget about them they get angry, if you don't pay them the least loyal one leaves, and someone very fed up can betray you: rob you, go over to another gang or turn you in. You can give them a task: selling on the street the merchandise you keep at home, or cooking in your labs. At the end of the day they bring you the earnings.</li>
+<li>Money, realistically: you pay with what you carry, so you have to withdraw it first at a bank or an ATM; what you carry can be taken from you in a mugging on the street; money can be kept at home, but a house can be burgled, unless it has a safe, and an alarm makes it harder.</li>
+<li>Laundering: the bank no longer accepts dirty money just like that; above a daily limit, it notifies the tax office. It is laundered little by little at the bank, in casino chips, with a discreet fixer or with a front business.</li>
+<li>Social life is lived in person: from the phone you call, text, make plans to meet, send a gift to their home, give money and break up; a date, a gift in hand, a kiss, the night, plans or asking someone out are done face to face, where that person is, in your home or while they are with you. A date is lived by going to the place together, and the plan is told in scenes. You can go back to doing everything from the phone, with the new option.</li>
+<li>Meeting at a place and time: with the people in your social life and with your acquaintances from the street. The phone reminds you; if you get there, the plan is lived there; if not, you stood them up.</li>
+<li>Schedules, optional: each person in your social life is at their place during their hours and has one day off a week; and, if you want, businesses open and close at their hours and close on some days. The first day of the game is Monday.</li>
+<li>If your partner finds out there is someone else, the hurt lasts for days: what you do together brings you half as close, apologizing in person helps and, if it happens again, it's over. Kisses and dances with another person can also reach them.</li>
+<li>More clothes, and with style: more than thirty outfits sorted by style, new footwear and many more accessories, such as bags, belts, bracelets, scarves, ties or perfumes. What you buy is yours: at home you can dress in it without paying. Each person in your social life likes a style, and dressing smartly helps you sell cars.</li>
+<li>More ways to wash and to drink, with realistic life: the gym locker room shower, the sea, the toiletries section of the supermarket, the bazaar and the gas station, with deodorant, wipes, cologne and a toothbrush, and the fountains in the parks and squares, to drink for free. And in the shops, water jugs, sports drinks and canned coffee.</li>
+<li>The backpack: you carry valuables, stolen or found, and the merchandise, with limited space. They turn up when you rob, in the glove compartment of the cars you break into, on some fallen enemies and at the bottom of the sea, and they are sold at pawn shops, stolen goods for less. Clothing stores sell a bigger backpack.</li>
+<li>The wardrobe in your houses: it stores items, merchandise and weapons, safe from the police.</li>
+<li>Insurance for your vehicles: you take it out on the phone, in My vehicles, and it covers all your land vehicles. Every midnight it charges a fee for each one you have on the street; the ones in the garage don't pay. If one explodes, the next day it is returned to you repaired and with its upgrades, in your garage or at the door of a repair shop, after paying an excess. Without insurance, the game tells you it has been lost.</li>
+<li>Your businesses from a distance: when one with no employees has gone days without you stopping by, the warning now says that with someone hired it would hold up without you. With staff, its reputation stays a little below normal even if you don't go, so you can have businesses in several towns without visiting them all. The manual explains it.</li>
+<li>Everything new can be adjusted in the mod editor, and can also be done with a controller.</li>
+</ul>
+
+<h2>Version 1.7.1</h2>
+<p>Made with what you told us and asked for after 1.7.0: the fixes, and also the big requests. What changes the way you play is optional, and at the end of this section it says how each option comes and where to change it. Games saved with earlier versions load as before.</p>
+<h3>The most important</h3>
+<ul>
+<li>Your vehicles are no longer lost: they stay where you park them, they have their own list on the phone and you can give them a name.</li>
+<li>Defending yourself from someone who attacks you is no longer a crime, and neither are gym fights.</li>
+<li>The gangs you defeated try to take back your neighborhoods, with a warning and a deadline. It comes set to normal and can be turned off in Options, The street.</li>
+<li>The street has more life: people who shout, talk and act, patrols on their rounds, ambulances, and being able to surrender to the police.</li>
+<li>Shops you walk through with a basket, a pantry and a fridge at home, cooking with recipes and home delivery food.</li>
+<li>Robberies at any business, deals with the gangs, three jobs to choose from on the board, six new weapons and, as optional modes, working as a police officer, the police helicopter and the neighborhood war on the street.</li>
+<li>Planned heists: before a robbery you hand out roles among your gang, driver, lookout, escort, safecracker and shooter, and the heist is played in phases, with your crew talking to you over the radio.</li>
+<li>Real flying: helicopters and light planes have altitude and fuel, and you go from one town to another on a real crossing, with wind, a control tower, storms and an autopilot. There are hangars, you can hijack an aircraft with the radar on your tail, and with a license you can work as a commercial pilot. It comes turned on and can be turned off in Options.</li>
+<li>On a server: if it restarts or the connection drops, the game waits and rejoins by itself, just as you were. Also, text roleplay channels, money limits explained with figures and purchases that are not lost.</li>
+<li>Whoever runs a server can update the game with the server open: it warns, saves, updates and starts again by itself.</li>
+<li>On a server, people with different versions of the game can play together, on equal terms: damage and money are decided by the server, what your version does not have reaches you as the closest thing, and your character loses nothing by changing version.</li>
+<li>You can be a good person, a criminal or both, with the consequences: standing and street reputation change how you are treated, there is a criminal record, permanent contracts with a boss and promotions, studies with qualifications, businesses that grow, loans, mortgages and mild taxes, and a new story with voices in all its scenes, The Right Path, which can be completed entirely without committing a crime. It comes set to mild and can be adjusted or turned off in Options.</li>
+<li>Everything new can be done with a controller, with an actions menu and a way to type without a keyboard.</li>
+<li>Thirty-six new sounds, 279 in total, and all of them in Learn the sounds, by groups.</li>
+<li>Updates that say why they fail, and how to update manually.</li>
+<li>The details of everything, and how each new option comes, are in the full change log: in the main menu, About, What's new in this version.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>With the GPS autopilot, the car no longer takes hits at junctions: traffic turning right no longer pulls out on top of you, and oncoming traffic waits for you to pass before turning left.</li>
+<li>Gym fights are no longer a crime: knocking down your opponent in boxing or in the martial arts night does not call the police or lower your standing.</li>
+<li>Inside businesses, F1 explains the business you are in, and not your house.</li>
+<li>When you press Enter at the counter, the bar or the window, the game says that you walk up and they serve you, and you go back to the business menu.</li>
+<li>The police station board can be read: it says whether you are wanted, what the fine would cost you, the wanted gangs and the day's incidents. The lottery prize board and the job center's offers board can also be read.</li>
+<li>Neighborhoods say who they belong to at each moment: a gang, you, at war, or the gang that took them from you. And when you conquer a neighborhood you fight the gang that rules it.</li>
+<li>Places named after the neighborhood's gang, such as the hideout, change their name and description when the neighborhood becomes yours or another gang's.</li>
+<li>Leaving for another town by road is no longer confusing: when you reach the exit with your vehicle, the game says that you are already there and to press Enter without getting out. Before, the GPS could send you a few meters further on, where the car can't reach. On foot, the game explains that you leave by road in a vehicle and guides you to the bus station.</li>
+<li>The exit from Puerto Bravo to Valdeolmos could not be taken, because it was at the same spot as a lookout point. Two places can no longer end up on top of each other.</li>
+<li>At the wheel, the GPS always takes you by road to another town, even if you have to cross another one on the way. Before, if it was not the neighboring town, it sent you to the bus.</li>
+<li>The transport job with the truck is fully explained at the start: the load is already inside, it is taken by road and it is delivered by itself when you stop in front. It no longer sends you to the bus station, and G marks the destination again if you remove it.</li>
+<li>The GPS detour notice always reminds you that it is canceled with Shift G.</li>
+<li>The tutorials check what you do. The sailing one asks you to cast off, steer and dock, with a free practice motorboat. The jobs one asks you to do a real taxi fare. And in the first one, the radar exercise asks you to use the radar.</li>
+<li>Playing with friends is no longer a mission completed by going to a bar: it is an explanation that is read on the phone.</li>
+<li>No vehicle is lost when you retry a mission. In 1.7.0, if you sent your vehicle to the garage after the mission had started, failed and retried, it disappeared from the street and from the garage; and the one you took out of the garage was duplicated. Now vehicles, garages and moored boats don't go back in time when you retry, neither from the start nor from a checkpoint.</li>
+<li>The O key now always gives the direction, not just the meters, and says the name of the place as it appears in the list of places.</li>
+<li>On the phone, the mission you have in progress guides you to its current objective, not to the place where it started.</li>
+<li>A GPS detour to a parked vehicle no longer gets stuck: it ends when you get in, and the GPS goes back to what you had before, saying so. Before, G kept pointing at the vehicle you were already in.</li>
+<li>After updating, the game says where the change log really is: in the main menu, About, What's new in this version.</li>
+<li>The voice generator for your own character is tested separately before it is used: if it fails on your computer, the game no longer closes, and the lines with your name are spoken by the screen reader.</li>
+<li>If you had changed keyboard keys, the controller buttons are no longer mixed up.</li>
+<li>In Options, Sound and music, Adjust the volume of each sound, none are missing any more.</li>
+</ul>
+<h3>The street, people and the police</h3>
+<ul>
+<li>Self-defense: if a mugger, a gang member or anyone comes after you, shooting them or knocking them down is no longer a crime, and it counts from the moment they rush at you, not from their first blow. Neither is stopping the people in a street incident. If there is a patrol nearby or someone calls it in, the officers go after whoever attacked you, not after you.</li>
+<li>People can be heard: each person shouts and complains with their own voice, male or female, when they get scared or take a hit. And the game says who runs away or steps aside, and in which direction, without overloading you.</li>
+<li>People who talk as you pass: some people walk in pairs, and when you pass by them you hear a stray line. You choose how often.</li>
+<li>People on the street now have a surname, and there are more names, trades and lines.</li>
+<li>People also act: someone who comes to trust you may keep you company for a while, and someone who gets fed up with you may punch you or report you.</li>
+<li>Two new options when talking to someone: asking them for a favor, and suggesting they join your gang. Not everyone accepts: trust, your reputation and their personality all count.</li>
+<li>With artificial intelligence mode, a new option lets the character suggest keeping you company, leaving, getting angry or joining your gang. The game always decides with its own rules, and no character gives you money or items because of what you type.</li>
+<li>Patrols on their rounds: a patrol car drives around the streets even when nobody is after you. They see the crimes you commit nearby and, with traffic rules turned on, they hand out the fines.</li>
+<li>Ambulances: a while after a shootout or a hit-and-run, one arrives with its siren, treats the injured and leaves.</li>
+<li>Surrendering: with the police after you and an officer nearby, Shift H raises your hands. They stop shooting and arrest you. The more you are wanted, the bigger the fine and the more hours in the cells; at the highest level you lose all your weapons.</li>
+<li>The police come better armed the more you are wanted: at level 4, submachine guns and shotguns; at level 5 the Borrasca Unit also comes out, an assault unit that arrives in a van with rifles.</li>
+<li>Police helicopter, optional: at the highest wanted level you hear it arrive and circle overhead, and it talks to you over the loudspeaker. While it has you located you can't shake off the police. It loses you if you stick close to a building or go inside one, and it doesn't recognize you if you change vehicle without it seeing you. It can be shot down, but that costs you dearly.</li>
+<li>Some enemies arrive in a vehicle: part of the escort in some contracts and the reinforcements in the last assault when you conquer a neighborhood. You hear them coming, you can shoot the vehicle before they get out, and when they get out the vehicle is left for you.</li>
+<li>Many enemies shout a line when they see you, with their name first: that way you know who has seen you.</li>
+<li>Fallen enemies drop ammunition for the weapon they had, if you carry the same one. It is picked up by itself when you walk over it. And as a difficulty option, they can sometimes drop the whole weapon.</li>
+<li>New section in Options, The street: people, police and gangs, with all of the above. Each thing can be turned on or off.</li>
+</ul>
+<h3>Weapons and combat</h3>
+<ul>
+<li>Six new weapons, each with its own sound: fire axe, burst-fire pistol, pump-action shotgun, lever-action rifle, semi-automatic rifle and grenade launcher.</li>
+<li>Not all weapons are bought at the gun shop: the axe is in the shops, and the pump-action shotgun and the lever-action rifle are sold second-hand at the pawn shops. Ammunition, at any gun shop.</li>
+<li>Each weapon states its damage and range at the gun shop and in your weapons list, and with F1 it gives the full sheet: damage, range, rate of fire and accuracy, in words and in figures.</li>
+<li>Shooting from a vehicle is explained when it matters: the first time you are shot at while at the wheel, the game reminds you that Q locks on and Control fires, without getting out. The F1 help at the wheel explains it in full.</li>
+<li>Missions adjust to your escort: if you go with a lot of people, a few more and tougher enemies wait for you, up to a limit.</li>
+</ul>
+<h3>Territories and reconquest of neighborhoods</h3>
+<ul>
+<li>Conquering is no longer the end: playing offline, when you hold all the neighborhoods of a city, the gangs you defeated regroup and, after a few days of calm, try to take them back. With four neighborhoods or more they already start to move, more slowly.</li>
+<li>It also applies to games that already had everything conquered: when you load them there are a few days of calm and a notice, only once, explaining how to defend yourself.</li>
+<li>When a gang attacks a neighborhood you are always warned and you have a few hours: go there and defend it in person, in waves and with your gang at your side, or send your crew from the phone. If you do nothing, you lose it, with its daily money and some reputation, and you will have to reconquer it.</li>
+<li>When you send your crew, the game tells you the odds beforehand and the result with its numbers afterwards.</li>
+<li>New menu on the phone, in Territories: Neighborhood defense. It states the threat, the loyalty and the defense of each neighborhood, and everything is done from there.</li>
+<li>A standing guard in each neighborhood, who is paid every day and defends it alone if you don't arrive; reinforcements paid once; and informants, who warn you of the attack in advance, with the gang, the neighborhood and the time.</li>
+<li>Truces: pay a gang and it leaves you alone for a few days. They can be broken, by them or by you.</li>
+<li>Preemptive strike: raid the hideout of a gang that is regrouping, in a short mission that changes every time, and crush its strength.</li>
+<li>Loyalty of each neighborhood: it drops if days go by without you setting foot there and rises when you visit it, defend it or invest in it. The game warns you before it drops too far. A loyal neighborhood defends itself better and tells you what is being planned.</li>
+<li>Sometimes two gangs team up for a big strike, and it is announced. A gang that is driven off several times is dismantled for a long time, but someone always ends up coming: an outside gang may settle in the region.</li>
+<li>Rules to keep it fair: there are never two attacks at once, there are always days of rest between one and the next, the deadline does not run while you are on a mission, and nobody loses a neighborhood by sleeping for a night.</li>
+<li>While an attack is going on, the objective key says which neighborhood is under attack and how much time you have left.</li>
+<li>Negotiating with the gangs, on the phone, in Territories: give a neighborhood back to them in exchange for money, buy one from them without firing a shot, or charge them a daily tribute for letting them stay. What they answer depends on your strength and on how you get along, and you can haggle.</li>
+<li>Picking a fight with a gang without conquering anything, also in Territories: they come after you wherever you are, with no neighborhoods involved.</li>
+<li>In Territories, the first option explains how territories work: what they are for, how they are conquered, how they are defended and what happens if you lose them.</li>
+<li>New optional mode: neighborhood war on the street. Each neighborhood belongs to a gang and its members walk its streets. A neighborhood is conquered by going there and beating three waves, with your gang at your side, and the neighborhoods that are attacked are defended in person. With the mode turned off, everything stays on the phone, as always.</li>
+</ul>
+<h3>Vehicles</h3>
+<ul>
+<li>Your vehicles are no longer lost. The ones you buy, the ones you upgrade at a repair shop, the ones you take out of a garage and the ones you name are yours: they stay where you park them even if you move away or take another one, in any town, and they are saved with the game. If you had an upgraded vehicle in an earlier game, it becomes yours.</li>
+<li>New section on the phone, My vehicles: all of yours, with their name, model, condition, upgrades and where each one is. From there you can mark any of them on the GPS, ask for it to be brought to you, send it to a garage without going to get it, or rename it.</li>
+<li>Shift L still takes you to the last vehicle you used, and now it tells you how many more you have.</li>
+<li>Six of your vehicles fit on the street. If you go over that, your mechanic takes the oldest one to a garage; if there is no room, he warns you and you don't lose any.</li>
+<li>Work vehicles you upgrade, such as an ambulance or a taxi, are also yours. You can't keep a mission vehicle, and the repair shop tells you so before charging.</li>
+<li>If you are knocked down or arrested in another town, or you replay a mission, your vehicle stays parked where it was instead of disappearing.</li>
+<li>Give your vehicles a name: in your house menu, at the repair shop or in My vehicles. The game says it when you get in, when you locate it and in the lists.</li>
+<li>Missions tell you about the vehicle before you accept them, in the summary and when you reach the contact's door: whether they give you a vehicle, whether you have to take a specific one, or whether you can do it with your own. And they warn you when there is a chase for which it is best to bring a fast one.</li>
+<li>When a mission gives you a vehicle, yours stays parked and safe, and the game tells you so.</li>
+<li>Five transport and delivery missions can be done with your own vehicle: drive it to where the mission vehicle is and stop next to it.</li>
+<li>Gang driver: if you have someone recruited, ask from the phone, in Services, or from your gang menu, for them to come and pick you up with a vehicle from your garage or one of the gang's, whichever you choose. They take a while to arrive, honk the horn, you get in as a passenger and they drive to the destination you set. You can shoot along the way, they wait for you if you get out and you dismiss them whenever you want.</li>
+<li>Four new upgrades at the repair shop: reinforced tires, reinforced suspension and bumpers, exhaust silencer and bigger fuel tank.</li>
+<li>At the car dealership you choose which car you take for a test drive.</li>
+<li>When you retry or replay a mission, or go back to a checkpoint, the vehicle you were in, or the one you had just left next to you, comes with you and is parked beside you. The game says so, and reminds you how many you have on the street and in the garages.</li>
+<li>If you were on a boat of yours when you retried, it goes back to a mooring. And if during the mission you bought a house and kept a vehicle in its garage, that vehicle goes to another garage or stays on the street in your name.</li>
+</ul>
+<h3>Home, shops and cooking</h3>
+<ul>
+<li>Shopping by walking around the store: in food shops, supermarkets, markets and gas stations, when you walk around inside you pick up a basket and go from aisle to aisle with the arrow keys. Each aisle has its own products. Enter puts a product in the basket, Left Arrow puts it back, C says what you have, and you pay at the checkout.</li>
+<li>If you don't have enough money, the shopkeeper tells you how much is missing and you can put something back right there. If you walk out with a full basket, the game asks: pay, leave the basket or take it without paying. That last one is shoplifting: if you are seen, the police are after you and you are not allowed into that shop for a couple of days.</li>
+<li>If you don't want to walk around, you have the same thing in the shop menu, in Buy takeout food for home. And everything else stays the same.</li>
+<li>Each kind of shop sells its own things at its own price: the supermarket has everything, the market has fresh food and is cheaper, the corner shop has no meat or fish, and the gas station only drinks and snacks, more expensive. Every day there is a special offer, and some product that is sold out.</li>
+<li>Pantry and fridge: what you buy you carry with you until you put it away in the kitchen of a house of yours. Fresh food goes in the fridge and the rest in the pantry, each house with its own and with limited space.</li>
+<li>Fresh food goes off: the game says how long each thing has left, warns you about what expires today or tomorrow, and expired food is thrown away by itself, saying so.</li>
+<li>What is eaten as it is, like a piece of fruit, a sandwich or a bottle of water, you can carry with you and eat on the street, from the phone, in Inventory.</li>
+<li>Cooking at home: walk through your house to the kitchen and choose a recipe. There are eleven, from the tuna sandwich to the seafood paella. Each one uses its ingredients and takes its time. Home-cooked food is much more filling than packaged food and cheaper than eating out; you get several servings, and the ones you don't eat are kept in the fridge.</li>
+<li>Sometimes a dish turns out first-rate and sometimes it gets a bit burnt. Your skill in the kitchen improves with practice, and an equipped kitchen helps.</li>
+<li>Home delivery food: when you are in a house of yours, the phone lets you order food and drinks. You choose from the menu, wait about half an hour of game time and they ring the doorbell. If you are not at home, the delivery person calls you, waits a while and leaves.</li>
+<li>None of this is compulsory: without realistic life, eating is for recovering health and mood, and nobody has to cook.</li>
+</ul>
+<h3>Objective, GPS and chases</h3>
+<ul>
+<li>The O key first says where the objective is: name, meters, direction and street. In a chase, when following someone or with the clock running, one press says only where it is and where it is heading; two quick presses read the whole explanation.</li>
+<li>Shift O, new: go back to the mission or job objective. It always does the same thing: it drops any detour, marks it on the GPS and, if it is close, leaves it selected on the radar. It is also on the phone, and it is the first entry in the L list of places.</li>
+<li>On the phone, Available missions starts with the mission you have in progress, with the position of its objective.</li>
+<li>The GPS has a single destination, which is the one G says, and the directions, the beacon and the autopilot all go to it. What you mark during a mission is a detour: when you finish it, the GPS goes back to the mission and says so.</li>
+<li>Detours end by themselves: when you get into the vehicle, reach the person, pick up the item or arrive at the place. If what you were looking for disappears, the game also says so and goes back.</li>
+<li>If the mission changes destination while you are on a detour, the game tells you that you are still on the detour and where the GPS will go afterwards.</li>
+<li>Control G, new: recovers the last destination or detour you removed with Shift G. With no mission and no destination, G alone does the same.</li>
+<li>When a chase in a vehicle starts, the game explains that you need a fast vehicle and how to follow whoever is fleeing. The notices about where they are going also say the street and which way they are heading.</li>
+<li>New option, Chase assist: more frequent notices, every turn called out, the person fleeing slows down sooner if you fall behind, a bit more time when there is a limit, and more leeway when following someone on foot.</li>
+</ul>
+<h3>Life, reputation and consequences: being good, bad or both</h3>
+<ul>
+<li>Standing with the neighbors and street reputation are still two separate scores, and now both are felt in the world. On the phone, in Life, reputation and consequences, you can read how the city sees you, how the street sees you and what you gain or lose because of it.</li>
+<li>Where people like you, shops give you discounts and let you buy on credit, neighbors sometimes look the other way and an officer gives you the benefit of the doubt. Where people avoid you, they charge you more and report you more readily.</li>
+<li>With street reputation, bodyguards charge less, bribes work better and gangs respect your businesses. Without reputation, without a gang and without an escort, some gang may come by asking for money "for protection": you decide whether to pay, report it, refuse or stand up to them.</li>
+<li>Criminal record: each arrest goes on your record, more serious the more you were wanted. It closes off joining the police, jobs of trust and, if serious, loans. Records expire by themselves and are reduced with community service or with a lawyer. Anything before this version does not count.</li>
+<li>Permanent contract, at the job centers: a boss with a name and a personality, shifts to complete each week, a salary on top of what you earn per shift, evaluations, warnings and dismissal if you don't show up, and promotions to positions with real responsibility. If you leave on good terms, a letter of recommendation. Without a contract, everything stays as always.</li>
+<li>Studies with qualifications, at the academies: seven qualifications that take several afternoons and money, and that open up the better positions and the upgrades for your businesses. You can study and work on the same day.</li>
+<li>Your businesses are managed: upgrades, employees, prices, opening hours and a reputation among the customers that rises if you look after them and falls if you neglect them. Every now and then there is an inspection.</li>
+<li>The bank lends: personal loans and mortgages to buy a house or a business paying only the down payment, depending on your standing, your income and your record. Installments are charged automatically, with a warning; if you don't pay, a surcharge and, the third time, seizure of part of what you earn, never all at once.</li>
+<li>Taxes and bills, mild: electricity and water for your houses, their property tax and a tax on what your businesses bring in, every week, with a warning two days before and always available to check. Games already started have fourteen days' grace and a notice explaining it.</li>
+<li>Doing good: when you are on foot, every so often you come across a lost wallet, an injured person, a robbery, a fight, a lost child... and you decide whether to help, carry on your way or take advantage.</li>
+<li>The double life has rules: what you are seen doing gets around, and it can end up in the newspaper and cost you your standing and your job. You are protected by discretion, a front business for the money, bribes and a lawyer, each with its price and its risk.</li>
+<li>The Right Path: a new story in nine chapters, with decisions, temptations and four endings, which starts at the Puerto Bravo Job Center as soon as you have seen your aunt and is completed without committing a single crime. The game says from the start that there are two roads, the street and The Right Path, and that you can follow both. Its scenes have recorded voices, like the others: each new character has their own voice, they call you by your name and address you as male or female; with a character you created, the lines that say your name are generated by the game on your computer.</li>
+<li>Love life suitable for everyone: without turning on adult content, you can meet someone, go on dates, become a couple, get engaged, live together and get married.</li>
+<li>Eight new achievements: Clean Record, Model Citizen, Two-Faced, Home with a Name, Complete Race, three qualifications, The Right Path and Good Samaritan.</li>
+<li>Four new sounds: dismissal, inspection, bill and qualification.</li>
+<li>On an online server there are permanent contracts, with the salary paid by the server, qualifications, criminal records and, if its owner wants, shop treatment based on your standing. There are no loans, mortgages, taxes or business management, and The Right Path story is played offline; the game tells you if you try.</li>
+</ul>
+
+<h3>New activities</h3>
+<ul>
+<li>You can rob any business that has a till, not only shops and banks: repair shops, gyms, gun shops, pharmacies, bars, cinemas, hotels, casinos and the rest. Where there is a guard, you have to deal with them first.</li>
+<li>The businesses you rob remember you for a few days: either they don't open the door to you, or they call the police as soon as they see you. Shops too.</li>
+<li>The tavern board offers three different jobs to choose from every day: the usual target, one with an escort that arrives in a vehicle, one who flees by car, one holed up in a business, one you have to follow first, one you only have to teach a lesson, something to recover or someone to protect.</li>
+<li>Working as a police officer, optional mode: join the force at a police station, start your shift with a patrol car and respond to calls on the radio: robberies, fights, reckless drivers and chases. Order people to stop, subdue, arrest and fine; get paid for each call and get promoted. If you commit a crime on duty, you lose your badge.</li>
+<li>With adult content, plans as a couple: an aimless walk, the cinema, a dinner, a boat trip, an afternoon at the beach and more, each one told with scenes that change.</li>
+<li>With adult content, living as a couple, optional: you can ask your partner to move in with you. Each person decides. If they accept, you find them at home, you eat together, they eat what you cook, they ask you for things and they notice if you don't show up. You can ask them to leave.</li>
+<li>With adult content, suppliers can be robbed to take their merchandise and their cash. It has consequences: they stop selling to you, they raise their prices or they send people after you.</li>
+<li>"My music", in the pause menu, explains in four steps how to put your songs on the radio and opens the folder for you. The folder can also be opened from Options, Sound and music, and the My music station, when it is empty, explains how to fill it.</li>
+</ul>
+<h3>Planned heists with your gang</h3>
+<ul>
+<li>Before robbing a bank, a business with a till or a supplier, if you have members of your gang with you, you can plan the heist: in the place's menu, Plan the heist with your gang. It is voluntary: the usual robbery is still in its own option and does not change.</li>
+<li>Five roles to hand out. The driver waits outside with the engine running, in a vehicle of yours or one of the gang's, and gives you a head start in the getaway. The lookout keeps the police busy and keeps telling you how long until they arrive. The escort goes in with you and stops anyone from playing the hero or raising the alarm too early. The safecracker opens the safe faster, or alone while you cover them. The shooter fires from the vehicle at whoever is following you.</li>
+<li>You also choose your own part: opening the safe or covering whoever opens it, and driving or riding as a passenger.</li>
+<li>The heist has five phases that the game announces out loud: entry, control, safe, exit and getaway. The O key tells you which one you are in and who is doing what.</li>
+<li>In a planned heist the safe takes time to open: you have to stay next to it, you hear how it progresses, and if you move away, it stops.</li>
+<li>Each member of your gang now has a name, aim, driving, nerves and loyalty, different in each game. They perform according to what they are worth, and with each heist that goes well they learn and become more loyal to you. You can see it on the phone, in Territories, Your gang, Your crew.</li>
+<li>Things can go wrong, a different way each time: the driver arrives late, the safecracker's hands shake, the escort is wounded and out of action for a few days, or the lookout is arrested and, depending on their loyalty, keeps quiet or gives your name.</li>
+<li>At the end the loot is split: each one takes their share, and before you start the menu tells you how much you will keep.</li>
+<li>Explained inside the game, in How this works, and in the manual. On an online server and when playing with friends there are no planned heists; there, the usual robbery remains.</li>
+</ul>
+<h3>Real flying</h3>
+<ul>
+<li>Helicopters and light planes have altitude. Up Arrow takes off, D climbs, A descends and F lands: the aircraft comes down by itself and, when it touches the ground, you get out. A note sounds when the altitude changes, higher pitched the higher you are.</li>
+<li>Flying high, the police on the ground lose sight of you. Flying low, everything is as always.</li>
+<li>The light plane needs the runway of an airport or an airfield, and builds up speed to take off. Anywhere else it is a forced landing, which you have to confirm and which damages it.</li>
+<li>Aircraft burn fuel, which is refilled at heliports, airports and airfields. The game warns you when you are on reserve; if it runs out, the engine stops and you glide.</li>
+<li>You go from one town to another on a real crossing: when you fly to the edge of the town, or with Enter at a heliport or an airport, you choose a destination. There is a heading, altitude, different wind on each flight and a control tower that talks to you over the radio.</li>
+<li>The autopilot does everything if you want, and the crossing can be sped up with N. Enter says how far is left, the heading, the altitude, the wind and the fuel.</li>
+<li>Things happen in the air: turbulence, another aircraft you have to give way to, and storms you can go around, fly over or go through. With rain there is more wind and more storms.</li>
+<li>Flying by hand, two clicks tell you which way to turn. When you arrive, the tower gives you the approach; with assisted landing the aircraft descends and lines up on its own, and without it you do it yourself.</li>
+<li>Two ways to arrive: land at the airfield, or fly in low over the town and set down wherever you want.</li>
+<li>Hangars at heliports, airports and airfields: they are rented by the day or bought. Aircraft kept there are not lost, they are refueled and repaired there, and they appear on the phone, in My vehicles, from where they can also be sent to the hangar.</li>
+<li>Hijacking an airliner, with a weapon, at any airfield. It is a major crime: high wanted level, a serious criminal record and a radar that follows you while you fly high. If you land at an airfield with the radar on you, they are waiting for you. Flying low, it loses you.</li>
+<li>A different job every day at each airfield: someone pays for the hijacked aircraft, delivered to a discreet spot in another town and without the radar on you.</li>
+<li>The honest road: the commercial pilot license, which you get at the academy, opens up passenger and cargo flights between towns. Three jobs a day at each airfield, with your own aircraft or one of the company's.</li>
+<li>Explained inside the game, in How flying works, in the menu of any heliport or airport.</li>
+<li>On an online server you fly the same way and there are hangars; there are no hijackings or commercial flights.</li>
+<li>With real flight turned off in Options, everything is as before.</li>
+</ul>
+<h3>Playing on a server</h3>
+<ul>
+<li>If the server restarts to update, it no longer throws you out to the menu. It warns you with a countdown, your character is saved and the game stays waiting. As soon as the server is back, you rejoin by yourself and carry on just as you were: same place, same vehicle, your health, your weapons, your money and your mission where you left it. The same happens if the connection drops.</li>
+<li>The waiting screen says what is happening, plays a soft tone so you know it is still there and, every so often, how long you have been waiting. Any key repeats it, F1 explains it and Escape stops waiting.</li>
+<li>If you were in a mission group and the others also come back, the group is put back together by itself. If someone does not come back, the game tells you who.</li>
+<li>If the server comes back asking for a newer version of the game, it tells you and offers to update; when it finishes, it offers to go back to that server.</li>
+<li>As a passenger you no longer get run over. Whoever rides as a passenger in another player's vehicle is inside: neither that vehicle nor any other runs them over, they can't be robbed like someone on foot and the bodywork protects them from gunfire.</li>
+<li>When the server holds back money, the game says so with figures: how much you have earned, how much is accepted, what the hourly limit of that server is, how much margin you have left and how much you recover each minute. On the phone, in Online, Data and rules of this server, you can see how you are doing.</li>
+<li>Contracts, gym fights, robberies and car jobs no longer use up the hourly limit: the server accepts them separately, up to a number per hour of each type. And the margin you don't use builds up, up to a few hours, also while you are away.</li>
+<li>What you buy is saved within a few seconds. And if the connection drops right after buying, the server gives you your money back.</li>
+<li>Text roleplay: Shift F10 speaks in character, to whoever is near you; Control F10 describes what your character does; and there is an out-of-character channel for the whole server. Each one sounds different, everything is read by the screen reader and can be reviewed on the phone.</li>
+<li>Character sheet: a sentence about who you are, which others read from Who is here or with Shift J.</li>
+<li>Other people's radio: near another player's vehicle you hear, quietly, the in-game station they have on. Nobody's own music is ever heard.</li>
+<li>My vehicles, online: the phone list also brings the vehicles the server keeps in your name, and from there you can rename a parked one, ask for it to be brought to you or send it to a garage.</li>
+<li>In group missions, helping in another player's gym fight no longer counts as a crime.</li>
+<li>On a server, home delivery food, robberies, contracts, plans as a couple, and shopping and cooking also work, and your pantry is saved with your character. The reconquest of neighborhoods, the neighborhood war on the street, ambulances, negotiating with the gangs, recruiting on the street, living as a couple and working as a police officer are only for single player. And where the police are run by the server there are no patrols of your own, no helicopter and no surrendering.</li>
+<li>Different versions on the same server: you can play with people who have another version of the game. Nobody is left out because of their version, unless the server owner requires a minimum one.</li>
+<li>On equal terms: the damage, range and rate of fire of each weapon and the money are decided by the server with the same figures for everyone. Having the new version gives no advantage in a fight.</li>
+<li>If another player uses a weapon or a vehicle that your version does not have, you hear and see them as the closest thing your game knows. Before, a weapon like that made no sound and a vehicle like that could not be seen parked.</li>
+<li>When you join a server that does not have the same data as your game, you are told by name which weapons and which vehicles don't match and what you will notice.</li>
+<li>Your character loses nothing by changing version: if one day you join with an earlier version, what that version does not know stays saved on the server and you get it back when you return with the new one, together with whatever you did in the meantime.</li>
+<li>You can't give another player a weapon their version does not have: the server gives it back to you and tells you, instead of it being lost.</li>
+<li>With mods that change the world you can also join a server, unless its owner does not want that: you play with what you have in common, and what your mod adds does not count against the others.</li>
+<li>Permanent contracts on a server: they are signed as always, and the shifts are counted by the server, which pays the salary into your bank without using up the hourly earnings limit. If the period ends while you are away, the evaluation reaches you when you come back.</li>
+<li>On a server that has it turned on, shops give a small discount to those with a good name and charge extra to those with a very bad one, the same for everyone. Criminal records are noted down and count for jobs of trust.</li>
+<li>If someone rejoins with their character while their previous session was still open, the others are no longer left with two players with their name.</li>
+</ul>
+<h3>For whoever runs a server</h3>
+<ul>
+<li>You can now update the game with the server or the panel open. The game explains it to you and asks for permission; the server warns the players, saves everything and closes; the game updates and the server starts again by itself, just as it was. If the update were to fail, the server starts again anyway.</li>
+<li>New commands, update and restart: they warn the players with a countdown and stop the server saying it is coming back. They also work on Linux, on a NAS and with Docker.</li>
+<li>When stopping, the server waits for each game to save its character, and saves everyone's money. Before, what happened in the last few seconds could be lost. And restarting from the panel no longer throws anyone out to the menu.</li>
+<li>Someone who rejoins in the middle of a fight after a disconnection no longer leaves two characters with their name.</li>
+<li>New options, all without restarting: turn off the roleplay channels and change their range, turn off vehicle radio, how many hours of earnings build up, how many repeatable jobs are accepted per hour, the seconds of warning before restarting and how long to wait for the last save.</li>
+<li>The server guide explains the money limit, with tips for servers among friends and open servers, and how to use the roleplay channels. The game has no microphone voice chat: to talk out loud, the guide recommends using any voice program separately.</li>
+<li>The server's police officers hold out according to the wanted level, and the names and lines of their characters come from the game's data.</li>
+<li>The gangs' cash box no longer keeps endless entries: the last two hundred are kept.</li>
+<li>An updated server still works for those playing with 1.7.0, and an updated game can join a 1.7.0 server: the game says what that server does not have. Those still on 1.7.0 hear the restart warning and go back to the menu with a clear message; their character is saved anyway.</li>
+<li>Playing with different versions, a new section in the server guide: what happens when not everyone has the same version, what each player sees and what you decide.</li>
+<li>The server no longer rejects those who bring data it can't verify, such as someone with mods: they get in, play with what is in common and are told what does not match. What affects the others is decided by the server with its world. If you prefer the old way, the new option for data that can't be verified rejects it.</li>
+<li>The server knows the world of version 1.7.0 out of the box and remembers what each version it checks has: it gives each game the closest thing it knows.</li>
+<li>A server with no world takes the one from the first player who joins even if it is not signed, warns about it in the log and replaces it with the first signed one that arrives.</li>
+<li>The character is saved in full, including what the server does not know, and what an earlier version can't save is kept. The database updates itself.</li>
+<li>Salaries for permanent contracts: they are paid by the server with the game's figures and a limit that you set. Asking to be paid twice, early or by rejoining does not work.</li>
+<li>New options, without restarting: what to do with data that can't be verified, whether there are salaries, their maximum pay, how many shifts count per day and whether shops treat players according to their standing. They have their own tab in the panel, Honest life.</li>
+</ul>
+<h3>Updating the game</h3>
+<ul>
+<li>If you update with an online server open and the update fails, nothing the server saved when it closed is lost: the server data goes into neither the backup nor the restore.</li>
+<li>You can update with the server panel open, even if you have never started the server. When it finishes, the panel comes back minimized and the focus stays on the game.</li>
+<li>The update no longer fails on computers that have other utilities with the same name as the Windows ones.</li>
+<li>When an update finishes, the game opens in the foreground: before, it could stay behind another window and the screen reader stayed on that one.</li>
+<li>When playing with the Windows voice, the session log no longer records a serious error that did not happen.</li>
+<li>Before downloading and before closing, the game checks that there is space on the disk, that it can write to its folder and that you don't have it open twice or have the mod editor open, and tells you clearly.</li>
+<li>If an update fails, the game tells disk failures apart from network failures and says the reason: protected folder, full disk or antivirus. When it reopens it tells you why it failed and what to do, and the installer leaves its own log so you can send it.</li>
+<li>"Update manually", in Options, Updates, with the four steps to install the new version yourself if the antivirus or the network won't let it. It is also in the manual.</li>
+<li>The summary of what's new that you read before updating is no longer cut off mid-word: it ends at a full stop and says where the rest is.</li>
+</ul>
+<h3>Controller</h3>
+<ul>
+<li>Everything new in this version can also be done with a controller, whether Xbox or PlayStation.</li>
+<li>Controller actions menu: hold View, or Create or Share, and press the right trigger, or R2. That is where everything that does not fit on a button is: the police stop order, shouting, robbing, taking cover, slow time, the roleplay channels, your dog, the radar filter, quick save and more. Only the actions that are valid at that moment appear. When you connect a controller, the game reminds you where it is.</li>
+<li>Typing with the controller: in any text box, up and down on the D-pad go through the letters, right types the chosen one and left deletes. LB or L1 types a space and RB or R1 switches between lowercase, uppercase, numbers and symbols.</li>
+<li>Ready-made phrases for chat and roleplay, and random names for your vehicles: with X or Square, or with Tab on the keyboard, you go through them and choose without typing.</li>
+<li>Surrendering: the combination button and the left trigger. In the shop you walk through, X or Square says what you have in the basket. While waiting for a server, A or Cross repeats, B or Circle exits and Y or Triangle explains it.</li>
+<li>With a controller, the game also says the button when the function uses a combination: for example, how to cancel a GPS detour or how to lower your hands when surrendering.</li>
+<li>In the controller actions menu: go back to the mission objective and recover the last destination you removed from the GPS. The objective is still on its button, and pressed twice in a row it reads the whole explanation.</li>
+<li>Flying with the controller: when piloting, the right stick to the right climbs and to the left descends. On a crossing, the D-pad controls the heading and the altitude, X or Square is the autopilot, A or Cross says how the flight is going, Y or Triangle speeds it up, LB or L1 repeats the tower and RB or R1 opens the flight menu.</li>
+<li>Planned heists are done entirely from the menus, with the usual buttons.</li>
+</ul>
+<h3>Sounds</h3>
+<ul>
+<li>Thirty-six new sounds, in all the packs: there are now 279. Among them, the five for flying, which are the altitude tone, the alignment tone, turbulence, the cockpit alarm and landing; the four for life and its consequences, which are dismissal, inspection, bill and qualification; those for the six new weapons; people's shouts and complaints; ammunition being picked up; the police helicopter and its loudspeaker; the police radio; the house doorbell; the basket, the fridge, the knife, the frying pan, the pot and the plate; roleplay messages; waiting for the server; and the three neighborhood alerts: threat, neighborhood lost and neighborhood defended.</li>
+<li>Learn the sounds now has all the sounds in the game. The most important ones come first, as before, and then all of them split into groups: footsteps, weapons, engines, police, places, ambience, shopping and cooking, playing on a server and the rest. Go into a group and press Enter on a sound to hear it.</li>
+<li>The Realistic, Alternative, Retro and Surround packs bring real recordings for twelve of the new sounds, exactly the same sounds as the default ones, and their credits say where each recording comes from.</li>
+<li>The orientation signals for the heliport, the mine and the prison are now the same with the default sounds and with all the packs. If you play with the default sounds, you will notice that those three sound a little different than before: they are the ones the game creates again when you delete a sound, so now there are no longer two versions.</li>
+<li>The sounds are better organized and easier to find. Learn the sounds and Options, Adjust the volume of each sound, now have the same 20 groups, with the same names: orientation, places, moving on foot, vehicles, weapons, police, house, money, work, playing online and the rest. Inside, the sounds are in alphabetical order, each with its name and with what hearing it means, and when you go into a group it says how many it has. Both menus have Search for a sound: you type a word, with or without accents, and the matching ones appear. In the volume of each sound it says which ones you have changed and how many in each group, and you can return to its default volume a single one, with Delete or from the Changed sounds list, a whole group or all of them. The volumes you had already changed are kept.</li>
+</ul>
+<h3>Mod editor</h3>
+<ul>
+<li>New sections for everything in this version: People on the street, Enemy types, Gangs, Police per wanted level, People's personalities, Businesses' cash, My vehicles and driver, The street, Neighborhood war on the street, Reconquest of neighborhoods, and those for home delivery food, robberies, negotiating with the gangs, contracts from the board, what people do, the police job, plans and life as a couple, and the products, the aisles, the kinds of shop and the recipes.</li>
+<li>Create your enemies with their weapon, health, aim, voice, lines and vehicle, and use them in missions. The people on the street you add join the game's own or replace them, as you prefer.</li>
+<li>Repair shop upgrades say what they improve, how many levels they have and how much each one gives, and new upgrades can be added. Weapons say where they are bought.</li>
+<li>Fights have the It is a sports match checkbox; neighborhoods, the Gang that rules the neighborhood field; and missions, the Can be done with the player's vehicle checkbox, the Tutorial practice step and the It is a briefing checkbox.</li>
+<li>The ready-made phrases for chat and the random vehicle names can also be changed from the editor.</li>
+<li>The manual explains how to create your own vehicles.</li>
+<li>New section, Chases and the objective key: how often it says where the person fleeing is going, when they slow down, and the same numbers with the assist turned on.</li>
+<li>New sections for planned heists: Roles in a heist, where you can change the roles, their shares of the loot or add others, and Prepared heists: numbers and phrases.</li>
+<li>New sections for flying: Flying: numbers and phrases; Aircraft, with the speed, ceiling, range and whether each aircraft needs a runway; and Air map, with where each town is in the region. Heliports and airports have the Hangar space price field.</li>
+<li>In missions, a pickup step can take a few seconds to open, like a safe, and a police step can take a few seconds to arrive.</li>
+</ul>
+<h3>New options and how they come</h3>
+<p>So that everyone knows what they will find when they update. They are all in Options, in the section given, and each one has its explanation with F1.</p>
+<p>They come turned on:</p>
+<ul>
+<li>Gangs try to reconquer your neighborhoods: on normal. You choose between off, calm, normal and hard, in The street. It is only noticeable with four neighborhoods or more, and only when playing offline. If you don't want it, set it to off.</li>
+<li>Missions adjust to your escort: on moderate. You choose between no, moderate and strong, in Combat and difficulty.</li>
+<li>Consequence level: on mild. You choose between off, mild, normal and demanding, in the new section Life, reputation and consequences. On off, standing and street reputation count as before and nothing more. What you choose yourself, such as a permanent contract, a qualification or a loan, is available at any level.</li>
+<li>Taxes and bills: yes. In Life, reputation and consequences. They are mild, you are warned about them and games already started have fourteen days' grace. With no, there are no bills, taxes or inspections, as before.</li>
+<li>Criminal record: yes. In Life, reputation and consequences. Anything before this version does not count. With no, nothing is recorded, as before.</li>
+<li>Love life suitable for everyone: yes. In Life, reputation and consequences. With no, relationships only exist with adult content, as before.</li>
+<li>Chase assist: on. It is mild, and can be turned off in Combat and difficulty.</li>
+<li>Real flight: yes. In Movement and driving. Helicopters and light planes have altitude and really travel between towns. With no, you always fly at the same altitude and change town in one jump from a heliport, as before.</li>
+<li>Assisted landing on crossings: yes. In Movement and driving. With no, you make the approach to the airfield yourself.</li>
+<li>Aircraft burn fuel: yes. In Movement and driving. Only with real flight. With no, the tank is not used up.</li>
+<li>Self-defense: yes. In The street. With no, any shot and any kill counts, as before.</li>
+<li>Police patrols driving around the streets: yes. In The street. With no, the police only appear when they are after you, as before.</li>
+<li>Ambulances that come when there are injured people: yes. In The street. They are only ambience.</li>
+<li>Fallen enemies drop ammo: yes. In The street.</li>
+<li>The people you talk to act on their own too: yes. In The street. With no, people only talk, as before.</li>
+<li>Say when people run away or step aside: yes. In The street. With no, you only hear the shouts.</li>
+<li>People who talk as you pass: rarely. You choose between never, rarely, now and then and often, in The street.</li>
+<li>On a server, wait and rejoin only if the connection drops or the server restarts: yes, with ten minutes of waiting at most. In Play online; the wait can be set from 1 to 120 minutes.</li>
+<li>On a server, hear the radio of other players' vehicles: yes. In Sound and music.</li>
+</ul>
+<p>They come turned off, and you have to turn them on to have them:</p>
+<ul>
+<li>Police helicopter at the highest wanted level. In The street.</li>
+<li>Mode: neighborhood war on the street. In The street.</li>
+<li>Mode: be able to work as a police officer. In The street.</li>
+<li>Difficulty: fallen enemies sometimes drop their weapon. In The street.</li>
+<li>The AI can suggest actions, and the game decides. In People and artificial intelligence.</li>
+<li>Life as a couple: being able to ask your partner to move in with you. In Adult content.</li>
+</ul>
+<p>They change without an option, and it is worth knowing:</p>
+<ul>
+<li>The police at wanted levels 4 and 5 are better armed than before.</li>
+<li>The shops you rob remember you for a few days, like the other businesses.</li>
+<li>The tavern board opens a list of three jobs instead of starting one directly.</li>
+<li>What you buy to take home is not eaten by itself: you have to put it away and, if it is an ingredient, cook it. What was eaten on the spot in bars, restaurants and shops stays the same.</li>
+<li>Aircraft are no longer kept in a house garage: their place is a hangar. Any you had in a garage stay there and can be taken out.</li>
+<li>The members of your gang now have names: when you call them, each one arrives with their own.</li>
+</ul>
+<p>On the server, the new options come like this: roleplay channels, yes, with a range of 30 meters; radio in other players' cars, yes; three hours of accumulable earnings; six repeatable jobs accepted per hour of each type, with 15000 euros at most per job; twenty seconds of warning before restarting and six of waiting for the last save. Also: those who bring data that can't be verified get in; salaries for permanent contracts, yes, with 1,500 euros of maximum pay and three shifts counted per day; and discounts for standing in shops, yes.</p>
+
+<h2>Version 1.7.0</h2>
+<p>Two big things: the online server, to play with lots of people in a world that stays alive, and what you have asked for and told us since 1.6.3.</p>
+<h3>The online server</h3>
+<ul>
+<li>Playing on a server. In the main menu, Play on a server: a world that stays alive even when you are not there, with real players, gangs, territories, houses and businesses, and with traffic, people on the street and the police the same for everyone.</li>
+<li>Set up your own server. Everything you need comes with the game, in the servidor folder: for two friends playing or for a hundred people, on your computer or on a machine that stays on.</li>
+<li>Server panel. A window accessible with a screen reader to start and stop it, see who is inside, send announcements and messages, kick, ban, appoint administrators, create invitations and read the log of what happens.</li>
+<li>Configuration in tabs, with every option explained with Control H. Almost everything can be changed with the server running, and the panel says which changes need a restart.</li>
+<li>No fixed player limit. The server splits the work by zones, so that each player receives in detail only what is near them.</li>
+<li>Different versions of the game, together on the same server. Someone still on an earlier version can keep joining when the server is already on a new one: each one plays with what their version knows, and the game tells them when they join.</li>
+<li>The content comes from the game, not the server. What your game or your mods sell you can also buy on a server, and it is saved with your character.</li>
+<li>What another player is wearing: near them, Shift J says what they have on. Only when you ask. It also works when playing with friends.</li>
+<li>Money, watched by the server: you can always spend; you can earn what the server itself gives and an amount per hour from jobs and sales. You can only give another player the money you are carrying. And a house or a business only gives money back when sold if you paid for it on that server: what you bring from playing on your own you can keep and use, but it does not turn into money.</li>
+<li>Automatic backups every day, and manual ones whenever you want. They are restored from the panel, and they are useful for moving the server to another machine.</li>
+<li>Options for admins: message of the day, banned names, kicking for inactivity, minimum game version, how often it saves and logging to a file.</li>
+<li>For every system: on Windows with the panel or from the console, and with Python on Linux, Mac, Raspberry Pi and NAS, or with Docker. For those you don't need the game.</li>
+<li>Open the router port from the panel, if the router allows it, so people can join from outside your home.</li>
+<li>Complete guide, step by step: every way to set it up, the address you give your people, encryption, administration, troubleshooting and all the options. It is in the servidor folder and opens from the panel with F1.</li>
+</ul>
+<h3>New in the game</h3>
+<ul>
+<li>Where you left the vehicle. With Shift L, or on the phone with Where is my vehicle, the game tells you where the vehicle you got out of is and sets it on the GPS. If you were heading somewhere else, when you reach the vehicle the GPS goes back to that destination by itself. And if you go to another town without it, it waits for you there: the game tells you in which town and on which street you left it.</li>
+<li>The next intersection. Shift N tells you which street is the next one you will cross, how many meters away it is and which street you are on, on foot or at the wheel. Just that, without the rest of the information.</li>
+<li>Shift V tells you only your hunger, thirst, sleep and hygiene, without having to hear your whole status.</li>
+<li>The right Shift no longer makes you run or switches between walking and running. Only the left one does; the right one is kept for key combinations.</li>
+<li>Download progress. While a new version or the artificial intelligence model is downloading, any key tells you the percentage and how many megabytes it has so far.</li>
+<li>Downloads in the background. During those downloads, B sends them to the background and you keep playing. The game lets you know when they finish, and the new version is installed whenever you want, from Options, Updates.</li>
+<li>The radio pauses when you get out. The song stops and, when you get into any vehicle, it carries on right where it left off. This works for all stations and for My music, and each station remembers its own place. If you prefer the station to keep playing without you, like a real radio, change it in Options, Sound.</li>
+<li>The radio on foot. Stores sell a music player with headphones: on foot, Shift R turns it on and changes station. When you get into a vehicle, the song carries on without cutting out.</li>
+<li>Music in venues. In stores, bars, gyms, repair shops and other venues, one of the game's stations plays quietly in the background; each venue has its own.</li>
+<li>Gamepad: button combinations. While you hold the View, Create or Share button, the other buttons have a second function. So now, without a keyboard, you can turn on the GPS autopilot, hear how far you have left to go, the next intersection, where you left the vehicle, cancel the GPS, change station and more. They are changed in Options, Gamepad.</li>
+<li>Fuel, optional and turned off by default. In Options, Combat and difficulty. Cars, motorcycles and trucks use fuel, more the faster you go; they warn you when they go into reserve and stop when the tank is empty. You refuel at gas stations without getting out, with fuel cans or by calling roadside assistance. There is a gas station in every town with cars.</li>
+<li>Thirst and hygiene, as part of realistic life. Besides eating and sleeping, you have to drink and wash. You drink in bars, restaurants, stores and your kitchen; the shower is in your home and in hotels.</li>
+<li>Breakdowns, optional and turned off by default. Vehicles count kilometers, get a flat tire every now and then and need an inspection from time to time. You carry spare tires, which you change from the phone.</li>
+<li>Traffic rules and the points license, optional and turned off by default. Running a red light or speeding costs you a fine and points, but only if the police see you. With no points left your license is taken away, and you get it back with a course.</li>
+<li>Mixed martial arts. In gyms, fight nights of three rounds in a row, each opponent tougher than the last. They pay more than boxing.</li>
+<li>Accessories. In clothing stores: glasses, chains, rings, watches, caps and earrings, cheap ones and designer ones. You wear them as well as your clothes, and they lift your mood the first time you wear them.</li>
+<li>More protection. Tactical clothing and a camouflage uniform, which have reinforcements, in clothing stores; and a tactical chest rig and full tactical gear in gun shops, with armor of 150 and 200.</li>
+<li>New trades. Shifts as a carpenter, welder, mechanic's assistant and lifeguard at the job center. And car salesperson at the dealerships, with a salary and commission; if you like, you can also ask for the keys for a test drive and never come back.</li>
+<li>Relaxed sound. A new option in Options, Sound, for computers where the audio clicks, cuts out or stutters.</li>
+<li>All the game's prices are now in the data: what the cinema, the repair shop, a taxi, a bodyguard and fines cost, the salaries, and what each job pays. That is 89 fares that a mod can change.</li>
+<li>The mod editor has eleven new sections: clothing, accessories, gun shop protections, workdays, gym fights, fuel, home furniture, repair shop upgrades, realism, radio on foot and in venues, and fares and prices. All of that is in the game data, and a mod can change it or add its own. Places have the gas station mark and the price per liter, and vehicles have their tank.</li>
+</ul>
+<h3>Help in missions</h3>
+<ul>
+<li>Following someone on foot: they no longer start walking until you find them. Before, they set off as soon as the job began and, if you were far away, you lost them before you even got there. Now the GPS takes you to them and the game tells you when they are close.</li>
+<li>Chases: while they are far away, the game tells you every so often how many meters ahead they are and which way they are going, and lets you know when they are within reach. If they already got away from you, the next time they are more nervous and go slower, and if there is a time limit you get a bit more.</li>
+<li>U-turn: the GPS now tells you the key, U, with the car almost stopped. And the GPS autopilot does it by itself when the destination, or the vehicle you are chasing, is behind you, instead of repeating that you should turn around.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>The starting weapon of a mod character did not respect the spare ammunition the mod gave it.</li>
+</ul>
+
+<h2>Version 1.6.3</h2>
+<p>Made with what you told us while testing 1.6.2, and with one big change: new voices for all the characters, who call you by your name whoever you play as.</p>
+<h3>New</h3>
+<ul>
+<li>New voices in all the scenes. Each character in the story and in the added stories has their own voice: that is seventy-four characters and seventy-four voices, instead of the six that were shared out before. All the lines are there, including those of the new missions.</li>
+<li>The voices work for any main character. Before, they only played if you played as Dani in masculine. Now, with Dani, Álex, Sam or Cris, they call you by that name and speak to you in the masculine or the feminine. And the main character has a voice of their own: one male and one female voice for each of the four.</li>
+<li>Voices also for the character you create. The story lines that say your name are generated on your computer, with the characters' voices, the first time you play with that name: a waiting screen of a few seconds at the start, which you can skip, and the rest while you play. When you create the character you choose your voice, you can listen to how they will call you and, if your name does not sound right, write how it is pronounced. It needs a processor from 2013 or 2015 onwards; on an older one, the screen reader says those lines.</li>
+<li>When you update, the new voices replace those of the previous version. The ones you recorded yourself, in the propias folder, are not touched.</li>
+<li>The voices are made with Phonon, a voice engine by Gradium, for non-commercial use. Its license comes with the game.</li>
+<li>Furnishing the house. In the menu of any home of yours there are six things to buy, one per room: a sofa and a TV, a new kitchen, a bathtub, a really good bed, plants and paintings, and a workbench for the garage. Each one improves what you do in its room or how well you rest, and the workbench repairs the stored vehicles while you sleep.</li>
+<li>Talking in your own words to people you already know. In the card of each person in your social life, and of your partner, there is a new option: you write whatever you like and they answer, just like when you talk to people on the street. If you are not in the same place, by phone.</li>
+<li>Detours with the radar. If you are heading somewhere and you mark with B something the radar has mentioned, money on the ground or an item, the game takes it as a detour: when you get there, the GPS goes back to the destination you had by itself. With Shift G you drop the detour.</li>
+<li>Create your own character. In New game, at the end of the list of characters, there is Create your own character. You give them a first name and a surname, choose whether they speak to you in the masculine or the feminine, share out eight levels among the four skills, with five at most in each, and pick a starting advantage: Savings, Toughness, Quick Hands, a switchblade, People skills or None. The story calls you by the name you wrote.</li>
+<li>Main character in masculine or feminine. When you choose Dani, Álex, Sam or Cris, the game asks how you want to be spoken to. From then on, the dialogue and messages respect it: welcome in the masculine or feminine, Encarna's nephew or niece, son or daughter, stranger, boss, in the right form. It is saved with the game. Games from earlier versions stay as they were, in masculine.</li>
+<li>The characters of the example mods now say whether they are he or she, and with them the game does not ask.</li>
+<li>A railway line in every town with a station. It crosses the town from one side to the other and trains run along it: they come in at one end, stop at the platform, blow their horn and leave at the other end. You can hear them coming and going from the street. You can cross the track on foot; the game says train tracks when you step on it and, if a train is coming, it blows its horn and warns you; if you do not get out of the way, it runs you over.</li>
+<li>By bus, from one town to another, a train catches up with you on the line that runs alongside the road and you hear it pass from one ear to the other.</li>
+<li>Flights to the villages and the islands. The villages you reach by road have an airfield, with scheduled light planes to the cities and the other villages. You reach the islands and the platform by scheduled helicopter from any airport or airfield, and from their heliports you can also fly back to the villages.</li>
+<li>The branches of the story cross over. Each branch remembers what you decided in the others: whoever gives you the mission comments on it at the end. When you have closed all three, the Puerto Bravo, Villaseca and San Lucero ones, the mission Three Letters arrives at the bar, and after it one more ending, out of three possible ones, depending on what your decisions add up to.</li>
+<li>New lottery. Each ticket has a five-digit number and the draw is every day at nine in the evening. The game says the winning number and you check whether you have won, on the phone or wherever tickets are sold. Prizes go by the last digits: refund, two, three and four digits, and a jackpot for all five that grows every day nobody wins it. Tickets are sold at lottery offices, where you can ask for your number, and also in stores, bars and taverns.</li>
+<li>Friendly fire, optional. In Options, Combat and difficulty, there is a new option: Friendly fire. By default it is set to yes, which is the realistic choice: you can hurt your dog, your bodyguards and your gang. With no, you cannot aim at them or hurt them, not even by accident.</li>
+<li>Looking after the dog. Shift Y opens its menu: pet it, feed it, send it home and call it. It gets hungry over the hours and lets you know. Dog food is sold at the animal shelter and in stores.</li>
+<li>Choosing how you collect from your businesses: have it brought to you in person every midnight, as before; have it paid into the bank; or go and collect it at each business yourself, for ten percent more. You change it on the phone, in Properties, or in the menu of any of your businesses.</li>
+<li>Twelve new missions, in a chapter of their own: Jobs of the Region. They are standalone jobs spread around Puerto Bravo, Monteferro, Villaseca, San Lucero, Cala Brava and Fuentefría: following someone, escorting, getting in quietly, keeping watch, deliveries against the clock, a race, a robbery to order and a trip out to sea.</li>
+<li>With a gamepad connected, the game tells you the buttons instead of the keys: in what it says while you play, in the tutorials and in the scenes. "Press the left trigger to lock on", instead of "press Q". It follows your button assignment and is turned off in Options, Gamepad.</li>
+<li>The GPS goes back to the mission by itself. If in the middle of a mission you go off to do something else and the GPS is left without a destination, after two seconds it sets what the mission asks for again. With G you can also get it back by hand.</li>
+<li>The vehicle you get out of waits for you where you left it, even if you go far away, and it is saved with the game. Before, it disappeared when you went away.</li>
+<li>Easier garage: if you leave the vehicle parked near your home, the home menu offers to put it in the garage. And from the phone, in Services, your mechanic takes the vehicle you are using to one of your garages, for 100 euros.</li>
+<li>The GPS autopilot stops when you arrive and says so. In a hurry, with the siren on or in a mission or job against the clock, it goes faster and does not wait at traffic lights.</li>
+<li>Getting in and out no longer sounds the same in every vehicle: a motorcycle and a bicycle have no door, a truck's door is deep and a sports car's door is light. And each person has their own voice, deeper or higher, in their complaints and their shouts.</li>
+<li>In the mod editor: the railway line of each town, the airfields, and conditions to combine decisions from different stories.</li>
+<li>In the mod editor, the character has a new field, They talk to them, and in any text you can write what changes in square brackets, with the masculine form, a bar and the feminine form: Bienvenid[o|a], [el sobrino|la sobrina].</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>The main menu music took several seconds to start playing. Now it comes in straight away.</li>
+<li>A peace pact between gangs could be accepted several times in a row and collected each time, because the Territories menu kept showing the offer. The same happened when paying the inspector. Not anymore.</li>
+<li>People on the street could be a student at sixty-four or retired at nineteen. Now their trade matches their age.</li>
+<li>AI mode with the model installed in the game itself gave a Windows error on some computers: it said VCRUNTIME140.dll was missing. The game already includes those libraries and now gives them to the model's program.</li>
+<li>A mission could be marked as completed without playing it. If you were arrested, or knocked out, at the very moment the last enemy or the chased vehicle went down, the final scene stayed open under the mission failed message; when you chose Retry, that old scene pushed the newly started mission through to the end. Now, if you had already done what the mission asked, it does not fail: after the police station or the hospital, its scene continues and it is completed. And a scene from a mission that has already ended cannot move another one.</li>
+<li>In the missions where you steal a vehicle, lose the police and deliver it, if you left the vehicle and changed town the mission got stuck. Now it fails with its reason and you can retry it.</li>
+<li>With the GPS autopilot, the car did not actually stop at the destination, and missions where you go to a place were not marked as done until you braked yourself.</li>
+<li>In The Courier and the other chases, the fleeing car was hard to catch with an ordinary vehicle. Now it goes slower on easy and normal, and it eases off if it gets far ahead of you.</li>
+<li>Stutters when loading music. Radio songs longer than a minute and a half now play in segments, ambient music is read without duplicating memory, changing station quickly does not pile up reads, and reading music from the disk gives way to the game.</li>
+<li>The update said "The download was cut off before it finished" and you had to start from scratch. Now it resumes by itself from where it was.</li>
+<li>With members of your gang beside you, the phone said you already had two bodyguards and did not let you call any.</li>
+<li>Cars caught fire too soon. The main cause was the tram: it rammed any car driving along an avenue with tracks, even one beside it, and took off half its health with each hit. Now the tram brakes and waits behind a vehicle. Also, the vehicle you are driving takes less damage on easy and normal, skidding only causes damage at high speed, the game warns you that smoke is coming out at 25 percent and, if it catches fire, you have more time to get out.</li>
+<li>The theft of the Centella from Autos Platino asks you to deliver it with somewhat less condition: at 30 percent instead of 40.</li>
+<li>If you hit your dog by accident, it stayed marked as an enemy forever and there was no way to fix it. Now it becomes afraid of you, and you fix it by making peace: petting, food or time.</li>
+<li>Hitting a bodyguard or a member of your gang left them in a strange state. Now they warn you twice and on the third time they turn against you.</li>
+<li>The members of your gang who were with you were saved in the game as bodyguards and drew two salaries. Not anymore.</li>
+<li>A very long recording on the My music station froze the game and could hang the whole computer. The radio loaded the whole song into memory before starting, and that is about one hundred and thirty megabytes for every minute of audio: with a one-hour recording, almost eight gigabytes. Now songs longer than five minutes are read and played in one-minute segments, one after another and without gaps, so it does not matter how long they are: a one-hour recording takes up the same as a short song and starts playing just as quickly.</li>
+<li>For the same reason, a sound effect replaced by a very long file can no longer fill up the memory: at most sixty seconds of effects are loaded, ten minutes of ambiences and three of a recorded voice. No sound in the game comes close to those limits.</li>
+<li>The dialogue always addressed the main character in the masculine, even if the chosen character had a woman's name.</li>
+<li>The combat tutorial did not let you lock on to the dummy. Tutorials are started from the phone, wherever you are, but the dummy appeared at the shooting club while the narrator said "you are at the shooting club": if you were far away, Q answered "no enemies nearby". Now, if you are far from where a tutorial takes place, or in another town, the tutorial itself takes you to its starting point and tells you. This applies to the four that are started from the phone: combat, jobs, sea and playing with friends.</li>
+<li>In that tutorial, the dummies and targets are no longer announced as enemies or as "taken down": the game says how many practice targets there are and how far away the nearest one is, and when you knock one down it tells you that another one is left and that Q locks on to it. They also do not count in your statistics or leave money on the ground.</li>
+</ul>
+<h3>Improved</h3>
+<ul>
+<li>Several game messages have been written so that they work for anyone: "you have no injuries", "you keep playing on your own", "if you crouch they hear you less".</li>
+<li>The names of trades, ranks and some achievements change with the main character: ambulance driver, veteran, champion, in the feminine when it applies.</li>
+<li>The name you write for your character is not recorded in the session log.</li>
+</ul>
+
+<h2>Version 1.6.2</h2>
+<p>This version includes everything from 1.6.1, which was a patch so that the game would start on computers with old processors. If you jump straight from 1.6.0 to this one, you do not miss anything.</p>
+<h3>New</h3>
+<ul>
+<li>Playable tutorial. The mission Learn to get around, which starts at Grandma's Apartment, teaches you in three short exercises how to find your bearings, how to use the GPS and the radar, and how to drive. You cannot fail it.</li>
+<li>Four more tutorials, on the phone, in Missions, under Learn to play: combat with dummies that do not fight back, jobs with a test taxi route, the sea, and playing with friends. While they last, the police do not respond.</li>
+<li>Checkpoints in missions. If you fail a long mission, you can retry from the last stage you had reached, instead of starting it all over again.</li>
+<li>Stereo ambiences. Ambient sounds and rain are played just as they were recorded, without converting them to mono. Anyone who makes a pack with surround ambiences will hear them in surround. The sounds guide explains how to prepare them.</li>
+<li>Surround sound engine, with binaural sound. With headphones you can tell whether something sounds in front of you or behind you, not just to the left or right. It also mixes the sound outside the program, so it does not stutter when lots of things play at once. It is optional: you choose it in Options, Sound and music, Sound engine, and it applies when you reopen the game. The classic engine is still the default, and it is always used on computers with an old processor and with mono sound.</li>
+<li>With the surround engine, each place has its own echo: almost none in the countryside and at sea, a little in the street, more among warehouses, long in the mountains and short inside a house or a venue. Things that fly sound above you, and if you are flying, the city sounds below you. It can be turned off in Options, Sound and music.</li>
+<li>New sound pack, Envolvente (surround). It has the sounds of the realistic pack and eleven ambiences truly recorded in stereo, one minute each: city, neighborhood, port, beach, sea, countryside, mountain, park, industrial area, night and rain. It has the same files as the other packs, and its orientation sounds are the default ones. You choose it in Options, Sound and music. All the recordings are in the public domain, and where each one comes from is written in the pack's CREDITOS.txt file.</li>
+<li>Taxi and bus trips are no longer instant: you hear the journey, with the engine, the road and the radio. They last between twelve seconds and a minute depending on the distance, and with Enter you arrive straight away. It can be turned off in Options, Movement and driving.</li>
+<li>Mono sound, in Options, Sound and music: the same in both ears, for people who hear with only one.</li>
+<li>The ambience and the music go down for a moment every time the voice speaks, so it is easier to understand. It can be turned off in Options, Sound and music.</li>
+<li>The first time you enter a neighborhood, the game describes it. It can be turned off in Options.</li>
+<li>An option for menus to say the position of each option, for example three of nine.</li>
+<li>Adjustable gamepad vibration strength, from twenty to one hundred percent.</li>
+<li>Remappable keyboard keys. In Options, Keyboard, you choose which key does each thing while you play. The two keys are swapped, so no function is left without a key, and the F1 help tells you the keys you have set. If you want, your keys also work in menus and dialogs, and the left Shift can be moved to another key.</li>
+<li>Six new mission types, designed to be played by ear: following someone by the sound of their footsteps without being noticed, escorting someone to a place, reaching a guarded point without being heard, passing through several places in order against the clock, watching a place without being seen, and racing against rivals whose engines you can hear.</li>
+<li>Seventeen new missions that use them: six in the main story, in the chapter Jobs by Ear, which start at the Puerto Bravo newspaper; six in Bahía del Ocaso, which start at El Faro del Ocaso; and one in each of the mods Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos and Neon Nights.</li>
+<li>Vehicle upgrades. At any repair shop you can upgrade the vehicle you bring: engine, brakes and armor, with three levels each. The upgraded engine goes faster and sounds higher. The upgrades stay with that vehicle and are kept in the garage.</li>
+<li>Your own gang. With at least one territory you can give your gang a name and recruit people, from the phone, in Territories. They follow you, get into your vehicle and fight by your side. Each territory lets you keep one more, up to six, and they are paid a salary every midnight.</li>
+<li>You can walk around inside your homes: living room, kitchen, bathroom, bedroom and garage, going from one room to another with the arrow keys. In the kitchen there is something in the fridge once a day.</li>
+<li>You can also walk around inside venues: bars, stores, banks, hospitals, repair shops, casinos and almost all the others. In the venue's menu, the option Walk around inside the place lets you go from room to room, sit down, listen in on what people are saying or go back to the counter.</li>
+<li>Voices in all the stories. The scenes of the main story and of all the mods that come with the game now have voices, computer-generated, when you play as Dani. They are turned off in Options, Voice.</li>
+<li>Decisions with consequences and three endings. At the end of the chapter Jobs by Ear, the mission The councilman's envelope asks you to decide what you do with the evidence, and depending on what you choose, the missions that follow, your money, your fame and how you get on with Los Calaveras all change. Each option leads to a different ending.</li>
+<li>Relationship with the gangs. A gang that respects you does not attack you in the street or try to take neighborhoods from you; one that is out to get you does. You can see it on the phone, in Territories.</li>
+<li>Conquered neighborhoods come to life: they give you fame when you conquer them, other gangs attack them and you have to defend them or let your gang do it, some gangs offer pacts and the police put you on their list.</li>
+<li>Journal on the phone: how far you are in the story, the decisions you have made and the missions you have done. From there you can replay any mission. If you have not played for days, when you load the game it reminds you where you were.</li>
+<li>Skipping a mission: if you fail it three times, you can skip it. It counts as done, with no reward.</li>
+<li>Slow time, with the Backspace key: everything goes slower while you have concentration left.</li>
+<li>Taking cover, with Shift X, behind a wall or a parked vehicle: you take much less damage.</li>
+<li>Weapon upgrades at gun shops: silencer and extended magazine.</li>
+<li>Fine or bribe: with a low wanted level and enough money, when an officer catches you, you can pay the fine, try to bribe them or let yourself be arrested.</li>
+<li>Hit confirmation, with a high-pitched tap and a gamepad vibration.</li>
+<li>Seven and a half, with a Spanish deck of cards, in bars and taverns.</li>
+<li>New game keeping what you earned, in the main menu, and three difficulty modifiers in the options.</li>
+<li>When you open your game to your friends, the game tries to open the port on your router by itself, and tells you whether it managed to. When you close it, it closes the port.</li>
+<li>Separate volume for the help signals: beacon, radar, aiming tone, proximity sensor, traffic lights and place sounds.</li>
+<li>When you turn on a signal in the options, you hear a sample of how it sounds.</li>
+<li>Running with one key press, without holding the key, for people who cannot or do not want to hold it.</li>
+<li>How much the game explains when it speaks: little, normal or a lot. And speed, pitch and volume of the Windows voice.</li>
+<li>Helicopter flights with a pilot also have a journey.</li>
+<li>With adult content, the people in your social life are in their places and not only on the phone: you can talk to them there and ask them to go out with you for a stroll, on foot or in your vehicle.</li>
+<li>With adult content, a night with someone is played step by step: you decide what you do and the other person responds. Listening to what they want is what makes it go well. No explicit scenes, as always, and it can be left as before in the options.</li>
+<li>With adult content, a clandestine lab in one of your homes: making the goods is a minigame played by ear, keeping a tone in its place. It brings money and trouble.</li>
+<li>Tram in the four cities: a line that goes round the city with stops in every neighborhood, sixteen in Puerto Bravo. You get on at a stop, the tram announces each one, and you get off wherever you want with Enter.</li>
+<li>Tram tracks in the streets, and trams running along them: you hear them coming, passing and stopping at each stop. You can cross the tracks on foot; when you step on them the game says so and your footsteps sound like metal. If a tram is coming and you are on the tracks, it rings its bell; if you do not get out of the way, it runs you over.</li>
+<li>Near the station you hear the train coming in, and near the airport, the plane taking off.</li>
+<li>Train: every town you reach overland has its own train station, separate from the bus station, and from each one you can go to all the others, including those of the mods.</li>
+<li>An airport on the outskirts of the four cities: a passenger plane for long journeys, and rental light planes and helicopters that you fly yourself.</li>
+<li>Four decisions open different branches of the story, each with its own missions and its own ending, and some leave consequences that last forever, such as an income every midnight.</li>
+<li>Swimming and diving in the sea. With F you jump off the boat, you swim with the arrow keys, and X takes you underwater: underwater you can hold out for about thirty seconds and sometimes you find something on the bottom.</li>
+<li>Light plane: faster and cheaper than the helicopter.</li>
+<li>Dominoes, the coin guessing game and slot machines in bars and taverns, as well as seven and a half.</li>
+<li>More decisions: eight in the main story and one in six of the mods.</li>
+<li>Fourteen new sounds, in all the packs: train, train whistle, tram, tram bell, light plane, passenger plane, takeoff, swim stroke, underwater, the two footsteps on the tracks, and the signatures of the tram stop, the train station and the airport. In the recording packs they are real public domain recordings. The sounds guide lists them.</li>
+<li>In Services, on the phone, you can dismiss your bodyguards.</li>
+<li>The mod editor lets you create missions with those six step types, decisions with branches and endings, mark a mission as a tutorial and add enemies that do not attack.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>The game closed with an error when you arrived late with a package in the courier job. Fixed, and all the other trades have been checked so the same thing cannot happen.</li>
+<li>The police were too overwhelming on foot. Now the first patrol takes a few seconds to come out and comes from farther away, there is a cap on patrols according to the wanted level, one at levels one and two and up to four at level five, and on foot you only need to get half a block away for them to lose sight of you.</li>
+<li>With lots of patrols, the sirens overloaded the sound and the game stuttered. Now the sirens share out the volume, patrols no longer pile up without limit and the game does not spend processing on sounds that are too far away to be heard.</li>
+<li>Walking and running are a bit faster.</li>
+<li>The Options, Gamepad menu did not have the Go back option. Now every menu in the game that you leave with Escape also has Go back at the end.</li>
+</ul>
+<h3>Improved</h3>
+<ul>
+<li>Sounds that are not recorded at 44,100 hertz are now converted without losing quality in the high frequencies.</li>
+<li>The manual explains that the voices in the scenes are computer-generated.</li>
+<li>The voices that come with the game are now in data\voces, in one subfolder per story. Your recordings go in data\voces\propias, which updates do not touch. The voces_serie folder from earlier versions is no longer used and the game deletes it by itself.</li>
+<li>Sound effects change from WAV to FLAC, in all the packs. FLAC compresses without loss, so they sound exactly the same, and they take up 55 megabytes instead of 141: the game download drops by about 85 megabytes. When you update, the game deletes the old WAV files that are no longer needed and keeps the sounds you changed yourself. Music, radio and voices stay in MP3 and OGG, because they were already compressed and changing their format would lower their quality. If you put a recording of your own with the name of a game sound, yours now always plays, without having to delete the original.</li>
+<li>With a pack of long ambiences, like Envolvente, each ambience is loaded when you enter its neighborhood instead of loading them all at startup. The game uses about two hundred megabytes less memory.</li>
+<li>In Learn the sounds, when you press Enter only the chosen sound plays, without the menu click on top of it.</li>
+<li>Auto walk, with U, no longer gets stuck against a wall when turning a corner, and the GPS does not consider the route finished until you step onto the sidewalk, in front of the door.</li>
+<li>If you are crouching without realizing it, the game tells you when you try to run, and so does the V key.</li>
+<li>Collectibles give a prize and some fame for every five.</li>
+<li>Saved games carry a format number: those from earlier versions are converted by themselves when you load them.</li>
+</ul>
+
+<h2>Version 1.6.1</h2>
+<p>Patch for old processors. All of this is also in 1.6.2.</p>
+<h3>Fixed</h3>
+<ul>
+<li>The game did not start on computers with old processors, from before 2009 or 2010: it closed after a few seconds without saying anything. Now it has two calculation engines and picks by itself the one your processor can use.</li>
+<li>If a computer cannot run the game, it no longer closes silently: it says so out loud and in a box that the screen reader reads, and it is noted in the log.</li>
+<li>The session log no longer includes folder names from the computer where the game was prepared, which appeared when there was an error.</li>
+</ul>
+<h3>Improved</h3>
+<ul>
+<li>The log notes which instructions your processor has and which calculation engine was used, to better diagnose startup failures.</li>
+</ul>
+
+<h2>Version 1.6</h2>
+<h3>New</h3>
+<ul>
+<li>Bahía del Ocaso: a big new city on the west coast, with six neighborhoods, more than fifty places, three gangs and a story of its own with twenty-one missions in a city in drought, where water is the contraband. It also brings four honest jobs, five vehicles, three weapons, three races and two characters. You get there through the west exit of Puerto Bravo, by bus, by sea or by helicopter.</li>
+<li>AI mode with whichever service you want: local model, Google AI Studio, OpenAI, Anthropic or another compatible one. You can have several, and in automatic mode the game uses the free ones first and moves on to the next one if one fails.</li>
+<li>The game picks the cheapest model of each service by itself and changes it if it stops existing: you do not have to keep an eye on anything.</li>
+<li>Local artificial intelligence, free and without internet: from the options themselves you download a small model, choosing between three, that runs on your computer. The game starts it by itself and always closes it when you quit, whatever happens. Ollama and LM Studio also work.</li>
+<li>Test now option, which tells you which service and which model answer and how long they take.</li>
+<li>Recorded voices in the scenes: if you put the recording of a line in data\voces, it plays instead of the screen reader. It lets you give a voice to the characters of any mission, from the game or from a mod.</li>
+<li>In the mod editor, Control G writes the voice script of a mod, with the file name of each line, and Control Shift V opens the voices folder.</li>
+<li>Full GPS autopilot: with a destination set and the Y key, the car drives itself. It accelerates, brakes, turns, waits at traffic lights and stops when it arrives.</li>
+<li>Voices in the Bahía del Ocaso scenes: 105 lines of the story play with Spanish voices, male and female, computer-generated. They are chosen in Options, Voice.</li>
+<li>About, in the main menu: version, author, license, links and an invitation to buy a coffee.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>With realistic life turned on you could not eat while hungry if your health was at maximum: the game said you were not hungry. Now you can always eat when you are hungry.</li>
+</ul>
+<h3>Improved</h3>
+<ul>
+<li>AI mode no longer needs any separate component: it works in every copy of the game.</li>
+<li>Talking about whatever you like without artificial intelligence: when you write to a person, the game recognizes almost seventy topics and answers from a base of more than one thousand one hundred phrases, according to each person's character and how much they trust you. You do not need internet or to turn anything on.</li>
+<li>With AI mode, people answer with more variety: each time they are in a different mood.</li>
+<li>Recorded voices are chosen in Options, Voice, and only play when you play as Dani.</li>
+<li>Saved games: the game only loads encrypted saved games that it saved itself. A readable saved game, written or edited by hand, is no longer accepted.</li>
+<li>Updates also respect your recorded voices and the local model.</li>
+</ul>
+
+<h2>Version 1.5</h2>
+<h3>New</h3>
+<ul>
+<li>Session log, for reporting bugs: every time you open the game, it notes what is happening in a folder inside data\logs. If something goes wrong, you zip that session's folder and send it. The last five sessions are kept and older ones are deleted by themselves.</li>
+<li>The log does not store anything personal: not what you write, not chat messages, not passwords, not names, not internet addresses, not your Windows user name, not the paths of your folders.</li>
+<li>F12 key: puts a mark in the log when you notice something odd, to flag the moment.</li>
+<li>In Options, Log for reporting bugs: where it is, what it contains, how to send it and an option that opens the folder.</li>
+<li>The mod editor also keeps its own log.</li>
+</ul>
+<h3>Improved</h3>
+<ul>
+<li>If the game closes because of an error, it tells you the name of the folder you need to send.</li>
+</ul>
+
+<h2>Version 1.4</h2>
+<h3>New</h3>
+<ul>
+<li>Talking to anyone: on foot, the J key opens a conversation with the person next to you. Each one has their own name, trade, character and mood. You can say hello, ask about a place, buy them a coffee, make friends or write whatever you want to say to them. The people you know stay on the phone.</li>
+<li>AI mode, optional: with an Anthropic API key, people on the street answer what you write, played by an artificial intelligence.</li>
+<li>Every day is different: sales, market day, shortages, festival, transport strike, holiday getaway rush, days without a soul about and cruise days. Prices, the people on the street and the traffic change. Each store has its own price every day. No two games are the same.</li>
+<li>Realistic life, optional: hunger and sleep.</li>
+<li>With friends: joint activities, a race with a bet and a team delivery; riding as a passenger in a friend's vehicle, and giving each other first aid kits.</li>
+<li>Updates from within the game, in Options: it tells you at startup if there is a new version, downloads it, checks that it is genuine and updates itself. You can choose where from: the game server, GitHub, both or an address of your own.</li>
+<li>Three more complete mods, already turned on: Peñas Altas, a mining village in the mountains; Isla de los Vientos, an island you reach by boat, and Neon Nights, the nightlife of Puerto Bravo. With the earlier ones, that makes seven.</li>
+<li>Expanded adult content: flirting with people on the street, encounters in four ways, gestures with your partner, items, protection and health, and a dance floor in the clubs. It is still told without explicit scenes.</li>
+<li>The game options are also saved protected.</li>
+</ul>
+<h3>Improved</h3>
+<ul>
+<li>The manual explains everything new and is written only for the player.</li>
+<li>Network messages mention AdGuard, antivirus and firewalls when they may be the cause, and the game retries by itself.</li>
+</ul>
+
+<h2>Version 1.3</h2>
+<h3>New</h3>
+<ul>
+<li>Choosing a character at the start: Dani, Álex, Sam and Cris, each with their own advantages. The story calls you by the name you choose.</li>
+<li>A complete honest life: job centers with shifts and trades, promotions every eight services, academies with courses, soup kitchens with donations and volunteering, and standing among the neighbors that goes up with honest work and down with crimes.</li>
+<li>Your career, on the phone: a summary of your honest life and your criminal life.</li>
+<li>Ambient music with several pieces per situation: it starts with a random one and, when it ends, another one plays. It goes quiet when you turn on the radio and comes back when you turn it off.</li>
+<li>Optional mode with content for people over 18, turned off by default: relationships, clubs, substances and dealing, with consequences for your mood, health and fame.</li>
+<li>Mood and fame on the street, which change with what you do.</li>
+<li>Walking by itself: on foot, the U key follows the GPS route without you having to steer the character. It was requested on the audio game forums.</li>
+<li>Sound packs: you choose them in Options, Sound and music, and you hear them straight away. All the sounds are now in data\sonidos, in subfolders: por_defecto and one per pack. Three come with the game: Realista and Alternativo, with real public domain recordings, and Retro, with old console sound.</li>
+<li>All music is leveled by itself when it loads, both ambient music and radio music, and in each ambient music folder all the tracks there are get used.</li>
+<li>Volume matching: any changed sound, from a pack or replaced by hand, is brought by itself to the level of the original. And each sound can be turned up or down separately from Options.</li>
+<li>Four complete mods, already turned on: Costa Dorada and Valdeolmos, two new villages with their own story, Trades and Errands, and Engine and Asphalt.</li>
+<li>Playing with friends: your own game sets up the server, with or without a password, and you keep playing. You give them an address and they join. You hear each other, you find each other with the radar and the GPS, you write each other messages that are read aloud (F10 key) and you send each other money. It retries and reconnects by itself if a network filter or an outage interrupts the connection.</li>
+<li>Protected files: the data, the mods and the saved games are encrypted and signed, and cannot be modified with a text editor. To create content there is the mod editor.</li>
+<li>Accessible mod editor, EditorMods.exe, with which you create all the content the game supports.</li>
+<li>New sounds: the door and the background ambience when you enter a venue, a rooster at dawn, an owl at dusk, bells at midnight, promotions, diplomas, donations and a cash register on every payment.</li>
+</ul>
+<h3>Improved</h3>
+<ul>
+<li>The options are grouped into sections, each with its own Go back option.</li>
+<li>The manual includes all the keys, taken from the game itself, and there is a separate list in teclas_en.html.</li>
+<li>The sounds guide describes all the files, including the ambient music.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>The accents in the sounds guide were displayed wrongly.</li>
+<li>Closing the game while music was loading, or with lots of long songs, could fail or use several gigabytes of memory.</li>
+<li>A traffic jam could stay stuck forever in front of your car.</li>
+<li>The bodyguard and the dog can no longer be run over by your own vehicle.</li>
+</ul>
+
+<h2>Version 1.2</h2>
+<ul>
+<li>Support for Xbox and PlayStation gamepads, with vibration and remappable buttons.</li>
+<li>Everything the game uses or creates is in the data folder. The sounds and the radio are files that can be changed.</li>
+<li>Monteferro, Fuentefría and the Neptuno Platform. Helicopter, dog companion, territory wars, stock market, treasures and more jobs.</li>
+</ul>
+
+<h2>Version 1.1</h2>
+<ul>
+<li>San Lucero, Villaseca, Cala Brava, Isla Tortuga and the Mar de Poniente, with boats and fishing.</li>
+<li>More missions, weapons, vehicles, stores and jobs.</li>
+</ul>
+
+<h2>Version 1.0</h2>
+<ul>
+<li>First version: Puerto Bravo, the main story, assisted driving, GPS, radar, combat and police.</li>
+</ul>
+</body>
+</html>

@@ -772,13 +772,13 @@ def test_el_editor_cubre_los_golpes_y_la_documentacion_los_cuenta():
     paso = {cp["k"] for cp in ESQUEMAS["paso"]["campos"]}
     assert {"tarda", "retraso"} <= paso
     docs = os.path.join(rutas.base(), "data", "docs")
-    manual = open(os.path.join(docs, "manual.html"), encoding="utf-8").read()
+    manual = open(os.path.join(docs, "manual_es.html"), encoding="utf-8").read()
     for trozo in ("Golpes preparados", "Preparar el golpe con tu banda", "conductor", "vigilante", "escolta", "el de la caja", "tirador", "Las cinco fases", "Entrada: cada uno va a su sitio",
                   "Tu gente, uno por uno"):
         assert trozo in manual, trozo
-    editor = open(os.path.join(docs, "editor_mods.html"), encoding="utf-8").read()
+    editor = open(os.path.join(docs, "editor_mods_es.html"), encoding="utf-8").read()
     assert "Golpes preparados" in editor and "Papeles de un golpe" in editor
-    novedades = open(os.path.join(docs, "novedades.html"), encoding="utf-8").read()
+    novedades = open(os.path.join(docs, "novedades_es.html"), encoding="utf-8").read()
     assert "golpe" in novedades.lower() and "papel" in novedades.lower()
 
 

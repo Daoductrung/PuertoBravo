@@ -10,10 +10,11 @@ separadas por una barra: primero la masculina y luego la femenina.
 Vale igual en los datos (misiones, mods, descripciones) que en los textos del código, y se resuelve en un solo sitio:
 justo antes de decir, mostrar o registrar el texto.
 """
+from .i18n import tr
 import re
 
 GENEROS = ("h", "m")
-NOMBRES = {"h": "en masculino", "m": "en femenino"}
+NOMBRES = {"h": tr("en masculino"), "m": tr("en femenino")}
 _MARCA = re.compile(r"\[([^\[\]|]*)\|([^\[\]|]*)\]")
 
 actual = "h"          # el de la partida en curso

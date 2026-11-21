@@ -387,8 +387,8 @@ def generar(semilla=7):
     gr = _seno(4400, 6.0) * (np.sin(PI2 * 32 * tg) > 0.3) * (np.sin(PI2 * 1.6 * tg) > -0.2)
     S["amb_noche"] = _norm(_bucle(gr + 0.3 * _filtro(ruido(6.0), 40, 250), 200), 0.3)
     S["lluvia"] = _norm(_bucle(_filtro(ruido(5.0), 1200, 9000) + 0.5 * _filtro(ruido(5.0), 200, 900), 300), 0.4)
-    tr = _filtro(ruido(3.5), 25, 180) * _decae(3.5, 0.9, 0.05) * (1 + 0.5 * _filtro(ruido(3.5), hi=6) * 8)
-    S["trueno"] = _norm(tr, 0.9)
+    trab = _filtro(ruido(3.5), 25, 180) * _decae(3.5, 0.9, 0.05) * (1 + 0.5 * _filtro(ruido(3.5), hi=6) * 8)
+    S["trueno"] = _norm(trab, 0.9)
     lad = np.zeros(int(SR * 1.0))
     for k in range(3):
         _poner(lad, vocal(520, 300, 0.12, (800, 1600), 0.08), k * 0.28)

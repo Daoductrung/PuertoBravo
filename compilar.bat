@@ -33,6 +33,15 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo Poniendo al dia los idiomas: cada texto nuevo del juego tiene que estar traducido al ingles antes de compilar...
+".venv\Scripts\python.exe" herramientas\i18n\extraer.py
+".venv\Scripts\python.exe" herramientas\i18n\fusionar.py --instalar --estricto
+if errorlevel 1 (
+    echo ERROR: hay textos sin traducir al ingles. Estan en traduccion\en\pendientes: traducelos en traduccion\en\hechos y vuelve a compilar.
+    pause
+    exit /b 1
+)
+
 echo Exportando el mundo para el servidor en linea...
 ".venv\Scripts\python.exe" herramientas\exportar_mundo_servidor.py
 echo Poniendo al dia la guia del servidor con sus opciones y sus ordenes...
@@ -58,6 +67,8 @@ if errorlevel 1 (
 echo Copiando la carpeta data junto a los ejecutables...
 xcopy /e /i /y /q "data\datos" "%D%\data\datos" >nul
 xcopy /e /i /y /q "data\docs" "%D%\data\docs" >nul
+rem Los idiomas: el catalogo de cada uno, legible para quien quiera revisar o hacer una traduccion
+xcopy /e /i /y /q "data\idiomas" "%D%\data\idiomas" >nul
 rem Las voces viajan dentro de data\datos, en voces_puente: el juego, al arrancar, las coloca en data\voces, quita las de
 rem la version anterior y borra el puente. Asi llegan igual a una instalacion nueva que a quien actualiza desde cualquier
 rem version (el actualizador de la 1.6.0 y la 1.6.1 no copia la carpeta voces), y no viajan dos veces.
@@ -66,6 +77,7 @@ if exist "%D%\data\datos\voces_puente\propias" rmdir /s /q "%D%\data\datos\voces
 if not exist "%D%\data\voces" mkdir "%D%\data\voces"
 rem El generador de voces para los personajes hechos por el jugador: el modelo Phonon de Gradium, sus voces y su licencia
 ".venv\Scripts\python.exe" herramientas\preparar_phonon.py
+if not errorlevel 1 ".venv\Scripts\python.exe" herramientas\preparar_phonon.py --idioma en
 if errorlevel 1 (
     echo ERROR: falta el modelo del generador de voces. Mira herramientas\preparar_phonon.py
     pause
@@ -90,6 +102,7 @@ if exist "data\mods\isla_de_los_vientos.json" copy /y "data\mods\isla_de_los_vie
 if exist "data\mods\noches_de_neon.json" copy /y "data\mods\noches_de_neon.json" "%D%\data\mods" >nul
 if exist "data\mods\bahia_del_ocaso.json" copy /y "data\mods\bahia_del_ocaso.json" "%D%\data\mods" >nul
 if exist "LEEME.txt" copy /y "LEEME.txt" "%D%\LEEME.txt" >nul
+if exist "LEEME_en.txt" copy /y "LEEME_en.txt" "%D%\LEEME_en.txt" >nul
 
 echo Preparando la carpeta del servidor: lanzadores, guia, ejemplo de configuracion y lo necesario para otros sistemas...
 ".venv\Scripts\python.exe" herramientas\preparar_carpeta_servidor.py "%D%"
@@ -123,6 +136,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo Apuntando los componentes que trae el juego, para que no avise de ellos como nuevos...
+".venv\Scripts\python.exe" herramientas\publicar_componentes.py de-serie
 echo Comprobando que la compilacion esta limpia...
 ".venv\Scripts\python.exe" herramientas\comprobar_limpio.py "%D%"
 if errorlevel 1 (

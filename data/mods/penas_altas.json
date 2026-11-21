@@ -510,6 +510,7 @@
    "id": "pa_dinamita",
    "nombre": "Cartucho de dinamita",
    "tipo": "explosivo",
+   "unidad": "granada|granadas",
    "dano": 130,
    "alcance": 30,
    "cadencia": 1.3,

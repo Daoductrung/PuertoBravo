@@ -4,6 +4,7 @@ Cada emisora es un bucle estéreo compuesto al vuelo a partir de una semilla.
 Además, cualquier archivo de audio que el jugador deje en la carpeta
 radio_usuario se convierte en la emisora «Mi música».
 """
+from .i18n import tr
 import math
 import os
 import random
@@ -16,16 +17,16 @@ PI2 = 2 * np.pi
 VERSION = 2
 
 EMISORAS = [
-    {"id": "apagada", "nombre": "Radio apagada"},
-    {"id": "bravo", "nombre": "Bravo FM, rock de carretera", "estilo": "rock", "bpm": 124, "semilla": 11, "tono": 40},
-    {"id": "latina", "nombre": "Onda Caribe, ritmos latinos", "estilo": "latino", "bpm": 94, "semilla": 23, "tono": 45},
-    {"id": "neon", "nombre": "Neón 84, sintetizadores", "estilo": "synth", "bpm": 108, "semilla": 37, "tono": 42},
-    {"id": "calma", "nombre": "Radio Bahía, música tranquila", "estilo": "calma", "bpm": 78, "semilla": 51, "tono": 48},
-    {"id": "usuario", "nombre": "Mi música"},
-    {"id": "hierro", "nombre": "Radio Hierro, rock duro de Monteferro", "estilo": "rock", "bpm": 142, "semilla": 77, "tono": 38},
-    {"id": "club", "nombre": "Lucero Club, electrónica", "estilo": "synth", "bpm": 126, "semilla": 91, "tono": 45},
-    {"id": "tropical", "nombre": "Costa Tropical, verbena", "estilo": "latino", "bpm": 108, "semilla": 63, "tono": 43},
-    {"id": "noticias", "nombre": "El Faro Noticias, la actualidad de la comarca"},
+    {"id": "apagada", "nombre": tr("Radio apagada")},
+    {"id": "bravo", "nombre": tr("Bravo FM, rock de carretera"), "estilo": "rock", "bpm": 124, "semilla": 11, "tono": 40},
+    {"id": "latina", "nombre": tr("Onda Caribe, ritmos latinos"), "estilo": "latino", "bpm": 94, "semilla": 23, "tono": 45},
+    {"id": "neon", "nombre": tr("Neón 84, sintetizadores"), "estilo": "synth", "bpm": 108, "semilla": 37, "tono": 42},
+    {"id": "calma", "nombre": tr("Radio Bahía, música tranquila"), "estilo": "calma", "bpm": 78, "semilla": 51, "tono": 48},
+    {"id": "usuario", "nombre": tr("Mi música")},
+    {"id": "hierro", "nombre": tr("Radio Hierro, rock duro de Monteferro"), "estilo": "rock", "bpm": 142, "semilla": 77, "tono": 38},
+    {"id": "club", "nombre": tr("Lucero Club, electrónica"), "estilo": "synth", "bpm": 126, "semilla": 91, "tono": 45},
+    {"id": "tropical", "nombre": tr("Costa Tropical, verbena"), "estilo": "latino", "bpm": 108, "semilla": 63, "tono": 43},
+    {"id": "noticias", "nombre": tr("El Faro Noticias, la actualidad de la comarca")},
 ]
 
 
@@ -665,17 +666,17 @@ class Radio:
         if e["id"] == "usuario":
             self._buscar_usuario()
             if not self.pistas_usuario:
-                return ("Mi música: todavía no hay canciones. Esta emisora pone las tuyas. Para ponerlas, pulsa Escape y elige Mi música: "
-                        "ahí están los pasos y la opción Abrir la carpeta de mi música, que abre la carpeta donde se copian. También está en Opciones, Sonido y música. Valen mp3, ogg, flac y wav.")
+                return (tr("Mi música: todavía no hay canciones. Esta emisora pone las tuyas. Para ponerlas, pulsa Escape y elige Mi música: "
+                        "ahí están los pasos y la opción Abrir la carpeta de mi música, que abre la carpeta donde se copian. También está en Opciones, Sonido y música. Valen mp3, ogg, flac y wav."))
             ruta = self.pistas_usuario[self.pista_idx % len(self.pistas_usuario)]
             self._pedir(ruta, desde=self._desde_recuerdo(ruta))     # sigue por donde iría, como una emisora de verdad
-            return "Mi música: " + os.path.splitext(os.path.basename(ruta))[0].replace("_", " ")
+            return tr("Mi música: ") + os.path.splitext(os.path.basename(ruta))[0].replace("_", " ")
         r = self.recuerdo_de(e["id"])
         if "archivo" in e:
             self._pedir(e["archivo"], desde=r[1] if r and r[0] == e["archivo"] else 0.0)
             return e["nombre"]
         if e["id"] not in self.listas:
-            return e["nombre"] + ". Sintonizando, espera un momento."
+            return e["nombre"] + tr(". Sintonizando, espera un momento.")
         if r and r[0] in self.pistas.get(e["id"], []):           # la canción que sonaba aquí, por donde iba
             self.ultima[e["id"]] = r[0]
             self._pedir(r[0], desde=r[1])
@@ -691,7 +692,7 @@ class Radio:
                 self.canal.parar()
                 self.canal = None
             self._pedir(ruta)
-            return "Mi música: " + os.path.splitext(os.path.basename(ruta))[0].replace("_", " ")
+            return tr("Mi música: ") + os.path.splitext(os.path.basename(ruta))[0].replace("_", " ")
         return None
 
     def reanudar(self):
@@ -705,19 +706,19 @@ class Radio:
 # ---------------------------------------------------------------------------
 # Cada situación tiene varias piezas. Se elige una al azar y, cuando termina, entra otra distinta.
 AMBIENTES = {
-    "exploracion": ("De día, explorando con calma", [
+    "exploracion": (tr("De día, explorando con calma"), [
         (52, 5, [(0, "M7"), (9, "m7"), (5, "M7"), (7, "7")]), (55, 6, [(0, "M7"), (4, "m7"), (9, "m7"), (5, "M7")]),
         (50, 7, [(0, "M7"), (7, "7"), (9, "m7"), (5, "M7")]), (57, 8, [(0, "m7"), (5, "7"), (10, "M7"), (3, "M7")])]),
-    "noche": ("De noche", [
+    "noche": (tr("De noche"), [
         (45, 17, [(0, "m7"), (8, "M7"), (3, "M7"), (10, "7")]), (43, 18, [(0, "m7"), (5, "m7"), (8, "M7"), (7, "7")]),
         (47, 19, [(0, "m7"), (10, "M7"), (8, "M7"), (0, "m7")])]),
-    "mar": ("En el mar", [
+    "mar": (tr("En el mar"), [
         (50, 29, [(0, "M7"), (5, "M7"), (9, "m7"), (5, "M7")]), (48, 30, [(0, "M7"), (7, "7"), (5, "M7"), (0, "M7")]),
         (53, 31, [(0, "M7"), (9, "m7"), (2, "m7"), (7, "7")])]),
-    "tension": ("Con la policía detrás o enemigos cerca", [
+    "tension": (tr("Con la policía detrás o enemigos cerca"), [
         (43, 41, [(0, "m"), (1, "M"), (0, "m"), (10, "m")]), (45, 42, [(0, "m"), (8, "M"), (0, "m"), (7, "M")]),
         (41, 43, [(0, "m"), (3, "M"), (1, "M"), (0, "m")])]),
-    "menu": ("En el menú principal", [
+    "menu": (tr("En el menú principal"), [
         (48, 53, [(0, "m7"), (5, "m7"), (10, "M7"), (3, "M7")]), (50, 54, [(0, "M7"), (9, "m7"), (5, "M7"), (7, "7")]),
         (46, 55, [(0, "m7"), (8, "M7"), (10, "M7"), (7, "7")]), (53, 56, [(0, "M7"), (4, "m7"), (5, "M7"), (7, "7")])]),
 }
@@ -829,7 +830,7 @@ class MusicaAmbiente:
                         except Exception:
                             pass
                 try:
-                    open(marca, "w", encoding="utf-8").write("Piezas de serie creadas. Si borras este archivo, se vuelven a crear las que falten.")
+                    open(marca, "w", encoding="utf-8").write(tr("Piezas de serie creadas. Si borras este archivo, se vuelven a crear las que falten."))
                 except OSError:
                     pass
             for f in sorted(os.listdir(sub)):

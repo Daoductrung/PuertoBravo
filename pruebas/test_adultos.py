@@ -53,8 +53,8 @@ def test_opciones_por_secciones_con_volver(robot):
     menus_juego.opciones(app)
     raiz = app.pila[-1]
     textos = [o.texto for o in raiz.opciones]
-    assert textos[-1] == "Volver" and len(textos) == 15 and "Teclado: cambiar las teclas" in textos and "Registro para informar de fallos" in textos and "Personas e inteligencia artificial" in textos and "Actualizaciones" in textos
-    for k in range(len(textos) - 1):
+    assert textos[-1] == "Volver" and len(textos) == 16 and textos[0].startswith("Idioma: ") and "Teclado: cambiar las teclas" in textos and "Registro para informar de fallos" in textos and "Personas e inteligencia artificial" in textos and "Actualizaciones" in textos
+    for k in range(1, len(textos) - 1):                 # la primera, Idioma, se cambia con las flechas: no abre nada
         raiz.i = k
         robot.tecla(pygame.K_RETURN)
         sub = app.pila[-1]
@@ -133,6 +133,7 @@ def test_relaciones(robot):
     random.seed(3)
     p = robot.nueva_partida()
     _activar(robot)
+    p.cfg["vida_en_persona"] = False                 # el modo de antes, todo desde el móvil; el de ahora lo prueba test_172
     j = p.j
     j.dinero = 5000
     l = p.lugares["chiringuito"]
@@ -149,7 +150,8 @@ def test_relaciones(robot):
         p.dia += 1
         _elegir(robot, "Proponer una cita")
         _elegir(robot, "Dar un paseo")              # su plan favorito
-        while "Cita con" in robot.app.pila[-1].titulo:
+        robot.saltar_dialogos()                     # la cita se cuenta en escenas
+        while "Cita con" in getattr(robot.app.pila[-1], "titulo", ""):
             robot.tecla(pygame.K_ESCAPE)
         _elegir(robot, "Hacerle un regalo")
         _elegir(robot, "ramo de flores")

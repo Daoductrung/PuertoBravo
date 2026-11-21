@@ -23,7 +23,7 @@ import time
 import pytest
 
 import banco_versiones as bv
-from juego import enlinea
+from juego import VERSION, enlinea
 from servidor import compat, nucleo, opciones
 from test_servidor import Banco, Cli, lejos_de_todo, mundo
 
@@ -436,11 +436,11 @@ def test_1_servidor_nuevo_vacio_entra_primero_el_juego_de_la_1_7_0_y_luego_el_de
     assert s.ev("[srv.mundo['version'], len(srv.mundo['armas']), bool(srv.mundo.get('provisional'))]") == ["1.7.0", 37, False]
     assert s.ev("srv._nominas() is None")                  # el mundo de la 1.7.0 no trae contratos fijos: no hay nóminas
     r = entrar(nueva, s, "Nico")
-    assert r["mundo"]["version"] == "1.7.1" and r["mundo"]["igual"] and r["mundo"]["huella"] != H170
-    assert s.ev("[srv.mundo['version'], len(srv.mundo['armas'])]") == ["1.7.1", 43] and s.ev("srv._nominas() is not None")
-    assert any("El mundo pasa de la versión 1.7.0 a la 1.7.1" in l for l in s.ev("lineas"))
+    assert r["mundo"]["version"] == VERSION and r["mundo"]["igual"] and r["mundo"]["huella"] != H170
+    assert s.ev("[srv.mundo['version'], len(srv.mundo['armas'])]") == [VERSION, 43] and s.ev("srv._nominas() is not None")
+    assert any(f"El mundo pasa de la versión 1.7.0 a la {VERSION}" in l for l in s.ev("lineas"))
     # a la jugadora de la 1.7.0 no se la echa: se le dice que el servidor cambia de datos y sigue jugando
-    assert vieja.ev("hasta(\"'pasa a los datos de la versión 1.7.1' in dicho(8)\", 8)"), vieja.ev("dicho(4)")
+    assert vieja.ev(f"hasta(\"'pasa a los datos de la versión {VERSION}' in dicho(8)\", 8)"), vieja.ev("dicho(4)")
     assert "puede seguir jugando" in vieja.ev("dicho(8)") and vieja.ev("P().en_servidor")
     hecho = jugar_juntos(taller, s, vieja, nueva)
     assert hecho[-1] == "corte y reconexion" and "explosivo" in hecho, hecho
@@ -453,10 +453,10 @@ def test_2_servidor_nuevo_vacio_entra_primero_el_juego_de_ahora_y_luego_el_de_la
     s = taller.servidor("nueva", "vacio", **CFG_JUNTOS)
     nueva, vieja = taller.juego("nueva"), taller.juego("vieja")
     r = entrar(nueva, s, "Nora")
-    assert r["mundo"]["version"] == "1.7.1" and r["mundo"]["igual"] and r["admin"]
+    assert r["mundo"]["version"] == VERSION and r["mundo"]["igual"] and r["admin"]
     r = entrar(vieja, s, "Vito")
-    assert r["mundo"]["version"] == "1.7.1" and r["mundo"]["igual"] is False
-    assert s.ev("[srv.mundo['version'], len(srv.mundo['armas'])]") == ["1.7.1", 43]      # el servidor no retrocede
+    assert r["mundo"]["version"] == VERSION and r["mundo"]["igual"] is False
+    assert s.ev("[srv.mundo['version'], len(srv.mundo['armas'])]") == [VERSION, 43]      # el servidor no retrocede
     assert vieja.ev("hasta(\"'cosas que tu versión del juego no tiene' in dicho(10)\", 8)"), vieja.ev("dicho(5)")
     dicho = vieja.ev("dicho(10)")
     assert "6 armas" in dicho and "Escopeta de corredera" in dicho and "Un vehículo" in dicho and "el mismo para todos" in dicho, dicho
@@ -468,10 +468,10 @@ def test_2_servidor_nuevo_vacio_entra_primero_el_juego_de_ahora_y_luego_el_de_la
 def test_3_servidor_nuevo_con_su_mundo_y_los_dos_juegos(taller):
     """El servidor de ahora tal como se reparte, con su mundo.json: entran los dos, en cualquier orden."""
     s = taller.servidor("nueva", "propio", **CFG_JUNTOS)
-    assert s.info["version"] == "1.7.1" and "equivalencias" in s.info["funciones"] and "nominas" in s.info["funciones"]
+    assert s.info["version"] == VERSION and "equivalencias" in s.info["funciones"] and "nominas" in s.info["funciones"]
     vieja, nueva = taller.juego("vieja"), taller.juego("nueva")
     r = entrar(vieja, s, "Vega")
-    assert r["mundo"]["version"] == "1.7.1" and r["mundo"]["igual"] is False and r["entra"]
+    assert r["mundo"]["version"] == VERSION and r["mundo"]["igual"] is False and r["entra"]
     assert not s.ev("[l for l in lineas if 'El mundo pasa' in l]")
     r = entrar(nueva, s, "Nilo")
     assert r["mundo"]["igual"] is True
@@ -488,7 +488,7 @@ def test_4_servidor_de_la_1_7_0_con_el_juego_de_ahora_y_el_de_la_1_7_0_a_la_vez(
     nueva, vieja = taller.juego("nueva"), taller.juego("vieja")
     r = entrar(nueva, s, "Nuria")
     assert r["entra"] and "equivalencias" not in r["funciones"] and "nominas" not in r["funciones"]
-    assert s.ev("srv.mundo['version']") == "1.7.1"         # el servidor antiguo adopta el mundo nuevo, firmado
+    assert s.ev("srv.mundo['version']") == VERSION         # el servidor antiguo adopta el mundo nuevo, firmado
     r = entrar(vieja, s, "Vasco")
     assert r["entra"] and r["mundo"]["igual"] is False
     # lo que no existe en ese servidor: el juego nuevo lo sabe y lo dice
@@ -549,7 +549,7 @@ def test_el_tope_de_dinero_es_el_mismo_para_las_dos_versiones(taller):
         assert 1300 <= quedan[g.version] <= 1320, quedan     # los 300 del margen, y lo poco que se recupera mientras tanto
         assert "retira" in g.ev("dicho(6)"), g.ev("dicho(4)")
         assert abs(s.ev("J(%r).saldo" % g.nombre) - quedan[g.version]) <= 2
-    assert abs(quedan["1.7.0"] - quedan["1.7.1"]) <= 20, quedan
+    assert abs(quedan["1.7.0"] - quedan[VERSION]) <= 20, quedan
 
 
 # ============================================================================ el personaje, de una versión a otra
@@ -583,13 +583,13 @@ p.j.campo_del_futuro = {'algo': [1, 2, 3]}
     nueva("salir()")
     time.sleep(0.4)
     antes = json.loads(s.ev("hacer(lambda: srv.alm.cuenta_por_nombre('Sara')['partida'])"))
-    assert s.ev("hacer(lambda: srv.alm.cuenta_por_nombre('Sara')['partida_juego'])") == "1.7.1"
+    assert s.ev("hacer(lambda: srv.alm.cuenta_por_nombre('Sara')['partida_juego'])") == VERSION
     assert antes["jugador"]["campo_del_futuro"] == {"algo": [1, 2, 3]}      # el servidor guarda también lo que no conoce
     nuevos = ("antecedentes", "titulos", "creditos", "empresa", "honra", "despensa", "encima", "cocina_practica", "reconquista", "contrato", "campo_del_futuro")
     assert all(k in antes["jugador"] for k in nuevos)
     # ---- entra con la 1.7.0: mismo personaje, sin lo que su juego no conoce, y avisado
     r = entrar(vieja, s, "Sara")
-    assert r["tenia_partida"] and r["partida_de"] == "1.7.1"
+    assert r["tenia_partida"] and r["partida_de"] == VERSION
     assert vieja.ev("[p.j.arma, sorted(p.j.armas), p.j.dinero, p.j.banco]") == ["punos", ["escopeta", "pistola", "punos"], 3210, 100]
     assert vieja.ev("p.j.garajes") == {"piso_centro": [{"modelo": "sedan", "salud": 90, "nombre": "Sedán viejo"}]}
     assert vieja.ev("hasta(\"'no los pierdes' in dicho(10)\", 8)"), vieja.ev("dicho(5)")
@@ -603,7 +603,7 @@ p.j.campo_del_futuro = {'algo': [1, 2, 3]}
     time.sleep(0.4)
     despues = json.loads(s.ev("hacer(lambda: srv.alm.cuenta_por_nombre('Sara')['partida'])"))
     jd = despues["jugador"]
-    assert s.ev("hacer(lambda: srv.alm.cuenta_por_nombre('Sara')['partida_juego'])") == "1.7.1"      # sigue siendo un personaje de la 1.7.1
+    assert s.ev("hacer(lambda: srv.alm.cuenta_por_nombre('Sara')['partida_juego'])") == VERSION      # sigue siendo un personaje de la 1.7.1
     for k in nuevos:                                       # ni un campo nuevo perdido, y tal como estaban
         assert jd[k] == antes["jugador"][k], k
     assert jd["dinero"] == 3000 and jd["arma"] == "revolver"
@@ -1246,12 +1246,12 @@ def test_las_opciones_nuevas_estan_en_el_servidor_en_el_panel_y_en_la_guia():
     assert "mundo_distinto = admitir" in conf and "nomina_max = 1500" in conf and "VIDA HONRADA" in conf
     limpio, problemas = opciones.validar({"mundo_distinto": "Rechazar", "nominas": "no", "nomina_max": "-3"})
     assert limpio["mundo_distinto"] == "rechazar" and limpio["nominas"] == "no" and limpio["nomina_max"] == 1500 and len(problemas) == 1
-    with open(os.path.join(RAIZ, "data", "docs", "servidor.html"), encoding="utf-8") as f:
+    with open(os.path.join(RAIZ, "data", "docs", "servidor_es.html"), encoding="utf-8") as f:
         guia = f.read()
     for palabra in ("<code>mundo_distinto</code>", "<code>nominas</code>", "<code>nomina_max</code>", "<code>nomina_turnos_dia</code>", "<code>trato_prestigio</code>",
                     "Jugar con versiones distintas", "lo más parecido", "el primero que entra", "versión mínima"):
         assert palabra in guia, palabra
-    with open(os.path.join(RAIZ, "data", "docs", "manual.html"), encoding="utf-8") as f:
+    with open(os.path.join(RAIZ, "data", "docs", "manual_es.html"), encoding="utf-8") as f:
         manual = f.read()
     for palabra in ("Jugar con gente que tiene otra versión", "la nómina la paga el servidor"):
         assert palabra in manual, palabra

@@ -5,6 +5,7 @@ Las vías están en `Mundo` (por qué calles van y dónde paran). Aquí está lo
 ciudad, que avanzan por la línea, paran en cada parada y tocan la campana. Se les oye venir desde donde están, y si
 el jugador está en la vía por delante, el conductor toca la campana sin parar. Si aun así no se aparta, lo arrolla.
 """
+from .i18n import tr
 import math
 import random
 
@@ -136,7 +137,7 @@ def paso(p, dt):
                     p.son("tranvia_campana", xy=(tx, ty), ref=14, maxd=140, vol=1.0)
                 if not t["avisado"]:
                     t["avisado"] = True
-                    p.decir(f"¡Viene el tranvía, {p.direccion_txt(tx, ty)}! Sal de las vías.")
+                    p.decir(tr('¡Viene el tranvía, {direccion_txt}! Sal de las vías.').format(direccion_txt=(p.direccion_txt(tx, ty))))
         else:
             t["avisado"] = False
         if j.veh:
@@ -147,13 +148,13 @@ def paso(p, dt):
                 p.son("choque_leve", xy=(tx, ty), vol=0.9)
                 p.danar_vehiculo(j.veh, min(16.0, abs(j.veh.vel) * 0.6))
                 j.veh.vel *= 0.2
-                p.decir("¡Chocas con el tranvía!")
+                p.decir(tr("¡Chocas con el tranvía!"))
             elif delante and d < 14:
                 t["espera"] = 1.5
                 if not t.get("frenado"):
                     t["frenado"] = True
                     p.son("frenazo", xy=(tx, ty), ref=10, maxd=120, vol=0.5)
-                    p.decir("El tranvía frena detrás de ti y espera a que dejes libres las vías.")
+                    p.decir(tr("El tranvía frena detrás de ti y espera a que dejes libres las vías."))
             elif not delante:
                 t["frenado"] = False
         elif d < 3.2 and delante and not p.transicion:
@@ -163,7 +164,7 @@ def paso(p, dt):
             j.x, j.y = ax, ay
             p.danar_jugador(35, (tx, ty))
             p.app.vibrar(1.0, 1.0, 400)
-            p.decir("¡Te ha arrollado el tranvía! Te aparta de las vías de un golpe.")
+            p.decir(tr("¡Te ha arrollado el tranvía! Te aparta de las vías de un golpe."))
     _paso_tren(p, dt, x, y)
     p.t_avion -= dt
     if p.t_avion <= 0:
@@ -240,7 +241,7 @@ def _paso_tren(p, dt, x, y):
             p.son("tren_silbato", xy=(tx, ty), ref=30, maxd=OIR_TREN, vol=1.0)
         if not t["avisado"]:
             t["avisado"] = True
-            p.decir(f"¡Viene el tren, {p.direccion_txt(tx, ty)}! Sal de las vías.")
+            p.decir(tr('¡Viene el tren, {direccion_txt}! Sal de las vías.').format(direccion_txt=(p.direccion_txt(tx, ty))))
         if por_delante < 4.0 and not p.transicion:
             p.son("choque", xy=(tx, ty), vol=1.0)
             ax, ay = m.fuera_de_la_via(x, y)
@@ -248,11 +249,11 @@ def _paso_tren(p, dt, x, y):
                 p.danar_vehiculo(j.veh, 50)
                 j.veh.vel *= 0.1
                 j.veh.x, j.veh.y = ax, ay
-                p.decir("¡El tren embiste tu vehículo y lo saca de las vías!")
+                p.decir(tr("¡El tren embiste tu vehículo y lo saca de las vías!"))
             else:
                 j.x, j.y = ax, ay
                 p.danar_jugador(60, (tx, ty))
                 p.app.vibrar(1.0, 1.0, 500)
-                p.decir("¡Te ha arrollado el tren! Sales despedido fuera de las vías.")
+                p.decir(tr("¡Te ha arrollado el tren! Sales despedido fuera de las vías."))
     else:
         t["avisado"] = False

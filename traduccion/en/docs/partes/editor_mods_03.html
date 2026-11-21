@@ -1,0 +1,57 @@
+<h3>Tranvía, tren y aeropuerto en tus localidades</h3>
+<p>En los datos del juego y en los mods que vienen con él, las paradas de tranvía, la estación de tren, el aeropuerto y las vías están escritos como todo lo demás, y se editan igual:</p>
+<ul>
+<li>Cada parada, estación y aeropuerto es un lugar, con su tipo: Parada de tranvía, Estación de tren o Aeropuerto. Puedes cambiarle el nombre, la descripción, la manzana, la fachada y la posición, o borrarlo.</li>
+<li>Cada parada tiene además su Orden en la línea de tranvía: el tranvía las recorre de menor a mayor y vuelve a la primera.</li>
+<li>Un aeropuerto puede ser un aeródromo: marca Es un aeródromo, con pista corta. A los aeródromos llegan avionetas de línea, no aviones grandes, y en ellos solo se alquilan avionetas. Es lo propio de un pueblo.</li>
+<li>La localidad tiene los campos La vía del tren va por, y Número de esa calle o avenida. La vía del tren cruza la localidad de lado a lado, en línea recta: por una calle, de oeste a este, o por una avenida, de sur a norte. Por ella pasan los trenes, que paran en la estación. Si los dejas sin valor, la vía va por delante de la estación de tren. Sin estación de tren no hay vía.</li>
+<li>La localidad tiene el campo Recorrido de las vías del tranvía: la lista de cruces por los que pasan, en orden. Basta con poner los cruces donde giran. Cada parada para en el punto de las vías que le queda más cerca.</li>
+<li>La localidad tiene también el campo Poner el transporte público que falte. Con sí, si a tu localidad le falta alguna de estas cosas, el juego se la pone al cargarla: paradas en todos los barrios y aeropuerto si es una ciudad, y estación de tren si tiene una salida por carretera. Con no, tiene solo lo que tú le pongas.</li>
+</ul>
+<p>Si creas una localidad nueva y no pones nada, funciona igual: el juego le pone lo que falte. Si pones tú las paradas, no añade ninguna más. El botón Comprobar avisa si un cruce de las vías no existe, si dos paradas tienen el mismo orden o si una parada queda a más de sesenta metros de las vías.</p>
+<h3>Decisiones, ramas y finales</h3>
+<p>Cada opción de una decisión puede dejar, además, una renta: dinero que el jugador cobra, o paga, cada medianoche, para siempre.</p>
+<p>El tipo de paso Una decisión del jugador abre un menú con las opciones que escribas, de dos a cuatro. Cada opción tiene el texto que elige el jugador, una explicación para F1, lo que se cuenta al elegirla, y sus consecuencias: dinero, fama, ánimo y relación con una banda.</p>
+<ul>
+<li>Ponle un nombre a la decisión, una palabra sin espacios. Con ese nombre, otras misiones y otros pasos pueden depender de lo que se eligió.</li>
+<li>En una misión, Solo aparece si se tomó la decisión y Número de la opción elegida hacen que esa misión exista solo en una rama de la historia. La primera opción es la 1.</li>
+<li>En un paso, los mismos dos campos hacen que ese paso se juegue solo en una rama; en las demás se salta.</li>
+<li>En una misión, Texto del final de la historia la convierte en un final: al completarla se dice ese texto y queda apuntado en el diario. Con varias misiones así, cada una tras una opción distinta, la historia tiene varios finales.</li>
+</ul>
+<p>En la historia principal, las misiones fd1 a fd4 son un ejemplo: una decisión con tres opciones y un final para cada una.</p>
+
+<h3>Dar voz a los personajes</h3>
+<p>Las frases de los diálogos las lee el lector de pantalla de quien juega. Si quieres que suenen con voces grabadas, no hay que tocar nada en el mod: basta con dejar las grabaciones en la carpeta de voces del juego.</p>
+<ol>
+<li>Guarda el mod y pulsa <kbd>Control G</kbd>, o elige Guion de voces para grabar en el menú Mod. El editor escribe un archivo de texto con todas las frases de todas las misiones y lo abre en el Bloc de notas.</li>
+<li>En el guion, cada frase lleva encima el nombre que debe tener su grabación, por ejemplo <strong>oc01_1_2</strong>: misión, número de paso y número de frase. Al final dice cuántas frases tiene cada personaje, para repartirlas entre varias personas.</li>
+<li>Graba cada frase en un archivo aparte, en WAV, OGG, FLAC o MP3, con ese nombre.</li>
+<li>Algunas frases cambian con el protagonista: las que dicen su nombre, las que llevan una forma masculina y otra femenina entre corchetes, y las que dice él mismo. El guion lo avisa debajo de cada una y da el nombre de sus otras formas, con una arroba detrás: <strong>oc01_1_2@alex</strong>, <strong>oc01_1_2@m</strong>, <strong>oc01_1_2@alex_m</strong>. El archivo sin nada detrás es el de Dani en masculino. Puedes grabar solo ese: a quien juegue con otro protagonista, esa frase se la dirá su lector, nunca la grabación de otro.</li>
+<li>Deja los archivos en la carpeta de voces, que se abre con <kbd>Control Mayúsculas V</kbd>. Pueden ir en subcarpetas.</li>
+<li>Vuelve a pulsar <kbd>Control G</kbd> cuando quieras: las frases que ya tienen archivo salen marcadas con la palabra GRABADA.</li>
+</ol>
+<p>Las frases sin grabación las sigue leyendo el lector, así que se puede grabar poco a poco. Si después cambias el orden de los pasos o de las frases de una misión, cambian sus números: vuelve a sacar el guion y renombra los archivos.</p>
+<p>Para compartir un mod con voces, pasa el archivo del mod y, aparte, una carpeta con las grabaciones para copiar en <strong>data\voces\propias</strong>. Usa voces propias o voces sintéticas que tengas permiso para usar: no voces clonadas de personas reales ni sacadas de otros juegos o películas.</p>
+
+<h2>6. Los sonidos</h2>
+<p>Todo lo que añadas debe sonar. Cada lugar tiene un campo de sonido, que es el que se oye al pasar por su puerta y de fondo al entrar. Elige en el desplegable uno de los sonidos del juego. Si quieres uno nuevo, copia tu archivo en <code>data\sonidos\por_defecto</code> con el nombre que quieras y aparecerá en la lista la próxima vez que abras el editor. La guía <a href="cambiar_sonidos_es.html">cambiar_sonidos_es.html</a> describe todos los sonidos.</p>
+
+<h2>7. Comprobar y probar</h2>
+<p><kbd>F5</kbd> revisa el mod y lista lo que encuentra: referencias a cosas que no existen, lugares fuera del mapa o sobre un edificio, misiones sin pasos, identificadores repetidos y pasos incoherentes. Cada aviso dice en qué elemento está. Corrige y vuelve a comprobar hasta que no quede ninguno.</p>
+<p><kbd>F9</kbd> guarda, comprueba y abre el juego. Empieza una partida nueva o carga una, y ve a ver tu contenido.</p>
+
+<h2>8. Activar y desactivar mods</h2>
+<p>Con <kbd>Control M</kbd> se abre una lista de casillas con todos los mods de la carpeta. Los marcados son los que carga el juego. Un mod desactivado no se borra: su archivo cambia de extensión y el juego lo ignora.</p>
+
+<h2>9. Compartir un mod</h2>
+<p>Envía el archivo <code>.pbm</code> de la carpeta <code>data\mods</code>. Quien lo reciba solo tiene que copiarlo en su carpeta <code>data\mods</code>. Si tu mod usa sonidos nuevos, envía también esos archivos, que van en <code>data\sonidos\por_defecto</code>.</p>
+
+<h2>10. Problemas frecuentes</h2>
+<ul>
+<li>El lector no dice el nombre de un campo: pulsa <kbd>Control H</kbd>.</li>
+<li>El juego no muestra mi contenido: comprueba con <kbd>Control M</kbd> que el mod está activado y con <kbd>F5</kbd> que no tiene errores. Los lugares con contenido para adultos solo aparecen con esa opción activada en el juego.</li>
+<li>He estropeado un mod: los originales del juego no se tocan nunca. Desactiva o borra el archivo del mod y el juego vuelve a estar como antes.</li>
+</ul>
+
+</body>
+</html>

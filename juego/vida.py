@@ -3,6 +3,7 @@
 El juego se puede jugar como una persona de bien o como un delincuente. El prestigio entre los
 vecinos sube con el trabajo honrado y baja con los delitos; la fama en la calle va por otro lado.
 """
+from .i18n import tr
 import math
 import random
 import re
@@ -15,13 +16,13 @@ PUNTOS = 8                   # niveles de habilidad que reparte quien se hace su
 MAX_NIVEL = 5                # y lo más que puede poner en una sola
 # Con qué empieza un personaje propio, a elegir una: igual de fuertes que las de los personajes de la lista.
 VENTAJAS = [
-    ("ninguna", "Ninguna", "Empiezas con lo puesto y un botiquín. Para quien quiere la partida más cuesta arriba.", {}),
-    ("ahorros", "Ahorros", "Empiezas con ochocientos euros.", {"dinero": 800}),
-    ("fortaleza", "Fortaleza", "Empiezas con más salud, veinte puntos más, y dos botiquines.", {"salud_max": 120, "botiquines": 2}),
-    ("manitas", "Manos rápidas", "Empiezas con tres juegos de ganzúas, para abrir vehículos sin romper el cristal.", {"ganzuas": 3}),
-    ("navaja", "Una navaja en el bolsillo", "Empiezas con una navaja y dos botiquines.", {"arma": "navaja", "botiquines": 2}),
-    ("vecinos", "Don de gentes", "Empiezas con buen ánimo, algo de fama y el aprecio de los vecinos: cobras más en los trabajos honrados "
-                                 "y la policía te pasa por alto las faltas pequeñas.", {"animo": 75, "reputacion": 10, "ciudadania": 45}),
+    ("ninguna", tr("Ninguna"), tr("Empiezas con lo puesto y un botiquín. Para quien quiere la partida más cuesta arriba."), {}),
+    ("ahorros", tr("Ahorros"), tr("Empiezas con ochocientos euros."), {"dinero": 800}),
+    ("fortaleza", tr("Fortaleza"), tr("Empiezas con más salud, veinte puntos más, y dos botiquines."), {"salud_max": 120, "botiquines": 2}),
+    ("manitas", tr("Manos rápidas"), tr("Empiezas con tres juegos de ganzúas, para abrir vehículos sin romper el cristal."), {"ganzuas": 3}),
+    ("navaja", tr("Una navaja en el bolsillo"), tr("Empiezas con una navaja y dos botiquines."), {"arma": "navaja", "botiquines": 2}),
+    ("vecinos", tr("Don de gentes"), tr("Empiezas con buen ánimo, algo de fama y el aprecio de los vecinos: cobras más en los trabajos honrados "
+                                 "y la policía te pasa por alto las faltas pequeñas."), {"animo": 75, "reputacion": 10, "ciudadania": 45}),
 ]
 
 
@@ -34,7 +35,7 @@ def limpiar_nombre(texto):
 
 def personaje_propio(nombre, apellido="", gen="h", niveles=None, ventaja="ninguna", voz="dani", dicho=""):
     """El diccionario de un personaje hecho por el jugador, ya saneado: es lo que recibe aplicar_personaje."""
-    pj = {"id": PROPIO, "nombre": limpiar_nombre(nombre) or "Dani", "apellido": limpiar_nombre(apellido), "genero": gen if gen in genero.GENEROS else "h",
+    pj = {"id": PROPIO, "nombre": limpiar_nombre(nombre) or tr("Dani"), "apellido": limpiar_nombre(apellido), "genero": gen if gen in genero.GENEROS else "h",
           "botiquines": 1, "ventaja": ventaja, "voz": voz if voz in ("dani", "alex", "sam", "cris") else "dani", "dicho": limpiar_nombre(dicho)}
     quedan = PUNTOS
     for h in HAB_NOMBRE:
@@ -46,8 +47,8 @@ def personaje_propio(nombre, apellido="", gen="h", niveles=None, ventaja="ningun
     return pj
 
 
-RANGOS = ["aprendiz", "oficial", "veteran[o|a]", "maestr[o|a]", "leyenda"]
-HAB_NOMBRE = {"conduccion": "conducción", "punteria": "puntería", "resistencia": "resistencia", "pesca": "pesca"}
+RANGOS = [tr("aprendiz"), tr("oficial"), tr("veteran[o|a]"), tr("maestr[o|a]"), tr("leyenda")]      # solo se dicen
+HAB_NOMBRE = {"conduccion": tr("conducción"), "punteria": tr("puntería"), "resistencia": tr("resistencia"), "pesca": tr("pesca")}
 # Las jornadas de trabajo sin vehículo están en los datos (vida.json, jornadas).
 
 
@@ -81,15 +82,15 @@ class Vida:
         if pj is None and propio.get("id") == PROPIO:
             pj = {"id": PROPIO}
         if pj is None:
-            pj = (self.personajes() or [{"id": "dani", "nombre": "Dani", "apellido": "Roca"}])[0]
+            pj = (self.personajes() or [{"id": "dani", "nombre": tr("Dani"), "apellido": tr("Roca")}])[0]
         pj = dict(pj)
         fijo = pj.get("genero")                          # un personaje con el género escrito en sus datos no cambia
         pj.update(propio)
         if fijo in genero.GENEROS:
             pj["genero"] = fijo
         j.personaje = pj["id"]
-        j.nombre = str(pj.get("nombre") or "Dani")[:MAX_NOMBRE]
-        j.apellido = str(pj.get("apellido") or ("" if pj["id"] == PROPIO else "Roca"))[:MAX_NOMBRE]
+        j.nombre = str(pj.get("nombre") or tr("Dani"))[:MAX_NOMBRE]
+        j.apellido = str(pj.get("apellido") or ("" if pj["id"] == PROPIO else tr("Roca")))[:MAX_NOMBRE]
         j.genero = genero.poner(pj.get("genero"))
         j.voz = pj.get("voz") if pj.get("voz") in ("dani", "alex", "sam", "cris") else "dani"
         j.nombre_dicho = limpiar_nombre(pj.get("dicho", "")) if pj["id"] == PROPIO else ""
@@ -122,7 +123,7 @@ class Vida:
     # ------------------------------------------------------ prestigio ciudadano
     def ciudadania_txt(self):
         c = self.j.ciudadania
-        return "los vecinos te evitan" if c < 10 else "eres [un vecino|una vecina] más" if c < 40 else "los vecinos te aprecian" if c < 75 else "eres [un ciudadano|una ciudadana] ejemplar"
+        return tr("los vecinos te evitan") if c < 10 else tr("eres [un vecino|una vecina] más") if c < 40 else tr("los vecinos te aprecian") if c < 75 else tr("eres [un ciudadano|una ciudadana] ejemplar")
 
     def cambiar_ciudadania(self, n):
         antes = self.ciudadania_txt()
@@ -130,7 +131,7 @@ class Vida:
         ahora = self.ciudadania_txt()
         if ahora != antes:
             self.son("prestigio" if n > 0 else "animo_baja", cat="interfaz")
-            self.decir(f"Cambia cómo te ven en el barrio: {ahora}.")
+            self.decir(tr('Cambia cómo te ven en el barrio: {ahora}.').format(ahora=(ahora)))
 
     # ------------------------------------------------------------------ empleos
     def servicios_de(self, tipo):
@@ -151,17 +152,17 @@ class Vida:
             self.hon_turno("oficio:" + str(tipo))
         if self.rango(tipo) > antes:
             self.son("ascenso", cat="interfaz")
-            self.decir(f"¡Ascenso! Ya eres {nombre} {RANGOS[self.rango(tipo)]}: cobras un {12 * self.rango(tipo)} por ciento más.")
+            self.decir(tr('¡Ascenso! Ya eres {nombre} {v}: cobras un {v2} por ciento más.').format(nombre=(nombre), v=(RANGOS[self.rango(tipo)]), v2=(12 * self.rango(tipo))))
 
     def jornada(self, clave, nombre, paga, salud):
         j = self.j
         if j.jornada_dia == self.dia:
             self.app.son("error")
-            self.decir("Hoy ya has trabajado una jornada. Vuelve mañana.", True)
+            self.decir(tr("Hoy ya has trabajado una jornada. Vuelve mañana."), True)
             return
         if j.estrellas:
             self.app.son("error")
-            self.decir("Con la policía buscándote no te contratan.", True)
+            self.decir(tr("Con la policía buscándote no te contratan."), True)
             return
         j.jornada_dia = self.dia
         cobro = int(paga * self.mult_trabajo("jornada"))
@@ -172,7 +173,7 @@ class Vida:
         self.servicio_hecho("jornada", "trabajador")
         self.cambiar_ciudadania(1.0)
         self.cambiar_animo(-2)
-        self.decir(f"{nombre}: ocho horas de trabajo y {cobro} euros. Son las {self.hora_txt()}.", True)
+        self.decir(tr('{nombre}: ocho horas de trabajo y {cobro} euros. Son las {hora_txt}.').format(nombre=(nombre), cobro=(cobro), hora_txt=(self.hora_txt())), True)
         self.hon_turno("jornada:" + str(clave))                  # si es de tu contrato fijo, cuenta como turno
 
     def jornada_vendedor(self, l):
@@ -180,15 +181,17 @@ class Vida:
         j = self.j
         if j.jornada_dia == self.dia:
             self.app.son("error")
-            self.decir("Hoy ya has trabajado una jornada. Vuelve mañana.", True)
+            self.decir(tr("Hoy ya has trabajado una jornada. Vuelve mañana."), True)
             return
         if j.estrellas:
             self.app.son("error")
-            self.decir("Con la policía buscándote no te contratan.", True)
+            self.decir(tr("Con la policía buscándote no te contratan."), True)
             return
         j.jornada_dia = self.dia
         # se vende más con buena fama entre los vecinos, con experiencia y yendo bien arreglado
-        prob = min(0.85, 0.22 * self.mult_trabajo("jornada") + 0.02 * min(10, j.stats.get("coches_vendidos", 0)) + (0.1 if j.accesorios else 0.0))
+        prob = min(0.85, 0.22 * self.mult_trabajo("jornada") + 0.02 * min(10, j.stats.get("coches_vendidos", 0)) + (0.1 if j.accesorios else 0.0)
+                   + __import__("juego.vestuario", fromlist=["x"]).bono_vendedor(self)      # y más con ropa elegante (vestuario.py)
+                   - (__import__("juego.necesidades", fromlist=["x"]).AJ("vendedor_sucio") / 100.0 if self.sucio() else 0.0))      # y menos sin ducharte
         marcas = l.get("modelos")
         modelos = [mo for mo in self.datos["vehiculos"] if mo.get("precio") and not mo.get("barco") and (not marcas or mo["id"] in marcas)]
         vendidos = [random.choice(modelos) for _ in range(4) if modelos and random.random() < prob]
@@ -203,34 +206,36 @@ class Vida:
         self.cambiar_animo(2 if vendidos else -2)
         if vendidos:
             nombres = ", ".join(mo["nombre"] for mo in vendidos)
-            self.decir(f"Ocho horas en la exposición. Has vendido {len(vendidos)}: {nombres}. Sueldo de {sueldo} euros y {comision} de comisión. Son las {self.hora_txt()}.", True)
+            self.decir(tr('Ocho horas en la exposición. Has vendido {len}: {nombres}. Sueldo de {sueldo} euros y {comision} de comisión. Son las {hora_txt}.').format(len=(len(vendidos)), nombres=(nombres), sueldo=(sueldo), comision=(comision), hora_txt=(self.hora_txt())), True)
         else:
-            self.decir(f"Ocho horas en la exposición y nadie se ha decidido. Cobras el sueldo, {sueldo} euros. Son las {self.hora_txt()}.", True)
+            self.decir(tr('Ocho horas en la exposición y nadie se ha decidido. Cobras el sueldo, {sueldo} euros. Son las {hora_txt}.').format(sueldo=(sueldo), hora_txt=(self.hora_txt())), True)
 
     def aspecto_txt(self):
         """Lo que llevas puesto: la ropa y los complementos."""
         j = self.j
-        t = f"Llevas puesto: {j.ropa}"
+        t = tr('Llevas puesto: {ropa}').format(ropa=(j.ropa))
+        if getattr(j, "calzado", "") and j.calzado != "zapatillas de calle":      # las de serie no se dicen
+            t += f", {j.calzado}"
         if j.accesorios:
             cosas = [n.lower() for n in j.accesorios.values()]
-            t += ", con " + (", ".join(cosas[:-1]) + " y " + cosas[-1] if len(cosas) > 1 else cosas[0])
+            t += tr(", con ") + (", ".join(cosas[:-1]) + tr(" y ") + cosas[-1] if len(cosas) > 1 else cosas[0])
         return t + "."
 
     def curso(self, hab):
         j = self.j
         if j.curso_dia == self.dia:
             self.app.son("error")
-            self.decir("Ya has ido a clase hoy. La cabeza no da para más.", True)
+            self.decir(tr("Ya has ido a clase hoy. La cabeza no da para más."), True)
             return
         if self.nivel(hab) >= 10:
-            self.decir("Ya no pueden enseñarte nada más: tienes el nivel máximo.", True)
+            self.decir(tr("Ya no pueden enseñarte nada más: tienes el nivel máximo."), True)
             return
         if not self.pagar(self.precio("curso", 250)):
             return
         j.curso_dia = self.dia
         self.pasar_horas(4)
         self.son("diploma", cat="interfaz")
-        self.decir(f"Cuatro horas de clase de {HAB_NOMBRE[hab]}. Son las {self.hora_txt()}.", True)
+        self.decir(tr('Cuatro horas de clase de {v}. Son las {hora_txt}.').format(v=(HAB_NOMBRE[hab]), hora_txt=(self.hora_txt())), True)
         self.ganar_xp(hab, 320)
         self.cambiar_ciudadania(1.0)
 
@@ -241,12 +246,12 @@ class Vida:
         self.cambiar_ciudadania(cantidad / 40.0)
         self.cambiar_animo(2 + cantidad / 100.0)
         self.j.stats["donado"] = self.j.stats.get("donado", 0) + cantidad
-        self.decir(f"Donas {cantidad} euros. Te dan las gracias de corazón.", True)
+        self.decir(tr('Donas {cantidad} euros. Te dan las gracias de corazón.').format(cantidad=(cantidad)), True)
 
     def voluntariado(self):
         j = self.j
         if j.voluntario_dia == self.dia:
-            self.decir("Hoy ya has echado una mano. Vuelve mañana.", True)
+            self.decir(tr("Hoy ya has echado una mano. Vuelve mañana."), True)
             return
         j.voluntario_dia = self.dia
         self.pasar_horas(4)
@@ -254,7 +259,7 @@ class Vida:
         j.stats["voluntariado"] = j.stats.get("voluntariado", 0) + 1
         self.cambiar_ciudadania(3.0)
         self.cambiar_animo(6)
-        self.decir(f"Pasas cuatro horas sirviendo comidas. Sales cansad[o|a] y content[o|a]. Son las {self.hora_txt()}.", True)
+        self.decir(tr('Pasas cuatro horas sirviendo comidas. Sales cansad[o|a] y content[o|a]. Son las {hora_txt}.').format(hora_txt=(self.hora_txt())), True)
 
     def vehiculo_de_trabajo_cercano(self, tipo):
         """Lugar de este mapa que tiene siempre aparcado un vehículo de ese oficio."""

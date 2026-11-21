@@ -7,6 +7,7 @@ repartidor te llama, espera un rato en la puerta y se va con el pedido.
 La carta está en los datos (vida.json, carta_domicilio), los tiempos y las frases en la sección domicilio, y el envío
 en las tarifas (domicilio_envio). Un mod puede cambiarlo todo.
 """
+from .i18n import tr
 import math
 import random
 
@@ -14,25 +15,25 @@ from . import gente as G
 from .ajustes import Ajustes
 
 AJ = Ajustes("domicilio", {"espera_min": 22, "espera_max": 40, "lluvia_extra": 25, "tope_cosas": 4, "espera_puerta": 20, "busqueda_max": 1, "radio_casa": 28},
-             {"locales": ["Casa Paca", "El Fogón de Lola", "Bocatería La Esquina", "Asador El Puerto", "La Cazuela", "Pollos Remigio", "Wok del Muelle"],
-              "frases_pedido": ["{local}, dígame. Apuntado: {cosas}. En unos {minutos} minutos lo tiene en {casa}.",
-                                "{local}. Marchando: {cosas}. Tardamos unos {minutos} minutos, que hoy hay faena.",
-                                "Ha llamado a {local}. Tomo nota: {cosas}. Sale para {casa} en cuanto esté; calcule {minutos} minutos."],
-              "frases_llega": ["{nombre}, de {local}: su pedido. Que aproveche.", "Buenas, traigo lo de {local}. Aquí tiene. Hasta otra.",
-                               "{nombre}, de {local}. Todavía quema, tenga cuidado. Buen provecho.", "Pedido de {local}. Perdone la espera, que estaba el tráfico imposible."],
-              "frases_espera": ["Te llama {nombre}, de {local}: está en la puerta de {casa} con tu pedido y dice que te espera {minutos} minutos.",
-                                "Suena el móvil: {nombre}, de {local}, ha llamado al timbre de {casa} y no abre nadie. Te espera {minutos} minutos."],
-              "frases_se_va": ["{nombre}, de {local}, se ha cansado de esperar en la puerta de {casa} y se ha llevado el pedido. No te devuelven el dinero.",
-                               "Nadie abrió en {casa}: {nombre} se ha vuelto a {local} con tu pedido. Lo pagado, pagado está."],
-              "frases_come": ["Te lo tomas en la cocina, sin prisa.", "Cenas en el sofá, con la tele puesta.", "Te lo comes de pie, junto a la ventana.", "Pones la mesa para ti y das cuenta de todo."]},
+             {"locales": [tr("Casa Paca"), tr("El Fogón de Lola"), tr("Bocatería La Esquina"), tr("Asador El Puerto"), tr("La Cazuela"), tr("Pollos Remigio"), tr("Wok del Muelle")],
+              "frases_pedido": [tr("{local}, dígame. Apuntado: {cosas}. En unos {minutos} minutos lo tiene en {casa}."),
+                                tr("{local}. Marchando: {cosas}. Tardamos unos {minutos} minutos, que hoy hay faena."),
+                                tr("Ha llamado a {local}. Tomo nota: {cosas}. Sale para {casa} en cuanto esté; calcule {minutos} minutos.")],
+              "frases_llega": [tr("{nombre}, de {local}: su pedido. Que aproveche."), tr("Buenas, traigo lo de {local}. Aquí tiene. Hasta otra."),
+                               tr("{nombre}, de {local}. Todavía quema, tenga cuidado. Buen provecho."), tr("Pedido de {local}. Perdone la espera, que estaba el tráfico imposible.")],
+              "frases_espera": [tr("Te llama {nombre}, de {local}: está en la puerta de {casa} con tu pedido y dice que te espera {minutos} minutos."),
+                                tr("Suena el móvil: {nombre}, de {local}, ha llamado al timbre de {casa} y no abre nadie. Te espera {minutos} minutos.")],
+              "frases_se_va": [tr("{nombre}, de {local}, se ha cansado de esperar en la puerta de {casa} y se ha llevado el pedido. No te devuelven el dinero."),
+                               tr("Nadie abrió en {casa}: {nombre} se ha vuelto a {local} con tu pedido. Lo pagado, pagado está.")],
+              "frases_come": [tr("Te lo tomas en la cocina, sin prisa."), tr("Cenas en el sofá, con la tele puesta."), tr("Te lo comes de pie, junto a la ventana."), tr("Pones la mesa para ti y das cuenta de todo.")]},
              cero=("lluvia_extra", "busqueda_max"))
 
 CARTA = [
-    {"id": "bocadillo", "nombre": "Bocadillo de calamares", "tipo": "comida", "precio": 7, "hambre": 40, "sed": 0, "salud": 15},
-    {"id": "pizza_casa", "nombre": "Pizza familiar", "tipo": "comida", "precio": 13, "hambre": 70, "sed": 0, "salud": 25},
-    {"id": "menu_dia", "nombre": "Menú del día, dos platos y postre", "tipo": "comida", "precio": 16, "hambre": 100, "sed": 20, "salud": 40},
-    {"id": "agua_grande", "nombre": "Botella grande de agua", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 80, "salud": 0},
-    {"id": "refresco", "nombre": "Refresco de limón", "tipo": "bebida", "precio": 3, "hambre": 5, "sed": 60, "salud": 3},
+    {"id": "bocadillo", "nombre": tr("Bocadillo de calamares"), "tipo": "comida", "precio": 7, "hambre": 40, "sed": 0, "salud": 15},
+    {"id": "pizza_casa", "nombre": tr("Pizza familiar"), "tipo": "comida", "precio": 13, "hambre": 70, "sed": 0, "salud": 25},
+    {"id": "menu_dia", "nombre": tr("Menú del día, dos platos y postre"), "tipo": "comida", "precio": 16, "hambre": 100, "sed": 20, "salud": 40},
+    {"id": "agua_grande", "nombre": tr("Botella grande de agua"), "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 80, "salud": 0},
+    {"id": "refresco", "nombre": tr("Refresco de limón"), "tipo": "bebida", "precio": 3, "hambre": 5, "sed": 60, "salud": 3},
 ]
 
 
@@ -44,12 +45,12 @@ def carta(p):
 def efecto_txt(c):
     partes = []
     if c.get("hambre"):
-        partes.append("quita hambre")
+        partes.append(tr("quita hambre"))
     if c.get("sed"):
-        partes.append("quita sed")
+        partes.append(tr("quita sed"))
     if c.get("salud"):
-        partes.append(f"da {int(c['salud'])} de salud")
-    return ", ".join(partes) or "sin efecto"
+        partes.append(tr('da {int} de salud').format(int=(int(c['salud']))))
+    return ", ".join(partes) or tr("sin efecto")
 
 
 class Domicilio:
@@ -71,23 +72,23 @@ class Domicilio:
         """Por qué no se puede pedir ahora, o cadena vacía si se puede."""
         j = self.j
         if self.casa_aqui() is None:
-            return "Para pedir comida a domicilio tienes que estar en una casa tuya, o en su puerta."
+            return tr("Para pedir comida a domicilio tienes que estar en una casa tuya, o en su puerta.")
         if j.pedido:
-            return "Ya tienes un pedido en camino. " + self.pedido_txt()
+            return tr("Ya tienes un pedido en camino. ") + self.pedido_txt()
         if j.estrellas > AJ("busqueda_max"):
-            return "Con la policía buscándote así, ningún repartidor se acerca a tu puerta."
+            return tr("Con la policía buscándote así, ningún repartidor se acerca a tu puerta.")
         return ""
 
     def pedido_txt(self):
         d = self.j.pedido
         if not d:
-            return "No has pedido nada."
+            return tr("No has pedido nada.")
         casa = self.lug(d.get("casa"))
-        donde = self.nombre_lugar(casa) if casa else "tu casa"
+        donde = self.nombre_lugar(casa) if casa else tr("tu casa")
         if d.get("estado") == "puerta":
-            return f"{d['nombre']}, de {d['local']}, espera en la puerta de {donde} con tu pedido."
+            return tr('{nombre}, de {local}, espera en la puerta de {donde} con tu pedido.').format(nombre=(d['nombre']), local=(d['local']), donde=(donde))
         falta = max(1, int(round(d["llega"] - self._ahora())))
-        return f"Tu pedido de {d['local']} llega a {donde} en unos {falta} minutos."
+        return tr('Tu pedido de {local} llega a {donde} en unos {falta} minutos.').format(local=(d['local']), donde=(donde), falta=(falta))
 
     def pedir_domicilio(self, cosas, rng=random):
         """Hace el pedido: lo cobra y deja en camino al repartidor. Devuelve True si se ha hecho."""
@@ -95,7 +96,7 @@ class Domicilio:
         motivo = self.domicilio_motivo()
         if motivo or not cosas:
             self.app.son("error")
-            self.decir(motivo or "No has elegido nada de la carta.", True)
+            self.decir(motivo or tr("No has elegido nada de la carta."), True)
             return False
         casa = self.casa_aqui()
         total = sum(int(c.get("precio", 0)) for c in cosas) + self.precio("domicilio_envio", 3)
@@ -108,7 +109,7 @@ class Domicilio:
         j.stats["pedidos"] = j.stats.get("pedidos", 0) + 1
         self.son("movil", cat="interfaz", vol=0.6)
         lista = ", ".join(c["nombre"].lower() for c in cosas)
-        self.decir(AJ.frase("frases_pedido", rng, local=local, cosas=lista, minutos=int(round(minutos / 5.0)) * 5 or 5, casa=casa.nombre) + f" Pagas {total} euros, con el envío.", True)
+        self.decir(AJ.frase("frases_pedido", rng, local=local, cosas=lista, minutos=int(round(minutos / 5.0)) * 5 or 5, casa=casa.nombre) + tr(' Pagas {total} euros, con el envío.').format(total=(total)), True)
         return True
 
     def _en_esa_casa(self, d):
@@ -162,8 +163,8 @@ class Domicilio:
         self.cambiar_animo(2)
         if casa.id == j.convive_casa and j.convive:              # era lo que te había pedido quien vive contigo
             self.peticion_cumplida("cena")
-        self.decir("Llaman al timbre. " + AJ.frase("frases_llega", nombre=d["nombre"], local=d["local"]) + " " + AJ.frase("frases_come")
-                   + f" Salud {int(j.salud)}.{self.necesidades_txt()}")
+        self.decir(tr("Llaman al timbre. ") + AJ.frase("frases_llega", nombre=d["nombre"], local=d["local"]) + " " + AJ.frase("frases_come")
+                   + tr(' Salud {int}.{necesidades_txt}').format(int=(int(j.salud)), necesidades_txt=(self.necesidades_txt())))
 
 
 def menu_domicilio(p):
@@ -187,13 +188,13 @@ def menu_domicilio(p):
         def f():
             if c in elegidas:
                 elegidas.remove(c)
-                app.decir(f"Quitas {c['nombre'].lower()} del pedido. Llevas {len(elegidas)}.", True)
+                app.decir(tr('Quitas {lower} del pedido. Llevas {len}.').format(lower=(c['nombre'].lower()), len=(len(elegidas))), True)
             elif len(elegidas) >= tope:
                 app.son("error")
-                app.decir(f"En un pedido caben {tope} cosas como mucho.", True)
+                app.decir(tr('En un pedido caben {tope} cosas como mucho.').format(tope=(tope)), True)
             else:
                 elegidas.append(c)
-                app.decir(f"Añades {c['nombre'].lower()}. Llevas {len(elegidas)}: {total()} euros, más {envio} de envío.", True)
+                app.decir(tr('Añades {lower}. Llevas {len}: {total} euros, más {envio} de envío.').format(lower=(c['nombre'].lower()), len=(len(elegidas)), total=(total()), envio=(envio)), True)
             m.refrescar(False)
         return f
 
@@ -202,12 +203,11 @@ def menu_domicilio(p):
             app.cerrar(m)
 
     def ops():
-        lista = [Opcion((lambda c=c: f"{c['nombre']}: {int(c.get('precio', 0))} euros, {efecto_txt(c)}" + (". En el pedido" if c in elegidas else "")), alternar(c),
-                        ayuda=(c.get("desc") or "") + " Intro lo añade al pedido, y otra vez lo quita. El hambre y la sed solo cuentan con la vida realista activada; la salud, siempre.")
+        lista = [Opcion((lambda c=c: tr('{nombre}: {int} euros, {efecto_txt}').format(nombre=(c['nombre']), int=(int(c.get('precio', 0))), efecto_txt=(efecto_txt(c))) + (tr(". En el pedido") if c in elegidas else "")), alternar(c),
+                        ayuda=(c.get("desc") or "") + tr(" Intro lo añade al pedido, y otra vez lo quita. El hambre y la sed solo cuentan con la vida realista activada; la salud, siempre."))
                  for c in carta(p)]
-        lista.append(Opcion(lambda: f"Hacer el pedido: {len(elegidas)} cosas, {total() + envio} euros con el envío" if elegidas else "Hacer el pedido: todavía no has elegido nada", encargar,
-                            ayuda=f"Lo traen a {casa.nombre} en unos {AJ.entero('espera_min')} a {AJ.entero('espera_max')} minutos del juego, más si llueve. "
-                                  "Cuando llegue, llaman al timbre: si estás en casa, te lo tomas en el acto. Si no estás, el repartidor te llama, espera un rato en la puerta y se va."))
+        lista.append(Opcion(lambda: tr('Hacer el pedido: {len} cosas, {v} euros con el envío').format(len=(len(elegidas)), v=(total() + envio)) if elegidas else tr("Hacer el pedido: todavía no has elegido nada"), encargar,
+                            ayuda=tr('Lo traen a {nombre} en unos {entero} a {entero2} minutos del juego, más si llueve. Cuando llegue, llaman al timbre: si estás en casa, te lo tomas en el acto. Si no estás, el repartidor te llama, espera un rato en la puerta y se va.').format(nombre=(casa.nombre), entero=(AJ.entero('espera_min')), entero2=(AJ.entero('espera_max')))))
         return lista
-    m = Menu(app, lambda: f"Comida a domicilio en {casa.nombre}. Tienes {p.j.dinero} euros", ops, intro="Intro añade cada cosa al pedido. Al final, Hacer el pedido")
+    m = Menu(app, lambda: tr('Comida a domicilio en {nombre}. Tienes {dinero} euros').format(nombre=(casa.nombre), dinero=(p.j.dinero)), ops, intro=tr("Intro añade cada cosa al pedido. Al final, Hacer el pedido"))
     app.abrir(m)

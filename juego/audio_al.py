@@ -9,6 +9,7 @@ cambia quién pone el sonido en los auriculares: en lugar de mezclar muestras en
 OpenAL por cada sonido en marcha y la actualiza una vez por fotograma. Si la biblioteca no está o no arranca,
 `crear()` devuelve el motor clásico: el juego nunca se queda sin sonido por esto.
 """
+from .i18n import tr
 import ctypes
 import math
 import os
@@ -100,12 +101,12 @@ class MezcladorAL(Mezclador):
         self.al = _cargar(ruta_dll())
         self.dev = self.al.alcOpenDevice(None)
         if not self.dev:
-            raise OSError("OpenAL no ha podido abrir el dispositivo de sonido")
+            raise OSError(tr("OpenAL no ha podido abrir el dispositivo de sonido"))
         atributos = (ctypes.c_int * 3)(ALC_HRTF_SOFT, 1, 0)
         self.ctx = self.al.alcCreateContext(self.dev, atributos)
         if not self.ctx or not self.al.alcMakeContextCurrent(self.ctx):
             self.al.alcCloseDevice(self.dev)
-            raise OSError("OpenAL no ha podido crear el contexto de sonido")
+            raise OSError(tr("OpenAL no ha podido crear el contexto de sonido"))
         v = ctypes.c_int(0)
         self.al.alcGetIntegerv(self.dev, ALC_HRTF_STATUS_SOFT, 1, ctypes.byref(v))
         self.binaural = v.value == 1

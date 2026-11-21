@@ -8,6 +8,7 @@ Ojo: por llevar la llave del certificado y la configuración, una copia no es pa
 
 Solo usa la biblioteca de serie.
 """
+from .idioma import tr
 import os
 import shutil
 import sqlite3
@@ -116,9 +117,9 @@ def contenido(ruta_zip):
         with zipfile.ZipFile(ruta_zip) as z:
             nombres = [n for n in z.namelist() if n in PERMITIDOS]
     except (zipfile.BadZipFile, OSError):
-        raise ValueError("Ese archivo no es una copia de seguridad del servidor, o está dañado.")
+        raise ValueError(tr("Ese archivo no es una copia de seguridad del servidor, o está dañado."))
     if BASE not in nombres:
-        raise ValueError("Ese archivo no es una copia de seguridad del servidor: no trae la base de datos.")
+        raise ValueError(tr("Ese archivo no es una copia de seguridad del servidor: no trae la base de datos."))
     return nombres
 
 
@@ -145,7 +146,7 @@ def restaurar(ruta_zip, datos, conf=None, con_conf=False):
                 c.close()
         except sqlite3.Error:
             os.remove(base_tmp)
-            raise ValueError("La base de datos de esa copia está dañada. No se ha cambiado nada.")
+            raise ValueError(tr("La base de datos de esa copia está dañada. No se ha cambiado nada."))
         for sobra in (BASE + "-wal", BASE + "-shm", BASE + "-journal"):
             try:
                 os.remove(os.path.join(datos, sobra))

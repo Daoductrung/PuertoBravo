@@ -5,6 +5,7 @@ Casi todo se enciende y se apaga en Opciones, La calle. Los números y las frase
 (data/datos/vida.json, sección calle), que un mod puede cambiar. En un servidor con policía común, la policía la lleva
 el servidor: aquí no se ponen patrullas, ni helicóptero, ni rendición.
 """
+from .i18n import tr
 import math
 import random
 
@@ -27,17 +28,17 @@ _AJUSTES = {
 _CERO = ("grito_prob", "parejas", "municion_prob", "arma_prob", "patrullas", "patrullas_noche", "auxilio_prob", "ambulancia_prob",
          "rendicion_dinero", "helicoptero_multa", "helicoptero_dano_minimo")
 _LISTAS = {
-    "frases_huye": ["{quien} sale corriendo.", "{quien} grita y echa a correr.", "{quien} huye calle abajo.", "{quien} se asusta y corre."],
-    "frases_huyen": ["{n} personas salen corriendo.", "La gente huye: {n} personas echan a correr.", "{n} personas gritan y se dispersan."],
-    "frases_aparta": ["{quien} se aparta de un salto.", "{quien} se quita de en medio.", "{quien} se echa a un lado."],
-    "frases_charla": ["{quien}, al pasar:", "Oyes a {quien_min}, que pasa hablando:", "{quien} le dice a quien va a su lado:"],
+    "frases_huye": [tr("{quien} sale corriendo."), tr("{quien} grita y echa a correr."), tr("{quien} huye calle abajo."), tr("{quien} se asusta y corre.")],
+    "frases_huyen": [tr("{n} personas salen corriendo."), tr("La gente huye: {n} personas echan a correr."), tr("{n} personas gritan y se dispersan.")],
+    "frases_aparta": [tr("{quien} se aparta de un salto."), tr("{quien} se quita de en medio."), tr("{quien} se echa a un lado.")],
+    "frases_charla": [tr("{quien}, al pasar:"), tr("Oyes a {quien_min}, que pasa hablando:"), tr("{quien} le dice a quien va a su lado:")],
     "charla_temas": ["tiempo", "futbol", "trabajo_duro", "dinero", "comida", "barrio_vida", "ciudad_cambio", "policia", "delincuencia", "transporte",
                      "salud", "cansancio", "fiestas", "politica", "animales", "ninos_colegio", "deporte", "cine_tele", "juego_suerte", "noticias",
                      "movil", "compras_ropa", "casa_alquiler", "agua_sequia", "ricos_jefes", "familia", "hijos", "coches", "musica", "mar_playa", "puerto"],
-    "frases_auxilio": ["¡Policía! ¡Suelta el arma!", "¡Alto, policía!", "¡Quieto ahí! ¡Policía!"],
-    "frases_rendicion": ["¡Las manos donde yo las vea! ¡No te muevas!", "¡Quiet[o|a]! ¡Al suelo, despacio!", "¡No hagas ninguna tontería! ¡Las manos arriba!"],
-    "megafono": ["Le tenemos localizado. Deténgase y salga con las manos en alto.", "Aquí la policía. No tiene escapatoria: ríndase.",
-                 "Le habla la policía. Tire el arma y quédese donde está.", "Le vemos desde el aire. No empeore las cosas: entréguese."],
+    "frases_auxilio": [tr("¡Policía! ¡Suelta el arma!"), tr("¡Alto, policía!"), tr("¡Quieto ahí! ¡Policía!")],
+    "frases_rendicion": [tr("¡Las manos donde yo las vea! ¡No te muevas!"), tr("¡Quiet[o|a]! ¡Al suelo, despacio!"), tr("¡No hagas ninguna tontería! ¡Las manos arriba!")],
+    "megafono": [tr("Le tenemos localizado. Deténgase y salga con las manos en alto."), tr("Aquí la policía. No tiene escapatoria: ríndase."),
+                 tr("Le habla la policía. Tire el arma y quédese donde está."), tr("Le vemos desde el aire. No empeore las cosas: entréguese.")],
     "helicoptero_sin_techo": ["monumento", "salida", "pesca", "muelle", "embarcadero", "carrera", "helipuerto", "tesoro", "tranvia", "taxi", "feria"],
 }
 AJUSTES = dict(_AJUSTES)
@@ -81,7 +82,7 @@ def quien(p, minuscula=False):
     f = getattr(p, "ficha", None)
     if f and f.get("presentado") and f.get("nombre"):
         return f["nombre"]
-    t = "Una mujer" if genero_de(p) == "m" else "Un hombre"
+    t = tr("Una mujer") if genero_de(p) == "m" else tr("Un hombre")
     return t.lower() if minuscula else t
 
 
@@ -146,8 +147,8 @@ class Calle:
             if "defensa_propia" not in self.j.recordado:
                 self.j.recordado.append("defensa_propia")
                 self.son("notificacion", cat="interfaz")
-                self.decir("Te han atacado primero: defenderte de quien te ataca no cuenta como delito."
-                           + ("" if self.sv_policia_comun() else " Si llegan agentes, irán también a por él."))
+                self.decir(tr("Te han atacado primero: defenderte de quien te ataca no cuenta como delito.")
+                           + ("" if self.sv_policia_comun() else tr(" Si llegan agentes, irán también a por él.")))
         self.pedir_auxilio()
 
     def pedir_auxilio(self):
@@ -164,7 +165,7 @@ class Calle:
         cerca = [v for v in self.vehiculos if v.ia == "policia" and not v.muerto and not v.desplegado and v.dist(x, y) < 220]
         if cerca:
             v = min(cerca, key=lambda v: v.dist(x, y))
-        elif random.random() < aj("auxilio_prob") / 100.0:
+        elif random.random() < aj("auxilio_prob") * (2 if self.hon_buena_gente() else 1) / 100.0:      # a la buena gente se le ayuda antes
             v = self._crear_patrulla(x, y)
             if v is None:
                 return
@@ -172,7 +173,7 @@ class Calle:
             return
         v.auxilio = self.t + 60.0
         v.t_calma = 0.0
-        self.decir("Alguien ha avisado a la policía: una patrulla viene hacia la pelea.")
+        self.decir(tr("Alguien ha avisado a la policía: una patrulla viene hacia la pelea."))
 
     def _crear_patrulla(self, x, y, ronda=False):
         pos = self._punto_llegada(x, y)
@@ -239,7 +240,7 @@ class Calle:
         e.muerto = True
         e.t_estado = self.t
         self.son("muerte_npc", xy=(e.x, e.y), ref=6, tono=e.tono)
-        self.decir(f"{autor.nombre} abate a {e.nombre}.")
+        self.decir(tr('{nombre} abate a {nombre2}.').format(nombre=(autor.nombre), nombre2=(e.nombre)))
         if self.objetivo is e:
             self.objetivo = None
             if self.cfg["punteria"] == "completa":
@@ -302,7 +303,7 @@ class Calle:
             p.t_disparo = random.uniform(0.4, 1.0)
             self.personas.append(p)
         self.son("puerta_coche", xy=(v.x, v.y))
-        self.decir(f"Llega una patrulla y se bajan {e['ocupantes']} agentes. {self.situar(v.x, v.y, 'Está')}. Van a por quien te ha atacado, no a por ti.")
+        self.decir(tr('Llega una patrulla y se bajan {ocupantes} agentes. {situar}. Van a por quien te ha atacado, no a por ti.').format(ocupantes=(e['ocupantes']), situar=(self.situar(v.x, v.y, tr('Está')))))
 
     def _recoger_agentes(self, v):
         for p in [p for p in self.personas if p.tipo == "policia" and getattr(p, "coche", None) is v]:
@@ -318,7 +319,7 @@ class Calle:
             v.sirena = None
         self.son("puerta_coche", xy=(v.x, v.y))
         if v.dist(*self.pos()) < 60:
-            self.decir("Los agentes vuelven al coche patrulla y siguen su ronda.")
+            self.decir(tr("Los agentes vuelven al coche patrulla y siguen su ronda."))
 
     # ------------------------------------------------------------------ 2. la gente reacciona
     def voz_persona(self, p, cual, vol=0.6):
@@ -410,7 +411,7 @@ class Calle:
         self.son("murmullo", xy=(a.x, a.y), ref=4, maxd=30, vol=0.8, tono=voz_tono(a))
         t = random.choice(LISTAS["frases_charla"]).format(quien=quien(a), quien_min=quien(a, True)) + " " + frase
         if random.random() < 0.5:
-            t += f" {quien(b)} contesta: {respuestas.comentario(fb)}"
+            t += tr(' {quien} contesta: {comentario}').format(quien=(quien(b)), comentario=(respuestas.comentario(fb)))
         return t
 
     # ------------------------------------------------------------------ 4. munición y armas de los caídos
@@ -429,7 +430,7 @@ class Calle:
             return None
         balas = max(1, int(float(a.get("cargador", 1) or 1) * random.uniform(aj("municion_min"), max(aj("municion_min"), aj("municion_max"))) / 100.0)) if de_fuego else 0
         x, y = self.mundo.punto_libre(p.x + random.uniform(-1.5, 1.5), p.y + random.uniform(-1.5, 1.5))
-        o = Objeto(tipo, f"{a['nombre']} en el suelo" if tipo == "arma" else f"Munición de {a['nombre']}", x, y)
+        o = Objeto(tipo, tr('{nombre} en el suelo').format(nombre=(a['nombre'])) if tipo == "arma" else tr('Munición de {nombre}').format(nombre=(a['nombre'])), x, y)
         o.arma = a["id"]
         o.valor = balas
         self.objetos.append(o)
@@ -444,19 +445,19 @@ class Calle:
         n = int(o.valor)
         if a["id"] not in j.armas:
             if o.tipo != "arma":
-                self.decir(f"Munición de {a['nombre']}: ya no llevas esa arma, así que no te sirve.")
+                self.decir(tr('Munición de {nombre}: ya no llevas esa arma, así que no te sirve.').format(nombre=(a['nombre'])))
                 return
             cap = int(a.get("cargador", 0) or 0)
             j.armas[a["id"]] = {"cargador": min(cap, n), "reserva": max(0, n - cap)}
             num = self.orden_armas.index(a["id"]) + 1
-            self.decir(f"Recoges del suelo: {a['nombre']}" + (", con una bala" if n == 1 else f", con {n} balas" if n else "") + "."
-                       + (f" Es el arma número {num}." if num <= 9 else " Elígela con la coma o con la tecla I."))
+            self.decir(tr('Recoges del suelo: {nombre}').format(nombre=(a['nombre'])) + (tr(", con una bala") if n == 1 else tr(', con {n} balas').format(n=(n)) if n else "") + "."
+                       + (tr(' Es el arma número {num}.').format(num=(num)) if num <= 9 else tr(" Elígela con la coma o con la tecla I.")))
         elif n:
             m = j.armas[a["id"]]
             m["reserva"] += n
-            self.decir(f"Recoges {n} {'bala' if n == 1 else 'balas'} de {a['nombre']}. Llevas {m['cargador'] + m['reserva']}.")
+            self.decir(tr('Recoges {n} {v} de {nombre}. Llevas {v2}.').format(n=(n), v=(tr('bala') if n == 1 else tr('balas')), nombre=(a['nombre']), v2=(m['cargador'] + m['reserva'])))
         else:
-            self.decir(f"{a['nombre']}: ya llevas una igual.")
+            self.decir(tr('{nombre}: ya llevas una igual.').format(nombre=(a['nombre'])))
 
     # ------------------------------------------------------------------ 5. patrullas que circulan
     def patrullas_activas(self):
@@ -513,7 +514,7 @@ class Calle:
             v.sirena = self.son("sirena_ambulancia", bucle=True, xy=(v.x, v.y), ref=12, maxd=240, vol=0.6)
             self.vehiculos.append(v)
             a.update(estado="viene", veh=v, limite=55.0)
-            self.decir("Se oye una ambulancia: viene a atender a los heridos.")
+            self.decir(tr("Se oye una ambulancia: viene a atender a los heridos."))
         elif a["estado"] == "atiende":
             a["t"] -= dt
             if a["t"] <= 0:
@@ -524,7 +525,7 @@ class Calle:
                 v.lat_obj = 0.0
                 a.update(estado="se_va", limite=45.0)
                 if v.dist(*self.pos()) < 70:
-                    self.decir("Los sanitarios terminan y la ambulancia se va.")
+                    self.decir(tr("Los sanitarios terminan y la ambulancia se va."))
         elif a["estado"] == "se_va":
             a["limite"] -= dt
             if a["limite"] <= 0 or v.dist(*self.pos()) > 220:
@@ -556,7 +557,7 @@ class Calle:
                     a.update(estado="atiende", t=aj("ambulancia_atiende"), x=v.x, y=v.y)
                     self.son("puerta_coche", xy=(v.x, v.y), tono=0.82)
                     if d < 120:
-                        self.decir(f"Llega la ambulancia y los sanitarios atienden a los heridos. {self.situar(v.x, v.y, 'Está')}.")
+                        self.decir(tr('Llega la ambulancia y los sanitarios atienden a los heridos. {situar}.').format(situar=(self.situar(v.x, v.y, tr('Está')))))
                 return 0.0, self._decidir_destino
             if self._obstaculo(v, 11):
                 return 0.0, self._decidir_destino
@@ -577,10 +578,10 @@ class Calle:
         j = self.j
         n = j.estrellas if nivel is None else nivel
         if n <= 2:
-            return "Con tan poca búsqueda es una detención corriente: puedes arreglarlo con una multa, si la opción está activada."
+            return tr("Con tan poca búsqueda es una detención corriente: puedes arreglarlo con una multa, si la opción está activada.")
         multa, horas, todas = self._pena_rendicion(n)
-        return (f"Con nivel {n}: {multa} euros de multa, {horas} horas de calabozo y te quedas sin tus armas de fuego"
-                + (" y sin las demás armas ni el chaleco." if todas else "."))
+        return (tr('Con nivel {n}: {multa} euros de multa, {horas} horas de calabozo y te quedas sin tus armas de fuego').format(n=(n), multa=(multa), horas=(horas))
+                + (tr(" y sin las demás armas ni el chaleco.") if todas else "."))
 
     def _pena_rendicion(self, n):
         j = self.j
@@ -598,30 +599,30 @@ class Calle:
         if self.transicion:
             return False
         if self.rendido:
-            self._romper_rendicion("Bajas las manos.")
+            self._romper_rendicion(tr("Bajas las manos."))
             return False
         if self.sv_policia_comun():
-            self.decir("En este servidor la policía la lleva el servidor, y con ella no hay rendición con las manos arriba.", True)
+            self.decir(tr("En este servidor la policía la lleva el servidor, y con ella no hay rendición con las manos arriba."), True)
             return False
         if j.estrellas == 0:
-            self.decir("Nadie te busca: no hay ante quién rendirse.", True)
+            self.decir(tr("Nadie te busca: no hay ante quién rendirse."), True)
             return False
         if self.t < self.t_rendicion_rota:
             self.app.son("error")
-            self.decir("Acabas de romper una rendición: los agentes no se fían. Espera un poco.", True)
+            self.decir(tr("Acabas de romper una rendición: los agentes no se fían. Espera un poco."), True)
             return False
         if j.veh and abs(j.veh.vel) > 2:
-            self.decir("Detén el vehículo antes de rendirte.", True)
+            self.decir(tr("Detén el vehículo antes de rendirte."), True)
             return False
         if not self._agentes_cerca():
-            self.decir("No hay ningún agente cerca ante quien rendirte. Espera a que lleguen.", True)
+            self.decir(tr("No hay ningún agente cerca ante quien rendirte. Espera a que lleguen."), True)
             return False
         x, y = self.pos()
         self.rendido = {"x": x, "y": y, "t": 0.0, "arresto": 0.0, "dicho": False}
         self.son("levantarse")
         self.sv_ruido("grito")
-        self.decir("Levantas las manos y gritas que te rindes. Los agentes dejan de disparar y vienen a por ti: no te muevas ni ataques. "
-                   + self.rendicion_txt() + " Con Mayúsculas H otra vez, bajas las manos.", True)
+        self.decir(tr("Levantas las manos y gritas que te rindes. Los agentes dejan de disparar y vienen a por ti: no te muevas ni ataques. ")
+                   + self.rendicion_txt() + tr(" Con Mayúsculas H otra vez, bajas las manos."), True)
         return True
 
     def _romper_rendicion(self, texto):
@@ -629,7 +630,7 @@ class Calle:
             return
         self.rendido = None
         self.t_rendicion_rota = self.t + 25.0
-        self.decir(texto + " Los agentes vuelven a disparar.", True)
+        self.decir(texto + tr(" Los agentes vuelven a disparar."), True)
 
     def _rendicion(self, dt):
         r = self.rendido
@@ -641,12 +642,12 @@ class Calle:
             return
         x, y = self.pos()
         if math.hypot(x - r["x"], y - r["y"]) > 1.5:
-            self._romper_rendicion("Te has movido: se acabó la rendición.")
+            self._romper_rendicion(tr("Te has movido: se acabó la rendición."))
             return
         r["t"] += dt
         if r["t"] > 50 and not self._agentes_cerca(90):
             self.rendido = None
-            self.decir("Nadie viene a detenerte. Bajas las manos.")
+            self.decir(tr("Nadie viene a detenerte. Bajas las manos."))
 
     def agente_detiene(self, p, d, dt):
         """Con las manos arriba, el agente no dispara: se acerca y te esposa. Devuelve True si te ha detenido."""
@@ -692,7 +693,7 @@ class Calle:
         """Entras en un edificio (un local, tu casa, un garaje, un taller): el helicóptero deja de verte en el acto."""
         h = self.heli
         if h and h["estado"] == "vigila" and l.tipo not in LISTAS["helicoptero_sin_techo"]:
-            self._heli_pierde("Al entrar bajo techo, el helicóptero te pierde de vista.")
+            self._heli_pierde(tr("Al entrar bajo techo, el helicóptero te pierde de vista."))
 
     def _heli_voz(self, texto):
         h = self.heli
@@ -705,7 +706,7 @@ class Calle:
         x, y = self.pos()
         ang = random.uniform(0, 2 * math.pi)
         v = Vehiculo(self.modelos["helicoptero"], x + math.sin(ang) * 320, y + math.cos(ang) * 320, 0, "heli_policia")
-        v.nombre = "Helicóptero de la policía"
+        v.nombre = tr("Helicóptero de la policía")
         v.salud = v.salud_max = float(aj("helicoptero_salud"))
         v.hostil = v.ocupado = v.volando = True
         v.tag = "helicoptero"
@@ -715,8 +716,7 @@ class Calle:
         self.heli = {"estado": "llega", "veh": v, "ang": ang, "sentido": random.choice([-1, 1]), "t_oculto": 0.0, "t_visto": 0.0, "t_busca": 0.0,
                      "t_megafono": 0.0, "centro": (x, y), "vistos": set(), "pista": False}
         self.son("notificacion", cat="interfaz")
-        self.decir(f"Se oye un helicóptero: la policía te busca también desde el aire. {self.situar(v.x, v.y, 'Viene')}. "
-                   "Mientras te tenga localizado no podrás despistar a nadie: pégate a una fachada, entra en un edificio o cambia de vehículo sin que te vea.")
+        self.decir(tr('Se oye un helicóptero: la policía te busca también desde el aire. {situar}. Mientras te tenga localizado no podrás despistar a nadie: pégate a una fachada, entra en un edificio o cambia de vehículo sin que te vea.').format(situar=(self.situar(v.x, v.y, tr('Viene')))))
 
     def _heli_fuera(self, texto=None, volver=None):
         h = self.heli
@@ -732,7 +732,7 @@ class Calle:
         x, y = self.pos()
         h.update(estado="busca", centro=(x, y), t_busca=float(aj("helicoptero_busca")), t_visto=0.0, t_oculto=0.0)
         self.son("policia_perdida", cat="interfaz", vol=0.5)
-        self.decir(texto + " Da vueltas buscándote: ya puedes despistar a la policía. Si sales al descubierto tal como te vio, te encuentra; con otro vehículo no te reconoce.")
+        self.decir(texto + tr(" Da vueltas buscándote: ya puedes despistar a la policía. Si sales al descubierto tal como te vio, te encuentra; con otro vehículo no te reconoce."))
 
     def _helicoptero(self, dt):
         j = self.j
@@ -757,7 +757,7 @@ class Calle:
             self.heli = None
             return
         if j.estrellas < nivel or not self.heli_activo():
-            self._heli_fuera(None if self.transicion or j.estrellas == 0 else "El helicóptero de la policía se retira.")
+            self._heli_fuera(None if self.transicion or j.estrellas == 0 else tr("El helicóptero de la policía se retira."))
             return
         x, y = self.pos()
         radio = aj("helicoptero_radio")
@@ -768,11 +768,11 @@ class Calle:
                 h["ang"] = math.atan2(v.x - x, v.y - y)
                 if oculto:
                     h.update(estado="busca", centro=(x, y), t_busca=float(aj("helicoptero_busca")))
-                    self.decir("El helicóptero llega y da vueltas sobre la zona: todavía no te ha visto.")
+                    self.decir(tr("El helicóptero llega y da vueltas sobre la zona: todavía no te ha visto."))
                 else:
                     h["estado"] = "vigila"
                     h["vistos"].add(self._aspecto())
-                    self._heli_voz("El helicóptero te enfoca. Por el altavoz: " + random.choice(LISTAS["megafono"]))
+                    self._heli_voz(tr("El helicóptero te enfoca. Por el altavoz: ") + random.choice(LISTAS["megafono"]))
                     h["t_megafono"] = random.uniform(22, 38)
         else:
             cx, cy = (x, y) if h["estado"] == "vigila" else h["centro"]
@@ -797,15 +797,15 @@ class Calle:
                     self.son("buscando", vol=0.5, cat="interfaz", tono=1.3)
                 if not h["pista"] and h["t_oculto"] > 1.0:      # se explica una vez por helicóptero
                     h["pista"] = True
-                    self.decir("Pegad[o|a] a la fachada, el helicóptero no te ve. Aguanta así unos segundos.")
+                    self.decir(tr("Pegad[o|a] a la fachada, el helicóptero no te ve. Aguanta así unos segundos."))
                 if h["t_oculto"] >= aj("helicoptero_pierde"):
-                    self._heli_pierde("El helicóptero te ha perdido de vista.")
+                    self._heli_pierde(tr("El helicóptero te ha perdido de vista."))
             else:
                 h["t_oculto"] = 0.0
                 h["t_megafono"] -= dt
                 if h["t_megafono"] <= 0:
                     h["t_megafono"] = random.uniform(22, 38)
-                    self._heli_voz("Helicóptero de la policía: " + random.choice(LISTAS["megafono"]))
+                    self._heli_voz(tr("Helicóptero de la policía: ") + random.choice(LISTAS["megafono"]))
         elif h["estado"] == "busca":
             h["t_busca"] -= dt
             a_la_vista = not oculto and math.hypot(x - h["centro"][0], y - h["centro"][1]) < radio * 2
@@ -816,11 +816,11 @@ class Calle:
                     h.update(estado="vigila", t_visto=0.0, t_oculto=0.0)
                     h["t_megafono"] = random.uniform(22, 38)
                     self.son("estrella_sube", cat="interfaz", vol=0.6)
-                    self._heli_voz("¡El helicóptero te ha vuelto a localizar! Por el altavoz: " + random.choice(LISTAS["megafono"]))
+                    self._heli_voz(tr("¡El helicóptero te ha vuelto a localizar! Por el altavoz: ") + random.choice(LISTAS["megafono"]))
             else:
                 h["t_visto"] = 0.0
             if h["estado"] == "busca" and h["t_busca"] <= 0:
-                self._heli_fuera("El helicóptero no te encuentra y se retira.")
+                self._heli_fuera(tr("El helicóptero no te encuentra y se retira."))
 
     def heli_danado(self, v, dano):
         """Le das al helicóptero. Las armas ligeras no le hacen nada: hace falta un rifle, una carabina o un explosivo."""
@@ -830,13 +830,13 @@ class Calle:
         if dano < aj("helicoptero_dano_minimo") * 0.55:
             if self.t - self.t_heli_aviso > 8:
                 self.t_heli_aviso = self.t
-                self.decir("Las balas rebotan en el helicóptero: hace falta un arma pesada, un rifle o un explosivo.")
+                self.decir(tr("Las balas rebotan en el helicóptero: hace falta un arma pesada, un rifle o un explosivo."))
             return
         antes = v.salud / v.salud_max
         v.salud -= dano
         self.son("bala_impacto", xy=(v.x, v.y), ref=30, maxd=300)
         if antes > 0.5 >= v.salud / v.salud_max > 0:
-            self.decir("El helicóptero echa humo.")
+            self.decir(tr("El helicóptero echa humo."))
         if v.salud > 0:
             return
         j = self.j
@@ -853,8 +853,7 @@ class Calle:
         self.t_represalia = self.t + 120.0
         self.t_evasion = 0.0
         self.app.vibrar(1.0, 1.0, 500)
-        self.decir(f"¡Has derribado el helicóptero de la policía! Cae envuelto en llamas, {M.metros(math.hypot(x - self.pos()[0], y - self.pos()[1]))}, {self.direccion_txt(x, y)}: apártate. "
-                   f"Toda la policía de la comarca se vuelca en buscarte: durante dos minutos tardarás el doble en despistarla, y si te cogen pagarás {int(aj('helicoptero_multa'))} euros más por el helicóptero.", True)
+        self.decir(tr('¡Has derribado el helicóptero de la policía! Cae envuelto en llamas, {metros}, {direccion_txt}: apártate. Toda la policía de la comarca se vuelca en buscarte: durante dos minutos tardarás el doble en despistarla, y si te cogen pagarás {int} euros más por el helicóptero.').format(metros=(M.metros(math.hypot(x - self.pos()[0], y - self.pos()[1]))), direccion_txt=(self.direccion_txt(x, y)), int=(int(aj('helicoptero_multa')))), True)
 
     def _heli_se_estrella(self, h):
         x, y = h["x"], h["y"]

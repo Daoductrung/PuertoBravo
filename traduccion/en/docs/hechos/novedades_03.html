@@ -1,0 +1,154 @@
+<h3>Playing on a server</h3>
+<ul>
+<li>If the server restarts to update, it no longer throws you out to the menu. It warns you with a countdown, your character is saved and the game stays waiting. As soon as the server is back, you rejoin by yourself and carry on just as you were: same place, same vehicle, your health, your weapons, your money and your mission where you left it. The same happens if the connection drops.</li>
+<li>The waiting screen says what is happening, plays a soft tone so you know it is still there and, every so often, how long you have been waiting. Any key repeats it, F1 explains it and Escape stops waiting.</li>
+<li>If you were in a mission group and the others also come back, the group is put back together by itself. If someone does not come back, the game tells you who.</li>
+<li>If the server comes back asking for a newer version of the game, it tells you and offers to update; when it finishes, it offers to go back to that server.</li>
+<li>As a passenger you no longer get run over. Whoever rides as a passenger in another player's vehicle is inside: neither that vehicle nor any other runs them over, they can't be robbed like someone on foot and the bodywork protects them from gunfire.</li>
+<li>When the server holds back money, the game says so with figures: how much you have earned, how much is accepted, what the hourly limit of that server is, how much margin you have left and how much you recover each minute. On the phone, in Online, Data and rules of this server, you can see how you are doing.</li>
+<li>Contracts, gym fights, robberies and car jobs no longer use up the hourly limit: the server accepts them separately, up to a number per hour of each type. And the margin you don't use builds up, up to a few hours, also while you are away.</li>
+<li>What you buy is saved within a few seconds. And if the connection drops right after buying, the server gives you your money back.</li>
+<li>Text roleplay: Shift F10 speaks in character, to whoever is near you; Control F10 describes what your character does; and there is an out-of-character channel for the whole server. Each one sounds different, everything is read by the screen reader and can be reviewed on the phone.</li>
+<li>Character sheet: a sentence about who you are, which others read from Who is here or with Shift J.</li>
+<li>Other people's radio: near another player's vehicle you hear, quietly, the in-game station they have on. Nobody's own music is ever heard.</li>
+<li>My vehicles, online: the phone list also brings the vehicles the server keeps in your name, and from there you can rename a parked one, ask for it to be brought to you or send it to a garage.</li>
+<li>In group missions, helping in another player's gym fight no longer counts as a crime.</li>
+<li>On a server, home delivery food, robberies, contracts, plans as a couple, and shopping and cooking also work, and your pantry is saved with your character. The reconquest of neighborhoods, the neighborhood war on the street, ambulances, negotiating with the gangs, recruiting on the street, living as a couple and working as a police officer are only for single player. And where the police are run by the server there are no patrols of your own, no helicopter and no surrendering.</li>
+<li>Different versions on the same server: you can play with people who have another version of the game. Nobody is left out because of their version, unless the server owner requires a minimum one.</li>
+<li>On equal terms: the damage, range and rate of fire of each weapon and the money are decided by the server with the same figures for everyone. Having the new version gives no advantage in a fight.</li>
+<li>If another player uses a weapon or a vehicle that your version does not have, you hear and see them as the closest thing your game knows. Before, a weapon like that made no sound and a vehicle like that could not be seen parked.</li>
+<li>When you join a server that does not have the same data as your game, you are told by name which weapons and which vehicles don't match and what you will notice.</li>
+<li>Your character loses nothing by changing version: if one day you join with an earlier version, what that version does not know stays saved on the server and you get it back when you return with the new one, together with whatever you did in the meantime.</li>
+<li>You can't give another player a weapon their version does not have: the server gives it back to you and tells you, instead of it being lost.</li>
+<li>With mods that change the world you can also join a server, unless its owner does not want that: you play with what you have in common, and what your mod adds does not count against the others.</li>
+<li>Permanent contracts on a server: they are signed as always, and the shifts are counted by the server, which pays the salary into your bank without using up the hourly earnings limit. If the period ends while you are away, the evaluation reaches you when you come back.</li>
+<li>On a server that has it turned on, shops give a small discount to those with a good name and charge extra to those with a very bad one, the same for everyone. Criminal records are noted down and count for jobs of trust.</li>
+<li>If someone rejoins with their character while their previous session was still open, the others are no longer left with two players with their name.</li>
+</ul>
+<h3>For whoever runs a server</h3>
+<ul>
+<li>You can now update the game with the server or the panel open. The game explains it to you and asks for permission; the server warns the players, saves everything and closes; the game updates and the server starts again by itself, just as it was. If the update were to fail, the server starts again anyway.</li>
+<li>New commands, update and restart: they warn the players with a countdown and stop the server saying it is coming back. They also work on Linux, on a NAS and with Docker.</li>
+<li>When stopping, the server waits for each game to save its character, and saves everyone's money. Before, what happened in the last few seconds could be lost. And restarting from the panel no longer throws anyone out to the menu.</li>
+<li>Someone who rejoins in the middle of a fight after a disconnection no longer leaves two characters with their name.</li>
+<li>New options, all without restarting: turn off the roleplay channels and change their range, turn off vehicle radio, how many hours of earnings build up, how many repeatable jobs are accepted per hour, the seconds of warning before restarting and how long to wait for the last save.</li>
+<li>The server guide explains the money limit, with tips for servers among friends and open servers, and how to use the roleplay channels. The game has no microphone voice chat: to talk out loud, the guide recommends using any voice program separately.</li>
+<li>The server's police officers hold out according to the wanted level, and the names and lines of their characters come from the game's data.</li>
+<li>The gangs' cash box no longer keeps endless entries: the last two hundred are kept.</li>
+<li>An updated server still works for those playing with 1.7.0, and an updated game can join a 1.7.0 server: the game says what that server does not have. Those still on 1.7.0 hear the restart warning and go back to the menu with a clear message; their character is saved anyway.</li>
+<li>Playing with different versions, a new section in the server guide: what happens when not everyone has the same version, what each player sees and what you decide.</li>
+<li>The server no longer rejects those who bring data it can't verify, such as someone with mods: they get in, play with what is in common and are told what does not match. What affects the others is decided by the server with its world. If you prefer the old way, the new option for data that can't be verified rejects it.</li>
+<li>The server knows the world of version 1.7.0 out of the box and remembers what each version it checks has: it gives each game the closest thing it knows.</li>
+<li>A server with no world takes the one from the first player who joins even if it is not signed, warns about it in the log and replaces it with the first signed one that arrives.</li>
+<li>The character is saved in full, including what the server does not know, and what an earlier version can't save is kept. The database updates itself.</li>
+<li>Salaries for permanent contracts: they are paid by the server with the game's figures and a limit that you set. Asking to be paid twice, early or by rejoining does not work.</li>
+<li>New options, without restarting: what to do with data that can't be verified, whether there are salaries, their maximum pay, how many shifts count per day and whether shops treat players according to their standing. They have their own tab in the panel, Honest life.</li>
+</ul>
+<h3>Updating the game</h3>
+<ul>
+<li>If you update with an online server open and the update fails, nothing the server saved when it closed is lost: the server data goes into neither the backup nor the restore.</li>
+<li>You can update with the server panel open, even if you have never started the server. When it finishes, the panel comes back minimized and the focus stays on the game.</li>
+<li>The update no longer fails on computers that have other utilities with the same name as the Windows ones.</li>
+<li>When an update finishes, the game opens in the foreground: before, it could stay behind another window and the screen reader stayed on that one.</li>
+<li>When playing with the Windows voice, the session log no longer records a serious error that did not happen.</li>
+<li>Before downloading and before closing, the game checks that there is space on the disk, that it can write to its folder and that you don't have it open twice or have the mod editor open, and tells you clearly.</li>
+<li>If an update fails, the game tells disk failures apart from network failures and says the reason: protected folder, full disk or antivirus. When it reopens it tells you why it failed and what to do, and the installer leaves its own log so you can send it.</li>
+<li>"Update manually", in Options, Updates, with the four steps to install the new version yourself if the antivirus or the network won't let it. It is also in the manual.</li>
+<li>The summary of what's new that you read before updating is no longer cut off mid-word: it ends at a full stop and says where the rest is.</li>
+</ul>
+<h3>Controller</h3>
+<ul>
+<li>Everything new in this version can also be done with a controller, whether Xbox or PlayStation.</li>
+<li>Controller actions menu: hold View, or Create or Share, and press the right trigger, or R2. That is where everything that does not fit on a button is: the police stop order, shouting, robbing, taking cover, slow time, the roleplay channels, your dog, the radar filter, quick save and more. Only the actions that are valid at that moment appear. When you connect a controller, the game reminds you where it is.</li>
+<li>Typing with the controller: in any text box, up and down on the D-pad go through the letters, right types the chosen one and left deletes. LB or L1 types a space and RB or R1 switches between lowercase, uppercase, numbers and symbols.</li>
+<li>Ready-made phrases for chat and roleplay, and random names for your vehicles: with X or Square, or with Tab on the keyboard, you go through them and choose without typing.</li>
+<li>Surrendering: the combination button and the left trigger. In the shop you walk through, X or Square says what you have in the basket. While waiting for a server, A or Cross repeats, B or Circle exits and Y or Triangle explains it.</li>
+<li>With a controller, the game also says the button when the function uses a combination: for example, how to cancel a GPS detour or how to lower your hands when surrendering.</li>
+<li>In the controller actions menu: go back to the mission objective and recover the last destination you removed from the GPS. The objective is still on its button, and pressed twice in a row it reads the whole explanation.</li>
+<li>Flying with the controller: when piloting, the right stick to the right climbs and to the left descends. On a crossing, the D-pad controls the heading and the altitude, X or Square is the autopilot, A or Cross says how the flight is going, Y or Triangle speeds it up, LB or L1 repeats the tower and RB or R1 opens the flight menu.</li>
+<li>Planned heists are done entirely from the menus, with the usual buttons.</li>
+</ul>
+<h3>Sounds</h3>
+<ul>
+<li>Thirty-six new sounds, in all the packs: there are now 279. Among them, the five for flying, which are the altitude tone, the alignment tone, turbulence, the cockpit alarm and landing; the four for life and its consequences, which are dismissal, inspection, bill and qualification; those for the six new weapons; people's shouts and complaints; ammunition being picked up; the police helicopter and its loudspeaker; the police radio; the house doorbell; the basket, the fridge, the knife, the frying pan, the pot and the plate; roleplay messages; waiting for the server; and the three neighborhood alerts: threat, neighborhood lost and neighborhood defended.</li>
+<li>Learn the sounds now has all the sounds in the game. The most important ones come first, as before, and then all of them split into groups: footsteps, weapons, engines, police, places, ambience, shopping and cooking, playing on a server and the rest. Go into a group and press Enter on a sound to hear it.</li>
+<li>The Realistic, Alternative, Retro and Surround packs bring real recordings for twelve of the new sounds, exactly the same sounds as the default ones, and their credits say where each recording comes from.</li>
+<li>The orientation signals for the heliport, the mine and the prison are now the same with the default sounds and with all the packs. If you play with the default sounds, you will notice that those three sound a little different than before: they are the ones the game creates again when you delete a sound, so now there are no longer two versions.</li>
+<li>The sounds are better organized and easier to find. Learn the sounds and Options, Adjust the volume of each sound, now have the same 20 groups, with the same names: orientation, places, moving on foot, vehicles, weapons, police, house, money, work, playing online and the rest. Inside, the sounds are in alphabetical order, each with its name and with what hearing it means, and when you go into a group it says how many it has. Both menus have Search for a sound: you type a word, with or without accents, and the matching ones appear. In the volume of each sound it says which ones you have changed and how many in each group, and you can return to its default volume a single one, with Delete or from the Changed sounds list, a whole group or all of them. The volumes you had already changed are kept.</li>
+</ul>
+<h3>Mod editor</h3>
+<ul>
+<li>New sections for everything in this version: People on the street, Enemy types, Gangs, Police per wanted level, People's personalities, Businesses' cash, My vehicles and driver, The street, Neighborhood war on the street, Reconquest of neighborhoods, and those for home delivery food, robberies, negotiating with the gangs, contracts from the board, what people do, the police job, plans and life as a couple, and the products, the aisles, the kinds of shop and the recipes.</li>
+<li>Create your enemies with their weapon, health, aim, voice, lines and vehicle, and use them in missions. The people on the street you add join the game's own or replace them, as you prefer.</li>
+<li>Repair shop upgrades say what they improve, how many levels they have and how much each one gives, and new upgrades can be added. Weapons say where they are bought.</li>
+<li>Fights have the It is a sports match checkbox; neighborhoods, the Gang that rules the neighborhood field; and missions, the Can be done with the player's vehicle checkbox, the Tutorial practice step and the It is a briefing checkbox.</li>
+<li>The ready-made phrases for chat and the random vehicle names can also be changed from the editor.</li>
+<li>The manual explains how to create your own vehicles.</li>
+<li>New section, Chases and the objective key: how often it says where the person fleeing is going, when they slow down, and the same numbers with the assist turned on.</li>
+<li>New sections for planned heists: Roles in a heist, where you can change the roles, their shares of the loot or add others, and Prepared heists: numbers and phrases.</li>
+<li>New sections for flying: Flying: numbers and phrases; Aircraft, with the speed, ceiling, range and whether each aircraft needs a runway; and Air map, with where each town is in the region. Heliports and airports have the Hangar space price field.</li>
+<li>In missions, a pickup step can take a few seconds to open, like a safe, and a police step can take a few seconds to arrive.</li>
+</ul>
+<h3>New options and how they come</h3>
+<p>So that everyone knows what they will find when they update. They are all in Options, in the section given, and each one has its explanation with F1.</p>
+<p>They come turned on:</p>
+<ul>
+<li>Gangs try to reconquer your neighborhoods: on normal. You choose between off, calm, normal and hard, in The street. It is only noticeable with four neighborhoods or more, and only when playing offline. If you don't want it, set it to off.</li>
+<li>Missions adjust to your escort: on moderate. You choose between no, moderate and strong, in Combat and difficulty.</li>
+<li>Consequence level: on mild. You choose between off, mild, normal and demanding, in the new section Life, reputation and consequences. On off, standing and street reputation count as before and nothing more. What you choose yourself, such as a permanent contract, a qualification or a loan, is available at any level.</li>
+<li>Taxes and bills: yes. In Life, reputation and consequences. They are mild, you are warned about them and games already started have fourteen days' grace. With no, there are no bills, taxes or inspections, as before.</li>
+<li>Criminal record: yes. In Life, reputation and consequences. Anything before this version does not count. With no, nothing is recorded, as before.</li>
+<li>Love life suitable for everyone: yes. In Life, reputation and consequences. With no, relationships only exist with adult content, as before.</li>
+<li>Chase assist: on. It is mild, and can be turned off in Combat and difficulty.</li>
+<li>Real flight: yes. In Movement and driving. Helicopters and light planes have altitude and really travel between towns. With no, you always fly at the same altitude and change town in one jump from a heliport, as before.</li>
+<li>Assisted landing on crossings: yes. In Movement and driving. With no, you make the approach to the airfield yourself.</li>
+<li>Aircraft burn fuel: yes. In Movement and driving. Only with real flight. With no, the tank is not used up.</li>
+<li>Self-defense: yes. In The street. With no, any shot and any kill counts, as before.</li>
+<li>Police patrols driving around the streets: yes. In The street. With no, the police only appear when they are after you, as before.</li>
+<li>Ambulances that come when there are injured people: yes. In The street. They are only ambience.</li>
+<li>Fallen enemies drop ammo: yes. In The street.</li>
+<li>The people you talk to act on their own too: yes. In The street. With no, people only talk, as before.</li>
+<li>Say when people run away or step aside: yes. In The street. With no, you only hear the shouts.</li>
+<li>People who talk as you pass: rarely. You choose between never, rarely, now and then and often, in The street.</li>
+<li>On a server, wait and rejoin only if the connection drops or the server restarts: yes, with ten minutes of waiting at most. In Play online; the wait can be set from 1 to 120 minutes.</li>
+<li>On a server, hear the radio of other players' vehicles: yes. In Sound and music.</li>
+</ul>
+<p>They come turned off, and you have to turn them on to have them:</p>
+<ul>
+<li>Police helicopter at the highest wanted level. In The street.</li>
+<li>Mode: neighborhood war on the street. In The street.</li>
+<li>Mode: be able to work as a police officer. In The street.</li>
+<li>Difficulty: fallen enemies sometimes drop their weapon. In The street.</li>
+<li>The AI can suggest actions, and the game decides. In People and artificial intelligence.</li>
+<li>Life as a couple: being able to ask your partner to move in with you. In Adult content.</li>
+</ul>
+<p>They change without an option, and it is worth knowing:</p>
+<ul>
+<li>The police at wanted levels 4 and 5 are better armed than before.</li>
+<li>The shops you rob remember you for a few days, like the other businesses.</li>
+<li>The tavern board opens a list of three jobs instead of starting one directly.</li>
+<li>What you buy to take home is not eaten by itself: you have to put it away and, if it is an ingredient, cook it. What was eaten on the spot in bars, restaurants and shops stays the same.</li>
+<li>Aircraft are no longer kept in a house garage: their place is a hangar. Any you had in a garage stay there and can be taken out.</li>
+<li>The members of your gang now have names: when you call them, each one arrives with their own.</li>
+</ul>
+<p>On the server, the new options come like this: roleplay channels, yes, with a range of 30 meters; radio in other players' cars, yes; three hours of accumulable earnings; six repeatable jobs accepted per hour of each type, with 15000 euros at most per job; twenty seconds of warning before restarting and six of waiting for the last save. Also: those who bring data that can't be verified get in; salaries for permanent contracts, yes, with 1,500 euros of maximum pay and three shifts counted per day; and discounts for standing in shops, yes.</p>
+
+<h2>Version 1.7.0</h2>
+<p>Two big things: the online server, to play with lots of people in a world that stays alive, and what you have asked for and told us since 1.6.3.</p>
+<h3>The online server</h3>
+<ul>
+<li>Playing on a server. In the main menu, Play on a server: a world that stays alive even when you are not there, with real players, gangs, territories, houses and businesses, and with traffic, people on the street and the police the same for everyone.</li>
+<li>Set up your own server. Everything you need comes with the game, in the servidor folder: for two friends playing or for a hundred people, on your computer or on a machine that stays on.</li>
+<li>Server panel. A window accessible with a screen reader to start and stop it, see who is inside, send announcements and messages, kick, ban, appoint administrators, create invitations and read the log of what happens.</li>
+<li>Configuration in tabs, with every option explained with Control H. Almost everything can be changed with the server running, and the panel says which changes need a restart.</li>
+<li>No fixed player limit. The server splits the work by zones, so that each player receives in detail only what is near them.</li>
+<li>Different versions of the game, together on the same server. Someone still on an earlier version can keep joining when the server is already on a new one: each one plays with what their version knows, and the game tells them when they join.</li>
+<li>The content comes from the game, not the server. What your game or your mods sell you can also buy on a server, and it is saved with your character.</li>
+<li>What another player is wearing: near them, Shift J says what they have on. Only when you ask. It also works when playing with friends.</li>
+<li>Money, watched by the server: you can always spend; you can earn what the server itself gives and an amount per hour from jobs and sales. You can only give another player the money you are carrying. And a house or a business only gives money back when sold if you paid for it on that server: what you bring from playing on your own you can keep and use, but it does not turn into money.</li>
+<li>Automatic backups every day, and manual ones whenever you want. They are restored from the panel, and they are useful for moving the server to another machine.</li>
+<li>Options for admins: message of the day, banned names, kicking for inactivity, minimum game version, how often it saves and logging to a file.</li>
+<li>For every system: on Windows with the panel or from the console, and with Python on Linux, Mac, Raspberry Pi and NAS, or with Docker. For those you don't need the game.</li>
+<li>Open the router port from the panel, if the router allows it, so people can join from outside your home.</li>
+<li>Complete guide, step by step: every way to set it up, the address you give your people, encryption, administration, troubleshooting and all the options. It is in the servidor folder and opens from the panel with F1.</li>
+</ul>

@@ -1,4 +1,5 @@
 """Segunda ampliación: habilidades, logros, eventos callejeros, encargos repetibles y noticias."""
+from .i18n import tr
 import math
 import random
 
@@ -7,57 +8,57 @@ from . import mundo as M
 from .entidades import Objeto, Persona
 
 HABILIDADES = {
-    "conduccion": ("Conducción", "Cada nivel sube un uno por ciento la velocidad máxima y reduce los daños de tu vehículo."),
-    "punteria": ("Puntería", "Cada nivel sube tu probabilidad de acertar."),
-    "resistencia": ("Resistencia", "Cada nivel te hace correr más y recibir menos daño."),
-    "pesca": ("Pesca", "Cada nivel hace que piquen antes y que tus capturas valgan más."),
+    "conduccion": (tr("Conducción"), tr("Cada nivel sube un uno por ciento la velocidad máxima y reduce los daños de tu vehículo.")),
+    "punteria": (tr("Puntería"), tr("Cada nivel sube tu probabilidad de acertar.")),
+    "resistencia": (tr("Resistencia"), tr("Cada nivel te hace correr más y recibir menos daño.")),
+    "pesca": (tr("Pesca"), tr("Cada nivel hace que piquen antes y que tus capturas valgan más.")),
 }
 
 MODELOS_ENCARGO = ["sedan", "deportivo", "todoterreno", "furgoneta", "moto", "descapotable", "pickup", "utilitario", "buggy", "limusina"]
 
 LOGROS = [
-    ("primera", "De vuelta a casa", "Completa tu primera misión.", lambda p: len(p.completadas) >= 1),
-    ("historia", "Ley del asfalto", "Completa la historia principal.", lambda p: "m20" in p.completadas),
-    ("todas", "Leyenda de la comarca", "Completa todas las misiones.", lambda p: len(p.completadas) >= len(p.datos["misiones"])),
-    ("rico", "Primer millón de céntimos", "Reúne 10000 euros entre efectivo y banco.", lambda p: p.j.dinero + p.j.banco >= 10000),
-    ("millonario", "Magnate", "Reúne 250000 euros entre efectivo y banco.", lambda p: p.j.dinero + p.j.banco >= 250000),
-    ("casero", "Casero", "Ten tres viviendas.", lambda p: sum(1 for i in p.j.propiedades if p.lug(i) and p.lug(i).tipo == "casa") >= 3),
-    ("empresario", "Empresario", "Ten tres negocios.", lambda p: sum(1 for i in p.j.propiedades if p.lug(i) and p.lug(i).tipo == "negocio") >= 3),
-    ("viajero", "Trotamundos", "Visita todas las localidades.", lambda p: all(any(b["id"] in p.j.barrios_vistos for b in m.barrios) for m in p.mapas.values())),
-    ("explorador", "Explorador", "Visita cien lugares.", lambda p: len(p.j.visitados) >= 100),
-    ("cartografo", "Cartógraf[o|a]", "Visita todos los lugares del juego.", lambda p: len(p.j.visitados) >= len(p.lugares)),
-    ("coleccionista", "Coleccionista", "Encuentra diez objetos de colección.", lambda p: len(p.j.casetes) >= 10),
-    ("completista", "Lo tengo todo", "Encuentra todos los objetos de colección.", lambda p: len(p.j.casetes) >= p.total_casetes()),
-    ("pescador", "Lobo de mar", "Pesca veinticinco peces.", lambda p: p.j.stats.get("peces", 0) >= 25),
-    ("capitan", "Armador[|a]", "Ten dos barcos.", lambda p: len(p.j.barcos) >= 2),
-    ("piloto", "Piloto", "Recorre cien kilómetros al volante.", lambda p: p.j.stats["metros_coche"] >= 100000),
-    ("caminante", "Caminante", "Recorre diez kilómetros a pie.", lambda p: p.j.stats["metros_pie"] >= 10000),
-    ("ladron", "Manos rápidas", "Roba veinticinco vehículos.", lambda p: p.j.stats["vehiculos_robados"] >= 25),
-    ("taxista", "Taxista de toda la vida", "Completa veinte servicios de trabajo.", lambda p: p.j.stats.get("servicios", 0) >= 20),
-    ("campeon", "[Campeón|Campeona]", "Gana todas las carreras.", lambda p: len(p.j.stats["carreras"]) >= len(p.datos["carreras"])),
-    ("boxeador", "Guantes de oro", "Gana cinco combates de boxeo.", lambda p: p.j.stats.get("boxeo", 0) >= 5),
-    ("sicario", "Profesional", "Cumple cinco contratos del tablón.", lambda p: p.j.stats.get("contratos", 0) >= 5),
-    ("butron", "Butroner[o|a]", "Atraca un banco.", lambda p: p.j.stats.get("atracos", 0) >= 1),
-    ("forzudo", "En plena forma", "Sube tu salud máxima a 150.", lambda p: p.j.salud_max >= 150),
-    ("maestro", "Maestría", "Sube una habilidad al nivel diez.", lambda p: any(p.nivel(h) >= 10 for h in HABILIDADES)),
-    ("heroe", "Buen[|a] vecin[o|a]", "Resuelve diez sucesos callejeros.", lambda p: p.j.stats.get("eventos", 0) >= 10),
-    ("arsenal", "Arsenal", "Ten quince armas distintas.", lambda p: len(p.j.armas) >= 15),
-    ("amigo", "Amistad de cuatro patas", "Adopta un perro.", lambda p: bool(p.j.perro)),
-    ("jefe", "[Jefe|Jefa] de barrio", "Conquista tres territorios.", lambda p: len(p.j.territorios) >= 3),
-    ("amo", "La comarca es tuya", "Conquista todos los barrios de las tres ciudades.", lambda p: len(p.j.territorios) >= sum(len(m.barrios) for m in p.mapas.values() if m.tipo == "ciudad")),
-    ("buzo", "Cazatesoros", "Encuentra cinco tesoros buceando o con el detector.", lambda p: p.j.stats.get("tesoros", 0) >= 5),
-    ("memoria", "Memoria de elefante", "Aguanta ocho rondas en la máquina de memoria de sonidos.", lambda p: p.j.stats.get("simon", 0) >= 8),
-    ("inversor", "Lobo de la bolsa", "Ten acciones por valor de 20000 euros.", lambda p: sum(n * p.precio_accion(i) for i, n in p.j.acciones.items()) >= 20000),
+    ("primera", tr("De vuelta a casa"), tr("Completa tu primera misión."), lambda p: len(p.completadas) >= 1),
+    ("historia", tr("Ley del asfalto"), tr("Completa la historia principal."), lambda p: "m20" in p.completadas),
+    ("todas", tr("Leyenda de la comarca"), tr("Completa todas las misiones."), lambda p: len(p.completadas) >= len(p.datos["misiones"])),
+    ("rico", tr("Primer millón de céntimos"), tr("Reúne 10000 euros entre efectivo y banco."), lambda p: p.j.dinero + p.j.banco >= 10000),
+    ("millonario", tr("Magnate"), tr("Reúne 250000 euros entre efectivo y banco."), lambda p: p.j.dinero + p.j.banco >= 250000),
+    ("casero", tr("Casero"), tr("Ten tres viviendas."), lambda p: sum(1 for i in p.j.propiedades if p.lug(i) and p.lug(i).tipo == "casa") >= 3),
+    ("empresario", tr("Empresario"), tr("Ten tres negocios."), lambda p: sum(1 for i in p.j.propiedades if p.lug(i) and p.lug(i).tipo == "negocio") >= 3),
+    ("viajero", tr("Trotamundos"), tr("Visita todas las localidades."), lambda p: all(any(b["id"] in p.j.barrios_vistos for b in m.barrios) for m in p.mapas.values())),
+    ("explorador", tr("Explorador"), tr("Visita cien lugares."), lambda p: len(p.j.visitados) >= 100),
+    ("cartografo", tr("Cartógraf[o|a]"), tr("Visita todos los lugares del juego."), lambda p: len(p.j.visitados) >= len(p.lugares)),
+    ("coleccionista", tr("Coleccionista"), tr("Encuentra diez objetos de colección."), lambda p: len(p.j.casetes) >= 10),
+    ("completista", tr("Lo tengo todo"), tr("Encuentra todos los objetos de colección."), lambda p: len(p.j.casetes) >= p.total_casetes()),
+    ("pescador", tr("Lobo de mar"), tr("Pesca veinticinco peces."), lambda p: p.j.stats.get("peces", 0) >= 25),
+    ("capitan", tr("Armador[|a]"), tr("Ten dos barcos."), lambda p: len(p.j.barcos) >= 2),
+    ("piloto", tr("Piloto"), tr("Recorre cien kilómetros al volante."), lambda p: p.j.stats["metros_coche"] >= 100000),
+    ("caminante", tr("Caminante"), tr("Recorre diez kilómetros a pie."), lambda p: p.j.stats["metros_pie"] >= 10000),
+    ("ladron", tr("Manos rápidas"), tr("Roba veinticinco vehículos."), lambda p: p.j.stats["vehiculos_robados"] >= 25),
+    ("taxista", tr("Taxista de toda la vida"), tr("Completa veinte servicios de trabajo."), lambda p: p.j.stats.get("servicios", 0) >= 20),
+    ("campeon", tr("[Campeón|Campeona]"), tr("Gana todas las carreras."), lambda p: len(p.j.stats["carreras"]) >= len(p.datos["carreras"])),
+    ("boxeador", tr("Guantes de oro"), tr("Gana cinco combates de boxeo."), lambda p: p.j.stats.get("boxeo", 0) >= 5),
+    ("sicario", tr("Profesional"), tr("Cumple cinco contratos del tablón."), lambda p: p.j.stats.get("contratos", 0) >= 5),
+    ("butron", tr("Butroner[o|a]"), tr("Atraca un banco."), lambda p: p.j.stats.get("atracos", 0) >= 1),
+    ("forzudo", tr("En plena forma"), tr("Sube tu salud máxima a 150."), lambda p: p.j.salud_max >= 150),
+    ("maestro", tr("Maestría"), tr("Sube una habilidad al nivel diez."), lambda p: any(p.nivel(h) >= 10 for h in HABILIDADES)),
+    ("heroe", tr("Buen[|a] vecin[o|a]"), tr("Resuelve diez sucesos callejeros."), lambda p: p.j.stats.get("eventos", 0) >= 10),
+    ("arsenal", tr("Arsenal"), tr("Ten quince armas distintas."), lambda p: len(p.j.armas) >= 15),
+    ("amigo", tr("Amistad de cuatro patas"), tr("Adopta un perro."), lambda p: bool(p.j.perro)),
+    ("jefe", tr("[Jefe|Jefa] de barrio"), tr("Conquista tres territorios."), lambda p: len(p.j.territorios) >= 3),
+    ("amo", tr("La comarca es tuya"), tr("Conquista todos los barrios de las tres ciudades."), lambda p: len(p.j.territorios) >= sum(len(m.barrios) for m in p.mapas.values() if m.tipo == "ciudad")),
+    ("buzo", tr("Cazatesoros"), tr("Encuentra cinco tesoros buceando o con el detector."), lambda p: p.j.stats.get("tesoros", 0) >= 5),
+    ("memoria", tr("Memoria de elefante"), tr("Aguanta ocho rondas en la máquina de memoria de sonidos."), lambda p: p.j.stats.get("simon", 0) >= 8),
+    ("inversor", tr("Lobo de la bolsa"), tr("Ten acciones por valor de 20000 euros."), lambda p: sum(n * p.precio_accion(i) for i, n in p.j.acciones.items()) >= 20000),
     # la vida honrada, la doble vida y sus consecuencias (versión 1.7.1)
-    ("ficha_limpia", "Ficha limpia", "Llega al día treinta sin una sola condena en toda la partida.", lambda p: p.dia >= 30 and not p.en_servidor and p.cfg["antecedentes"] and not p.j.stats.get("antecedentes") and not p.j.stats["detenciones"]),
-    ("ejemplar", "Ciudadan[o|a] ejemplar", "Alcanza los 90 de prestigio entre los vecinos sin antecedentes en vigor.", lambda p: p.j.ciudadania >= 90 and not p.hon_antecedentes()),
-    ("doble_vida", "Dos caras", "Ten a la vez 60 de prestigio y 50 de fama en la calle, sin antecedentes en vigor y sin que te hayan descubierto nunca.",
+    ("ficha_limpia", tr("Ficha limpia"), tr("Llega al día treinta sin una sola condena en toda la partida."), lambda p: p.dia >= 30 and not p.en_servidor and p.cfg["antecedentes"] and not p.j.stats.get("antecedentes") and not p.j.stats["detenciones"]),
+    ("ejemplar", tr("Ciudadan[o|a] ejemplar"), tr("Alcanza los 90 de prestigio entre los vecinos sin antecedentes en vigor."), lambda p: p.j.ciudadania >= 90 and not p.hon_antecedentes()),
+    ("doble_vida", tr("Dos caras"), tr("Ten a la vez 60 de prestigio y 50 de fama en la calle, sin antecedentes en vigor y sin que te hayan descubierto nunca."),
      lambda p: p.j.ciudadania >= 60 and p.j.reputacion >= 50 and not p.hon_antecedentes() and not p.j.stats.get("descubierto") and p.hon_nivel() > 0),
-    ("gran_empresa", "Casa con nombre", "Lleva un negocio tuyo al nivel más alto.", lambda p: any(int(e.get("nivel", 1)) >= 1 + len(p.hon_mejoras()) for e in p.j.empresa.values()) and len(p.hon_mejoras()) > 0),
-    ("carrera", "Carrera completa", "Llega al puesto más alto de un empleo fijo.", lambda p: bool(p.j.contrato) and p.hon_empleo() is not None and int(p.j.contrato.get("puesto", 0)) >= len(p.hon_empleo()["puestos"]) - 1),
-    ("titulado", "Con todas las letras", "Consigue tres títulos.", lambda p: len(p.hon_titulos()) >= 3),
-    ("buen_camino", "El buen camino", "Termina la historia del buen camino con el final honrado.", lambda p: (p.decisiones.get("_final_honrado") or {}).get("clase") == "honrado"),
-    ("samaritano", "Buen[|a] samaritan[o|a]", "Haz diez buenas acciones por la calle.", lambda p: p.j.stats.get("buenas_acciones", 0) >= 10),
+    ("gran_empresa", tr("Casa con nombre"), tr("Lleva un negocio tuyo al nivel más alto."), lambda p: any(int(e.get("nivel", 1)) >= 1 + len(p.hon_mejoras()) for e in p.j.empresa.values()) and len(p.hon_mejoras()) > 0),
+    ("carrera", tr("Carrera completa"), tr("Llega al puesto más alto de un empleo fijo."), lambda p: bool(p.j.contrato) and p.hon_empleo() is not None and int(p.j.contrato.get("puesto", 0)) >= len(p.hon_empleo()["puestos"]) - 1),
+    ("titulado", tr("Con todas las letras"), tr("Consigue tres títulos."), lambda p: len(p.hon_titulos()) >= 3),
+    ("buen_camino", tr("El buen camino"), tr("Termina la historia del buen camino con el final honrado."), lambda p: (p.decisiones.get("_final_honrado") or {}).get("clase") == "honrado"),
+    ("samaritano", tr("Buen[|a] samaritan[o|a]"), tr("Haz diez buenas acciones por la calle."), lambda p: p.j.stats.get("buenas_acciones", 0) >= 10),
 ]
 
 
@@ -73,7 +74,7 @@ class Extras2:
         ahora = self.nivel(hab)
         if ahora > antes:
             self.son("nivel", cat="interfaz")
-            self.decir(f"Tu habilidad de {HABILIDADES[hab][0].lower()} sube al nivel {ahora}.")
+            self.decir(tr('Tu habilidad de {lower} sube al nivel {ahora}.').format(lower=(HABILIDADES[hab][0].lower()), ahora=(ahora)))
 
     # ------------------------------------------------------------------- logros
     def comprobar_logros(self):
@@ -87,7 +88,7 @@ class Extras2:
             if ok:
                 self.j.logros.append(ident)
                 self.son("logro", cat="interfaz")
-                self.decir(f"Logro conseguido: {nombre}. {desc}")
+                self.decir(tr('Logro conseguido: {nombre}. {desc}').format(nombre=(nombre), desc=(desc)))
 
     # -------------------------------------------------------- actualización
     def actualizar_extras(self, dt):
@@ -106,37 +107,37 @@ class Extras2:
         if self.t_noticia > 0:
             return
         self.t_noticia = random.uniform(18, 28)
-        self.decir("El Faro Noticias. " + self.noticia())
+        self.decir(tr("El Faro Noticias. ") + self.noticia())
 
     def noticia(self):
         j = self.j
         s = j.stats
         ops = [
-            f"Son las {self.hora_txt()}. " + ("Llueve en toda la comarca: precaución en las carreteras." if self.lluvia else "Cielos despejados en toda la comarca.") + (" " + self.dia_txt() if self.dia_txt() else ""),
-            "El Atlético Bravo empata a cero y sigue soñando con el ascenso.",
-            "El Ayuntamiento de Puerto Bravo promete arreglar el reloj de la plaza. Otra vez.",
-            "Los pescadores de Cala Brava denuncian que cada vez hay más botas viejas en el mar.",
-            "El balneario de Fuentefría cuelga el cartel de completo.",
-            "La Universidad de San Lucero investiga por qué los estudiantes duermen tan poco.",
+            tr('Son las {hora_txt}. ').format(hora_txt=(self.hora_txt())) + (tr("Llueve en toda la comarca: precaución en las carreteras.") if self.lluvia else tr("Cielos despejados en toda la comarca.")) + (" " + self.dia_txt() if self.dia_txt() else ""),
+            tr("El Atlético Bravo empata a cero y sigue soñando con el ascenso."),
+            tr("El Ayuntamiento de Puerto Bravo promete arreglar el reloj de la plaza. Otra vez."),
+            tr("Los pescadores de Cala Brava denuncian que cada vez hay más botas viejas en el mar."),
+            tr("El balneario de Fuentefría cuelga el cartel de completo."),
+            tr("La Universidad de San Lucero investiga por qué los estudiantes duermen tan poco."),
         ]
         if s["vehiculos_robados"] > 5:
-            ops.append(f"Ola de robos de vehículos: ya van {s['vehiculos_robados']} denuncias. La policía busca a un único sospechoso.")
+            ops.append(tr('Ola de robos de vehículos: ya van {vehiculos_robados} denuncias. La policía busca a un único sospechoso.').format(vehiculos_robados=(s['vehiculos_robados'])))
         if s.get("atracos", 0):
-            ops.append("Los bancos refuerzan su seguridad tras los últimos atracos.")
+            ops.append(tr("Los bancos refuerzan su seguridad tras los últimos atracos."))
         if s.get("eventos", 0) > 2:
-            ops.append("Vecinos de la comarca hablan de una persona misteriosa que aparece cuando hay problemas y se va sin decir su nombre.")
+            ops.append(tr("Vecinos de la comarca hablan de una persona misteriosa que aparece cuando hay problemas y se va sin decir su nombre."))
         if j.estrellas:
-            ops.append("Última hora: la policía persigue a un individuo peligroso. Se recomienda no salir a la calle.")
+            ops.append(tr("Última hora: la policía persigue a un individuo peligroso. Se recomienda no salir a la calle."))
         if "m20" in self.completadas:
-            ops.append("Octavio Belmonte pasa su primera semana en prisión. Sus empresas, intervenidas por la jueza.")
+            ops.append(tr("Octavio Belmonte pasa su primera semana en prisión. Sus empresas, intervenidas por la jueza."))
         elif "m10" in self.completadas:
-            ops.append("El empresario Octavio Belmonte niega cualquier relación con la banda de Los Calaveras.")
+            ops.append(tr("El empresario Octavio Belmonte niega cualquier relación con la banda de Los Calaveras."))
         if "t06" in self.completadas:
-            ops.append("Monteferro celebra el fin de la huelga minera con una verbena en la plaza.")
+            ops.append(tr("Monteferro celebra el fin de la huelga minera con una verbena en la plaza."))
         if "s06" in self.completadas:
-            ops.append("San Lucero respira tranquila tras la caída de la banda de Los Lagartos.")
+            ops.append(tr("San Lucero respira tranquila tras la caída de la banda de Los Lagartos."))
         if s.get("peces", 0) > 10:
-            ops.append("La lonja registra capturas récord esta semana.")
+            ops.append(tr("La lonja registra capturas récord esta semana."))
         return random.choice(ops)
 
     # --------------------------------------------------------- sucesos callejeros
@@ -182,13 +183,13 @@ class Extras2:
             malos = [p for p in ev.get("personas", []) if p.tipo == "enemigo"]
             if ev["tipo"] in ("atraco", "banda") and malos and all(p.muerto for p in malos):
                 premio = ev["premio"]
-                self._fin_evento("La víctima te da las gracias y una recompensa." if ev["tipo"] == "atraco" else "Los vecinos, agradecidos, hacen una colecta para ti.", premio)
+                self._fin_evento(tr("La víctima te da las gracias y una recompensa.") if ev["tipo"] == "atraco" else tr("Los vecinos, agradecidos, hacen una colecta para ti."), premio)
             elif ev["tipo"] == "maletin" and ev["objeto"] not in self.objetos:
                 self.j.stats["eventos"] = self.j.stats.get("eventos", 0) + 1
                 self._fin_evento()
             elif ev["t"] <= 0:
-                self._fin_evento({"atraco": "El atracador ha huido con el botín.", "banda": "Los pandilleros se han marchado.",
-                                  "maletin": "Alguien ha encontrado el maletín antes que tú."}[ev["tipo"]])
+                self._fin_evento({"atraco": tr("El atracador ha huido con el botín."), "banda": tr("Los pandilleros se han marchado."),
+                                  "maletin": tr("Alguien ha encontrado el maletín antes que tú.")}[ev["tipo"]])
             return
         if self.mision or self.trabajo or self.guerra or j.estrellas or self.mundo.tipo in ("mar", "isla") or self.transicion or not self.cfg["sucesos"]:
             return
@@ -203,23 +204,23 @@ class Extras2:
         x, y = pos
         self.son("evento", cat="interfaz")
         if tipo == "maletin":
-            o = Objeto("dinero", "Maletín perdido", x, y)
+            o = Objeto("dinero", tr("Maletín perdido"), x, y)
             o.valor = random.randint(150, 600)
             self.objetos.append(o)
             self.evento = {"tipo": tipo, "t": 150.0, "objeto": o}
-            self.decir(f"Suceso: alguien ha perdido un maletín por aquí cerca. {self.situar(x, y, 'Está')}. Búscalo con el radar, pulsando Tabulador.")
+            self.decir(tr('Suceso: alguien ha perdido un maletín por aquí cerca. {situar}. Búscalo con el radar, pulsando Tabulador.').format(situar=(self.situar(x, y, tr('Está')))))
             return
         personas = []
         if tipo == "atraco":
-            v = Persona("civil", x, y, "Víctima del atraco")
+            v = Persona("civil", x, y, tr("Víctima del atraco"))
             v.estado = "quieto"
             v.tag = "evento"
             personas.append(v)
             n = 1
-            clase, nombre = "atracador", "Atracador"
+            clase, nombre = "atracador", tr("Atracador")
         else:
             n = random.randint(2, 3)
-            clase, nombre = "pandillero_calle", "Pandillero"
+            clase, nombre = "pandillero_calle", tr("Pandillero")
         for _ in range(n):
             f = G.enemigo(G.grupo(clase, tipo=nombre, arma=random.choice(["navaja", "pistola", "bate"]), salud=55))
             e = G.vestir(Persona("enemigo", *self.mundo.punto_libre(x + random.uniform(-3, 3), y + random.uniform(-3, 3)), f["nombre"]), f)
@@ -233,9 +234,9 @@ class Extras2:
         self.evento = {"tipo": tipo, "t": 110.0, "personas": personas, "premio": random.randint(150, 400) * n}
         if tipo == "atraco":
             self.son("grito", xy=(x, y), ref=10, maxd=120)
-            self.decir(f"Suceso: están atracando a alguien. {self.situar(x, y, 'Ocurre')}. Si quieres ayudar, pulsa Q para fijar al atracador.")
+            self.decir(tr('Suceso: están atracando a alguien. {situar}. Si quieres ayudar, pulsa Q para fijar al atracador.').format(situar=(self.situar(x, y, tr('Ocurre')))))
         else:
-            self.decir(f"Suceso: unos pandilleros tienen atemorizada la calle. {self.situar(x, y, 'Están')}. Si quieres echarlos, pulsa Q para fijarlos.")
+            self.decir(tr('Suceso: unos pandilleros tienen atemorizada la calle. {situar}. Si quieres echarlos, pulsa Q para fijarlos.').format(situar=(self.situar(x, y, tr('Están')))))
 
     # ------------------------------------------------------ encargos repetibles
     def _empezar_repetible(self, m):
@@ -251,20 +252,20 @@ class Extras2:
         n = min(5, 1 + self.j.stats.get("contratos", 0) // 2)
         quien = random.choice(G.lista("apodos"))
         armas = ["pistola", "pistola", "subfusil", "escopeta", "navaja"]
-        objetivo = dict(G.grupo("objetivo_contrato", arma="pistola", salud=95), tipo=f"Objetivo, {quien}")
+        objetivo = dict(G.grupo("objetivo_contrato", arma="pistola", salud=95), tipo=tr('Objetivo, {quien}').format(quien=(quien)))
         # con escolta numerosa, a veces parte de ella llega en un vehículo
         moto = G.tipo_enemigo("escolta_motorizada") if n >= 3 and random.random() < 0.5 else None
         en_coche = min(n - 1, int(moto.get("ocupantes", 3) or 3)) if moto and moto.get("vehiculo") in self.modelos and not self.en_servidor else 0
-        escolta = [G.grupo("guardaespaldas", tipo="Guardaespaldas", arma=random.choice(armas), salud=70) for _ in range(n - en_coche)]
+        escolta = [G.grupo("guardaespaldas", tipo=tr("Guardaespaldas"), arma=random.choice(armas), salud=70) for _ in range(n - en_coche)]
         if en_coche:
             escolta.append({"n": en_coche, "clase": "escolta_motorizada"})
         self._empezar_repetible({
-            "id": "contrato", "titulo": f"Contrato: {quien}", "lugar": l.id, "contador": "contratos",
+            "id": "contrato", "titulo": tr('Contrato: {quien}').format(quien=(quien)), "lugar": l.id, "contador": "contratos",
             "pasos": [
-                {"tipo": "eliminar", "lugar": dest.id, "texto": f"El objetivo, {quien}, está en {dest.nombre} con {n} guardaespaldas. Ve allí y cumple el contrato."
-                 + (" Parte de la escolta ronda la zona en un vehículo." if en_coche else ""),
+                {"tipo": "eliminar", "lugar": dest.id, "texto": tr('El objetivo, {quien}, está en {nombre} con {n} guardaespaldas. Ve allí y cumple el contrato.').format(quien=(quien), nombre=(dest.nombre), n=(n))
+                 + (tr(" Parte de la escolta ronda la zona en un vehículo.") if en_coche else ""),
                  "enemigos": [objetivo] + escolta},
-                {"tipo": "ir", "lugar": l.id, "texto": f"Contrato cumplido. Vuelve a {l.nombre} a cobrar."}],
+                {"tipo": "ir", "lugar": l.id, "texto": tr('Contrato cumplido. Vuelve a {nombre} a cobrar.').format(nombre=(l.nombre))}],
             "recompensa": {"dinero": 600 + 380 * n}})
 
     def empezar_atraco_banco(self, l, golpe=None):
@@ -273,13 +274,13 @@ class Extras2:
         n = max(1, int(caja["guardias"]) or 5)
         armados = n * 2 // 5                                     # de cada cinco vigilantes, dos llevan subfusil
         m = {
-            "id": "atraco_banco", "titulo": f"Atraco a {l.nombre}", "lugar": l.id, "contador": "atracos",
+            "id": "atraco_banco", "titulo": tr('Atraco a {nombre}').format(nombre=(l.nombre)), "lugar": l.id, "contador": "atracos",
             "pasos": [
-                {"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": "¡Esto es un atraco! Acaba con los vigilantes de seguridad.",
-                 "enemigos": [g for g in (G.grupo(caja.get("guardia") or "vigilante", n - armados, tipo="Vigilante de seguridad", arma="pistola", salud=80),
-                                          G.grupo("vigilante_armado", armados, tipo="Vigilante de seguridad", arma="subfusil", salud=85)) if g["n"] > 0]},
-                {"tipo": "recoger", "lugar": l.id, "objeto": "Botín de la cámara acorazada", "texto": "La cámara acorazada está abierta. Recoge el botín."},
-                {"tipo": "policia", "nivel": max(1, int(caja["busqueda"]) or 4), "texto": "¡Ha saltado la alarma silenciosa! Despista a la policía para quedarte el botín."}],
+                {"tipo": "eliminar", "lugar": l.id, "ya": True, "texto": tr("¡Esto es un atraco! Acaba con los vigilantes de seguridad."),
+                 "enemigos": [g for g in (G.grupo(caja.get("guardia") or "vigilante", n - armados, tipo=tr("Vigilante de seguridad"), arma="pistola", salud=80),
+                                          G.grupo("vigilante_armado", armados, tipo=tr("Vigilante de seguridad"), arma="subfusil", salud=85)) if g["n"] > 0]},
+                {"tipo": "recoger", "lugar": l.id, "objeto": tr("Botín de la cámara acorazada"), "texto": tr("La cámara acorazada está abierta. Recoge el botín.")},
+                {"tipo": "policia", "nivel": max(1, int(caja["busqueda"]) or 4), "texto": tr("¡Ha saltado la alarma silenciosa! Despista a la policía para quedarte el botín.")}],
             "recompensa": {"dinero": int(caja["dinero"])}}
         if golpe:
             self.golpe_adaptar(m, l, golpe)                      # preparado con la banda: la cámara tarda en abrirse y cada uno hace su papel
@@ -305,11 +306,11 @@ class Extras2:
         mo = self.modelos[random.choice(ids)]
         donde = self._destino_azar(150, 800, l)
         self._empezar_repetible({
-            "id": "encargo_coche", "titulo": f"Encargo: {mo['nombre']}", "lugar": l.id, "contador": "encargos",
+            "id": "encargo_coche", "titulo": tr('Encargo: {nombre}').format(nombre=(mo['nombre'])), "lugar": l.id, "contador": "encargos",
             "pasos": [
-                {"tipo": "robar", "modelo": mo["id"], "lugar": donde.id, "nombre": f"{mo['nombre']} de encargo", "busqueda": 1,
-                 "texto": f"Un cliente quiere un {mo['nombre']}. Hay uno aparcado junto a {donde.nombre}. Róbalo."},
-                {"tipo": "entregar", "lugar": l.id, "salud_min": 50, "texto": f"Lleva el vehículo a {l.nombre} en buen estado."}],
+                {"tipo": "robar", "modelo": mo["id"], "lugar": donde.id, "nombre": tr('{nombre} de encargo').format(nombre=(mo['nombre'])), "busqueda": 1,
+                 "texto": tr('Un cliente quiere un {nombre}. Hay uno aparcado junto a {nombre2}. Róbalo.').format(nombre=(mo['nombre']), nombre2=(donde.nombre))},
+                {"tipo": "entregar", "lugar": l.id, "salud_min": 50, "texto": tr('Lleva el vehículo a {nombre} en buen estado.').format(nombre=(l.nombre))}],
             "recompensa": {"dinero": int(mo["valor"] * 1.5) + 350}})
 
     def combate_def(self, ident):
@@ -319,28 +320,28 @@ class Extras2:
         """Un combate del gimnasio, definido en los datos: uno o varios asaltos seguidos, solo con los puños."""
         g = self.j.stats.get(c["id"], 0)
         asaltos = max(1, int(c.get("asaltos", 1)))
-        nombres = list(c.get("rivales") or ["el Rival"])
+        nombres = list(c.get("rivales") or [tr("el Rival")])
         rivales = random.sample(nombres, asaltos) if len(nombres) >= asaltos else [random.choice(nombres) for _ in range(asaltos)]
         self.j.arma = "punos"
         pasos = []
         for n, rival in enumerate(rivales):
             if asaltos == 1:
-                entrada = "¡Suena la campana!"
+                entrada = tr("¡Suena la campana!")
             else:
-                entrada = "¡Se cierra la jaula! Primer asalto." if n == 0 else "Último asalto: el combate estelar." if n == asaltos - 1 else f"Asalto {n + 1}, sin descanso."
+                entrada = tr("¡Se cierra la jaula! Primer asalto.") if n == 0 else tr("Último asalto: el combate estelar.") if n == asaltos - 1 else tr('Asalto {v}, sin descanso.').format(v=(n + 1))
             pasos.append({"tipo": "eliminar", "lugar": l.id, "ya": True,
-                          "texto": f"{entrada} Tu rival es {rival}. Pulsa Q para fijarlo y Espacio para golpear.",
+                          "texto": tr('{entrada} Tu rival es {rival}. Pulsa Q para fijarlo y Espacio para golpear.').format(entrada=(entrada), rival=(rival)),
                           "enemigos": [{"n": 1, "tipo": rival[0].upper() + rival[1:], "arma": "punos", "deportivo": bool(c.get("deportivo", True)),
                                         "salud": int(c.get("salud", 60)) + int(c.get("salud_asalto", 0)) * n + int(c.get("salud_victoria", 20)) * g}]})
-        self._empezar_repetible({"id": c["id"], "titulo": f"{c['nombre']} contra {rivales[0]}" if asaltos == 1 else c["nombre"], "lugar": l.id, "contador": c["id"],
+        self._empezar_repetible({"id": c["id"], "titulo": tr('{nombre} contra {v}').format(nombre=(c['nombre']), v=(rivales[0])) if asaltos == 1 else c["nombre"], "lugar": l.id, "contador": c["id"],
                                  "pasos": pasos, "recompensa": {"dinero": int(c.get("premio", 150)) + int(c.get("premio_victoria", 100)) * g}})
         self.son("campana_ring", cat="interfaz")
 
     def empezar_boxeo(self, l):
-        self.empezar_combate(l, self.combate_def("boxeo") or {"id": "boxeo", "nombre": "Combate de boxeo"})
+        self.empezar_combate(l, self.combate_def("boxeo") or {"id": "boxeo", "nombre": tr("Combate de boxeo")})
 
     def empezar_mma(self, l):
-        self.empezar_combate(l, self.combate_def("mma") or {"id": "mma", "nombre": "Velada de artes marciales mixtas", "asaltos": 3})
+        self.empezar_combate(l, self.combate_def("mma") or {"id": "mma", "nombre": tr("Velada de artes marciales mixtas"), "asaltos": 3})
 
     # --------------------------------------------------------------- servicios
     def plaza_cercana(self):

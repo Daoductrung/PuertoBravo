@@ -3,6 +3,7 @@
 No hay ninguna opción escrita a mano aquí: las pestañas, las etiquetas, las ayudas, los rangos y los valores salen de
 ``servidor.opciones``, que es de donde salen también el ejemplo de servidor.conf, la comprobación y la documentación.
 """
+from juego.i18n import tr
 import wx
 
 from editor.accesibilidad.dialogos import crear_botonera, elegir_opcion, mostrar_error, preparar_dialogo
@@ -26,9 +27,9 @@ def con_letra(etiqueta, usadas):
 
 def ayuda_de(o):
     """Lo que dice Control+H en el control de una opción: qué es, qué admite y si pide reiniciar."""
-    partes = [o.ayuda, o.descripcion_valores(), "De serie: %s." % (o.defecto if o.defecto != "" else "vacío")]
-    partes.append("Para que este cambio valga hay que reiniciar el servidor." if o.reinicio else "Se aplica sin reiniciar el servidor.")
-    partes.append("En servidor.conf se llama %s." % o.clave)
+    partes = [o.ayuda, o.descripcion_valores(), tr("De serie: %s.") % (o.defecto if o.defecto != "" else tr("vacío"))]
+    partes.append(tr("Para que este cambio valga hay que reiniciar el servidor.") if o.reinicio else tr("Se aplica sin reiniciar el servidor."))
+    partes.append(tr("En servidor.conf se llama %s.") % o.clave)
     return " ".join(partes)
 
 
@@ -36,16 +37,16 @@ class DialogoConfiguracion(wx.Dialog):
     """Edita todas las opciones del servidor. ``al_aplicar(valores)`` se llama con Aceptar y con Aplicar, y devuelve si ha ido bien."""
 
     def __init__(self, padre, cfg, al_aplicar=None, en_marcha=False):
-        super().__init__(padre, title="Configuración del servidor", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, name="Configuración del servidor")
+        super().__init__(padre, title=tr("Configuración del servidor"), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, name=tr("Configuración del servidor"))
         self.al_aplicar = al_aplicar
         self.controles = {}                      # clave -> control
         self.paginas = {}                        # clave -> número de pestaña
         sizer = wx.BoxSizer(wx.VERTICAL)
-        aviso = wx.StaticText(self, label=("El servidor está en marcha. " if en_marcha else "") +
-                              "Las opciones que piden reiniciar lo dicen en su ayuda, con Control+H. Control+Tabulador cambia de pestaña.")
+        aviso = wx.StaticText(self, label=(tr("El servidor está en marcha. ") if en_marcha else "") +
+                              tr("Las opciones que piden reiniciar lo dicen en su ayuda, con Control+H. Control+Tabulador cambia de pestaña."))
         aviso.Wrap(680)
         sizer.Add(aviso, 0, wx.ALL, 8)
-        self.cuaderno = wx.Notebook(self, name="Grupos de opciones")
+        self.cuaderno = wx.Notebook(self, name=tr("Grupos de opciones"))
         for n, (ident, titulo, que) in enumerate(opciones.SECCIONES):
             pagina = wx.Panel(self.cuaderno, name=titulo)
             columna = wx.BoxSizer(wx.VERTICAL)
@@ -57,8 +58,8 @@ class DialogoConfiguracion(wx.Dialog):
             self.cuaderno.AddPage(pagina, titulo)
         sizer.Add(self.cuaderno, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         fila = wx.BoxSizer(wx.HORIZONTAL)
-        self.boton_fabrica = wx.Button(self, label="Valores de &fábrica...")
-        self.boton_fabrica.SetHelpText("Deja las opciones como vienen de serie: las de esta pestaña o todas. No se guarda nada hasta que pulses Aceptar o Aplicar.")
+        self.boton_fabrica = wx.Button(self, label=tr("Valores de &fábrica..."))
+        self.boton_fabrica.SetHelpText(tr("Deja las opciones como vienen de serie: las de esta pestaña o todas. No se guarda nada hasta que pulses Aceptar o Aplicar."))
         self.boton_fabrica.Bind(wx.EVT_BUTTON, lambda e: self.de_fabrica())
         fila.Add(self.boton_fabrica, 0, wx.ALL, 8)
         fila.AddStretchSpacer()
@@ -135,14 +136,14 @@ class DialogoConfiguracion(wx.Dialog):
             valor, error = opciones.validar_valor(o.clave, crudo[o.clave])
             if error:
                 self.ir_a(o.clave)
-                mostrar_error(self, "%s: %s." % (o.etiqueta, error), "Hay un valor que no vale")
+                mostrar_error(self, "%s: %s." % (o.etiqueta, error), tr("Hay un valor que no vale"))
                 self.ir_a(o.clave)
                 return None
             limpio[o.clave] = valor
         if limpio["entrada"] == "clave" and not limpio["clave"]:
             self.ir_a("clave")
-            mostrar_error(self, "Has elegido que para crear un personaje haga falta la contraseña de entrada, pero la contraseña está vacía. "
-                                "Escribe una, o cambia quién puede crear un personaje.", "Falta la contraseña de entrada")
+            mostrar_error(self, tr("Has elegido que para crear un personaje haga falta la contraseña de entrada, pero la contraseña está vacía. "
+                                "Escribe una, o cambia quién puede crear un personaje."), tr("Falta la contraseña de entrada"))
             self.ir_a("clave")
             return None
         return limpio
@@ -155,8 +156,8 @@ class DialogoConfiguracion(wx.Dialog):
     def de_fabrica(self):
         n = self.cuaderno.GetSelection()
         titulo = opciones.SECCIONES[n][1]
-        r = elegir_opcion(self, "¿Qué opciones quieres dejar como vienen de serie? No se guarda nada hasta que pulses Aceptar o Aplicar.",
-                          "Valores de fábrica", ["Solo las de «%s»" % titulo, "&Todas las opciones"])
+        r = elegir_opcion(self, tr("¿Qué opciones quieres dejar como vienen de serie? No se guarda nada hasta que pulses Aceptar o Aplicar."),
+                          tr("Valores de fábrica"), [tr("Solo las de «%s»") % titulo, tr("&Todas las opciones")])
         if r is None:
             return
         serie = opciones.valores_de_serie()

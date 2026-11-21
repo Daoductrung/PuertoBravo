@@ -7,6 +7,7 @@ los barrios, la hora y el tiempo, el tráfico, la gente de la calle y la policí
 Lo que decide el servidor no lo decide tu juego: si un disparo tuyo llega a otro jugador, de quién es un coche
 aparcado, cuánto hay en la caja de la banda.
 """
+from .i18n import tr, tr_servidor
 import binascii
 import hashlib
 import json
@@ -33,7 +34,7 @@ MAX_LINEA = 700 * 1024
 SABE = ("rol", "radio", "pasajeros", "mis_vehiculos", "topes", "encargos",
         # sabe esperar a un servidor que se reinicia y volver a entrar solo: el servidor le avisa con cifras, no con un texto
         "reconexion")
-CANALES_ROL = {"ic": ("en personaje", "chat_personaje"), "ooc": ("fuera de personaje", "chat_fuera"), "yo": ("acción", "chat_accion")}
+CANALES_ROL = {"ic": (tr("en personaje"), "chat_personaje"), "ooc": (tr("fuera de personaje"), "chat_fuera"), "yo": (tr("acción"), "chat_accion")}
 ORDENES_ROL = {"yo": "yo", "me": "yo", "ep": "ic", "ic": "ic", "fp": "ooc", "ooc": "ooc"}
 MAX_FICHA = 200
 RADIO_AJENA_M = 34.0              # a cuántos metros se deja de oír la radio del vehículo de otro jugador
@@ -74,12 +75,12 @@ def identidad(crear=True):
     if not crear:
         return None
     s = os.urandom(32)
-    cifrado.escribir_json(ruta, {"semilla": binascii.hexlify(s).decode("ascii"), "aviso": "Esta es tu identidad en los servidores. No la compartas."})
+    cifrado.escribir_json(ruta, {"semilla": binascii.hexlify(s).decode("ascii"), "aviso": tr("Esta es tu identidad en los servidores. No la compartas.")})
     return s
 
 
 def exportar_identidad():
-    return "PB1-" + binascii.hexlify(identidad()).decode("ascii")
+    return tr("PB1-") + binascii.hexlify(identidad()).decode("ascii")
 
 
 def importar_identidad(texto):
@@ -93,7 +94,7 @@ def importar_identidad(texto):
         return False
     if len(s) != 32:
         return False
-    cifrado.escribir_json(_archivo_identidad(), {"semilla": binascii.hexlify(s).decode("ascii"), "aviso": "Esta es tu identidad en los servidores. No la compartas."})
+    cifrado.escribir_json(_archivo_identidad(), {"semilla": binascii.hexlify(s).decode("ascii"), "aviso": tr("Esta es tu identidad en los servidores. No la compartas.")})
     return True
 
 
@@ -117,7 +118,7 @@ def mundo_servidor():
     El servidor no trae esto de fábrica atado a una versión: se lo da el juego. Así un mismo servidor vale para las
     versiones que vayan saliendo, sin tener que actualizarlo."""
     from . import VERSION
-    datos = M.cargar_datos()
+    datos = M.cargar_datos(traducir=False)
     mapas = M.crear_mapas(datos)
     out = {"version": VERSION, "huella": huella_datos(datos), "mapas": {}, "armas": {}, "modelos": {}, "misiones": {}}
     for ident, m in mapas.items():
@@ -257,7 +258,7 @@ class _Lineas:
     def leer(self):
         while b"\n" not in self.buf:
             if len(self.buf) > MAX_LINEA:
-                raise ValueError("mensaje demasiado largo")
+                raise ValueError(tr("mensaje demasiado largo"))
             trozo = self.sock.recv(65536)
             if not trozo:
                 return None
@@ -325,15 +326,15 @@ class ClienteServidor(red.Cliente):
                 s, fp = self._abrir(host, puerto, timeout, tls)
             except (OSError, ValueError) as e:
                 if isinstance(e, (socket.gaierror, ConnectionRefusedError)) or ultimo:
-                    return False, Motivo("No se pudo conectar con el servidor. Comprueba la dirección y que el servidor esté encendido. " + red.AVISO_FILTROS, "red")
+                    return False, Motivo(tr("No se pudo conectar con el servidor. Comprueba la dirección y que el servidor esté encendido. ") + red.AVISO_FILTROS, "red")
                 continue                         # el servidor no cifra, o se ha cortado: se prueba de la otra forma
             except Exception:
                 if ultimo:
-                    return False, Motivo("No se pudo conectar con el servidor.", "red")
+                    return False, Motivo(tr("No se pudo conectar con el servidor."), "red")
                 continue
             if tls and huella_cert and fp != huella_cert:
                 s.close()
-                return False, Motivo("certificado: " + fp, "certificado")
+                return False, Motivo(tr("certificado: ") + fp, "certificado")
             self.cifrado, self.huella_cert = tls, fp
             try:
                 s.settimeout(timeout if intento >= 2 else min(timeout, 5))
@@ -347,8 +348,8 @@ class ClienteServidor(red.Cliente):
                 r = self._respuesta(lineas, ("reto", "rechazo", "ok"), tope=3)
                 if not tls and huella_cert and r and r.get("t") in ("reto", "rechazo", "ok"):
                     s.close()
-                    return False, Motivo("Este servidor cifraba la conexión y ahora no lo hace. Por seguridad no entro. "
-                                         "Si lo ha cambiado quien lo lleva, bórralo de tu lista y añádelo otra vez.", "certificado")
+                    return False, Motivo(tr("Este servidor cifraba la conexión y ahora no lo hace. Por seguridad no entro. "
+                                         "Si lo ha cambiado quien lo lleva, bórralo de tu lista y añádelo otra vez."), "certificado")
                 if r and r.get("t") == "reto":
                     try:
                         minimo = int(r.get("vmin") or 0)
@@ -356,7 +357,7 @@ class ClienteServidor(red.Cliente):
                         minimo = 0
                     if minimo > VERSION_RED:                     # el servidor ya no habla con juegos como este
                         s.close()
-                        return False, Motivo("Este servidor necesita una versión más nueva del juego. Actualiza el juego para entrar.", "version")
+                        return False, Motivo(tr("Este servidor necesita una versión más nueva del juego. Actualiza el juego para entrar."), "version")
                     s.settimeout(timeout)
                     f = ed25519.firmar(semilla, ("puertobravo-entrada|" + str(r.get("n", ""))).encode("ascii"))
                     red._enviar(s, self.lock, {"t": "firma", "f": binascii.hexlify(f).decode("ascii")})
@@ -377,14 +378,19 @@ class ClienteServidor(red.Cliente):
                 except OSError:
                     pass
                 if enviado_mundo:
-                    return False, "El servidor no ha aceptado los datos de tu versión del juego, o ha cortado la conexión al recibirlos. Prueba otra vez dentro de un momento."
+                    return False, tr("El servidor no ha aceptado los datos de tu versión del juego, o ha cortado la conexión al recibirlos. Prueba otra vez dentro de un momento.")
                 if not ultimo:
                     continue
-                return False, Motivo("Lo que hay en esa dirección no es un servidor de Puerto Bravo, o no contesta. " + red.AVISO_FILTROS, "red")
+                return False, Motivo(tr("Lo que hay en esa dirección no es un servidor de Puerto Bravo, o no contesta. ") + red.AVISO_FILTROS, "red")
             if r["t"] == "rechazo":
                 s.close()
-                return False, Motivo(str(r.get("motivo", "El servidor no te deja entrar.")), r.get("codigo") if isinstance(r.get("codigo"), str) else "",
-                                     r.get("minima") if isinstance(r.get("minima"), str) else "")
+                # El servidor lo dice en español: el código se saca de su texto (un servidor anterior no lo manda) y se dice traducido.
+                texto = str(r.get("motivo") or "") or tr("El servidor no te deja entrar.")
+                codigo = r.get("codigo") if isinstance(r.get("codigo"), str) else ""
+                if not codigo:
+                    from .reconexion import codigo_de
+                    codigo = codigo_de(texto)
+                return False, Motivo(tr_servidor(texto), codigo, r.get("minima") if isinstance(r.get("minima"), str) else "")
             s.settimeout(None)
             self.sock, self.conectado, self.id, self.nombre = s, True, r.get("id"), r.get("nombre", nombre)
             self.host, self.puerto = host, puerto
@@ -394,7 +400,7 @@ class ClienteServidor(red.Cliente):
                 self.protocolo = VERSION_RED
             threading.Thread(target=self._leer, args=(lineas,), daemon=True).start()
             return True, r
-        return False, Motivo(aviso or "No se pudo conectar con el servidor.", "red")
+        return False, Motivo(aviso or tr("No se pudo conectar con el servidor."), "red")
 
 
 class Enlace:
@@ -408,13 +414,13 @@ def conectar(app, servidor, clave="", invitacion=""):
     """Conecta con un servidor de la lista. Devuelve (Enlace, texto) o (None, motivo)."""
     d = red.analizar_direccion(servidor.get("dir", ""))
     if d is None:
-        return None, "No entiendo esa dirección."
+        return None, tr("No entiendo esa dirección.")
     host, puerto = d
     if ":" not in servidor.get("dir", "").replace(red.PREFIJO, ""):
         puerto = PUERTO
     if not hasattr(app, "_huella_datos"):
         app._huella_datos = huella_datos(app.datos)
-    nombre = (app.cfg["red_nombre"] or "Jugador")[:24]
+    nombre = (app.cfg["red_nombre"] or tr("Jugador"))[:24]
     registro.ocultar(nombre)
     cli = ClienteServidor()
     semilla = getattr(app, "semilla_identidad", None)        # las pruebas automáticas traen la suya y no tocan la del jugador
@@ -427,7 +433,7 @@ def conectar(app, servidor, clave="", invitacion=""):
     if not ok:
         return None, r
     servidor["cert"] = cli.huella_cert
-    servidor["nombre"] = str((r.get("servidor") or {}).get("nombre") or servidor.get("nombre") or "Servidor")[:60]
+    servidor["nombre"] = str((r.get("servidor") or {}).get("nombre") or servidor.get("nombre") or tr("Servidor"))[:60]
     return Enlace(cli, r, servidor), ""
 
 
@@ -480,7 +486,7 @@ class EnLinea:
         self.remotos = {}
         for q in ok.get("jugadores", []):
             registro.ocultar(q["nombre"])
-            r = Remoto(q["id"], q["nombre"])
+            r = Remoto(q["id"], tr(str(q["nombre"])) if q.get("ia") else q["nombre"])      # los personajes del servidor, en tu idioma
             r.banda, r.ia = q.get("banda"), bool(q.get("ia"))
             self.remotos[q["id"]] = r
         h = ok.get("hora") or {}
@@ -519,9 +525,9 @@ class EnLinea:
                     self.j.propiedades.remove(l.id)
                 n = max(0, int(cosa.get("n", 0)))
                 self.j.dinero += n
-                nombre = l.nombre if l is not None else "una propiedad"
-                self.decir(f"{cosa.get('por', 'Alguien')} te ha comprado {nombre} por {n} euros." if cosa["que"] == "venta" else
-                           f"Llevabas tanto sin entrar que {nombre} ha vuelto al mercado. Te quedan {n} euros de su valor.")
+                nombre = l.nombre if l is not None else tr("una propiedad")
+                self.decir(tr('{get} te ha comprado {nombre} por {n} euros.').format(get=(cosa.get('por', 'Alguien')), nombre=(nombre), n=(n)) if cosa["que"] == "venta" else
+                           tr('Llevabas tanto sin entrar que {nombre} ha vuelto al mercado. Te quedan {n} euros de su valor.').format(nombre=(nombre), n=(n)))
         if ok.get("saldo") is not None and not vuelta:           # el dinero lo lleva el servidor: manda lo que él tiene apuntado
             self._sv_ajustar_saldo(self.j.dinero + self.j.banco - int(ok["saldo"]), callar=True)
         # Al volver no se corta aquí: tu juego manda lo que tiene y el servidor lo juzga con sus reglas de siempre (lo que
@@ -530,22 +536,22 @@ class EnLinea:
         self._sv_descontar_robos(int(ok.get("robos") or 0))
         for cosa in ok.get("pendientes", []):
             if cosa.get("que") == "coche":
-                self.decir(f"Mientras no estabas, {cosa.get('por', 'alguien')} se llevó tu {cosa.get('nombre', 'vehículo')} de donde lo dejaste.")
+                self.decir(tr('Mientras no estabas, {get} se llevó tu {get2} de donde lo dejaste.').format(get=(cosa.get('por', 'alguien')), get2=(cosa.get('nombre', 'vehículo'))))
             if cosa.get("que") == "caido":
                 n = min(self.j.dinero, int(cosa.get("pierde", 0)))
                 self.j.dinero -= n
-                self.decir(f"Mientras te desconectabas en plena pelea, {cosa.get('por', 'alguien')} te tumbó. Has perdido {n} euros.")
+                self.decir(tr('Mientras te desconectabas en plena pelea, {get} te tumbó. Has perdido {n} euros.').format(get=(cosa.get('por', 'alguien')), n=(n)))
         info = self.sv["info"]
         quienes = ", ".join(x.nombre for x in self.remotos.values())
         self.son("amigo_entra", cat="interfaz")
         if vuelta:
             return self._sv_de_vuelta(espera, quienes)
-        self.decir(f"Estás en {self.sv['nombre_servidor']} como {self.red.nombre}. " + (str(info.get("bienvenida", "")) + " " if info.get("bienvenida") else "")
-                   + (f"Están: {quienes}. " if quienes else "De momento no hay nadie más. ")
-                   + ("La conexión va cifrada. " if self.sv["cifrado"] else "Este servidor no cifra la conexión. ")
-                   + ("Hay combate entre jugadores" + (", con zonas seguras en hospitales, comisarías y casas. " if info.get("seguras") else ". ") if info.get("pvp") else "Aquí no hay combate entre jugadores. ")
+        self.decir(tr('Estás en {nombre_servidor} como {nombre}. ').format(nombre_servidor=(self.sv['nombre_servidor']), nombre=(self.red.nombre)) + (tr_servidor(str(info.get("bienvenida", ""))) + " " if info.get("bienvenida") else "")
+                   + (tr('Están: {quienes}. ').format(quienes=(quienes)) if quienes else tr("De momento no hay nadie más. "))
+                   + (tr("La conexión va cifrada. ") if self.sv["cifrado"] else tr("Este servidor no cifra la conexión. "))
+                   + (tr("Hay combate entre jugadores") + (tr(", con zonas seguras en hospitales, comisarías y casas. ") if info.get("seguras") else ". ") if info.get("pvp") else tr("Aquí no hay combate entre jugadores. "))
                    + self.sv_aviso_version()
-                   + "Abre el móvil con M y entra en En línea para verlo todo.")
+                   + tr("Abre el móvil con M y entra en En línea para verlo todo."))
         self.sv_guardar()
 
     # ------------------------------------------------- cuando el servidor se va y vuelve
@@ -553,12 +559,12 @@ class EnLinea:
         """Cómo está tu personaje en el servidor, dicho al dejar de esperarle."""
         e = getattr(self, "sv_espera", None) or {}
         if e.get("avisado"):
-            return "Tu personaje quedó guardado en el servidor justo antes de que se cerrara."
+            return tr("Tu personaje quedó guardado en el servidor justo antes de que se cerrara.")
         seg = e.get("sin_guardar")
         if seg is None:
-            return "Tu personaje está guardado en el servidor como estaba en su último guardado."
+            return tr("Tu personaje está guardado en el servidor como estaba en su último guardado.")
         from .reconexion import tiempo_txt
-        return f"Tu personaje está guardado en el servidor como estaba {tiempo_txt(seg)} antes del corte: lo que hicieras después no se ha guardado."
+        return tr('Tu personaje está guardado en el servidor como estaba {tiempo_txt} antes del corte: lo que hicieras después no se ha guardado.').format(tiempo_txt=(tiempo_txt(seg)))
 
     def sv_cortado(self, causa, motivo="", vuelve=0):
         """El servidor se ha ido: se cierra para actualizarse o reiniciarse («actualizacion», «reinicio»), se ha cerrado sin
@@ -583,7 +589,7 @@ class EnLinea:
                                        "otros": [str(q.get("nombre", "")) for q in miembros if q.get("id") != yo]}
         if self.pasajero is not None:                            # ibas en el vehículo de otro: te quedas a pie donde estabais
             r = self.remotos.get(self.pasajero)
-            self.sv_espera["pasajero"] = r.nombre if r is not None else "otro jugador"
+            self.sv_espera["pasajero"] = r.nombre if r is not None else tr("otro jugador")
             self.pasajero = None
             self.j.x, self.j.y = self.mundo.punto_libre(self.j.x + 2, self.j.y + 2)
         self._sv_limpiar_mundo()
@@ -653,7 +659,7 @@ class EnLinea:
             v.red_dueno = False
             self.quitar_vehiculo(v)
             self.son("puerta_coche")
-            self.decir("Mientras el servidor volvía, otro jugador se ha llevado el vehículo en el que ibas: te quedas a pie.", True)
+            self.decir(tr("Mientras el servidor volvía, otro jugador se ha llevado el vehículo en el que ibas: te quedas a pie."), True)
             return
         if por == "lejos":
             self.red.enviar({"t": "veh_fin", "id": v.id_red})    # el que el servidor tenía apuntado en otro sitio, fuera: es este
@@ -665,22 +671,22 @@ class EnLinea:
         self.t_red = 1.0                                         # tu posición, ya: el servidor te pone donde estás
         self._aspecto_enviado = None                             # y cómo vas vestido, otra vez: el servidor no se acuerda
         self.sv["t_guardar"] = 0.4                               # y enseguida tu personaje, tal como está
-        partes = [f"Reconectado a {self.sv['nombre_servidor']}. Sigues donde estabas"
-                  + (f", al volante de tu {self.j.veh.nombre}" if self.j.veh is not None else "") + "."]
+        partes = [tr('Reconectado a {nombre_servidor}. Sigues donde estabas').format(nombre_servidor=(self.sv['nombre_servidor']))
+                  + (tr(', al volante de tu {nombre}').format(nombre=(self.j.veh.nombre)) if self.j.veh is not None else "") + "."]
         if espera.get("pasajero"):
-            partes.append(f"Ibas de pasajero con {espera['pasajero']}: te has quedado a pie donde estabais.")
+            partes.append(tr('Ibas de pasajero con {pasajero}: te has quedado a pie donde estabais.').format(pasajero=(espera['pasajero'])))
         g = espera.get("grupo")
         if g and g.get("otros"):
             self.sv["regrupo"] = dict(g, hasta=self.t + 180.0, invitados=set())
-            partes.append("Ibas en un grupo de misión: " + ("lo rehago yo en cuanto vuelvan los demás." if g["lidero"]
-                          else f"vuelves a él en cuanto {g['lider'] or 'quien lo llevaba'} entre y lo rehaga."))
+            partes.append(tr("Ibas en un grupo de misión: ") + (tr("lo rehago yo en cuanto vuelvan los demás.") if g["lidero"]
+                          else tr('vuelves a él en cuanto {v} entre y lo rehaga.').format(v=(g['lider'] or tr('quien lo llevaba')))))
         if self.sv["info"].get("policia") and (self.j.estrellas or self.j.puntos_busqueda):
-            partes.append("Tu nivel de búsqueda es el que diga ahora la policía del servidor.")
+            partes.append(tr("Tu nivel de búsqueda es el que diga ahora la policía del servidor."))
         aviso = self.sv_aviso_version()
         if aviso:
             partes.append(aviso.strip())
         if quienes:
-            partes.append(f"Están: {quienes}.")
+            partes.append(tr('Están: {quienes}.').format(quienes=(quienes)))
         registro.info("red", "De vuelta en el servidor con la partida que había en memoria")
         return " ".join(partes)
 
@@ -694,13 +700,12 @@ class EnLinea:
         faltan = [n for n in g["otros"] if n not in presentes]
         if not faltan:
             self.sv["regrupo"] = None
-            self.decir("El grupo de misión está otra vez completo.")
+            self.decir(tr("El grupo de misión está otra vez completo."))
             return
         if self.t >= g["hasta"]:
             self.sv["regrupo"] = None
-            lista = faltan[0] if len(faltan) == 1 else ", ".join(faltan[:-1]) + " y " + faltan[-1]
-            self.decir(f"No se ha podido rehacer del todo el grupo de misión: {lista} no {'ha' if len(faltan) == 1 else 'han'} vuelto al servidor a tiempo. "
-                       "Cuando entre, se le invita otra vez desde el móvil, En línea, Quién hay.")
+            lista = faltan[0] if len(faltan) == 1 else ", ".join(faltan[:-1]) + tr(" y ") + faltan[-1]
+            self.decir(tr('No se ha podido rehacer del todo el grupo de misión: {lista} no {v} vuelto al servidor a tiempo. Cuando entre, se le invita otra vez desde el móvil, En línea, Quién hay.').format(lista=(lista), v=(tr('ha') if len(faltan) == 1 else tr('han'))))
             return
         if g["lidero"]:
             for r in self.remotos.values():
@@ -718,16 +723,11 @@ class EnLinea:
         suya, mia = version_tupla(m.get("version")), version_tupla(VERSION)
         if suya > mia:
             if self.sv_sabe("equivalencias"):                    # el servidor le pone a tu juego lo más parecido de lo que conoce
-                return (f"Este servidor va con los datos de la versión {m['version']} del juego y tú tienes la {VERSION}: puedes jugar con todos. "
-                        "Las armas y los vehículos que tu versión no tiene los oirás y los verás como lo más parecido de lo que conoces; "
-                        "los lugares nuevos no los verás hasta que actualices. ")
-            return (f"Este servidor va con los datos de la versión {m['version']} del juego y tú tienes la {VERSION}: puedes jugar, "
-                    "pero no verás los lugares, vehículos y armas nuevos de otros jugadores hasta que actualices. ")
+                return (tr('Este servidor va con los datos de la versión {version} del juego y tú tienes la {VERSION}: puedes jugar con todos. Las armas y los vehículos que tu versión no tiene los oirás y los verás como lo más parecido de lo que conoces; los lugares nuevos no los verás hasta que actualices. ').format(version=(m['version']), VERSION=(VERSION)))
+            return (tr('Este servidor va con los datos de la versión {version} del juego y tú tienes la {VERSION}: puedes jugar, pero no verás los lugares, vehículos y armas nuevos de otros jugadores hasta que actualices. ').format(version=(m['version']), VERSION=(VERSION)))
         if suya < mia:
-            return (f"Este servidor va con los datos de la versión {m['version']} del juego, anterior a la tuya: puedes jugar, "
-                    "pero lo nuevo de tu versión no lo verán los demás, las armas nuevas cuentan contra otros jugadores como ir con las manos, "
-                    "y en las localidades nuevas no te verán a ti. ")
-        return "Los datos de tu juego no son exactamente los de este servidor: puedes jugar, pero lo que tengas distinto no lo verán los demás. "
+            return (tr('Este servidor va con los datos de la versión {version} del juego, anterior a la tuya: puedes jugar, pero lo nuevo de tu versión no lo verán los demás, las armas nuevas cuentan contra otros jugadores como ir con las manos, y en las localidades nuevas no te verán a ti. ').format(version=(m['version'])))
+        return tr("Los datos de tu juego no son exactamente los de este servidor: puedes jugar, pero lo que tengas distinto no lo verán los demás. ")
 
     def sv_distinto_txt(self):
         """Qué no coincide entre tu juego y el mundo del servidor, con nombres, como lo cuenta el propio servidor (desde la
@@ -741,14 +741,14 @@ class EnLinea:
             if not nombres:
                 return ""
             cabeza = uno if len(nombres) == 1 else f"{len(nombres)} {varios}"
-            return f"{cabeza}: " + ", ".join(nombres[:6]) + (f" y {len(nombres) - 6} más" if len(nombres) > 6 else "")
+            return f"{cabeza}: " + ", ".join(nombres[:6]) + (tr(' y {v} más').format(v=(len(nombres) - 6)) if len(nombres) > 6 else "")
         out = ""
-        faltan = [t for t in (lista("faltan", "armas", "un arma", "armas"), lista("faltan", "vehiculos", "un vehículo", "vehículos")) if t]
+        faltan = [t for t in (lista("faltan", "armas", tr("un arma"), "armas"), lista("faltan", "vehiculos", tr("un vehículo"), "vehículos")) if t]
         if faltan:
-            out += ". El servidor tiene y tu juego no, " + "; ".join(faltan) + ". Los oirás y los verás como lo más parecido de lo que tu juego conoce"
-        sobran = [t for t in (lista("sobran", "armas", "un arma", "armas"), lista("sobran", "vehiculos", "un vehículo", "vehículos")) if t]
+            out += tr(". El servidor tiene y tu juego no, ") + "; ".join(faltan) + tr(". Los oirás y los verás como lo más parecido de lo que tu juego conoce")
+        sobran = [t for t in (lista("sobran", "armas", tr("un arma"), "armas"), lista("sobran", "vehiculos", tr("un vehículo"), "vehículos")) if t]
         if sobran:
-            out += ". Tu juego tiene y el servidor no, " + "; ".join(sobran) + ". Contra otros jugadores esas armas cuentan como ir con las manos, y esos vehículos los ven como un utilitario"
+            out += tr(". Tu juego tiene y el servidor no, ") + "; ".join(sobran) + tr(". Contra otros jugadores esas armas cuentan como ir con las manos, y esos vehículos los ven como un utilitario")
         return out
 
     def sv_al_dia(self, dias):
@@ -756,7 +756,7 @@ class EnLinea:
         if dias <= 0:
             return
         n = min(3, dias)
-        self.decir(f"Has estado {dias} {'día' if dias == 1 else 'días'} del servidor sin entrar." + (" Cuentan tres." if dias > 3 else ""))
+        self.decir(tr('Has estado {dias} {v} del servidor sin entrar.').format(dias=(dias), v=(tr('día') if dias == 1 else tr('días'))) + (tr(" Cuentan tres.") if dias > 3 else ""))
         for _ in range(n):
             self._cobrar_negocios()
         self.pasar_perro(60.0 * 24 * n)
@@ -783,7 +783,7 @@ class EnLinea:
         self._sv_limpiar_mundo()
         self.desconectar_online(motivo)
         if al_menu:
-            texto = motivo or "Has salido del servidor."
+            texto = motivo or tr("Has salido del servidor.")
             self.app.volver_al_menu()
             self.app.decir(texto, True)
 
@@ -920,7 +920,7 @@ class EnLinea:
             ra["canal"] = self.son(SON_RADIO_AJENA, bucle=True, xy=(mejor.x, mejor.y), ref=5, maxd=RADIO_AJENA_M, vol=0.45, cat="musica")
             if not sv.get("radio_ajena_dicha"):                  # la primera vez se explica qué es y cómo se quita
                 sv["radio_ajena_dicha"] = True
-                self.decir(f"Lo que suena es la radio del vehículo de {mejor.nombre}. Si no quieres oír las radios de los demás, se quita en Opciones, Sonido y música.")
+                self.decir(tr('Lo que suena es la radio del vehículo de {nombre}. Si no quieres oír las radios de los demás, se quita en Opciones, Sonido y música.').format(nombre=(mejor.nombre)))
         elif ra["canal"] is not None:
             ra["canal"].mover(mejor.x, mejor.y)
 
@@ -957,10 +957,10 @@ class EnLinea:
             if segura != sv["segura"]:
                 sv["segura"] = segura
                 self.son("llegada" if segura else "menu_atras", cat="interfaz", vol=0.5)
-                self.sv_dicho("segura", "Zona segura: aquí nadie puede herir a nadie." if segura else "Sales de la zona segura.", 6.0)
+                self.sv_dicho("segura", tr("Zona segura: aquí nadie puede herir a nadie.") if segura else tr("Sales de la zona segura."), 6.0)
             if sv["protegido"] and time.time() >= sv["protegido"]:
                 sv["protegido"] = 0
-                self.decir("Se acaba la protección de llegada.")
+                self.decir(tr("Se acaba la protección de llegada."))
         x0, y0 = self.pos()
         for r in self.remotos.values():              # quien te atacó deja de contar como enemigo al cabo de un rato
             if r.hostil and self.t - getattr(r, "t_hostil", 0.0) > 90:
@@ -1008,7 +1008,7 @@ class EnLinea:
     def _svm_aviso(self, m):
         if m.get("son") and m["son"] in self.mez.sonidos:
             self.son(m["son"], cat="interfaz", vol=0.6)
-        self.decir(str(m.get("texto", "")))
+        self.decir(tr_servidor(str(m.get("texto", ""))))
 
     def _svm_pong(self, m):
         pass
@@ -1026,7 +1026,7 @@ class EnLinea:
         if llueve != self.lluvia:
             self.lluvia = llueve
             self.son("trueno" if llueve else "pajaro", cat="ambiente")
-            self.decir("Empieza a llover. El asfalto mojado alarga las frenadas." if llueve else "Deja de llover.")
+            self.decir(tr("Empieza a llover. El asfalto mojado alarga las frenadas.") if llueve else tr("Deja de llover."))
         if dia != self.dia:
             self.dia = dia
             self.plazas_usadas.clear()
@@ -1043,13 +1043,13 @@ class EnLinea:
     def _svm_entra(self, m):
         self._aspecto_enviado = None                             # que el que llega sepa también cómo vas
         registro.ocultar(m.get("nombre"))
-        r = Remoto(m["id"], str(m.get("nombre", "Alguien")))
+        r = Remoto(m["id"], tr(str(m.get("nombre", "Alguien"))) if m.get("ia") else str(m.get("nombre", "Alguien")))
         r.banda, r.ia = m.get("banda"), bool(m.get("ia"))
         self.remotos[m["id"]] = r
         if r.ia:
             return                               # los personajes del servidor van y vienen sin anunciarse
         self.son("amigo_entra", cat="interfaz")
-        self.decir(f"{r.nombre} entra en el servidor.")
+        self.decir(tr('{nombre} entra en el servidor.').format(nombre=(r.nombre)))
 
     def _svm_sale(self, m):
         r = self.remotos.pop(m.get("id"), None)
@@ -1064,7 +1064,7 @@ class EnLinea:
             if getattr(r, "ia", False):
                 return
             self.son("amigo_sale", cat="interfaz")
-            self.decir(f"{r.nombre} sale del servidor.")
+            self.decir(tr('{nombre} sale del servidor.').format(nombre=(r.nombre)))
 
     def _svm_estados(self, m):
         if "tr" in m:
@@ -1138,11 +1138,11 @@ class EnLinea:
                 if f[0] == "v":
                     if modelo not in self.modelos:
                         continue
-                    o = self.crear_vehiculo(modelo, x, y, M.dir_de_rumbo(rumbo), "servidor", "Coche patrulla")
+                    o = self.crear_vehiculo(modelo, x, y, M.dir_de_rumbo(rumbo), "servidor", tr("Coche patrulla"))
                     o.eco_poli, o.ocupado = True, True
                     o.sirena = self.son("sirena", bucle=True, xy=(x, y), ref=14, maxd=260, vol=0.5)
                 else:
-                    o = Persona("civil", x, y, "Policía")
+                    o = Persona("civil", x, y, tr("Policía"))
                     o.estado, o.tag, o.eco_poli, o.eco_de = "quieto", "eco", clave[1], r.id
                     self.personas.append(o)
                 ecos[clave] = o
@@ -1188,17 +1188,17 @@ class EnLinea:
     def _svm_patrulla_llega(self, m):
         """Una patrulla del servidor que rondaba cerca viene a por ti: desde ahora es de las que te persiguen."""
         if m.get("ya"):                                          # la sigue llevando el servidor: solo te enteras
-            self.sv_dicho("patrulla", "Una patrulla que rondaba por aquí viene a por ti.", 8.0)
+            self.sv_dicho("patrulla", tr("Una patrulla que rondaba por aquí viene a por ti."), 8.0)
             return
         if not self.j.estrellas or "patrulla" not in self.modelos:
             return
         v = self.crear_vehiculo("patrulla", float(m.get("x", 0)), float(m.get("y", 0)), int(m.get("d", 0)) % 4, "policia")
         v.ocupado, v.hostil, v.vel = True, True, 12.0
-        self.sv_dicho("patrulla", "Una patrulla que rondaba por aquí viene a por ti.", 8.0)
+        self.sv_dicho("patrulla", tr("Una patrulla que rondaba por aquí viene a por ti."), 8.0)
 
     def _svm_visto(self, m):
-        self.decir("Te ha visto una patrulla.")
-        self.delito(2, "disparos delante de una patrulla", siempre=True)
+        self.decir(tr("Te ha visto una patrulla."))
+        self.delito(2, tr("disparos delante de una patrulla"), siempre=True)
 
     # --------------------------------------------- la policía que lleva el servidor
     def sv_policia_comun(self):
@@ -1233,7 +1233,7 @@ class EnLinea:
                 self._sv_limpiar_busqueda(m.get("motivo") == "perdida")
             return
         if m.get("motivo") == "vuelve":
-            self.decir("La policía no se ha olvidado de ti: te siguen buscando.")
+            self.decir(tr("La policía no se ha olvidado de ti: te siguen buscando."))
         self.j.puntos_busqueda = max(pu, float(UMBRAL[es - 1]))
 
     def _sv_cuadrar_busqueda(self, es):
@@ -1455,7 +1455,7 @@ class EnLinea:
                 v = self.crear_vehiculo(modelo, x, y, M.dir_de_rumbo(rumbo), "servidor")
                 v.tr_id, v.ocupado, v.cerrado, v.tr_poli = ident, True, False, bool(poli)
                 if poli:
-                    v.nombre = "Coche patrulla"
+                    v.nombre = tr("Coche patrulla")
                 self.sv["trafico"][ident] = v
             if poli >= 2 and v.sirena is None:                   # persigue a alguien: con la sirena puesta
                 otras = sum(1 for o in self.vehiculos if o is not v and o.sirena is not None)
@@ -1498,7 +1498,7 @@ class EnLinea:
             v.t_choque = self.t + 1.5
             self.son("golpe")
             self.danar_jugador(v.vel * 2.2, (v.x, v.y))
-            self.decir("¡Te ha atropellado un vehículo!")
+            self.decir(tr("¡Te ha atropellado un vehículo!"))
 
     def _svm_tr_revienta(self, m):
         v = self.sv["trafico"].pop(m.get("id"), None)
@@ -1509,15 +1509,18 @@ class EnLinea:
             self.son("explosion", xy=(float(m.get("x", 0)), float(m.get("y", 0))), ref=30, maxd=400)
 
     def _svm_chat(self, m):
+        de = self.remotos.get(m.get("de"))
+        if de is not None and getattr(de, "ia", False):          # lo que dice un personaje del servidor: en tu idioma
+            m = dict(m, nombre=de.nombre, texto=tr_servidor(str(m.get("texto", ""))))
         if m.get("canal") in CANALES_ROL:
             return self._sv_chat_rol(m.get("canal"), str(m.get("nombre", "Alguien")), str(m.get("texto", "")), m.get("de"))
-        canal = {"cerca": " aquí cerca", "banda": " a la banda", "priv": " solo a ti", "grupo": " al grupo"}.get(m.get("canal"), "")
+        canal = {"cerca": tr(" aquí cerca"), "banda": tr(" a la banda"), "priv": tr(" solo a ti"), "grupo": tr(" al grupo")}.get(m.get("canal"), "")
         linea = f"{m.get('nombre', 'Alguien')}{canal}: {m.get('texto', '')}"
         self.chat.append(linea)
         del self.chat[:-40]
         self.son("chat", cat="interfaz")
         with registro.privado():
-            self.decir(f"{m.get('nombre', 'Alguien')} dice{canal}: {m.get('texto', '')}")
+            self.decir(tr('{get} dice{canal}: {get2}').format(get=(m.get('nombre', 'Alguien')), canal=(canal), get2=(m.get('texto', ''))))
 
     # --------------------------------------------------------------------- rol
     def sv_rol(self):
@@ -1526,8 +1529,8 @@ class EnLinea:
 
     def sv_rol_motivo(self):
         if not self.sv_sabe("rol"):
-            return "Este servidor va con una versión anterior y no tiene canales de rol: usa el chat de siempre."
-        return "Quien lleva este servidor tiene apagados los canales de rol: usa el chat de siempre."
+            return tr("Este servidor va con una versión anterior y no tiene canales de rol: usa el chat de siempre.")
+        return tr("Quien lleva este servidor tiene apagados los canales de rol: usa el chat de siempre.")
 
     def _sv_apuntar_rol(self, canal, linea):
         self.sv["historial"].append((canal, linea))
@@ -1542,9 +1545,9 @@ class EnLinea:
         if canal == "yo":
             linea = dicho = f"{nombre} {texto}"
         elif canal == "ic":
-            linea, dicho = f"{nombre}, en personaje: {texto}", f"{nombre} dice: {texto}"
+            linea, dicho = tr('{nombre}, en personaje: {texto}').format(nombre=(nombre), texto=(texto)), tr('{nombre} dice: {texto}').format(nombre=(nombre), texto=(texto))
         else:
-            linea = dicho = f"{nombre}, fuera de personaje: {texto}"
+            linea = dicho = tr('{nombre}, fuera de personaje: {texto}').format(nombre=(nombre), texto=(texto))
         self._sv_apuntar_rol(canal, linea)
         r = self.remotos.get(de)
         cerca = canal != "ooc" and r is not None and r.visto and r.mapa == self.mundo.id
@@ -1571,21 +1574,21 @@ class EnLinea:
                 self.decir(self.sv_rol_motivo(), True)
                 return False
             self.red.enviar({"t": "chat", "texto": texto, "canal": canal})
-            linea = f"Tú {texto}" if canal == "yo" else f"Tú, {CANALES_ROL[canal][0]}: {texto}"
+            linea = tr('Tú {texto}').format(texto=(texto)) if canal == "yo" else tr('Tú, {v}: {texto}').format(v=(CANALES_ROL[canal][0]), texto=(texto))
             self._sv_apuntar_rol(canal, linea)
             self.son(CANALES_ROL[canal][1] if CANALES_ROL[canal][1] in self.mez.sonidos else "chat", cat="interfaz", vol=0.6)
-            self.decir(f"{self.red.nombre} {texto}" if canal == "yo" else "Enviado.", True)
+            self.decir(f"{self.red.nombre} {texto}" if canal == "yo" else tr("Enviado."), True)
             return True
         self.red.enviar({"t": "chat", "texto": texto, "canal": canal, "a": a})
-        self.chat.append(f"Tú: {texto}")
+        self.chat.append(tr('Tú: {texto}').format(texto=(texto)))
         del self.chat[:-40]
         self.son("chat", cat="interfaz", vol=0.6)
-        self.decir("Enviado.", True)
+        self.decir(tr("Enviado."), True)
         return True
 
     def _svm_rol_oido(self, m):
         if not m.get("n") and m.get("canal") != "ooc":
-            self.decir("No hay nadie lo bastante cerca para oírlo.")
+            self.decir(tr("No hay nadie lo bastante cerca para oírlo."))
 
     def sv_poner_ficha(self, texto):
         """Tu frase de ficha: la que los demás leen cuando te miran. Vacía, la quita."""
@@ -1617,7 +1620,7 @@ class EnLinea:
             self.sv["ficha"] = texto
             self.app.son("menu_ok")
             with registro.privado():
-                self.decir(f"Tu ficha dice ahora: {texto}" if texto else "Has quitado tu ficha.", True)
+                self.decir(tr('Tu ficha dice ahora: {texto}').format(texto=(texto)) if texto else tr("Has quitado tu ficha."), True)
             return
         self.sv["fichas"][m.get("de")] = texto
         r = self.remotos.get(m.get("de"))
@@ -1627,36 +1630,36 @@ class EnLinea:
             de_paso = self.sv.pop("ficha_de_paso", False)
             with registro.privado():
                 if texto:
-                    self.decir(f"Ficha de {nombre}: {texto}", not de_paso)
+                    self.decir(tr('Ficha de {nombre}: {texto}').format(nombre=(nombre), texto=(texto)), not de_paso)
                 elif not de_paso:
-                    self.decir(f"{nombre} no ha escrito ninguna ficha.", True)
+                    self.decir(tr('{nombre} no ha escrito ninguna ficha.').format(nombre=(nombre)), True)
 
     def _svm_cobro(self, m):
         n = min(self.j.dinero, max(0, int(m.get("n", 0))))
         self.j.dinero -= n
         self.son("caja" if "caja" in self.mez.sonidos else "dinero", cat="interfaz", vol=0.6)
-        self.decir(f"Pagas {n} euros: {m.get('motivo', '')}. Te quedan {self.j.dinero}.")
+        self.decir(tr('Pagas {n} euros: {get}. Te quedan {dinero}.').format(n=(n), get=(tr_servidor(str(m.get('motivo', '')))), dinero=(self.j.dinero)))
 
     def _svm_recibe(self, m):
         clase, ident, n = m.get("clase"), str(m.get("id", "")), max(1, int(m.get("n", 1)))
-        nombre = m.get("nombre", "Alguien")
+        nombre = tr_servidor(str(m.get("nombre", "Alguien")))
         if clase == "arma" and ident in self.armas_d:
             self.dar_arma(ident, 0)
-            self.decir(f"{nombre} te da: {self.armas_d[ident]['nombre']}.")
+            self.decir(tr('{nombre} te da: {nombre2}.').format(nombre=(nombre), nombre2=(self.armas_d[ident]['nombre'])))
         elif clase == "balas" and ident in self.j.armas:
             self.j.armas[ident]["reserva"] += n
             self.son("recarga", vol=0.6)
-            self.decir(f"{nombre} te da {n} balas de {self.armas_d[ident]['nombre'].lower()}.")
+            self.decir(tr('{nombre} te da {n} balas de {lower}.').format(nombre=(nombre), n=(n), lower=(self.armas_d[ident]['nombre'].lower())))
         elif clase == "objeto" and ident in {o["id"] for o in self.datos["objetos"]}:
             self.j.objetos[ident] = self.j.objetos.get(ident, 0) + n
             self.son("recoger", cat="interfaz")
-            self.decir(f"{nombre} te da {n} de {next(o['nombre'] for o in self.datos['objetos'] if o['id'] == ident).lower()}.")
+            self.decir(tr('{nombre} te da {n} de {lower}.').format(nombre=(nombre), n=(n), lower=(next(o['nombre'] for o in self.datos['objetos'] if o['id'] == ident).lower())))
         elif clase in ("arma", "objeto"):        # algo de otra versión del juego, o de un mod, que tu juego no tiene
-            self.decir(f"{nombre} te quiere dar algo que no existe en tu versión del juego, y no lo puedes recibir.")
+            self.decir(tr('{nombre} te quiere dar algo que no existe en tu versión del juego, y no lo puedes recibir.').format(nombre=(nombre)))
 
     def _svm_dado(self, m):
         self.son("recoger", cat="interfaz", vol=0.5)
-        self.decir(f"Entregado a {m.get('nombre', 'tu compañero')}.")
+        self.decir(tr('Entregado a {get}.').format(get=(m.get('nombre', 'tu compañero'))))
 
     def _svm_quien(self, m):
         self.sv["quien"] = m.get("e") or []
@@ -1664,10 +1667,10 @@ class EnLinea:
     def _svm_pasivo(self, m):
         self.sv["pasivo"] = bool(m.get("si"))
         self.son("notificacion", cat="interfaz", vol=0.5)
-        self.decir("Modo pasivo activado: no puedes herir a otros jugadores ni ellos a ti." if self.sv["pasivo"] else "Modo pasivo quitado: vuelves a estar expuesto.")
+        self.decir(tr("Modo pasivo activado: no puedes herir a otros jugadores ni ellos a ti.") if self.sv["pasivo"] else tr("Modo pasivo quitado: vuelves a estar expuesto."))
 
     def _svm_expulsado(self, m):
-        self.sv_salir(str(m.get("motivo") or "Te han sacado del servidor."), al_menu=True)
+        self.sv_salir(tr_servidor(str(m.get("motivo") or "")) or tr("Te han sacado del servidor."), al_menu=True)
 
     def _svm_parada(self, m):
         """El servidor avisa de que se va a reiniciar, con su cuenta atrás."""
@@ -1675,30 +1678,30 @@ class EnLinea:
             en = max(0, int(m.get("en") or 0))
         except (TypeError, ValueError):
             en = 0
-        que = "para actualizarse" if m.get("causa") == "actualizacion" else "por mantenimiento"
+        que = tr("para actualizarse") if m.get("causa") == "actualizacion" else tr("por mantenimiento")
         self.son("notificacion", cat="interfaz", vol=0.7)
         if not self.sv.get("parada_dicha"):
             self.sv["parada_dicha"] = True
-            vuelta = ("No tienes que hacer nada: tu personaje se guarda solo y, en cuanto el servidor vuelva, te reconecto y sigues donde estabas."
-                      if self.cfg["reconectar"] else "Tu personaje se guarda solo. Cuando el servidor vuelva, entra otra vez desde Jugar en un servidor.")
-            self.decir(f"Aviso del servidor: dentro de {en} segundos se reinicia {que}. {vuelta}", True)
+            vuelta = (tr("No tienes que hacer nada: tu personaje se guarda solo y, en cuanto el servidor vuelva, te reconecto y sigues donde estabas.")
+                      if self.cfg["reconectar"] else tr("Tu personaje se guarda solo. Cuando el servidor vuelva, entra otra vez desde Jugar en un servidor."))
+            self.decir(tr('Aviso del servidor: dentro de {en} segundos se reinicia {que}. {vuelta}').format(en=(en), que=(que), vuelta=(vuelta)), True)
         else:
-            self.decir(f"El servidor se reinicia dentro de {en} segundos.")
+            self.decir(tr('El servidor se reinicia dentro de {en} segundos.').format(en=(en)))
 
     def _svm_cerrado(self, m):
         # Un servidor nuevo dice por qué se cierra: si es para actualizarse o por mantenimiento, se le espera; si lo han
         # apagado, no. Uno anterior no lo dice: no se sabe si va a volver, así que se le espera igual, por si acaso.
         causa = m.get("causa")
-        motivo = str(m.get("motivo") or "El servidor se ha cerrado.")
+        motivo = tr_servidor(str(m.get("motivo") or "")) or tr("El servidor se ha cerrado.")
         if causa != "apagado" and self.sv_cortado(causa if causa in ("actualizacion", "reinicio") else "cierre", motivo, m.get("vuelve")):
             return
-        self.sv_salir(motivo + " Tu personaje está guardado.", al_menu=True)
+        self.sv_salir(motivo + tr(" Tu personaje está guardado."), al_menu=True)
 
     def _svm_desconectado(self, m):
         registro.aviso("red", "Se ha cortado la conexión con el servidor")
         if self.sv_cortado("corte"):
             return
-        self.sv_salir("Se ha perdido la conexión con el servidor. Tu personaje se guardó hace menos de un minuto: vuelve a entrar para seguir.", al_menu=True)
+        self.sv_salir(tr("Se ha perdido la conexión con el servidor. Tu personaje se guardó hace menos de un minuto: vuelve a entrar para seguir."), al_menu=True)
 
     # ----------------------------------------------------------------- economía
     def _sv_ajustar_saldo(self, sobra, callar=False, datos=None):
@@ -1716,27 +1719,26 @@ class EnLinea:
     def _sv_texto_tope(self, sobra, d=None):
         """Lo que se dice cuando el servidor retira dinero, con las cifras que mande. Uno anterior no manda ninguna."""
         if not d or d.get("tope") is None:
-            return (f"El servidor no reconoce {sobra} euros de lo que llevas, y se retiran. En un servidor no se puede ganar más de un tanto por hora "
-                    "fuera de las misiones y de lo que te dan otros jugadores.")
+            return (tr('El servidor no reconoce {sobra} euros de lo que llevas, y se retiran. En un servidor no se puede ganar más de un tanto por hora fuera de las misiones y de lo que te dan otros jugadores.').format(sobra=(sobra)))
         try:
             tope, acumula, margen, por_minuto = int(d["tope"]), int(d.get("acumula") or d["tope"]), int(d.get("margen") or 0), int(d.get("por_minuto") or 0)
             ganado, aceptado = int(d.get("ganado") or 0), int(d.get("aceptado") or 0)
         except (TypeError, ValueError):
-            return f"El servidor no reconoce {sobra} euros de lo que llevas, y se retiran."
-        texto = (f"De los {ganado} euros que acabas de ganar, el servidor acepta {aceptado} y retira {sobra}. " if ganado else
-                 f"El servidor retira {sobra} euros que no reconoce. ")
-        texto += f"Aquí se pueden ganar por cuenta propia hasta {tope} euros por hora"
+            return tr('El servidor no reconoce {sobra} euros de lo que llevas, y se retiran.').format(sobra=(sobra))
+        texto = (tr('De los {ganado} euros que acabas de ganar, el servidor acepta {aceptado} y retira {sobra}. ').format(ganado=(ganado), aceptado=(aceptado), sobra=(sobra)) if ganado else
+                 tr('El servidor retira {sobra} euros que no reconoce. ').format(sobra=(sobra)))
+        texto += tr('Aquí se pueden ganar por cuenta propia hasta {tope} euros por hora').format(tope=(tope))
         if acumula > tope:
-            texto += f", y lo que no uses se te guarda hasta {acumula}"
+            texto += tr(', y lo que no uses se te guarda hasta {acumula}').format(acumula=(acumula))
         texto += ". "
         if margen <= 0 and por_minuto > 0:
-            texto += f"Ahora mismo has llegado al tope: recuperas {por_minuto} euros de margen cada minuto. "
+            texto += tr('Ahora mismo has llegado al tope: recuperas {por_minuto} euros de margen cada minuto. ').format(por_minuto=(por_minuto))
         elif margen > 0:
-            texto += f"Te quedan {margen} euros de margen. "
-        texto += "No cuentan contra el tope las misiones de la historia, lo que te dan otros jugadores"
+            texto += tr('Te quedan {margen} euros de margen. ').format(margen=(margen))
+        texto += tr("No cuentan contra el tope las misiones de la historia, lo que te dan otros jugadores")
         if int(d.get("encargos_hora") or 0) > 0:
-            texto += f", ni los encargos repetibles, como contratos, combates y atracos, hasta {int(d['encargos_hora'])} por hora de cada tipo"
-        return texto + ". Cómo vas de margen está en el móvil, En línea, Datos y reglas de este servidor."
+            texto += tr(', ni los encargos repetibles, como contratos, combates y atracos, hasta {int} por hora de cada tipo').format(int=(int(d['encargos_hora'])))
+        return texto + tr(". Cómo vas de margen está en el móvil, En línea, Datos y reglas de este servidor.")
 
     def _svm_saldo(self, m):
         self.sv["economia"] = {k: m.get(k) for k in ("tope", "acumula", "horas", "margen", "por_minuto", "encargos_hora", "encargo_max")} if m.get("tope") is not None else self.sv.get("economia")
@@ -1749,19 +1751,19 @@ class EnLinea:
         """Cómo va el tope de dinero de este servidor, en una frase, para el menú."""
         d = self.sv.get("economia")
         if not self.sv_sabe("topes"):
-            return "Este servidor puede poner un tope a lo que ganas por hora, pero su versión no dice cuál"
+            return tr("Este servidor puede poner un tope a lo que ganas por hora, pero su versión no dice cuál")
         if not d:
-            return "En este servidor no hay tope de ganancias: el dinero lo lleva tu juego"
+            return tr("En este servidor no hay tope de ganancias: el dinero lo lleva tu juego")
         try:
-            texto = f"Ganancia por tu cuenta: hasta {int(d['tope'])} euros por hora"
+            texto = tr('Ganancia por tu cuenta: hasta {int} euros por hora').format(int=(int(d['tope'])))
             if int(d.get("acumula") or 0) > int(d["tope"]):
-                texto += f", que se acumulan hasta {int(d['acumula'])} si no los usas"
-            texto += f". Ahora te quedan {int(d.get('margen') or 0)} de margen"
+                texto += tr(', que se acumulan hasta {int} si no los usas').format(int=(int(d['acumula'])))
+            texto += tr('. Ahora te quedan {int} de margen').format(int=(int(d.get('margen') or 0)))
             if int(d.get("encargos_hora") or 0) > 0:
-                texto += f". Aparte, se reconocen {int(d['encargos_hora'])} encargos repetibles por hora de cada tipo, hasta {int(d.get('encargo_max') or 0)} euros cada uno"
+                texto += tr('. Aparte, se reconocen {int} encargos repetibles por hora de cada tipo, hasta {int2} euros cada uno').format(int=(int(d['encargos_hora'])), int2=(int(d.get('encargo_max') or 0)))
             return texto
         except (TypeError, ValueError, KeyError):
-            return "Este servidor pone un tope a lo que ganas por hora"
+            return tr("Este servidor pone un tope a lo que ganas por hora")
 
     def sv_mision_ok(self, m):
         """Has completado una misión tuya: se lo dices al servidor para que dé por buena la recompensa. Si es un encargo
@@ -1811,7 +1813,7 @@ class EnLinea:
             precio = int(l.get("precio", 0) or 0)
             self.j.dinero += precio
             self.app.son("error")
-            self.decir(f"{l.nombre} ya es de {nombre}: se te ha adelantado. Te devuelven los {precio} euros.")
+            self.decir(tr('{nombre} ya es de {nombre2}: se te ha adelantado. Te devuelven los {precio} euros.').format(nombre=(l.nombre), nombre2=(nombre), precio=(precio)))
 
     def _svm_prop(self, m):
         yo = self.sv.get("cuenta")
@@ -1829,7 +1831,7 @@ class EnLinea:
             if l.id not in self.j.propiedades:                   # se lo has comprado a otro jugador
                 self.j.propiedades.append(l.id)
                 self.son("mision_ok", cat="interfaz")
-                self.decir(f"¡{l.nombre} es tuyo!")
+                self.decir(tr('¡{nombre} es tuyo!').format(nombre=(l.nombre)))
         elif m.get("cuenta") is not None:
             self._sv_devolver(l, str(m.get("nombre", "otro jugador")))
 
@@ -1851,8 +1853,8 @@ class EnLinea:
         l = self.lugares.get(m.get("lugar"))
         self.sv["robo"] = m.get("lugar")
         self.son("alarma", xy=(l.x, l.y) if l else None, vol=0.7)
-        self.delito(3, "atraco a un negocio", siempre=True)
-        self.decir(f"¡Atraco! Salta la alarma y a {m.get('nombre', 'su dueño')} le llega el aviso. Aguanta en la puerta {m.get('segundos', 20)} segundos, a pie, sin alejarte.", True)
+        self.delito(3, tr("atraco a un negocio"), siempre=True)
+        self.decir(tr('¡Atraco! Salta la alarma y a {get} le llega el aviso. Aguanta en la puerta {get2} segundos, a pie, sin alejarte.').format(get=(m.get('nombre', 'su dueño')), get2=(m.get('segundos', 20))), True)
 
     def _svm_robo_fin(self, m):
         self.sv["robo"] = None
@@ -1861,10 +1863,10 @@ class EnLinea:
             self.j.dinero += n
             self.j.stats["dinero_ganado"] += n
             self.son("dinero", cat="interfaz")
-            self.decir(f"Caja vaciada: {n} euros. Lárgate antes de que llegue su dueño.", True)
+            self.decir(tr('Caja vaciada: {n} euros. Lárgate antes de que llegue su dueño.').format(n=(n)), True)
         else:
             self.app.son("error")
-            self.decir(str(m.get("motivo") or "El atraco ha fallado."), True)
+            self.decir(tr_servidor(str(m.get("motivo") or "")) or tr("El atraco ha fallado."), True)
 
     def _svm_robo_aviso(self, m):
         l = self.lugares.get(m.get("lugar"))
@@ -1873,8 +1875,8 @@ class EnLinea:
             r.hostil, r.t_hostil = True, self.t           # quien te roba es enemigo: la Q le fija
         self.son("alarma", cat="interfaz", vol=0.7)
         self.app.vibrar(0.8, 0.8, 500)
-        de_quien = "tu negocio" if m.get("tuyo") else "un negocio de tu banda"
-        self.decir(f"¡{m.get('nombre', 'Alguien')} está atracando {de_quien}, {self.nombre_lugar(l) if l else ''}! Tienes {m.get('segundos', 20)} segundos para impedirlo.", True)
+        de_quien = tr("tu negocio") if m.get("tuyo") else tr("un negocio de tu banda")
+        self.decir(tr('¡{get} está atracando {de_quien}, {v}! Tienes {get2} segundos para impedirlo.').format(get=(m.get('nombre', 'Alguien')), de_quien=(de_quien), v=(self.nombre_lugar(l) if l else ''), get2=(m.get('segundos', 20))), True)
         if l is not None and not self.mision and self.gps is None:
             self.gps_a_lugar(l, callar=True)
 
@@ -1887,7 +1889,7 @@ class EnLinea:
         del_banco = min(j.banco, total - de_mano)
         j.banco -= del_banco
         self.son("animo_baja", cat="interfaz")
-        self.decir(f"A tus negocios les han robado {total} euros de la caja. Se te descuentan {de_mano + del_banco}.")
+        self.decir(tr('A tus negocios les han robado {total} euros de la caja. Se te descuentan {v}.').format(total=(total), v=(de_mano + del_banco)))
 
     def _svm_robos_dia(self, m):
         self._sv_descontar_robos(int(m.get("total") or 0))
@@ -1917,7 +1919,7 @@ class EnLinea:
         if r is None:
             return False
         if self.arma()["id"] == "punos":
-            self.decir("Para atracar a alguien tienes que empuñar un arma.", True)
+            self.decir(tr("Para atracar a alguien tienes que empuñar un arma."), True)
             return True
         self.son("grito", vol=0.5)
         self.red.enviar({"t": "atraco", "a": r.id})
@@ -1931,7 +1933,7 @@ class EnLinea:
         if r is None:
             return False
         from . import menus_enlinea
-        menus_enlinea.chat(self, "priv", r.id, f"Qué le dices a {r.nombre}")
+        menus_enlinea.chat(self, "priv", r.id, tr('Qué le dices a {nombre}').format(nombre=(r.nombre)))
         return True
 
     def _svm_atracado(self, m):
@@ -1940,7 +1942,7 @@ class EnLinea:
         self._sv_agresor(m.get("de"), str(m.get("nombre", "Alguien")))
         self.son("grito", vol=0.6)
         self.app.vibrar(0.6, 0.6, 300)
-        self.decir(f"¡{m.get('nombre', 'Alguien')} te atraca a punta de arma! Te quita {n} euros. Pulsa Q para fijarle.", True)
+        self.decir(tr('¡{get} te atraca a punta de arma! Te quita {n} euros. Pulsa Q para fijarle.').format(get=(m.get('nombre', 'Alguien')), n=(n)), True)
 
     def _svm_atraco_ok(self, m):
         n = max(0, int(m.get("botin", 0)))
@@ -1948,7 +1950,7 @@ class EnLinea:
         self.j.stats["dinero_ganado"] += n
         self.son("dinero", cat="interfaz")
         self.delito(1.5, "atraco")
-        self.decir(f"Atracas a {m.get('nombre', 'otro jugador')}: {n} euros." if n else f"Atracas a {m.get('nombre', 'otro jugador')}, pero no lleva nada encima.", True)
+        self.decir(tr('Atracas a {get}: {n} euros.').format(get=(m.get('nombre', 'otro jugador')), n=(n)) if n else tr('Atracas a {get}, pero no lleva nada encima.').format(get=(m.get('nombre', 'otro jugador'))), True)
 
     def sv_explosion(self, x, y, arma_id):
         if self.en_servidor and arma_id:
@@ -1959,7 +1961,7 @@ class EnLinea:
         r = self.remotos.get(ident)
         if r is not None:
             if not r.hostil:
-                self.sv_dicho("ataca", f"¡{nombre} te ataca! Pulsa Q para fijarlo.", 5.0)
+                self.sv_dicho("ataca", tr('¡{nombre} te ataca! Pulsa Q para fijarlo.').format(nombre=(nombre)), 5.0)
             r.hostil, r.t_hostil = True, self.t
 
     def _svm_herido(self, m):
@@ -2020,13 +2022,13 @@ class EnLinea:
         r = self.remotos.get(m.get("a"))
         if r is not None:
             self.son("dolor_npc", xy=(r.x, r.y), ref=6)
-        self.sv_dicho("impacto", f"Atropellas a {m.get('nombre', 'alguien')}." if m.get("atropello") else f"Le das a {m.get('nombre', 'alguien')}.", 3.0)
+        self.sv_dicho("impacto", tr('Atropellas a {get}.').format(get=(m.get('nombre', 'alguien'))) if m.get("atropello") else tr('Le das a {get}.').format(get=(m.get('nombre', 'alguien'))), 3.0)
 
     def _svm_fallo(self, m):
         if m.get("motivo"):
-            self.sv_dicho("motivo", str(m["motivo"]), 3.0, True)
+            self.sv_dicho("motivo", tr_servidor(str(m["motivo"])), 3.0, True)
         elif m.get("lejos"):
-            self.sv_dicho("lejos", "Fuera de alcance.", 2.5)
+            self.sv_dicho("lejos", tr("Fuera de alcance."), 2.5)
 
     def sv_al_morir(self):
         """Has caído. Si ha sido ante otro jugador, el servidor reparte el botín."""
@@ -2039,7 +2041,7 @@ class EnLinea:
     def _svm_caes(self, m):
         n = min(self.j.dinero, max(0, int(m.get("pierde", 0))))
         self.j.dinero -= n
-        self.decir(f"Has caído ante {m.get('nombre', 'otro jugador')}. Se lleva {n} euros de lo que llevabas encima.")
+        self.decir(tr('Has caído ante {get}. Se lleva {n} euros de lo que llevabas encima.').format(get=(m.get('nombre', 'otro jugador')), n=(n)))
 
     def _svm_baja(self, m):
         n = max(0, int(m.get("botin", 0)))
@@ -2051,16 +2053,16 @@ class EnLinea:
             if self.objetivo is r:
                 self.objetivo = None
         self.son("mision_ok", cat="interfaz", vol=0.5)
-        self.decir(f"Has tumbado a {m.get('nombre', 'otro jugador')}. Te llevas {n} euros.{m.get('texto', '')}")
+        self.decir(tr('Has tumbado a {get}. Te llevas {n} euros.{get2}').format(get=(m.get('nombre', 'otro jugador')), n=(n), get2=(tr_servidor(str(m.get('texto', ''))))))
 
     def _svm_buscado(self, m):
         self.sv["recompensa"] = int(m.get("recompensa", 0))
-        self.decir(f"Has tumbado a alguien que no se defendía. Ofrecen {self.sv['recompensa']} euros por tu cabeza, y la policía te busca.")
+        self.decir(tr('Has tumbado a alguien que no se defendía. Ofrecen {recompensa} euros por tu cabeza, y la policía te busca.').format(recompensa=(self.sv['recompensa'])))
         if self.mundo.policia:
             self.poner_busqueda(2)
 
     def _svm_muerte(self, m):
-        self.sv_dicho("muerte", f"{m.get('por', 'Alguien')} ha tumbado a {m.get('quien', 'alguien')}.", 1.0)
+        self.sv_dicho("muerte", tr('{get} ha tumbado a {get2}.').format(get=(m.get('por', 'Alguien')), get2=(m.get('quien', 'alguien'))), 1.0)
 
     # ---------------------------------------------------------------- vehículos
     def sv_poner_vehiculos(self):
@@ -2107,6 +2109,22 @@ class EnLinea:
             self.sv["vehs"][v.id_red] = d
             self.sv.setdefault("mios", set()).add(v.id_red)
             self.red.enviar(dict(d, t="veh_dejar"))
+            self._sv_traidos_pendientes()
+
+    def sv_traido(self, v):
+        """Tu mecánico te ha traído un vehículo de tu garaje: el servidor lo apunta como tuyo, aparcado en su calle, igual
+        que si te hubieras bajado de él. Si vas conduciendo otro, se apunta en cuanto te bajes de ese."""
+        if not self.en_servidor or v.tag or getattr(v, "id_red", None) is not None:
+            return
+        if self.j.veh is not None and getattr(self.j.veh, "id_red", None) is not None:
+            self.sv.setdefault("traidos", []).append(v)
+            return
+        self.sv_subido(v)
+
+    def _sv_traidos_pendientes(self):
+        for v in self.sv.pop("traidos", None) or []:
+            if not v.muerto and v in self.vehiculos and v is not self.j.veh:
+                self.sv_subido(v)
 
     def sv_quitado(self, v):
         """Un vehículo tuyo deja de existir: al garaje, vendido o reventado."""
@@ -2119,11 +2137,11 @@ class EnLinea:
     def sv_pedir_vehiculo(self, v):
         """F junto a un vehículo aparcado de otro jugador: se lo pides al servidor. True si hay que esperar la respuesta."""
         if self.en_servidor and (getattr(v, "eco_poli", False) or (getattr(v, "tr_poli", False) and not v.desplegado)):
-            self.decir("Ese coche patrulla está lleno de policías.", True)
+            self.decir(tr("Ese coche patrulla está lleno de policías."), True)
             return True
         if self.en_servidor and getattr(v, "tr_id", None) is not None and v.ia == "servidor":      # un coche del tráfico común
             if abs(v.vel) > 6:
-                self.decir("Va demasiado rápido para abrir la puerta. Ponte delante: frenará.", True)
+                self.decir(tr("Va demasiado rápido para abrir la puerta. Ponte delante: frenará."), True)
             else:
                 self.red.enviar({"t": "tr_robar", "id": v.tr_id})
             return True
@@ -2195,8 +2213,8 @@ class EnLinea:
         garaje. Devuelve False, y lo dice, si el servidor es anterior y no sabe hacerlo."""
         if not self.sv_sabe("mis_vehiculos"):
             self.app.son("error")
-            self.decir("Este servidor va con una versión anterior y no sabe hacer eso con un vehículo aparcado. Ve hasta él: puedes cambiarle el nombre "
-                       "al subir, y mandarlo al garaje desde Servicios con el vehículo al lado.", True)
+            self.decir(tr("Este servidor va con una versión anterior y no sabe hacer eso con un vehículo aparcado. Ve hasta él: puedes cambiarle el nombre "
+                       "al subir, y mandarlo al garaje desde Servicios con el vehículo al lado."), True)
             return False
         self.red.enviar(dict(mas, t="veh_" + que, id=d["id"]))
         return True
@@ -2209,7 +2227,7 @@ class EnLinea:
             self.sv["vehs"].pop(ident, None)
             self.sv.setdefault("mios", set()).discard(ident)
             self.app.son("error")
-            self.decir(str(m.get("motivo") or "No se ha podido."), True)
+            self.decir(tr_servidor(str(m.get("motivo") or "")) or tr("No se ha podido."), True)
             return
         if d.get("id") is None:
             return
@@ -2219,7 +2237,7 @@ class EnLinea:
             if v is not None:
                 v.nombre = str(d.get("nombre") or v.nombre)[:40]
             self.app.son("menu_ok")
-            self.decir(f"Ahora se llama {d.get('nombre')}.", True)
+            self.decir(tr('Ahora se llama {get}.').format(get=(d.get('nombre'))), True)
         elif que == "traer":
             self.pagar(int(pend.get("precio", 0)))
             self.sv["vehs"][d["id"]] = d
@@ -2231,8 +2249,10 @@ class EnLinea:
                 v = self._sv_crear_copia(d)
             if v is not None:
                 v.red_dueno = True
+                if self.j.veh is None:
+                    self.ultimo_veh = v                          # Mayúsculas L y Servicios lo encuentran
                 self.son(v.modelo.get("claxon", "claxon"), xy=(v.x, v.y))
-                self.decir(f"Tu mecánico te deja {v.nombre} en la calle. {self.situar(v.x, v.y, 'Está')}.", True)
+                self.decir(tr('Tu mecánico te deja {nombre} en la calle. {situar}.').format(nombre=(v.nombre), situar=(self.situar(v.x, v.y, tr('Está')))), True)
         elif que == "garaje":
             casa = self.lug(m.get("ref") or pend.get("casa") or "")
             self.sv["vehs"].pop(d["id"], None)
@@ -2247,7 +2267,7 @@ class EnLinea:
                      "mejoras": dict(d.get("mejoras") or {})}
             self.j.garajes.setdefault(casa.id, []).append(ficha)
             self.son("arranque", vol=0.6)
-            self.decir(f"Tu mecánico se lleva {ficha['nombre']} al garaje de {self.nombre_lugar(casa)}.", True)
+            self.decir(tr('Tu mecánico se lleva {nombre} al garaje de {nombre_lugar}.').format(nombre=(ficha['nombre']), nombre_lugar=(self.nombre_lugar(casa))), True)
             self.sv_guardar()                                    # ya no está en la calle del servidor: que conste en tu personaje cuanto antes
 
     def _svm_veh_ok(self, m):
@@ -2261,13 +2281,13 @@ class EnLinea:
                     if t.sirena is not None:
                         t.sirena.parar()
                         t.sirena = None
-                    self.delito(3, "robo de un coche patrulla", siempre=True)
+                    self.delito(3, tr("robo de un coche patrulla"), siempre=True)
                 else:
-                    c = Persona("civil", *self.mundo.punto_libre(t.x + 2, t.y + 2), nombre="Conductor")
+                    c = Persona("civil", *self.mundo.punto_libre(t.x + 2, t.y + 2), nombre=tr("Conductor"))
                     c.estado, c.t_estado = "huye", 12
                     self.personas.append(c)
                     self.son("grito", xy=(c.x, c.y), tono=c.tono)
-                    self.delito(2, "robo de vehículo con violencia")
+                    self.delito(2, tr("robo de vehículo con violencia"))
         v = self._sv_copia(m.get("id"))
         re = self.sv.get("reenganche")
         if re and re.get("id") == m.get("id") and v is not None and v is self.j.veh:
@@ -2291,10 +2311,10 @@ class EnLinea:
         if m.get("asalto"):
             v.x, v.y = x, y
             self.son("grito", xy=(x, y), vol=0.6)
-            self.decir(f"Sacas a {m['asalto']} del vehículo y te lo quedas.")
-            self.delito(2, "robo de vehículo con violencia")
+            self.decir(tr('Sacas a {asalto} del vehículo y te lo quedas.').format(asalto=(m['asalto'])))
+            self.delito(2, tr("robo de vehículo con violencia"))
         elif m.get("robado"):
-            self.delito(0.5, "robo de vehículo")
+            self.delito(0.5, tr("robo de vehículo"))
         v.red_mio = True
         self.sv["vehs"].pop(v.id_red, None)
         self._subir(v, bool(m.get("robado")))
@@ -2305,7 +2325,7 @@ class EnLinea:
             return self._sv_reenganche_no(m)
         if m.get("motivo"):
             self.app.son("error")
-            self.decir(str(m["motivo"]), True)
+            self.decir(tr_servidor(str(m["motivo"])), True)
 
     def _svm_sacado(self, m):
         v = self.j.veh
@@ -2316,7 +2336,7 @@ class EnLinea:
             self.quitar_vehiculo(v)
         self._sv_agresor(m.get("por"), str(m.get("nombre", "Alguien")))
         self.son("puerta_coche")
-        self.decir(f"¡{m.get('nombre', 'Alguien')} te saca del vehículo y se lo lleva!", True)
+        self.decir(tr('¡{get} te saca del vehículo y se lo lleva!').format(get=(m.get('nombre', 'Alguien'))), True)
 
     def _svm_veh_golpe(self, m):
         if self.j.veh is not None and getattr(self.j.veh, "id_red", None) == m.get("id"):
@@ -2355,15 +2375,15 @@ class EnLinea:
         antes = self.sv["banda"]
         self.sv["banda"], self.sv["rango"] = m.get("b"), m.get("rango")
         if antes and not self.sv["banda"]:
-            self.decir("Ya no estás en ninguna banda.")
+            self.decir(tr("Ya no estás en ninguna banda."))
         elif self.sv["banda"] and not antes:
             self.son("territorio", cat="interfaz", vol=0.6)
-            self.decir(f"Estás en la banda {self.sv['banda']['nombre']}.")
+            self.decir(tr('Estás en la banda {nombre}.').format(nombre=(self.sv['banda']['nombre'])))
 
     def _svm_banda_invita(self, m):
         self.sv["inv_banda"] = {"nombre": str(m.get("nombre", "")), "de": str(m.get("de", ""))}
         self.son("notificacion", cat="interfaz")
-        self.decir(f"{m.get('de', 'Alguien')} te invita a la banda {m.get('nombre', '')}. Abre el móvil con M, En línea, para aceptar o rechazar.")
+        self.decir(tr('{get} te invita a la banda {get2}. Abre el móvil con M, En línea, para aceptar o rechazar.').format(get=(m.get('de', 'Alguien')), get2=(m.get('nombre', ''))))
 
     def _svm_de_banda(self, m):
         r = self.remotos.get(m.get("id"))
@@ -2384,10 +2404,10 @@ class EnLinea:
     def sv_relacion(self, r):
         """Qué es para ti otro jugador: de tu banda, del grupo, o nada."""
         if self.sv["grupo"] is not None and any(q["id"] == r.id for q in self.sv["miembros"]):
-            return "de tu grupo"
+            return tr("de tu grupo")
         b = self.sv["banda"]
         if b and getattr(r, "banda", None) == b["id"]:
-            return "de tu banda"
+            return tr("de tu banda")
         return ""
 
     # --------------------------------------------------------- misiones en grupo
@@ -2397,10 +2417,10 @@ class EnLinea:
         if self.sv["grupo"] is None:
             self._sv_quitar_ecos()
             if antes is not None:
-                self.decir("El grupo se ha deshecho.")
+                self.decir(tr("El grupo se ha deshecho."))
         else:
             nombres = ", ".join(q["nombre"] for q in self.sv["miembros"] if q["id"] != self.red.id)
-            self.decir(f"Grupo de misión: vas con {nombres}." + (" Lo llevas tú: lo que consigas en tus misiones lo compartís." if self.sv["grupo"] == self.red.id else ""))
+            self.decir(tr('Grupo de misión: vas con {nombres}.').format(nombres=(nombres)) + (tr(" Lo llevas tú: lo que consigas en tus misiones lo compartís.") if self.sv["grupo"] == self.red.id else ""))
             if self.sv["grupo"] == self.red.id and self.mision:
                 self.sv_mision_paso()
                 self.sv_mision_enemigos()
@@ -2411,19 +2431,19 @@ class EnLinea:
             # Es quien llevaba tu grupo antes de que el servidor se fuera, que lo está rehaciendo: se acepta sin preguntar.
             self.sv["regrupo"] = None
             self.red.enviar({"t": "grupo_resp", "si": True})
-            self.decir(f"{g['lider']} rehace el grupo de misión y vuelves a él.")
+            self.decir(tr('{lider} rehace el grupo de misión y vuelves a él.').format(lider=(g['lider'])))
             return
         self.sv["inv_grupo"] = {"de": m.get("de"), "nombre": str(m.get("nombre", "")), "mision": str(m.get("mision", ""))}
         self.son("notificacion", cat="interfaz")
-        self.decir(f"{m.get('nombre', 'Alguien')} te invita a su grupo" + (f" para la misión {m['mision']}" if m.get("mision") else "")
-                   + ". Abre el móvil con M, En línea, para aceptar o rechazar.")
+        self.decir(tr('{get} te invita a su grupo').format(get=(m.get('nombre', 'Alguien'))) + (tr(' para la misión {mision}').format(mision=(m['mision'])) if m.get("mision") else "")
+                   + tr(". Abre el móvil con M, En línea, para aceptar o rechazar."))
 
     def _svm_paga_mision(self, m):
         n = max(0, int(m.get("n", 0)))
         self.j.dinero += n
         self.j.stats["dinero_ganado"] += n
         self.son("mision_ok", cat="interfaz")
-        self.decir(f"Misión completada con {m.get('de', 'tu grupo')}: {m.get('titulo', '')}. Tu parte: {n} euros.")
+        self.decir(tr('Misión completada con {get}: {get2}. Tu parte: {n} euros.').format(get=(m.get('de', 'tu grupo')), get2=(m.get('titulo', '')), n=(n)))
         self._sv_quitar_ecos()
 
     def sv_lidero(self):
@@ -2484,7 +2504,7 @@ class EnLinea:
         if que == "paso":
             self.sv["mision_grupo"] = {"titulo": str(d.get("titulo", "")), "texto": str(d.get("texto", "")), "lugar": d.get("lugar")}
             self.son("notificacion", cat="interfaz", vol=0.6)
-            self.decir(f"Misión de {nombre}, {d.get('titulo', '')}: {d.get('texto', '')}")
+            self.decir(tr('Misión de {nombre}, {get}: {get2}').format(nombre=(nombre), get=(d.get('titulo', '')), get2=(d.get('texto', ''))))
             l = self.lugares.get(d.get("lugar") or "")
             if l is not None and not self.mision and (self.gps is None or self.gps.get("grupo")):
                 self.gps_a_lugar(l, callar=True)
@@ -2518,7 +2538,7 @@ class EnLinea:
                 self.sv["ecos"][k] = e
                 nuevos += 1
             if nuevos:
-                self.decir(f"Los enemigos de la misión de {nombre} son también tuyos: hay {nuevos}. Pulsa Q para fijar al más cercano.")
+                self.decir(tr('Los enemigos de la misión de {nombre} son también tuyos: hay {nuevos}. Pulsa Q para fijar al más cercano.').format(nombre=(nombre), nuevos=(nuevos)))
         elif que == "golpe":
             k = d.get("k")
             e = self.sv["ecos"].get(k)
@@ -2535,7 +2555,7 @@ class EnLinea:
             if self.gps and self.gps.get("grupo"):
                 self.cancelar_gps()
             if not d.get("hecha"):
-                self.decir(f"La misión de {nombre} se ha quedado sin terminar.")
+                self.decir(tr('La misión de {nombre} se ha quedado sin terminar.').format(nombre=(nombre)))
 
     def _sv_grupo_paso(self, dt):
         """Los enemigos del grupo que ya han caído se retiran de tu lista."""

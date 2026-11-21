@@ -58,9 +58,12 @@ def comprobar(raiz):
     def hay(*partes):
         return os.path.exists(os.path.join(raiz, *partes))
 
-    for necesario in (("PuertoBravo.exe",), ("EditorMods.exe",), ("data", "datos", "ciudad.pbd"), ("data", "docs", "manual.html"),
-                      ("data", "docs", "teclas.html"), ("data", "docs", "cambiar_sonidos.html"), ("data", "docs", "editor_mods.html"),
-                      ("data", "docs", "novedades.html"), ("data", "docs", "servidor.html"), ("PuertoBravoServidor.exe",), ("PuertoBravoServidorPanel.exe",),
+    for necesario in (("PuertoBravo.exe",), ("EditorMods.exe",), ("data", "datos", "ciudad.pbd"), ("data", "docs", "manual_es.html"),
+                      ("data", "docs", "teclas_es.html"), ("data", "docs", "cambiar_sonidos_es.html"), ("data", "docs", "editor_mods_es.html"),
+                      ("data", "docs", "novedades_es.html"), ("data", "docs", "servidor_es.html"),
+                      ("data", "docs", "manual_en.html"), ("data", "docs", "teclas_en.html"), ("data", "docs", "cambiar_sonidos_en.html"),
+                      ("data", "docs", "editor_mods_en.html"), ("data", "docs", "novedades_en.html"), ("data", "docs", "servidor_en.html"),
+                      ("data", "idiomas", "en", "textos.json"), ("PuertoBravoServidor.exe",), ("PuertoBravoServidorPanel.exe",),
                       ("lib", "servidor", "mundo.json"), ("lib", "servidor", "opciones.pyc"), ("lib", "panel_servidor"), ("data", "sonidos", "por_defecto"), ("data", "sonidos", "realista"), ("data", "sonidos", "alternativo"), ("data", "sonidos", "retro"),
                       ("data", "radio"), ("data", "musica"), ("lib", "numpy"), ("lib_antiguo", "numpy"), ("lib", "soft_oal.dll"), ("LICENCIA_OpenAL_Soft.txt",)) + tuple(("data", "mods", m) for m in MODS_DE_SERIE):
         if not hay(*necesario):
@@ -98,14 +101,22 @@ def comprobar(raiz):
         problemas.append("Hay voces en data\\voces: deben ir solo en data\\datos\\voces_puente")
     if os.path.isdir(os.path.join(data, "voces_generadas")):
         problemas.append("Voces generadas para un personaje propio: " + os.path.join("data", "voces_generadas"))
-    principal = os.path.join(puente, "historia_principal")
-    if not os.path.isdir(principal):
-        problemas.append("Faltan las voces de la historia principal: " + principal)
-    else:
+    # una carpeta por historia y por idioma: historia_principal_es, historia_principal_en...
+    for cod, deben in (("es", ("m01_1_1", "m01_1_1@alex", "m01_1_2@cris_m")), ("en", ("m01_1_1",))):
+        principal = os.path.join(puente, "historia_principal_" + cod)
+        if not os.path.isdir(principal):
+            problemas.append("Faltan las voces de la historia principal en " + cod + ": " + principal)
+            continue
         nombres = {os.path.splitext(f)[0].lower() for f in os.listdir(principal)}
-        for hace_falta in ("m01_1_1", "m01_1_1@alex", "m01_1_2@cris_m"):
+        if len(nombres) < 900:
+            problemas.append("Faltan voces de la historia principal en " + cod + ": solo hay " + str(len(nombres)))
+        for hace_falta in deben:
             if hace_falta not in nombres:
-                problemas.append("Falta la voz " + hace_falta + " de la historia principal: las de esta versión llevan una por personaje y género")
+                problemas.append("Falta la voz " + hace_falta + " de la historia principal en " + cod + ": las de esta versión llevan una por personaje y género")
+    if os.path.isdir(puente) and any(not os.path.isdir(os.path.join(puente, d)) or not d.rsplit("_", 1)[-1] in ("es", "en") for d in os.listdir(puente)):
+        problemas.append("Hay en las voces carpetas sin idioma en el nombre: " + ", ".join(d for d in os.listdir(puente) if d.rsplit("_", 1)[-1] not in ("es", "en")))
+    if not os.path.exists(os.path.join(data, "phonon", "reparto_en.json")) or not os.path.isdir(os.path.join(data, "phonon", "voces_en")):
+        problemas.append("Faltan las voces inglesas del generador del personaje propio: data\\phonon\\voces_en y reparto_en.json")
     for n in ("config.json", "tokenizer.json", "model.q8.gguf", "reparto.json", "LICENCIA.txt"):
         if not os.path.exists(os.path.join(data, "phonon", n)):
             problemas.append("Falta el generador de voces: " + os.path.join("data", "phonon", n))

@@ -13,17 +13,18 @@ con normalidad, en lugar de desaparecer sin más.
 
 Este módulo no puede importar numpy ni nada que lo use.
 """
+from .i18n import tr
 import os
 import sys
 
 # Constantes de IsProcessorFeaturePresent. De la 36 en adelante solo contestan bien desde Windows 10 de mayo de 2020.
-INSTRUCCIONES = (("SSE3", 13), ("CX16", 14), ("SSSE3", 36), ("SSE4.1", 37), ("SSE4.2", 38), ("AVX", 39), ("AVX2", 40))
-NECESARIAS = ("SSE3", "CX16", "SSSE3", "SSE4.1", "SSE4.2")
+INSTRUCCIONES = (("SSE3", 13), ("CX16", 14), ("SSSE3", 36), (tr("SSE4.1"), 37), (tr("SSE4.2"), 38), ("AVX", 39), ("AVX2", 40))
+NECESARIAS = ("SSE3", "CX16", "SSSE3", tr("SSE4.1"), tr("SSE4.2"))
 estado = {"numpy": "", "motivo": "", "instrucciones": {}}
 
-AVISO = ("Puerto Bravo no puede funcionar en este ordenador. Su procesador es demasiado antiguo: le faltan instrucciones "
+AVISO = (tr("Puerto Bravo no puede funcionar en este ordenador. Su procesador es demasiado antiguo: le faltan instrucciones "
          "que el motor de sonido del juego necesita. No es un fallo de la instalación ni se arregla volviendo a descargarlo. "
-         "Hace falta un ordenador con un procesador fabricado, más o menos, de 2009 en adelante.")
+         "Hace falta un ordenador con un procesador fabricado, más o menos, de 2009 en adelante."))
 
 
 def instrucciones():
@@ -89,11 +90,11 @@ def preparar(cargar=None):
         try:
             cargar()
             estado["numpy"] = cual
-            estado["motivo"] = ("forzada para pruebas" if forzada in ("antigua", "oficial") and hay_antigua else
-                                "no hay otra" if not hay_antigua else
-                                "el procesador tiene todas las instrucciones" if cual == "oficial" and not errores else
-                                "al procesador le faltan instrucciones" if cual == "antigua" and not errores else
-                                "la otra no ha cargado: " + "; ".join(errores))
+            estado["motivo"] = (tr("forzada para pruebas") if forzada in ("antigua", "oficial") and hay_antigua else
+                                tr("no hay otra") if not hay_antigua else
+                                tr("el procesador tiene todas las instrucciones") if cual == "oficial" and not errores else
+                                tr("al procesador le faltan instrucciones") if cual == "antigua" and not errores else
+                                tr("la otra no ha cargado: ") + "; ".join(errores))
             return True
         except Exception as e:                                           # sobre todo ImportError: «DLL load failed»
             errores.append(f"{cual}: {type(e).__name__}")
@@ -107,8 +108,8 @@ def preparar(cargar=None):
 def resumen():
     """Para sistema.txt: qué instrucciones hay y qué biblioteca se ha cargado."""
     ins = estado["instrucciones"] or instrucciones()
-    return {"instrucciones del procesador": ", ".join(f"{n} {'sí' if v else 'no'}" for n, v in ins.items()) or "no se han podido consultar",
-            "biblioteca de cálculo": f"{estado['numpy'] or 'oficial'} ({estado['motivo'] or 'sin elegir'})"}
+    return {"instrucciones del procesador": ", ".join(f"{n} {'sí' if v else 'no'}" for n, v in ins.items()) or tr("no se han podido consultar"),
+            "biblioteca de cálculo": f"{estado['numpy'] or 'oficial'} ({estado['motivo'] or tr('sin elegir')})"}
 
 
 def avisar_incompatible(registro=None):
@@ -124,6 +125,6 @@ def avisar_incompatible(registro=None):
         pass
     try:
         import ctypes
-        ctypes.windll.user32.MessageBoxW(None, AVISO, "Puerto Bravo: Ley del Asfalto", 0x10 | 0x10000)     # icono de error, en primer plano
+        ctypes.windll.user32.MessageBoxW(None, AVISO, tr("Puerto Bravo: Ley del Asfalto"), 0x10 | 0x10000)     # icono de error, en primer plano
     except Exception:
         pass

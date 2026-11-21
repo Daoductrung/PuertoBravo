@@ -832,7 +832,7 @@ def test_las_voces_de_los_tutoriales_siguen_cuadrando_con_sus_frases(datos_de_se
     grabación de un tutorial apuntando a un paso que ya no es un diálogo o a una frase que no existe."""
     d = M.cargar_datos(con_mods=False)
     por_id = {m["id"]: m for m in d["misiones"]}
-    carpeta = os.path.join(rutas.DATA, "voces", "historia_principal")
+    carpeta = os.path.join(rutas.DATA, "voces", "historia_principal_es")
     if not os.path.isdir(carpeta):
         pytest.skip("sin voces grabadas")
     for f in os.listdir(carpeta):
@@ -1649,16 +1649,16 @@ def test_los_sonidos_nuevos_estan_en_todos_los_packs_y_en_la_guia():
         for pack in ("por_defecto", "realista", "alternativo", "retro", "envolvente"):
             carpeta = os.path.join(rutas.PACKS, pack)
             assert os.path.isdir(carpeta) and any(os.path.exists(os.path.join(carpeta, n + e)) for e in rutas.EXT_AUDIO), (pack, n)
-    guia = open(os.path.join(rutas.DATA, "docs", "cambiar_sonidos.html"), encoding="utf-8").read()
+    guia = open(os.path.join(rutas.DATA, "docs", "cambiar_sonidos_es.html"), encoding="utf-8").read()
     assert "timbre" in guia and "emisora" in guia
 
 
 def test_el_manual_y_la_guia_del_editor_cuentan_lo_nuevo():
-    manual = open(os.path.join(rutas.DATA, "docs", "manual.html"), encoding="utf-8").read()
+    manual = open(os.path.join(rutas.DATA, "docs", "manual_es.html"), encoding="utf-8").read()
     for frase in ("Comida a domicilio", "Atracar cualquier local", "Asaltar a un proveedor", "Negociar con las bandas", "El tablón de encargos", "Pedirle un favor",
                   "que se una a tu banda", "Vivir en pareja", "Planes en pareja", "Trabajar de policía", "dar el alto", "lancha de prácticas"):
         assert frase in manual, frase
-    editor = open(os.path.join(rutas.DATA, "docs", "editor_mods.html"), encoding="utf-8").read()
+    editor = open(os.path.join(rutas.DATA, "docs", "editor_mods_es.html"), encoding="utf-8").read()
     for frase in ("Contratos del tablón", "Comida a domicilio", "Avisos de la emisora", "Planes en pareja", "Negociar con las bandas", "Práctica de un tutorial"):
         assert frase in editor, frase
     assert ".json" not in manual and ".py" not in manual             # el manual es para quien juega: nada de programación

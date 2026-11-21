@@ -1,4 +1,5 @@
 """Lógica del editor de mods, sin interfaz: cargar, guardar, convertir y comprobar un mod."""
+from juego.i18n import tr
 import copy
 import json
 import os
@@ -107,14 +108,14 @@ class Mod:
     def __init__(self):
         self.ruta = None
         self.modificado = False
-        self.info = {"nombre": "Mi mod", "version": "1.0"}
+        self.info = {"nombre": tr("Mi mod"), "version": "1.0"}
         self.secciones = {clave: [] for clave, _, _ in SECCIONES}
         self.extra = {}
 
     @classmethod
     def desde_crudo(cls, crudo):
         m = cls()
-        m.info = desempaquetar("info", crudo.get("info", {})) or {"nombre": "Mi mod"}
+        m.info = desempaquetar("info", crudo.get("info", {})) or {"nombre": tr("Mi mod")}
         for clave, _, esq in SECCIONES:
             v = crudo.get(clave, [])
             if clave == "capitulos":
@@ -129,7 +130,7 @@ class Mod:
     def cargar(cls, ruta):
         crudo = cifrado.leer_json(ruta)              # abre igual los mods protegidos que los escritos a mano
         if not isinstance(crudo, dict):
-            raise ValueError("El archivo no contiene un mod: debe ser un objeto JSON.")
+            raise ValueError(tr("El archivo no contiene un mod: debe ser un objeto JSON."))
         m = cls.desde_crudo(crudo)
         m.ruta = ruta
         return m
@@ -173,7 +174,7 @@ class Catalogo:
     """Todo lo que existe (en el juego y en el mod), para ofrecerlo en los desplegables y comprobar referencias."""
 
     def __init__(self, base=None):
-        self.base = base or M.cargar_datos(con_mods=False)
+        self.base = base or M.cargar_datos(con_mods=False, traducir=False)
         try:
             self.sonidos = sorted({os.path.splitext(f)[0] for f in os.listdir(rutas.SONIDOS) if os.path.splitext(f)[1].lower() in rutas.EXT_AUDIO})
         except OSError:
@@ -189,7 +190,7 @@ class Catalogo:
         if ref == "sonido":
             return [(s, s) for s in self.sonidos]
         if ref == "habilidad":
-            return [("conduccion", "Conducción"), ("punteria", "Puntería"), ("resistencia", "Resistencia"), ("pesca", "Pesca")]
+            return [("conduccion", tr("Conducción")), ("punteria", tr("Puntería")), ("resistencia", tr("Resistencia")), ("pesca", tr("Pesca"))]
         if ref == "mapa":
             out = [(m["id"], m["nombre"]) for m in b["mapas"]]
             return out + [(m.get("id"), m.get("nombre", m.get("id"))) for m in sec.get("mapas", []) if m.get("id") and m.get("id") not in dict(out)]
@@ -198,15 +199,15 @@ class Catalogo:
             nombres = {m["id"]: m["nombre"] for m in b["mapas"]}
             for m in b["mapas"]:
                 for l in m.get("lugares", []):
-                    out[l["id"]] = f"{l['nombre']}, en {m['nombre']}"
+                    out[l["id"]] = tr('{nombre}, en {nombre2}').format(nombre=(l['nombre']), nombre2=(m['nombre']))
             for m in sec.get("mapas", []):
                 nombres[m.get("id")] = m.get("nombre", m.get("id"))
                 for l in m.get("lugares", []):
                     if l.get("id"):
-                        out[l["id"]] = f"{l.get('nombre', l['id'])}, en {m.get('nombre', '')}, del mod"
+                        out[l["id"]] = tr('{get}, en {get2}, del mod').format(get=(l.get('nombre', l['id'])), get2=(m.get('nombre', '')))
             for l in sec.get("lugares", []):
                 if l.get("id"):
-                    out[l["id"]] = f"{l.get('nombre', l['id'])}, en {nombres.get(l.get('mapa', 'puerto_bravo'), l.get('mapa', ''))}, del mod"
+                    out[l["id"]] = tr('{get}, en {get2}, del mod').format(get=(l.get('nombre', l['id'])), get2=(nombres.get(l.get('mapa', 'puerto_bravo'), l.get('mapa', ''))))
             return sorted(out.items(), key=lambda e: e[1].lower())
         tabla = {"modelo": ("vehiculos", b["vehiculos"]), "arma": ("armas", b["armas"]), "mision": ("misiones", b["misiones"]),
                  "tipo_enemigo": ("tipos_enemigo", b.get("tipos_enemigo", [])),
@@ -220,7 +221,7 @@ class Catalogo:
             out = {x["id"]: str(x.get(campo, x["id"])) for x in lista}
             for x in sec.get(clave, []):
                 if x.get("id"):
-                    out[x["id"]] = str(x.get(campo, x["id"])) + ", del mod"
+                    out[x["id"]] = str(x.get(campo, x["id"])) + tr(", del mod")
             return sorted(out.items(), key=lambda e: e[1].lower())
         return []
 
@@ -256,32 +257,32 @@ def _recorrer(nombre_esq, d, cat, mod, donde, errores, avisos):
         if not visible:
             continue
         if cp.get("req") and v in VACIOS:
-            errores.append(f"{donde}: falta «{cp['e']}».")
+            errores.append(tr('{donde}: falta «{e}».').format(donde=(donde), e=(cp['e'])))
             continue
         if v in VACIOS:
             continue
         if t in ("entero", "decimal"):
             if not isinstance(v, (int, float)) or isinstance(v, bool):
-                errores.append(f"{donde}: «{cp['e']}» tiene que ser un número.")
+                errores.append(tr('{donde}: «{e}» tiene que ser un número.').format(donde=(donde), e=(cp['e'])))
             else:
                 if "minimo" in cp and v < cp["minimo"]:
-                    errores.append(f"{donde}: «{cp['e']}» no puede ser menor que {cp['minimo']}.")
+                    errores.append(tr('{donde}: «{e}» no puede ser menor que {minimo}.').format(donde=(donde), e=(cp['e']), minimo=(cp['minimo'])))
                 if "maximo" in cp and v > cp["maximo"]:
-                    errores.append(f"{donde}: «{cp['e']}» no puede ser mayor que {cp['maximo']}.")
+                    errores.append(tr('{donde}: «{e}» no puede ser mayor que {maximo}.').format(donde=(donde), e=(cp['e']), maximo=(cp['maximo'])))
         elif t == "opcion":
             if v not in [o[0] for o in cp["ops"]]:
-                errores.append(f"{donde}: «{cp['e']}» tiene un valor desconocido: {v}.")
+                errores.append(tr('{donde}: «{e}» tiene un valor desconocido: {v}.').format(donde=(donde), e=(cp['e']), v=(v)))
         elif t == "ref":
             if v not in dict(cat.opciones(cp["ref"], mod)):
-                errores.append(f"{donde}: «{cp['e']}» apunta a «{v}», que no existe.")
+                errores.append(tr('{donde}: «{e}» apunta a «{v}», que no existe.').format(donde=(donde), e=(cp['e']), v=(v)))
         elif t == "refs":
             validos = dict(cat.opciones(cp["ref"], mod))
             for x in v:
                 if x not in validos:
-                    errores.append(f"{donde}: «{cp['e']}» incluye «{x}», que no existe.")
+                    errores.append(tr('{donde}: «{e}» incluye «{x}», que no existe.').format(donde=(donde), e=(cp['e']), x=(x)))
         elif t == "lista":
             for n, x in enumerate(v, 1):
-                _recorrer(cp["sub"], x, cat, mod, f"{donde}, {cp['e'].lower()}, elemento {n}", errores, avisos)
+                _recorrer(cp["sub"], x, cat, mod, tr('{donde}, {lower}, elemento {n}').format(donde=(donde), lower=(cp['e'].lower()), n=(n)), errores, avisos)
         elif t == "objeto":
             _recorrer(cp["sub"], v, cat, mod, f"{donde}, {cp['e'].lower()}", errores, avisos)
 
@@ -300,29 +301,29 @@ def _comprobar_tranvia(mod, m, crudo, mm, donde, errores, avisos):
     if eje in ("H", "V"):
         tope = (mm.NY if eje == "H" else mm.NX) - 1
         if not isinstance(n, int) or isinstance(n, bool) or not (0 <= n <= tope):
-            errores.append(f"{donde}: la vía del tren va por una {'calle' if eje == 'H' else 'avenida'} que no existe. Tiene que ser un número de 0 a {tope}.")
+            errores.append(tr('{donde}: la vía del tren va por una {v} que no existe. Tiene que ser un número de 0 a {tope}.').format(donde=(donde), v=(tr('calle') if eje == 'H' else tr('avenida')), tope=(tope)))
         elif not any(l.tipo == "tren" for l in mm.lugares_todos.values()) and crudo.get("transporte") is False:
-            avisos.append(f"{donde}: tiene vía del tren pero no estación de tren: sin estación, no pasa ningún tren.")
+            avisos.append(tr('{donde}: tiene vía del tren pero no estación de tren: sin estación, no pasa ningún tren.').format(donde=(donde)))
     elif n is not None and eje is None:
-        avisos.append(f"{donde}: la vía del tren tiene número pero no dice si va por una calle o por una avenida; el juego la pondrá delante de la estación.")
+        avisos.append(tr('{donde}: la vía del tren tiene número pero no dice si va por una calle o por una avenida; el juego la pondrá delante de la estación.').format(donde=(donde)))
     for n, cruce in enumerate(crudo.get("vias") or [], 1):
         try:
             i, j = (cruce["a"], cruce["b"]) if isinstance(cruce, dict) else (cruce[0], cruce[1])
             if not (0 <= int(i) < mm.NX and 0 <= int(j) < mm.NY):
-                errores.append(f"{donde}: el cruce {n} de las vías, avenida {i} y calle {j}, no existe. Las avenidas van de 0 a {mm.NX - 1} y las calles de 0 a {mm.NY - 1}.")
+                errores.append(tr('{donde}: el cruce {n} de las vías, avenida {i} y calle {v}, no existe. Las avenidas van de 0 a {v2} y las calles de 0 a {v3}.').format(donde=(donde), n=(n), i=(i), v=(j), v2=(mm.NX - 1), v3=(mm.NY - 1)))
         except (KeyError, IndexError, TypeError, ValueError):
-            errores.append(f"{donde}: el cruce {n} de las vías no tiene avenida y calle.")
+            errores.append(tr('{donde}: el cruce {n} de las vías no tiene avenida y calle.').format(donde=(donde), n=(n)))
     paradas = [empaquetar("lugar", l) for l in mod.secciones.get("lugares", []) if l.get("mapa") == m.get("id") and l.get("tipo") == "tranvia"]
     paradas += [l for l in crudo.get("lugares", []) if l.get("tipo") == "tranvia"]
     if not paradas:
         return
     if len(paradas) == 1:
-        avisos.append(f"{donde}: solo hay una parada de tranvía; hacen falta al menos dos para que haya línea.")
+        avisos.append(tr('{donde}: solo hay una parada de tranvía; hacen falta al menos dos para que haya línea.').format(donde=(donde)))
     ordenes = [l.get("orden") for l in paradas if l.get("orden") is not None]
     if ordenes and len(ordenes) != len(paradas):
-        avisos.append(f"{donde}: unas paradas de tranvía tienen orden en la línea y otras no; el juego las ordenará él, dando la vuelta a la ciudad.")
+        avisos.append(tr('{donde}: unas paradas de tranvía tienen orden en la línea y otras no; el juego las ordenará él, dando la vuelta a la ciudad.').format(donde=(donde)))
     if len(set(ordenes)) != len(ordenes):
-        avisos.append(f"{donde}: hay paradas de tranvía con el mismo orden en la línea.")
+        avisos.append(tr('{donde}: hay paradas de tranvía con el mismo orden en la línea.').format(donde=(donde)))
     try:
         c2 = dict(crudo)
         c2["lugares"] = [{k: v for k, v in l.items() if k != "mapa"} for l in paradas]
@@ -334,7 +335,7 @@ def _comprobar_tranvia(mod, m, crudo, mm, donde, errores, avisos):
                 px, py = m2.via_punto(s)
                 lejos = math.hypot(px - l.x, py - l.y)
                 if lejos > 60:
-                    avisos.append(f"{donde}: la parada «{l.nombre}» queda a {int(lejos)} metros de las vías; el tranvía parará lejos de ella.")
+                    avisos.append(tr('{donde}: la parada «{nombre}» queda a {int} metros de las vías; el tranvía parará lejos de ella.').format(donde=(donde), nombre=(l.nombre), int=(int(lejos))))
     except Exception:
         pass
 
@@ -345,18 +346,18 @@ def comprobar(mod, cat):
     for clave, titulo, esq in SECCIONES:
         vistos = set()
         for d in mod.secciones.get(clave, []):
-            ident = d.get("id") or d.get("clave") or d.get("nombre") or "sin nombre"
+            ident = d.get("id") or d.get("clave") or d.get("nombre") or tr("sin nombre")
             donde = f"{titulo}, «{ident}»"
             if "id" in [cp["k"] for cp in ESQUEMAS[esq]["campos"]]:
                 if d.get("id") in vistos:
-                    errores.append(f"{donde}: el identificador está repetido dentro del mod.")
+                    errores.append(tr('{donde}: el identificador está repetido dentro del mod.').format(donde=(donde)))
                 vistos.add(d.get("id"))
                 if d.get("id") and not re.fullmatch(r"[a-z0-9_]+", str(d["id"])):
-                    avisos.append(f"{donde}: conviene que el identificador solo tenga minúsculas, números y guiones bajos.")
+                    avisos.append(tr('{donde}: conviene que el identificador solo tenga minúsculas, números y guiones bajos.').format(donde=(donde)))
             _recorrer(esq, d, cat, mod, donde, errores, avisos)
     # mapas: tienen que poder construirse
     for m in mod.secciones.get("mapas", []):
-        donde = f"Localidades y mapas, «{m.get('id', 'sin nombre')}»"
+        donde = tr('Localidades y mapas, «{get}»').format(get=(m.get('id', tr('sin nombre'))))
         crudo = empaquetar("mapa", m)
         crudo.setdefault("lugares", [])
         try:
@@ -364,25 +365,25 @@ def comprobar(mod, cat):
                 M.Mar(crudo)
             else:
                 if len(crudo.get("avenidas", [])) < 2 or len(crudo.get("calles", [])) < 2:
-                    errores.append(f"{donde}: hacen falta al menos dos avenidas y dos calles.")
+                    errores.append(tr('{donde}: hacen falta al menos dos avenidas y dos calles.').format(donde=(donde)))
                     continue
                 if not crudo.get("barrios"):
-                    errores.append(f"{donde}: hace falta al menos un barrio.")
+                    errores.append(tr('{donde}: hace falta al menos un barrio.').format(donde=(donde)))
                     continue
                 mm = M.Mundo(dict(crudo, transporte=False, lugares=list(crudo["lugares"])))      # al revisar no se añade nada: se mira lo que hay
                 for bi in range(mm.NX - 1):
                     for bj in range(mm.NY - 1):
                         if (bi, bj) not in mm._barrio_de:
-                            avisos.append(f"{donde}: la manzana {bi}, {bj} no pertenece a ningún barrio; usará el primero.")
+                            avisos.append(tr('{donde}: la manzana {bi}, {bj} no pertenece a ningún barrio; usará el primero.').format(donde=(donde), bi=(bi), bj=(bj)))
                 _comprobar_tranvia(mod, m, crudo, mm, donde, errores, avisos)
         except Exception as e:
-            errores.append(f"{donde}: no se puede construir el mapa: {e}")
+            errores.append(tr('{donde}: no se puede construir el mapa: {e}').format(donde=(donde), e=(e)))
     # lugares: su posición tiene que existir y poder pisarse
     lugares = [(l, l.get("mapa", "puerto_bravo")) for l in mod.secciones.get("lugares", [])]
     for m in mod.secciones.get("mapas", []):
         lugares += [(l, m.get("id")) for l in m.get("lugares", [])]
     for l, mapa_id in lugares:
-        donde = f"Lugares, «{l.get('id', 'sin nombre')}»"
+        donde = tr('Lugares, «{get}»').format(get=(l.get('id', tr('sin nombre'))))
         crudo = _mapa_crudo(cat, mod, mapa_id)
         if crudo is None:
             continue
@@ -395,69 +396,69 @@ def comprobar(mod, cat):
             mm = M.Mar(crudo) if crudo.get("tipo") == "mar" else M.Mundo(crudo)
             if mm.tipo == "mar":
                 if "xy" not in lc:
-                    errores.append(f"{donde}: en el mar hay que indicar la posición con coordenadas.")
+                    errores.append(tr('{donde}: en el mar hay que indicar la posición con coordenadas.').format(donde=(donde)))
                     continue
             else:
                 if "bloque" not in lc:
-                    errores.append(f"{donde}: falta la manzana.")
+                    errores.append(tr('{donde}: falta la manzana.').format(donde=(donde)))
                     continue
                 bi, bj = lc["bloque"]
                 if not (0 <= bi < mm.NX - 1 and 0 <= bj < mm.NY - 1):
-                    errores.append(f"{donde}: la manzana {bi}, {bj} no existe en {mm.nombre}. Hay {mm.NX - 1} de oeste a este y {mm.NY - 1} de sur a norte.")
+                    errores.append(tr('{donde}: la manzana {bi}, {bj} no existe en {nombre}. Hay {v} de oeste a este y {v2} de sur a norte.').format(donde=(donde), bi=(bi), bj=(bj), nombre=(mm.nombre), v=(mm.NX - 1), v2=(mm.NY - 1)))
                     continue
                 if "xy" not in lc and "lado" not in lc:
-                    errores.append(f"{donde}: indica la fachada o una posición interior.")
+                    errores.append(tr('{donde}: indica la fachada o una posición interior.').format(donde=(donde)))
                     continue
             lug = M.Lugar(lc, mm)
             if mm.tipo == "mar":
                 if mm.superficie(lug.x, lug.y) != "agua":
-                    errores.append(f"{donde}: esa posición no es agua navegable.")
+                    errores.append(tr('{donde}: esa posición no es agua navegable.').format(donde=(donde)))
             elif not mm.transitable(lug.x, lug.y):
-                errores.append(f"{donde}: la posición cae dentro de un edificio. Una posición interior solo vale en plazas, parques, playas y muelles.")
+                errores.append(tr('{donde}: la posición cae dentro de un edificio. Una posición interior solo vale en plazas, parques, playas y muelles.').format(donde=(donde)))
         except Exception as e:
-            errores.append(f"{donde}: posición incorrecta: {e}")
+            errores.append(tr('{donde}: posición incorrecta: {e}').format(donde=(donde), e=(e)))
     # misiones: coherencia de los pasos
     for mi in mod.secciones.get("misiones", []):
-        donde = f"Misiones, «{mi.get('id', 'sin nombre')}»"
+        donde = tr('Misiones, «{get}»').format(get=(mi.get('id', tr('sin nombre'))))
         hay_vehiculo = False
         for n, p in enumerate(mi.get("pasos", []), 1):
             t = p.get("tipo")
             if t == "robar":
                 hay_vehiculo = True
             if t == "entregar" and not hay_vehiculo:
-                errores.append(f"{donde}, paso {n}: para entregar un vehículo hace falta antes un paso de conseguirlo.")
+                errores.append(tr('{donde}, paso {n}: para entregar un vehículo hace falta antes un paso de conseguirlo.').format(donde=(donde), n=(n)))
             if t == "dialogo" and not p.get("lineas"):
-                errores.append(f"{donde}, paso {n}: el diálogo no tiene frases.")
+                errores.append(tr('{donde}, paso {n}: el diálogo no tiene frases.').format(donde=(donde), n=(n)))
             if t == "eliminar" and not p.get("enemigos"):
-                errores.append(f"{donde}, paso {n}: no hay enemigos que eliminar.")
+                errores.append(tr('{donde}, paso {n}: no hay enemigos que eliminar.').format(donde=(donde), n=(n)))
             for k, g in enumerate(p.get("enemigos") or [] if t == "eliminar" else [], 1):
                 if not g.get("clase") and not (g.get("tipo") and g.get("arma")):
-                    errores.append(f"{donde}, paso {n}, grupo de enemigos {k}: elige un tipo de enemigo, o escribe su nombre y su arma.")
+                    errores.append(tr('{donde}, paso {n}, grupo de enemigos {k}: elige un tipo de enemigo, o escribe su nombre y su arma.').format(donde=(donde), n=(n), k=(k)))
             if t in ("ir", "robar", "entregar", "eliminar", "perseguir", "seguir", "escoltar", "sigilo", "vigilar", "carrera") and not p.get("lugar"):
-                errores.append(f"{donde}, paso {n}: falta el lugar.")
+                errores.append(tr('{donde}, paso {n}: falta el lugar.').format(donde=(donde), n=(n)))
             if t in ("seguir", "escoltar") and not p.get("destino"):
-                errores.append(f"{donde}, paso {n}: falta el lugar de destino.")
+                errores.append(tr('{donde}, paso {n}: falta el lugar de destino.').format(donde=(donde), n=(n)))
             if t == "decision" and len(p.get("opciones") or []) < 2:
-                errores.append(f"{donde}, paso {n}: una decisión necesita al menos dos opciones.")
+                errores.append(tr('{donde}, paso {n}: una decisión necesita al menos dos opciones.').format(donde=(donde), n=(n)))
             if t == "decision" and not p.get("clave"):
-                avisos.append(f"{donde}, paso {n}: la decisión no tiene nombre; ninguna misión podrá depender de ella.")
+                avisos.append(tr('{donde}, paso {n}: la decisión no tiene nombre; ninguna misión podrá depender de ella.').format(donde=(donde), n=(n)))
             if t == "carrera" and not p.get("puntos"):
-                errores.append(f"{donde}, paso {n}: una carrera necesita al menos un lugar de paso, que hace de meta.")
+                errores.append(tr('{donde}, paso {n}: una carrera necesita al menos un lugar de paso, que hace de meta.').format(donde=(donde), n=(n)))
             if t == "ruta" and len(p.get("puntos") or []) < 2:
-                errores.append(f"{donde}, paso {n}: una ruta necesita al menos dos lugares.")
+                errores.append(tr('{donde}, paso {n}: una ruta necesita al menos dos lugares.').format(donde=(donde), n=(n)))
             if t == "recoger" and not p.get("lugar") and not p.get("aqui"):
-                errores.append(f"{donde}, paso {n}: indica un lugar o marca que el objeto aparece donde esté el jugador.")
+                errores.append(tr('{donde}, paso {n}: indica un lugar o marca que el objeto aparece donde esté el jugador.').format(donde=(donde), n=(n)))
             if t == "recoger" and not p.get("objeto"):
-                errores.append(f"{donde}, paso {n}: falta el nombre del objeto.")
+                errores.append(tr('{donde}, paso {n}: falta el nombre del objeto.').format(donde=(donde), n=(n)))
             if t in ("robar", "perseguir") and not p.get("modelo"):
-                errores.append(f"{donde}, paso {n}: falta el modelo de vehículo.")
+                errores.append(tr('{donde}, paso {n}: falta el modelo de vehículo.').format(donde=(donde), n=(n)))
             if t not in ("dialogo", "dar", "decision") and not p.get("texto"):
-                avisos.append(f"{donde}, paso {n}: no tiene texto; el jugador no sabrá qué hacer.")
+                avisos.append(tr('{donde}, paso {n}: no tiene texto; el jugador no sabrá qué hacer.').format(donde=(donde), n=(n)))
         if mi.get("id") in (mi.get("requiere") or []):
-            errores.append(f"{donde}: no puede exigirse a sí misma.")
+            errores.append(tr('{donde}: no puede exigirse a sí misma.').format(donde=(donde)))
     for pe in mod.secciones.get("personas", []):
         if isinstance(pe.get("edad"), (int, float)) and pe["edad"] < 18:
-            errores.append(f"Personas, «{pe.get('id', '')}»: tiene que ser una persona adulta, de 18 años o más.")
+            errores.append(tr('Personas, «{get}»: tiene que ser una persona adulta, de 18 años o más.').format(get=(pe.get('id', ''))))
     return errores, avisos
 
 

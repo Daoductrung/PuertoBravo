@@ -583,6 +583,7 @@
    "id": "cd_bengala",
    "nombre": "Bengala de señales",
    "tipo": "explosivo",
+   "unidad": "cóctel|cócteles",
    "dano": 60,
    "alcance": 22,
    "cadencia": 1.2,

@@ -603,8 +603,8 @@ def test_mayusculas_o_vuelve_al_objetivo_siempre_igual(robot):
     from juego import ayuda
     assert any(e == "Mayúsculas O" for e, _ in ayuda.TECLAS["general"]) and any(e == "Control G" for e, _ in ayuda.TECLAS["general"])
     raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    manual = open(os.path.join(raiz, "data", "docs", "manual.html"), encoding="utf-8").read()
-    teclas = open(os.path.join(raiz, "data", "docs", "teclas.html"), encoding="utf-8").read()
+    manual = open(os.path.join(raiz, "data", "docs", "manual_es.html"), encoding="utf-8").read()
+    teclas = open(os.path.join(raiz, "data", "docs", "teclas_es.html"), encoding="utf-8").read()
     for doc in (manual, teclas):
         assert "Mayúsculas O" in doc and "Control G" in doc
 
