@@ -1,6 +1,10 @@
 # Puerto Bravo: Ley del Asfalto
 
-Audiojuego de mundo abierto, en español y totalmente accesible. Se juega solo con el oído: con teclado o con mando de Xbox o de PlayStation, y con lector de pantalla (NVDA, JAWS o la voz de Windows). No hace falta ver la pantalla para nada.
+**Idioma de este documento:** Español · [English](README_en.md)
+
+> *This README is also available in English: [read it in English](README_en.md).*
+
+Audiojuego de mundo abierto, en español y en inglés, y totalmente accesible. Se juega solo con el oído: con teclado o con mando de Xbox o de PlayStation, y con lector de pantalla (NVDA, JAWS o la voz de Windows). No hace falta ver la pantalla para nada.
 
 Es un juego original. Su ciudad, su historia, sus personajes y su música son propios.
 
@@ -10,6 +14,24 @@ Este documento tiene cuatro partes:
 2. [Para desarrolladores](#2-para-desarrolladores): preparar el entorno, probar, compilar y publicar.
 3. [Crear mods](#3-crear-mods): ampliar el juego con contenido propio.
 4. [Packs de sonidos y de música](#4-packs-de-sonidos-y-de-música): cambiar cómo suena.
+
+---
+
+## Una nota sobre los sonidos
+
+Quiero ser sincero con quien llegue hasta aquí: como desarrollador, el sonido no es lo mío. Por falta de tiempo y de conocimientos, los sonidos del juego son, en su mayoría, generados por el propio programa o recogidos de páginas web de grabaciones libres de derechos. Sé que no están a la altura, y que en un audiojuego el sonido lo es casi todo: con sonidos buenos, elegidos por gente que entiende de esto y que conoce el juego, Puerto Bravo ganaría muchísimo.
+
+Por eso estoy abierto a cualquier colaboración con packs de sonidos, completos o de unos pocos sonidos. Si te animas:
+
+- La guía `data\docs\cambiar_sonidos_es.html` (también en inglés, `cambiar_sonidos_en.html`) dice qué es cada sonido, qué significa oírlo, cuánto dura el original y cómo se arma un pack. El apartado [Packs de sonidos y de música](#4-packs-de-sonidos-y-de-música) lo resume.
+- Las grabaciones tienen que poder repartirse con el juego: propias o con una licencia libre (CC0 o parecida), indicando de dónde sale cada una.
+- Para hacérmelo llegar, abre una [incidencia en GitHub](https://github.com/hxebolax/PuertoBravo/issues) con un enlace de descarga al pack (o el ZIP adjunto, si cabe), o escríbeme por Mastodon a [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX). Si sabes usar Git, también vale una petición de cambios (pull request) con el pack en su carpeta de `data\sonidos`.
+
+Cualquier ayuda, por pequeña que sea, será muy bien recibida. Y gracias de antemano.
+
+## Este documento en otros idiomas
+
+Cada idioma tiene su propio archivo junto a este, con el código de dos letras del idioma al final del nombre, igual que las guías del juego: `README_en.md` es el inglés, y un `README_it.md` sería el italiano. Si traduces el README a otro idioma, añade el enlace a la línea de idiomas del principio de todos los README que haya.
 
 ---
 
@@ -67,7 +89,7 @@ Todo lo que ocurre tiene su sonido, colocado a tu alrededor: lo que suena a la d
 - Auriculares estéreo.
 - Un lector de pantalla abierto, como NVDA o JAWS. Si no hay ninguno, el juego habla con la voz de Windows.
 
-Descarga la última versión, descomprime la carpeta donde quieras y ejecuta `PuertoBravo.exe`. No instala nada: es portable. Dentro del juego, `F1` dice las teclas en cualquier momento, y el menú principal abre el manual completo, que está en `data\docs\manual.html` y se navega por encabezados.
+Descarga la última versión, descomprime la carpeta donde quieras y ejecuta `PuertoBravo.exe`. No instala nada: es portable. Dentro del juego, `F1` dice las teclas en cualquier momento, y el menú principal abre el manual completo, que está en `data\docs\manual_es.html` (y en inglés, `manual_en.html`) y se navega por encabezados. El juego va en el idioma de Windows, en español o en inglés, y se puede elegir en Opciones, Idioma.
 
 Si algo falla, el juego deja un registro de cada sesión en `data\logs`, sin datos personales: comprimes la carpeta de la sesión y la adjuntas a una [incidencia](https://github.com/hxebolax/PuertoBravo/issues), o la envías por Mastodon a [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX). El manual explica cómo.
 
@@ -333,7 +355,7 @@ La protección usa una clave que va dentro del propio programa. Evita la edició
 
 El juego se actualiza leyendo un archivo `version.json` firmado con Ed25519. La fuente (el servidor, GitHub, ambos o una dirección personalizada) solo decide de dónde se descarga: lo que se instala tiene que estar firmado con la clave privada de quien publica, cuya clave pública va en `juego/actualizador.py`.
 
-1. Sube `VERSION` en `juego/__init__.py` y añade las novedades al principio de `data/docs/novedades.html`.
+1. Sube `VERSION` en `juego/__init__.py` y añade las novedades al principio de `data/docs/novedades_es.html` y de `data/docs/novedades_en.html`.
 2. Ejecuta `compilar.bat`.
 3. Ejecuta `publicar.bat`. Crea en `dist\publicar` el archivo `PuertoBravo_v<versión>.zip` y su `version.json` firmado, y los copia a la carpeta escrita en `publicar_destino.txt`, que es la carpeta web del servidor.
 4. Para GitHub, crea la release `v<versión>` y sube esos mismos dos archivos.
@@ -387,7 +409,7 @@ Un mod añade o cambia contenido sin tocar los datos originales: lugares, mision
 
 ### Con el editor
 
-La forma normal es `EditorMods.exe` (o `editor.bat` desde el código fuente). Es una aplicación accesible con lector de pantalla: cada cosa se crea rellenando un formulario, `Control+H` explica el campo en el que estás y `F1` abre su manual (`data\docs\editor_mods.html`). Antes de guardar comprueba que todo lo que cita el mod existe, y avisa de lo que falta.
+La forma normal es `EditorMods.exe` (o `editor.bat` desde el código fuente). Es una aplicación accesible con lector de pantalla: cada cosa se crea rellenando un formulario, `Control+H` explica el campo en el que estás y `F1` abre su manual (`data\docs\editor_mods_es.html`). Antes de guardar comprueba que todo lo que cita el mod existe, y avisa de lo que falta.
 
 El editor guarda siempre protegido, como `.pbm`, que es lo que carga el juego compilado, y abre tanto los `.pbm` como los `.json`.
 
@@ -418,13 +440,13 @@ Las voces que trae el juego están generadas con Phonon 40m, un modelo de voz de
 
 ## 4. Packs de sonidos y de música
 
-La guía completa, con la descripción y la duración de cada uno de los 237 sonidos, es `data\docs\cambiar_sonidos.html`. Resumen:
+La guía completa, con la descripción y la duración de cada uno de los 279 sonidos, es `data\docs\cambiar_sonidos_es.html` (en inglés, `cambiar_sonidos_en.html`). Resumen:
 
 ### Sonidos
 
 - Todos los efectos están en `data\sonidos`, en subcarpetas. `por_defecto` tiene los de serie, un archivo por sonido; si borras alguno, el juego lo vuelve a crear. Cada una de las demás subcarpetas es un pack.
 - El pack se elige dentro del juego, en Opciones, Sonido y música, y se oye al momento.
-- Vienen tres packs completos: Realista y Alternativo, con grabaciones reales de dominio público, y Retro, con sonido de consola antigua. Los tres conservan el original en los sonidos de orientación (balizas, tonos, semáforos, radar y sonidos de los lugares), porque de ellos depende moverse por el juego.
+- Vienen cuatro packs completos: Realista y Alternativo, con grabaciones reales de dominio público; Retro, con sonido de consola antigua, y Envolvente, para el motor de sonido envolvente. Los cuatro conservan el original en los sonidos de orientación (balizas, tonos, semáforos, radar y sonidos de los lugares), porque de ellos depende moverse por el juego.
 - Para hacer el tuyo, crea una carpeta en `data\sonidos` y copia dentro tus grabaciones con el nombre exacto del sonido que sustituyen: `claxon.wav`, `paso_acera0.ogg`. Los sonidos del juego están en FLAC, sin pérdida; los tuyos pueden ser WAV, OGG, FLAC o MP3. No hace falta traerlos todos: lo que falte suena con el original. Se admiten WAV, OGG, FLAC y MP3.
 - Un archivo `pack.json` opcional da al pack su nombre, autor, licencia y retoques de volumen por sonido.
 - El volumen se iguala solo: cada sonido cambiado se lleva al nivel del original, y el jugador puede subir o bajar cualquiera por separado desde Opciones.
