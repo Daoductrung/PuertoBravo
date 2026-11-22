@@ -3697,11 +3697,12 @@
   ]
  },
  "mod-marisma_negra": {
-  "version": 1,
-  "huella": "c75261f3d4acef6933c01f6f60829691bbe31405fcc70000823d55cc0ab09a32",
+  "version": 2,
+  "huella": "a3098bdfc559d798076e853395b2f90fd8deefd3e45e8371aada30b0120d45e2",
   "archivos": [
    "data/mods/marisma_negra.pbm",
    "data/idiomas/en/mods/marisma_negra.json",
+   "data/idiomas/vi/mods/marisma_negra.json",
    "data/voces/marisma_negra_es/mn01_1_1.ogg",
    "data/voces/marisma_negra_es/mn01_1_2.ogg",
    "data/voces/marisma_negra_es/mn01_1_2@alex_h.ogg",
