@@ -34,8 +34,12 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 VARIABLE = "PUERTOBRAVO_IDIOMA"
 
 # Cómo se llama cada idioma en su propia lengua, por su código.
+# La misma lista que la del juego (juego/i18n.py); un idioma que no esté aquí lo dice su idioma.json, {"nombre": "..."}.
 NOMBRES = {"es": "Español", "en": "English", "it": "Italiano", "fr": "Français", "pt": "Português", "de": "Deutsch", "ca": "Català",
-           "eu": "Euskara", "gl": "Galego", "nl": "Nederlands", "pl": "Polski"}
+           "eu": "Euskara", "gl": "Galego", "nl": "Nederlands", "pl": "Polski", "ru": "Русский", "uk": "Українська", "tr": "Türkçe",
+           "ro": "Română", "sv": "Svenska", "da": "Dansk", "no": "Norsk", "nb": "Norsk bokmål", "fi": "Suomi", "cs": "Čeština", "sk": "Slovenčina",
+           "hu": "Magyar", "el": "Ελληνικά", "ar": "العربية", "he": "עברית", "hi": "हिन्दी", "ja": "日本語", "ko": "한국어", "zh": "中文",
+           "vi": "Tiếng Việt", "id": "Bahasa Indonesia", "eo": "Esperanto", "hr": "Hrvatski", "sr": "Српски", "bg": "Български", "sl": "Slovenščina"}
 
 _estado = {"idioma": None, "textos": {}}
 
@@ -81,8 +85,21 @@ def disponibles():
             pass
     r = {ORIGEN: NOMBRES[ORIGEN]}
     for c in sorted(cods - {ORIGEN}):
-        r[c] = NOMBRES.get(c, c)
+        r[c] = NOMBRES.get(c) or _nombre_propio(c) or c
     return r
+
+
+def _nombre_propio(cod):
+    """El nombre que da a su idioma el idioma.json de la carpeta del juego, si lo hay."""
+    for base in _bases_del_juego():
+        try:
+            with open(os.path.join(base, "data", "idiomas", cod, "idioma.json"), encoding="utf-8") as f:
+                n = json.load(f).get("nombre")
+            if n:
+                return str(n)
+        except (OSError, ValueError, AttributeError):
+            continue
+    return None
 
 
 def idioma_del_sistema():
