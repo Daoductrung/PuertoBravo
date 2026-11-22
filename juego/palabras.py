@@ -32,19 +32,28 @@ def _mapa():
         for es, otro in textos.items():                    # las palabras sueltas del catálogo: «nunca», «fácil»...
             if isinstance(otro, str) and re.fullmatch(r"[a-záéíóúñü]{3,}", es) and otro and otro != es:
                 mapa[es] = otro
-        ingles = set()                                     # una palabra que también es del idioma no se toca: «media», «once»
-        for otro in textos.values():                       # (solo las que van en minúscula: los nombres propios no cuentan)
-            if isinstance(otro, str):
-                otro_limpio = re.sub(r"\{[^}]*\}", " ", otro)
-                ingles.update(re.findall(r"(?<![A-Za-z])[a-z]+(?![A-Za-z])", otro_limpio))
-        mapa = {k: v for k, v in mapa.items() if k not in ingles}
         try:
             with open(os.path.join(i18n.carpeta(cod), "palabras.json"), encoding="utf-8") as f:
                 mapa.update({k: v for k, v in json.load(f).items() if isinstance(v, str) and v and k != v})
         except (OSError, ValueError, AttributeError):
             pass
+        propias = _del_idioma(textos)                      # también para palabras.json: «media» en inglés es «media»
+        mapa = {k: v for k, v in mapa.items() if k not in propias}
     _cache.update(idioma=cod, mapa=mapa)
     return mapa
+
+
+def _del_idioma(textos):
+    """Las palabras en minúscula que salen en las traducciones: una palabra que también es del idioma no se toca («media»,
+    «once», «fin» en inglés). Los nombres propios van con mayúscula y no cuentan. Antes de mirar se quita lo que sigue en
+    español aunque esté en una traducción: los huecos («{nombre}») y la clave de delante del «=» («calle=casual»); si no,
+    «nombre» o «calle» parecerían palabras del idioma y se quedarían sin traducir."""
+    r = set()
+    for otro in textos.values():
+        if isinstance(otro, str):
+            limpio = re.sub(r"\{[^{}]*\}", " ", re.sub(r"^[a-z_0-9]+=", " ", otro))
+            r.update(re.findall(r"(?<![A-Za-z])[a-z]+(?![A-Za-z])", limpio))
+    return r
 
 
 def pulir(texto):

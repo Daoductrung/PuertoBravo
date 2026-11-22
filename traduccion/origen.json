@@ -11999,7 +11999,7 @@
 "juego/respuestas_datos1.py"
 ],
 "Deberías pasarte por: {titulo}, en {nombre_lugar}. Abre el móvil con M para marcarla en el GPS.": [
-"juego/menus_juego.py"
+"juego/misiones.py"
 ],
 "Debes {debe} euros de alquiler de este hangar. Hasta que pagues, no te dejan sacar nada.": [
 "juego/vuelo.py"
@@ -17777,7 +17777,6 @@
 "data/datos/misiones.json"
 ],
 "Encarna: ": [
-"juego/menus_juego.py",
 "juego/menus_juego.py"
 ],
 "Encarni": [

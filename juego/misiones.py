@@ -116,7 +116,9 @@ class Misiones:
                 return m                    # los demás tutoriales se empiezan desde el móvil: no deben estorbar en la oficina de empleo o en el embarcadero
         return None
 
-    def objetivo_txt(self):
+    def objetivo_txt(self, sugerir=False):
+        """Lo que toca hacer ahora. Con ``sugerir``, sin misión en curso, la siguiente se dice como consejo («Deberías
+        pasarte por...»), que es como lo dice la gente del juego."""
         if self.guerra:
             return self.guerra_txt()
         if not self.mision and self.rec_asalto_txt():            # te están asaltando un barrio: es lo urgente
@@ -167,6 +169,8 @@ class Misiones:
         if disp:
             m = disp[0]
             l = self.lugares[m["lugar"]]
+            if sugerir:
+                return tr('Deberías pasarte por: {titulo}, en {nombre_lugar}. Abre el móvil con M para marcarla en el GPS.').format(titulo=(m['titulo']), nombre_lugar=(self.nombre_lugar(l)))
             return tr('No tienes ninguna misión en curso. Disponible: {titulo}, en {nombre_lugar}. Abre el móvil con M para marcarla en el GPS.').format(titulo=(m['titulo']), nombre_lugar=(self.nombre_lugar(l)))
         return tr("Has completado todas las misiones de la historia. La ciudad es tuya.")
 

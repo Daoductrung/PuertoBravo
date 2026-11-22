@@ -4,7 +4,7 @@
 
 > *This README is also available in English: [read it in English](README_en.md).*
 
-Audiojuego de mundo abierto, en español y en inglés, y totalmente accesible. Se juega solo con el oído: con teclado o con mando de Xbox o de PlayStation, y con lector de pantalla (NVDA, JAWS o la voz de Windows). No hace falta ver la pantalla para nada.
+Audiojuego de mundo abierto, en español, en inglés y en vietnamita, y totalmente accesible. Se juega solo con el oído: con teclado o con mando de Xbox o de PlayStation, y con lector de pantalla (NVDA, JAWS o la voz de Windows). No hace falta ver la pantalla para nada.
 
 Es un juego original. Su ciudad, su historia, sus personajes y su música son propios.
 
@@ -89,7 +89,7 @@ Todo lo que ocurre tiene su sonido, colocado a tu alrededor: lo que suena a la d
 - Auriculares estéreo.
 - Un lector de pantalla abierto, como NVDA o JAWS. Si no hay ninguno, el juego habla con la voz de Windows.
 
-Descarga la última versión, descomprime la carpeta donde quieras y ejecuta `PuertoBravo.exe`. No instala nada: es portable. Dentro del juego, `F1` dice las teclas en cualquier momento, y el menú principal abre el manual completo, que está en `data\docs\manual_es.html` (y en inglés, `manual_en.html`) y se navega por encabezados. El juego va en el idioma de Windows, en español o en inglés, y se puede elegir en Opciones, Idioma.
+Descarga la última versión, descomprime la carpeta donde quieras y ejecuta `PuertoBravo.exe`. No instala nada: es portable. Dentro del juego, `F1` dice las teclas en cualquier momento, y el menú principal abre el manual completo, que está en `data\docs\manual_es.html` (y en inglés, `manual_en.html`) y se navega por encabezados. El juego va en el idioma de Windows, en español, en inglés o en vietnamita, y se puede elegir en Opciones, Idioma. Con la versión 1.7.2, el vietnamita se instala como componente, en Opciones, Actualizaciones, Componentes.
 
 Si algo falla, el juego deja un registro de cada sesión en `data\logs`, sin datos personales: comprimes la carpeta de la sesión y la adjuntas a una [incidencia](https://github.com/hxebolax/PuertoBravo/issues), o la envías por Mastodon a [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX). El manual explica cómo.
 
