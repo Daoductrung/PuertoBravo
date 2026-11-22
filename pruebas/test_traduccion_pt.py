@@ -58,6 +58,15 @@ def test_el_juego_carga_portugues_y_respeta_los_nombres():
     ) == ["pt", "Opções", "Puerto Bravo", "El Puerto", "Dani", "Gazuas", "True"]
 
 
+def test_las_distancias_y_el_resumen_de_voz_son_comprensibles():
+    assert _en_portugues(
+        "from juego import i18n, voz\n"
+        "print(i18n.tr('{d} metros').format(d=25))\n"
+        "print(i18n.tr('Alcance {_grado}: {_num} metros').format(_grado='curto', _num=40))\n"
+        "print(voz.resumir('Você está em Calle Mayor. Pressione F1 para consultar as teclas.'))\n"
+    ) == ["25 metros", "Alcance curto: 40 metros", "Você está em Calle Mayor."]
+
+
 def test_los_nombres_originales_se_conservan():
     cat = _leer("data/idiomas/pt/textos.json")["textos"]
     for nombre in _leer("traduccion/pt/nombres.json"):
