@@ -67,11 +67,31 @@ def test_las_distancias_y_el_resumen_de_voz_son_comprensibles():
     ) == ["25 metros", "Alcance curto: 40 metros", "Você está em Calle Mayor."]
 
 
-def test_los_nombres_originales_se_conservan():
+def test_los_nombres_siguen_el_glosario_y_preservan_los_propios():
     cat = _leer("data/idiomas/pt/textos.json")["textos"]
-    for nombre in _leer("traduccion/pt/nombres.json"):
+    for nombre, portugues in _leer("traduccion/pt/nombres.json").items():
         if nombre in cat:
+            assert cat[nombre] == portugues, nombre
+    for nombre, tipo in _leer("traduccion/en/nombres_origen.json").items():
+        if tipo in ("localidad", "barrio", "calle", "persona", "personaje") and nombre in cat:
             assert cat[nombre] == nombre, nombre
+
+
+def test_los_tipos_de_local_se_traducen_sin_cambiar_sus_nombres():
+    assert _en_portugues(
+        "from juego import i18n, mundo\n"
+        "d = mundo.cargar_datos()\n"
+        "lugares = {l['id']: l['nombre'] for l in d['ciudad']['lugares']}\n"
+        "print(i18n.tr('Cementerio de la Alameda'))\n"
+        "print(i18n.tr('Armería El Plomo'))\n"
+        "print(i18n.tr('Farmacia Luna'))\n"
+        "print(i18n.tr('Banco Mercantil'))\n"
+        "print(i18n.tr('Aeropuerto de Bahía del Ocaso'))\n"
+        "print('Cemitério da Alameda' in lugares.values())\n"
+        "print(i18n.tr('Tercer ejercicio: llevar el coche al Gimnasio El Yunque. Cuando subas, el destino se marca solo. Conduce tú, o pulsa Y y deja que te lleve.'))\n"
+    ) == ["Cemitério da Alameda", "Loja de armas El Plomo", "Farmácia Luna", "Banco Mercantil",
+          "Aeroporto de Bahía del Ocaso", "True",
+          "Terceiro exercício: levar o carro à Academia El Yunque. Ao entrar, o destino é definido automaticamente. Dirija sozinho ou pressione Y e deixe-o levá-lo."]
 
 
 def test_las_dos_formas_del_protagonista_se_oyen_sin_marcas():

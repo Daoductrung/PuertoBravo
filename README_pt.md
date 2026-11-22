@@ -33,7 +33,7 @@ Qualquer ajuda, por menor que seja, será muito apreciada. Agradeço antecipadam
 
 ## Sobre as traduções
 
-O autor preparou a versão inglesa do jogo e deste README com ajuda de inteligência artificial. A tradução para português do Brasil usa essa versão como base, com revisão de terminologia, instruções, gênero e nomes próprios. Os nomes originais do jogo, das cidades, dos personagens, dos estabelecimentos e dos mods foram preservados. Correções de linguagem são bem-vindas.
+O autor preparou a versão inglesa do jogo e deste README com ajuda de inteligência artificial. A tradução para português do Brasil usa essa versão como base, com revisão de terminologia, instruções, gênero e nomes próprios. Os nomes próprios do jogo, das cidades, dos personagens, das marcas e dos mods foram preservados. Os tipos de locais são traduzidos, como Cemitério da Alameda, Farmácia Luna e Loja de armas El Plomo. Correções de linguagem são bem-vindas.
 
 O pacote brasileiro usa o código `pt`, compatível com a seleção de idiomas do jogo. Inclui o catálogo, as seis guias, este README e as instruções de uso. Não inclui gravações de vozes em português: as cenas são faladas pelo leitor de tela.
 

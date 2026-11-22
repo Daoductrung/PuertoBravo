@@ -6,7 +6,7 @@ Esta tradução usa a versão inglesa como base e o espanhol para conferir o con
 - `../../data/idiomas/pt/textos.json`: catálogo carregado pelo jogo, sincronizado com `pt.json`.
 - `../../data/idiomas/pt/idioma.json`: identificação da variante brasileira.
 - `../../data/idiomas/pt/palabras.json`: glossário auxiliar, com as mesmas chaves da versão inglesa.
-- `nombres.json`: nomes originais preservados, incluindo cidades, bairros, ruas, personagens, estabelecimentos e títulos próprios dos mods.
+- `nombres.json`: glossário dos nomes exibidos. Preserva cidades, bairros, ruas, personagens, marcas e títulos próprios dos mods; traduz o tipo do local e os conectivos ao redor do nome próprio.
 - `mods/marisma_negra.json`: tradução do componente opcional, distribuída pelo respectivo `componente.json`.
 - As seis guias ficam em `../../data/docs/*_pt.html`. Há instruções de uso em `../../LEEME_pt.txt`, `../../README_pt.md` e `../../data/mods/LEEME_mods_pt.txt`.
 - A referência técnica dos mods está em `../../desarrollo/formato_de_los_mods_pt.html`. As regras de contribuição estão em `../../CONTRIBUTING_pt.md`.
@@ -16,6 +16,8 @@ Foi usada tradução assistida, com correções de terminologia, instruções de
 ## Critérios de revisão
 
 Português brasileiro natural, tratamento com «você» e frases claras ao ouvir. São mantidos o cenário litorâneo espanhol, a moeda em euros e o tom dos crimes e da história. Entre os termos revisados estão «gazua», «carregador», «submetralhadora», «lavagem de dinheiro», «acerto de contas», «blindagem» e «sinal sonoro».
+
+Nos locais, traduza a parte descritiva e mantenha o nome próprio. Exemplos: `Cementerio de la Alameda` → `Cemitério da Alameda`, `Armería El Plomo` → `Loja de armas El Plomo`, `Farmacia Luna` → `Farmácia Luna`. `Puerto Bravo`, `Bahía del Ocaso`, `Calle de la Sal`, `Dani Roca` e os títulos dos mods permanecem iguais. Use a mesma forma do glossário nos diálogos, nas missões e nas guias. Confira também a concordância: `ao Gimnasio El Yunque` passa a `à Academia El Yunque`.
 
 Não altere chaves JSON do protocolo, identificadores, comandos, caminhos ou nomes de arquivos. Preserve as variáveis entre chaves e os campos `%s` e `%d`. As marcas `[masculino|feminino]` são resolvidas antes da leitura, assim como no espanhol.
 
