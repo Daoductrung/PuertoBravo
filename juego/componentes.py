@@ -22,7 +22,7 @@ import urllib.parse
 import zipfile
 
 from . import VERSION, actualizador as A, rutas
-from .i18n import tr
+from .i18n import es, tr
 
 ARCHIVO = "componentes.json"
 ARCHIVO_SERIE = "componentes_de_serie.json"     # los que trae el juego, con su versión: los escribe la compilación
@@ -43,6 +43,19 @@ TIPOS = {
     "musica": ("data/musica/",),
     "radio": ("data/radio/",),
 }
+# Lo que dice el menú de cada componente que el juego trae de serie, para que se sepa qué es en cualquier idioma. Se escribe
+# en español y herramientas/publicar_componentes.py lo pone en el manifiesto en cada idioma que tiene catálogo («nombres» y
+# «descripciones»): así lo entiende también un juego anterior, que lee el nombre y la descripción tal como llegan.
+# {idioma} es el nombre del idioma en el de quien lee; la descripción de un pack o de un mod sale de sus datos.
+DESCRIPCIONES = {
+    "idioma": es("El juego entero en {idioma}: los menús, la historia, los lugares, los objetos, las teclas, el editor de mods y el panel "
+                 "del servidor. Después de instalarlo, elígelo en Opciones, Idioma: se aplica al volver a abrir el juego."),
+    "voces": es("Las voces grabadas de las escenas de la historia en {idioma}. Sin ellas, las escenas las dice tu lector de pantalla."),
+    "documentacion": es("El manual y las demás guías en {idioma}, puestas al día sin esperar a una versión nueva del juego."),
+    "sonidos": es("{descripcion} Se elige en Opciones, Sonido y música, Pack de sonidos, y se oye al momento."),
+    "mod": es("{descripcion} Se carga solo al abrir el juego. Para quitarlo, desactívalo en el editor de mods con Control M."),
+}
+
 NOMBRE_TIPO = {"idioma": tr("Idiomas"), "voces": tr("Voces"), "documentacion": tr("Documentación"), "sonidos": tr("Packs de sonidos"), "mod": tr("Mods"),
                "musica": tr("Música de ambiente"), "radio": tr("Radio")}
 

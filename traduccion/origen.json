@@ -4050,6 +4050,9 @@
 "Altavoz del helicóptero": [
 "juego/catalogo_sonidos.py"
 ],
+"Alternativo": [
+"data/sonidos/alternativo/pack.json"
+],
 "Altitud a la que hay que llegar, en metros": [
 "editor/esquema_vuelo.py"
 ],
@@ -15315,6 +15318,9 @@
 "El juego distingue tres: rumor, chivatazo y mensaje.": [
 "editor/esquema.py"
 ],
+"El juego entero en {idioma}: los menús, la historia, los lugares, los objetos, las teclas, el editor de mods y el panel del servidor. Después de instalarlo, elígelo en Opciones, Idioma: se aplica al volver a abrir el juego.": [
+"juego/componentes.py"
+],
 "El juego entiende de qué va lo que escribes y contesta a eso.": [
 "juego/menus_adultos.py"
 ],
@@ -15426,6 +15432,9 @@
 ],
 "El mantenimiento la deja como nueva. Cuesta según el daño que tenga.": [
 "juego/vuelo_pantalla.py"
+],
+"El manual y las demás guías en {idioma}, puestas al día sin esperar a una versión nueva del juego.": [
+"juego/componentes.py"
 ],
 "El mar da y el mar quita.": [
 "juego/respuestas_datos1.py"
@@ -18064,6 +18073,9 @@
 "Enviarle 500 euros": [
 "juego/menus_online.py"
 ],
+"Envolvente": [
+"data/sonidos/envolvente/pack.json"
+],
 "Envías {n} euros a {nombre}. Te quedan {dinero}.": [
 "juego/online.py"
 ],
@@ -18828,9 +18840,6 @@
 ],
 "Espacio ataca al que tienes fijado. Con un arma de cuerpo a cuerpo tienes que acercarte hasta tenerlo al lado.": [
 "data/datos/misiones.json"
-],
-"Español": [
-"juego/menus_juego.py"
 ],
 "Especialistas en vehículos de montaña.": [
 "data/datos/mapas/monteferro.json"
@@ -21212,6 +21221,9 @@
 ],
 "Graba cada frase en un archivo aparte, en WAV, OGG, FLAC o MP3, con el nombre que se indica,": [
 "juego/voces.py"
+],
+"Grabaciones reales para pasos, puertas, armas, golpes, cristales, coche, lluvia, agua y monedas.": [
+"data/sonidos/realista/pack.json"
 ],
 "Gracias a ti por la conversación.": [
 "juego/respuestas_datos2.py"
@@ -25873,6 +25885,9 @@
 "Las vendes al precio de hoy y te dice si con ellas ganas o pierdes respecto a lo que te costaron. Si tienes menos de diez, vendes las que tengas.": [
 "juego/menus_extra.py"
 ],
+"Las voces grabadas de las escenas de la historia en {idioma}. Sin ellas, las escenas las dice tu lector de pantalla.": [
+"juego/componentes.py"
+],
 "Latas, pasta, arroz y legumbres en estantes hasta el techo.": [
 "juego/compra.py",
 "data/datos/vida.json"
@@ -28290,6 +28305,9 @@
 ],
 "Los sonidos de los menús, del dinero, de los mensajes y de las misiones, y las balizas. Al cambiarlo suena una muestra. Cámbialo con las flechas izquierda y derecha.": [
 "juego/menus_juego.py"
+],
+"Los sonidos del pack realista, con ambientes de barrio grabados en estéreo. Los sonidos de orientación son los de serie.": [
+"data/sonidos/envolvente/pack.json"
 ],
 "Los sonidos están por los mismos grupos que en Aprender los sonidos. Cada uno se ajusta del 30 al 200 por ciento de su volumen de serie, y encima se aplican los volúmenes generales de efectos, de ambiente y de avisos. Pulsa Intro para entrar en un grupo": [
 "juego/menus_juego.py"
@@ -33362,6 +33380,9 @@
 "Otra ropa: {len}": [
 "juego/vestuario.py"
 ],
+"Otra selección de grabaciones para los mismos sonidos, con otras armas y con clics reales en los menús.": [
+"data/sonidos/alternativo/pack.json"
+],
 "Otra vez tú, qué bien. Hay un furtivo en el valle. Sale del Mirador del Águila en un quad y no deja un ciervo vivo.": [
 "data/datos/misiones_extra2.json"
 ],
@@ -37285,6 +37306,9 @@
 "editor/esquema.py",
 "editor/esquema.py"
 ],
+"Realista": [
+"data/sonidos/realista/pack.json"
+],
 "Reanimación, vendajes, rescate en el agua y traslado de heridos.": [
 "data/datos/vida.json"
 ],
@@ -38141,6 +38165,9 @@
 ],
 "Retirarte": [
 "juego/menus.py"
+],
+"Retro": [
+"data/sonidos/retro/pack.json"
 ],
 "Retroceso": [
 "juego/ayuda.py",
@@ -41000,6 +41027,9 @@
 ],
 "Sonidos cortos de la interfaz. Conviene que sean breves y discretos.": [
 "juego/catalogo_sonidos.py"
+],
+"Sonidos de consola antigua, de 8 y 16 bits, para pasos, golpes, disparos, explosiones, monedas, avisos y menús; el resto, grabaciones reales.": [
+"data/sonidos/retro/pack.json"
 ],
 "Sonidos de los lugares": [
 "juego/catalogo_sonidos.py"
@@ -49491,8 +49521,9 @@
 "agacharte o levantarte. Al agacharte te aciertan menos, pero vas más lento": [
 "juego/ayuda.py"
 ],
-"agente": [
-"juego/agente.py"
+"agente de policía": [
+"juego/agente.py",
+"data/datos/vida.json"
 ],
 "agente en prácticas": [
 "juego/agente.py",
@@ -49528,6 +49559,9 @@
 ],
 "alcance {_num} metros": [
 "juego/combate.py"
+],
+"alemán": [
+"juego/i18n.py"
 ],
 "algo": [
 "juego/convivencia.py"
@@ -49752,6 +49786,9 @@
 "buscar entre la arena": [
 "juego/pantallas.py"
 ],
+"búlgaro": [
+"juego/i18n.py"
+],
 "caduca en {d} días": [
 "juego/compra.py"
 ],
@@ -49829,6 +49866,9 @@
 "juego/atracos.py",
 "data/datos/vida.json"
 ],
+"catalán": [
+"juego/i18n.py"
+],
 "cavar": [
 "juego/pantallas.py"
 ],
@@ -49845,6 +49885,12 @@
 "juego/enlinea.py",
 "juego/menus_enlinea.py",
 "juego/reconexion.py"
+],
+"checo": [
+"juego/i18n.py"
+],
+"chino": [
+"juego/i18n.py"
 ],
 "chula y presumida": [
 "juego/gente.py",
@@ -50056,6 +50102,9 @@
 "copiar los datos nuevos del juego": [
 "juego/actualizador.py"
 ],
+"coreano": [
+"juego/i18n.py"
+],
 "corre el rumor de que llevas una doble vida": [
 "juego/honrado.py"
 ],
@@ -50070,6 +50119,9 @@
 ],
 "crea un código de invitación de un solo uso; con un número detrás, crea varios": [
 "servidor/nucleo.py"
+],
+"croata": [
+"juego/i18n.py"
 ],
 "cruceta abajo": [
 "juego/mando.py",
@@ -50130,6 +50182,9 @@
 "da {int} de salud": [
 "juego/compra.py",
 "juego/domicilio.py"
+],
+"danés": [
+"juego/i18n.py"
 ],
 "daño {_num}, ": [
 "juego/combate.py"
@@ -51029,8 +51084,20 @@
 "ese barrio": [
 "juego/menus_extra.py"
 ],
+"eslovaco": [
+"juego/i18n.py"
+],
+"esloveno": [
+"juego/i18n.py"
+],
+"español": [
+"juego/i18n.py"
+],
 "esperando a alguien": [
 "juego/ia.py"
+],
+"esperanto": [
+"juego/i18n.py"
 ],
 "esperar a que el juego se cerrara": [
 "juego/actualizador.py"
@@ -51112,6 +51179,9 @@
 "están": [
 "juego/misvehiculos.py"
 ],
+"euskera": [
+"juego/i18n.py"
+],
 "exceso de velocidad, a {int} por hora donde el límite es {int2}": [
 "juego/realismo.py"
 ],
@@ -51151,6 +51221,9 @@
 "fijar al enemigo más cercano": [
 "juego/mando.py"
 ],
+"finés": [
+"juego/i18n.py"
+],
 "flecha abajo": [
 "juego/teclado.py",
 "juego/vuelo_pantalla.py",
@@ -51168,6 +51241,9 @@
 ],
 "forzada para pruebas": [
 "juego/procesador.py"
+],
+"francés": [
+"juego/i18n.py"
 ],
 "frenar y marcha atrás": [
 "juego/mando.py"
@@ -51199,6 +51275,9 @@
 ],
 "fácil": [
 "juego/menus_juego.py"
+],
+"gallego": [
+"juego/i18n.py"
 ],
 "ganas {_euros} euros": [
 "juego/bolsa.py"
@@ -51239,6 +51318,9 @@
 ],
 "gracias|muchas gracias|te lo agradezco|muy amable|eres muy amable|que amable|te debo una": [
 "juego/respuestas_datos2.py"
+],
+"griego": [
+"juego/i18n.py"
 ],
 "gritar para espantar a los peatones. De servicio como policía, da el alto a los sospechosos": [
 "juego/ayuda.py"
@@ -51333,8 +51415,14 @@
 "hay un asalto en curso": [
 "juego/reconquista.py"
 ],
+"hebreo": [
+"juego/i18n.py"
+],
 "helader[o|a]": [
 "juego/trabajos.py"
+],
+"hindi": [
+"juego/i18n.py"
 ],
 "hipoteca de {nombre}": [
 "juego/honrado.py"
@@ -51372,6 +51460,9 @@
 ],
 "hurto en una tienda": [
 "juego/compra.py"
+],
+"húngaro": [
+"juego/i18n.py"
 ],
 "if %N% geq 180 goto no_cierra": [
 "juego/actualizador.py"
@@ -51416,6 +51507,12 @@
 "juego/capo.py",
 "juego/laboratorio.py"
 ],
+"indonesio": [
+"juego/i18n.py"
+],
+"inglés": [
+"juego/i18n.py"
+],
 "ingreso": [
 "servidor/nucleo.py"
 ],
@@ -51443,8 +51540,14 @@
 "ir a la habitación, la sala o el pasillo de al lado. Se oyen tus pasos hacia ese lado y el juego dice adónde llegas": [
 "juego/ayuda.py"
 ],
+"italiano": [
+"juego/i18n.py"
+],
 "jaja|jeje|jiji|que gracioso|que graciosa|que risa|me parto|que bueno|me rio": [
 "juego/respuestas_datos2.py"
+],
+"japonés": [
+"juego/i18n.py"
 ],
 "jef[e|a] de guardia": [
 "data/datos/vida.json"
@@ -52308,6 +52411,9 @@
 "nadie te conoce": [
 "juego/adultos.py"
 ],
+"neerlandés": [
+"juego/i18n.py"
+],
 "nervios": [
 "juego/golpes.py"
 ],
@@ -52447,6 +52553,12 @@
 "juego/mundo.py",
 "juego/partida.py"
 ],
+"noruego": [
+"juego/i18n.py"
+],
+"noruego bokmål": [
+"juego/i18n.py"
+],
 "nos vemos": [
 "juego/charla.py"
 ],
@@ -52486,8 +52598,11 @@
 "juego/partida.py"
 ],
 "oficial": [
-"juego/agente.py",
 "juego/vida.py"
+],
+"oficial de policía": [
+"juego/agente.py",
+"data/datos/vida.json"
 ],
 "oficial de primera": [
 "data/datos/vida.json"
@@ -52630,6 +52745,9 @@
 "poco, sin recordar las teclas": [
 "juego/menus_juego.py"
 ],
+"polaco": [
+"juego/i18n.py"
+],
 "pone": [
 "juego/sistemas.py"
 ],
@@ -52684,6 +52802,9 @@
 "juego/enlinea.py",
 "servidor/nucleo.py",
 "servidor/nucleo.py"
+],
+"portugués": [
+"juego/i18n.py"
 ],
 "prefiero no decirlo": [
 "juego/menus_juego.py"
@@ -52972,6 +53093,12 @@
 "juego/atracos.py",
 "data/datos/vida.json"
 ],
+"rumano": [
+"juego/i18n.py"
+],
+"ruso": [
+"juego/i18n.py"
+],
 "rápida": [
 "juego/combate.py"
 ],
@@ -53061,6 +53188,9 @@
 ],
 "seleccionar todo": [
 "editor/accesibilidad/ayuda.py"
+],
+"serbio": [
+"juego/i18n.py"
 ],
 "servicios de {get}": [
 "juego/menus_honrado.py"
@@ -53265,6 +53395,9 @@
 "subir a un vehículo o bajarte": [
 "juego/ayuda.py",
 "juego/mando.py"
+],
+"sueco": [
+"juego/i18n.py"
 ],
 "sur": [
 "juego/mundo.py",
@@ -53585,6 +53718,9 @@
 "tu vehículo": [
 "juego/partida.py"
 ],
+"turco": [
+"juego/i18n.py"
+],
 "tus antecedentes penales": [
 "juego/honrado.py"
 ],
@@ -53616,6 +53752,9 @@
 ],
 "título de {hon_titulo_nombre}": [
 "juego/menus_honrado.py"
+],
+"ucraniano": [
+"juego/i18n.py"
 ],
 "un albarán de explosivos": [
 "data/mods/penas_altas.json"
@@ -54189,6 +54328,9 @@
 "veteran[o|a]": [
 "juego/vida.py"
 ],
+"vietnamita": [
+"juego/i18n.py"
+],
 "vigilante": [
 "juego/trabajos.py"
 ],
@@ -54631,6 +54773,12 @@
 ],
 "{c} mayúscula": [
 "juego/menus.py"
+],
+"{descripcion} Se carga solo al abrir el juego. Para quitarlo, desactívalo en el editor de mods con Control M.": [
+"juego/componentes.py"
+],
+"{descripcion} Se elige en Opciones, Sonido y música, Pack de sonidos, y se oye al momento.": [
+"juego/componentes.py"
 ],
 "{desc} Se lleva el {int} por ciento del botín.": [
 "juego/golpes.py"
@@ -58315,6 +58463,9 @@
 ],
 "Único. Otras misiones lo usan para exigir que esta esté completada.": [
 "editor/esquema.py"
+],
+"árabe": [
+"juego/i18n.py"
 ],
 "áéíóúüñÁÉÍÓÚÜÑ¿¡": [
 "juego/actualizador.py"

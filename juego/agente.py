@@ -27,7 +27,7 @@ AJ = Ajustes("policia_oficio", {
     "temerario_obedece": 70, "temerario_segundos": 3, "persecucion_salud": 55, "multa_importe": 120, "multa_comision": 25,
     "apercibimientos": 3, "expulsion_dias": 7, "bono_rapidez": 40, "radio_fuerza": 120, "radio_fuerza_vehiculo": 300, "abandono_metros": 170,
 }, {
-    "rangos": [tr("agente en prácticas"), tr("agente"), tr("oficial"), tr("subinspector[|a]"), tr("inspector[|a]"), tr("comisari[o|a]")],
+    "rangos": [tr("agente en prácticas"), tr("agente de policía"), tr("oficial de policía"), tr("subinspector[|a]"), tr("inspector[|a]"), tr("comisari[o|a]")],
     "frases_ingreso": [tr("Firmas, juras y te dan una placa que pesa más de lo que parece. Ya eres agente en prácticas."),
                        tr("Ocho horas de teoría, tiro y normas. Al salir llevas placa y un número de agente.")],
     "frases_turno": [tr("Central a todas las unidades: {nombre} entra de servicio. Buen turno."), tr("Fichas, coges las llaves y la emisora cruje: estás de servicio."),

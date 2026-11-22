@@ -88,6 +88,50 @@ def test_marcas_de_genero_con_mas_de_dos_formas():
     assert genero.resolver("[sin barra] y [o|a]", "h") == "[sin barra] y o"
 
 
+def test_cada_idioma_se_dice_en_el_tuyo_y_en_el_suyo():
+    assert i18n.nombre_en("vi", "es") == "vietnamita (Tiếng Việt)"
+    assert i18n.nombre_en("en", "es") == "inglés (English)"
+    assert i18n.nombre_en("vi", "en") == "Vietnamese (Tiếng Việt)"
+    assert i18n.nombre_en("en", "en") == "English" and i18n.nombre_en("vi", "vi") == "Tiếng Việt"
+    assert i18n.nombre_en("es", "vi") == "tiếng Tây Ban Nha (Español)"
+    assert i18n.idioma_en("vi", "es") == "vietnamita" and i18n.idioma_en("es", "en") == "Spanish"
+
+
+def test_los_identificadores_de_los_datos_no_se_traducen():
+    """«pesca», «puerto», «agente» o «radar» son palabras del catálogo y también identificadores: traducidos, el código no
+    encontraría los puntos de pesca, el barrio del puerto, la policía ni el ejercicio del radar."""
+    codigo = ("from juego import mundo\nd = mundo.cargar_datos()\n"
+              "print(sorted({l.get('tipo') for l in d['ciudad']['lugares'] if l.get('tipo') == 'pesca'}))\n"
+              "print([b['id'] for b in d['ciudad']['barrios'] if b['id'] == 'puerto'])\n"
+              "print([t['id'] for t in d['tipos_enemigo'] if t['id'] == 'agente'])\n"
+              "print([p['exige'] for m in d['misiones'] for p in m.get('pasos', []) if p.get('exige')])\n"
+              "print(d['ciudad']['lugares'][0]['nombre'])\n")
+    for cod in ("en", "vi"):
+        lineas = _en(cod, codigo).strip().splitlines()
+        assert lineas[:4] == ["['pesca']", "['puerto']", "['agente']", "['radar']"], (cod, lineas)
+        assert lineas[4] == _catalogo(cod)["Piso de la abuela"]            # los nombres sí se traducen
+
+
+def test_una_partida_inglesa_de_antes_recupera_sus_identificadores():
+    out = _en("en", "from juego import i18n\n"
+                    "g = {'barrios': ['port'], 'prendas': ['Jeans'], 'pescado': [{'nombre': 'x', 'tipo': 'fishing'}], 'nombre': 'port'}\n"
+                    "i18n.al_idioma_de_ahora(g, respetar=('nombre',))\nprint(g['barrios'], g['pescado'][0]['tipo'], g['nombre'])\n")
+    assert out.strip() == "['puerto'] pesca port"
+
+
+def test_cada_componente_dice_que_es_en_cada_idioma():
+    sys.path.insert(0, os.path.join(RAIZ, "herramientas"))
+    import publicar_componentes as P
+    d = P.presentar("idioma-vi", "idioma", RAIZ)
+    assert d["nombres"]["es"] == "vietnamita (Tiếng Việt)" and d["nombres"]["en"] == "Vietnamese (Tiếng Việt)" and d["nombres"]["vi"] == "Tiếng Việt"
+    assert d["descripcion"].startswith("El juego entero en vietnamita") and "Opciones, Idioma" in d["descripcion"]
+    assert d["descripciones"]["en"].startswith("The whole game in Vietnamese")
+    pack = P.presentar("sonidos-retro", "sonidos", RAIZ)
+    assert pack["nombres"]["en"] == "Retro" and "Pack de sonidos" in pack["descripcion"] and pack["descripciones"]["en"].startswith("Old console sounds")
+    mod = P.presentar("mod-motor_y_asfalto", "mod", RAIZ)
+    assert mod["nombre"] == "Motor y asfalto" and mod["nombres"]["en"] == "Engine and Asphalt" and "Control M" in mod["descripcion"]
+
+
 def test_el_mod_marisma_negra_tiene_traduccion_vietnamita_completa():
     base = os.path.join(RAIZ, "componentes_extra", "mod_marisma_negra")
     spec = json.load(open(os.path.join(base, "componente.json"), encoding="utf-8"))
