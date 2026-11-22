@@ -646,11 +646,10 @@ def opciones(app):
     from . import i18n
 
     def idioma_txt():
-        hay = i18n.disponibles()
-        if cfg["idioma"] == "auto":
-            t = tr('Idioma: automático, el de tu sistema ({nombre})').format(nombre=hay.get(i18n.elegir("auto"), tr("Español")))
+        if cfg["idioma"] == "auto":                       # cada idioma, en el tuyo y en el suyo: «vietnamita (Tiếng Việt)»
+            t = tr('Idioma: automático, el de tu sistema ({nombre})').format(nombre=i18n.idioma_en(i18n.elegir("auto")))
         else:
-            t = tr('Idioma: {nombre}').format(nombre=hay.get(cfg["idioma"], cfg["idioma"]))
+            t = tr('Idioma: {nombre}').format(nombre=i18n.nombre_en(cfg["idioma"]))
         return t + (tr(". Se aplica al volver a abrir el juego") if i18n.elegir(cfg["idioma"]) != i18n.actual() else "")
 
     def cambiar_idioma(d):

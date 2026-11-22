@@ -855,7 +855,7 @@
      "radio_fuerza": 120,
      "radio_fuerza_vehiculo": 300,
      "abandono_metros": 170,
-     "rangos": ["agente en prácticas", "agente", "oficial", "subinspector[|a]", "inspector[|a]", "comisari[o|a]"],
+     "rangos": ["agente en prácticas", "agente de policía", "oficial de policía", "subinspector[|a]", "inspector[|a]", "comisari[o|a]"],
      "frases_ingreso": ["Firmas, juras y te dan una placa que pesa más de lo que parece. Ya eres agente en prácticas.", "Ocho horas de teoría, tiro y normas. Al salir llevas placa y un número de agente."],
      "frases_turno": ["Central a todas las unidades: {nombre} entra de servicio. Buen turno.", "Fichas, coges las llaves y la emisora cruje: estás de servicio.", "El sargento te tira las llaves: «El de la puerta es el tuyo. Y devuélvelo entero»."],
      "frases_fin": ["Central: recibido. Fin del turno.", "Dejas las llaves en el mostrador de guardia. Turno terminado."],

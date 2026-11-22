@@ -35,12 +35,73 @@ NOMBRES = {"es": "Español", "en": "English", "it": "Italiano", "fr": "Français
            "vi": "Tiếng Việt", "id": "Bahasa Indonesia", "eo": "Esperanto", "hr": "Hrvatski", "sr": "Српски", "bg": "Български", "sl": "Slovenščina"}
 
 
+def es(texto):
+    """Marca un texto español que se traduce en otro momento, no donde está escrito (los nombres de los idiomas, lo que
+    dice el manifiesto de componentes): así entra en los catálogos. Devuelve el mismo texto."""
+    return texto
+
+
+# Cómo se llama cada idioma en español: el catálogo de cada idioma dice cómo se llama en ese idioma.
+NOMBRES_ES = {"es": es("español"), "en": es("inglés"), "it": es("italiano"), "fr": es("francés"), "pt": es("portugués"), "de": es("alemán"),
+              "ca": es("catalán"), "eu": es("euskera"), "gl": es("gallego"), "nl": es("neerlandés"), "pl": es("polaco"), "ru": es("ruso"),
+              "uk": es("ucraniano"), "tr": es("turco"), "ro": es("rumano"), "sv": es("sueco"), "da": es("danés"), "no": es("noruego"),
+              "nb": es("noruego bokmål"), "fi": es("finés"), "cs": es("checo"), "sk": es("eslovaco"), "hu": es("húngaro"), "el": es("griego"),
+              "ar": es("árabe"), "he": es("hebreo"), "hi": es("hindi"), "ja": es("japonés"), "ko": es("coreano"), "zh": es("chino"),
+              "vi": es("vietnamita"), "id": es("indonesio"), "eo": es("esperanto"), "hr": es("croata"), "sr": es("serbio"), "bg": es("búlgaro"),
+              "sl": es("esloveno")}
+_catalogos = {}
+
+
+def catalogo(cod):
+    """El catálogo de un idioma, {español: traducción}, leído una vez. El del español está vacío."""
+    if cod == ORIGEN:
+        return {}
+    if cod not in _catalogos:
+        try:
+            with open(os.path.join(carpeta(cod), "textos.json"), encoding="utf-8") as f:
+                d = json.load(f)
+            _catalogos[cod] = {k: v for k, v in (d.get("textos", d) or {}).items() if isinstance(v, str) and v}
+        except (OSError, ValueError, AttributeError):
+            _catalogos[cod] = {}
+    return _catalogos[cod]
+
+
+def en_idioma(texto, cod):
+    """Un texto español dicho en el idioma ``cod``, haya o no arrancado el juego en él. Tal cual si no está traducido."""
+    return catalogo(cod).get(texto, texto) if isinstance(texto, str) else texto
+
+
+def idioma_en(cod, idioma=None):
+    """Cómo se llama el idioma ``cod`` dicho en ``idioma`` (el del juego, si no se dice), en minúscula y sin más:
+    «vietnamita», «Vietnamese», «tiếng Việt». Si no se sabe, su propio nombre."""
+    idioma = idioma or actual()
+    if cod not in NOMBRES_ES:
+        return nombre_de(cod)
+    local = NOMBRES_ES[cod] if idioma == ORIGEN else catalogo(idioma).get(NOMBRES_ES[cod])
+    return local or nombre_de(cod)
+
+
+def nombre_en(cod, idioma=None):
+    """Cómo se presenta un idioma en una lista: en el idioma de quien lee y, entre paréntesis, en el suyo, para que cada uno
+    encuentre el suyo aunque no entienda el del juego: «vietnamita (Tiếng Việt)». El propio, solo con su nombre."""
+    idioma = idioma or actual()
+    propio = nombre_de(cod)
+    if cod == idioma:
+        return propio
+    local = idioma_en(cod, idioma)
+    return propio if local.lower() == propio.lower() else f"{local} ({propio})"
+
+
 def carpeta(cod=None):
     return rutas.data("idiomas", cod) if cod else rutas.data("idiomas")
 
 
 def nombre_de(cod):
-    """El nombre del idioma: el de su idioma.json, o el que le corresponde por su código."""
+    """El nombre del idioma en su propia lengua: el que le corresponde por su código o, si el juego no lo conoce, el de su
+    idioma.json. (Hasta la 1.7.2 mandaba el de idioma.json: por eso el del vietnamita lleva también vietnamita y
+    Vietnamese, para que se entienda en esa versión.)"""
+    if cod in NOMBRES:
+        return NOMBRES[cod]
     try:
         with open(os.path.join(carpeta(cod), "idioma.json"), encoding="utf-8") as f:
             n = json.load(f).get("nombre")
@@ -255,30 +316,42 @@ def tr_servidor(texto):
     return hechos[texto]
 
 
+# Un identificador de los datos va en minúscula, sin espacios ni tildes («pesca», «puerto», «agente»). Muchos son también
+# palabras que el catálogo traduce, así que no se traducen nunca, salvo en los campos que son texto para leer, como el
+# nombre de algo o los rangos de la policía: si no, el código ya no los encontraría («fishing» en vez de «pesca»).
+_IDENTIFICADOR = re.compile(r"[a-z0-9_]+\Z")
+CAMPOS_DE_TEXTO = frozenset(("nombre", "nombres", "rangos", "texto", "titulo", "descripcion", "frases"))
+
+
+def es_identificador(valor, clave):
+    """Si el valor de ese campo es un identificador de los datos, que no se traduce."""
+    return isinstance(valor, str) and clave not in CAMPOS_DE_TEXTO and _IDENTIFICADOR.match(valor) is not None
+
+
 def traducir_datos(obj):
-    """Traduce, en el sitio, todos los textos de unos datos (.json ya cargados) que estén en el catálogo. Los identificadores
-    no están en el catálogo, así que no se tocan. Devuelve el mismo objeto."""
+    """Traduce, en el sitio, todos los textos de unos datos (.json ya cargados) que estén en el catálogo, menos los
+    identificadores (es_identificador). Devuelve el mismo objeto."""
     if _estado["idioma"] is None:
         cargar()
     t = _estado["textos"]
     if not t:
         return obj
 
-    def rec(o):
+    def rec(o, clave=None):
         if isinstance(o, dict):
             for k, v in o.items():
                 if isinstance(v, str):
-                    if v in t:
+                    if v in t and not es_identificador(v, k):
                         o[k] = t[v]
                 else:
-                    rec(v)
+                    rec(v, k)
         elif isinstance(o, list):
             for i, v in enumerate(o):
                 if isinstance(v, str):
-                    if v in t:
+                    if v in t and not es_identificador(v, clave):
                         o[i] = t[v]
                 else:
-                    rec(v)
+                    rec(v, clave)
     rec(obj)
     return obj
 
@@ -358,24 +431,26 @@ def al_idioma_de_ahora(obj, respetar=()):
     if not inv and not t:
         return obj
 
-    def uno(v):
+    def uno(v, clave):
         es = v if v in t or not inv else inv.get(v, v)
+        if es_identificador(es, clave):                # un identificador, en español como en los datos (y el de una partida
+            return es                                  # guardada antes de la 1.7.3, traducido entonces, vuelve a serlo)
         return t.get(es, es)
 
-    def rec(o):
+    def rec(o, clave=None):
         if isinstance(o, dict):
             for k, v in o.items():
                 if k in respetar:
                     continue
                 if isinstance(v, str):
-                    o[k] = uno(v)
+                    o[k] = uno(v, k)
                 else:
-                    rec(v)
+                    rec(v, k)
         elif isinstance(o, list):
             for i, v in enumerate(o):
                 if isinstance(v, str):
-                    o[i] = uno(v)
+                    o[i] = uno(v, clave)
                 else:
-                    rec(v)
+                    rec(v, clave)
     rec(obj)
     return obj

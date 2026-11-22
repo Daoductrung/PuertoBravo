@@ -6,7 +6,8 @@
 
 - Del código: cada tr("...") (y es("...") del servidor) de juego, editor, panel_servidor, servidor y las herramientas que
   escriben documentos (generar_datos, preparar_carpeta_servidor).
-- De los datos: cada texto de data\\datos y de los mods de data\\mods que sea para personas (los identificadores no).
+- De los datos: cada texto de data\\datos y de los mods de data\\mods que sea para personas (los identificadores no), y el
+  nombre y la descripción de cada pack de sonidos (data\\sonidos\\<pack>\\pack.json).
 - Escribe traduccion\\origen.json (cada texto con dónde aparece) y, para el idioma, traduccion\\<idioma>\\pendientes\\lote_NNN.json
   con los textos que aún no tienen traducción en data\\idiomas\\<idioma>.json, agrupados por archivo para dar contexto.
 """
@@ -64,6 +65,15 @@ def de_los_datos():
         except (OSError, ValueError):
             continue
         rec(d, os.path.relpath(f, RAIZ).replace("\\", "/"))
+    for f in sorted(glob.glob(os.path.join(RAIZ, "data", "sonidos", "*", "pack.json"))):     # el nombre y la descripción de cada pack
+        try:
+            d = json.load(open(f, encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        rel = os.path.relpath(f, RAIZ).replace("\\", "/")
+        for clave in ("nombre", "descripcion"):
+            if isinstance(d.get(clave), str) and d[clave].strip():
+                r.setdefault(d[clave], []).append(rel)
     return r
 
 
