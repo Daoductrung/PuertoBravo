@@ -25,6 +25,7 @@ import os
 import numpy as np
 
 from . import cifrado, rutas, sintesis
+from .i18n import tr
 
 SR = sintesis.SR
 VENTANA = int(0.3 * SR)
@@ -122,7 +123,7 @@ def listar():
         n = len(_archivos(ruta))
         if n:
             m = _meta(ruta)
-            out.append({"id": d, "nombre": str(m.get("nombre") or d.replace("_", " ")), "descripcion": str(m.get("descripcion") or ""), "n": n})
+            out.append({"id": d, "nombre": tr(str(m.get("nombre") or d.replace("_", " "))), "descripcion": tr(str(m.get("descripcion") or "")), "n": n})
     return out
 
 

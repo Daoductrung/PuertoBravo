@@ -1,4 +1,5 @@
 {
   "codigo": "vi",
-  "nombre": "Tiếng Việt"
+  "nombre": "vietnamita, Vietnamese, Tiếng Việt",
+  "_nota": "Hasta la 1.7.2 el juego dice este nombre tal cual en cualquier idioma; desde la 1.7.3 dice el idioma en el tuyo y en el suyo."
 }

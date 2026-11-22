@@ -162,6 +162,58 @@ def definir_extra():
     return r
 
 
+def idiomas_del_menu(base=DIST):
+    """Los idiomas en los que se escriben el nombre y la descripción de cada componente: el español y los que tienen catálogo."""
+    carpeta = os.path.join(base, "data", "idiomas")
+    otros = sorted(c for c in os.listdir(carpeta) if os.path.isfile(os.path.join(carpeta, c, "textos.json"))) if os.path.isdir(carpeta) else []
+    return ["es"] + [c for c in otros if c != "es"]
+
+
+def _info_mod(ident):
+    """El nombre y la descripción de un mod del juego, de su archivo legible del proyecto (en la compilación va protegido)."""
+    for ruta in (os.path.join(RAIZ, "data", "mods", ident + ".json"), os.path.join(DIST, "data", "mods", ident + ".json")):
+        try:
+            info = json.load(open(ruta, encoding="utf-8")).get("info") or {}
+            return str(info.get("nombre") or ""), str(info.get("descripcion") or "")
+        except (OSError, ValueError, AttributeError):
+            continue
+    return "", ""
+
+
+def presentar(cid, tipo, base=DIST):
+    """Nombre y descripción de un componente del juego en cada idioma, para el manifiesto: {"nombre", "nombres",
+    "descripcion", "descripciones"}. Un juego anterior los dice tal como llegan, en su idioma, sin saber nada más."""
+    from juego import componentes as C2, i18n
+    cod = cid.split("-", 1)[1]
+    nombres, descripciones = {}, {}
+    for lengua in idiomas_del_menu(base):
+        plantilla = i18n.en_idioma(C2.DESCRIPCIONES.get(tipo, ""), lengua)
+        if tipo in ("idioma", "voces", "documentacion"):
+            idioma = "es" if cid == "docs-es" else cod
+            nombre = i18n.nombre_en(idioma, lengua)
+            desc = plantilla.format(idioma=i18n.idioma_en(idioma, lengua))
+        elif tipo == "sonidos":
+            pack = {}
+            for raiz in (base, RAIZ):                    # la compilación protege los .json: si no, el del proyecto
+                try:
+                    pack = json.load(open(os.path.join(raiz, "data", "sonidos", cod, "pack.json"), encoding="utf-8"))
+                    break
+                except (OSError, ValueError):
+                    continue
+            nombre = i18n.en_idioma(str(pack.get("nombre") or cod), lengua)
+            desc = plantilla.format(descripcion=i18n.en_idioma(str(pack.get("descripcion") or ""), lengua)).strip()
+        elif tipo == "mod":
+            n, d = _info_mod(cod)
+            nombre = i18n.en_idioma(n or cod.replace("_", " "), lengua)
+            desc = plantilla.format(descripcion=i18n.en_idioma(d, lengua)).strip()
+        else:
+            continue
+        nombres[lengua], descripciones[lengua] = nombre, desc
+    if not nombres:
+        return {}
+    return {"nombre": nombres["es"], "nombres": nombres, "descripcion": descripciones["es"], "descripciones": descripciones}
+
+
 def huella(base, archivos):
     h = hashlib.sha256()
     for a in archivos:
@@ -216,7 +268,7 @@ def main(args):
             shutil.copy2(zruta, destino_zip)
         lista.append({"id": cid, "tipo": tipo, "nombre": nombre, "version": version, "file": archivo, "sha256": sha, "size": tam,
                       "url": base_web + archivo, "espejos": {"github": f"https://github.com/{A.REPOSITORIO_GITHUB}/releases/download/{C.TAG_GITHUB}/{archivo}"},
-                      "requiere_juego": VERSION, "borra": sorted({destino_de(a) for a in set(viejos) - set(arch)}), **META.get(cid, {})})
+                      "requiere_juego": VERSION, "borra": sorted({destino_de(a) for a in set(viejos) - set(arch)}), **(META.get(cid) or presentar(cid, tipo))})
         estado[cid] = {"version": version, "huella": hu, "archivos": arch}
     semilla = P.leer_privada()
     manifiesto = P.firmar({"formato": 1, "componentes": lista}, semilla)
