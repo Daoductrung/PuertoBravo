@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Criar mods para Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 52em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+pre { background: #222; padding: .8em; overflow: auto; border-radius: 6px; }
+code { color: #9fe89f; }
+</style>
+</head>
+<body>
+<h1>Criar mods para Puerto Bravo: Ley del Asfalto</h1>
+<p>A forma mais prática de criar um mod é usar o editor de mods, <strong>EditorMods.exe</strong>, que é acessível com leitor de tela e tem seu próprio manual em <a href="../data/docs/editor_mods_pt.html">editor_mods_pt.html</a>. Este documento descreve o formato dos arquivos, caso você prefira escrevê-los à mão ou queira entender o que o editor salva.</p>
+<p>No jogo compilado, os dados originais (arquivos <code>.pbd</code>) e os mods (arquivos <code>.pbm</code>) são protegidos e criptografados, e não podem ser lidos como texto. Se escrever um mod à mão em um arquivo <code>.json</code>, como nos exemplos deste documento, você precisa abri-lo no editor de mods e salvar: o editor verifica o mod e o protege como <code>.pbm</code>, que é o formato carregado pelo jogo. Ao executar pelo código-fonte, o jogo também lê diretamente os <code>.json</code>.</p>
+<p>Ao iniciar, o jogo lê todos os arquivos <code>.json</code> da pasta <strong>data\mods</strong> e os combina com os dados originais. Se um elemento tiver o mesmo <code>id</code> de um elemento existente, ele o substitui; caso contrário, é adicionado. Se houver um erro em um mod, o jogo avisa ao iniciar e continua funcionando.</p>
+
+<h2>Estrutura de um mod</h2>
+<p>Um mod é um objeto JSON que pode conter qualquer uma destas listas: <code>lugares</code>, <code>misiones</code>, <code>armas</code>, <code>vehiculos</code>, <code>carreras</code>, <code>comidas</code>, <code>objetos</code>, <code>peces</code>, <code>personajes</code>, <code>capitulos</code> e <code>mapas</code>. Para o conteúdo adulto, também: <code>personas</code>, <code>actividades</code>, <code>regalos</code> e <code>sustancias</code>.</p>
+
+<h2>O mapa</h2>
+<p>As coordenadas são em metros. O eixo x cresce para o leste e o eixo y para o norte. Há uma via a cada 90 metros. Os quarteirões são numerados com dois índices: o primeiro conta as avenidas a partir do oeste e o segundo, as ruas a partir do sul, começando em zero.</p>
+
+<h2>Adicionar um lugar</h2>
+<pre><code>{
+  "lugares": [
+    {"id": "mi_bar", "mapa": "puerto_bravo", "nombre": "Bar El Rincón", "tipo": "taberna",
+     "bloque": [2, 3], "lado": "N", "pos": 20,
+     "desc": "Um bar pequeno com os melhores croquetes."}
+  ]
+}</code></pre>
+<ul>
+<li><code>bloque</code>: o quarteirão. <code>lado</code>: N, S, E ou O, a fachada onde fica a porta. <code>pos</code>: distância em metros da esquina oeste ou sul, de 0 a 72.</li>
+<li>Em praças, parques e praias, você pode usar <code>"xy": [x, y]</code> dentro do quarteirão, no lugar de <code>lado</code> e <code>pos</code>.</li>
+<li><code>mapa</code>: puerto_bravo, san_lucero, monteferro, villaseca, cala_brava, fuentefria, isla_tortuga, plataforma ou mar. Se não for informado, será Puerto Bravo.</li>
+</ul>
+<h3>Tipos de lugar</h3>
+<p>casa, negocio, armeria, tienda, farmacia, comida, pizzeria, hospital, comisaria, taller, desguace, casino, bar, taberna, taxi, carrera, periodico, banco, loteria, empenos, pescaderia, gimnasio, ropa, cine, hotel, concesionario, nautica, estacion, salida, embarcadero, muelle, helipuerto, protectora, feria, tesoro, pesca, monumento, empleo, academia e ong. Com o conteúdo adulto, também club e proveedor. Esses são identificadores do formato e devem ser escritos exatamente assim.</p>
+<ul>
+<li>casa: <code>precio</code> e <code>garaje</code>. negocio: <code>precio</code> e <code>ingresos</code> diários.</li>
+<li>salida, embarcadero e muelle: <code>a_mapa</code> e <code>a_lugar</code>, o lugar de chegada.</li>
+<li><code>vehiculo</code>: modelo que aparece sempre estacionado na porta.</li>
+<li><code>requiere</code>: identificador da missão que precisa ser concluída para o lugar abrir.</li>
+<li><code>sonido</code>: nome do som emitido pelo lugar. Também é o som ambiente ouvido ao entrar. Sempre informe esse campo: neste jogo, tudo precisa ter som.</li>
+<li>academia: <code>cursos</code>, lista das habilidades ensinadas: conduccion, punteria, resistencia e pesca. Se não for informada, ensina as quatro.</li>
+<li>empleo e ong não precisam de mais nada.</li>
+</ul>
+
+<h2>Adicionar uma missão</h2>
+<pre><code>{
+  "misiones": [
+    {"id": "mod01", "titulo": "Croquetas a domicilio", "capitulo": 5, "contacto": "Loli",
+     "lugar": "mi_bar", "requiere": ["m01"],
+     "resumen": "A dona do Bar El Rincón precisa de um entregador.",
+     "pasos": [
+       {"tipo": "dialogo", "lineas": [["Loli", "Leve estes croquetes ao hospital, por favor."]]},
+       {"tipo": "ir", "lugar": "hospital", "limite": 120, "texto": "Leve os croquetes ao Hospital General em dois minutos."},
+       {"tipo": "dialogo", "lineas": [["Narrador", "As enfermeiras aplaudem você."]]}
+     ],
+     "recompensa": {"dinero": 200}}
+  ]
+}</code></pre>
+<h3>Tipos de etapa</h3>
+<ul>
+<li><code>dialogo</code>: <code>lineas</code>, uma lista de pares com quem fala e o que diz. Use Narrador para a narração.</li>
+<li><code>ir</code>: chegar a um <code>lugar</code>.</li>
+<li><code>dar</code>: entrega <code>arma</code> com <code>balas</code>, o <code>dinero</code>.</li>
+<li><code>robar</code>: um veículo <code>modelo</code> aparece junto ao <code>lugar</code> e é preciso entrar nele. Com <code>"abierto": true</code> não é necessário arrombar. <code>busqueda</code> define o nível de procurado ao entrar.</li>
+<li><code>entregar</code>: levar esse veículo até um <code>lugar</code>. <code>salud_min</code> é o estado mínimo do veículo, em porcentagem.</li>
+<li><code>eliminar</code>: <code>enemigos</code>, uma lista de grupos com <code>n</code>, <code>tipo</code>, <code>arma</code> e <code>salud</code>. Com <code>"ya": true</code> aparecem imediatamente.
+Um grupo também pode ter <code>clase</code>, o identificador de um tipo de inimigo de <code>tipos_enemigo</code>: dele vêm o nome, a arma, a saúde, a pontaria, as falas e o veículo. Os valores do grupo têm prioridade sobre os do tipo. Também aceita <code>punteria</code>, <code>vehiculo</code> (um modelo: chegam nesse veículo) e <code>"a_pie": true</code>.</li>
+<li><code>recoger</code>: um <code>objeto</code> em um <code>lugar</code>, ou onde você estiver, com <code>"aqui": true</code>.</li>
+<li><code>policia</code>: define o <code>nivel</code> de procurado, e é preciso despistar a polícia.</li>
+<li><code>perseguir</code>: um veículo <code>modelo</code> foge a partir do <code>lugar</code> e precisa ser destruído. <code>salud</code> é a resistência dele.</li>
+<li><code>practica</code>: é concluída quando o jogador realmente faz o que está indicado em <code>que</code>: <code>zarpar</code>, <code>timon</code> (com <code>metros</code> e <code>giro</code>, em graus), <code>atracar</code>, <code>trabajar</code> ou <code>servicio</code>. Serve para os tutoriais.</li>
+</ul>
+<p>Um grupo de inimigos aceita <code>"intimidar": true</code>: esse inimigo se rende quando fica com menos da metade da saúde e, se morrer, a missão falha. Uma missão aceita <code>"explicacion": true</code>: não é jogada, apenas lida no celular. Uma etapa <code>ir</code> aceita <code>"exige": "radar"</code>: chegar ao destino não basta se o jogador não tiver usado o radar durante essa etapa.</p>
+<p>Qualquer etapa aceita <code>texto</code>, lido ao começar, e <code>limite</code>, um limite de tempo em segundos.</p>
+<p>A recompensa aceita <code>dinero</code>, <code>arma</code> com <code>balas</code>, <code>chaleco</code> e <code>barco</code>.</p>
+
+<h2>Armas e veículos</h2>
+<p>Copie uma entrada de <code>data\datos\armas.json</code> ou <code>data\datos\vehiculos.json</code>, altere o <code>id</code> e os valores. Em um veículo, <code>"barco": true</code> o transforma em uma embarcação, <code>"vuela": true</code> em uma aeronave, <code>trabajo</code> atribui uma profissão pela tecla J, e <code>precio</code> o coloca à venda. Os veículos de um bairro são escolhidos na lista <code>vehiculos</code> desse bairro no mapa.</p>
+
+<h2>Pessoas na rua, gangues, tipos de inimigo, polícia e caixas</h2>
+<p>Ficam em <code>data/datos/gente.json</code>, e um mod pode incluir as mesmas chaves:</p>
+<ul>
+<li><code>gente</code>: uma lista com um único elemento, <code>{"id": "general", ...}</code>, com as listas <code>nombres_h</code>, <code>nombres_m</code>, <code>apellidos</code>, <code>frases</code>, <code>apodos</code>, <code>perros</code>, <code>bandas_propias</code>, <code>rivales_carrera</code>, <code>nombres_servidor</code> e as cinco listas de falas dos personagens de um servidor (<code>frases_servidor_paseante</code>, <code>frases_servidor_ratero</code>, <code>frases_servidor_pistolero</code>, <code>frases_servidor_ladron</code> e <code>frases_servidor_atracador</code>, que podem ficar vazias), as quatro listas de frases prontas para o chat e a interpretação de personagens (<code>frases_chat</code>, <code>rol_frases_ic</code>, <code>rol_frases_yo</code> e <code>rol_frases_ooc</code>, oferecidas nos campos de texto com Tab ou com o controle), e <code>oficios</code>, uma lista de <code>{"nombre", "femenino", "edad_min", "edad_max", "peso"}</code>. As listas de um mod são acrescentadas às do jogo; com <code>"sustituir": true</code>, as listas incluídas substituem as originais. Se uma lista não for informada ou estiver vazia, vale a original.</li>
+<li><code>caracteres</code>: <code>{"id", "desc", "desc_ia", "habla", "saludo", "cumplido", "chiste", "insulto", "valor"}</code>. <code>habla</code> é um dos cinco tipos originais, para as frases escritas.</li>
+<li><code>bandas</code>: <code>{"id", "nombre", "tipos": [...], "refuerzo", "callejero"}</code>, com identificadores de tipos de inimigo.</li>
+<li><code>tipos_enemigo</code>: <code>{"id", "nombre", "arma", "armas": [...], "salud", "punteria", "vehiculo", "ocupantes", "voz", "frases": [...]}</code>. <code>voz</code> é <code>grave</code> ou <code>aguda</code>.</li>
+<li><code>policia_niveles</code>: <code>{"id", "nivel", "tipos": [...], "aviso"}</code>, um por nível de procurado, de 1 a 5.</li>
+<li><code>cajas_locales</code>: <code>{"id", "minimo", "maximo", "guardias", "guardia", "busqueda"}</code>; o identificador é o tipo de lugar.</li>
+</ul>
+<p>Exceto <code>gente</code>, a combinação funciona como no restante: um elemento com o identificador de um elemento do jogo o substitui. As armas também aceitam <code>donde</code> (<code>armeria</code>, <code>tienda</code> ou <code>empenos</code>) y <code>sin_silenciador</code>, e as melhorias da oficina (<code>mejoras</code>), <code>efecto</code> (<code>motor</code>, <code>frenos</code>, <code>blindaje</code>, <code>neumaticos</code>, <code>suspension</code>, <code>escape</code> ou <code>deposito</code>), <code>niveles</code> e <code>por_nivel</code>.</p>
+<p>Uma missão aceita <code>"vehiculo_libre": true</code>: se houver uma etapa <code>robar</code>, ela poderá ser feita com o veículo do jogador, no lugar do veículo da missão. Sem essa chave, a missão exige o veículo próprio dela.</p>
+<p>A seção <code>vehiculos_propios</code> (em <code>vida.json</code>) é uma lista com um único elemento, <code>{"id": "general", ...}</code>: <code>tope_calle</code> (veículos do jogador na rua), <code>chofer_espera_min</code> e <code>chofer_espera_max</code> (segundos), <code>chofer_busqueda_max</code>, <code>chofer_modelos</code> (identificadores de veículo) e as listas de falas <code>chofer_frases_sale</code>, <code>chofer_frases_llega</code>, <code>chofer_frases_destino</code>, <code>chofer_frases_marcha</code>, <code>chofer_frases_llegada</code>, <code>chofer_frases_espera</code> e <code>chofer_frases_adios</code>, y <code>nombres_propuestos</code> (nomes oferecidos aleatoriamente ao batizar um veículo). Se um valor não for informado, vale o original. O preço do motorista é a tarifa <code>chofer</code>.</p>
+<p>A seção <code>calle</code> (em <code>vida.json</code>) também é uma lista com um único elemento, <code>{"id": "general", ...}</code>, lida por <code>juego/calle.py</code>. Números: <code>reaccion_cada</code>, <code>grito_prob</code>, <code>parejas</code>, <code>charla_poco</code>, <code>charla_normal</code>, <code>charla_mucho</code>, <code>municion_prob</code>, <code>municion_min</code>, <code>municion_max</code> (porcentagem de um carregador), <code>arma_prob</code>, <code>patrullas</code>, <code>patrullas_noche</code>, <code>auxilio_prob</code>, <code>ambulancia_prob</code>, <code>ambulancia_espera_min</code>, <code>ambulancia_espera_max</code>, <code>ambulancia_atiende</code>, <code>rendicion_multa</code>, <code>rendicion_dinero</code>, <code>rendicion_horas</code>, <code>rendicion_nivel_armas</code> e os valores do helicóptero: <code>helicoptero_nivel</code>, <code>helicoptero_llega</code>, <code>helicoptero_salud</code>, <code>helicoptero_altura</code>, <code>helicoptero_radio</code>, <code>helicoptero_pierde</code>, <code>helicoptero_busca</code>, <code>helicoptero_reconoce</code>, <code>helicoptero_vuelve</code>, <code>helicoptero_dano_minimo</code> e <code>helicoptero_multa</code>. Listas de textos: <code>frases_huye</code> e <code>frases_aparta</code> (com <code>{quien}</code>), <code>frases_huyen</code> (com <code>{n}</code>), <code>frases_charla</code> (com <code>{quien}</code> ou <code>{quien_min}</code>), <code>charla_temas</code> (identificadores de <code>juego/respuestas_datos*.py</code>), <code>frases_auxilio</code>, <code>frases_rendicion</code>, <code>megafono</code> e <code>helicoptero_sin_techo</code> (tipos de lugar). Se um número não for informado ou for inválido, vale o original; as probabilidades e as patrulhas aceitam zero.</p>
+<p>A seção <code>guerra_barrios</code> funciona da mesma forma e é lida por <code>juego/guerra.py</code>: <code>miembros_prob</code>, <code>bajas_para_empezar</code>, <code>ventana_bajas</code>, <code>oleadas</code>, <code>oleada_base</code>, <code>defensa_oleadas</code>, <code>pausa_min</code>, <code>pausa_max</code>, <code>fuera_max</code>, <code>premio_conquista</code>, <code>premio_defensa</code>, e as listas <code>frases_empieza</code>, <code>frases_defensa</code>, <code>frases_gana</code> e <code>frases_retirada</code> (com <code>{banda}</code> e <code>{barrio}</code>). Para brigas provocadas sem conquistar o bairro (<code>Guerra.buscar_pelea</code>): <code>pelea_base</code>, <code>pelea_larga_tandas</code>, <code>pelea_enfado</code>, <code>pelea_espera</code>, <code>premio_pelea</code>, <code>frases_pelea</code> e <code>frases_pelea_gana</code>.</p>
+<p>A seção <code>escolta_misiones</code> (em <code>vida.json</code>), também uma lista com um único elemento, é lida por <code>juego/escolta.py</code>: <code>radio</code>, <code>aliados_gratis</code> e, para cada nível da opção (<code>moderado</code> e <code>fuerte</code>), <code>_extra</code> (inimigos adicionais por aliado), <code>_extra_max</code>, <code>_salud</code>, <code>_salud_max</code>, <code>_punteria</code> e <code>_punteria_max</code> (porcentagens), além da lista <code>frases</code> (com <code>{n}</code>).</p>
+<p>A seção <code>persecuciones</code> (em <code>vida.json</code>), também uma lista com um único elemento, é lida por <code>juego/destinos.py</code>: <code>canta_cada</code> e <code>canta_desde</code> (segundos entre avisos e distância em metros a partir da qual os avisos são dados), <code>afloja_medio</code>, <code>afloja_lejos</code>, <code>factor_medio</code> e <code>factor_lejos</code> (metros e porcentagem da velocidade de quem foge), e os mesmos campos com o prefixo <code>ayuda_</code> para quando a opção <code>ayuda_persecucion</code> estiver ativada, <code>ayuda_tiempo</code> (porcentagem de tempo adicional), <code>ayuda_giros_cada</code>, <code>seguir_aviso</code>, <code>seguir_lejos</code>, <code>ayuda_seguir_aviso</code>, <code>ayuda_seguir_lejos</code> e <code>ayuda_seguir_aguante</code> para seguir alguém a pé, <code>doble_o</code> (segundos para o toque duplo na tecla de objetivo) e as listas <code>frases_empieza</code> e <code>frases_a_pie</code>.</p>
+<p>Um lugar aceita <code>nombre_conquistado</code> e <code>desc_conquistado</code>, e um bairro, <code>descripcion_conquistado</code>: textos usados quando o bairro já não pertence à gangue indicada nos dados, mas ao jogador, a uma gangue de jogadores ou a outra gangue. Sem esses campos, o texto não muda.</p>
+<p>Dois lugares de uma cidade não podem ocupar o mesmo ponto: ao carregar, o que chega depois e coincide com outro, a menos de três metros, é deslocado para um espaço livre na mesma fachada (<code>Mundo._separar</code>).</p>
+
+<p>Seções da versão 1.7.1, todas em <code>vida.json</code>. As que têm um único elemento <code>{"id": "general", ...}</code> contêm números e listas de falas; suas chaves e valores originais ficam no módulo que as lê, em <code>AJ = Ajustes(...)</code>:</p>
+<ul>
+<li><code>domicilio</code> (<code>juego/domicilio.py</code>) y <code>carta_domicilio</code>, uma lista de <code>{"id", "nombre", "tipo", "precio", "hambre", "sed", "salud", "desc"}</code>.</li>
+<li><code>cocina</code> (<code>juego/compra.py</code>): compras, despensa e cozinha. Há quatro listas associadas: <code>pasillos</code>, de <code>{"id", "nombre", "desc"}</code>; <code>productos</code>, de <code>{"id", "nombre", "pasillo", "precio", "sitio", "caduca", "hambre", "sed", "salud", "animo", "bebida", "desc"}</code> (<code>sitio</code>: <code>nevera</code> ou <code>despensa</code>; <code>caduca</code>, em dias; sem esse campo, não vence. Sem <code>hambre</code>, <code>sed</code>, <code>salud</code> nem <code>animo</code> é apenas um ingrediente); <code>tipos_tienda</code>, de <code>{"id", "nombre", "pasillos", "recargo", "lugares", "palabras", "resto"}</code>; y <code>recetas</code>, de <code>{"id", "nombre", "ingredientes", "minutos", "raciones", "hambre", "sed", "salud", "animo", "caduca", "fuego", "desc"}</code> (<code>ingredientes</code> é uma lista de identificadores de produto; <code>fuego</code>: <code>no</code>, <code>freir</code> ou <code>hervir</code>). Um lugar do tipo <code>tienda</code> aceita <code>"surtido"</code>, o identificador do tipo de loja.</li>
+<li><code>atracos</code> (<code>juego/atracos.py</code>): assaltos a estabelecimentos e ataques a fornecedores.</li>
+<li><code>golpes</code> (<code>juego/golpes.py</code>): golpes preparados com a gangue. Um único elemento com os números (tempos do cofre, atraso do vigia, vantagem do motorista, probabilidades de falha e limite da divisão) e as listas de falas; <code>tiempos_caja</code> é uma lista de textos <code>tipo=segundos</code>.</li>
+<li><code>papeles_golpe</code>: lista de funções, <code>{"id", "nombre", "efecto", "atributo", "parte", "desc"}</code>. <code>efecto</code> é um de <code>conductor</code>, <code>vigilante</code>, <code>escolta</code>, <code>caja</code> ou <code>tirador</code>; <code>atributo</code>, um de <code>punteria</code>, <code>conduccion</code>, <code>nervios</code> ou <code>lealtad</code>; <code>parte</code>, a porcentagem do saque. Se um mod incluir essa seção, ela substitui a seção original inteira.</li>
+<li>Etapas de missão: <code>tarda</code> (segundos) em uma etapa <code>recoger</code> e <code>retraso</code> (segundos) em uma etapa <code>policia</code>.</li>
+<li><code>vuelo</code> (<code>juego/vuelo.py</code>): voo de verdade. Um único elemento com os números (altitudes, combustível, travessia, aproximação, eventos, radar e sequestro, hangares e voos comerciais) e as listas de falas.</li>
+<li><code>aeronaves</code>: lista de <code>{"id", "crucero", "alt_crucero", "techo", "autonomia", "ascenso", "pista"}</code>; <code>id</code> é o identificador de um veículo com <code>vuela</code>. É acrescentada à lista original: um elemento com o mesmo <code>id</code> altera essa aeronave, e os campos não informados mantêm o valor original.</li>
+<li><code>mapa_aire</code>: lista de <code>{"id", "x", "y"}</code>, com o identificador de uma cidade e sua posição em quilômetros (leste e norte). É acrescentada à lista original.</li>
+<li>Lugares do tipo <code>helipuerto</code> ou <code>aeropuerto</code>: <code>hangar_precio</code>, opcional. Novas tarifas: <code>queroseno</code>, <code>queroseno_domicilio</code>, <code>hangar_alquiler</code>, <code>hangar_compra</code>, <code>hangar_revision</code> e <code>mandar_hangar</code>. Novo diploma: <code>piloto</code>.</li>
+<li><code>pactos</code> (<code>juego/pactos.py</code>): negociação com as gangues e trégua da reconquista (<code>tregua_base</code>, <code>tregua_dias_min</code>, <code>tregua_dias_max</code>, <code>tregua_rompe_prob</code> e suas falas).</li>
+<li><code>reconquista</code> (<code>juego/reconquista.py</code>): gangues derrotadas que tentam recuperar os bairros do jogador. Um único elemento, <code>general</code>, com os números (calma, ritmo e prazos por intensidade, com os sufixos <code>_tranquilo</code>, <code>_normal</code> e <code>_duro</code>, pesos do objetivo, defesa, lealdade, consequências, golpe e forasteiras) e as listas de falas; as chaves e os valores originais ficam em <code>reconquista.AJ</code>.</li>
+<li><code>vida_honrada</code> (<code>juego/honrado.py</code>): vida, reputação e consequências. Um único elemento, <code>general</code>, com os números (tratamento no comércio, testemunhas, antecedentes, carreira, empresa, inspeções, impostos, banco, vida dupla, extorsão e relacionamento) e as listas de falas; as chaves e os valores originais ficam em <code>honrado.AJ</code>. Os níveis suave e exigente são calculados a partir do normal, com <code>factor_suave</code> e <code>factor_exigente</code>. Há cinco listas associadas: <code>titulos</code>, de <code>{"id", "nombre", "sesiones", "precio", "horas", "prestigio", "requiere", "desc", "abre"}</code>; <code>empleos_fijos</code>, de <code>{"id", "nombre", "empresa", "desc", "confianza", "cuenta", "puestos"}</code>, em que <code>cuenta</code> é uma lista de <code>"jornada:id"</code> u <code>"oficio:tipo"</code> e cada cargo é <code>{"nombre", "sueldo", "cupo", "titulo", "prestigio", "mando"}</code>; <code>mejoras_negocio</code>, de <code>{"id", "nivel", "nombre", "coste", "ingresos", "titulo", "prestigio"}</code> (<code>coste</code> e <code>ingresos</code>, em porcentagem); <code>incidencias_trabajo</code>, de <code>{"id", "texto", "opciones": [{"texto", "ayuda", "calidad", "dice"}]}</code>; y <code>buenas_acciones</code>, de <code>{"id", "texto", "opciones"}</code>, com cada opção <code>{"texto", "ayuda", "tentacion", "pide", "sin", "coste", "horas", "delito", "riesgo", "prestigio", "fama", "dinero", "animo", "salud", "dice", "mal": {...}}</code>.</li>
+<li>Missões: <code>honrada</code> (aumenta o prestígio e é oferecida, em vez de começar automaticamente), <code>orden</code>, <code>prestigio</code>, <code>requiere_vida</code> (<code>{"contrato", "turnos", "titulos", "prestigio", "negocios", "sin_antecedentes"}</code>), <code>epilogos</code> (lista de <code>{"titulo", "clase", "texto", "si_clave", "si_opcion"}</code>; é salva em <code>decisiones["_final_honrado"]</code>). Nas opções de uma decisão, <code>prestigio</code>.</li>
+<li><code>contratos</code> (<code>juego/contratos.py</code>), uma lista de <code>{"id", "nombre", "situacion", "peso", "desde", "paga", "paga_escolta", "resumen", "objetivo", "escolta", "refuerzo", "modelos", "salud_vehiculo", "locales", "objetos", "personas"}</code>. <code>situacion</code>: <code>eliminar</code>, <code>escolta_vehiculo</code>, <code>huye</code>, <code>local</code>, <code>seguir</code>, <code>intimidar</code>, <code>recuperar</code> ou <code>proteger</code>. Em <code>resumen</code> são aceitos <code>{quien}</code>, <code>{lugar}</code>, <code>{n}</code>, <code>{modelo}</code>, <code>{objeto}</code>, <code>{persona}</code> e <code>{destino}</code>.</li>
+<li><code>reacciones</code> (<code>juego/reacciones.py</code>): ações que as pessoas fazem por conta própria, favores e condições de recrutamento.</li>
+<li><code>convivencia</code> (<code>juego/convivencia.py</code>) y <code>planes_pareja</code>, uma lista de <code>{"id", "nombre", "precio", "horas", "afinidad", "animo", "requiere", "en_casa", "adultos", "escenas": [...]}</code>; nas cenas, <code>{n}</code> é o nome da pessoa com quem você se relaciona. As pessoas aceitam <code>convivir</code>: <code>facil</code>, <code>si</code> ou <code>nunca</code>.</li>
+<li><code>policia_oficio</code> (<code>juego/agente.py</code>) y <code>avisos_policia</code>, uma lista de <code>{"id", "tipo", "nombre", "peso", "paga", "sospechoso", "n_min", "n_max", "modelos", "frases"}</code>. <code>tipo</code>: <code>robo</code>, <code>pelea</code>, <code>temerario</code> ou <code>persecucion</code>. Nas falas, são aceitos <code>{lugar}</code> e <code>{modelo}</code>.</li>
+</ul>
+<p>Novas tarifas: <code>domicilio_envio</code> e <code>academia_policia</code>.</p>
+
+<h2>Personagens</h2>
+<pre><code>{
+  "personajes": [
+    {"id": "lola", "nombre": "Lola", "apellido": "Vega", "desc": "Mecânica. Começa com direção no nível três.",
+     "conduccion": 3, "dinero": 200, "botiquines": 1}
+  ]
+}</code></pre>
+<p>Campos opcionais: <code>dinero</code>, <code>salud_max</code>, <code>animo</code>, <code>reputacion</code>, <code>ciudadania</code>, os níveis iniciais <code>conduccion</code>, <code>punteria</code>, <code>resistencia</code> e <code>pesca</code>, <code>arma</code>, <code>botiquines</code> e <code>ganzuas</code>. Nos textos das missões, o nome Dani é substituído automaticamente pelo nome do personagem escolhido.</p>
+
+<h2>Missões em arquivos separados</h2>
+<p>Além da pasta de mods, o jogo carrega qualquer arquivo da pasta <strong>data\datos</strong> cujo nome comece com <code>misiones_</code>.</p>
+
+<h2>Sons</h2>
+<p>Os sons não fazem mais parte dos mods: cada som é um arquivo de <strong>data\sonidos\por_defecto</strong> que você pode substituir diretamente. A explicação completa, com a lista de arquivos, está em <strong>data/docs/cambiar_sonidos_pt.html</strong>.</p>
+
+<h2>Dicas</h2>
+<ul>
+<li>Salve os arquivos em UTF-8.</li>
+<li>Se usar o código-fonte, execute <strong>probar.bat</strong>: os testes verificam se todos os lugares, modelos e armas citados nas missões existem, e jogam cada missão do início ao fim.</li>
+</ul>
+</body>
+</html>

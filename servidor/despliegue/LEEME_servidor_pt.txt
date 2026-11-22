@@ -1,0 +1,46 @@
+SERVIDOR ON-LINE DE PUERTO BRAVO: LEY DEL ASFALTO
+
+Esta pasta contém tudo que você precisa para configurar seu próprio servidor. É aqui que ficam a configuração,
+os personagens e os backups. As atualizações do jogo não alteram seus dados.
+
+Para começar neste computador:
+
+- Panel del servidor: abre uma janela para iniciar, parar e administrar o servidor. É a opção mais prática.
+- Servidor por consola: inicia o servidor em uma janela de texto, onde você digita comandos.
+- Parar el servidor: encerra corretamente o servidor em execução, salvando tudo.
+- Arrancar con Windows - activar e Arrancar con Windows - quitar: ativam ou desativam o início automático
+  do servidor ao entrar no Windows. Os nomes dos arquivos de inicialização permanecem em espanhol.
+
+Além disso:
+
+- documentacion_pt.html: a guia completa, passo a passo. Abra no navegador. No painel, F1 abre a guia.
+  Também há versões em espanhol (documentacion_es.html) e inglês (documentacion_en.html).
+- servidor.conf.ejemplo: todas as opções explicadas. O painel permite alterá-las em Configuração.
+- otros_sistemas: arquivos que você copia para Linux, Mac, NAS, Raspberry Pi ou um servidor alugado,
+  além dos arquivos para usar Docker. Nessas máquinas, basta ter Python; não é preciso instalar o jogo.
+
+Ao iniciar o servidor pela primeira vez, aparecem aqui servidor.conf, com sua configuração, e a pasta
+datos_servidor, com os personagens, o certificado e os backups. Se mover o jogo para outra pasta ou outro
+computador, leve esses dois itens para que o servidor continue como estava.
+
+Atualizar o jogo com o servidor aberto: não é mais preciso encerrá-lo antes. O jogo informa o que fará,
+pede autorização, avisa os jogadores, encerra o servidor corretamente e instala a atualização. Ao terminar,
+o servidor inicia novamente, como estava. Os jogos dos participantes aguardam e se reconectam automaticamente,
+com cada jogador na mesma posição. A seção 20 da guia explica esse processo.
+
+Novidades da versão 1.7.1, explicadas nas seções 18 e 19 da guia:
+
+- O limite de dinheiro é informado aos jogadores em números. A margem não utilizada se acumula, e os serviços
+  repetíveis, como contratos, lutas e assaltos, são reconhecidos separadamente. Entre amigos, você pode aumentar
+  o ganho por hora.
+- Canais de interpretação de personagens por texto: falar como personagem, descrever ações, falar fora do
+  personagem e uma frase de apresentação. A opção rol permite desativá-los.
+- Quem está perto do veículo de outro jogador ouve a emissora do jogo que está tocando nele. A opção
+  radio_coches permite desativar isso.
+- O jogo não transmite voz pelo microfone. Para conversar por voz, use outro programa.
+- Um servidor novo continua aceitando jogos da versão 1.7.0, e um jogo novo pode entrar em um servidor 1.7.0.
+- Versões diferentes: ninguém é rejeitado pela versão, a menos que você defina uma versão mínima. O servidor
+  determina o dano e o dinheiro da mesma forma para todos. Cada jogo recebe o equivalente mais próximo que
+  conhece, e o personagem não perde nada ao passar por uma versão anterior. Quem usa mods participa do conteúdo
+  em comum, conforme a opção mundo_distinto. A seção 17 da guia explica isso.
+- Os contratos permanentes têm salários pagos pelo servidor, configurados em nominas, nomina_max e nomina_turnos_dia.

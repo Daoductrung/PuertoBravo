@@ -110,6 +110,7 @@ if exist "data\mods\bahia_del_ocaso.json" copy /y "data\mods\bahia_del_ocaso.jso
 if exist "LEEME.txt" copy /y "LEEME.txt" "%D%\LEEME.txt" >nul
 if exist "LEEME_en.txt" copy /y "LEEME_en.txt" "%D%\LEEME_en.txt" >nul
 if exist "LEEME_vi.txt" copy /y "LEEME_vi.txt" "%D%\LEEME_vi.txt" >nul
+if exist "LEEME_pt.txt" copy /y "LEEME_pt.txt" "%D%\LEEME_pt.txt" >nul
 
 echo Preparando la carpeta del servidor: lanzadores, guia, ejemplo de configuracion y lo necesario para otros sistemas...
 ".venv\Scripts\python.exe" herramientas\preparar_carpeta_servidor.py "%D%"

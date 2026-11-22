@@ -190,6 +190,8 @@ def preparar(juego):
     for nombre in LANZADORES:
         shutil.copyfile(os.path.join(DESPLIEGUE, "windows", nombre), os.path.join(destino, nombre))
     _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_servidor.txt"), os.path.join(destino, "LEEME.txt"), "\r\n")
+    for ruta in sorted(glob.glob(os.path.join(DESPLIEGUE, "LEEME_servidor_*.txt"))):
+        _copiar_texto(ruta, os.path.join(destino, os.path.basename(ruta).replace("LEEME_servidor_", "LEEME_")), "\r\n")
     with open(os.path.join(destino, "servidor.conf.ejemplo"), "w", encoding="utf-8", newline="\r\n") as f:
         f.write(texto_ejemplo())
     for cod, ruta in guias().items():
@@ -214,6 +216,8 @@ def preparar(juego):
     for nombre in GUIONES + DE_DOCKER + ("puertobravo.service",):
         _copiar_texto(os.path.join(DESPLIEGUE, nombre), os.path.join(otros, nombre), "\n")
     _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_otros_sistemas.txt"), os.path.join(otros, "LEEME.txt"), "\n")
+    for ruta in sorted(glob.glob(os.path.join(DESPLIEGUE, "LEEME_otros_sistemas_*.txt"))):
+        _copiar_texto(ruta, os.path.join(otros, os.path.basename(ruta).replace("LEEME_otros_sistemas_", "LEEME_")), "\n")
     with open(os.path.join(otros, "servidor.conf.ejemplo"), "w", encoding="utf-8", newline="\n") as f:
         f.write(texto_ejemplo())
     return destino

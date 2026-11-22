@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Alterando os sons e a música do Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 54em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+a { color: #8fd0ff; }
+code { color: #9fe89f; }
+kbd { border: 1px solid #aaa; border-radius: 4px; padding: 0 .35em; background: #2a2a2a; }
+li { margin-bottom: .3em; }
+</style>
+</head>
+<body>
+<h1>Alterando os sons e a música do Puerto Bravo</h1>
+<p>Todos os sons do jogo são arquivos comuns na pasta <code>data</code>, ao lado do programa. Você pode substituir qualquer um deles por uma gravação de sua preferência. Este documento explica como e descreve cada arquivo. Está organizado por títulos: com o seu leitor de tela você pode pular de um para o outro com a tecla H.</p>
+
+<h2>1. Onde está tudo</h2>
+<ul>
+<li><code>data\sonidos</code>: todos os efeitos sonoros, espalhados em subpastas.</li>
+<li><code>data\sonidos\por_defecto</code>: os sons padrão, um arquivo por som. Existem arquivos 279. Se algum estiver faltando ou você o excluir, o jogo o criará novamente.</li>
+<li><code>data\radio</code>: a música das estações de rádio, um arquivo por estação.</li>
+<li><code>data\radio\mi_musica</code>: sua própria estação. Copie aqui as músicas que você deseja.</li>
+<li><code>data\musica</code>: a música ambiente, com uma pasta por situação e diversas peças em cada.</li>
+<li><code>data\sonidos\realista</code>, <code>data\sonidos\alternativo</code>, <code>data\sonidos\retro</code> e as demais subpastas: os pacotes de som, um por pasta. Você os escolhe em Opções.</li>
+</ul>
+
+<h2>2. Como alterar um efeito sonoro</h2>
+<ol>
+<li>Encontre na lista no final o nome do som que deseja alterar, por exemplo <code>claxon</code>.</li>
+<li>Prepare sua gravação e dê exatamente esse nome: <code>claxon.wav</code>.</li>
+<li>Copie-o para <code>data\sonidos\por_defecto</code>. Você não precisa deletar o arquivo do jogo, que se chama <code>claxon.flac</code>: se houver dois com o mesmo nome, o seu é o que joga.</li>
+<li>Feche o jogo e abra-o novamente. Os sons são carregados na inicialização.</li>
+</ol>
+<h3>Formatos suportados</h3>
+<ul>
+<li>WAV, OGG, FLAC e MP3. Os sons que acompanham o jogo são FLAC. Se houver dois arquivos com o mesmo nome e extensão diferente, será utilizado aquele que não for FLAC, que é o seu. Para voltar ao som do jogo, exclua o seu.</li>
+<li>Por que FLAC: ele comprime sem perdas. A leitura fornece exatamente as mesmas amostras que um WAV, mas ocupa menos da metade do espaço. Até a versão 1.6.1 os sons do jogo eram WAV; ao atualizar, o jogo exclui os arquivos WAV antigos idênticos aos novos e mantém os que você alterou. OGG e MP3 ocupam ainda menos espaço, mas perdem um pouco de qualidade: eles servem para suas gravações se você não se importa, e o jogo só os utiliza onde o original já veio por ali, que é a música, o rádio, as vozes e os ambientes longos do pacote Surround.</li>
+<li>Qualquer taxa de amostragem: o jogo converte para 44.100 hertz.</li>
+<li>Mono ou estéreo. Os efeitos são sempre transformados em mono, pois é o jogo que coloca cada som à sua esquerda, à sua direita, na frente ou atrás.</li>
+</ul>
+<h3>Recuperando o som original</h3>
+<p>Delete o arquivo. Na próxima vez que for iniciado, o jogo criará o som original novamente. Para recuperá-los todos, exclua toda a pasta <code>data\sonidos\por_defecto</code>.</p>
+<h3>Dicas para que pareça certo</h3>
+<ul>
+<li>Corte o silêncio no início: se o som demorar um pouco para começar, o jogo parecerá responder tarde.</li>
+<li>Mantenha um comprimento semelhante ao original, sobretudo para passos, alertas e beacons. A lista fornece o comprimento de cada um.</li>
+<li>Não deixe no volume máximo. Os originais atingem um pico entre 30 e 90 por cento, dependendo de quão importantes são. Se o seu som soar muito alto ou muito baixo, ajuste-o no seu editor.</li>
+<li>Evite reverberações longas em sons de orientação: isso desfoca a direção de onde eles vêm.</li>
+<li>Os sons marcados como um loop se repetem sem parar. O final deve juntar-se ao início sem nenhum clique ou salto: corte em um cruzamento zero ou use um crossfade.</li>
+<li>Os motores são registrados em marcha lenta e em velocidade constante. O jogo aumenta o tom conforme você acelera, até um pouco mais que o dobro.</li>
+</ul>
+<h3>O volume se estabiliza sozinho</h3>
+<p>Cada gravação tem um volume diferente. Para que isso não prejudique o equilíbrio do jogo, ao carregar um som que você alterou o jogo o coloca no mesmo nível que o original tinha: mede o trecho mais alto do seu arquivo, compara-o com o som original e aumenta ou diminui conforme necessário, sem deixá-lo cortar. Dessa forma, alguns passos não podem ser mais altos que um tiro ou um sinal sonoro inaudível. Você pode desligar isso em Opções, Som e música, equilibrando o volume dos sons alterados.</p>
+<p>Se um som específico ainda parecer alto ou baixo para você, vá para Opções, Som e música, Ajuste o volume de cada som. Eles estão todos lá, nos mesmos grupos da lista no final deste documento: Enter reproduz e as setas esquerda e direita diminuem ou aumentam, de 30 a 200 por cento. A busca por um som o encontra por uma palavra de seu nome, sem precisar saber em qual grupo ele está. O menu diz quantos sons você alterou, no total e em cada grupo, e permite retornar um único, um grupo inteiro ou todos eles ao volume padrão. A configuração é salva com suas opções e atende pelo nome do arquivo, para que não seja perdida quando você atualizar o jogo.</p>
+<h3>Ouvir qualquer som dentro do jogo</h3>
+<p>No menu principal e no menu de pausa, Aprender os sons tem os sons 279 do jogo: primeiro o grupo O mais importante, depois Procurar um som e depois todos eles, nos mesmos grupos da lista no final deste documento e na mesma ordem. Entre em um grupo e pressione Enter em um som: o jogo diz como se chama e o que significa, e joga sozinho, com o pack que você escolheu. Com Procurar um som você digita uma palavra, por exemplo sirene, e obtém todas as que a possuem no nome ou na explicação. É útil verificar como ficou uma de suas gravações sem precisar acionar o som durante a reprodução.</p>
+
+<h2>3. Pacotes de som</h2>
+<p>Um pacote é uma pasta com arquivos com o mesmo nome dos sons do jogo. Os pacotes vão dentro de <code>data\sonidos</code>, cada um em sua subpasta, ao lado de <code>por_defecto</code>, e você os escolhe dentro do jogo em Opções, Som e música, Pacote de sons, com as setas esquerda e direita. A mudança é ouvida imediatamente e não afeta seus arquivos em <code>data\sonidos\por_defecto</code>: para voltar, escolha «default».</p>
+<ul>
+<li>Um pack seu não precisa trazer todos: os sons que ele não traz continuam brincando com o original.</li>
+<li>O volume de cada som do pacote é igual ao original, conforme explicado acima.</li>
+<li>Os pacotes que acompanham o jogo trazem exatamente os mesmos arquivos do <code>por_defecto</code>, com os mesmos nomes: nem um a mais e nem um a menos. Suas gravações são de domínio público (licença CC0) e vêm de kenney.nl, opengameart.org, freesound.org e bigsoundbank.com.</li>
+<li>Os tons dos canais interpretação de personagem (<code>chat_personaje</code>, <code>chat_fuera</code> e <code>chat_accion</code>) e o de espera pelo servidor (<code>espera_servidor</code>) são os padrões em cada pack, propositalmente: são um código de tons e isso ajuda se eles soarem sempre iguais.</li>
+<li>Os pacotes instalados como padrão são «Alternativo», com sons 279, «Envolvente», com sons 279, «Realista», com sons 279, «Retrô», com sons 279. Cada um traz todos os sons do jogo: substituem por gravações de domínio público tudo o que não é orientação, e mantêm o original para os sons de orientação: balizas, tons, semáforos, radar, localizadores e sons de lugares. O arquivo <code>CREDITOS.txt</code> de cada pacote diz de onde vem cada som e quais são originais.</li>
+</ul>
+<h3>Fazendo seu próprio pacote</h3>
+<ol>
+<li>Crie uma pasta dentro de <code>data\sonidos</code> com o nome do pacote, sem espaços ímpares: por exemplo <code>mi_pack</code>.</li>
+<li>Copie suas gravações com o nome exato do som que elas substituem: <code>claxon.wav</code>, <code>paso_acera0.ogg</code>. A lista no final deste documento contém todos os nomes.</li>
+<li>Abra o jogo e escolha o pacote em Opções.</li>
+</ol>
+<p>Se desejar, adicione um arquivo <code>pack.json</code> com o nome que será lido em Opções e algumas configurações:</p>
+<pre><code>{
+  "nombre": "Mi pack",
+  "descripcion": "Grabado en mi calle",
+  "autor": "Tu nombre",
+  "licencia": "CC0",
+  "igualar": true,
+  "volumenes": {"claxon": 0.8, "ladrido": 1.3}
+}</code></pre>
+<ul>
+<li><code>igualar</code>: com <code>false</code>, os sons deste pack entram como estão, sem diminuir o volume. Use-o somente se você já os tiver nivelado.</li>
+<li><code>volumenes</code>: um retoque por som aplicado após sair à noite. 1 deixa como está, 0,8 reduz em vinte por cento.</li>
+</ul>
+<p>Para compartilhar um pacote, compacte sua pasta. Quem recebe descompacta dentro de seu <code>data\sonidos</code>.</p>
+
+<h2>4. O rádio</h2>
+<h3>Mudar a música de uma estação</h3>
+<p>Cada estação padrão possui um nome de arquivo em <code>data\radio</code>. Substitua o arquivo por outra música com o mesmo nome e ela será reproduzida.</p>
+<p>Uma estação pode ter várias músicas: cada arquivo nomeado como a estação, ou como a estação seguido por um sublinhado e o que você quiser, é uma de suas músicas. Por exemplo <code>bravo.mp3</code>, <code>bravo_1.mp3</code> e <code>bravo_dos.ogg</code> são três músicas da Bravo FM: tocam aleatoriamente e, quando uma termina, toca outra diferente. Com uma única música, ela se repete em loop.</p>
+<ul>
+<li><code>bravo.mp3</code>: Bravo FM, rock de estrada.</li>
+<li><code>latina.mp3</code>: Onda Caribe, ritmos latinos.</li>
+<li><code>neon.mp3</code>: Neon 84, sintetizadores.</li>
+<li><code>calma.mp3</code>: Rádio Bahia, música relaxante.</li>
+<li><code>hierro.mp3</code>: Rádio Hierro, hard rock de Monteferro.</li>
+<li><code>club.mp3</code>: Clube Lucero, eletrônico.</li>
+<li><code>tropical.mp3</code>: Costa Tropical, música de festa de rua.</li>
+</ul>
+<p>Se você excluir um desses arquivos, o jogo compõe a música original novamente. As músicas são niveladas automaticamente quando carregadas: não importa o volume de cada arquivo.</p>
+<h3>Adicionando novas estações</h3>
+<p>Qualquer outro arquivo de áudio que você deixar em <code>data\radio</code> é uma nova estação, com o nome do arquivo. Por exemplo, <code>radio_clasica.mp3</code> aparece no mostrador como «Radio clasica». Os sublinhados são lidos como espaços.</p>
+<h3>Minha música</h3>
+<p>Os arquivos em <code>data\radio\mi_musica</code> constituem a estação «Minha música». Dentro do carro, a tecla R passa de uma música para outra antes de pular para a próxima estação.</p>
+
+<h2>5. A música ambiente</h2>
+<p>Fora dos veículos, ou com o rádio desligado, ouve-se uma música suave de fundo que muda de acordo com a situação. Cada situação tem várias peças: o jogo começa com uma aleatória e, quando termina, passa para outra diferente. Quando você liga o rádio de um veículo, a música ambiente diminui e volta quando você desliga o rádio ou sai.</p>
+<p>Cada situação é uma pasta dentro de <code>data\musica</code>:</p>
+<ul>
+<li><code>data\musica\exploracion</code>: de dia, explorando à vontade. Como padrão possui 4 peças, de <code>exploracion_1.mp3</code> a <code>exploracion_4.mp3</code>.</li>
+<li><code>data\musica\noche</code>: à noite. Como padrão possui 3 peças, de <code>noche_1.mp3</code> a <code>noche_3.mp3</code>.</li>
+<li><code>data\musica\mar</code>: no mar. Como padrão possui 3 peças, de <code>mar_1.mp3</code> a <code>mar_3.mp3</code>.</li>
+<li><code>data\musica\tension</code>: com a polícia em seu encalço ou inimigos por perto. Como padrão possui 3 peças, de <code>tension_1.mp3</code> a <code>tension_3.mp3</code>.</li>
+<li><code>data\musica\menu</code>: no menu principal. Como padrão possui 4 peças, de <code>menu_1.mp3</code> a <code>menu_4.mp3</code>.</li>
+</ul>
+<ul>
+<li>Para adicionar sua própria música, copie os arquivos de áudio para a pasta da situação desejada. Cada arquivo da pasta entra na rotação, por mais que sejam: se você deixar um <code>exploracion_5.wav</code> em <code>exploracion</code>, ou vinte músicas com qualquer nome, todas serão usadas aleatoriamente junto com as que já estão lá. WAV, OGG, FLAC e MP3 estão bem.</li>
+<li>Todas as músicas são niveladas automaticamente quando carregadas: cada peça ambiente, cada estação, cada nova estação e cada música de Minha música terminam no mesmo nível, então nenhuma soa mais alta que a outra. A única coisa que altera o volume é o que você escolhe em Opções.</li>
+<li>Para retirar uma peça padrão para que ela não volte, substitua-a por outra de mesmo nome. Se você simplesmente excluí-lo, o jogo o compõe novamente.</li>
+<li>Para que apenas sua música seja reproduzida em uma situação, substitua todas as peças padrão em sua pasta.</li>
+<li>A música ambiente é ligada, desligada e tem seu volume definido em Opções, Som e música.</li>
+</ul>
+
+<h2>6. Lista completa de sons</h2>
+<p>O nome do arquivo é aquele que está no início de cada linha, com a extensão <code>.flac</code> para aqueles que o jogo traz. O seu pode ter qualquer um dos suportados. Depois vem o nome que o jogo diz em voz alta e o que significa ouvi-lo.</p>
+<p>Os grupos são iguais, com os mesmos nomes e na mesma ordem, como em Aprenda os sons e em Opções, Som e música, ajuste o volume de cada som. Eles seguem o que você faz no jogo. Dentro de cada grupo, os sons estão em ordem alfabética do nome falado. Cada grupo é um título: pule de um para o outro com a tecla H ou pesquise uma palavra com a pesquisa do seu navegador.</p>
+
+<p>Existem 20 grupos:</p>
+<ol>
+<li>Orientação e GPS: 17 sons.</li>
+<li>Sons de lugares: 37 sons.</li>
+<li>Movendo-se a pé e nadando: 20 sons.</li>
+<li>Veículos e condução: 19 sons.</li>
+<li>Avarias, oficina, gás e roubo de veículos: 10 sons.</li>
+<li>Barcos, helicópteros, trem, bonde e avião: 16 sons.</li>
+<li>Armas, o tiro de cada uma: 14 sons.</li>
+<li>Combate, mira e ferimentos: 20 sons.</li>
+<li>Polícia e serviços de emergência: 12 sons.</li>
+<li>Pessoas na rua e animais: 8 sons.</li>
+<li>Casa, cozinha e comida: 8 sons.</li>
+<li>Lojas, dinheiro e itens: 5 sons.</li>
+<li>Menus, telefone e alertas de jogos: 17 sons.</li>
+<li>Missões, trabalho, reputação e humor: 14 sons.</li>
+<li>Territórios e gangues: 4 sons.</li>
+<li>Jogo on-line e interpretação de personagem: 7 sons.</li>
+<li>Pesca, cassino e jogos: 12 sons.</li>
+<li>Ambiente e clima: 19 sons.</li>
+<li>Relacionamentos, apenas com conteúdo adulto: 7 sons.</li>
+<li>Substâncias e tráfico, apenas com conteúdo adulto: 13 sons.</li>
+</ol>
+<h3>Orientação e GPS</h3>
+<p>17 sons. Eles são a base da acessibilidade do jogo. Se você alterá-los, mantenha-os curtos, claros e fáceis de localizar no espaço. Os localizadores circulam a partir da posição de um objeto ou missão.</p>
+<ul>
+<li><code>llegada</code>: Chegada. Você chegou ao seu destino ou completou uma etapa da missão. Dura 0.82 segundos.</li>
+<li><code>loc_casete</code>: Colecionável. Soa de uma das fitas cassete escondidas pela cidade ou de outro colecionável. Ele toca em loop. Dura 1.60 segundos.</li>
+<li><code>cursor_mapa</code>: Cursor do explorador de mapas. O cursor do explorador do mapa foi movido para a próxima interseção. Também soa quando você lê um quadro dentro de um local. Dura 0.04 segundos.</li>
+<li><code>cruce</code>: Interseção. Você entra em um cruzamento ou se aproxima de um enquanto dirige. Dura 0.39 segundos.</li>
+<li><code>loc_objeto</code>: Item que você pode pegar. Soa vindo de um objeto caído no chão. Fique sobre ele e pegue-o. Ele toca em loop. Dura 1.20 segundos.</li>
+<li><code>bordillo</code>: Meio-fio. Ao dirigir livremente, você sai da estrada do lado onde o som soa. Dura 0.12 segundos.</li>
+<li><code>loc_mision</code>: Missão disponível. Soa de um lugar onde uma missão está esperando por você. Ele toca em loop. Dura 1.50 segundos.</li>
+<li><code>loc_lugar</code>: Ponto de interesse. Soa a partir de um ponto de interesse que não possui som próprio. Ele toca em loop. Dura 2.00 segundos.</li>
+<li><code>radar</code>: Radar. Soa da posição do que quer que o radar tenha acabado de anunciar. Dura 0.06 segundos.</li>
+<li><code>tono_libre</code>: Scanner, caminho limpo. O scanner direcional não encontra nenhuma parede nessa direção. Dura 0.08 segundos.</li>
+<li><code>tono_pared</code>: Scanner, parede. O scanner direcional encontrou uma parede. Quanto mais próximo estiver, mais alto será o tom. Dura 0.15 segundos.</li>
+<li><code>semaforo_pio</code>: Semáforo, chilrear lento. Os carros na avenida estão parados: você pode atravessar a avenida caminhando para leste ou oeste. Dura 0.09 segundos.</li>
+<li><code>semaforo_tic</code>: Semáforo, tique-taque rápido. Os carros na rua estão parados: você pode atravessar a rua caminhando para o norte ou para o sul. Dura 0.03 segundos.</li>
+<li><code>sonar</code>: Sensor de proximidade. Ao dirigir, há um veículo à frente: ele emite um sinal sonoro mais rápido e mais alto quanto mais próximo estiver. É também o sinal sonoro frio ou quente ao procurar um tesouro. Dura 0.05 segundos.</li>
+<li><code>baliza_destino</code>: Sinal sonoro do destino. O GPS sinal sonoro muda para este som quando o próximo ponto já é o seu destino. É também o tom que marca o norte. Dura 0.53 segundos.</li>
+<li><code>baliza</code>: Sinal sonoro do GPS. Soa na direção do próximo ponto da rota. Quanto mais perto você estiver, mais rápido ele se repete. Dura 0.35 segundos.</li>
+<li><code>loc_vehiculo</code>: Veículo da missão. Soa do veículo que a missão pede e do veículo do seu motorista enquanto ele espera por você. Ele toca em loop. Dura 1.80 segundos.</li>
+</ul>
+<h3>Sons de lugares</h3>
+<p>37 sons. Cada tipo de lugar reproduz seu som em loop para que você possa reconhecê-lo ao passar. Devem ser diferentes entre si e não cansativos: lembre-se que são ouvidos muitas vezes.</p>
+<ul>
+<li><code>lugar_protectora</code>: Abrigo de animais. Você está ao lado do abrigo de animais, onde pode adotar um cachorro: latindo. Ele toca em loop. Dura 4.00 segundos.</li>
+<li><code>lugar_gimnasio</code>: Academia. Você está ao lado de uma academia: pesos tilintando. Ele toca em loop. Dura 3.00 segundos.</li>
+<li><code>lugar_academia</code>: Academia ou autoescola. Você está ao lado de uma academia ou autoescola: o sino da aula. Ele toca em loop. Dura 3.50 segundos.</li>
+<li><code>lugar_aeropuerto</code>: Aeroporto. Você está próximo ao aeroporto: o anúncio do alto-falante, três notas descendentes. Ele toca em loop. Dura 3.00 segundos.</li>
+<li><code>lugar_banco</code>: Banco ou loja de penhores. Você está ao lado de um banco ou de uma loja de penhores: os bipes de um caixa eletrônico. Ele toca em loop. Dura 2.40 segundos.</li>
+<li><code>lugar_bar</code>: Bar, taberna ou discoteca. Você está ao lado de um bar, uma taberna, uma boate ou um negócio: música grave e profunda através da parede. Ele toca em loop. Dura 2.00 segundos.</li>
+<li><code>lugar_club</code>: Boate, conteúdo adulto. Você está ao lado de uma boate: música abafada e copos tilintando. Ele toca em loop. Dura 1.96 segundos.</li>
+<li><code>lugar_casa</code>: Casa. Você está ao lado de uma casa ou de um hotel, seu ou que você pode comprar: sinos de vento. Ele toca em loop. Dura 4.00 segundos.</li>
+<li><code>lugar_casino</code>: Cassino ou parque de diversões. Você está ao lado de um cassino ou de um parque de diversões: a melodia das máquinas caça-níqueis. Ele toca em loop. Dura 2.40 segundos.</li>
+<li><code>lugar_empleo</code>: Centro de emprego. Você está próximo ao centro de empregos: teclados e anúncio do número da fila. Ele toca em loop. Dura 3.00 segundos.</li>
+<li><code>lugar_cine</code>: Cinema. Você está ao lado de um cinema: o barulho de um projetor. Ele toca em loop. Dura 1.92 segundos.</li>
+<li><code>puerta_salir</code>: Deixe um local. Você sai de um local: a sineta e a porta se fechando. Dura 0.70 segundos.</li>
+<li><code>lugar_comisaria</code>: Delegacia de polícia. Você está ao lado de uma delegacia: um rádio policial. Ele toca em loop. Dura 3.00 segundos.</li>
+<li><code>lugar_boya</code>: Doca, boia ou local de pesca. Você está ao lado de um cais, de uma boia, de um local de pesca ou de um tesouro no mar: um sino de boia entre as ondas. Ele toca em loop. Dura 3.50 segundos.</li>
+<li><code>puerta_entrar</code>: Entrar em um estabelecimento. Você entra em um local: a porta e sua sineta. Enquanto você está lá dentro, o som do lugar toca ao fundo. Dura 1.10 segundos.</li>
+<li><code>lugar_tren</code>: Estação ferroviária. Você está próximo à estação de trem: o barulho de uma locomotiva. Ele toca em loop. Dura 2.40 segundos.</li>
+<li><code>lugar_estacion</code>: Estação rodoviária. Você está ao lado da rodoviária: freios a ar e anúncios no alto-falante. Ele toca em loop. Dura 4.00 segundos.</li>
+<li><code>lugar_fuente</code>: Fonte. Você está próximo a uma fonte: água caindo. Ele toca em loop. Dura 2.94 segundos.</li>
+<li><code>lugar_proveedor</code>: Fornecedor, conteúdo adulto. Você está ao lado de um fornecedor, onde se compra e vende produto: dois silos e uma veneziana de metal. Ele toca em loop. Dura 3.50 segundos.</li>
+<li><code>lugar_helipuerto</code>: Heliporto. Você está próximo a um heliporto: hélices girando e um bipe da torre de controle. Ele toca em loop. Dura 3.00 segundos.</li>
+<li><code>lugar_hospital</code>: Hospital ou farmácia. Você está ao lado de um hospital ou de uma farmácia: o bipe de um monitor. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>lugar_iglesia</code>: Igreja. Você está ao lado de uma igreja: um sino. Ele toca em loop. Dura 3.50 segundos.</li>
+<li><code>lugar_periodico</code>: Jornal ou livraria. Você está ao lado de um jornal ou de uma livraria: batidas de máquinas de escrever. Ele toca em loop. Dura 2.00 segundos.</li>
+<li><code>lugar_tienda</code>: Loja. Você está ao lado de uma loja: a campainha da porta. Ele toca em loop. Dura 3.20 segundos.</li>
+<li><code>lugar_armeria</code>: Loja de armas. Você está próximo a uma loja de armas: uma arma sendo engatilhada. Ele toca em loop. Dura 2.60 segundos.</li>
+<li><code>lugar_contacto</code>: Lugar com um contato. Você está próximo a um lugar onde alguém está esperando por você com um emprego. Ele toca em loop. Dura 1.50 segundos.</li>
+<li><code>lugar_generico</code>: Lugar sem som próprio. Você está próximo a um lugar que não possui som próprio. Ele toca em loop. Dura 2.00 segundos.</li>
+<li><code>lugar_mina</code>: Mina. Você está próximo a uma mina: picaretas contra pedras. Ele toca em loop. Dura 3.00 segundos.</li>
+<li><code>lugar_taller</code>: Oficina, ferro-velho ou concessionária de automóveis. Você está ao lado de um oficina, um ferro-velho ou uma concessionária de automóveis: uma chave pneumática. Ele toca em loop. Dura 3.00 segundos.</li>
+<li><code>lugar_tranvia</code>: Parada de bonde. Você está próximo a uma parada de bonde: dois toques da campainha. Ele toca em loop. Dura 2.40 segundos.</li>
+<li><code>lugar_taxi</code>: Ponto de táxi ou largada de corrida. Você está próximo a um ponto de táxi ou ao final de uma corrida: duas buzinas curtas. Ele toca em loop. Dura 2.50 segundos.</li>
+<li><code>lugar_prision</code>: Prisão. Você está próximo à prisão: um portão se fechando e uma sirene distante. Ele toca em loop. Dura 4.00 segundos.</li>
+<li><code>lugar_ong</code>: Refeitório comunitário. Você está ao lado de um refeitório ou de uma instituição de caridade: pratos e talheres. Ele toca em loop. Dura 3.00 segundos.</li>
+<li><code>lugar_comida</code>: Restaurante, pizzaria ou bar de praia. Você está próximo a um lugar onde as pessoas comem: alguma coisa fritando. Ele toca em loop. Dura 1.94 segundos.</li>
+<li><code>lugar_embarcadero</code>: Revendedor de cais ou barco. Você está próximo a um píer: água batendo nas docas e cabos de amarração rangendo. Ele toca em loop. Dura 3.80 segundos.</li>
+<li><code>lugar_rio</code>: Rio. Você está próximo a um rio: água correndo sobre pedras. Ele toca em loop. Dura 3.80 segundos.</li>
+<li><code>lugar_salida</code>: Saída da estrada. Você está próximo a uma saída da cidade: carros passando rapidamente. Este é o caminho para outra cidade. Ele toca em loop. Dura 3.00 segundos.</li>
+</ul>
+<h3>Movendo-se a pé e nadando</h3>
+<p>20 sons. Existem duas variantes de passos para cada superfície, alternando pé esquerdo e pé direito. Eles devem durar menos de um quarto de segundo.</p>
+<ul>
+<li><code>agacharse</code>: Agachar. Você se agacha: faz menos barulho e é mais difícil de ver. Dura 0.25 segundos.</li>
+<li><code>choque_pared</code>: Bater em uma parede. Você tentou bater em uma parede. Dura 0.12 segundos.</li>
+<li><code>levantarse</code>: Levante-se. Você se levanta depois de se agachar. Dura 0.25 segundos.</li>
+<li><code>brazada</code>: Natação. Soa a cada braçada que você nada. Dura 0.45 segundos.</li>
+<li><code>paso_plaza1</code>: Passos em um quadrado, pé direito. Você anda sobre as pedras de uma praça, com o outro pé. Dura 0.08 segundos.</li>
+<li><code>paso_plaza0</code>: Passos em um quadrado, pé esquerdo. Você anda nas pedras da calçada de uma praça. Dura 0.08 segundos.</li>
+<li><code>paso_arena1</code>: Passos na areia, pé direito. Você anda na areia, com o outro pé. Dura 0.20 segundos.</li>
+<li><code>paso_arena0</code>: Passos na areia, pé esquerdo. Você anda na areia da praia. Dura 0.20 segundos.</li>
+<li><code>paso_acera1</code>: Passos na calçada, pé direito. Você anda na calçada. Seus dois pés soam um pouco diferentes. Dura 0.09 segundos.</li>
+<li><code>paso_acera0</code>: Passos na calçada, pé esquerdo. Você anda na calçada. Dura 0.09 segundos.</li>
+<li><code>paso_calzada1</code>: Passos na estrada, pé direito. Você anda no asfalto, por onde passam os carros. Dura 0.10 segundos.</li>
+<li><code>paso_calzada0</code>: Passos na estrada, pé esquerdo. Você anda no asfalto: cuidado com os carros. Dura 0.10 segundos.</li>
+<li><code>paso_hierba1</code>: Passos na grama, pé direito. Você anda na grama, com o outro pé. Dura 0.16 segundos.</li>
+<li><code>paso_hierba0</code>: Passos na grama, pé esquerdo. Você caminha na grama de um parque ou no campo. Dura 0.16 segundos.</li>
+<li><code>paso_muelle1</code>: Passos no cais, pé direito. Você anda nas tábuas de um cais, com o outro pé. Dura 0.14 segundos.</li>
+<li><code>paso_muelle0</code>: Passos no cais, pé esquerdo. Você anda nas tábuas de um cais. Dura 0.14 segundos.</li>
+<li><code>paso_via1</code>: Passos nos trilhos, pé direito. Você ainda está nos trilhos do bonde ou do trem: saia deles. Dura 0.20 segundos.</li>
+<li><code>paso_via0</code>: Passos nos trilhos, pé esquerdo. Você está no meio dos trilhos do bonde ou do trem: um tilintar metálico vindo do trilho, com cascalho embaixo. Dura 0.20 segundos.</li>
+<li><code>salpicadura</code>: Respingo. Alguém ou alguma coisa cai na água: você, um veículo ou o que você joga no mar. Dura 0.90 segundos.</li>
+<li><code>bajo_agua</code>: Subaquático. Você está mergulhando: um estrondo abafado com bolhas. Ele toca em loop. Dura 3.00 segundos.</li>
+</ul>
+<h3>Veículos e condução</h3>
+<p>19 sons. Os motores funcionam em loop e o jogo aumenta o tom com velocidade. Registre o motor em marcha lenta, em rpm constante.</p>
+<ul>
+<li><code>choque</code>: Acidente grave. Uma pancada forte com o veículo: ele sofre danos. Dura 0.60 segundos.</li>
+<li><code>choque_leve</code>: Acidente leve. Um arranhão ou um leve impacto no veículo. Dura 0.30 segundos.</li>
+<li><code>motor_bici</code>: Bicicleta. Você está andando de bicicleta: o clique da corrente. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>claxon_camion</code>: Caminhão buzina. O buzina de um caminhão ou ônibus. Dura 0.70 segundos.</li>
+<li><code>claxon_bici</code>: Campainha de bicicleta. Uma campainha de bicicleta. Dura 0.54 segundos.</li>
+<li><code>claxon</code>: Carro buzina. Você buzina ou outro motorista buzina para você. Seu motorista buzina duas vezes na chegada e seu mecânico quando deixa o veículo. Dura 0.45 segundos.</li>
+<li><code>frenazo</code>: Grito dos freios. Um veículo freia bruscamente ou derrapa. Dura 0.90 segundos.</li>
+<li><code>arranque</code>: Ligue o motor. Você liga o motor de um veículo. Dura 0.90 segundos.</li>
+<li><code>motor_camion</code>: Motor de caminhão ou ônibus. O motor de um caminhão ou ônibus, profundo e pesado. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>motor_coche</code>: Motor de carro. O motor de um carro. Ele aumenta de tom com velocidade. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>motor_deportivo</code>: Motor de carro esportivo. O motor de um carro esportivo, mais áspero que um carro normal. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>motor_moto</code>: Motor de motocicleta. O motor de uma motocicleta. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>motor_tractor</code>: Motor de trator. O motor de um trator, lento e barulhento. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>motor_furgoneta</code>: Motor van ou off-roader. O motor de uma van ou off-roader. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>radio_cambio</code>: Mudança de estação. Você muda de estação no rádio de um veículo ou o desliga. Dura 0.30 segundos.</li>
+<li><code>claxon_helados</code>: Música da van de sorvete. A van de sorvete toca sua musiquinha em vez de buzinar. Dura 1.47 segundos.</li>
+<li><code>rodadura</code>: Pneus no asfalto. O barulho dos pneus do seu veículo. Quanto mais rápido você vai, mais alto fica. Ele toca em loop. Dura 1.44 segundos.</li>
+<li><code>puerta_coche</code>: Porta do veículo. Você entra ou sai de um veículo. Dura 0.18 segundos.</li>
+<li><code>intermitente</code>: Seta do veículo. Você pediu para virar no próximo cruzamento. Soa até você virar. Ele toca em loop. Dura 0.80 segundos.</li>
+</ul>
+<h3>Avarias, oficina, gás e roubo de veículos</h3>
+<p>10 sons. O que acontece com um veículo quando você simplesmente não o está dirigindo.</p>
+<ul>
+<li><code>alarma</code>: Alarme de carro. O alarme de um veículo ou local disparou. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>reserva</code>: Baixo combustível. Aviso de que o veículo está com pouco combustível: procure um posto de gasolina. Dura 0.62 segundos.</li>
+<li><code>fuego</code>: Fogo. Um veículo ou edifício está em chamas. Se for um veículo, vai explodir: fuja. Ele toca em loop. Dura 1.94 segundos.</li>
+<li><code>ganzua</code>: Gazua. Você está arrombando a fechadura de um veículo. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>pintura</code>: Pinte o veículo. Seu veículo está sendo pintado em uma oficina: a polícia deixa de reconhecê-lo. Dura 1.20 segundos.</li>
+<li><code>pinchazo</code>: Pneu furado. Um pneu estoura e o ar escapa: o veículo desvia para o lado. Dura 1.30 segundos.</li>
+<li><code>repostar</code>: Reabastecer. A bomba está enchendo o tanque. Dura 1.60 segundos.</li>
+<li><code>reparar</code>: Reparar na oficina. Seu veículo está sendo reparado em uma oficina. Dura 0.75 segundos.</li>
+<li><code>motor_seco</code>: Sem combustível. O motor tosse e morre: você ficou sem combustível. Ele toca em loop. Dura 0.69 segundos.</li>
+<li><code>cristal</code>: Vidro quebrado. Quebra de vidro: janela de carro ou vitrine. Dura 0.70 segundos.</li>
+</ul>
+<h3>Barcos, helicópteros, trem, bonde e avião</h3>
+<p>16 sons. O trem, o bonde e a cabine do avião funcionam em loop, assim como os motores.</p>
+<ul>
+<li><code>alarma_cabina</code>: Alarme da cabine. Durante o voo, quatro bipes urgentes: o combustível está muito baixo, há um obstáculo ou trânsito à frente ou o motor parou. Dura 0.62 segundos.</li>
+<li><code>tren_silbato</code>: Apito do trem. O trem sai da estação. Dura 1.60 segundos.</li>
+<li><code>avion</code>: Avião de passageiros. Você está em uma viagem de avião: o zumbido da cabine durante o voo. Ele toca em loop. Dura 3.00 segundos.</li>
+<li><code>motor_avioneta</code>: Avião leve. O zumbido de uma hélice de avião leve. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>tranvia</code>: Bonde. Você está em um bonde: um zumbido elétrico sobre os trilhos. Ele toca em loop. Dura 2.00 segundos.</li>
+<li><code>sirena_barco</code>: Buzina de navio. Um navio zarpa. No mar, também marca o anoitecer. Dura 1.80 segundos.</li>
+<li><code>avion_despegue</code>: Decolagem de avião. O avião acelera na pista e decola. Dura 4.00 segundos.</li>
+<li><code>motor_helicoptero</code>: Helicóptero. As hélices de um helicóptero em que você está viajando. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>motor_barco</code>: Motor de barco. O motor de um grande barco: um barco de pesca, um veleiro ou um iate. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>motor_lancha</code>: Motor de lancha. O motor de uma lancha ou outra embarcação rápida. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>aterrizaje</code>: Pouso. A aeronave pousa: um baque, o guincho das rodas e o rolamento desaparecendo. Dura 1.25 segundos.</li>
+<li><code>tranvia_campana</code>: Sino do bonde. O bonde parte: dois toques da campainha. Dura 0.90 segundos.</li>
+<li><code>tono_alineacion</code>: Tom de alinhamento. Ao voar sem piloto automático, dois cliques soam na lateral para a qual você precisa dirigir. No centro e em tons mais agudos, você está bem alinhado. Dura 0.11 segundos.</li>
+<li><code>tono_altitud</code>: Tom de altitude. Durante o voo, uma nota soa sempre que sua altitude muda: quanto mais alto o tom, mais alto você voa. Dura 0.13 segundos.</li>
+<li><code>tren</code>: Trem. Você está em uma viagem de trem: o vagão rola, com o barulho dos trilhos. Ele toca em loop. Dura 2.00 segundos.</li>
+<li><code>turbulencia</code>: Turbulência. A aeronave treme: há turbulência ou você está voando no meio de uma tempestade. Dura 1.30 segundos.</li>
+</ul>
+<h3>Armas, o tiro de cada uma</h3>
+<p>14 sons. O tiro de cada arma deve ser reconhecível sem olhar: tente ter certeza de que não soam iguais.</p>
+<ul>
+<li><code>lanzar</code>: Lançamento. Alguém atira uma granada ou um coquetel molotov, ou dispara uma besta. Dura 0.30 segundos.</li>
+<li><code>disparo_escopeta</code>: Tiro de espingarda. Alguém dispara uma espingarda: um grande estrondo. Dura 0.70 segundos.</li>
+<li><code>disparo_corredera</code>: Tiro de espingarda com ação de bombeamento. Um estrondo profundo e, logo atrás, o deslizamento. Dura 1.10 segundos.</li>
+<li><code>disparo_rafaga</code>: Tiro de pistola. Um tiro seco, muito curto, com repetição muito rápida. Dura 0.16 segundos.</li>
+<li><code>disparo_pistola</code>: Tiro de pistola. Alguém dispara uma pistola. Dura 0.35 segundos.</li>
+<li><code>disparo_silenciado</code>: Tiro de pistola silenciado. Um tiro abafado: quase ninguém ao redor ouve. Dura 0.12 segundos.</li>
+<li><code>disparo_revolver</code>: Tiro de revólver. Alguém dispara um revólver: mais profundo e mais forte que a pistola. Dura 0.50 segundos.</li>
+<li><code>disparo_rifle</code>: Tiro de rifle. Alguém dispara um rifle de precisão ou uma carabina: seco e com eco. Dura 0.80 segundos.</li>
+<li><code>disparo_palanca</code>: Tiro de rifle com ação de alavanca. O tiro e, logo atrás dele, a alavanca que carrega a próxima rodada. Dura 1.00 segundos.</li>
+<li><code>disparo_fusil</code>: Tiro de rifle de assalto. Alguém dispara um fuzil de assalto. Dura 0.30 segundos.</li>
+<li><code>disparo_semiautomatico</code>: Tiro de rifle semiautomático. Alguém dispara um rifle semiautomático: tiros únicos e altos. Dura 0.42 segundos.</li>
+<li><code>disparo_subfusil</code>: Tiro de submetralhadora. Alguém dispara uma submetralhadora ou uma submetralhadora: rajadas rápidas. Dura 0.20 segundos.</li>
+<li><code>cohete</code>: Tiro do lançador de foguetes. Um foguete é lançado: a explosão se seguirá. Dura 1.00 segundos.</li>
+<li><code>lanzagranadas</code>: Tiro do lançador de granadas. Um baque surdo, como um tubo: uma granada é lançada. Dura 0.60 segundos.</li>
+</ul>
+<h3>Combate, mira e ferimentos</h3>
+<p>20 sons. Recargas, impactos, acertos, tons de mira e o que você ouve quando alguém se machuca.</p>
+<ul>
+<li><code>hospital_despertar</code>: Acordando no hospital. Você desmaiou e acordou no hospital. Dura 2.60 segundos.</li>
+<li><code>muerte_npc</code>: Alguém cai. Alguém foi morto a tiros. Dura 0.70 segundos.</li>
+<li><code>tono_objetivo</code>: Alvo travado, ao alcance. Parece onde o inimigo está preso: eles estão ao alcance da sua arma. Dura 0.07 segundos.</li>
+<li><code>bala_silbido</code>: Bala perdida. Um tiro passou zunindo por você. Dura 0.18 segundos.</li>
+<li><code>latido</code>: Batimento cardíaco. Você tem muito pouca saúde: cure-se ou proteja-se. Ele toca em loop. Dura 1.00 segundos.</li>
+<li><code>navaja</code>: Corte de faca. Um golpe de faca, facão ou katana. Dura 0.12 segundos.</li>
+<li><code>curar</code>: Cura. Você recupera a saúde ou uma ambulância atende os feridos. Dura 0.78 segundos.</li>
+<li><code>amartillar</code>: Eles vão atirar em você. Um inimigo prepara sua arma: meio segundo depois ele atirará. Também soa quando você troca de arma. Dura 0.32 segundos.</li>
+<li><code>explosion</code>: Explosão. Uma granada, um foguete ou um veículo explodiu. Dura 1.80 segundos.</li>
+<li><code>dolor_npc</code>: Gemido de um homem. Você machucou um homem. Dura 0.28 segundos.</li>
+<li><code>dolor_mujer</code>: Gemido de uma mulher. Você machucou uma mulher. Dura 0.30 segundos.</li>
+<li><code>hacha</code>: Golpe de machado. Um golpe de machado: o barulho e o baque surdo da lâmina. Dura 0.42 segundos.</li>
+<li><code>golpe_aire</code>: Golpe no ar. Um golpe que não atinge ninguém. Dura 0.15 segundos.</li>
+<li><code>golpe</code>: Golpe que acerta. Um soco, um golpe de taco ou um atropelamento que cai em alguém. Dura 0.10 segundos.</li>
+<li><code>bala_impacto</code>: Impacto da bala. Uma bala atinge uma parede, um veículo ou qualquer outra coisa. Dura 0.12 segundos.</li>
+<li><code>tono_apuntado</code>: Inimigo travado, fora de alcance. Parece onde o inimigo está preso: eles estão longe demais para sua arma. Dura 0.04 segundos.</li>
+<li><code>recoger_municion</code>: Munição recolhida. Você pega munição ou uma arma largada por um inimigo caído: um carregador entrando e o ferrolho. Dura 0.50 segundos.</li>
+<li><code>recarga</code>: Recarga. Você recarrega sua arma. Dura 0.70 segundos.</li>
+<li><code>sin_balas</code>: Sem balas. Você puxa o gatilho e a arma está vazia: recarregue ou troque de arma. Dura 0.04 segundos.</li>
+<li><code>dolor</code>: Você foi ferido. Você sofreu danos. Dura 0.30 segundos.</li>
+</ul>
+<h3>Polícia e serviços de emergência</h3>
+<p>12 sons. Alertas de nível de procurado, sirenes e helicóptero da polícia.</p>
+<ul>
+<li><code>policia_perdida</code>: A polícia saiu do seu rastro. Eles não estão mais procurando por você. Dura 1.38 segundos.</li>
+<li><code>esposas</code>: Algemas. Você está preso. Dura 0.45 segundos.</li>
+<li><code>megafono</code>: Alto-falante de helicóptero. O helicóptero da polícia fala com você pelo alto-falante: um clique e uma voz metálica. O que está escrito é lido a seguir. Dura 1.10 segundos.</li>
+<li><code>buscando</code>: Eles estão procurando por você. Eles estão procurando por você, mas não podem vê-lo: continue assim por alguns segundos e você os afastará. Mais agudo, é o helicóptero que não consegue ver você. Dura 0.12 segundos.</li>
+<li><code>helicoptero_policia</code>: Helicóptero da polícia. No ponto mais alto, nível de procurado, o helicóptero da polícia: você o ouve chegar e circular acima. Ele toca em loop. Dura 2.00 segundos.</li>
+<li><code>multa</code>: Multa. Você recebeu uma multa: o apito do policial. Dura 0.76 segundos.</li>
+<li><code>estrella_baja</code>: O nível de procurado cai. A polícia está te procurando com menos zelo. Dura 0.70 segundos.</li>
+<li><code>estrella_sube</code>: O nível de procurado sobe. A polícia está te procurando com mais zelo. Dura 0.40 segundos.</li>
+<li><code>celda</code>: Porta da cela. Você foi preso e trancado: a porta da cela. Dura 0.90 segundos.</li>
+<li><code>emisora</code>: Rádio policial. Quando você trabalha como oficial: o clique do canal e dois bipes. Você entra em serviço, chega uma ligação ou o turno termina. Dura 0.75 segundos.</li>
+<li><code>sirena_ambulancia</code>: Sirene de ambulância. Uma ambulância: a sua, ou aquela que vem depois de um tiroteio ou atropelamento. Ele toca em loop. Dura 1.60 segundos.</li>
+<li><code>sirena</code>: Sirene de polícia. Um carro patrulha vindo atrás de você ou um caminhão de bombeiros. Ele toca em loop. Dura 2.00 segundos.</li>
+</ul>
+<h3>Pessoas na rua e animais</h3>
+<p>8 sons. Vozes sem palavras, passos alheios e o cachorro.</p>
+<ul>
+<li><code>evento</code>: Evento de rua. Algo está acontecendo nas proximidades: um assalto, alguns membros do gangue ou uma pasta perdida. Ajudar é opcional. Dura 0.74 segundos.</li>
+<li><code>grito</code>: Grito. Um grito: o seu para assustar as pessoas ou um inimigo que o viu e alertou seus amigos. Dura 0.75 segundos.</li>
+<li><code>grito_hombre</code>: Grito de um homem assustado. Um homem grita de medo e foge. Dura 0.63 segundos.</li>
+<li><code>grito_mujer</code>: Grito de uma mulher assustada. Uma mulher grita de susto e foge. Dura 0.72 segundos.</li>
+<li><code>ladrido</code>: Latido. Um cachorro late. Se for seu, ele avisa sobre um inimigo próximo ou que farejou algo. Dura 1.00 segundos.</li>
+<li><code>murmullo</code>: Murmúrio. Um pedestre murmura enquanto fala com você, ou dois transeuntes conversam entre si. Dura 0.35 segundos.</li>
+<li><code>perro_olfatea</code>: O cachorro fareja. Seu cachorro fareja o item mais próximo. Dura 0.36 segundos.</li>
+<li><code>paso_npc</code>: Os passos de outra pessoa. Alguém está andando perto de você. Dura 0.08 segundos.</li>
+</ul>
+<h3>Casa, cozinha e comida</h3>
+<p>8 sons. Comer, beber, cozinhar em casa e alguém bater à porta.</p>
+<ul>
+<li><code>beber</code>: Beber. Você toma alguns goles. Dura 0.33 segundos.</li>
+<li><code>timbre</code>: Campainha. Alguém toca a campainha: a comida que você pediu para entrega chegou. Duas notas, ding, dong. Dura 1.30 segundos.</li>
+<li><code>comer</code>: Comer. Você come alguma coisa: você recupera as forças. Dura 0.60 segundos.</li>
+<li><code>cocina_cortar</code>: Cozinhando, a faca. Você começa a cozinhar: cortando a faca na tábua. Dura 1.50 segundos.</li>
+<li><code>cocina_freir</code>: Cozinhando, a frigideira. Você cozinha na frigideira: o óleo fervendo. Dura 2.40 segundos.</li>
+<li><code>cocina_hervir</code>: Cozinhando, a panela. Você cozinha na panela: a água borbulha. Dura 2.40 segundos.</li>
+<li><code>nevera</code>: Geladeira. Você abre a geladeira em casa ou guarda as compras: a vedação da porta e o zumbido do motor. Dura 1.00 segundos.</li>
+<li><code>plato_servido</code>: Prato servido. O prato está pronto: porcelana na mesa e talheres. Dura 0.90 segundos.</li>
+</ul>
+<h3>Lojas, dinheiro e itens</h3>
+<p>5 sons. Comprar, receber e recolher coisas.</p>
+<ul>
+<li><code>caja</code>: Caixa registradora. Você paga por uma compra ou faz uma transação no banco. Dura 0.67 segundos.</li>
+<li><code>cesta</code>: Cesta de compras. Você joga um produto na cesta: um baque surdo e o fio tremendo. Com o tom mais baixo, você o coloca de volta na prateleira. Dura 0.40 segundos.</li>
+<li><code>dinero</code>: Dinheiro. Você ganhou dinheiro. Dura 0.55 segundos.</li>
+<li><code>recoger</code>: Item recolhido. Você pega um item do chão. Dura 0.18 segundos.</li>
+<li><code>bolsa</code>: Mercado de ações. Você comprou ações do bolsa de valores. Dura 0.49 segundos.</li>
+</ul>
+<h3>Menus, telefone e alertas de jogos</h3>
+<p>17 sons. Sons de interface curtos. Devem ser breves e discretos.</p>
+<ul>
+<li><code>buho</code>: A noite cai. São nove da noite: uma coruja. Dura 1.60 segundos.</li>
+<li><code>notificacion</code>: Alerta. Alerta geral: uma nova missão, um destino definido ou uma mensagem. O que é é dito logo em seguida. Dura 0.54 segundos.</li>
+<li><code>gallo</code>: Amanhecer. São sete da manhã: um galo canta. Dura 1.10 segundos.</li>
+<li><code>pasan_horas</code>: As horas passam. O tempo avança: você dorme, se esconde ou espera. Dura 1.85 segundos.</li>
+<li><code>movil</code>: Celular. Você abre o telefone ou recebe uma chamada ou mensagem. Dura 0.22 segundos.</li>
+<li><code>logro</code>: Conquista desbloqueada. Você ganhou uma das conquistas do jogo. Dura 1.05 segundos.</li>
+<li><code>reloj</code>: Contagem regressiva. Faltam menos de dez segundos: soa a cada segundo. Dura 0.03 segundos.</li>
+<li><code>error</code>: Erro. Você não pode fazer isso agora. Dura 0.22 segundos.</li>
+<li><code>guardado</code>: Jogo salvo. O jogo foi salvo. Dura 0.67 segundos.</li>
+<li><code>dialogo</code>: Linha de diálogo. Uma linha de diálogo começa. Dura 0.05 segundos.</li>
+<li><code>campanadas</code>: Meia-noite. Um novo dia começa: você cobra dos seus negócios e os preços mudam. Dura 4.20 segundos.</li>
+<li><code>menu_ajuste</code>: Menu, alterar um valor. Você altera o valor de uma opção para a esquerda ou para a direita. Dura 0.03 segundos.</li>
+<li><code>menu_ok</code>: Menu, escolher. Você escolhe uma opção em um menu. Dura 0.27 segundos.</li>
+<li><code>menu_borde</code>: Menu, início ou fim. Você alcançou o início ou o fim de um menu ou a borda do mapa. Dura 0.08 segundos.</li>
+<li><code>menu_mover</code>: Menu, vá para a próxima opção. Você passa de uma opção para outra em um menu. Dura 0.03 segundos.</li>
+<li><code>menu_atras</code>: Menu, voltar. Você volta em um menu. Dura 0.27 segundos.</li>
+<li><code>nivel</code>: Uma habilidade aumenta. Você melhorou na direção, no tiro, na resistência ou na pesca. Dura 0.80 segundos.</li>
+</ul>
+<h3>Missões, trabalho, reputação e humor</h3>
+<p>14 sons. O que acontece quando você termina uma missão, durante o trabalho honesto e quando a forma como as pessoas o veem ou como você se sente muda.</p>
+<ul>
+<li><code>diploma</code>: Curso concluído. Você concluiu um curso em uma academia e uma habilidade aumenta. Dura 1.38 segundos.</li>
+<li><code>despido</code>: Demissão. Você foi demitido do seu emprego permanente: uma porta batida e três notas descendentes. Dura 1.20 segundos.</li>
+<li><code>titulo</code>: Diploma obtido. Você terminou os estudos para obter um diploma: uma fanfarra curta e um acorde longo. Dura 1.50 segundos.</li>
+<li><code>donativo</code>: Doação. Você faz uma doação: moedas caindo. Dura 0.90 segundos.</li>
+<li><code>factura</code>: Fatura, imposto ou taxa. Suas contas, impostos ou pagamento de empréstimo foram cobrados: uma impressora de recibos e uma nota baixa. Dura 0.95 segundos.</li>
+<li><code>inspeccion</code>: Inspeção. Uma inspeção passou por uma de suas empresas: nós dos dedos batendo na porta, papéis e um carimbo. Se encontrou algo, está no seu telefone, em Vida, reputação e consequências. Dura 1.15 segundos.</li>
+<li><code>jornada</code>: Jornada de trabalho. Você trabalha um dia: a sirene da fábrica e as horas passam. Dura 2.50 segundos.</li>
+<li><code>mision_ok</code>: Missão concluída. Você completou uma missão. Dura 1.36 segundos.</li>
+<li><code>mision_fallo</code>: Missão falhou. Você falhou em uma missão ou caiu. Dura 1.60 segundos.</li>
+<li><code>fama</code>: Muda seu fama nas ruas. Muda a forma como você é visto na rua. Dura 0.68 segundos.</li>
+<li><code>prestigio</code>: Prestígio na cidade. Os vizinhos pensam melhor de você. Dura 0.83 segundos.</li>
+<li><code>ascenso</code>: Promoção. Você se classifica em uma profissão e ganha mais, ou é promovido em seu emprego permanente. Dura 1.40 segundos.</li>
+<li><code>animo_sube</code>: Seu humor melhora. Seu humor sobe um nível: você mira melhor. Dura 0.48 segundos.</li>
+<li><code>animo_baja</code>: Seu humor piora. Seu humor cai um nível: com um humor muito baixo você mira pior e corre menos. Dura 0.57 segundos.</li>
+</ul>
+<h3>Territórios e gangues</h3>
+<p>4 sons. Os alertas para os bairros que são seus.</p>
+<ul>
+<li><code>amenaza_barrio</code>: Ameaça a um de seus bairros. Uma gangue prepara um ataque a um de seus bairros, ou acaba de iniciá-lo: tambores profundos, cada vez mais frequentes, e duas notas tensas. Verifique o telefone, em Territórios. Dura 1.15 segundos.</li>
+<li><code>barrio_defendido</code>: Bairro defendido. Você lutou contra um ataque ou destruiu o esconderijo de um gangue: um rufar de tambores e três notas crescentes. Dura 1.25 segundos.</li>
+<li><code>barrio_perdido</code>: Bairro perdido. Uma gangue tirou um bairro de você: um sino profundo e notas descendentes. Dura 1.60 segundos.</li>
+<li><code>territorio</code>: Território conquistado. Um bairro se torna seu. Dura 1.56 segundos.</li>
+</ul>
+<h3>Jogo on-line e interpretação de personagem</h3>
+<p>7 sons. Alertas do jogo compartilhado e dos canais do servidor interpretação de personagem.</p>
+<ul>
+<li><code>chat_accion</code>: Ação do personagem. Em um servidor, alguém próximo descreve o que seu personagem faz, por exemplo, abrir uma porta: um pequeno farfalhar acompanhado de uma nota. Dura 0.45 segundos.</li>
+<li><code>amigo_entra</code>: Amigo chega. Jogando com amigos, alguém entra no jogo ou você se conecta. Três notas ascendentes. Dura 0.77 segundos.</li>
+<li><code>amigo_sale</code>: Amigo sai. Jogando com amigos, alguém sai ou você se desconecta. Três notas descendentes. Dura 0.77 segundos.</li>
+<li><code>espera_servidor</code>: Esperando pelo servidor. Em um servidor, a conexão caiu ou o servidor está atualizando, e o jogo espera para voltar sozinho: duas notas lentas e fracas, a segunda mais baixa. Ele se repete a cada poucos segundos. Dura 1.64 segundos.</li>
+<li><code>chat</code>: Mensagem. Brincando com amigos, chega ou é enviada uma mensagem: duas notas rápidas e agudas. É lido em voz alta a seguir. Dura 0.29 segundos.</li>
+<li><code>chat_fuera</code>: Mensagem fora do personagem. Num servidor, alguém fala como jogador e não como personagem: duas pancadas secas na madeira. Todo o servidor ouve. Dura 0.30 segundos.</li>
+<li><code>chat_personaje</code>: Mensagem no personagem. Em um servidor, alguém próximo fala como seu personagem, ou você: duas notas profundas e calorosas, mais lentas que as mensagens normais. Dura 0.64 segundos.</li>
+</ul>
+<h3>Pesca, cassino e jogos</h3>
+<p>12 sons. Pesca e jogos de casino, feiras e ginásio.</p>
+<ul>
+<li><code>diana_ok</code>: Alvo atingido. Você acertou um alvo na galeria de tiro. Dura 0.20 segundos.</li>
+<li><code>diana</code>: Alvo de tiro. Um alvo aparece: atire na direção do som. Dura 0.25 segundos.</li>
+<li><code>dados</code>: Dados. Os dados rolam. Dura 0.80 segundos.</li>
+<li><code>simon_1</code>: Máquina de memória, seta para a direita. A segunda nota mais alta do jogo da memória sonora. Dura 0.45 segundos.</li>
+<li><code>simon_3</code>: Máquina de memória, seta para a esquerda. A segunda nota mais baixa do jogo da memória sonora. Dura 0.45 segundos.</li>
+<li><code>simon_2</code>: Máquina de memória, seta para baixo. A nota mais baixa do jogo da memória sonora. Dura 0.45 segundos.</li>
+<li><code>simon_0</code>: Máquina de memória, seta para cima. A nota mais alta do jogo da memória sonora. Dura 0.45 segundos.</li>
+<li><code>pez_pica</code>: Pesca, peixe mordendo a isca. Um peixe mordeu o anzol: puxe imediatamente, dentro de um segundo. Dura 0.60 segundos.</li>
+<li><code>carrete</code>: Pescando, enrolando a linha. Você enrola a linha com o carretel. Dura 0.90 segundos.</li>
+<li><code>pesca_lanzar</code>: Pescando, lançando o anzol. Você lança a linha: o anzol cai na água. Dura 1.15 segundos.</li>
+<li><code>ruleta</code>: Roleta. A roda da roleta do cassino gira. Dura 2.40 segundos.</li>
+<li><code>campana_ring</code>: Sino de luta de boxe. Uma luta começa no ginásio. Dura 1.20 segundos.</li>
+</ul>
+<h3>Ambiente e clima</h3>
+<p>19 sons. Longos loops que tocam ao fundo em cada bairro, com chuva e à noite, e sons únicos que aparecem de vez em quando ao seu redor.</p>
+<ul>
+<li><code>amb_campo</code>: Ambiente campestre. Você está no campo: pássaros e sinos. Ele toca em loop. Dura 9.70 segundos.</li>
+<li><code>amb_mar</code>: Ambiente de mar aberto. Você está no mar, longe da costa. Ele toca em loop. Dura 9.70 segundos.</li>
+<li><code>amb_montana</code>: Ambiente de montanha. Você está nas montanhas: vento. Ele toca em loop. Dura 9.70 segundos.</li>
+<li><code>amb_playa</code>: Ambiente de praia. Você está na praia: ondas. Ele toca em loop. Dura 8.70 segundos.</li>
+<li><code>amb_parque</code>: Ambiente do parque. Você está em um parque: pássaros. Ele toca em loop. Dura 9.70 segundos.</li>
+<li><code>amb_industrial</code>: Ambiente industrial. Você está em uma área industrial: máquinas. Ele toca em loop. Dura 5.70 segundos.</li>
+<li><code>amb_noche</code>: Ambiente noturno. É noite: grilos. Ele toca em loop. Dura 5.80 segundos.</li>
+<li><code>amb_puerto</code>: Ambiente portuário. Você está no porto: ondas e o buzina de um navio distante. Ele toca em loop. Dura 8.70 segundos.</li>
+<li><code>amb_residencial</code>: Ambiente tranquilo de bairro. Você está em um bairro residencial. Ele toca em loop. Dura 7.70 segundos.</li>
+<li><code>amb_ciudad</code>: Ambiente urbano. Você está no centro da cidade: trânsito distante. Ele toca em loop. Dura 7.70 segundos.</li>
+<li><code>claxon_lejano</code>: Buzina distante. Uma buzina de carro distante, como ambiente: não é para você. Dura 0.45 segundos.</li>
+<li><code>lluvia</code>: Chuva. Está chovendo: o chão está mais escorregadio e você ouve menos. Ele toca em loop. Dura 4.70 segundos.</li>
+<li><code>gaviota</code>: Gaivotas. Gaivotas, na praia e no porto. Dura 2.00 segundos.</li>
+<li><code>martillo</code>: Martelamento de construção. Obras de construção à distância, no porto e nos parques industriais. Dura 1.20 segundos.</li>
+<li><code>multitud</code>: Murmúrio de uma multidão. Há muitas pessoas ao redor. Ele toca em loop. Dura 5.70 segundos.</li>
+<li><code>pajaro</code>: Pássaro. Um pássaro, em parques e bairros tranquilos. Dura 0.90 segundos.</li>
+<li><code>sirena_lejana</code>: Sirene distante. Uma sirene distante, como ambiente: eles não estão vindo atrás de você. Dura 2.00 segundos.</li>
+<li><code>trueno</code>: Trovão. Trovão, quando chove. Dura 3.50 segundos.</li>
+<li><code>viento_playa</code>: Vento. Vento na cara, quando você está em um helicóptero. Dura 8.70 segundos.</li>
+</ul>
+<h3>Relacionamentos, apenas com conteúdo adulto</h3>
+<p>7 sons. Ame a vida.</p>
+<ul>
+<li><code>afinidad_sube</code>: A afinidade aumenta. Alguém gosta mais de você, por causa de um bate-papo, de um encontro ou de um presente. Dura 1.09 segundos.</li>
+<li><code>afinidad_baja</code>: A afinidade diminui. Alguém está chateado com você. Dura 1.40 segundos.</li>
+<li><code>cita</code>: Encontro. Você tem um encontro ou um momento de proximidade com seu parceiro. Dura 1.30 segundos.</li>
+<li><code>noche_juntos</code>: Noite juntos. Vocês passam a noite juntos. A cena desaparece. Dura 2.94 segundos.</li>
+<li><code>pareja</code>: Novo parceiro. Você inicia um relacionamento: dois batimentos cardíacos e um arpejo. Dura 1.60 segundos.</li>
+<li><code>regalo</code>: Presente. Você entrega um presente: papel de embrulho. Dura 0.30 segundos.</li>
+<li><code>ruptura</code>: Separação. Um relacionamento termina. Dura 2.60 segundos.</li>
+</ul>
+<h3>Substâncias e tráfico, apenas com conteúdo adulto</h3>
+<p>13 sons. Cada substância tem seu próprio som quando você a pega, então você pode reconhecê-la sem olhar.</p>
+<ul>
+<li><code>abstinencia</code>: Abstinência. Seu corpo anseia por uma substância da qual você depende: um tremor. Dura 1.20 segundos.</li>
+<li><code>bajon</code>: Baixa dos efeitos. O efeito de uma substância passa e ocorre o acidente. Dura 1.60 segundos.</li>
+<li><code>tomar_hierba</code>: Fumar maconha. Você fuma maconha: um isqueiro, uma tragada e fuma. Dura 1.60 segundos.</li>
+<li><code>trato</code>: Negócio fechado. Você comprou ou vendeu um produto: notas e um pacote mudando de mãos. Dura 0.90 segundos.</li>
+<li><code>sobredosis</code>: Overdose. Você exagerou: seu coração desacelera, um bipe contínuo soa e você acaba no hospital. Dura 3.20 segundos.</li>
+<li><code>paisano</code>: Policial disfarçado. O comprador era um policial disfarçado. Dura 1.10 segundos.</li>
+<li><code>precio_escasez</code>: Preço de escassez. No fornecedor, essa substância hoje é muito cara. Dura 0.51 segundos.</li>
+<li><code>precio_ganga</code>: Preço de pechincha. No fornecedor, essa substância hoje está muito barata. Dura 0.51 segundos.</li>
+<li><code>rechazo</code>: Rejeição. Essa pessoa não está interessada no que você está oferecendo. Dura 0.22 segundos.</li>
+<li><code>tomar_pastillas</code>: Tomar comprimidos. Você toma um comprimido: o blister e um gole. Dura 0.90 segundos.</li>
+<li><code>tomar_copa</code>: Tome uma bebida. Você bebe álcool: é servido e você brinda. Dura 1.30 segundos.</li>
+<li><code>tomar_cristal</code>: Usar cristal. Você pega o cristal: ele estala. Dura 1.50 segundos.</li>
+<li><code>tomar_polvo</code>: Usar pó branco. Você pega um pó branco: uma carta e um cheiro. Dura 1.00 segundos.</li>
+</ul>
+</body>
+</html>
