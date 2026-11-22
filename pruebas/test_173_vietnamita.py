@@ -86,3 +86,14 @@ def test_marcas_de_genero_con_mas_de_dos_formas():
     assert genero.resolver("Bienvenid[o|a]", "m") == "Bienvenida"
     assert genero.resolver("[anh|chị|bạn]", "h") == "anh" and genero.resolver("[anh|chị|bạn]", "m") == "bạn"
     assert genero.resolver("[sin barra] y [o|a]", "h") == "[sin barra] y o"
+
+
+def test_el_mod_marisma_negra_tiene_traduccion_vietnamita_completa():
+    base = os.path.join(RAIZ, "componentes_extra", "mod_marisma_negra")
+    spec = json.load(open(os.path.join(base, "componente.json"), encoding="utf-8"))
+    assert spec["nombres"].get("vi") and spec["descripciones"].get("vi")
+    mod = json.load(open(os.path.join(base, "marisma_negra.json"), encoding="utf-8"))
+    cat_vi = json.load(open(os.path.join(RAIZ, "traduccion", "vi", "mods", "marisma_negra.json"), encoding="utf-8"))["textos"]
+    lineas = [(l["texto"] if isinstance(l, dict) else l[1]) for m in mod["misiones"] for p in m["pasos"] if p["tipo"] == "dialogo" for l in p["lineas"]]
+    assert len(lineas) >= 40 and all(t in cat_vi for t in lineas)
+    assert any(a.get("destino") == "data/idiomas/vi/mods/marisma_negra.json" for a in spec.get("archivos", []))

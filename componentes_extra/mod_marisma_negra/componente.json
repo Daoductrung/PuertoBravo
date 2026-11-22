@@ -2,12 +2,19 @@
  "id": "mod-marisma_negra",
  "tipo": "mod",
  "nombre": "Marisma Negra",
- "nombres": {"en": "Marisma Negra"},
+ "nombres": {
+  "en": "Marisma Negra",
+  "vi": "Marisma Negra"
+ },
  "descripcion": "Un pueblo de marisma al sur de Puerto Bravo, con arrozales, laguna, anguileros, unas salinas cerradas y contrabandistas que usan los caños de noche. Cuatro misiones con voces, un encargo honrado, una escopeta de puesto, una fisga, una barca de caños, una ranchera, una carrera por los arrozales y un personaje. Se llega por la salida este de Puerto Bravo.",
- "descripciones": {"en": "A marsh town south of Puerto Bravo, with rice fields, a lagoon, eel fishermen, a closed saltworks and smugglers who use the channels at night. Four voiced missions, an honest errand, a hide shotgun, an eel spear, a channel boat, a pickup, a race through the rice fields and a playable character. You get there by Puerto Bravo's east exit."},
+ "descripciones": {
+  "en": "A marsh town south of Puerto Bravo, with rice fields, a lagoon, eel fishermen, a closed saltworks and smugglers who use the channels at night. Four voiced missions, an honest errand, a hide shotgun, an eel spear, a channel boat, a pickup, a race through the rice fields and a playable character. You get there by Puerto Bravo's east exit.",
+  "vi": "Một thị trấn đầm lầy phía nam Puerto Bravo, với những cánh đồng lúa, đầm phá, người đánh lươn, ruộng muối đóng cửa và những kẻ buôn lậu hoạt động ban đêm trên các con lạch. Bốn nhiệm vụ có lồng tiếng, một công việc lương thiện, súng săn vịt trời, xiên bắt lươn, thuyền máy đi rạch, xe bán tải, đường đua ruộng lúa và một nhân vật mới. Đến đó qua lối ra phía đông của Puerto Bravo."
+ },
  "archivos": [
   {"origen": "marisma_negra.json", "destino": "data/mods/marisma_negra.pbm", "proteger": true},
   {"origen": "../../traduccion/en/mods/marisma_negra.json", "destino": "data/idiomas/en/mods/marisma_negra.json"},
+  {"origen": "../../traduccion/vi/mods/marisma_negra.json", "destino": "data/idiomas/vi/mods/marisma_negra.json"},
   {"carpeta": "voces/marisma_negra_es", "destino": "data/voces/marisma_negra_es"},
   {"carpeta": "voces/marisma_negra_en", "destino": "data/voces/marisma_negra_en"}
  ]
