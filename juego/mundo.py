@@ -81,7 +81,7 @@ def _es_dato(nombre):
 
 
 SECCIONES_VIDA = ("prendas", "complementos", "protecciones", "jornadas", "combates", "combustible", "muebles", "mejoras", "realismo", "ambiente", "tarifas", "vehiculos_propios", "calle", "guerra_barrios",
-                  "carta_domicilio", "domicilio", "atracos", "pactos", "reconquista", "contratos", "reacciones", "planes_pareja", "convivencia", "alquiler", "desguace", "mochila", "objetos_valor", "encuentros", "horarios_locales", "calzado", "vestuario", "bolsa", "bolsa_empresas", "necesidades", "capo", "policia_oficio", "avisos_policia",
+                  "carta_domicilio", "cartas", "domicilio", "atracos", "pactos", "reconquista", "contratos", "reacciones", "planes_pareja", "convivencia", "alquiler", "desguace", "mochila", "objetos_valor", "encuentros", "horarios_locales", "calzado", "vestuario", "bolsa", "bolsa_empresas", "necesidades", "capo", "policia_oficio", "avisos_policia",
                   "pasillos", "productos", "tipos_tienda", "recetas", "cocina", "escolta_misiones", "persecuciones", "golpes", "papeles_golpe", "vuelo", "aeronaves", "mapa_aire",
                   "vida_honrada", "titulos", "empleos_fijos", "mejoras_negocio", "incidencias_trabajo", "buenas_acciones")
 
@@ -140,6 +140,7 @@ def cargar_datos(con_mods=True, traducir=True):
             ex = _leer_json(ruta_extra)
             d["misiones"] += ex.get("misiones", [])
             d["capitulos"].update(ex.get("capitulos", {}))
+    pendientes = []                                              # lugares de los mods, que se colocan cuando ya están todas las localidades
     if con_mods and os.path.isdir(rutas.MODS):
         from . import cifrado
         for nombre in sorted(os.listdir(rutas.MODS)):
@@ -184,14 +185,21 @@ def cargar_datos(con_mods=True, traducir=True):
                 else:
                     d["mapas"][pos] = nuevo
             for nuevo in mod.get("lugares", []):
-                destino = next((x for x in d["mapas"] if x.get("id") == nuevo.get("mapa")), d["ciudad"])
-                lista = destino["lugares"]
-                pos = next((k for k, x in enumerate(lista) if x["id"] == nuevo["id"]), None)
-                if pos is None:
-                    lista.append(nuevo)
-                else:
-                    lista[pos] = nuevo
+                pendientes.append((nombre, nuevo))               # al final: su localidad puede venir en un mod que se lee después
             d["capitulos"].update(mod.get("capitulos", {}))
+        for nombre, nuevo in pendientes:
+            destino = next((x for x in d["mapas"] if x.get("id") == nuevo.get("mapa")), None)
+            if destino is None:
+                if nuevo.get("mapa") not in (None, "", "puerto_bravo"):
+                    d["errores_mods"].append(tr('{nombre}: el lugar {lugar} es de la localidad {mapa}, que no está en ningún mod activo. Se ha puesto en Puerto Bravo.').format(
+                        nombre=nombre, lugar=nuevo.get("nombre", nuevo.get("id")), mapa=nuevo.get("mapa")))
+                destino = d["ciudad"]
+            lista = destino["lugares"]
+            pos = next((k for k, x in enumerate(lista) if x["id"] == nuevo["id"]), None)
+            if pos is None:
+                lista.append(nuevo)
+            else:
+                lista[pos] = nuevo
     if traducir:
         from . import i18n
         i18n.traducir_datos(d)

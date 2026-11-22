@@ -753,8 +753,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         else:
             m = min(muelles, key=lambda l: math.hypot(l.x - x, l.y - y))
             dest = self.lug(m.get("a_lugar"))
-        j.barco_actual = None
+        remolque = self.remolcar_barco(dest.mapa, comprobar=not callar)
         self.cambiar_mapa(dest.mapa, dest.x, dest.y)
+        if remolque:
+            self.decir(remolque)
         if not callar:
             j.salud = max(10.0, j.salud - 30)
             self.pasar_horas(2)
@@ -865,6 +867,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.decir(tr('Música {int} por ciento').format(int=(int(v * 100))), True)
         elif k in (pygame.K_PAGEUP, pygame.K_PAGEDOWN) and ev.mod & pygame.KMOD_CTRL:
             self.voz.repasar_extremo(k == pygame.K_PAGEDOWN)
+        elif k in (pygame.K_PAGEUP, pygame.K_PAGEDOWN, pygame.K_PERIOD) and ev.mod & pygame.KMOD_SHIFT:
+            self.voz.repasar_mensajes({pygame.K_PAGEUP: -1, pygame.K_PAGEDOWN: 1}.get(k, 0))      # los del chat y del servidor, aparte
         elif k == pygame.K_PAGEUP:
             self.voz.repasar(-1)
         elif k == pygame.K_PAGEDOWN:
@@ -1025,8 +1029,9 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 dest = self.lug(l.get("a_lugar")) if l.get("a_mapa") in self.mapas else None
                 if dest is not None and math.hypot(l.x - j.x, l.y - j.y) < 14:
                     self._fin_agua()
-                    j.barco_actual = None
-                    self.cambiar_mapa(dest.mapa, dest.x, dest.y, None, tr('Llegas nadando a {nombre} y sales del agua, chorreando, en {nombre2}.').format(nombre=(l.nombre), nombre2=(dest.nombre)))
+                    remolque = self.remolcar_barco(dest.mapa)
+                    self.cambiar_mapa(dest.mapa, dest.x, dest.y, None, tr('Llegas nadando a {nombre} y sales del agua, chorreando, en {nombre2}.').format(nombre=(l.nombre), nombre2=(dest.nombre))
+                                      + (" " + remolque if remolque else ""))
                     return True
         return False
 
@@ -1787,6 +1792,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                     self.decir(f"{p.nombre}: " + random.choice((tr("Aquí estoy. Tú mandas."), tr("Todo tranquilo por ahora."), tr("Yo te cubro."), tr("Cuando quieras nos movemos."))), True)
                 elif p.hostil:
                     self.decir(tr('{nombre} no quiere hablar.').format(nombre=(p.nombre)), True)
+                elif p.estado == "huye":
+                    self.decir(tr('{nombre} pasa corriendo, muerto de miedo, y no se para.').format(nombre=(p.nombre)), True)
                 else:
                     self.son("murmullo", xy=(p.x, p.y))
                     self.decir(f"{p.nombre}: {random.choice(gente.lista('frases'))}", True)

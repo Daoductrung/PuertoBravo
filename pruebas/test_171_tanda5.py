@@ -1566,11 +1566,11 @@ def test_ascensos_y_rangos(robot, datos_de_serie):
     _a(p, a["lugar"], 6.0)
     robot.frames(10)
     robot.tecla(pygame.K_h)
-    assert j.stats["serv_policia"] == cada and p.rango_policia() == 1 and p.rango_policia_txt() == "agente"
+    assert j.stats["serv_policia"] == cada and p.rango_policia() == 1 and p.rango_policia_txt() == "agente de policía"
     assert "scenso" in _todo(robot) or "ascienden" in _todo(robot)
     from juego import menus_vida
     menus_vida.carrera(p)                                          # y consta en Tu carrera, en el móvil
-    assert any("Policía: eres agente. Avisos resueltos: %d" % cada in _texto(o) for o in robot.app.pila[-1].opciones)
+    assert any("Policía: eres agente de policía. Avisos resueltos: %d" % cada in _texto(o) for o in robot.app.pila[-1].opciones)
     _cerrar_menus(robot)
     j.stats["serv_policia"] = 9999
     assert p.rango_policia() == len(AG.AJ.lista("rangos")) - 1     # el último rango es el tope

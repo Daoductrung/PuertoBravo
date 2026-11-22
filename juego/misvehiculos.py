@@ -400,6 +400,32 @@ class MisVehiculos:
                 return qx, qy, d
         return self.mundo.plaza_en(x + 13, y)
 
+    def remolcar_barco(self, mapa=None, comprobar=True):
+        """Tu barco se ha quedado en el mar sin ti: has saltado al agua y has llegado nadando a tierra, te han rescatado o
+        has despertado en el hospital. No se pierde: lo remolcan hasta un amarre, en la localidad a la que llegas si tiene
+        embarcadero. Solo se pierde si se ha hundido o ha ardido (con `comprobar`, se mira si sigue a flote). Devuelve la
+        frase que lo cuenta, o cadena vacía si no ibas con tu barco."""
+        j = self.j
+        b = j.barco_actual
+        if not b:
+            return ""
+        j.barco_actual = None
+        v = next((o for o in self.vehiculos if o.modelo.get("barco") and getattr(o, "propio", False)), None)
+        if comprobar and self.mundo.tipo == "mar" and (v is None or v.muerto):
+            return tr('Tu barco, {nombre}, se ha hundido: lo has perdido.').format(nombre=(b.get("nombre") or tr("el tuyo")))
+        emb = None
+        if mapa in self.mapas:
+            emb = next((l for l in self.mapas[mapa].lugares.values() if l.tipo == "embarcadero"), None)
+        emb = emb or next((l for m in self.mapas.values() for l in m.lugares.values() if l.tipo == "embarcadero"), None)
+        if emb is None:
+            return ""
+        salud = v.salud if v is not None and not v.muerto else b.get("salud", 100)
+        j.barcos.append({"modelo": b["modelo"], "nombre": b.get("nombre"), "salud": salud, "en": emb.id})
+        if v is not None and v is not j.veh:
+            self.quitar_vehiculo(v)
+        return tr('A tu barco, {nombre}, lo remolcan hasta un amarre de {nombre_lugar}: allí puedes volver a zarpar con él.').format(
+            nombre=(b.get("nombre") or (v.nombre if v is not None else tr("el tuyo"))), nombre_lugar=(self.nombre_lugar(emb)))
+
     def preparar_traslado(self, mapa):
         """Antes de que el juego te lleve a otro sitio (y antes de rebobinar al jugador, que le quita el vehículo de las
         manos): qué vehículo va contigo, y tu barco, si ibas en él, a un amarre. Devuelve {"veh": vehículo o None}."""

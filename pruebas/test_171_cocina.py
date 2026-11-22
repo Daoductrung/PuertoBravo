@@ -441,7 +441,8 @@ def test_el_menu_rapido_de_la_tienda_sigue_y_vende_lo_mismo(robot, datos_de_seri
     menu = robot.app.pila[-1]
     textos = [_texto(o) for o in menu.opciones]
     # lo de siempre sigue en su sitio: comer algo en el acto, el botiquín, la ganzúa, atracar
-    assert any(t.startswith("Botiquín") for t in textos) and any("anzúa" in t for t in textos) and "Atracar la tienda" in textos
+    assert any(t.startswith("Botiquín") for t in textos) and "Atracar la tienda" in textos
+    assert any("anzúa" in t for t in textos) == ("ganzua" in (l.get("vende") or ["ganzua"]))     # desde la 1.7.3, cada tienda vende lo suyo
     assert sum(1 for t in textos if "recupera" in t and "de salud" in t) == 2
     o = _opcion(menu, "Comprar comida para llevar a casa")
     assert "sin pasear" in o.ayuda and "Recorrer el local por dentro" in o.ayuda

@@ -140,9 +140,16 @@ class PanelElementos(wx.Panel):
         s = self._sel()
         if s is None:
             return
+        antes = self.elementos[s].get("id") if isinstance(self.elementos[s], dict) else None
         cambiado = self._formulario(self.elementos[s], tr("Editar: ") + modelo.resumen(self.nombre_esq, self.elementos[s]))
         if cambiado is not None:
             self.elementos[s] = cambiado
+            if self.nombre_esq == "mapa" and antes and cambiado.get("id") and cambiado.get("id") != antes:
+                # una localidad que cambia de identificador: lo que apuntaba a ella la sigue encontrando
+                n = modelo.renombrar_referencias_mapa(self.mod, antes, cambiado["id"])
+                if n:
+                    from .accesibilidad import voz
+                    voz.hablar(tr('La localidad se llama ahora {id} por dentro: {n} referencias del mod apuntan ya a ella.').format(id=cambiado["id"], n=n))
             self._cambio(s)
         else:
             self.lista.SetFocus()

@@ -159,6 +159,7 @@ class Online:
             return
         self.red.enviar({"t": "chat", "texto": texto[:300]})
         self.chat.append(tr('Tú: {texto}').format(texto=(texto)))
+        self.voz.apuntar_mensaje(tr('Tú: {texto}').format(texto=(texto[:300])))
         del self.chat[:-30]
         self.son("chat", cat="interfaz", vol=0.6)
         self.decir(tr("Enviado."), True)
@@ -318,6 +319,7 @@ class Online:
                 r.callar()
                 self.son("amigo_sale", cat="interfaz")
                 self.decir(tr('{nombre} se ha ido.').format(nombre=(r.nombre)))
+                self.voz.apuntar_mensaje(tr('{nombre} se ha ido.').format(nombre=(r.nombre)))
         elif t == "chat":
             linea = f"{m.get('nombre', tr('Alguien'))}: {m.get('texto', '')}"
             self.chat.append(linea)
@@ -325,6 +327,7 @@ class Online:
             self.son("chat", cat="interfaz")
             with registro.privado():           # los mensajes del chat no se registran
                 self.decir(tr('{get} dice: {get2}').format(get=(m.get('nombre', tr('Alguien'))), get2=(m.get('texto', ''))))
+                self.voz.apuntar_mensaje(linea)
             registro.info("red", "Llega un mensaje de chat", letras=len(str(m.get("texto", ""))))
         elif t == "act" and (m.get("d") or {}).get("que") == "aspecto":
             self._aspecto_recibido(m.get("de"), (m.get("d") or {}).get("texto"))

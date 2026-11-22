@@ -218,13 +218,22 @@ class Realismo:
             return
         limite = aj("limite_ciudad") * (1.0 + aj("margen_velocidad") / 100.0) / 3.6
         if abs(v.vel) <= limite:
-            self.t_exceso = 0.0
+            # frenar un momento para una curva no borra lo que llevas corriendo: se va olvidando poco a poco
+            self.t_exceso = max(0.0, getattr(self, "t_exceso", 0.0) - 2.0 * dt)
             return
         self.t_exceso = getattr(self, "t_exceso", 0.0) + dt
-        if self.t_exceso > 4.0 and self.t - getattr(self, "t_multa", -99) > 30 and self._policia_mirando():
+        # Cuanto más corres, antes te ven y desde más lejos: a quien va muy rápido no lo salva pasar volando.
+        exceso = (abs(v.vel) - limite) * 3.6                         # kilómetros por hora por encima de lo tolerado
+        hace_falta = max(1.5, 4.0 - exceso / 20.0)
+        radio = min(220.0, 85.0 + 2.0 * exceso)
+        if self.t_exceso > hace_falta and self.t - getattr(self, "t_multa", -99) > 30 and self._policia_mirando(radio):
             self.t_exceso = 0.0
             self.t_multa = self.t
-            self.multar(tr('exceso de velocidad, a {int} por hora donde el límite es {int2}').format(int=(int(abs(v.vel) * 3.6)), int2=(int(aj('limite_ciudad')))), aj("multa_velocidad"), aj("puntos_velocidad"))
+            kmh = int(abs(v.vel) * 3.6)
+            grave = kmh >= 2 * aj("limite_ciudad")                    # al doble del límite, la multa y los puntos, dobles
+            self.multar((tr('exceso de velocidad muy grave, a {int} por hora donde el límite es {int2}') if grave else
+                         tr('exceso de velocidad, a {int} por hora donde el límite es {int2}')).format(int=(kmh), int2=(int(aj('limite_ciudad')))),
+                        aj("multa_velocidad") * (2 if grave else 1), aj("puntos_velocidad") * (2 if grave else 1))
 
     def carne_txt(self):
         if not self.normas_activas():

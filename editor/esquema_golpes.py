@@ -55,9 +55,9 @@ _NUMEROS = {
 _ENTEROS = ("invitar_precio", "paga_precio", "radio_presentes", "radio_vehiculo", "atributo_min", "atributo_max", "exp_max", "herido_dias_min", "herido_dias_max", "delata_busqueda")
 # clave: (etiqueta, pestaña, huecos)
 _FRASES = {
-    "frases_charla_banda": (tr("Hablas con uno de los tuyos"), tr("Tu gente"), "{nombre}"),
+    "frases_charla_banda": (tr("Hablas con uno de los tuyos"), tr("Tu gente"), tr("{nombre} y {alias}, tu alias de jefe o tu nombre")),
     "frases_invitar_banda": (tr("Le invitas a algo"), tr("Tu gente"), "{nombre}"),
-    "frases_paga_banda": (tr("Le das la paga extra"), tr("Tu gente"), tr("{nombre} y {euros}")),
+    "frases_paga_banda": (tr("Le das la paga extra"), tr("Tu gente"), tr("{nombre}, {euros} y {alias}")),
     "frases_echar_banda": (tr("Le echas de la banda"), tr("Tu gente"), "{nombre}"),
     "tiempos_caja": (tr("Segundos de la caja según el tipo de local"), tr("La caja"), tr("Uno por línea: el nombre interno del tipo, un signo igual y los segundos. Por ejemplo, banco=26.")),
     "vehiculos": (tr("Vehículos de la banda para la huida"), tr("General"), ""),

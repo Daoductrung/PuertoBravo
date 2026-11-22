@@ -321,8 +321,8 @@ def test_buscar_un_sonido_sin_contar_tildes_ni_mayusculas():
     assert con[0][0] in ("emisora", "helicoptero_policia", "policia_perdida", "sirena", "paisano") and con[0][1]          # primero, los que lo llevan en el nombre
     hallados = dict(con)
     assert hallados["sirena"] == "Policía y emergencias" and hallados["lugar_comisaria"] == "Sonidos de los lugares" and "paisano" in hallados
-    assert [s for s, _ in cat.buscar("semaforo", serie)] == ["semaforo_pio", "semaforo_tic"]
-    assert [s for s, _ in cat.buscar("Semáforo", serie)] == ["semaforo_pio", "semaforo_tic"]
+    assert [s for s, _ in cat.buscar("semaforo", serie)] == ["semaforo_rojo", "semaforo_verde", "semaforo_pio", "semaforo_tic"]
+    assert [s for s, _ in cat.buscar("Semáforo", serie)] == ["semaforo_rojo", "semaforo_verde", "semaforo_pio", "semaforo_tic"]
     assert [s for s, _ in cat.buscar("acera derecho", serie)] == ["paso_acera1"]                 # varias palabras: las tiene todas
     assert [s for s, _ in cat.buscar("montana", serie)] == ["amb_montana"] == [s for s, _ in cat.buscar("montaña", serie)]
     assert ("timbre", "Casa, cocina y comida") in cat.buscar("timb", serie)                       # vale un trozo

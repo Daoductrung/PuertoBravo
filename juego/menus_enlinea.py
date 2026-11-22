@@ -1,6 +1,6 @@
 """Menús para jugar en un servidor: la lista de servidores, y dentro de la partida, todo lo que se hace con los demás."""
 from .i18n import tr, tr_servidor
-from . import enlinea, red
+from . import enlinea, i18n, red
 from . import mundo as M
 from .menus import EntradaTexto, Menu, Opcion
 from .menus_online import deletrear
@@ -35,10 +35,15 @@ def servidores(app):
             if enlace is None:
                 if motivo.startswith(tr("certificado: ")):
                     return cambio_certificado(s, motivo[13:])
-                if "contraseña" in motivo and not clave:
+                crudo = i18n.original(str(motivo))                # en español, para reconocerlo en cualquier idioma
+                if "contraseña" in crudo and not clave:
                     return app.abrir(EntradaTexto(app, tr("Contraseña de entrada del servidor"), lambda t: entrar(s, clave=t)(), secreto=True, maximo=60))
-                if "invitación" in motivo and not invitacion:
+                if "invitación" in crudo and not invitacion:
                     return app.abrir(EntradaTexto(app, tr("Código de invitación que te ha dado quien lleva el servidor"), lambda t: entrar(s, invitacion=t)(), maximo=20))
+                if getattr(motivo, "codigo", "") == "nombre":         # entra por primera vez sin nombre de jugador: se lo pide
+                    app.son("error")
+                    app.decir(motivo, True)
+                    return pedir_nombre(lambda: entrar(s, clave, invitacion)())
                 app.son("error")
                 app.decir(motivo, True)
                 return
@@ -106,13 +111,24 @@ def servidores(app):
                   or [Opcion(tr("No hay ninguno"), ayuda=tr("Tu lista de servidores está vacía: no hay nada que quitar."))])
         app.abrir(mq)
 
-    def nombre():
+    def pedir_nombre(despues=None):
         def hecho(t):
-            cfg["red_nombre"] = t.strip()[:24]
+            t = " ".join(t.split())[:24]
+            if len(t) < 2:
+                app.son("error")
+                app.decir(tr("Hace falta un nombre de al menos dos letras para entrar en un servidor."), True)
+                return
+            cfg["red_nombre"] = t
             cfg.guardar()
-            app.decir(tr('En los servidores en los que entres por primera vez te llamarás {v}.').format(v=(cfg['red_nombre'] or tr('Jugador'))), True)
+            app.decir(tr('En los servidores en los que entres por primera vez te llamarás {v}.').format(v=(t)), True)
+            if despues:
+                despues()
         app.abrir(EntradaTexto(app, tr("Tu nombre de jugador"), hecho, inicial=cfg["red_nombre"], maximo=24,
-                               ayuda=tr("Es el nombre con el que te ven los demás. En un servidor donde ya tienes personaje no cambia.")))
+                               ayuda=tr("Es el nombre con el que te ven los demás, de dos a veinticuatro letras. Sin él no se entra en un servidor por primera vez. "
+                                        "En un servidor donde ya tienes personaje no cambia: allí te lo cambia quien lo administra.")))
+
+    def nombre():
+        pedir_nombre()
 
     def identidad():
         def exportar():

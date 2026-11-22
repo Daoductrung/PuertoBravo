@@ -138,7 +138,7 @@ def comprobar(raiz):
     mods = os.path.join(data, "mods")
     if os.path.isdir(mods):
         for f in os.listdir(mods):
-            if not (f.upper().startswith("LEEME") or f in MODS_DE_SERIE):
+            if not (f.upper().startswith(("LEEME", "README")) or f in MODS_DE_SERIE):
                 problemas.append("Mod personal: " + os.path.join("data", "mods", f))
     # los datos del juego y los mods deben ir protegidos
     from juego import cifrado

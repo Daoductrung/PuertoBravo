@@ -69,6 +69,8 @@ class Jugador:
         self.barrios_banda = {}      # barrios que una banda te ha quitado: {barrio: banda}
         self.banda = 0               # cuánta gente tienes en tu banda
         self.banda_nombre = ""
+        self.alias = ""
+        self.cajero_ingresos = [0, 0]   # [día, euros] ingresados hoy en los cajeros: tienen tope al día             # tu mote en la calle como jefe de banda; vacío, te llaman por tu nombre
         self.laboratorios = []       # casas tuyas con laboratorio (contenido para adultos)
         self.material = 0            # tandas de material de laboratorio que te quedan
         self.ciclo = 0               # cuántas veces has vuelto a empezar conservando lo ganado

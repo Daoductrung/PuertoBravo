@@ -25,6 +25,10 @@ Con Docker:
 
     docker compose up -d --build
 
+Órdenes en inglés: desde la versión 1.7.3 cada orden vale en español y en inglés a la vez: ayuda o help, jugadores o
+players, expulsar o kick, vetar o ban, actualizar o update, reiniciar o restart, apagar o shutdown, renombrar o rename,
+y las demás. En inglés, este mismo texto está en README_en.txt.
+
 Actualizar el servidor sin echar a nadie al menú:
 
 Aquí el servidor no se actualiza con el juego: se sustituye la carpeta servidor por la del juego nuevo y se reinicia.

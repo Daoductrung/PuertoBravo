@@ -1,0 +1,55 @@
+PUERTO BRAVO SERVER FOR LINUX, MAC, NAS, RASPBERRY PI AND DOCKER
+
+This folder is everything you need to run the server on a machine that isn't Windows, without the game.
+Copy all of it to that machine, with any name you like, for example puertobravo.
+
+What's here:
+
+- servidor: the server's code. It only needs Python 3.8 or later; there's nothing else to install.
+- servidor.conf.ejemplo: every option, explained. Copy it as servidor.conf and change it as you like.
+- arrancar.sh, parar.sh and estado.sh: to leave it running in the background, stop it and see how it's doing.
+- reiniciar.sh: stops it warning the players and starts it again. Use it after updating.
+- puertobravo.service: to start it with the system, with systemd. Inside it says how to install it.
+- Dockerfile, docker-compose.yml and entrada_docker.sh: to run it with Docker.
+
+The shortest way, with Python:
+
+    python3 -m servidor --ejemplo      writes servidor.conf
+    python3 -m servidor                starts the server; you type commands to it, and help lists them all
+
+In the background:
+
+    sh arrancar.sh        sh estado.sh        sh parar.sh        sh reiniciar.sh
+
+With Docker:
+
+    docker compose up -d --build
+
+Commands in English: since version 1.7.3 every command works in English and in Spanish at the same time: help or
+ayuda, players or jugadores, kick or expulsar, ban or vetar, update or actualizar, restart or reiniciar, shutdown or
+apagar, rename or renombrar, and the rest. Type help to list them.
+
+Updating the server without throwing anyone back to the menu:
+
+Here the server doesn't update with the game: you replace the servidor folder with the one from the new game and
+restart it. If you restart it with the update command, instead of cutting it off, it warns the players with a
+countdown, waits for their games to save, saves everything and closes saying why. The games wait and join again by
+themselves when it starts again, and each player carries on where they were. Any of these works:
+
+    sh reiniciar.sh                         warns, stops it and starts it again
+    python3 -m servidor --actualizar        asks it to stop with a warning; then you start it, or systemd, or Docker
+    update                                  the same command, typed in its console or, with a slash in front, by an
+                                            administrator in the game chat. restart says it's for maintenance
+    a file parar.txt in the data folder, with the word actualizar inside: the server checks it every second
+
+Stopped that way, the program ends with code 75. The systemd service and the docker-compose.yml included here start it
+again by themselves. The countdown is the parada_aviso option, 20 seconds by default. If the system stops it
+(systemctl stop, docker compose down, parar.sh), it still warns that it's a restart, but without a countdown.
+
+The full guide, step by step, is in documentacion_en.html (in Spanish, documentacion_es.html), in the game's servidor
+folder.
+
+Language: the server writes the console and the log in the system's language (the LANG variable): Spanish if the
+system is in Spanish, and English otherwise. You can fix it with the idioma option in servidor.conf (auto, es, en) or
+with the PUERTOBRAVO_IDIOMA variable. What players hear doesn't depend on this: the server sends it in Spanish and each
+player's game says it in theirs, so people with different languages can play on the same server.

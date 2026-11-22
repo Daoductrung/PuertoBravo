@@ -48,6 +48,8 @@ SONIDOS = {
         ("tono_libre", tr("Escáner, camino despejado"), tr("El escáner direccional no encuentra ninguna pared en esa dirección.")),
         ("semaforo_tic", tr("Semáforo, tictac rápido"), tr("Los coches de la calle están parados: puedes cruzar la calle, andando hacia el norte o hacia el sur.")),
         ("semaforo_pio", tr("Semáforo, pío lento"), tr("Los coches de la avenida están parados: puedes cruzar la avenida, andando hacia el este o hacia el oeste.")),
+        ("semaforo_rojo", tr("Semáforo en rojo, al volante"), tr("Conduces tú y el semáforo del próximo cruce está en rojo, o se acaba de poner en rojo: dos notas graves que bajan.")),
+        ("semaforo_verde", tr("Semáforo en verde, al volante"), tr("Conduces tú y el semáforo del próximo cruce está en verde, o se acaba de poner en verde: dos notas agudas que suben.")),
         ("cursor_mapa", tr("Cursor del explorador de mapa"), tr("El cursor del explorador de mapa ha pasado al cruce siguiente. También suena al leer un tablón dentro de un local.")),
         ("sonar", tr("Sensor de proximidad"), tr("Al volante, hay un vehículo delante: pita más rápido y más agudo cuanto más cerca está. También es el pitido de frío o caliente al buscar tesoros.")),
         ("bordillo", tr("Bordillo"), tr("En conducción libre, te sales de la calzada por el lado en el que suena.")),
@@ -227,6 +229,7 @@ SONIDOS = {
         ("grito", tr("Grito"), tr("Un grito: el tuyo para espantar a la gente, o el de un enemigo que te ha visto y avisa a los suyos.")),
         ("grito_hombre", tr("Grito de un hombre asustado"), tr("Un hombre grita de susto y sale corriendo.")),
         ("grito_mujer", tr("Grito de una mujer asustada"), tr("Una mujer grita de susto y sale corriendo.")),
+        ("panico", tr("Pánico en la calle"), tr("Mucha gente grita y huye a la vez: un tiroteo, una explosión o un atropello ha sembrado el pánico a tu alrededor.")),
         ("evento", tr("Suceso callejero"), tr("Algo está pasando cerca: un atraco, unos pandilleros o un maletín perdido. Ayudar es opcional.")),
         ("ladrido", tr("Ladrido"), tr("Un perro ladra. Si es el tuyo, avisa de un enemigo cercano o de que ha olfateado algo.")),
         ("perro_olfatea", tr("El perro olfatea"), tr("Tu perro busca por el olfato el objeto más cercano.")),
@@ -364,7 +367,7 @@ SONIDOS = {
 
 # Los imprescindibles para orientarse y sobrevivir, en el orden en que conviene aprenderlos: el primer grupo de Aprender los sonidos.
 IMPORTANTES = (
-    "baliza", "baliza_destino", "llegada", "cruce", "radar", "tono_pared", "tono_libre", "choque_pared", "semaforo_tic", "semaforo_pio",
+    "baliza", "baliza_destino", "llegada", "cruce", "radar", "tono_pared", "tono_libre", "choque_pared", "semaforo_tic", "semaforo_pio", "semaforo_rojo", "semaforo_verde",
     "paso_acera0", "paso_calzada0", "paso_hierba0", "paso_arena0", "paso_muelle0", "paso_via0", "paso_npc",
     "loc_mision", "loc_objeto", "loc_casete", "loc_vehiculo", "loc_lugar", "puerta_entrar", "puerta_salir",
     "lugar_casa", "lugar_armeria", "lugar_comida", "lugar_tienda", "lugar_hospital", "lugar_comisaria", "lugar_taller", "lugar_bar", "lugar_casino",

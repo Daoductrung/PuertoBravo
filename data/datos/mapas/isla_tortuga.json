@@ -15,7 +15,7 @@
   "bloques": {"0,0": "arena", "1,0": "arena", "0,1": "hierba", "1,1": "hierba"},
   "lugares": [
     {"id": "it_muelle", "nombre": "Muelle de Isla Tortuga", "tipo": "embarcadero", "bloque": [0, 0], "lado": "S", "pos": 36, "a_mapa": "mar", "a_lugar": "mar_isla", "desc": "Un pantalán de tablas medio podridas, el único punto de atraque de la isla."},
-    {"id": "it_chiringuito", "nombre": "Chiringuito del Náufrago", "tipo": "comida", "bloque": [1, 0], "lado": "N", "pos": 36, "desc": "Cuatro cañas, un techo de palma y el mejor pulpo a la brasa del mundo."},
+    {"id": "it_chiringuito", "nombre": "Chiringuito del Náufrago", "tipo": "comida", "carta": "chiringuito", "bloque": [1, 0], "lado": "N", "pos": 36, "desc": "Cuatro cañas, un techo de palma y el mejor pulpo a la brasa del mundo."},
     {"id": "it_cueva", "nombre": "Cueva del Tuerto", "tipo": "monumento", "bloque": [1, 1], "xy": [50, 50], "desc": ""},
     {"id": "it_faro", "nombre": "Faro de Isla Tortuga", "tipo": "monumento", "bloque": [0, 1], "xy": [20, 55], "desc": ""},
     {"id": "it_cabana", "nombre": "Cabaña del ermitaño", "tipo": "casa", "bloque": [0, 1], "lado": "S", "pos": 36, "precio": 15000, "garaje": 0, "desc": "Una cabaña de madera frente al mar. No tiene garaje, ni falta que hace."},

@@ -383,6 +383,25 @@ def quitar_docs_sin_idioma():
     return n
 
 
+def quitar_leemes_viejos():
+    """Hasta la 1.7.2 el LEEME de cada idioma se llamaba LEEME_en.txt, LEEME_vi.txt; desde la 1.7.3 lleva un nombre que se
+    entiende en inglés, README_en.txt, y el de los mods README_mods_en.txt. Al actualizar el viejo se queda: si ya está el
+    nuevo, sobra. El español sigue siendo LEEME.txt. Devuelve cuántos ha quitado."""
+    import re
+    n = 0
+    for carpeta, viejo, nuevo in ((rutas.base(), "LEEME_{}.txt", "README_{}.txt"),
+                                  (rutas.data("mods"), "LEEME_mods_{}.txt", "README_mods_{}.txt")):
+        try:
+            for f in os.listdir(carpeta):
+                m = re.fullmatch(nuevo.replace(".", r"\.").format(r"([a-z]{2,3})"), f)
+                if m and os.path.isfile(os.path.join(carpeta, viejo.format(m.group(1)))):
+                    os.remove(os.path.join(carpeta, viejo.format(m.group(1))))
+                    n += 1
+        except OSError:
+            pass
+    return n
+
+
 def original(texto):
     """El texto español del que sale una traducción de cualquier idioma instalado; el mismo si no sale de ninguno."""
     if not isinstance(texto, str):

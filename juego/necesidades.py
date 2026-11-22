@@ -92,6 +92,12 @@ class Necesidades:
         if self.vida_realista():
             j.sed = max(0.0, j.sed - cuanto * 0.4)             # con la comida también se bebe algo
 
+    def tomar(self, hambre=0.0, sed=0.0):
+        """Comer o beber algo que dice en los datos cuánto quita de hambre y de sed (las cartas de los locales)."""
+        if self.vida_realista():
+            self.j.hambre = max(0.0, self.j.hambre - float(hambre or 0))
+            self.j.sed = max(0.0, self.j.sed - float(sed or 0))
+
     def ha_bebido(self, cuanto=70.0):
         if self.vida_realista():
             self.j.sed = max(0.0, self.j.sed - cuanto)

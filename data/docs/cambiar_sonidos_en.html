@@ -19,7 +19,7 @@ li { margin-bottom: .3em; }
 <h2>1. Where everything is</h2>
 <ul>
 <li><code>data\sonidos</code>: all the sound effects, spread over subfolders.</li>
-<li><code>data\sonidos\por_defecto</code>: the standard sounds, one file per sound. There are 279 files. If one is missing or you delete it, the game creates it again.</li>
+<li><code>data\sonidos\por_defecto</code>: the standard sounds, one file per sound. There are 282 files. If one is missing or you delete it, the game creates it again.</li>
 <li><code>data\radio</code>: the music of the radio stations, one file per station.</li>
 <li><code>data\radio\mi_musica</code>: your own station. Copy here the songs you want.</li>
 <li><code>data\musica</code>: the ambient music, with one folder per situation and several pieces in each.</li>
@@ -55,7 +55,7 @@ li { margin-bottom: .3em; }
 <p>Every recording comes at a different volume. So that this doesn't spoil the game's balance, when it loads a sound you have changed the game brings it to the same level the original had: it measures the loudest stretch of your file, compares it with the original sound's and raises or lowers it as needed, without letting it clip. That way some footsteps can't end up louder than a gunshot, or a beacon inaudible. You can turn this off in Options, Sound and music, Even out the volume of the changed sounds.</p>
 <p>If a particular sound still seems loud or soft to you, go to Options, Sound and music, Adjust the volume of each sound. They are all there, in the same groups as the list at the end of this document: Enter plays it and the left and right arrows lower or raise it, from 30 to 200 percent. Search for a sound finds it by a word of its name, without having to know which group it is in. The menu says how many sounds you have changed, in total and in each group, and lets you return a single one, a whole group or all of them to their standard volume. The setting is saved with your options and goes by the file name, so it isn't lost when you update the game.</p>
 <h3>Listening to any sound inside the game</h3>
-<p>In the main menu and the pause menu, Learn the sounds has the game's 279 sounds: first the group The most important, then Search for a sound and then all of them, in the same groups as the list at the end of this document and in the same order. Go into a group and press Enter on a sound: the game says what it is called and what it means, and plays it on its own, with the pack you have chosen. With Search for a sound you type a word, for example siren, and you get all the ones that have it in their name or in their explanation. It is useful to check how one of your recordings turned out without having to trigger the sound while playing.</p>
+<p>In the main menu and the pause menu, Learn the sounds has the game's 282 sounds: first the group The most important, then Search for a sound and then all of them, in the same groups as the list at the end of this document and in the same order. Go into a group and press Enter on a sound: the game says what it is called and what it means, and plays it on its own, with the pack you have chosen. With Search for a sound you type a word, for example siren, and you get all the ones that have it in their name or in their explanation. It is useful to check how one of your recordings turned out without having to trigger the sound while playing.</p>
 
 <h2>3. Sound packs</h2>
 <p>A pack is a folder with files named the same as the game's sounds. Packs go inside <code>data\sonidos</code>, each in its own subfolder, next to <code>por_defecto</code>, and you choose them inside the game in Options, Sound and music, Sound pack, with the left and right arrows. The change is heard at once and doesn't touch your files in <code>data\sonidos\por_defecto</code>: to go back, choose «default».</p>
@@ -64,7 +64,7 @@ li { margin-bottom: .3em; }
 <li>The volume of each sound in the pack is evened out to the original's, as explained above.</li>
 <li>The packs that come with the game bring exactly the same files as <code>por_defecto</code>, with the same names: not one more and not one less. Their recordings are public domain (CC0 licence) and come from kenney.nl, opengameart.org, freesound.org and bigsoundbank.com.</li>
 <li>The tones of the role-play channels (<code>chat_personaje</code>, <code>chat_fuera</code> and <code>chat_accion</code>) and the one for waiting for the server (<code>espera_servidor</code>) are the standard ones in every pack, on purpose: they are a code of tones and it helps if they always sound the same.</li>
-<li>The packs installed as standard are «Alternative», with 279 sounds, «Surround», with 279 sounds, «Realistic», with 279 sounds, «Retro», with 279 sounds. Each one brings all the game's sounds: they replace with public domain recordings everything that is not orientation, and keep the original for the orientation sounds: beacons, tones, traffic lights, radar, locators and the sounds of places. Each pack's <code>CREDITOS.txt</code> file says where each sound comes from and which ones are original.</li>
+<li>The packs installed as standard are «Alternative», with 282 sounds, «Surround», with 282 sounds, «Realistic», with 282 sounds, «Retro», with 282 sounds. Each one brings all the game's sounds: they replace with public domain recordings everything that is not orientation, and keep the original for the orientation sounds: beacons, tones, traffic lights, radar, locators and the sounds of places. Each pack's <code>CREDITOS.txt</code> file says where each sound comes from and which ones are original.</li>
 </ul>
 <h3>Making your own pack</h3>
 <ol>
@@ -130,7 +130,7 @@ li { margin-bottom: .3em; }
 
 <p>There are 20 groups:</p>
 <ol>
-<li>Orientation and GPS: 17 sounds.</li>
+<li>Orientation and GPS: 19 sounds.</li>
 <li>Sounds of places: 37 sounds.</li>
 <li>Moving on foot and swimming: 20 sounds.</li>
 <li>Vehicles and driving: 19 sounds.</li>
@@ -139,7 +139,7 @@ li { margin-bottom: .3em; }
 <li>Weapons, the shot of each one: 14 sounds.</li>
 <li>Combat, aim and wounds: 20 sounds.</li>
 <li>Police and emergency services: 12 sounds.</li>
-<li>People on the street and animals: 8 sounds.</li>
+<li>People on the street and animals: 9 sounds.</li>
 <li>Home, kitchen and food: 8 sounds.</li>
 <li>Stores, money and items: 5 sounds.</li>
 <li>Menus, phone and game alerts: 17 sounds.</li>
@@ -152,13 +152,14 @@ li { margin-bottom: .3em; }
 <li>Substances and dealing, only with adult content: 13 sounds.</li>
 </ol>
 <h3>Orientation and GPS</h3>
-<p>17 sounds. They are the foundation of the game&#x27;s accessibility. If you change them, keep them short, clear and easy to locate in space. The locators loop from the position of an object or a mission.</p>
+<p>19 sounds. They are the foundation of the game&#x27;s accessibility. If you change them, keep them short, clear and easy to locate in space. The locators loop from the position of an object or a mission.</p>
 <ul>
 <li><code>llegada</code>: Arrival. You have reached your destination or completed a mission step. It lasts 0.82 seconds.</li>
 <li><code>loc_casete</code>: Collectible. It sounds from one of the cassette tapes hidden around the city, or from another collectible. It plays in a loop. It lasts 1.60 seconds.</li>
 <li><code>bordillo</code>: Curb. In free driving, you run off the road on the side where it sounds. It lasts 0.12 seconds.</li>
 <li><code>baliza_destino</code>: Destination beacon. The GPS beacon switches to this sound when the next point is already your destination. It is also the tone that marks north. It lasts 0.53 seconds.</li>
 <li><code>baliza</code>: GPS beacon. It sounds in the direction of the next point on the route. The closer you are, the faster it repeats. It lasts 0.35 seconds.</li>
+<li><code>semaforo_verde</code>: Green light, while driving. You are driving and the traffic light at the next junction is green, or has just turned green: two high notes going up. It lasts 0.41 seconds.</li>
 <li><code>cruce</code>: Intersection. You walk into an intersection, or you approach one while driving. It lasts 0.39 seconds.</li>
 <li><code>loc_objeto</code>: Item you can pick up. It sounds from an object lying on the ground. Stand on it and pick it up. It plays in a loop. It lasts 1.20 seconds.</li>
 <li><code>cursor_mapa</code>: Map explorer cursor. The map explorer cursor has moved to the next intersection. It also sounds when you read a board inside a venue. It lasts 0.04 seconds.</li>
@@ -167,6 +168,7 @@ li { margin-bottom: .3em; }
 <li><code>loc_lugar</code>: Point of interest. It sounds from a point of interest that has no sound of its own. It plays in a loop. It lasts 2.00 seconds.</li>
 <li><code>sonar</code>: Proximity sensor. When driving, there is a vehicle ahead: it beeps faster and higher the closer it is. It is also the cold or hot beep when searching for treasure. It lasts 0.05 seconds.</li>
 <li><code>radar</code>: Radar. It sounds from the position of whatever the radar has just announced. It lasts 0.06 seconds.</li>
+<li><code>semaforo_rojo</code>: Red light, while driving. You are driving and the traffic light at the next junction is red, or has just turned red: two low notes going down. It lasts 0.52 seconds.</li>
 <li><code>tono_libre</code>: Scanner, path clear. The directional scanner finds no wall in that direction. It lasts 0.08 seconds.</li>
 <li><code>tono_pared</code>: Scanner, wall. The directional scanner has found a wall. The closer it is, the higher the pitch. It lasts 0.15 seconds.</li>
 <li><code>semaforo_tic</code>: Traffic light, fast ticking. The cars on the street are stopped: you can cross the street, walking north or south. It lasts 0.03 seconds.</li>
@@ -353,11 +355,12 @@ li { margin-bottom: .3em; }
 <li><code>estrella_sube</code>: Wanted level goes up. The police are looking for you with more zeal. It lasts 0.40 seconds.</li>
 </ul>
 <h3>People on the street and animals</h3>
-<p>8 sounds. Voices without words, other people&#x27;s footsteps and the dog.</p>
+<p>9 sounds. Voices without words, other people&#x27;s footsteps and the dog.</p>
 <ul>
 <li><code>paso_npc</code>: Another person&#x27;s footsteps. Someone is walking near you. It lasts 0.08 seconds.</li>
 <li><code>ladrido</code>: Bark. A dog barks. If it&#x27;s yours, it warns you of a nearby enemy or that it has sniffed something out. It lasts 1.00 seconds.</li>
 <li><code>murmullo</code>: Murmur. A pedestrian murmurs as they talk to you, or two passersby chat with each other. It lasts 0.35 seconds.</li>
+<li><code>panico</code>: Panic in the street. Lots of people scream and run at once: a shootout, an explosion or someone being run over has caused panic around you. It lasts 2.20 seconds.</li>
 <li><code>grito</code>: Scream. A scream: yours to scare people off, or an enemy who has spotted you and alerts their friends. It lasts 0.75 seconds.</li>
 <li><code>grito_hombre</code>: Scream of a frightened man. A man yells in fright and runs off. It lasts 0.63 seconds.</li>
 <li><code>grito_mujer</code>: Scream of a frightened woman. A woman yells in fright and runs off. It lasts 0.72 seconds.</li>

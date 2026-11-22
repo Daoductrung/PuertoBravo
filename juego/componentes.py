@@ -53,7 +53,7 @@ DESCRIPCIONES = {
     "voces": es("Las voces grabadas de las escenas de la historia en {idioma}. Sin ellas, las escenas las dice tu lector de pantalla."),
     "documentacion": es("El manual y las demás guías en {idioma}, puestas al día sin esperar a una versión nueva del juego."),
     "sonidos": es("{descripcion} Se elige en Opciones, Sonido y música, Pack de sonidos, y se oye al momento."),
-    "mod": es("{descripcion} Se carga solo al abrir el juego. Para quitarlo, desactívalo en el editor de mods con Control M."),
+    "mod": es("{descripcion} Se carga solo al abrir el juego. Para quitarlo, desactívalo en Opciones, Mods, o en el editor de mods con Control M."),
 }
 
 NOMBRE_TIPO = {"idioma": tr("Idiomas"), "voces": tr("Voces"), "documentacion": tr("Documentación"), "sonidos": tr("Packs de sonidos"), "mod": tr("Mods"),

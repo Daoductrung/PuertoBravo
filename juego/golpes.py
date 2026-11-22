@@ -34,7 +34,9 @@ AJ = Ajustes("golpes", {
     "reparto_tope": 60, "lealtad_exito": 3, "lealtad_fracaso": 6,
     "charla_lealtad": 2, "invitar_precio": 30, "invitar_lealtad": 4, "paga_precio": 150, "paga_lealtad": 8,
 }, {
-    "frases_charla_banda": [tr("{nombre} te cuenta que su madre quiere que deje esto y se saque el carné de camión. Se ríe, pero no del todo."), tr("{nombre} te pregunta si de verdad te fías de todos los de la banda. Dice que de ti, sí."), tr("Habláis de fútbol. {nombre} es del equipo que siempre pierde, y lo defiende como si le fuera la vida."), tr("{nombre} te enseña una foto de cuando era crío, en la playa del puerto. Nadie diría que es la misma persona."), tr("{nombre} dice que está ahorrando para irse un año fuera cuando esto se calme. No dice adónde."), tr("{nombre} te cuenta, bajando la voz, que el último golpe le quitó el sueño dos noches.")],
+    "frases_charla_banda": [tr("{nombre} te cuenta que su madre quiere que deje esto y se saque el carné de camión. Se ríe, pero no del todo."), tr("{nombre} te pregunta si de verdad te fías de todos los de la banda. Dice que de ti, sí."), tr("Habláis de fútbol. {nombre} es del equipo que siempre pierde, y lo defiende como si le fuera la vida."), tr("{nombre} te enseña una foto de cuando era crío, en la playa del puerto. Nadie diría que es la misma persona."), tr("{nombre} dice que está ahorrando para irse un año fuera cuando esto se calme. No dice adónde."), tr("{nombre} te cuenta, bajando la voz, que el último golpe le quitó el sueño dos noches."),
+                            tr("{nombre} te mira y se ríe: «Cuando digo en el barrio que trabajo para {alias}, la gente se aparta.»"),
+                            tr("«Tú eres {alias}», te dice {nombre}, «y eso aquí pesa más que cualquier pistola.»")],
     "frases_invitar_banda": [tr("Invitas a {nombre} a una cerveza en la barra. Acaba siendo una ronda, y luego otra."), tr("Le pagas a {nombre} un bocadillo y un café. Dice que así da gusto currar contigo.")],
     "frases_paga_banda": [tr("Le das a {nombre} {euros} euros, aparte de su parte. No dice nada, pero se le nota."), tr("{nombre} se guarda los {euros} euros sin contarlos: «Esto no se me olvida».")],
     "frases_echar_banda": [tr("{nombre} recoge sus cosas y se va sin mirar atrás. Ya no es de la banda."), tr("«Tú sabrás», dice {nombre}. Deja la banda y se pierde calle abajo.")],
@@ -871,7 +873,8 @@ def menu_miembro(p, f, al_cambiar=None):
         apuntar("charla")
         leal(AJ("charla_lealtad"))
         p.pasar_horas(0.5)
-        hecho(AJ.frase("frases_charla_banda", nombre=n))
+        from .sistemas import alias_de
+        hecho(AJ.frase("frases_charla_banda", nombre=n, alias=alias_de(p.j)))
 
     def invitar():
         if hoy("invitar"):
@@ -893,7 +896,8 @@ def menu_miembro(p, f, al_cambiar=None):
         apuntar("paga")
         leal(AJ("paga_lealtad"))
         p.son("dinero", cat="interfaz")
-        hecho(AJ.frase("frases_paga_banda", nombre=n, euros=euros))
+        from .sistemas import alias_de
+        hecho(AJ.frase("frases_paga_banda", nombre=n, euros=euros, alias=alias_de(p.j)))
 
     def echar():
         def si():

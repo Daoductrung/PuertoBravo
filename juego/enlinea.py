@@ -420,7 +420,7 @@ def conectar(app, servidor, clave="", invitacion=""):
         puerto = PUERTO
     if not hasattr(app, "_huella_datos"):
         app._huella_datos = huella_datos(app.datos)
-    nombre = (app.cfg["red_nombre"] or tr("Jugador"))[:24]
+    nombre = (app.cfg["red_nombre"] or "").strip()[:24]          # sin nombre, el servidor no deja entrar por primera vez
     registro.ocultar(nombre)
     cli = ClienteServidor()
     semilla = getattr(app, "semilla_identidad", None)        # las pruebas automáticas traen la suya y no tocan la del jugador
@@ -1009,6 +1009,7 @@ class EnLinea:
         if m.get("son") and m["son"] in self.mez.sonidos:
             self.son(m["son"], cat="interfaz", vol=0.6)
         self.decir(tr_servidor(str(m.get("texto", ""))))
+        self.voz.apuntar_mensaje(tr_servidor(str(m.get("texto", ""))))
 
     def _svm_pong(self, m):
         pass
@@ -1050,6 +1051,7 @@ class EnLinea:
             return                               # los personajes del servidor van y vienen sin anunciarse
         self.son("amigo_entra", cat="interfaz")
         self.decir(tr('{nombre} entra en el servidor.').format(nombre=(r.nombre)))
+        self.voz.apuntar_mensaje(tr('{nombre} entra en el servidor.').format(nombre=(r.nombre)))
 
     def _svm_sale(self, m):
         r = self.remotos.pop(m.get("id"), None)
@@ -1065,6 +1067,7 @@ class EnLinea:
                 return
             self.son("amigo_sale", cat="interfaz")
             self.decir(tr('{nombre} sale del servidor.').format(nombre=(r.nombre)))
+            self.voz.apuntar_mensaje(tr('{nombre} sale del servidor.').format(nombre=(r.nombre)))
 
     def _svm_estados(self, m):
         if "tr" in m:
@@ -1520,7 +1523,9 @@ class EnLinea:
         del self.chat[:-40]
         self.son("chat", cat="interfaz")
         with registro.privado():
-            self.decir(tr('{get} dice{canal}: {get2}').format(get=(m.get('nombre', 'Alguien')), canal=(canal), get2=(m.get('texto', ''))))
+            dicho_chat = tr('{get} dice{canal}: {get2}').format(get=(m.get('nombre', tr('Alguien'))), canal=(canal), get2=(m.get('texto', '')))
+            self.decir(dicho_chat)
+            self.voz.apuntar_mensaje(dicho_chat)
 
     # --------------------------------------------------------------------- rol
     def sv_rol(self):
@@ -1554,6 +1559,7 @@ class EnLinea:
         self.son(sonido if sonido in self.mez.sonidos else "chat", cat="interfaz", xy=(r.x, r.y) if cerca else None, ref=12, maxd=400)
         with registro.privado():
             self.decir(dicho)
+            self.voz.apuntar_mensaje(dicho)
 
     def sv_enviar_chat(self, texto, canal="todos", a=None):
         """Manda un mensaje por un canal. Si empieza por una orden de rol (barra yo, barra ep, barra fp), va por ese canal.
@@ -1581,6 +1587,7 @@ class EnLinea:
             return True
         self.red.enviar({"t": "chat", "texto": texto, "canal": canal, "a": a})
         self.chat.append(tr('Tú: {texto}').format(texto=(texto)))
+        self.voz.apuntar_mensaje(tr('Tú: {texto}').format(texto=(texto)))
         del self.chat[:-40]
         self.son("chat", cat="interfaz", vol=0.6)
         self.decir(tr("Enviado."), True)

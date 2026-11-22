@@ -18,7 +18,7 @@ from .ajustes import Ajustes
 
 AJ = Ajustes("convivencia", {
     "afinidad_minima": 70, "citas_minimas": 3, "nunca_prob": 20, "espera_dias": 5, "ausencia_dias": 2,
-    "peticion_prob": 30, "peticion_dias": 2, "peticion_premio": 6, "peticion_castigo": 5, "cocina_salud": 30, "cocina_hambre": 70,
+    "peticion_prob": 30, "peticion_dias": 2, "peticion_repite_dias": 3, "peticion_premio": 6, "peticion_castigo": 5, "cocina_salud": 30, "cocina_hambre": 70,
     "dinero_afinidad": 2, "dinero_tope": 10, "dinero_minimo": 50,
 }, {
     "frases_si": [tr("{n} se queda en silencio un momento, y luego sonríe: Creía que no me lo ibas a pedir nunca. Sí."),
@@ -56,7 +56,7 @@ AJ = Ajustes("convivencia", {
     "frases_compra": [tr("{n} te enseña {cosa} que se compró con lo que le diste. No para de darte las gracias."), tr("{n} no se quita {cosa} de encima desde que se lo compró: se nota que le hacía ilusión."), tr("{n}: «¿Has visto {cosa}? Gracias otra vez». Lo dice de corazón.")],
     "frases_mudanza": [tr("Cargáis las cajas entre los dos y dejáis {antes}. Desde hoy vivís en {casa}."), tr("{n} elige el dormitorio de {casa} antes de deshacer la primera maleta. Ya vivís allí."), tr("Una furgoneta, dos viajes y una planta que casi no sobrevive: la mudanza a {casa} está hecha.")],
     "frases_peticion_dinero": [tr("{n}: Este mes voy justo de dinero. ¿Me echas una mano?"), tr("{n}: He visto algo que me encantaría comprarme, pero no me llega. Si me ayudas, te lo agradezco.")],
-}, cero=("nunca_prob", "peticion_prob", "peticion_premio", "peticion_castigo", "citas_minimas", "dinero_afinidad"))
+}, cero=("nunca_prob", "peticion_prob", "peticion_repite_dias", "peticion_premio", "peticion_castigo", "citas_minimas", "dinero_afinidad"))
 
 DINEROS = (50, 100, 250, 500)
 
@@ -212,6 +212,9 @@ class Convivencia:
         ops = ["cena", "plan", "dormir", "regalo", "dinero"]
         if casa is not None and len(sistemas.muebles_de(j, casa)) < len(sistemas.MUEBLES) - 1:
             ops.append("mueble")
+        ultima = j.convive_hoy.get("ultima_peticion") if isinstance(j.convive_hoy, dict) else None
+        if ultima and self.dia - int(ultima[1]) < AJ.entero("peticion_repite_dias") and len(ops) > 1 and ultima[0] in ops:
+            ops.remove(ultima[0])                                # lo que acabas de hacerle no te lo vuelve a pedir enseguida
         que = random.choice(ops)
         j.peticion_pareja = {"que": que, "dia": self.dia, "hasta": self.dia + AJ.entero("peticion_dias"),
                              "muebles": len(sistemas.muebles_de(j, casa)) if casa is not None else 0}
@@ -222,7 +225,8 @@ class Convivencia:
         if not pet or not pers:
             return ""
         que = {"cena": tr("que pidas cena a domicilio para los dos, en casa"), "plan": tr("que hagáis algún plan juntos"), "dormir": tr("que te quedes a dormir en casa"),
-               "mueble": tr("que compres algún mueble para la casa"), "regalo": tr("un detalle: un regalo"),
+               "mueble": tr("que compres algún mueble nuevo para {casa}").format(casa=self.nombre_lugar(self.casa_comun()) if self.casa_comun() else tr("vuestra casa")),
+               "regalo": tr("un detalle: un regalo"),
                "dinero": tr("que le des algo de dinero, al menos {n} euros").format(n=AJ.entero('dinero_minimo'))}.get(pet["que"], tr("algo"))
         return tr('{nombre} te ha pedido {que}. Tienes hasta el día {hasta}.').format(nombre=(pers['nombre']), que=(que), hasta=(pet['hasta']))
 
@@ -233,6 +237,8 @@ class Convivencia:
         if not pet or not pers or pet.get("que") != que:
             return False
         j.peticion_pareja = None
+        if isinstance(j.convive_hoy, dict):
+            j.convive_hoy["ultima_peticion"] = [que, self.dia]
         self.sumar_afinidad(j.convive, AJ.entero("peticion_premio"))
         self.cambiar_animo(3)
         self.decir(AJ.frase("frases_peticion_ok", n=pers["nombre"]))
@@ -257,9 +263,13 @@ class Convivencia:
         antes = self.casa_comun()
         j.convive_casa = casa.id
         j.convive_hoy["visto"] = self.dia
+        pet = j.peticion_pareja
+        if pet and pet.get("que") == "mueble":                   # el mueble que pedía, ahora para la casa nueva
+            from . import sistemas
+            pet["muebles"] = len(sistemas.muebles_de(j, casa))
         self.son("pareja", cat="interfaz")
         self.cambiar_animo(4)
-        return AJ.frase("frases_mudanza", n=pers["nombre"], casa=self.nombre_lugar(casa), antes=self.nombre_lugar(antes) if antes else "la casa de antes")
+        return AJ.frase("frases_mudanza", n=pers["nombre"], casa=self.nombre_lugar(casa), antes=self.nombre_lugar(antes) if antes else tr("la casa de antes"))
 
     def dar_dinero_pareja(self, pers, euros):
         """Le das dinero a tu pareja para que se compre algo. Os acerca según lo que le das, una vez al día; al día

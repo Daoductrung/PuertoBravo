@@ -7,5 +7,6 @@ El juego trae ocho: Bahía del Ocaso, Costa Dorada, Valdeolmos, Peñas Altas, Is
 Oficios y recados, y Motor y asfalto.
 
 Para añadir un mod que te hayan pasado, copia aquí su archivo.
-Para quitar uno, bórralo de aquí o desactívalo en el editor con Control M.
+Para quitar uno, bórralo de aquí o desactívalo en el juego, en Opciones, Mods, o en el editor con Control M.
+Si un mod trae sonidos propios, van en la carpeta sonidos que hay aquí dentro.
 Para crear los tuyos, usa EditorMods.exe, que está junto al juego. Su manual se abre con F1.

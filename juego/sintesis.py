@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 SR = 44100
-VERSION_CACHE = 25
+VERSION_CACHE = 26
 PI2 = 2 * np.pi
 
 
@@ -264,6 +264,9 @@ def generar(semilla=7):
     S["reloj"] = _norm(_seno(2000, 0.03) * _decae(0.03, 0.008), 0.4)
     S["semaforo_pio"] = _norm(_barrido(2900, 1900, 0.09) * _decae(0.09, 0.05, 0.005), 0.4)
     S["semaforo_tic"] = _norm(_seno(1000, 0.03) * _decae(0.03, 0.01), 0.4)
+    # al volante (versión 1.7.3): el semáforo del próximo cruce. Rojo, dos notas graves que bajan; verde, dos agudas que suben
+    S["semaforo_rojo"] = _norm(_sec([494, 370], 0.11, 0.3, 0.12, (1, 0.5, 0.25)), 0.45)
+    S["semaforo_verde"] = _norm(_sec([880, 1319], 0.08, 0.25, 0.1, (1, 0.3)), 0.4)
     S["recoger"] = _norm(_barrido(600, 1800, 0.18) * _decae(0.18, 0.2, 0.01), 0.5)
     S["esposas"] = _norm(np.concatenate([S["ganzua"][: int(SR * 0.35)], _filtro(ruido(0.1), 1500, 6000) * _decae(0.1, 0.02)]), 0.5)
 
@@ -750,7 +753,15 @@ def generar(semilla=7):
     # ----------------------------------------------- la calle (versión 1.7.1): voces de hombre y de mujer, botín y helicóptero
     S["grito_hombre"] = _norm(np.concatenate([vocal(210, 330, 0.18, (700, 1300), 0.4), vocal(330, 170, 0.45, (700, 1300), 0.28)]), 0.55)      # un grito grave, de susto
     S["grito_mujer"] = _norm(np.concatenate([vocal(520, 900, 0.22, (1000, 2300), 0.4), vocal(900, 560, 0.5, (1000, 2300), 0.3)]), 0.55)      # el mismo susto, agudo
-    S["dolor_mujer"] = _norm(vocal(330, 230, 0.3, (950, 1900), 0.15), 0.6)                                                               # la queja de una mujer al recibir un golpe
+    S["dolor_mujer"] = _norm(vocal(330, 230, 0.3, (950, 1900), 0.15), 0.6)
+    # el pánico en la calle (versión 1.7.3): varios gritos de hombres y mujeres a destiempo, sobre un tropel de pasos y voces
+    pa = np.zeros(int(SR * 2.2))
+    _poner(pa, _filtro(ruido(2.2), 250, 2200) * (0.25 + 0.2 * np.abs(_seno(5.5, 2.2))) * np.minimum(1.0, _t(2.2) / 0.2) * _decae(2.2, 1.6, 0.05), 0.0, 0.5)
+    for t0, f0, f1, f2, form, g in ((0.0, 520, 950, 600, (1000, 2300), 0.9), (0.18, 230, 340, 180, (700, 1300), 0.8),
+                                    (0.45, 640, 1050, 700, (1100, 2500), 0.7), (0.7, 280, 380, 200, (750, 1400), 0.6),
+                                    (1.0, 580, 900, 520, (1000, 2300), 0.5), (1.3, 250, 320, 190, (700, 1300), 0.4)):
+        _poner(pa, np.concatenate([vocal(f0, f1, 0.18, form, 0.4), vocal(f1, f2, 0.4, form, 0.28)]), t0, g)
+    S["panico"] = _norm(pa, 0.6)                                                               # la queja de una mujer al recibir un golpe
     rm = np.zeros(int(SR * 0.5))                                 # recoger munición: el cargador que entra y el cerrojo, dos golpes de metal
     _poner(rm, _filtro(ruido(0.07), 900, 4500) * _decae(0.07, 0.02), 0.0, 0.8)
     _poner(rm, (_seno(1900, 0.05) + _filtro(ruido(0.05), 2500, 8000)) * _decae(0.05, 0.012), 0.16)

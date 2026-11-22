@@ -138,9 +138,9 @@ a { color: #9fd0ff; }
 <li>In the game's <code>servidor</code> folder, open <code>Servidor por consola.bat</code>.</li>
 <li>The first time, it writes <code>servidor.conf</code> with all the options explained, and starts with the default values.</li>
 <li>The window tells you what's happening: which port it's listening on, whether it encrypts, who joins and who leaves.</li>
-<li>You type commands to it in that same window. Type <code>ayuda</code> and press Enter to hear them all. They're in section 16.</li>
-<li>To change the configuration, open <code>servidor.conf</code> with Notepad, change what you want and save. Then type <code>recargar</code> in the console: it applies what can be changed without restarting and tells you what is waiting for the restart.</li>
-<li>To stop it, type <code>apagar</code>, press Control+C or close the window. In all three cases it warns the players and saves everything.</li>
+<li>You type commands to it in that same window. Type <code>help</code> and press Enter to hear them all. They're in section 16.</li>
+<li>To change the configuration, open <code>servidor.conf</code> with Notepad, change what you want and save. Then type <code>reload</code> in the console: it applies what can be changed without restarting and tells you what is waiting for the restart.</li>
+<li>To stop it, type <code>shutdown</code>, press Control+C or close the window. In all three cases it warns the players and saves everything.</li>
 </ol>
 <p>The panel and the console use the same configuration and the same data: you can use one on one day and the other on another day, but not both at once.</p>
 <p>If you know how to use a command window, you can call the program directly from the game folder:</p>
@@ -182,7 +182,7 @@ a { color: #9fd0ff; }
 <li>Go into that folder: <code>cd puertobravo</code>. The <code>servidor</code> folder, with the code, must be inside it.</li>
 <li>Write the example configuration: <code>python3 -m servidor --ejemplo</code>. It creates <code>servidor.conf</code>.</li>
 <li>Change it as you like with a text editor, for example <code>nano servidor.conf</code>. To check there are no errors: <code>python3 -m servidor --comprobar</code>.</li>
-<li>Start it: <code>python3 -m servidor</code>. It tells you which port it's listening on and whether it encrypts. You type commands to it in that same terminal; <code>ayuda</code> lists them all. You stop it with <code>apagar</code> or with Control+C.</li>
+<li>Start it: <code>python3 -m servidor</code>. It tells you which port it's listening on and whether it encrypts. You type commands to it in that same terminal; <code>help</code> lists them all. You stop it with <code>shutdown</code> or with Control+C.</li>
 </ol>
 <h3>Leaving it in the background</h3>
 <ul>
@@ -250,8 +250,8 @@ a { color: #9fd0ff; }
 <li>Hear what it says: <code>docker compose logs -f</code>. You exit with Control+C, without stopping the server.</li>
 <li>Stop it in an orderly way: <code>docker compose down</code>. It warns the players and saves everything.</li>
 <li>Type commands to it: <code>docker attach puertobravo</code>, type the command and press Enter. To leave without stopping it, press Control+P and then Control+Q. The easiest way is to run it from the game chat.</li>
-<li>Don't use the <code>apagar</code> command inside Docker to stop it: Docker would start it again. Use <code>docker compose down</code>.</li>
-<li>To restart it with a warning, the <code>reiniciar</code> and <code>actualizar</code> commands do work, from the game chat or with <code>docker attach</code>: the server warns with its countdown, saves everything and exits, and Docker starts it again. The games wait and rejoin by themselves.</li>
+<li>Don't use the <code>shutdown</code> command inside Docker to stop it: Docker would start it again. Use <code>docker compose down</code>.</li>
+<li>To restart it with a warning, the <code>restart</code> and <code>update</code> commands do work, from the game chat or with <code>docker attach</code>: the server warns with its countdown, saves everything and exits, and Docker starts it again. The games wait and rejoin by themselves.</li>
 <li>If you change the port in <code>servidor.conf</code>, also change both numbers on the <code>ports</code> line of <code>docker-compose.yml</code>.</li>
 <li>With Docker, all connections may reach the server from the same internal address. That's why the <code>conexiones_por_ip</code> option must stay at 0.</li>
 </ul>
@@ -365,36 +365,38 @@ a { color: #9fd0ff; }
 <ul>
 <li>From the panel: with its buttons and menus, or by typing them in the Command for the server field, on the Log tab.</li>
 <li>From the console: by typing them in the server window.</li>
-<li>From the game, if you're an admin: in the general chat, which opens with F10, with a slash in front. For example, <code>/jugadores</code> or <code>/aviso Gang war tonight</code>. The game tells the answer to you alone. This is how you run a server that has no console: a service, a container or a NAS.</li>
+<li>From the game, if you're an admin: in the general chat, which opens with F10, with a slash in front. For example, <code>/players</code> or <code>/announce Gang war tonight</code>. The game tells the answer to you alone. This is how you run a server that has no console: a service, a container or a NAS.</li>
 </ul>
 <h3>The commands</h3>
+<p>Since version 1.7.3 every command works in English and in Spanish, at the same time and whatever the server's language: <code>help</code> or <code>ayuda</code>, <code>players</code> or <code>jugadores</code>, <code>kick</code> or <code>expulsar</code>, <code>ban</code> or <code>vetar</code>, <code>shutdown</code> or <code>apagar</code>, and so on for all of them. The help lists them in the console's language: in English, with the Spanish one in brackets. And with <code>rename name: new name</code> you change an account's player name without it losing anything; since 1.7.3 nobody joins for the first time without a player name, so accounts like "Player 3" are no longer needed.</p>
 <!-- ORDENES:INICIO -->
 <ul>
-<li><code>ayuda</code>: lists all the commands.</li>
-<li><code>estado</code>: how the server is doing: port, encryption, world, uptime and how many people there are.</li>
-<li><code>jugadores</code>: who is online and where.</li>
-<li><code>cuentas</code>: all the server&#x27;s accounts, with the banned ones and the admins.</li>
-<li><code>aviso text</code>: says something to everyone who is online.</li>
-<li><code>decir name: text</code>: says something to one player only.</li>
-<li><code>expulsar name</code>: kicks a player; they can come back in. After a colon you can tell them the reason.</li>
-<li><code>vetar name</code>: kicks a player and does not let them come back.</li>
-<li><code>perdonar name</code>: lifts the ban.</li>
-<li><code>admin name</code>: makes a player an admin.</li>
-<li><code>quitaradmin name</code>: takes away their admin rights.</li>
-<li><code>borrarcuenta name</code>: deletes an account with its character, its properties and its place in the gang; it cannot be undone.</li>
-<li><code>invitar</code>: creates a single-use invitation code; with a number after it, creates several.</li>
-<li><code>invitaciones</code>: the invitations there are, free and used.</li>
-<li><code>anular code</code>: cancels an invitation nobody has used yet.</li>
-<li><code>mensaje text</code>: changes the message of the day; with no text, removes it.</li>
-<li><code>hora number</code>: sets the game time, from 0 to 23.</li>
-<li><code>bandas</code>: the gangs, with their people and their till.</li>
-<li><code>guardar</code>: saves everything now.</li>
-<li><code>copia</code>: makes a backup.</li>
-<li><code>copias</code>: the backups there are.</li>
-<li><code>recargar</code>: reads servidor.conf again and applies what can be changed without restarting.</li>
-<li><code>actualizar</code>: warns everyone that the server is restarting to update, waits for the countdown, saves everything and stops it; the games wait and come back in on their own when you start it again. You can add the seconds of warning after it.</li>
-<li><code>reiniciar</code>: the same, but saying it is for maintenance. You can add the seconds of warning after it.</li>
-<li><code>apagar</code>: warns everyone, saves everything and stops the server.</li>
+<li><code>help (ayuda)</code>: lists all the commands.</li>
+<li><code>status (estado)</code>: how the server is doing: port, encryption, world, uptime and how many people there are.</li>
+<li><code>players (jugadores)</code>: who is online and where.</li>
+<li><code>accounts (cuentas)</code>: all the server&#x27;s accounts, with the banned ones and the admins.</li>
+<li><code>announce (aviso) text</code>: says something to everyone who is online.</li>
+<li><code>tell (decir) name: text</code>: says something to one player only.</li>
+<li><code>kick (expulsar) name</code>: kicks a player; they can come back in. After a colon you can tell them the reason.</li>
+<li><code>ban (vetar) name</code>: kicks a player and does not let them come back.</li>
+<li><code>unban (perdonar) name</code>: lifts the ban.</li>
+<li><code>op (admin) name</code>: makes a player an admin.</li>
+<li><code>deop (quitaradmin) name</code>: takes away their admin rights.</li>
+<li><code>rename (renombrar) name: new name</code>: changes an account&#x27;s player name, without losing anything; if they are online, they rejoin with the new one.</li>
+<li><code>deleteaccount (borrarcuenta) name</code>: deletes an account with its character, its properties and its place in the gang; it cannot be undone.</li>
+<li><code>invite (invitar)</code>: creates a single-use invitation code; with a number after it, creates several.</li>
+<li><code>invites (invitaciones)</code>: the invitations there are, free and used.</li>
+<li><code>revoke (anular) code</code>: cancels an invitation nobody has used yet.</li>
+<li><code>motd (mensaje) text</code>: changes the message of the day; with no text, removes it.</li>
+<li><code>time (hora) number</code>: sets the game time, from 0 to 23.</li>
+<li><code>gangs (bandas)</code>: the gangs, with their people and their till.</li>
+<li><code>save (guardar)</code>: saves everything now.</li>
+<li><code>backup (copia)</code>: makes a backup.</li>
+<li><code>backups (copias)</code>: the backups there are.</li>
+<li><code>reload (recargar)</code>: reads servidor.conf again and applies what can be changed without restarting.</li>
+<li><code>update (actualizar)</code>: warns everyone that the server is restarting to update, waits for the countdown, saves everything and stops it; the games wait and come back in on their own when you start it again. You can add the seconds of warning after it.</li>
+<li><code>restart (reiniciar)</code>: the same, but saying it is for maintenance. You can add the seconds of warning after it.</li>
+<li><code>shutdown (apagar)</code>: warns everyone, saves everything and stops the server.</li>
 </ul>
 <!-- ORDENES:FIN -->
 <p>Player names are typed as they are, with their spaces. For example, <code>expulsar Ana la Rápida</code> or <code>decir Ana la Rápida: turn the music down</code>.</p>
@@ -567,13 +569,13 @@ a { color: #9fd0ff; }
 <ul>
 <li>With the scripts: <code>sh reiniciar.sh</code>. It warns, stops it and starts it again.</li>
 <li>With systemd or with Docker: an admin types <code>/actualizar</code> in the game chat. The server warns, closes with code 75, and systemd or Docker start it again on their own. With Docker, if you have also changed the image, type <code>docker compose up -d --build</code>: when the container stops, the server still tells the games it is coming back.</li>
-<li>By hand, with the console in front of you: type <code>actualizar</code>, wait for it to finish and start it again.</li>
-<li>Without a console: from the server folder, <code>python3 -m servidor --actualizar</code>. Or leave a text file called <code>parar.txt</code> in the data folder with the word <code>actualizar</code> inside: the server checks it every second, deletes it and obeys. With <code>reiniciar</code> it says it is for maintenance, and with <code>parar</code> it just stops. After the word you can put the seconds of warning, for example <code>actualizar 60</code>.</li>
+<li>By hand, with the console in front of you: type <code>update</code>, wait for it to finish and start it again.</li>
+<li>Without a console: from the server folder, <code>python3 -m servidor --actualizar</code>. Or leave a text file called <code>parar.txt</code> in the data folder with the word <code>update</code> inside: the server checks it every second, deletes it and obeys. With <code>restart</code> it says it is for maintenance, and with <code>parar</code> it just stops. After the word you can put the seconds of warning, for example <code>actualizar 60</code>.</li>
 </ul></li>
 </ol>
 <ul>
 <li>The countdown is the one in the <code>parada_aviso</code> option, 20 seconds by default. How long it waits for each game's last save is set by <code>parada_espera</code>.</li>
-<li>When the server stops in order to come back (the <code>actualizar</code> and <code>reiniciar</code> commands), its program ends with code 75. If whoever runs it stops it (<code>apagar</code>, Control+C), it ends with 0 and the games go back to the menu, as always.</li>
+<li>When the server stops in order to come back (the <code>update</code> and <code>restart</code> commands), its program ends with code 75. If whoever runs it stops it (<code>shutdown</code>, Control+C), it ends with 0 and the games go back to the menu, as always.</li>
 <li>If the system stops it (<code>systemctl stop</code>, <code>docker compose down</code>, <code>sh parar.sh</code>, shutting down the machine), there is no time for a countdown, but the server still tells the games it is a restart: they wait and come back in on their own if it returns before they give up, which is ten minutes by default.</li>
 <li>Players with version 1.7.0 hear the warning as a normal notice and, when the server closes, go back to the menu with a text saying the server is restarting and to come back in a few minutes. Their character is saved all the same.</li>
 </ul>
@@ -643,7 +645,7 @@ a { color: #9fd0ff; }
 
 <h2 id="opciones">24. All the configuration options</h2>
 <p>Each option goes on one line of <code>servidor.conf</code>, in the form <code>nombre = valor</code> (name = value). Lines that start with a hash sign are comments. In the panel they are in Settings, Control+P, each group in its own tab.</p>
-<p>Most apply with the server running: from the panel, when you accept; in text mode, with the <code>recargar</code> command. Some rules, such as traffic, police, pedestrians, combat, adult content and prices, reach each player's game when they come in: whoever is already in will fully notice them when they come back in. The ones that need a server restart say so.</p>
+<p>Most apply with the server running: from the panel, when you accept; in text mode, with the <code>reload</code> command. Some rules, such as traffic, police, pedestrians, combat, adult content and prices, reach each player's game when they come in: whoever is already in will fully notice them when they come back in. The ones that need a server restart say so.</p>
 <!-- OPCIONES:INICIO -->
 <h3>General</h3>
 <p>What the server is called, what whoever comes in is told and how many people fit.</p>

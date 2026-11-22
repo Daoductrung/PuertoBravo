@@ -87,6 +87,7 @@ class VentanaEditor(wx.Frame):
         self._item(mod, tr("A&brir la carpeta de mods\tCtrl+B"), tr("Abre la carpeta en el Explorador."), self.carpeta)
         self._item(mod, tr("&Guion de voces para grabar\tCtrl+G"), tr("Escribe un texto con todas las frases de las misiones y el nombre de archivo de cada grabación."), self.guion_voces)
         self._item(mod, tr("Abrir la carpeta de &voces\tCtrl+Shift+V"), tr("Abre la carpeta donde se dejan las grabaciones."), self.carpeta_voces)
+        self._item(mod, tr("Añadir un &sonido propio...\tCtrl+Shift+A"), tr("Copia un archivo de sonido tuyo a la carpeta de sonidos de los mods, para elegirlo en las armas, los vehículos o los lugares."), self.anadir_sonido)
         self._item(mod, tr("&Probar en el juego\tF9"), tr("Guarda el mod y abre el juego."), self.probar)
         barra.Append(mod, tr("&Mod"))
         ayuda = wx.Menu()
@@ -238,6 +239,26 @@ class VentanaEditor(wx.Frame):
             return
         mostrar_mensaje(self, tr('Guion escrito en la carpeta de voces, con el nombre {nombre}. Se abre ahora en el Bloc de notas.\n\nCada frase lleva encima el nombre que debe tener su grabación. Deja las grabaciones en esa misma carpeta.').format(nombre=(nombre)), tr("Guion de voces"))
         os.startfile(ruta)
+
+    def anadir_sonido(self):
+        dlg = wx.FileDialog(self, tr("Elige el archivo de sonido"), wildcard=tr("Sonidos (*.wav;*.ogg;*.flac;*.mp3)|*.wav;*.ogg;*.flac;*.mp3"),
+                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        try:
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+            origen = dlg.GetPath()
+        finally:
+            dlg.Destroy()
+        del_juego = set(self.cat.sonidos) - set(getattr(self.cat, "sonidos_mods", []))
+        try:
+            nombre = modelo.anadir_sonido(origen, del_juego)
+        except (OSError, ValueError) as e:
+            mostrar_error(self, str(e), tr("Añadir un sonido propio"))
+            return
+        self.cat.refrescar_sonidos()
+        mostrar_mensaje(self, tr('Listo. Tu sonido se llama {nombre} y ya sale en las listas de sonidos, por ejemplo en el sonido de un arma, '
+                                 'el motor o el claxon de un vehículo o el sonido propio de un lugar. Está en data, mods, sonidos: '
+                                 'si compartes tu mod, comparte también ese archivo.').format(nombre=nombre), tr("Añadir un sonido propio"))
 
     def carpeta_voces(self):
         from juego import voces

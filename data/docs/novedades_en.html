@@ -15,13 +15,26 @@ li { margin-bottom: .3em; }
 <p>What changes in each version, from the newest to the oldest.</p>
 
 <h2>Version 1.7.3</h2>
-<p>In progress. Saved games load as before.</p>
+<p>In progress, with what you asked for in the forum thread and on GitHub after 1.7.2. Saved games load as before.</p>
 <h3>New</h3>
 <ul>
 <li>The game in Vietnamese, Tiếng Việt, thanks to a translation contributed on GitHub: the menus, the story, the places, the items, the keys, the mod editor and the server panel. With version 1.7.2 it can already be installed as a component, in Options, Updates, Components, and chosen in Options, Language when you open the game again; from this version on it comes with the game. It has no recorded voices: your screen reader says the scenes. Its guides open in English until they are translated.</li>
 <li>The Marisma Negra mod, installed as a component, is also in Vietnamese: its missions, dialogue, places and items. It reaches 1.7.2 as an update of the component, to version 2.</li>
 <li>Each language is named in yours and, in brackets, in its own, so everyone can find theirs even without understanding the game's language: in Options, Language you hear "Vietnamese (Tiếng Việt)" or "Spanish (Español)", instead of a name your screen reader can't read.</li>
 <li>In Options, Updates, Components, each component says in your language what it is, and F1 explains it: what it brings, where you choose it and when it takes effect. Before, a new component could show up with a name in another language or with its internal identifier. This also reaches 1.7.2, without updating the game.</li>
+<li>The GPS autopilot has three ways of driving: normal; in a hurry, faster but stopping at red lights; and in a big hurry, at full speed and without stopping at traffic lights, to get away from the police even if you can't drive well yet. Choose it in Options, Movement and driving, or at the wheel with Shift Y, and with a controller in the actions menu. It brakes only enough to take the bends.</li>
+<li>When you drive yourself, the game tells you the traffic light at the next junction, red or green, with a new sound for each, and whether it changes while you approach or wait. In assisted and free driving. It can be turned off in Options, Orientation and alerts, Traffic lights while driving.</li>
+<li>Each food place has its own menu: ice cream and horchata at ice cream parlors, pizzas at pizzerias, grilled sardines at beach bars, churros at churro shops, stew at inns, tapas at bars and taverns. Each item says how much hunger and thirst it takes away and how much health it gives, and you can have a drink when you are thirsty even with full health. And each shop sells what suits it: no more lockpicks or headphone players at the market. Everything can be changed in the mod editor.</li>
+<li>You can also pay in at cash machines, but only a little: up to five hundred euros a day. For more, the bank.</li>
+<li>Your dog can have any name you like: in its menu, Rename your dog.</li>
+<li>A boss alias: in your gang's menu, Your street alias. Your people call you that, and so does whoever joins your gang.</li>
+<li>Panic in the street: when lots of people get scared at once, you hear several of them screaming and running. It is a new sound, with real recordings in the packs. And your enemies' shots also scare people away.</li>
+<li>Options, Mods: turn mods on or off without leaving the game.</li>
+<li>Mods can carry their own sounds: in the editor, Mod, Add your own sound.</li>
+<li>On a server, messages from other players and from the server have their own history, apart from everything else: Shift Page Up and Shift Page Down. That way they don't get lost among keys and menus.</li>
+<li>The server console commands also work in English, at the same time as in Spanish: help, players, kick, ban, shutdown and the rest. The help lists them in the console's language. There is a new command, rename, to change a player's name without losing anything.</li>
+<li>The release notes you hear before updating arrive in the game's language. And each language's readme has a name that makes sense in that language: README_en.txt in English. The server folder has a README_en.txt too.</li>
+<li>A new sound pack, Genny, downloaded as a component in Options, Updates, Components, which also reaches 1.7.2: all 282 sounds of the game synthesized, with no recordings, each one different from the rest and following the game's logic. Choose it in Options, Sound and music, Sound pack.</li>
 </ul>
 <h3>Fixed</h3>
 <ul>
@@ -30,6 +43,15 @@ li { margin-bottom: .3em; }
 <li>Playing in English, or in any language other than Spanish, fishing spots, the story of the port neighborhood, the lookout role in heists and the radar exercise in the tutorial work again. Translating the data also translated some internal names, such as "pesca" or "puerto", and the game could no longer find them. Games saved in English are fixed by themselves when you load them.</li>
 <li>The police ranks are now police officer and senior police officer, so they are not confused with a skilled worker's rank. In English, the senior rank used to come out as "skilled worker".</li>
 <li>What goes to braille and to the history while a recorded voice plays is translated just like what is spoken.</li>
+<li>Your partner no longer keeps asking for a piece of furniture you have just bought: buying it for your home fulfills it straight away, and they won't ask again right away for what you have just done for them. The request says which house it is for.</li>
+<li>Being stood up is remembered: for a few days that person won't meet you again, and an acquaintance from the street also loses friendship. Before, you could arrange to meet again straight away.</li>
+<li>People who run away really run away: they move away from you instead of circling the block, and once safe they leave the street. If you press Enter next to them, they run past instead of giving you a casual line. Gunshots also scare people who were standing still.</li>
+<li>A gang you have a truce with no longer attacks your neighborhoods. And if you attack them, by picking a fight, going for one of their neighborhoods or raiding their hideout, the truce breaks and the game says so.</li>
+<li>Your boat is no longer lost if you jump into the water and swim ashore, if you are rescued or if you wake up in hospital: it is towed to a mooring, and the game tells you where.</li>
+<li>Driving faster no longer gets you out of fines: the faster you go, the sooner the police see you and from further away, and at twice the limit the fine is doubled.</li>
+<li>On a server you can no longer join for the first time without a player name: the game asks for it before joining. Before, the account was stuck with a name like Player 3 and could only be fixed by deleting it.</li>
+<li>In the mod editor, F9 explains why a town doesn't exist: whether you entered its name instead of its identifier, or it is in another mod. When you change a town's identifier, everything that pointed to it changes by itself. And a mod's place finds its town even if the town comes in another mod.</li>
+<li>In English, the turn signal, the coming junction and the password and invitation messages when joining a server no longer come out in Spanish.</li>
 </ul>
 
 <h2>Version 1.7.2</h2>

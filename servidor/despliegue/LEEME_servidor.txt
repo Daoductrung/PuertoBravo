@@ -22,6 +22,13 @@ Cuando arranques el servidor por primera vez aparecerán aquí servidor.conf, co
 datos_servidor, con los personajes, el certificado y las copias de seguridad. Si mueves el juego a otra carpeta o a
 otro ordenador, llévate esas dos cosas y el servidor seguirá como estaba.
 
+Órdenes: desde la versión 1.7.3 cada orden vale en español y en inglés a la vez: ayuda o help, jugadores o players,
+expulsar o kick, vetar o ban, apagar o shutdown, y así todas. Escribe ayuda para oírlas. Hay una nueva, renombrar
+nombre: nombre nuevo, para cambiarle el nombre a un jugador sin que pierda nada. Y nadie entra por primera vez sin
+nombre de jugador: el juego se lo pide.
+
+En inglés, este mismo texto está en README_en.txt.
+
 Actualizar el juego con el servidor abierto: ya no hace falta pararlo antes. El juego lo dice, pide permiso, avisa
 a los jugadores, para el servidor con orden, se actualiza y, al terminar, el servidor vuelve a arrancar solo, igual
 que estaba. Los juegos de los jugadores esperan y vuelven a entrar solos, cada uno donde estaba. Lo explica el

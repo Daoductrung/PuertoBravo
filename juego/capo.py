@@ -39,7 +39,7 @@ AJ = Ajustes("capo", {
     "robo_casa_prob": 3, "robo_casa_dinero_pct": 60, "robo_casa_mercancia_pct": 50, "robo_casa_objetos": 2,
     "atraco_calle_prob": 3, "atraco_calle_pct": 70, "atraco_calle_minimo": 150,
     # el dinero negro
-    "deposito_libre": 3000, "casino_maximo": 5000, "casino_comision": 12, "gestor_minimo": 5000, "gestor_comision": 25, "gestor_dias": 3,
+    "deposito_libre": 3000, "cajero_ingreso_max": 500, "casino_maximo": 5000, "casino_comision": 12, "gestor_minimo": 5000, "gestor_comision": 25, "gestor_dias": 3,
     "gestor_estafa": 5, "redada_lab_prob": 50,
 }, {
     "tareas": [tr("vender=vender en la calle tu mercancía"), tr("cocinar=cocinar en uno de tus laboratorios")],
@@ -62,7 +62,7 @@ AJ = Ajustes("capo", {
     "frases_gestor_llega": [tr("El gestor cumple: te llegan al banco {euros} euros limpios."), tr("En tu cuenta aparecen {euros} euros de una sociedad que no conoces. El gestor ha cumplido.")],
     "frases_gestor_estafa": [tr("El gestor ha desaparecido con tu dinero. En este negocio, a veces pasa."), tr("El teléfono del gestor ya no existe. Ni tu dinero.")],
 }, cero=("lealtad_baja_resta", "lealtad_alta_suma", "olvido_resta", "traicion_prob", "camello_detencion", "sisa_pct", "cocinero_incendio",
-         "robo_casa_prob", "atraco_calle_prob", "gestor_estafa", "casino_comision", "gestor_comision", "camello_comision", "redada_lab_prob", "deposito_libre"))
+         "robo_casa_prob", "atraco_calle_prob", "gestor_estafa", "casino_comision", "gestor_comision", "camello_comision", "redada_lab_prob", "deposito_libre", "cajero_ingreso_max"))
 
 PAGAS = ("baja", "normal", "alta")
 

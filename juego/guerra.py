@@ -130,6 +130,8 @@ class Guerra:
         if not self.puede_guerra(bool(rec)):
             return False
         banda = banda or self.banda_de_barrio(b) or random.choice(G.nombres_bandas())
+        if not rec and not defensa and hasattr(self, "romper_tregua"):
+            self.romper_tregua(banda)                            # ir a quitarles un barrio rompe la tregua que tuvieras con ellos
         n = max(1, int(rec["oleadas"] if rec else aj("defensa_oleadas" if defensa else "oleadas")))
         self.guerra = {"tipo": "defensa" if defensa else "conquista", "barrio": b["id"], "nombre": b["nombre"], "banda": banda, "oleada": 0, "total": n,
                        "vivos": [], "veh": [], "t": random.uniform(3.0, 5.0), "fuera": 0.0, "quedan": None, "limpia": True, "avisado": False,
@@ -188,6 +190,8 @@ class Guerra:
                        "vivos": [], "veh": [], "t": random.uniform(4.0, 7.0), "fuera": 0.0, "quedan": None, "limpia": True, "avisado": False,
                        "rec": False, "base": tandas[0], "bandas": [banda]}
         self.son("amenaza_barrio", cat="interfaz")
+        if hasattr(self, "romper_tregua"):
+            self.romper_tregua(banda)                            # buscarles pelea rompe la tregua
         self.cambiar_rep_banda(banda, -float(aj("pelea_enfado")))
         self.decir(random.choice(LISTAS["frases_pelea"]).format(banda=banda, barrio=b["nombre"])
                    + (tr(' Vienen {v}, de una vez.').format(v=(tandas[0])) if len(tandas) == 1 else tr(' Vienen en {len} tandas: {v} primero y más después.').format(len=(len(tandas)), v=(tandas[0])))

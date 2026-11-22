@@ -19,7 +19,7 @@ li { margin-bottom: .3em; }
 <h2>1. Dónde está cada cosa</h2>
 <ul>
 <li><code>data\sonidos</code>: todos los efectos de sonido, repartidos en subcarpetas.</li>
-<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 279 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
+<li><code>data\sonidos\por_defecto</code>: los sonidos de serie, un archivo por sonido. Son 282 archivos. Si falta alguno o lo borras, el juego lo vuelve a crear.</li>
 <li><code>data\radio</code>: la música de las emisoras, un archivo por emisora.</li>
 <li><code>data\radio\mi_musica</code>: tu propia emisora. Copia aquí las canciones que quieras.</li>
 <li><code>data\musica</code>: la música de ambiente, con una carpeta por situación y varias piezas en cada una.</li>
@@ -55,7 +55,7 @@ li { margin-bottom: .3em; }
 <p>Cada grabación viene a un volumen distinto. Para que eso no estropee el equilibrio del juego, al cargar un sonido que has cambiado el juego lo lleva al mismo nivel que tenía el original: mide el tramo más fuerte de tu archivo, lo compara con el del sonido original y lo sube o lo baja lo que haga falta, sin dejar que sature. Así unos pasos no pueden quedar más fuertes que un disparo, ni una baliza inaudible. Se puede desactivar en Opciones, Sonido y música, Igualar el volumen de los sonidos cambiados.</p>
 <p>Si aun así un sonido concreto te parece fuerte o flojo, ve a Opciones, Sonido y música, Ajustar el volumen de cada sonido. Están todos, por los mismos grupos que la lista del final de este documento: Intro lo hace sonar y las flechas izquierda y derecha lo bajan o lo suben, del 30 al 200 por ciento. Buscar un sonido lo encuentra por una palabra de su nombre, sin tener que saber en qué grupo está. El menú dice cuántos sonidos tienes cambiados, en total y en cada grupo, y deja devolver a su volumen de serie uno solo, un grupo entero o todos. El ajuste se guarda con tus opciones y va por el nombre del archivo, así que no se pierde al actualizar el juego.</p>
 <h3>Escuchar cualquier sonido dentro del juego</h3>
-<p>En el menú principal y en el de pausa, Aprender los sonidos tiene los 279 sonidos del juego: primero el grupo Los más importantes, después Buscar un sonido y después todos, por los mismos grupos que la lista del final de este documento y en el mismo orden. Entra en un grupo y pulsa Intro sobre un sonido: el juego dice cómo se llama y qué significa, y lo hace sonar a él solo, con el pack que tengas puesto. Con Buscar un sonido escribes una palabra, por ejemplo sirena, y salen todos los que la tienen en el nombre o en la explicación, con tildes o sin ellas. Sirve para comprobar cómo ha quedado una grabación tuya sin tener que provocar el sonido jugando.</p>
+<p>En el menú principal y en el de pausa, Aprender los sonidos tiene los 282 sonidos del juego: primero el grupo Los más importantes, después Buscar un sonido y después todos, por los mismos grupos que la lista del final de este documento y en el mismo orden. Entra en un grupo y pulsa Intro sobre un sonido: el juego dice cómo se llama y qué significa, y lo hace sonar a él solo, con el pack que tengas puesto. Con Buscar un sonido escribes una palabra, por ejemplo sirena, y salen todos los que la tienen en el nombre o en la explicación, con tildes o sin ellas. Sirve para comprobar cómo ha quedado una grabación tuya sin tener que provocar el sonido jugando.</p>
 
 <h2>3. Packs de sonidos</h2>
 <p>Un pack es una carpeta con archivos que se llaman igual que los sonidos del juego. Los packs van dentro de <code>data\sonidos</code>, cada uno en su subcarpeta, al lado de <code>por_defecto</code>, y se eligen dentro del juego en Opciones, Sonido y música, Pack de sonidos, con las flechas izquierda y derecha. El cambio se oye al momento y no toca tus archivos de <code>data\sonidos\por_defecto</code>: para volver atrás, elige «por defecto».</p>
@@ -64,7 +64,7 @@ li { margin-bottom: .3em; }
 <li>El volumen de cada sonido del pack se iguala al del original, como se explica arriba.</li>
 <li>Los packs que vienen con el juego traen exactamente los mismos archivos que <code>por_defecto</code>, con los mismos nombres: ni uno más ni uno menos. Sus grabaciones son de dominio público (licencia CC0) y salen de kenney.nl, opengameart.org, freesound.org y bigsoundbank.com.</li>
 <li>Los tonos de los canales de rol (<code>chat_personaje</code>, <code>chat_fuera</code> y <code>chat_accion</code>) y el de la espera al servidor (<code>espera_servidor</code>) son en todos los packs los de serie, a propósito: son un código de tonos y conviene que suenen siempre igual.</li>
-<li>De serie vienen instalados los packs «Alternativo», con 279 sonidos, «Envolvente», con 279 sonidos, «Realista», con 279 sonidos, «Retro», con 279 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y sonidos de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
+<li>De serie vienen instalados los packs «Alternativo», con 282 sonidos, «Envolvente», con 282 sonidos, «Realista», con 282 sonidos, «Retro», con 282 sonidos. Cada uno trae todos los sonidos del juego: sustituyen por grabaciones de dominio público todo lo que no es orientación, y conservan el original en los sonidos de orientación: balizas, tonos, semáforos, radar, localizadores y sonidos de los lugares. El archivo <code>CREDITOS.txt</code> de cada pack dice de dónde sale cada sonido y cuáles son originales.</li>
 </ul>
 <h3>Hacer tu propio pack</h3>
 <ol>
@@ -130,7 +130,7 @@ li { margin-bottom: .3em; }
 
 <p>Son 20 grupos:</p>
 <ol>
-<li>Orientación y GPS: 17 sonidos.</li>
+<li>Orientación y GPS: 19 sonidos.</li>
 <li>Sonidos de los lugares: 37 sonidos.</li>
 <li>Moverse a pie y nadar: 20 sonidos.</li>
 <li>Vehículos y conducción: 19 sonidos.</li>
@@ -139,7 +139,7 @@ li { margin-bottom: .3em; }
 <li>Armas, el disparo de cada una: 14 sonidos.</li>
 <li>Combate, puntería y heridas: 20 sonidos.</li>
 <li>Policía y emergencias: 12 sonidos.</li>
-<li>Gente de la calle y animales: 8 sonidos.</li>
+<li>Gente de la calle y animales: 9 sonidos.</li>
 <li>Casa, cocina y comida: 8 sonidos.</li>
 <li>Tiendas, dinero y objetos: 5 sonidos.</li>
 <li>Menús, móvil y avisos del juego: 17 sonidos.</li>
@@ -152,7 +152,7 @@ li { margin-bottom: .3em; }
 <li>Sustancias y trapicheo, solo con el contenido para adultos: 13 sonidos.</li>
 </ol>
 <h3>Orientación y GPS</h3>
-<p>17 sonidos. Son la base de la accesibilidad del juego. Si los cambias, que sigan siendo cortos, claros y fáciles de localizar en el espacio. Los localizadores suenan en bucle desde la posición de un objeto o de una misión.</p>
+<p>19 sonidos. Son la base de la accesibilidad del juego. Si los cambias, que sigan siendo cortos, claros y fáciles de localizar en el espacio. Los localizadores suenan en bucle desde la posición de un objeto o de una misión.</p>
 <ul>
 <li><code>baliza_destino</code>: Baliza de destino. La baliza del GPS cambia a este sonido cuando lo siguiente ya es tu destino. También es el tono que marca el norte. Dura 0,53 segundos.</li>
 <li><code>baliza</code>: Baliza del GPS. Suena en la dirección del siguiente punto de la ruta. Cuanto más cerca estás, más rápido se repite. Dura 0,35 segundos.</li>
@@ -167,6 +167,8 @@ li { margin-bottom: .3em; }
 <li><code>loc_objeto</code>: Objeto que puedes recoger. Suena desde un objeto que hay en el suelo. Ponte encima y recógelo. Se reproduce en bucle. Dura 1,20 segundos.</li>
 <li><code>loc_lugar</code>: Punto de interés. Suena desde un punto de interés que no tiene sonido propio. Se reproduce en bucle. Dura 2,00 segundos.</li>
 <li><code>radar</code>: Radar. Suena desde la posición de lo que acaba de anunciar el radar. Dura 0,06 segundos.</li>
+<li><code>semaforo_rojo</code>: Semáforo en rojo, al volante. Conduces tú y el semáforo del próximo cruce está en rojo, o se acaba de poner en rojo: dos notas graves que bajan. Dura 0,52 segundos.</li>
+<li><code>semaforo_verde</code>: Semáforo en verde, al volante. Conduces tú y el semáforo del próximo cruce está en verde, o se acaba de poner en verde: dos notas agudas que suben. Dura 0,41 segundos.</li>
 <li><code>semaforo_pio</code>: Semáforo, pío lento. Los coches de la avenida están parados: puedes cruzar la avenida, andando hacia el este o hacia el oeste. Dura 0,09 segundos.</li>
 <li><code>semaforo_tic</code>: Semáforo, tictac rápido. Los coches de la calle están parados: puedes cruzar la calle, andando hacia el norte o hacia el sur. Dura 0,03 segundos.</li>
 <li><code>sonar</code>: Sensor de proximidad. Al volante, hay un vehículo delante: pita más rápido y más agudo cuanto más cerca está. También es el pitido de frío o caliente al buscar tesoros. Dura 0,05 segundos.</li>
@@ -353,7 +355,7 @@ li { margin-bottom: .3em; }
 <li><code>buscando</code>: Te están buscando. Te buscan pero no te ven: sigue así unos segundos y los despistarás. Más agudo, es el helicóptero el que no te ve. Dura 0,12 segundos.</li>
 </ul>
 <h3>Gente de la calle y animales</h3>
-<p>8 sonidos. Voces sin palabras, pasos de otros y el perro.</p>
+<p>9 sonidos. Voces sin palabras, pasos de otros y el perro.</p>
 <ul>
 <li><code>perro_olfatea</code>: El perro olfatea. Tu perro busca por el olfato el objeto más cercano. Dura 0,36 segundos.</li>
 <li><code>grito</code>: Grito. Un grito: el tuyo para espantar a la gente, o el de un enemigo que te ha visto y avisa a los suyos. Dura 0,75 segundos.</li>
@@ -361,6 +363,7 @@ li { margin-bottom: .3em; }
 <li><code>grito_mujer</code>: Grito de una mujer asustada. Una mujer grita de susto y sale corriendo. Dura 0,72 segundos.</li>
 <li><code>ladrido</code>: Ladrido. Un perro ladra. Si es el tuyo, avisa de un enemigo cercano o de que ha olfateado algo. Dura 1,00 segundos.</li>
 <li><code>murmullo</code>: Murmullo. Un peatón murmura al hablarte, o dos que pasan van hablando entre ellos. Dura 0,35 segundos.</li>
+<li><code>panico</code>: Pánico en la calle. Mucha gente grita y huye a la vez: un tiroteo, una explosión o un atropello ha sembrado el pánico a tu alrededor. Dura 2,20 segundos.</li>
 <li><code>paso_npc</code>: Pasos de otra persona. Alguien camina cerca de ti. Dura 0,08 segundos.</li>
 <li><code>evento</code>: Suceso callejero. Algo está pasando cerca: un atraco, unos pandilleros o un maletín perdido. Ayudar es opcional. Dura 0,74 segundos.</li>
 </ul>

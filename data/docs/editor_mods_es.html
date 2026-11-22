@@ -102,6 +102,7 @@ li { margin-bottom: .3em; }
 <li><kbd>F9</kbd>: guardar, comprobar y abrir el juego para probar el mod.</li>
 <li><kbd>Control G</kbd>: escribir el guion de voces del mod, para grabar las frases de las misiones.</li>
 <li><kbd>Control Mayúsculas V</kbd>: abrir la carpeta de voces.</li>
+<li><kbd>Control Mayúsculas A</kbd>: añadir un sonido propio, para usarlo en armas, vehículos y lugares.</li>
 </ul>
 <h3>En las listas de elementos</h3>
 <ul>
@@ -243,6 +244,8 @@ li { margin-bottom: .3em; }
 <p>La sección Volar: números y frases, que tiene un solo elemento, lleva lo demás, por pestañas: las alturas y el aterrizaje forzoso; el combustible; la travesía, con lo que se acelera y el viento; la aproximación; los sucesos y sus pesos, donde un peso a cero quita ese suceso; las tormentas y los obstáculos del vuelo bajo; el radar y el secuestro; los hangares y los vuelos comerciales; y todas las frases, las de la torre y las demás. En los lugares de tipo helipuerto o aeropuerto hay un campo nuevo, Precio de la plaza de hangar. Los precios del combustible, del alquiler del hangar y del traslado están en la sección Tarifas y precios, y la licencia de piloto, en la de títulos.</p>
 <h3>Comida a domicilio</h3>
 <p>La sección Comida a domicilio: la carta tiene un elemento por plato o bebida: su nombre, su precio, el hambre y la sed que quita, de cero a cien, y la salud que da. Con un identificador del juego cambias ese plato; con uno nuevo, añades otro a la carta. La sección Comida a domicilio: tiempos y frases tiene un solo elemento: cuánto tarda el pedido, entre un mínimo y un máximo en minutos del juego, cuánto más si llueve, cuántas cosas caben, cuánto espera el repartidor si el jugador no está, y las frases, con los nombres de los sitios que reparten. El precio del envío está en Tarifas y precios.</p>
+<h3>Cartas de los locales y lo que vende cada tienda</h3>
+<p>La sección Cartas de los locales de comida tiene una carta por clase de local: heladería, pizzería, chiringuito, taberna... Cada una lleva sus platos y bebidas, con su precio, el hambre y la sed que quitan, de cero a cien, la salud que dan y una explicación para <kbd>F1</kbd>. Cada lugar de comidas, bar o taberna elige la suya en su campo Carta; sin carta, un sitio de comidas sirve la lista general de comidas, como en versiones anteriores, y un bar o una taberna, solo la caña con tapa. Con el identificador de una carta del juego la sustituyes entera; con uno nuevo, añades otra. En las tiendas, el campo Qué vende además de comida marca si venden botiquines, ganzúas, el reproductor con auriculares, pienso o las armas de tienda; sin marcar ninguno, venden de todo.</p>
 <h3>La compra y la cocina: productos, pasillos, tiendas y recetas</h3>
 <p>Cinco secciones que van juntas. Con ellas un mod puede añadir productos y recetas, abrir un pasillo nuevo o inventarse una clase de tienda.</p>
 <ul>
@@ -336,17 +339,18 @@ li { margin-bottom: .3em; }
 <p>Para compartir un mod con voces, pasa el archivo del mod y, aparte, una carpeta con las grabaciones para copiar en <strong>data\voces\propias</strong>. Usa voces propias o voces sintéticas que tengas permiso para usar: no voces clonadas de personas reales ni sacadas de otros juegos o películas.</p>
 
 <h2>6. Los sonidos</h2>
-<p>Todo lo que añadas debe sonar. Cada lugar tiene un campo de sonido, que es el que se oye al pasar por su puerta y de fondo al entrar. Elige en el desplegable uno de los sonidos del juego. Si quieres uno nuevo, copia tu archivo en <code>data\sonidos\por_defecto</code> con el nombre que quieras y aparecerá en la lista la próxima vez que abras el editor. La guía <a href="cambiar_sonidos_es.html">cambiar_sonidos_es.html</a> describe todos los sonidos.</p>
+<p>Todo lo que añadas debe sonar. Cada lugar tiene un campo de sonido, que es el que se oye al pasar por su puerta y de fondo al entrar, y las armas y los vehículos tienen los suyos. Elige en el desplegable uno de los sonidos del juego. Si quieres uno tuyo, en el menú Mod elige Añadir un sonido propio, con <kbd>Control Mayúsculas A</kbd>: escoges un archivo WAV, OGG, FLAC o MP3, el editor lo copia a <code>data\mods\sonidos</code> con un nombre sin tildes ni espacios, y ya sale en todos los desplegables de sonido. Si se llama como uno del juego, lleva delante <code>mod_</code>: un mod nunca sustituye los sonidos del juego, que son de todos los packs. La guía <a href="cambiar_sonidos_es.html">cambiar_sonidos_es.html</a> describe todos los sonidos.</p>
 
 <h2>7. Comprobar y probar</h2>
 <p><kbd>F5</kbd> revisa el mod y lista lo que encuentra: referencias a cosas que no existen, lugares fuera del mapa o sobre un edificio, misiones sin pasos, identificadores repetidos y pasos incoherentes. Cada aviso dice en qué elemento está. Corrige y vuelve a comprobar hasta que no quede ninguno.</p>
 <p><kbd>F9</kbd> guarda, comprueba y abre el juego. Empieza una partida nueva o carga una, y ve a ver tu contenido.</p>
+<p>Si la comprobación dice que algo apunta a una localidad que no existe, dice también por qué: si has puesto el nombre de la localidad en vez de su identificador, o si la localidad está en otro mod. Los lugares que llevan a una localidad tienen que ir en el mismo mod que ella. Al cambiar el identificador de una localidad de tu mod, todo lo que apuntaba a ella, lugares, salidas, carreras y el mapa del aire, se cambia solo, y el editor dice cuántas referencias ha cambiado.</p>
 
 <h2>8. Activar y desactivar mods</h2>
-<p>Con <kbd>Control M</kbd> se abre una lista de casillas con todos los mods de la carpeta. Los marcados son los que carga el juego. Un mod desactivado no se borra: su archivo cambia de extensión y el juego lo ignora.</p>
+<p>Con <kbd>Control M</kbd> se abre una lista de casillas con todos los mods de la carpeta. Los marcados son los que carga el juego. Un mod desactivado no se borra: su archivo cambia de extensión y el juego lo ignora. Desde la versión 1.7.3 se hace también dentro del juego, en Opciones, Mods: activar o desactivar.</p>
 
 <h2>9. Compartir un mod</h2>
-<p>Envía el archivo <code>.pbm</code> de la carpeta <code>data\mods</code>. Quien lo reciba solo tiene que copiarlo en su carpeta <code>data\mods</code>. Si tu mod usa sonidos nuevos, envía también esos archivos, que van en <code>data\sonidos\por_defecto</code>.</p>
+<p>Envía el archivo <code>.pbm</code> de la carpeta <code>data\mods</code>. Quien lo reciba solo tiene que copiarlo en su carpeta <code>data\mods</code>. Si tu mod usa sonidos propios, envía también esos archivos, que están en <code>data\mods\sonidos</code>, y quien lo reciba los copia en la misma carpeta.</p>
 
 <h2>10. Problemas frecuentes</h2>
 <ul>

@@ -7,5 +7,6 @@ The game comes with eight: Bahía del Ocaso, Costa Dorada, Valdeolmos, Peñas Al
 Oficios y recados, and Motor y asfalto.
 
 To add a mod someone has given you, copy its file here.
-To remove one, delete it from here or turn it off in the editor with Control M.
+To remove one, delete it from here or turn it off in the game, in Options, Mods, or in the editor with Control M.
+If a mod comes with its own sounds, they go in the sonidos folder inside this one.
 To make your own, use EditorMods.exe, which is next to the game. Its manual opens with F1.

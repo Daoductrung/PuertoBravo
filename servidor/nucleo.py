@@ -49,6 +49,24 @@ CANALES =("todos", "cerca", "banda", "priv", "grupo")
 CANALES_ROL = ("ic", "ooc", "yo")                 # en personaje, fuera de personaje y una acción
 # Órdenes que cualquiera puede escribir en el chat con una barra delante, también con un juego anterior a los canales de rol.
 ORDENES_ROL = {"yo": "yo", "me": "yo", "ep": "ic", "ic": "ic", "fp": "ooc", "ooc": "ooc", "ficha": "ficha"}
+# Las órdenes de administración en inglés (desde la 1.7.3): valen a la vez que las españolas, en la consola, en el panel y
+# en el chat, sea cual sea el idioma del servidor. La ayuda las dice en el idioma de la consola.
+ORDENES_EN = {"help": "ayuda", "status": "estado", "players": "jugadores", "who": "jugadores", "accounts": "cuentas",
+              "announce": "aviso", "broadcast": "aviso", "say": "aviso", "tell": "decir", "msg": "decir", "whisper": "decir",
+              "kick": "expulsar", "ban": "vetar", "unban": "perdonar", "pardon": "perdonar", "op": "admin", "deop": "quitaradmin",
+              "deleteaccount": "borrarcuenta", "rename": "renombrar", "invite": "invitar", "invites": "invitaciones", "revoke": "anular", "motd": "mensaje",
+              "time": "hora", "gangs": "bandas", "save": "guardar", "backup": "copia", "backups": "copias", "reload": "recargar",
+              "update": "actualizar", "restart": "reiniciar", "shutdown": "apagar", "stop": "apagar", "quit": "apagar", "exit": "apagar"}
+# Cómo se dice cada orden española en inglés, para la ayuda: el primero de los suyos.
+EN_DE_ORDEN = {}
+for _en, _es in ORDENES_EN.items():
+    EN_DE_ORDEN.setdefault(_es, _en)
+
+
+def orden_espanola(palabra):
+    """La orden española que corresponde a una palabra: la misma si ya lo es, o la de su nombre en inglés."""
+    p = palabra.lower()
+    return ORDENES_EN.get(p, p)
 MAX_FICHA = 200
 # Lo más que paga un encargo repetible de cada tipo, si el mundo del juego no lo dice (un juego anterior a la 1.7.1).
 ENCARGOS_DE_SERIE = {"contrato": 4000, "atraco_banco": 15000, "atraco_local": 8000, "asalto_proveedor": 6000, "encargo_coche": 12000,
@@ -119,6 +137,10 @@ def finito(v):
 
 def _constante_no_valida(nombre):
     raise ValueError(tr("un mensaje no puede traer %s") % nombre)
+
+
+# Lo que mandaba un juego anterior a la 1.7.3 cuando el jugador no se había puesto nombre: con eso no se crea una cuenta.
+NOMBRES_SIN_PONER = {"jugador", "player", "người chơi"}
 
 
 def limpiar_nombre(t, tope=24):
@@ -1042,9 +1064,14 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                 return self._rechazo(j, es("La contraseña de entrada no es correcta."))
             if modo == "invitacion" and not self.alm.invitacion_libre(str(m.get("invitacion", "")).strip().upper()):
                 return self._rechazo(j, es("Este servidor es solo para invitados, y ese código de invitación no vale o ya se ha usado."))
-            nombre = limpiar_nombre(m.get("nombre")) or es("Jugador")
+            nombre = limpiar_nombre(m.get("nombre"))
+            if not nombre or nombre.lower() in NOMBRES_SIN_PONER:
+                # Sin nombre de jugador no se entra: la cuenta se quedaría para siempre con un nombre que no es de nadie
+                # («Jugador 3») y solo se arreglaría borrándola. Un juego anterior a la 1.7.3 mandaba «Jugador» si no tenía.
+                return self._rechazo(j, es("Para entrar por primera vez necesitas un nombre de jugador: es como te verán los demás, y aquí se queda. "
+                                           "Póntelo en el móvil, en Jugar en un servidor, Tu nombre de jugador, y vuelve a entrar."), "nombre")
             if len(nombre) < 2:
-                return self._rechazo(j, es("Ese nombre es demasiado corto."))
+                return self._rechazo(j, es("Ese nombre es demasiado corto."), "nombre")
             base, k = nombre, 2
             while self.alm.cuenta_por_nombre(nombre) is not None:
                 nombre = "%s %d" % (base[:21], k)
@@ -3002,6 +3029,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         ("perdonar " + tr("nombre"), tr("levanta el veto")),
         ("admin " + tr("nombre"), tr("hace administrador a un jugador")),
         ("quitaradmin " + tr("nombre"), tr("le quita la administración")),
+        ("renombrar " + tr("nombre: nuevo nombre"), tr("le cambia el nombre de jugador a una cuenta, sin perder nada; si está dentro, vuelve a entrar con el nuevo")),
         ("borrarcuenta " + tr("nombre"), tr("borra una cuenta con su personaje, sus propiedades y su sitio en la banda; no se puede deshacer")),
         ("invitar", tr("crea un código de invitación de un solo uso; con un número detrás, crea varios")),
         ("invitaciones", tr("las invitaciones que hay, libres y usadas")),
@@ -3018,6 +3046,16 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         ("reiniciar", tr("lo mismo, pero diciendo que es por mantenimiento. Detrás se pueden poner los segundos de aviso")),
         ("apagar", tr("avisa a todos, lo guarda todo y para el servidor")),
     )
+
+    @staticmethod
+    def orden_dicha(orden):
+        """Una orden de la ayuda («expulsar nombre») como la escribe quien lee la consola: en español, o en inglés con la
+        española entre paréntesis si la consola está en otro idioma."""
+        from . import idioma
+        palabra, _, resto = orden.partition(" ")
+        if idioma.actual() == "es" or palabra not in EN_DE_ORDEN:
+            return orden
+        return "%s (%s)%s" % (EN_DE_ORDEN[palabra], palabra, " " + resto if resto else "")
 
     def resumen(self):
         """Cómo está el servidor ahora mismo, para quien lo administra: el panel y la orden estado salen de aquí.
@@ -3078,7 +3116,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         partes = texto.strip().split(None, 1)
         if not partes:
             return ""
-        que, resto = partes[0].lower(), (partes[1].strip() if len(partes) > 1 else "")
+        que, resto = orden_espanola(partes[0]), (partes[1].strip() if len(partes) > 1 else "")
         dentro = [j for j in self.jugadores.values() if j.dentro and not j.bot]
 
         def buscar(nombre):
@@ -3087,8 +3125,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self.log(tr("%s da la orden %s.") % (quien, que))
         if que in ("ayuda", "?"):
             if quien != "consola":                              # por el chat, corto: se oye, no se lee
-                return tr("Órdenes: ") + ", ".join(o for o, _ in self.AYUDA_ORDENES) + "."
-            return tr("Órdenes:") + "\n" + "\n".join("  %s: %s." % o for o in self.AYUDA_ORDENES)
+                return tr("Órdenes: ") + ", ".join(self.orden_dicha(o) for o, _ in self.AYUDA_ORDENES) + "."
+            return (tr("Órdenes:") + "\n" + "\n".join("  %s: %s." % (self.orden_dicha(o), d) for o, d in self.AYUDA_ORDENES)
+                    + "\n" + tr("Cada orden vale en español y en inglés: ayuda o help, jugadores o players, expulsar o kick, apagar o shutdown..."))
         if que == "estado":
             r = self.resumen()
             tope = r["max_jugadores"]
@@ -3152,6 +3191,23 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             if not pone and por_lista:
                 return tr("%s sigue administrando porque está en la lista de administradores de la configuración. Quítalo también de ahí.") % fila["nombre"]
             return (tr("%s ya es administrador.") if pone else tr("%s ya no administra.")) % fila["nombre"]
+        if que == "renombrar" and ":" in resto:
+            viejo, nuevo = (x.strip() for x in resto.split(":", 1))
+            fila = self.alm.cuenta_por_nombre(viejo)
+            if fila is None:
+                return tr("No hay nadie con ese nombre.")
+            nuevo = limpiar_nombre(nuevo)
+            if len(nuevo) < 2 or nuevo.lower() in NOMBRES_SIN_PONER:
+                return tr("Ese nombre no vale: tiene que tener al menos dos letras y no puede ser Jugador.")
+            otra = self.alm.cuenta_por_nombre(nuevo)
+            if otra is not None and otra["id"] != fila["id"]:
+                return tr("Ya hay otra cuenta que se llama %s.") % nuevo
+            self.alm.poner(fila["id"], nombre=nuevo)
+            self.alm.guardar()
+            j = buscar(fila["nombre"])
+            if j is not None:                                  # que vuelva a entrar con el nombre nuevo, para que todos lo vean
+                self._echar(j, es("Un administrador te ha cambiado el nombre de jugador a %s. Vuelve a entrar.") % nuevo)
+            return tr("%s se llama ahora %s.") % (fila["nombre"], nuevo)
         if que == "borrarcuenta" and resto:
             fila = self.alm.cuenta_por_nombre(resto)
             if fila is None:
@@ -3255,5 +3311,5 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             return tr("Apagando.")
         uso = next((o for o in self.AYUDA_ORDENES if o[0].split()[0] == que), None)
         if uso is not None:                                    # la orden existe, pero le falta el nombre, el texto o el número
-            return tr("A esa orden le falta algo. Se escribe así: %s. Sirve para esto: %s.") % uso
+            return tr("A esa orden le falta algo. Se escribe así: %s. Sirve para esto: %s.") % (self.orden_dicha(uso[0]), uso[1])
         return tr("No conozco esa orden. Escribe ayuda.")

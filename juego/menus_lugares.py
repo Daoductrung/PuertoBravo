@@ -685,6 +685,7 @@ def hotel(p, l):
 def taberna(p, l):
     app = p.app
     j = p.j
+    from .menus_juego import opcion_pedir_carta
 
     def beber():
         if p.pagar(p.precio("cana_tapa", 4)):
@@ -733,8 +734,7 @@ def taberna(p, l):
         app.decir(tr("Despides a tus guardaespaldas.") if n else tr("No tienes guardaespaldas."), True)
     AY_DADOS = tr("Tiras dos dados contra la casa. Si sacas más, ganas lo apostado; si empatáis, lo recuperas; si sacas menos, lo pierdes.")
     ops = ([Opcion(tr('Tomar una copa: {precio} euros').format(precio=(p.precio('copa_bar', 6))), lambda: p.consumir("alcohol", de_inventario=False) if p.pagar(p.precio("copa_bar", 6)) else None, ayuda=tr("Alcohol: sube el ánimo, pero caminas torcido y apuntas peor."))] if p.modo_adulto() else []) + \
-          [Opcion(tr('Tomar una caña con tapa: {precio} euros').format(precio=(p.precio('cana_tapa', 4))), beber, ayuda=tr("Te quita la sed y recuperas un poco de salud.")),
-           Opcion(tr("Jugar a los dados: 20 euros"), dados(20), ayuda=AY_DADOS), Opcion(tr("Jugar a los dados: 200 euros"), dados(200), ayuda=AY_DADOS),
+          [Opcion(tr('Tomar una caña con tapa: {precio} euros').format(precio=(p.precio('cana_tapa', 4))), beber, ayuda=tr("Te quita la sed y recuperas un poco de salud."))] +           opcion_pedir_carta(p, l) +           [Opcion(tr("Jugar a los dados: 20 euros"), dados(20), ayuda=AY_DADOS), Opcion(tr("Jugar a los dados: 200 euros"), dados(200), ayuda=AY_DADOS),
            Opcion(lambda: tr('Contratar un guardaespaldas: {int} euros').format(int=(int(p.precio('guardaespaldas_taberna', 300) * p.hon_fama_factor()))), contratar, ayuda=tr("Te sigue a pie, sube contigo a los vehículos y dispara a tus enemigos. Máximo dos.")),
            Opcion(tr("Despedir a los guardaespaldas"), despedir, ayuda=tr("Se van todos los que llevas y dejan de cobrarte cada medianoche.")),
            Opcion(tr("Tablón de encargos: ver los contratos de hoy"), contrato, ayuda=tr("Tres encargos para elegir, cada uno de una manera: quitar de en medio a alguien con sus guardaespaldas, cazar a uno que huye en coche, "

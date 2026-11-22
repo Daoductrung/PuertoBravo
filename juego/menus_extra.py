@@ -336,7 +336,8 @@ def protectora(p, l):
                 p.crear_perro()
                 _volver_al_juego(p)
                 p.son("ladrido")
-                p.decir(tr('{nombre} sale moviendo el rabo y ya no se separa de ti. Gruñe cuando hay peligro cerca y, a pie, con la tecla Y, busca por el olfato el objeto más cercano y te marca el camino.').format(nombre=(nombre)), True)
+                p.decir(tr('{nombre} sale moviendo el rabo y ya no se separa de ti. Gruñe cuando hay peligro cerca y, a pie, con la tecla Y, busca por el olfato el objeto más cercano y te marca el camino. '
+                           'Si quieres llamarlo de otra manera, en su menú, con Mayúsculas Y, está Ponerle otro nombre al perro.').format(nombre=(nombre)), True)
         return f
 
     def dejar():
@@ -393,8 +394,43 @@ def menu_perro(p):
                        ayuda=tr("Una ración le quita el hambre de casi un día y le sube mucho la confianza. El pienso se compra en la protectora de animales y en las tiendas.")),
                 Opcion(tr("Buscar por el olfato el objeto más cercano"), buscar, ayuda=tr("Lo mismo que la tecla Y.")),
                 Opcion(tr("Mandar a casa"), volver_y(p.mandar_perro_a_casa), ayuda=tr("Se va a tu vivienda y te espera allí, con comida y agua. Hace falta tener una casa. Para que vuelva, lo llamas desde este mismo menú."))]
-    m = Menu(app, tr('Tu perro, {perro}').format(perro=(j.perro)), ops)
+    def renombrar():
+        poner_nombre_perro(p, al_terminar=lambda: m.refrescar(False))
+
+    def ops_con_nombre():
+        return ops() + [Opcion(tr("Ponerle otro nombre al perro"), renombrar, ayuda=tr("Le pones el nombre que quieras, de hasta veinte letras. Tabulador propone nombres de perro. "
+                                                                         "Lo que escribas no se anota en el registro del juego."))]
+    m = Menu(app, lambda: tr('Tu perro, {perro}').format(perro=(j.perro)), ops_con_nombre)
     app.abrir(m)
+
+
+NOMBRE_PERRO_MAX = 20
+
+
+def poner_nombre_perro(p, al_terminar=None):
+    """Le pones nombre a tu perro: lo dice el juego al llamarlo, en su menú y cuando ladra o busca."""
+    from . import gente, registro
+    from .menus import EntradaTexto
+    app, j = p.app, p.j
+    antes = j.perro
+
+    def hecho(t):
+        t = " ".join(str(t).split())[:NOMBRE_PERRO_MAX]
+        if not t or t == antes:
+            app.decir(tr('Sigue llamándose {perro}.').format(perro=(antes)), True)
+            return
+        registro.ocultar(t)                                      # lo que escribes no se anota en el registro del juego
+        j.perro = t
+        d = p.perro()
+        if d is not None:
+            d.nombre = t
+        p.son("ladrido")
+        app.decir(tr('Ahora se llama {t}. Lo llamas y viene moviendo el rabo.').format(t=(t)), True)
+        if al_terminar:
+            al_terminar()
+    app.abrir(EntradaTexto(app, tr('Nombre para tu perro, que ahora se llama {perro}').format(perro=(antes)), hecho, maximo=NOMBRE_PERRO_MAX,
+                           ayuda=tr("Escribe el nombre y pulsa Intro. Tabulador propone nombres de perro. Escape lo deja como estaba."),
+                           propuestas=lambda: gente.lista("perros")))
 
 
 # ======================================================================== feria

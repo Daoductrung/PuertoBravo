@@ -406,7 +406,7 @@ def test_donde_se_compra_cada_arma_y_se_dispara(robot):
     elegir("Pistola de ráfagas")
     assert "lanzagranadas" in j.armas and "pistola_rafagas" in j.armas
     robot.tecla(pygame.K_ESCAPE)
-    tienda = next(l for l in p.mundo.lugares.values() if l.tipo == "tienda")
+    tienda = next(l for l in p.mundo.lugares.values() if l.tipo == "tienda" and "hacha" in (l.get("vende") or ["hacha"]))
     menus_juego._tienda(p, tienda)
     assert any(x.startswith("Hacha de bombero") and "cuerpo a cuerpo" in x for x in textos())
     elegir("Hacha de bombero")

@@ -175,6 +175,10 @@ class Catalogo:
 
     def __init__(self, base=None):
         self.base = base or M.cargar_datos(con_mods=False, traducir=False)
+        self.refrescar_sonidos()
+
+    def refrescar_sonidos(self):
+        """Los sonidos que se pueden elegir: los del juego y los propios de los mods (data/mods/sonidos)."""
         try:
             self.sonidos = sorted({os.path.splitext(f)[0] for f in os.listdir(rutas.SONIDOS) if os.path.splitext(f)[1].lower() in rutas.EXT_AUDIO})
         except OSError:
@@ -182,6 +186,8 @@ class Catalogo:
         if not self.sonidos:
             from juego import sintesis
             self.sonidos = sorted(sintesis.generar())
+        self.sonidos_mods = sonidos_de_mods()
+        self.sonidos = sorted(set(self.sonidos) | set(self.sonidos_mods))
 
     def opciones(self, ref, mod=None):
         """Lista de (identificador, texto) para un tipo de referencia."""
@@ -191,6 +197,12 @@ class Catalogo:
             return [(s, s) for s in self.sonidos]
         if ref == "habilidad":
             return [("conduccion", tr("Conducción")), ("punteria", tr("Puntería")), ("resistencia", tr("Resistencia")), ("pesca", tr("Pesca"))]
+        if ref == "vendible":                                    # lo que una tienda puede vender además de comida
+            out = {o["id"]: str(o.get("nombre", o["id"])) for o in b.get("objetos", []) if o.get("id") in ("botiquin", "ganzua", "walkman", "pienso")}
+            for a in list(b.get("armas", [])) + list(sec.get("armas", [])):
+                if a.get("id") and a.get("donde") == "tienda":
+                    out[a["id"]] = str(a.get("nombre", a["id"]))
+            return sorted(out.items(), key=lambda e: e[1].lower())
         if ref == "mapa":
             out = [(m["id"], m["nombre"]) for m in b["mapas"]]
             return out + [(m.get("id"), m.get("nombre", m.get("id"))) for m in sec.get("mapas", []) if m.get("id") and m.get("id") not in dict(out)]
@@ -213,6 +225,7 @@ class Catalogo:
                  "tipo_enemigo": ("tipos_enemigo", b.get("tipos_enemigo", [])),
                  "titulo_estudios": ("titulos", b.get("titulos", [])), "objeto": ("objetos", b.get("objetos", [])),
                  "producto": ("productos", b.get("productos", [])), "pasillo": ("pasillos", b.get("pasillos", [])), "tipo_tienda": ("tipos_tienda", b.get("tipos_tienda", [])),
+                 "carta": ("cartas", b.get("cartas", [])),
                  "sustancia": ("sustancias", b["adultos"].get("sustancias", [])), "persona": ("personas", b["adultos"].get("personas", [])),
                  "actividad": ("actividades", b["adultos"].get("actividades", [])), "regalo": ("regalos", b["adultos"].get("regalos", []))}
         if ref in tabla:
@@ -247,6 +260,82 @@ class Catalogo:
         return list(b.get(clave, []))
 
 
+def sonidos_de_mods():
+    """Los nombres de los sonidos propios de los mods, en data/mods/sonidos."""
+    try:
+        return sorted({os.path.splitext(f)[0] for f in os.listdir(rutas.SONIDOS_MODS) if os.path.splitext(f)[1].lower() in rutas.EXT_AUDIO})
+    except OSError:
+        return []
+
+
+def anadir_sonido(origen, sonidos_del_juego=()):
+    """Copia un archivo de sonido a data/mods/sonidos para usarlo en un mod. El nombre queda en minúsculas, sin tildes ni
+    espacios; si coincide con un sonido del juego, lleva «mod_» delante (el juego nunca deja que un mod sustituya uno
+    suyo). Devuelve el nombre con el que se elige en el editor."""
+    import shutil
+    import unicodedata
+    base, ext = os.path.splitext(os.path.basename(origen))
+    if ext.lower() not in rutas.EXT_AUDIO:
+        raise ValueError(tr("Ese archivo no es un sonido que el juego sepa leer: valen WAV, OGG, FLAC y MP3."))
+    nombre = unicodedata.normalize("NFKD", base).encode("ascii", "ignore").decode("ascii").lower()
+    nombre = re.sub(r"[^a-z0-9]+", "_", nombre).strip("_") or "sonido"
+    if nombre in set(sonidos_del_juego):
+        nombre = "mod_" + nombre
+    os.makedirs(rutas.SONIDOS_MODS, exist_ok=True)
+    for viejo in os.listdir(rutas.SONIDOS_MODS):                # el mismo nombre con otra extensión, fuera
+        if os.path.splitext(viejo)[0] == nombre:
+            os.remove(os.path.join(rutas.SONIDOS_MODS, viejo))
+    shutil.copyfile(origen, os.path.join(rutas.SONIDOS_MODS, nombre + ext.lower()))
+    return nombre
+
+
+def pista_mapa(v, mod):
+    """Por qué puede no existir una localidad a la que apunta algo del mod, y cómo arreglarlo, para el mensaje de F5 y F9."""
+    sec = mod.secciones if mod else {}
+    v = str(v)
+    for m in sec.get("mapas", []):
+        if str(m.get("nombre", "")).strip().lower() == v.strip().lower() and m.get("id") != v:
+            return " " + tr('Es el nombre de tu localidad, no su identificador, que es «{id}». Vuelve a elegirla en ese campo.').format(id=m.get("id"))
+    try:
+        from juego import gestor_mods, mundo as JM
+        for nombre, activo in gestor_mods.listar():
+            if mod is not None and getattr(mod, "ruta", None) and os.path.basename(str(mod.ruta)) == nombre:
+                continue
+            otro = JM._leer_json(os.path.join(rutas.MODS, nombre))
+            if any(isinstance(m, dict) and m.get("id") == v for m in otro.get("mapas", [])):
+                return " " + tr('Esa localidad está en otro mod, {nombre}. Los lugares que llevan a ella tienen que ir en el mismo mod que la localidad: pásalos a ese mod, o la localidad a este.').format(nombre=nombre)
+    except Exception:
+        pass
+    return " " + tr("Si le has cambiado el identificador a la localidad, o la has borrado y vuelto a crear, vuelve a elegirla en ese campo. "
+                    "Una localidad nueva cuenta en cuanto la aceptas en su ventana y guardas el mod.")
+
+
+def renombrar_referencias_mapa(mod, viejo, nuevo):
+    """Una localidad del mod cambia de identificador: todo lo del mod que apuntaba a ella pasa a apuntar al nuevo
+    (lugares, sus salidas, carreras y el mapa aéreo). Devuelve cuántas referencias ha cambiado."""
+    if not mod or not viejo or not nuevo or viejo == nuevo:
+        return 0
+    n = 0
+    sec = mod.secciones
+
+    def cambiar(d, claves):
+        nonlocal n
+        for k in claves:
+            if isinstance(d, dict) and d.get(k) == viejo:
+                d[k] = nuevo
+                n += 1
+    for l in sec.get("lugares", []):
+        cambiar(l, ("mapa", "a_mapa"))
+    for m in sec.get("mapas", []):
+        for l in m.get("lugares", []) or []:
+            cambiar(l, ("mapa", "a_mapa"))
+    for c in sec.get("carreras", []):
+        cambiar(c, ("mapa",))
+    for a in sec.get("mapa_aire", []):
+        cambiar(a, ("mapa", "id", "destino"))
+    return n
+
+
 # ================================================================== comprobación
 def _recorrer(nombre_esq, d, cat, mod, donde, errores, avisos):
     esq = ESQUEMAS[nombre_esq]
@@ -274,7 +363,8 @@ def _recorrer(nombre_esq, d, cat, mod, donde, errores, avisos):
                 errores.append(tr('{donde}: «{e}» tiene un valor desconocido: {v}.').format(donde=(donde), e=(cp['e']), v=(v)))
         elif t == "ref":
             if v not in dict(cat.opciones(cp["ref"], mod)):
-                errores.append(tr('{donde}: «{e}» apunta a «{v}», que no existe.').format(donde=(donde), e=(cp['e']), v=(v)))
+                errores.append(tr('{donde}: «{e}» apunta a «{v}», que no existe.').format(donde=(donde), e=(cp['e']), v=(v))
+                               + (pista_mapa(v, mod) if cp["ref"] == "mapa" else ""))
         elif t == "refs":
             validos = dict(cat.opciones(cp["ref"], mod))
             for x in v:
@@ -478,26 +568,11 @@ def ruta_protegida(ruta):
 
 
 def listar_mods():
-    """[(nombre de archivo, activo)] de la carpeta de mods."""
-    out = []
-    try:
-        for f in sorted(os.listdir(rutas.MODS)):
-            if f.lower().endswith(EXT_MODS):
-                out.append((f, True))
-            elif f.lower().endswith(tuple(e + ".desactivado" for e in EXT_MODS)):
-                out.append((f, False))
-    except OSError:
-        pass
-    return out
+    """[(nombre de archivo, activo)] de la carpeta de mods. Lo mismo que Opciones, Mods del juego (juego/gestor_mods.py)."""
+    from juego import gestor_mods
+    return gestor_mods.listar()
 
 
 def activar_mod(nombre, activo):
-    origen = os.path.join(rutas.MODS, nombre)
-    if activo and nombre.lower().endswith(".desactivado"):
-        destino = origen[:-len(".desactivado")]
-    elif not activo and nombre.lower().endswith(EXT_MODS):
-        destino = origen + ".desactivado"
-    else:
-        return nombre
-    os.replace(origen, destino)
-    return os.path.basename(destino)
+    from juego import gestor_mods
+    return gestor_mods.activar(nombre, activo)

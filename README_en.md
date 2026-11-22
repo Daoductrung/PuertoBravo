@@ -372,7 +372,7 @@ The game updates by reading a `version.json` file signed with Ed25519. The sourc
 1. Bump `VERSION` in `juego/__init__.py` and add the release notes at the top of `data/docs/novedades_es.html` and of `data/docs/novedades_en.html`.
 2. Run `compilar.bat`.
 3. Run `publicar.bat`. It creates in `dist\publicar` the file `PuertoBravo_v<versión>.zip` and its signed `version.json`, and copies them to the folder written in `publicar_destino.txt`, which is the server's web folder.
-4. For GitHub, create the release `v<versión>` and upload those same two files.
+4. For GitHub, create the release `v<versión>` and upload those same two files, with `notas_github.md` as the notes: `publicar.bat` leaves it in `dist\publicar`, with what's new in the version in every language that has its `novedades_<language>.html`, and prints the `gh release create` command that does it. The `version.json` also carries the release notes per language (`novedades_por_idioma`): every game since 1.7.3 reads its own, or the English ones, and earlier games keep reading `novedades`, in Spanish.
 
 The key is created only once with `.venv\Scripts\python.exe herramientas\publicar.py clave` and is kept in `herramientas\claves`. That folder and `publicar_destino.txt` are in `.gitignore`: the private key must never be in the repository or on the server. Keep a copy off the computer. If you fork the project and want to publish your own versions, create your key and change, in `juego/actualizador.py`, the public key, the server address and the repository.
 

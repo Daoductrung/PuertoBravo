@@ -17,6 +17,18 @@ NIVEL_HILO = 0.3
 LOCALES_CON_MUSICA = ("tienda", "comida", "pizzeria", "bar", "taberna", "ropa", "gimnasio", "club", "casino", "taller", "concesionario",
                       "feria", "empenos", "nautica", "armeria")
 
+# Los estilos del piloto del GPS, en el orden en que los recorre Mayúsculas Y.
+ESTILOS_PILOTO = ("normal", "prisa", "mucha_prisa")
+
+
+def texto_estilo_piloto(estilo):
+    """Lo que dice el juego al elegir un estilo del piloto."""
+    if estilo == "prisa":
+        return tr("Piloto con prisa: corre más, pero espera en los semáforos.")
+    if estilo == "mucha_prisa":
+        return tr("Piloto con mucha prisa: a toda velocidad y sin parar en los semáforos. Para huir de la policía; si no te buscan, te pueden multar.")
+    return tr("Piloto normal: velocidad de ciudad, y para en los semáforos.")
+
 
 class Conduccion:
     # ------------------------------------------------------------- utilidades
@@ -522,7 +534,7 @@ class Conduccion:
             else:
                 v.giro = g
                 self.intermitente = self.son("intermitente", bucle=True, pan=0.7 * g, vol=0.6)
-                self.decir(tr("Girarás a la ") + ("derecha" if g > 0 else "izquierda") + tr(" en el próximo cruce."), True)
+                self.decir(tr("Girarás a la ") + (tr("derecha") if g > 0 else tr("izquierda")) + tr(" en el próximo cruce."), True)
         elif k == pygame.K_u:
             if abs(v.vel) > 6:
                 self.decir(tr("Frena para dar media vuelta."), True)
@@ -559,6 +571,8 @@ class Conduccion:
             self.alternar_trabajo()
         elif k == pygame.K_w:
             self.decir(tr('{int} kilómetros por hora.').format(int=(int(abs(v.vel) * 3.6))), True)
+        elif k == pygame.K_y and mayus:
+            self.cambiar_estilo_piloto()
         elif k == pygame.K_y:
             self.cfg["piloto_gps"] = not self.cfg["piloto_gps"]
             if not self.cfg["piloto_gps"]:
@@ -574,6 +588,19 @@ class Conduccion:
                 self.decir(tr("Piloto del GPS activado. Marca un destino en el GPS y el coche irá solo: acelera, frena, gira y para en los semáforos."), True)
             else:
                 self.decir(tr('Piloto del GPS activado: el coche va solo hasta {nombre}. Con cualquier flecha o el espacio mandas tú.').format(nombre=(self.gps['nombre'])), True)
+
+    def estilo_piloto(self):
+        """Cómo conduce el piloto del GPS: normal, prisa o mucha_prisa (Opciones, o Mayúsculas Y al volante)."""
+        e = self.cfg["piloto_estilo"]
+        return e if e in ESTILOS_PILOTO else "normal"
+
+    def cambiar_estilo_piloto(self):
+        orden = list(ESTILOS_PILOTO)
+        self.cfg["piloto_estilo"] = orden[(orden.index(self.estilo_piloto()) + 1) % len(orden)]
+        self.cfg.guardar()
+        self._piloto_prisa = None                                # que diga cómo va con el estilo nuevo
+        self.son("menu_mover", cat="interfaz", vol=0.6)
+        self.decir(texto_estilo_piloto(self.estilo_piloto()), True)
 
     def piloto_puesto(self):
         """El piloto del GPS está activado, o conduce tu chófer, que usa el mismo piloto."""
@@ -595,13 +622,21 @@ class Conduccion:
         # Con prisa (la sirena puesta, o una misión o un trabajo contra el reloj) el piloto corre más. Solo se salta los
         # semáforos con la sirena o en una misión: en un trabajo (el autobús, el taxi, el reparto) te costaría multas y
         # puntos del carné, así que espera en rojo como cualquiera, aunque vaya más deprisa.
-        salta = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None)
-        prisa = salta or bool(self.trabajo and self.trabajo.get("limite") is not None)
-        objetivo = min(mo["vel_max"] * 0.85, 21.0) if prisa else min(mo["vel_max"] * 0.6, 14.0)
+        # El estilo que eliges manda además: con prisa corre como en un trabajo contra el reloj y espera en rojo; con mucha
+        # prisa va a todo lo que da el vehículo y no para en los semáforos, para huir de la policía o llegar a tiempo.
+        estilo = self.estilo_piloto()
+        salta = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None) or estilo == "mucha_prisa"
+        prisa = salta or bool(self.trabajo and self.trabajo.get("limite") is not None) or estilo == "prisa"
+        if estilo == "mucha_prisa":
+            objetivo = mo["vel_max"] * 0.95
+        else:
+            objetivo = min(mo["vel_max"] * 0.85, 21.0) if prisa else min(mo["vel_max"] * 0.6, 14.0)
         quien = self.chofer["nombre"].split(",")[0] if self.chofer_conduce() else tr("El piloto")
-        if prisa and not getattr(self, "_piloto_prisa", False):
+        estado = (prisa, salta)
+        if prisa and getattr(self, "_piloto_prisa", None) != estado:
             self.decir(tr('Vas con prisa: {v} corre más').format(v=(tr('el piloto') if quien in ('El piloto', tr('El piloto')) else quien)) + (tr(" y no espera en los semáforos.") if salta else tr(", pero espera en los semáforos.")))
-        self._piloto_prisa = prisa
+        self._piloto_prisa = estado if prisa else None
+        objetivo = min(objetivo, self._piloto_curva(v, freno))
         ruta = self.gps.get("ruta") or []
         if ruta and self.modo_asistido():                        # el destino ha quedado atrás (te has pasado, o el que persigues ha girado): media vuelta
             px, py = ruta[0]
@@ -698,11 +733,14 @@ class Conduccion:
             if (self.cfg["frenada_auto"] or self.piloto_completo()) and v.vel > 0:
                 self._frenada_auto(v, dt, freno)
             self._aviso_cruce(v)
+            if not self.piloto_completo():
+                self._aviso_semaforo(v)
             self._mover_via(v, dt, lat, self._decidir_jugador)
             if self.mundo.via_cercana(v.x, v.y)[2] > M.ACERA + 2:
                 self.libre_temp = True
         else:
             self._conducir_libre(v, dt, t)
+            self._aviso_semaforo(v)
         j.stats["metros_coche"] += math.hypot(v.x - x0, v.y - y0)
         self.ganar_xp("conduccion", math.hypot(v.x - x0, v.y - y0) / 60.0)
         if v.canal:
@@ -768,7 +806,7 @@ class Conduccion:
                 i, jj = (m._idx(v.x, m.NX), idx) if dx == 0 else (idx, m._idx(v.y, m.NY))
                 txt = tr('Cruce con {via}').format(via=(via))
                 if v.giro:
-                    txt += tr(", girarás a la ") + ("derecha" if v.giro > 0 else "izquierda")
+                    txt += tr(", girarás a la ") + (tr("derecha") if v.giro > 0 else tr("izquierda"))
                 elif not m.dir_valida(i, jj, v.dir):
                     txt += tr(", fin de la vía")
                 self.son("cruce", cat="interfaz", vol=0.5)
@@ -921,6 +959,61 @@ class Conduccion:
             if 0.5 < a < alcance and lat < 2.4:
                 return True
         return False
+
+    def _piloto_curva(self, v, freno):
+        """La velocidad a la que puede ir el piloto para girar sin derrapar en el próximo cruce, si va a girar en él. Con
+        prisa va muy por encima de lo que se gira bien: frena lo justo antes de la esquina y acelera al salir."""
+        g = v.giro or (self.giro_gps() if self.piloto_puesto() else 0)
+        if g not in (-1, 1):
+            return 999.0
+        dx, dy = M.DIRS[v.dir]
+        a = v.y if dx == 0 else v.x
+        s = dy if dx == 0 else dx
+        idx = math.floor(a / M.B) + 1 if s > 0 else math.ceil(a / M.B) - 1
+        d = abs(idx * M.B - a)
+        segura = 13.0                                            # por encima de 15 se derrapa al girar (_decidir_jugador)
+        return math.sqrt(segura * segura + 2.0 * max(1.0, freno * 0.8) * max(0.0, d - 2.0))
+
+    def _aviso_semaforo(self, v):
+        """Conduciendo tú (sin el piloto), el semáforo del próximo cruce: se dice una vez al acercarte si está en rojo o en
+        verde, con su sonido, y si esperas en rojo, cuándo se pone en verde. Con la opción Semáforos al conducir."""
+        if not self.cfg["semaforos_coche"] or self.mundo.tipo == "mar" or v.modelo.get("barco") or getattr(v, "volando", False):
+            return
+        m = self.mundo
+        if self.modo_asistido():
+            sentido = v.dir
+        else:                                                    # en conducción libre, hacia donde apunta el morro
+            sentido = M.dir_de_rumbo(v.rumbo)
+            if abs(M.norm180(v.rumbo - sentido * 90.0)) > 25:  # en diagonal no hay un semáforo de frente
+                return
+        dx, dy = M.DIRS[sentido]
+        a = v.y if dx == 0 else v.x
+        s = dy if dx == 0 else dx
+        idx = math.floor(a / M.B) + 1 if s > 0 else math.ceil(a / M.B) - 1
+        if not (0 <= idx < (m.NY if dx == 0 else m.NX)):
+            return
+        d = abs(idx * M.B - a)
+        if dx == 0:
+            verde = m.verde_vertical(m._idx(v.x, m.NX), idx, self.t)
+        else:
+            verde = not m.verde_vertical(idx, m._idx(v.y, m.NY), self.t)
+        clave = (sentido, idx)
+        previo = getattr(v, "aviso_semaforo", None)
+        if d < 8.5 or d > max(35.0, abs(v.vel) * 3.5):
+            if previo and previo[0] != clave:
+                v.aviso_semaforo = None
+            return
+        if previo is None or previo[0] != clave:
+            if v.vel < 1.0 and verde:
+                v.aviso_semaforo = (clave, True)                 # parado ante un verde: no hay nada que avisar
+                return
+            v.aviso_semaforo = (clave, verde)
+            self.son("semaforo_verde" if verde else "semaforo_rojo", cat="interfaz", vol=0.6)
+            self.decir(tr("Semáforo en verde.") if verde else tr("Semáforo en rojo."))
+        elif previo[1] != verde:                                 # ha cambiado mientras te acercabas o esperabas
+            v.aviso_semaforo = (clave, verde)
+            self.son("semaforo_verde" if verde else "semaforo_rojo", cat="interfaz", vol=0.6)
+            self.decir(tr("Se pone en verde.") if verde else tr("Se pone en rojo."))
 
     def _piloto_semaforo(self, v, freno):
         """El piloto ante el próximo cruce: los metros hasta la línea de parada si tiene que parar, o None si puede pasar.

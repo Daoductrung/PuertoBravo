@@ -17,6 +17,8 @@ Formas de recortar:
     ("carpeta", "archivo", {"desde": 2.0, "dur": 0.6})     una toma de una grabación que trae varias seguidas
     ... {"dur": 2.4, "entrada": 0.1, "fundido": 0.3}       con la entrada y la salida más suaves (ruidos continuos que se cortan)
     ... {"dur": 0.5, "veces": (0.0, 0.42, 0.72)}           la misma toma repetida en esos instantes (tres golpes de un tambor)
+    ... {"dur": 2.4, "mezcla": [(col, archivo, {op}, t0, ganancia), ...]}
+                                              encima, otras grabaciones en esos instantes (la gente que grita a la vez)
 """
 import json
 import os
@@ -348,11 +350,18 @@ EXTRA = {
 # La calle (1.7.1): gritos y quejas con voz de hombre y de mujer, la munición que se recoge y el helicóptero de la policía.
 # El megáfono se queda en todos los packs con el sonido del juego: lo que dice lo lee el lector, y una grabación con palabras estorbaría.
 CALLE = {
-    "realista": {"grito_hombre": ("YELL", "2yell3"), "grito_mujer": ("@girly-scream", "wscream_2_0"),
+    # el pánico (1.7.3): una multitud que grita y, encima, gritos sueltos de hombres y de mujeres a destiempo
+    "realista": {"panico": ("@crowd-shoutingspeaking-ambience", "crowd_shouting_0", {"desde": 9.0, "dur": 2.4, "entrada": 0.15, "fundido": 0.6, "mezcla": [
+                     ("@girly-scream", "wscream_2_0", {}, 0.05, 0.8), ("YELL", "2yell3", {}, 0.3, 0.6), ("YELL", "1yell5", {}, 0.75, 0.5),
+                     ("@girly-scream", "wscream_2_0", {}, 1.2, 0.45), ("YELL", "3yell4", {}, 1.5, 0.4)]}),
+                 "grito_hombre": ("YELL", "2yell3"), "grito_mujer": ("@girly-scream", "wscream_2_0"),
                  "dolor_mujer": ("@female-hurt-grunts-groans", "female_hurt_grunts_groans_1", {"desde": 2.05, "dur": 0.65}),
                  "recoger_municion": ("@gun-reload-sound-effects", "clipload1"),
                  "helicoptero_policia": ("@helicopter-sounds", "helicopter_0", {"bucle": 4.0, "desde": 22.0})},
-    "alternativo": {"grito_hombre": ("YELL", "3yell4"), "grito_mujer": ("@girly-scream", "wscream_2_0"),
+    "alternativo": {"panico": ("@crowd-shoutingspeaking-ambience", "crowd_shouting_0", {"desde": 19.0, "dur": 2.4, "entrada": 0.15, "fundido": 0.6, "mezcla": [
+                        ("YELL", "3yell4", {}, 0.05, 0.7), ("@girly-scream", "wscream_2_0", {}, 0.35, 0.75), ("YELL", "1yell9", {}, 0.8, 0.5),
+                        ("YELL", "2yell6", {}, 1.3, 0.45)]}),
+                    "grito_hombre": ("YELL", "3yell4"), "grito_mujer": ("@girly-scream", "wscream_2_0"),
                     "dolor_mujer": ("@female-hurt-grunts-groans", "female_hurt_grunts_groans_1", {"desde": 7.3, "dur": 0.75}),
                     "recoger_municion": ("SND", "Interface/cartriges"),
                     "helicoptero_policia": ("@helicopter-sfx", "heli_0", {"bucle": 4.0, "desde": 14.0})},
@@ -494,6 +503,17 @@ def preparar(d, op):
             for t in op["veces"]:
                 largo[int(t * SR):int(t * SR) + len(d)] += d
             d = largo
+        if "mezcla" in op:                                       # otras grabaciones encima, cada una en su instante
+            d = d * (0.9 / (float(np.max(np.abs(d))) or 1.0))
+            for col, archivo, op2, t0, g in op["mezcla"]:
+                ruta = buscar(col, archivo)
+                if ruta is None:
+                    continue
+                x = preparar(sintesis.leer_audio(ruta), op2)
+                i = int(t0 * SR)
+                if i + len(x) > len(d):
+                    d = np.concatenate([d, np.zeros(i + len(x) - len(d), dtype=np.float32)])
+                d[i:i + len(x)] += x * g
     p = float(np.max(np.abs(d))) or 1.0
     return (d * (0.9 / p)).astype(np.float32)
 

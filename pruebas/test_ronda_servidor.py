@@ -126,7 +126,7 @@ def test_partida_en_linea_a_ocho_dos_bandas_y_que_gane_la_mejor(ocho, banco):
         p.cfg["fuego_amigo"] = bool(k % 2)                       # cada uno con sus opciones: no cambian lo de los demás
         p.cfg["mando_textos"] = not (k % 3)
         p.j.dinero = 30000
-        tienda = next(l for l in p.mundo.lugares.values() if l.tipo == "tienda")
+        tienda = next(l for l in p.mundo.lugares.values() if l.tipo == "tienda" and {"botiquin", "ganzua"} <= set(l.get("vende") or ["botiquin", "ganzua"]))
         p.teletransportar(tienda.x, tienda.y)
         menus_juego.lugar(p, tienda)
         m = r.app.pila[-1]

@@ -76,6 +76,9 @@ def municion_txt(a, m):
     """La munición de un arma tuya, con su unidad: «12 balas y 30 de reserva», «1 granada y 2 de reserva»."""
     return tr('{cargador} {unidad} y {reserva} de reserva').format(cargador=(m['cargador']), unidad=(unidad(a, m['cargador'])), reserva=(m['reserva']))
 
+# A esta distancia de ti, quien huye se ha puesto a salvo y deja la calle (sale otro en su lugar más tarde).
+HUIDA_LEJOS = 60.0
+
 class Combate:
     # ------------------------------------------------------------------ armas
     def arma(self):
@@ -403,8 +406,12 @@ class Combate:
     def _ruido_disparo(self, x, y):
         if not self.en_defensa_propia():                         # disparar a quien te ha atacado primero no es delito
             self.delito(0.4, tr("disparos en la vía pública"))
+        self.susto_por_tiros(x, y)
+
+    def susto_por_tiros(self, x, y, radio=40):
+        """Unos disparos asustan a la gente de alrededor, la que pasea y la que estaba parada: echa a correr."""
         for p in self.personas:
-            if p.tipo == "civil" and not p.muerto and p.estado == "pasea" and p.dist(x, y) < 40:
+            if p.tipo == "civil" and not p.muerto and p.estado in ("pasea", "quieto") and p.dist(x, y) < radio:
                 self.asustar(p, 10)
 
     # ------------------------------------------------------------------ daños
@@ -736,6 +743,22 @@ class Combate:
             elif self.mundo.transitable(p.x, p.y + paso):
                 p.y += paso
 
+    def _huir(self, p, px, py, d, dt, vel=4.6):
+        """Un paso de quien huye: en dirección contraria a ti; si una pared se lo impide, por el lado que más le aleja."""
+        dx, dy = (p.x - px, p.y - py) if d > 0.1 else (random.uniform(-1, 1), random.uniform(-1, 1))
+        n = math.hypot(dx, dy) or 1.0
+        paso = vel * dt
+        opciones = [(dx / n, dy / n), (-dy / n, dx / n), (dy / n, -dx / n), (math.copysign(1, dx), 0.0), (0.0, math.copysign(1, dy))]
+        mejor = None
+        for ux, uy in opciones:
+            nx, ny = p.x + ux * paso, p.y + uy * paso
+            if self.mundo.transitable(nx, ny):
+                lejos = math.hypot(nx - px, ny - py)
+                if mejor is None or lejos > mejor[0]:
+                    mejor = (lejos, nx, ny)
+        if mejor is not None:
+            p.x, p.y = mejor[1], mejor[2]
+
     def actualizar_personas(self, dt):
         j = self.j
         px, py = self.pos()
@@ -766,12 +789,24 @@ class Combate:
                     self.personas.remove(p)
                 continue
             if not p.hostil:
+                if p.estado == "huye" and p.tag is None and p.bloque is not None:
+                    p.bloque = None                              # quien huye deja su manzana y corre lejos de ti de verdad
                 if p.estado == "quieto" or p.bloque is None:
                     if p.estado == "huye":
-                        self._andar_hacia(p, p.x + (p.x - px), p.y + (p.y - py), 4.5, dt)
+                        self._huir(p, px, py, d, dt)
+                        if p.tag is None and d > HUIDA_LEJOS:      # se ha puesto a salvo: ya no está en la calle
+                            self.personas.remove(p)
+                            continue
                         p.t_estado -= dt
+                        if d < 25:
+                            p.t_estado = max(p.t_estado, 2.0)   # mientras te tenga cerca, no deja de correr
                         if p.t_estado <= 0:
                             p.estado = "quieto"
+                        if d < 24:
+                            p.t_paso -= dt
+                            if p.t_paso <= 0:
+                                p.t_paso = 0.3
+                                self.son("paso_npc", xy=(p.x, p.y), ref=3, maxd=28, vol=0.7, tono=random.uniform(0.9, 1.1))
                     continue
                 vel = p.vel
                 if p.estado == "huye":
@@ -874,6 +909,7 @@ class Combate:
                     self.danar_jugador(a["dano"] * 0.5, (p.x, p.y))
                 continue
             self.son(a["sonido"], xy=(p.x, p.y), ref=14, maxd=220, vol=0.9)
+            self.susto_por_tiros(p.x, p.y)                       # también los tiros de los demás espantan a la gente
             if j.veh and "disparo_veh" not in j.recordado:       # la primera vez que te disparan yendo en un vehículo
                 j.recordado.append("disparo_veh")
                 self.son("notificacion", cat="interfaz")
@@ -980,7 +1016,9 @@ class Combate:
             return l
         todos = [l for l in self.lugares.values() if l.tipo == tipo]
         l = next((q for q in todos if q.mapa == "puerto_bravo"), todos[0])
-        self.j.barco_actual = None
+        remolque = self.remolcar_barco(l.mapa)
+        if remolque:
+            self.decir(remolque)
         if self.j.veh:
             v = self.j.veh
             if self.es_mio(v):                                   # el tuyo se queda donde estaba: no se pierde

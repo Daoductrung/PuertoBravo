@@ -285,7 +285,20 @@ def _info(m, url_manifiesto, fuente, ambas):
                 pass
     if not urls:
         raise ErrorFirma(tr("La versión no indica de dónde descargarla."))
-    return Info(version, archivo, sha, tamano, urls, str(m.get("novedades") or ""), fuente)
+    return Info(version, archivo, sha, tamano, urls, notas_en_mi_idioma(m), fuente)
+
+
+def notas_en_mi_idioma(m):
+    """Las novedades de la versión en el idioma del juego. Desde la 1.7.3 el version.json las trae por idioma en
+    novedades_por_idioma; un idioma que no las tiene oye las inglesas, y si tampoco, las españolas de novedades, que es
+    lo único que traen las versiones anteriores y lo que leen los juegos anteriores."""
+    from . import i18n
+    por_idioma = m.get("novedades_por_idioma") if isinstance(m.get("novedades_por_idioma"), dict) else {}
+    actual = i18n.actual()
+    for cod in dict.fromkeys((actual, "en" if actual != i18n.ORIGEN else i18n.ORIGEN)):
+        if isinstance(por_idioma.get(cod), str) and por_idioma[cod].strip():
+            return por_idioma[cod]
+    return str(m.get("novedades") or "")
 
 
 def comprobar(fuente="servidor", url_personalizada="", abrir=None, claves=None, version_actual=None):

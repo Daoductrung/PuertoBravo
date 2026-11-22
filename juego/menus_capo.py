@@ -17,12 +17,56 @@ def _sacar(p, n):
     p.app.decir(tr('El cajero te da {n} euros. Llevas {dinero} y en el banco quedan {banco}.').format(n=(n), dinero=(j.dinero), banco=(j.banco)), True)
 
 
+def queda_cajero(p):
+    """Lo que todavía se puede ingresar hoy en los cajeros."""
+    j = p.j
+    hecho = j.cajero_ingresos if isinstance(getattr(j, "cajero_ingresos", None), list) and len(j.cajero_ingresos) == 2 else [0, 0]
+    return max(0, AJ.entero("cajero_ingreso_max") - (int(hecho[1]) if int(hecho[0]) == p.dia else 0))
+
+
+def _ingresar(p, n):
+    """Meter efectivo en el banco por el cajero: poco al día, y con dinero negro, con las mismas preguntas que en el banco."""
+    j = p.j
+    queda = queda_cajero(p)
+    if queda <= 0:
+        p.app.son("error")
+        p.app.decir(tr("El cajero ya no admite más ingresos hoy. Para ingresar más, ve a un banco."), True)
+        return
+    cant = min(j.dinero if n is None else n, j.dinero, queda)
+    if cant <= 0:
+        p.app.son("error")
+        p.app.decir(tr("No llevas dinero encima."), True)
+        return
+    ok = p.ingreso_admitido(cant)                                # con dinero negro, solo hasta un tope al día (capo.py)
+    aviso = " " + p.sospecha_bancaria(ok) if ok < cant else ""
+    if ok <= 0:
+        p.app.son("error")
+        p.app.decir(aviso.strip(), True)
+        return
+    j.dinero -= ok
+    j.banco += ok
+    p.apuntar_ingreso(ok)
+    hecho = j.cajero_ingresos if isinstance(getattr(j, "cajero_ingresos", None), list) and int(j.cajero_ingresos[0]) == p.dia else [p.dia, 0]
+    j.cajero_ingresos = [p.dia, int(hecho[1]) + ok]
+    p.son("caja", cat="interfaz")
+    p.app.decir(tr('Ingresas {n} euros.{aviso} En el banco tienes {banco} y llevas {dinero}. Hoy el cajero te admite {queda} más.').format(
+        n=(ok), aviso=(aviso), banco=(j.banco), dinero=(j.dinero), queda=(queda_cajero(p))), True)
+
+
 def menu_cajero(p):
     app = p.app
-    m = Menu(app, lambda: tr('Cajero automático. En el banco tienes {banco} euros y llevas {dinero}').format(banco=(p.j.banco), dinero=(p.j.dinero)),
-             [Opcion(tr('Sacar {n} euros').format(n=(n)), (lambda n=n: _sacar(p, n)),
-                     ayuda=tr("Pasan del banco a lo que llevas encima, sin comisión. Si en el banco tienes menos, sacas lo que haya.")) for n in (20, 50, 100, 200, 500)] + [Opcion(tr("Volver"), lambda: app.cerrar(m))],
-             intro=tr("En el cajero solo se saca dinero. Para ingresar, ve a un banco"))
+
+    def ops():
+        lista = [Opcion(tr('Sacar {n} euros').format(n=(n)), (lambda n=n: _sacar(p, n)),
+                        ayuda=tr("Pasan del banco a lo que llevas encima, sin comisión. Si en el banco tienes menos, sacas lo que haya.")) for n in (20, 50, 100, 200, 500)]
+        if AJ.entero("cajero_ingreso_max") > 0:
+            lista += [Opcion(tr('Ingresar {n} euros').format(n=(n)), (lambda n=n: (_ingresar(p, n), m.refrescar(False))),
+                             ayuda=tr('Pasan de lo que llevas encima al banco. El cajero admite hasta {tope} euros al día; para más, el banco. Si llevas menos, ingresas lo que lleves.').format(tope=(AJ.entero('cajero_ingreso_max'))))
+                      for n in (20, 50, 100, 200, 500) if n <= AJ.entero("cajero_ingreso_max")]
+        return lista + [Opcion(tr("Volver"), lambda: app.cerrar(m))]
+    m = Menu(app, lambda: tr('Cajero automático. En el banco tienes {banco} euros y llevas {dinero}').format(banco=(p.j.banco), dinero=(p.j.dinero)), ops,
+             intro=(tr('Se saca dinero y se ingresa poco: hasta {tope} euros al día. Para ingresar más, ve a un banco').format(tope=(AJ.entero('cajero_ingreso_max')))
+                    if AJ.entero("cajero_ingreso_max") > 0 else tr("En el cajero solo se saca dinero. Para ingresar, ve a un banco")))
     app.abrir(m)
 
 
@@ -70,8 +114,8 @@ def opciones_lugar(p, l, menu):
         return
     extra = []
     if l.get("cajero"):
-        extra.append(Opcion(tr("Cajero automático: sacar dinero del banco"), lambda: menu_cajero(p),
-                            ayuda=tr("Lo que compras se paga con lo que llevas encima: el dinero del banco hay que sacarlo antes. En el cajero solo se saca.")))
+        extra.append(Opcion(tr("Cajero automático: sacar o ingresar dinero"), lambda: menu_cajero(p),
+                            ayuda=tr("Lo que compras se paga con lo que llevas encima: el dinero del banco hay que sacarlo antes. En el cajero también se ingresa, pero poco al día; para más, el banco.")))
     if p.blanqueo_activo():
         if l.tipo == "casino":
             extra.append(Opcion(tr("Blanquear dinero en fichas"), lambda: menu_fichas(p),

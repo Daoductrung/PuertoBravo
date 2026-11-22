@@ -130,7 +130,7 @@ def test_multa_por_exceso_de_velocidad_solo_si_te_ven(robot):
             if o is not v:
                 p.quitar_vehiculo(o)
         p.personas[:] = [e for e in p.personas if e.tipo != "policia"]
-        v.vel = 30.0                                              # 108 por hora
+        v.vel = 25.0                                              # 90 por hora: por encima del doble del límite, la multa es doble
         p.j.dinero = 1000
         dinero, puntos = p.j.dinero, p.j.carne_puntos
         for _ in range(60):
@@ -141,7 +141,7 @@ def test_multa_por_exceso_de_velocidad_solo_si_te_ven(robot):
         for _ in range(60):
             p.vigilar_velocidad(v, 0.1)
         assert p.j.dinero == dinero - R.aj("multa_velocidad") and p.j.carne_puntos == puntos - R.aj("puntos_velocidad")
-        assert "exceso de velocidad" in robot.dicho() and "108" in robot.dicho()
+        assert "exceso de velocidad" in robot.dicho() and "90" in robot.dicho()
         # dentro del margen, nada
         p.t += 100
         v.vel = 16.0                                              # 57 por hora: dentro del treinta por ciento

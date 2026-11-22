@@ -13,8 +13,8 @@
   "lugares": [
     {"id": "ff_salida", "nombre": "Salida sur, carretera de Monteferro", "tipo": "salida", "bloque": [1, 0], "lado": "S", "pos": 36, "a_mapa": "monteferro", "a_lugar": "mf_salida_norte", "km": 14, "horas": 0.4, "desc": "La carretera que baja a Monteferro."},
     {"id": "ff_estacion", "cajero": true, "nombre": "Parada del autobús de Fuentefría", "tipo": "estacion", "bloque": [0, 0], "lado": "N", "pos": 36, "precio": 18, "desc": "Una parada de montaña con marquesina de madera."},
-    {"id": "ff_meson", "nombre": "Mesón de la Trucha", "tipo": "taberna", "bloque": [2, 0], "lado": "N", "pos": 36, "desc": "Truchas con jamón, dados y cazadores que se alquilan de guardaespaldas."},
-    {"id": "ff_tienda", "nombre": "Tienda de la Montaña", "tipo": "tienda", "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Provisiones para excursionistas."},
+    {"id": "ff_meson", "nombre": "Mesón de la Trucha", "tipo": "taberna", "carta": "meson", "bloque": [2, 0], "lado": "N", "pos": 36, "desc": "Truchas con jamón, dados y cazadores que se alquilan de guardaespaldas."},
+    {"id": "ff_tienda", "nombre": "Tienda de la Montaña", "tipo": "tienda", "vende": ["botiquin", "hacha"], "bloque": [0, 0], "lado": "E", "pos": 36, "desc": "Provisiones para excursionistas."},
     {"id": "ff_balneario", "cajero": true, "nombre": "Balneario de Fuentefría", "tipo": "hotel", "bloque": [1, 1], "lado": "S", "pos": 36, "precio_noche": 60, "desc": "Aguas termales que lo curan todo. Sales como nuevo."},
     {"id": "ff_cabana", "nombre": "Cabaña del bosque", "tipo": "casa", "bloque": [2, 0], "lado": "O", "pos": 36, "precio": 6500, "garaje": 2, "desc": "Una cabaña de troncos entre abetos, con cobertizo para dos vehículos."},
     {"id": "ff_ermita", "nombre": "Ermita de la Cumbre", "tipo": "monumento", "bloque": [1, 1], "lado": "O", "pos": 36, "sonido": "lugar_iglesia", "desc": "Una ermita de piedra con una campana que se oye en todo el valle."},
@@ -24,7 +24,7 @@
     {"id": "ff_armeria", "nombre": "Caza y Pesca Río Frío", "tipo": "armeria", "bloque": [1, 1], "lado": "E", "pos": 36, "desc": "Escopetas, ballestas y cañas de pescar."},
     {"id": "fuentefria_tren", "nombre": "Estación de tren de Fuentefría", "tipo": "tren", "bloque": [0, 0], "lado": "S", "pos": 45, "desc": "Un andén, una taquilla y el panel de salidas. De aquí salen los trenes a las demás localidades a las que se llega por tierra."},
     {"id": "fuentefria_aerodromo", "cajero": true, "nombre": "Aeródromo de Fuentefría", "tipo": "aeropuerto", "aerodromo": true, "bloque": [0, 1], "lado": "N", "pos": 45, "precio": 120, "desc": "A las afueras: una pista corta de tierra, una manga de viento y una caseta. Llegan y salen avionetas de línea, y se alquilan avionetas."},
-    {"id": "ff_surtidor", "cajero": true, "nombre": "Gasolinera de Fuentefría", "tipo": "tienda", "surtidor": true, "bloque": [0, 0], "lado": "O", "pos": 36, "desc": "Surtidores bajo una marquesina y una tienda pequeña. Aquí se llena el depósito."}
+    {"id": "ff_surtidor", "cajero": true, "nombre": "Gasolinera de Fuentefría", "tipo": "tienda", "vende": ["botiquin"], "surtidor": true, "bloque": [0, 0], "lado": "O", "pos": 36, "desc": "Surtidores bajo una marquesina y una tienda pequeña. Aquí se llena el depósito."}
   ],
   "tren_eje": "H",
   "tren_n": 0,

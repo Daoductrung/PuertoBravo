@@ -31,11 +31,13 @@ DIAS = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "doming
 AJ = Ajustes("encuentros", {
     "desconfianza_dias": 10, "perdon_dias": 4, "regalo_envio": 15, "regalo_envio_pct": 60, "planton_afinidad": 8,
     "llamada_afinidad": 2, "aviso_minutos": 30, "espera_minutos": 30, "persona_abre": 10, "persona_cierra": 20, "variacion_horas": 1,
-    "conocido_precio": 8, "conocido_animo": 5, "conocido_amistad": 10,
+    "conocido_precio": 8, "conocido_animo": 5, "conocido_amistad": 10, "planton_dias": 3, "planton_amistad": 15,
 }, {
     "frases_planton": [tr("{n} te escribe: «Te he estado esperando en {lugar}. Ya me voy.» No le ha sentado nada bien."),
                        tr("{n} se ha cansado de esperarte en {lugar}. No contesta a tus mensajes.")],
     "frases_llega": [tr("{n} ya está en {lugar}, esperándote. Te saluda con un beso."), tr("Ahí está {n}, en la puerta de {lugar}. Llegas a tiempo.")],
+    "frases_planton_no": [tr("{n} lee tu mensaje y tarda en contestar: «Después del plantón del otro día, mejor lo dejamos para más adelante.» Prueba dentro de {d} días."),
+                          tr("«¿Otra vez? La última vez me dejaste esperando», te contesta {n}. Todavía no quiere quedar contigo: dale {d} días.")],
     "frases_aviso": [tr("Recuerda: a las {hora} has quedado con {n} en {lugar}."), tr("Dentro de un rato, a las {hora}, te espera {n} en {lugar}.")],
     "frases_no_esta": [tr("{n} no está ahora en {lugar}. {cuando}"), tr("Hoy no ves a {n} por {lugar}. {cuando}")],
     "frases_perdon_si": [tr("{n} te escucha sin interrumpir. Al final te coge la mano: «No me lo vuelvas a hacer.»"),
@@ -52,7 +54,7 @@ AJ = Ajustes("encuentros", {
     "escenas_baile": [tr("La música está alta y la pista, llena."), tr("{n} baila sin vergüenza ninguna y te saca de la esquina."), tr("Salís sudando, con las orejas zumbando y sin ganas de iros.")],
     "escenas_paseo": [tr("Echáis a andar sin rumbo."), tr("{n} te enseña un rincón que no conocías."), tr("Volvéis despacio, alargando el camino.")],
     "frases_conocido": [tr("{n} llega puntual. Te cuenta cosas del barrio mientras os tomáis algo."), tr("Con {n} se te pasa la hora volando. Al despedirse, te cuenta un chisme.")],
-}, cero=("planton_afinidad", "variacion_horas", "regalo_envio", "conocido_precio"))
+}, cero=("planton_afinidad", "variacion_horas", "regalo_envio", "conocido_precio", "planton_dias", "planton_amistad"))
 
 # Horarios de los locales de serie: el tipo de lugar abre y cierra a esas horas, y cierra esos días. Lo que no está aquí,
 # abre siempre (hospitales, comisarías, hoteles, estaciones, casas...). Una hora de cierre menor que la de apertura es de madrugada.
@@ -342,7 +344,7 @@ def huecos(p, pers=None):
             d = (m // 1440 - 1) % 7
             if d != libre and _en_franja(m % 1440, desde, hasta):
                 continue                                         # a esa hora está trabajando
-        if txt == "Dentro de una hora":
+        if txt == tr("Dentro de una hora"):
             txt = tr('Dentro de un rato, a las {_hora}').format(_hora=(_hora(m)))
         lista.append((txt, m))
     return lista
@@ -387,13 +389,40 @@ def actualizar(p, dt):
 
 
 def _planton(p, q, l):
+    """No has ido: se acuerda. Pierde afinidad (o amistad, si es un conocido) y durante unos días no quiere volver a quedar."""
     p.son("afinidad_baja", cat="interfaz")
     if q["con"].startswith("c:"):
+        c = next((x for x in p.j.conocidos if x.get("nombre") == q["con"][2:]), None)
+        if c is not None:
+            c["amistad"] = max(0, int(c.get("amistad", 0)) - AJ.entero("planton_amistad"))
+            c["planton"] = p.dia
         p.decir(tr('{nombre} te ha esperado en {nombre2} y no has aparecido. No creo que vuelva a quedar contigo pronto.').format(nombre=(q['nombre']), nombre2=(l.nombre)))
         return
+    r = p.relacion(q["con"])
+    r["planton"] = p.dia
+    r["plantones"] = int(r.get("plantones", 0)) + 1
     p.sumar_afinidad(q["con"], -AJ.entero("planton_afinidad"))
     p.cambiar_animo(-3)
     p.decir(AJ.frase("frases_planton", n=q["nombre"], lugar=l.nombre))
+
+
+def dias_de_planton(p, ficha):
+    """Los días que le quedan a alguien para volver a querer quedar contigo tras un plantón; cero si ya se le ha pasado.
+    `ficha` es su relación (vida social) o su ficha de conocido."""
+    dia = ficha.get("planton") if isinstance(ficha, dict) else None
+    if dia is None:
+        return 0
+    return max(0, int(dia) + AJ.entero("planton_dias") - p.dia)
+
+
+def rechaza_por_planton(p, nombre, ficha):
+    """Si todavía está dolido por el plantón, lo dice y devuelve True."""
+    d = dias_de_planton(p, ficha)
+    if not d:
+        return False
+    p.app.son("rechazo", cat="interfaz")
+    p.app.decir(AJ.frase("frases_planton_no", n=nombre, d=d), True)
+    return True
 
 
 def _encuentro(p, q, l):
@@ -479,6 +508,8 @@ def menu_quedar(p, pers, al_terminar=None):
         app.son("error")
         app.decir(tr('{nombre} apenas te conoce. Charlad primero algún día.').format(nombre=(pers['nombre'])), True)
         return
+    if rechaza_por_planton(p, pers["nombre"], r):
+        return
     base = p.lug(pers.get("lugar"))
 
     def hora(act):
@@ -519,6 +550,8 @@ def menu_quedar_conocido(p, c):
     if not cand:
         app.son("error")
         app.decir(tr('{nombre} vive en otra parte y allí no hay dónde tomar algo.').format(nombre=(c['nombre'])), True)
+        return
+    if rechaza_por_planton(p, c["nombre"], c):
         return
 
     def fijar(m):

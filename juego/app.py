@@ -67,6 +67,7 @@ class App:
             voces.quitar_sin_idioma()                         # y las carpetas de historia sin idioma, de antes de la 1.7.2
             from . import i18n
             i18n.quitar_docs_sin_idioma()                     # manual.html y los demás, de antes de la 1.7.2: ahora van por idioma
+            i18n.quitar_leemes_viejos()                       # LEEME_en.txt y los demás, de antes de la 1.7.3: ahora README_en.txt
         from . import audio_al
         self.mez = audio_al.crear(self.cfg, pruebas)          # el motor envolvente si se ha elegido y se puede; si no, el clásico
         self.aplicar_volumenes()

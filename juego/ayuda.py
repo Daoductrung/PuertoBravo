@@ -43,6 +43,8 @@ TECLAS = {
                          "Cuanto más nivel de búsqueda, más multa y más horas de calabozo, y con el nivel más alto pierdes todas las armas. Otra pulsación baja las manos")),
         (tr("Re Pág y Av Pág"), tr("repasan los mensajes anteriores. El punto repite el último")),
         (tr("Control Re Pág y Control Av Pág"), tr("van al primer mensaje del historial y al último. En Opciones, Voz, eliges si cada mensaje nuevo te lleva al final")),
+        (tr("Mayúsculas Re Pág y Mayúsculas Av Pág"), tr("repasan solo los mensajes de los demás jugadores y del servidor, aparte de todo lo demás: el chat, los avisos y quién entra y sale. "
+                                                          "Mayúsculas y el punto dicen el último. Valen también dentro de los menús")),
         ("F1", tr("esta ayuda")),
         ("F2", tr("cambia entre conducción asistida y libre")),
         ("F3", tr("cambia el movimiento a pie entre brújula y giros")),
@@ -80,6 +82,7 @@ TECLAS = {
         (tr("Frenada automática"), tr("en conducción asistida el coche frena solo si hay un vehículo delante en tu carril. Se desactiva en Opciones")),
         ("U", tr("media vuelta, con el coche casi parado. Con el piloto del GPS, la da él solo cuando el destino queda a tu espalda")),
         ("Y", tr("piloto del GPS: el coche va solo hasta el destino marcado; acelera, frena, gira, espera en los semáforos y se detiene al llegar")),
+        (tr("Mayúsculas Y"), tr("cómo conduce el piloto del GPS: normal; con prisa, que corre más y para en rojo; o con mucha prisa, a toda velocidad y sin parar en los semáforos, para huir de la policía")),
         ("E", tr("en conducción libre, endereza el coche hacia el punto cardinal más cercano")),
         ("W", tr("velocidad actual")),
         ("H", tr("claxon")),

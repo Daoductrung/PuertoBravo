@@ -272,9 +272,30 @@ def paga(p):
         p.rec_impago()
 
 
+def alias_de(j):
+    """Cómo te llaman los tuyos y la calle cuando eres jefe de banda: tu alias, o tu nombre si no tienes."""
+    return getattr(j, "alias", "") or j.nombre
+
+
 def menu_banda(p, Menu, Opcion, EntradaTexto):
     app = p.app
     j = p.j
+
+    def apodar():
+        from . import gente, registro
+
+        def hecho(t):
+            t = " ".join(t.split())[:30]
+            j.alias = t
+            if t:
+                registro.ocultar(t)
+                app.decir(tr('Desde hoy, en la calle eres {t}. Los tuyos te llamarán así.').format(t=(t)), True)
+            else:
+                app.decir(tr("Sin alias: te llaman por tu nombre."), True)
+        app.abrir(EntradaTexto(app, tr("Tu alias en la calle"), hecho, inicial=getattr(j, "alias", ""), maximo=30,
+                               ayuda=tr("El mote con el que te conocen como jefe: lo dicen los de tu banda al hablarte y quien se une a ella. "
+                                        "Tabulador propone motes. Si lo dejas vacío, te llaman por tu nombre."),
+                               propuestas=lambda: gente.lista("apodos")))
 
     def nombrar():
         def hecho(t):
@@ -293,7 +314,8 @@ def menu_banda(p, Menu, Opcion, EntradaTexto):
             if texto:
                 app.decir(texto, True)
         return g
-    m = Menu(app, lambda: tr('Tu banda: {v}. {banda} de {cupo}').format(v=(j.banda_nombre or tr('sin nombre')), banda=(j.banda), cupo=(cupo(j))), [
+    m = Menu(app, lambda: tr('Tu banda: {v}. {banda} de {cupo}').format(v=(j.banda_nombre or tr('sin nombre')), banda=(j.banda), cupo=(cupo(j)))
+             + (tr('. Tu alias: {alias}').format(alias=(j.alias)) if getattr(j, "alias", "") else ""), [
         Opcion(lambda: tr('Reclutar a alguien: {precio} euros. Tienes {dinero}').format(precio=(p.precio('recluta', PRECIO_RECLUTA)), dinero=(j.dinero)), hacer(reclutar),
                ayuda=tr('Cada territorio te deja mantener a uno más, hasta {TOPE_BANDA}. Cada miembro cobra cada medianoche lo que diga la paga de la banda; si no puedes pagar, el menos leal se va y los demás se enfadan.').format(TOPE_BANDA=(TOPE_BANDA))),
         Opcion(tr("Llamar a tu banda"), hacer(llamar), ayuda=tr("Acuden a donde estés, te siguen a pie, suben contigo al vehículo y pelean a tu lado.")),
@@ -309,6 +331,8 @@ def menu_banda(p, Menu, Opcion, EntradaTexto):
                      "Si un día no te llega para pagar, el menos leal se va y los demás se enfadan. Alguien muy poco leal puede traicionarte.")),
         Opcion(tr("Mandarlos a casa"), hacer(despedir), ayuda=tr("Los que van contigo se dispersan. Siguen en tu banda y cobrando, y vuelven cuando los llames.")),
         Opcion(tr("Cambiar el nombre de la banda"), nombrar, ayuda=tr("Escribes el nombre nuevo, de hasta treinta letras. Es como te llaman en la calle.")),
+        Opcion(lambda: tr('Tu alias en la calle: {v}').format(v=(j.alias or tr('ninguno, te llaman por tu nombre'))), apodar,
+               ayuda=tr("Tu mote como jefe, de hasta treinta letras: los de tu banda te llaman así, y quien se une a ella también. Vacío, te llaman por tu nombre.")),
     ])
     app.abrir(m)
 
@@ -359,6 +383,9 @@ def menu_muebles(p, lugar, Menu, Opcion):
             tengo.append(mueble[0])
             p.cambiar_animo(3)
             app.decir(tr('Te lo traen y lo dejan puesto. {v} {v2}').format(v=(mueble[4]), v2=(mueble[5])), True)
+            comun = p.casa_comun() if hasattr(p, "casa_comun") else None
+            if comun is not None and comun.id == lugar.id:       # te lo había pedido quien vive contigo: se entera al momento
+                p.peticion_cumplida("mueble")
             m.refrescar(False)
         return f
 
@@ -793,6 +820,8 @@ def sucesos_territorio(p, azar=None):
         return                                                    # con la reconquista en marcha, los asaltos los lleva ella (reconquista.py): nunca dos a la vez
     if tipo == "ataque" and banda in j.tributos:
         return                                                    # esa banda te paga por estar tranquila: no va a atacarte
+    if tipo == "ataque" and hasattr(p, "en_tregua") and p.en_tregua(banda):
+        return                                                    # tienes una tregua con esa banda: la respeta mientras dure
     if tipo == "ataque":
         t = azar.choice(j.territorios)
         nombre = _nombre_barrio(p, t)[0]

@@ -14,7 +14,7 @@ from . import mundo as M
 from .entidades import Objeto, Persona, Vehiculo
 
 _AJUSTES = {
-    "reaccion_cada": 8, "grito_prob": 50,
+    "reaccion_cada": 8, "grito_prob": 50, "panico_personas": 3, "panico_segundos": 3, "panico_cada": 20,
     "charla_poco": 150, "charla_normal": 70, "charla_mucho": 30, "parejas": 20,
     "municion_prob": 70, "municion_min": 40, "municion_max": 120, "arma_prob": 35,
     "patrullas": 2, "patrullas_noche": 1, "auxilio_prob": 60,
@@ -345,8 +345,22 @@ class Calle:
             return
         if random.random() < (aj("grito_prob") / 100.0 if grito is None else grito):
             self.voz_persona(p, "grito")
+        self._panico(p)
         if not callar:
             self._reacciones.append((p, que))
+
+    def _panico(self, p):
+        """Cuando mucha gente se asusta a la vez cerca de ti, se oye el pánico: gritos y carreras de varios a la vez."""
+        ahora = self.t
+        sustos = [(t, x, y) for t, x, y in getattr(self, "_sustos", []) if ahora - t < aj("panico_segundos")]
+        sustos.append((ahora, p.x, p.y))
+        self._sustos = sustos
+        if len(sustos) >= aj("panico_personas") and ahora - getattr(self, "t_panico", -999) > aj("panico_cada"):
+            self.t_panico = ahora
+            cx = sum(s[1] for s in sustos) / len(sustos)
+            cy = sum(s[2] for s in sustos) / len(sustos)
+            self.son("panico", xy=(cx, cy), ref=10, maxd=120, vol=0.8)
+            self._sustos = []
 
     def _decir_reacciones(self):
         r, self._reacciones = self._reacciones, []

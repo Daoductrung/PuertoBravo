@@ -99,6 +99,7 @@ if not exist "%D%\data\partidas" mkdir "%D%\data\partidas"
 if not exist "%D%\data\mods" mkdir "%D%\data\mods"
 if not exist "%D%\data\radio\mi_musica" mkdir "%D%\data\radio\mi_musica"
 if exist "data\mods\LEEME*.txt" copy /y "data\mods\LEEME*.txt" "%D%\data\mods" >nul
+if exist "data\mods\README*.txt" copy /y "data\mods\README*.txt" "%D%\data\mods" >nul
 if exist "data\mods\costa_dorada.json" copy /y "data\mods\costa_dorada.json" "%D%\data\mods" >nul
 if exist "data\mods\oficios_y_recados.json" copy /y "data\mods\oficios_y_recados.json" "%D%\data\mods" >nul
 if exist "data\mods\valdeolmos.json" copy /y "data\mods\valdeolmos.json" "%D%\data\mods" >nul
@@ -108,8 +109,8 @@ if exist "data\mods\isla_de_los_vientos.json" copy /y "data\mods\isla_de_los_vie
 if exist "data\mods\noches_de_neon.json" copy /y "data\mods\noches_de_neon.json" "%D%\data\mods" >nul
 if exist "data\mods\bahia_del_ocaso.json" copy /y "data\mods\bahia_del_ocaso.json" "%D%\data\mods" >nul
 if exist "LEEME.txt" copy /y "LEEME.txt" "%D%\LEEME.txt" >nul
-if exist "LEEME_en.txt" copy /y "LEEME_en.txt" "%D%\LEEME_en.txt" >nul
-if exist "LEEME_vi.txt" copy /y "LEEME_vi.txt" "%D%\LEEME_vi.txt" >nul
+rem En cada idioma, su LEEME con nombre que se entienda en ese idioma: README_en.txt, README_vi.txt...
+if exist "README_*.txt" copy /y "README_*.txt" "%D%" >nul
 
 echo Preparando la carpeta del servidor: lanzadores, guia, ejemplo de configuracion y lo necesario para otros sistemas...
 ".venv\Scripts\python.exe" herramientas\preparar_carpeta_servidor.py "%D%"

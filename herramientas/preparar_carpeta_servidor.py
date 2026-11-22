@@ -44,7 +44,7 @@ LANZADORES = ("Panel del servidor.bat", "Servidor por consola.bat", "Parar el se
               "Arrancar con Windows - activar.bat", "Arrancar con Windows - quitar.bat")
 GUIONES = ("arrancar.sh", "parar.sh", "reiniciar.sh", "estado.sh", "entrada_docker.sh")
 DE_DOCKER = ("Dockerfile", "docker-compose.yml")
-CONTENIDO = tuple((n,) for n in LANZADORES) + (("LEEME.txt",), ("servidor.conf.ejemplo",), ("documentacion_es.html",),
+CONTENIDO = tuple((n,) for n in LANZADORES) + (("LEEME.txt",), ("README_en.txt",), (OTROS, "README_en.txt"), ("servidor.conf.ejemplo",), ("documentacion_es.html",),
                                                 (OTROS, "LEEME.txt"), (OTROS, "servidor.conf.ejemplo"), (OTROS, "puertobravo.service"),
                                                 (OTROS, "servidor", "__main__.py"), (OTROS, "servidor", "nucleo.py"), (OTROS, "servidor", "opciones.py"),
                                                 (OTROS, "servidor", "idioma.py"), (OTROS, "servidor", "mundo.json")) + tuple((OTROS, n) for n in GUIONES + DE_DOCKER)
@@ -58,7 +58,7 @@ VIEJO = ("documentacion.html",)
 def html_ordenes():
     """La lista de órdenes de administración, tal como las dice el propio servidor."""
     e = html.escape
-    return "\n".join(["<ul>"] + ["<li><code>%s</code>: %s.</li>" % (e(o), e(que)) for o, que in Servidor.AYUDA_ORDENES] + ["</ul>"])
+    return "\n".join(["<ul>"] + ["<li><code>%s</code>: %s.</li>" % (e(Servidor.orden_dicha(o)), e(que)) for o, que in Servidor.AYUDA_ORDENES] + ["</ul>"])
 
 
 def _generado_aqui():
@@ -181,7 +181,7 @@ def preparar(juego):
     --guia, que compilar.bat lanza antes de copiar la documentación)."""
     destino = os.path.join(juego, CARPETA)
     # Solo se rehace lo que se reparte: si alguien ya tiene ahí su configuración y sus datos, no se tocan.
-    for sobra in LANZADORES + ("LEEME.txt", "servidor.conf.ejemplo") + VIEJO + tuple(os.path.basename(r) for r in glob.glob(os.path.join(destino, "documentacion_*.html"))):
+    for sobra in LANZADORES + ("LEEME.txt", "README_en.txt", "servidor.conf.ejemplo") + VIEJO + tuple(os.path.basename(r) for r in glob.glob(os.path.join(destino, "documentacion_*.html"))):
         if os.path.exists(os.path.join(destino, sobra)):
             os.remove(os.path.join(destino, sobra))
     shutil.rmtree(os.path.join(destino, OTROS), ignore_errors=True)
@@ -190,6 +190,7 @@ def preparar(juego):
     for nombre in LANZADORES:
         shutil.copyfile(os.path.join(DESPLIEGUE, "windows", nombre), os.path.join(destino, nombre))
     _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_servidor.txt"), os.path.join(destino, "LEEME.txt"), "\r\n")
+    _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_servidor_en.txt"), os.path.join(destino, "README_en.txt"), "\r\n")   # en inglés, con nombre inglés
     with open(os.path.join(destino, "servidor.conf.ejemplo"), "w", encoding="utf-8", newline="\r\n") as f:
         f.write(texto_ejemplo())
     for cod, ruta in guias().items():
@@ -214,6 +215,7 @@ def preparar(juego):
     for nombre in GUIONES + DE_DOCKER + ("puertobravo.service",):
         _copiar_texto(os.path.join(DESPLIEGUE, nombre), os.path.join(otros, nombre), "\n")
     _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_otros_sistemas.txt"), os.path.join(otros, "LEEME.txt"), "\n")
+    _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_otros_sistemas_en.txt"), os.path.join(otros, "README_en.txt"), "\n")
     with open(os.path.join(otros, "servidor.conf.ejemplo"), "w", encoding="utf-8", newline="\n") as f:
         f.write(texto_ejemplo())
     return destino

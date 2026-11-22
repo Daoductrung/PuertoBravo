@@ -358,7 +358,7 @@ El juego se actualiza leyendo un archivo `version.json` firmado con Ed25519. La 
 1. Sube `VERSION` en `juego/__init__.py` y añade las novedades al principio de `data/docs/novedades_es.html` y de `data/docs/novedades_en.html`.
 2. Ejecuta `compilar.bat`.
 3. Ejecuta `publicar.bat`. Crea en `dist\publicar` el archivo `PuertoBravo_v<versión>.zip` y su `version.json` firmado, y los copia a la carpeta escrita en `publicar_destino.txt`, que es la carpeta web del servidor.
-4. Para GitHub, crea la release `v<versión>` y sube esos mismos dos archivos.
+4. Para GitHub, crea la release `v<versión>` y sube esos mismos dos archivos, con `notas_github.md` como notas: lo deja `publicar.bat` en `dist\publicar`, con lo nuevo de la versión en cada idioma que tenga su `novedades_<idioma>.html`, y dice la orden `gh release create` que lo hace. El `version.json` lleva también las novedades por idioma (`novedades_por_idioma`): cada juego desde la 1.7.3 lee las suyas, o las inglesas, y los anteriores siguen leyendo `novedades`, en español.
 
 La clave se crea una sola vez con `.venv\Scripts\python.exe herramientas\publicar.py clave` y queda en `herramientas\claves`. Esa carpeta y `publicar_destino.txt` están en `.gitignore`: la clave privada no debe estar nunca en el repositorio ni en el servidor. Guarda una copia fuera del equipo. Si haces un fork y quieres publicar tus propias versiones, crea tu clave y cambia en `juego/actualizador.py` la clave pública, la dirección del servidor y el repositorio.
 

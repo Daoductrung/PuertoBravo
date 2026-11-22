@@ -267,6 +267,9 @@
     {"id": "general",
      "reaccion_cada": 8,
      "grito_prob": 50,
+     "panico_personas": 3,
+     "panico_segundos": 3,
+     "panico_cada": 20,
      "frases_huye": ["{quien} sale corriendo.", "{quien} grita y echa a correr.", "{quien} huye calle abajo.", "{quien} se asusta y corre."],
      "frases_huyen": ["{n} personas salen corriendo.", "La gente huye: {n} personas echan a correr.", "{n} personas gritan y se dispersan."],
      "frases_aparta": ["{quien} se aparta de un salto.", "{quien} se quita de en medio.", "{quien} se echa a un lado."],
@@ -374,6 +377,110 @@
      "doble_o": 1.5,
      "frases_empieza": ["Es una persecución en vehículo: a pie no le alcanzas, y con un vehículo lento, tampoco. El GPS y la baliza le siguen a él. La O te dice dónde está y hacia dónde va, y la Q lo fija para oírlo. Cada poco te digo por dónde va."],
      "frases_a_pie": ["Vas a pie: sube cuanto antes a un vehículo rápido, con F junto a uno, o pide el tuyo en el móvil, en Mis vehículos."]}
+  ],
+  "cartas": [
+    {"id": "bar", "nombre": "Bar de tapas", "platos": [
+      {"id": "boquerones", "nombre": "Tapa de boquerones en vinagre", "tipo": "comida", "precio": 4, "hambre": 25, "sed": 0, "salud": 8},
+      {"id": "bravas", "nombre": "Ración de patatas bravas", "tipo": "comida", "precio": 5, "hambre": 35, "sed": 0, "salud": 10, "desc": "Picantes: dan un poco de sed."},
+      {"id": "pincho_tortilla", "nombre": "Pincho de tortilla de patatas", "tipo": "comida", "precio": 3, "hambre": 30, "sed": 0, "salud": 8},
+      {"id": "cafe_leche", "nombre": "Café con leche", "tipo": "bebida", "precio": 2, "hambre": 5, "sed": 30, "salud": 3},
+      {"id": "refresco_bar", "nombre": "Refresco", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 55, "salud": 3}
+    ]},
+    {"id": "taberna", "nombre": "Taberna", "platos": [
+      {"id": "calamares", "nombre": "Ración de calamares", "tipo": "comida", "precio": 9, "hambre": 45, "sed": 0, "salud": 15},
+      {"id": "croquetas", "nombre": "Croquetas caseras", "tipo": "comida", "precio": 7, "hambre": 35, "sed": 0, "salud": 12},
+      {"id": "montadito_lomo", "nombre": "Montadito de lomo", "tipo": "comida", "precio": 4, "hambre": 30, "sed": 0, "salud": 10},
+      {"id": "mosto", "nombre": "Mosto", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 45, "salud": 2},
+      {"id": "gaseosa", "nombre": "Gaseosa", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 50, "salud": 2}
+    ]},
+    {"id": "pizzeria", "nombre": "Pizzería", "platos": [
+      {"id": "porcion_pizza", "nombre": "Porción de pizza", "tipo": "comida", "precio": 3, "hambre": 30, "sed": 0, "salud": 12},
+      {"id": "pizza_margarita", "nombre": "Pizza margarita", "tipo": "comida", "precio": 9, "hambre": 60, "sed": 0, "salud": 25},
+      {"id": "pizza_cuatro_quesos", "nombre": "Pizza cuatro quesos", "tipo": "comida", "precio": 11, "hambre": 65, "sed": 0, "salud": 28},
+      {"id": "calzone", "nombre": "Calzone de jamón y queso", "tipo": "comida", "precio": 12, "hambre": 70, "sed": 0, "salud": 30},
+      {"id": "refresco_grande", "nombre": "Refresco grande", "tipo": "bebida", "precio": 3, "hambre": 0, "sed": 60, "salud": 3}
+    ]},
+    {"id": "chiringuito", "nombre": "Chiringuito de playa", "platos": [
+      {"id": "espeto", "nombre": "Espeto de sardinas", "tipo": "comida", "precio": 9, "hambre": 45, "sed": 0, "salud": 20, "desc": "Asadas en la caña, junto a la arena."},
+      {"id": "pescaito", "nombre": "Fritura de pescado", "tipo": "comida", "precio": 11, "hambre": 55, "sed": 0, "salud": 22},
+      {"id": "ensalada", "nombre": "Ensalada mixta", "tipo": "comida", "precio": 7, "hambre": 35, "sed": 10, "salud": 15},
+      {"id": "limonada", "nombre": "Limonada", "tipo": "bebida", "precio": 3, "hambre": 0, "sed": 65, "salud": 3},
+      {"id": "refresco_playa", "nombre": "Refresco bien frío", "tipo": "bebida", "precio": 3, "hambre": 0, "sed": 55, "salud": 3}
+    ]},
+    {"id": "freiduria", "nombre": "Freiduría", "platos": [
+      {"id": "cucurucho_pescaito", "nombre": "Cucurucho de pescado frito", "tipo": "comida", "precio": 7, "hambre": 45, "sed": 0, "salud": 18},
+      {"id": "boquerones_fritos", "nombre": "Boquerones fritos", "tipo": "comida", "precio": 8, "hambre": 45, "sed": 0, "salud": 18},
+      {"id": "calamares_fritos", "nombre": "Calamares a la romana", "tipo": "comida", "precio": 9, "hambre": 50, "sed": 0, "salud": 20},
+      {"id": "refresco_freiduria", "nombre": "Refresco", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 55, "salud": 3}
+    ]},
+    {"id": "quiosco", "nombre": "Quiosco de helados y bocadillos", "platos": [
+      {"id": "cucurucho_helado", "nombre": "Helado de cucurucho", "tipo": "comida", "precio": 3, "hambre": 10, "sed": 15, "salud": 5},
+      {"id": "polo", "nombre": "Polo de hielo", "tipo": "comida", "precio": 2, "hambre": 0, "sed": 35, "salud": 3},
+      {"id": "bocadillo_jamon", "nombre": "Bocadillo de jamón", "tipo": "comida", "precio": 6, "hambre": 40, "sed": 0, "salud": 15},
+      {"id": "refresco_quiosco", "nombre": "Refresco", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 55, "salud": 3}
+    ]},
+    {"id": "heladeria", "nombre": "Heladería", "platos": [
+      {"id": "helado_dos_bolas", "nombre": "Helado de dos bolas, el sabor que quieras", "tipo": "comida", "precio": 4, "hambre": 15, "sed": 15, "salud": 6},
+      {"id": "copa_helado", "nombre": "Copa de helado con nata", "tipo": "comida", "precio": 7, "hambre": 30, "sed": 10, "salud": 10},
+      {"id": "granizado", "nombre": "Granizado de limón", "tipo": "bebida", "precio": 3, "hambre": 0, "sed": 60, "salud": 4},
+      {"id": "horchata", "nombre": "Horchata fresca", "tipo": "bebida", "precio": 3, "hambre": 5, "sed": 65, "salud": 5},
+      {"id": "batido", "nombre": "Batido de chocolate", "tipo": "bebida", "precio": 4, "hambre": 15, "sed": 40, "salud": 6}
+    ]},
+    {"id": "restaurante", "nombre": "Restaurante", "platos": [
+      {"id": "pescado_dia", "nombre": "Pescado del día", "tipo": "comida", "precio": 6, "hambre": 70, "sed": 0, "salud": 60},
+      {"id": "solomillo", "nombre": "Solomillo con su guarnición", "tipo": "comida", "precio": 8, "hambre": 80, "sed": 0, "salud": 70},
+      {"id": "menu_degustacion", "nombre": "Menú degustación", "tipo": "comida", "precio": 13, "hambre": 100, "sed": 30, "salud": 100, "desc": "Siete platos pequeños y un postre. Sales como nuevo."},
+      {"id": "postre_autor", "nombre": "Postre de la casa", "tipo": "comida", "precio": 3, "hambre": 20, "sed": 0, "salud": 15},
+      {"id": "agua_con_gas", "nombre": "Agua mineral con gas", "tipo": "bebida", "precio": 1, "hambre": 0, "sed": 60, "salud": 2}
+    ]},
+    {"id": "asador", "nombre": "Asador", "platos": [
+      {"id": "chuleton", "nombre": "Chuletón a la brasa", "tipo": "comida", "precio": 20, "hambre": 90, "sed": 0, "salud": 60},
+      {"id": "parrillada", "nombre": "Parrillada de carne", "tipo": "comida", "precio": 16, "hambre": 80, "sed": 0, "salud": 50},
+      {"id": "pollo_asado", "nombre": "Medio pollo asado", "tipo": "comida", "precio": 10, "hambre": 60, "sed": 0, "salud": 35},
+      {"id": "patatas_horno", "nombre": "Patatas al horno", "tipo": "comida", "precio": 4, "hambre": 25, "sed": 0, "salud": 8},
+      {"id": "refresco_asador", "nombre": "Refresco grande", "tipo": "bebida", "precio": 3, "hambre": 0, "sed": 60, "salud": 3}
+    ]},
+    {"id": "cafeteria", "nombre": "Cafetería", "platos": [
+      {"id": "cafe_solo", "nombre": "Café solo", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 20, "salud": 2, "desc": "Despeja un poco."},
+      {"id": "desayuno", "nombre": "Café con leche y tostada", "tipo": "comida", "precio": 4, "hambre": 25, "sed": 25, "salud": 8},
+      {"id": "croissant", "nombre": "Cruasán", "tipo": "comida", "precio": 2, "hambre": 20, "sed": 0, "salud": 5},
+      {"id": "sandwich", "nombre": "Sándwich mixto", "tipo": "comida", "precio": 4, "hambre": 35, "sed": 0, "salud": 12},
+      {"id": "zumo", "nombre": "Zumo de naranja natural", "tipo": "bebida", "precio": 3, "hambre": 5, "sed": 55, "salud": 5}
+    ]},
+    {"id": "meson", "nombre": "Mesón", "platos": [
+      {"id": "cocido", "nombre": "Cocido de montaña", "tipo": "comida", "precio": 12, "hambre": 90, "sed": 0, "salud": 45, "desc": "Una ración que da para dos."},
+      {"id": "truchas", "nombre": "Truchas con jamón", "tipo": "comida", "precio": 11, "hambre": 70, "sed": 0, "salud": 35},
+      {"id": "migas", "nombre": "Migas con chorizo", "tipo": "comida", "precio": 8, "hambre": 60, "sed": 0, "salud": 25},
+      {"id": "gaseosa_meson", "nombre": "Gaseosa", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 50, "salud": 2}
+    ]},
+    {"id": "churreria", "nombre": "Churrería", "platos": [
+      {"id": "chocolate_churros", "nombre": "Chocolate con churros", "tipo": "comida", "precio": 4, "hambre": 45, "sed": 15, "salud": 15},
+      {"id": "porras", "nombre": "Ración de porras", "tipo": "comida", "precio": 3, "hambre": 35, "sed": 0, "salud": 10},
+      {"id": "cafe_churreria", "nombre": "Café con leche", "tipo": "bebida", "precio": 2, "hambre": 5, "sed": 30, "salud": 3}
+    ]},
+    {"id": "maquina", "nombre": "Máquina expendedora", "platos": [
+      {"id": "bocadillo_maquina", "nombre": "Bocadillo envasado", "tipo": "comida", "precio": 4, "hambre": 30, "sed": 0, "salud": 8},
+      {"id": "chocolatina", "nombre": "Chocolatina", "tipo": "comida", "precio": 2, "hambre": 15, "sed": 0, "salud": 4},
+      {"id": "lata_refresco", "nombre": "Lata de refresco", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 50, "salud": 2}
+    ]},
+    {"id": "bocateria", "nombre": "Bocatería", "platos": [
+      {"id": "bocata_lomo", "nombre": "Bocadillo gigante de lomo con queso", "tipo": "comida", "precio": 6, "hambre": 65, "sed": 0, "salud": 20},
+      {"id": "bocata_tortilla", "nombre": "Bocadillo de tortilla", "tipo": "comida", "precio": 5, "hambre": 55, "sed": 0, "salud": 18},
+      {"id": "bocata_calamares", "nombre": "Bocadillo de calamares", "tipo": "comida", "precio": 5, "hambre": 50, "sed": 0, "salud": 16},
+      {"id": "refresco_bocateria", "nombre": "Refresco con hielo", "tipo": "bebida", "precio": 2, "hambre": 0, "sed": 55, "salud": 3}
+    ]},
+    {"id": "marisqueria", "nombre": "Marisquería", "platos": [
+      {"id": "gambas", "nombre": "Gambas a la plancha", "tipo": "comida", "precio": 5, "hambre": 40, "sed": 0, "salud": 30},
+      {"id": "arroz_bogavante", "nombre": "Arroz con bogavante", "tipo": "comida", "precio": 8, "hambre": 85, "sed": 0, "salud": 60},
+      {"id": "mariscada", "nombre": "Mariscada para uno", "tipo": "comida", "precio": 10, "hambre": 80, "sed": 0, "salud": 70},
+      {"id": "agua_marisqueria", "nombre": "Agua mineral", "tipo": "bebida", "precio": 1, "hambre": 0, "sed": 60, "salud": 2}
+    ]},
+    {"id": "horno", "nombre": "Horno de pan", "platos": [
+      {"id": "empanada", "nombre": "Empanada de atún", "tipo": "comida", "precio": 4, "hambre": 45, "sed": 0, "salud": 15},
+      {"id": "pan_lena", "nombre": "Pan de leña recién hecho", "tipo": "comida", "precio": 1, "hambre": 20, "sed": 0, "salud": 4},
+      {"id": "magdalenas", "nombre": "Magdalenas", "tipo": "comida", "precio": 2, "hambre": 20, "sed": 0, "salud": 5},
+      {"id": "leche", "nombre": "Vaso de leche fresca", "tipo": "bebida", "precio": 2, "hambre": 5, "sed": 45, "salud": 4}
+    ]}
   ],
   "carta_domicilio": [
     {"id": "bocadillo", "nombre": "Bocadillo de calamares", "tipo": "comida", "precio": 7, "hambre": 40, "sed": 0, "salud": 15},
@@ -577,7 +684,8 @@
      "frases_golpe": ["El escondite de {banda} queda arrasado: pierden gente, armas y ganas.", "{banda} tardará en rehacerse de esta: les has dejado sin escondite."],
      "frases_golpe_suspende": ["Y el asalto que preparaban a {barrio} queda suspendido.", "Con esto, lo de {barrio} se les ha acabado antes de empezar."],
      "frases_tregua_rota": ["{banda} ha roto la tregua: vuelven a ir a por lo tuyo.", "Se acabó la tregua con {banda}: dicen que ya no les compensa."],
-     "frases_tregua_fin": ["La tregua con {banda} termina hoy.", "Hoy vence lo pactado con {banda}: desde mañana, cada uno a lo suyo."]}
+     "frases_tregua_fin": ["La tregua con {banda} termina hoy.", "Hoy vence lo pactado con {banda}: desde mañana, cada uno a lo suyo."],
+     "frases_tregua_rompes": ["Has atacado a {banda} en plena tregua: se acabó lo pactado, y ahora irán a por lo tuyo con ganas.", "{banda} da la tregua por rota: los has atacado tú. Prepárate, que no tardarán en devolvértela."]}
   ],
   "contratos": [
     {"id": "clasico", "nombre": "Quitar de en medio", "situacion": "eliminar", "peso": 3, "paga": 600, "paga_escolta": 380, "objetivo": "objetivo_contrato", "escolta": "guardaespaldas", "resumen": "{quien} anda por {lugar} con {n} guardaespaldas. Alguien paga por que no vuelva a casa."},
@@ -618,7 +726,7 @@
      "frases_favor_barrio": ["{nombre}: Descuida, que en el barrio voy a hablar bien de ti.", "{nombre}: Si alguien pregunta por ti, sabrá que eres de fiar."],
      "frases_favor_no": ["{nombre}: ¿Un favor? Si casi no te conozco.", "{nombre}: Otro día, cuando haya más confianza.", "{nombre}: No me pidas cosas, anda."],
      "frases_favor_hoy": ["{nombre}: Hoy ya te he echado una mano. No abuses."],
-     "frases_recluta_si": ["{nombre}: ¿Con {banda}? Llevaba tiempo esperando algo así. Cuenta conmigo.", "{nombre} te estrecha la mano: desde hoy es de {banda}.", "{nombre}: Total, peor que mi trabajo no va a ser. Me apunto."],
+     "frases_recluta_si": ["{nombre}: ¿Con {banda}? Llevaba tiempo esperando algo así. Cuenta conmigo.", "{nombre} te estrecha la mano: desde hoy es de {banda}.", "{nombre}: Total, peor que mi trabajo no va a ser. Me apunto.", "{nombre}: ¿Trabajar para {alias}? Sé quién eres. Cuenta conmigo."],
      "frases_recluta_no_confianza": ["{nombre}: ¿Meterme en una banda con alguien a quien acabo de conocer? Ni loc[o|a].", "{nombre}: Primero tendré que saber quién eres."],
      "frases_recluta_no_caracter": ["{nombre}: Yo no valgo para eso. Me tiemblan las piernas solo de pensarlo.", "{nombre}: No, no. Yo quiero una vida tranquila."],
      "frases_recluta_no_fama": ["{nombre}: ¿Y tú quién eres para tener banda? No te conoce nadie.", "{nombre}: Cuando tu nombre suene en la calle, hablamos."],
@@ -644,6 +752,7 @@
      "ausencia_dias": 2,
      "peticion_prob": 30,
      "peticion_dias": 2,
+     "peticion_repite_dias": 3,
      "peticion_premio": 6,
      "peticion_castigo": 5,
      "cocina_salud": 30,
@@ -693,6 +802,9 @@
      "conocido_precio": 8,
      "conocido_animo": 5,
      "conocido_amistad": 10,
+     "planton_dias": 3,
+     "planton_amistad": 15,
+     "frases_planton_no": ["{n} lee tu mensaje y tarda en contestar: «Después del plantón del otro día, mejor lo dejamos para más adelante.» Prueba dentro de {d} días.", "«¿Otra vez? La última vez me dejaste esperando», te contesta {n}. Todavía no quiere quedar contigo: dale {d} días."],
      "frases_planton": ["{n} te escribe: «Te he estado esperando en {lugar}. Ya me voy.» No le ha sentado nada bien.", "{n} se ha cansado de esperarte en {lugar}. No contesta a tus mensajes."],
      "frases_llega": ["{n} ya está en {lugar}, esperándote. Te saluda con un beso.", "Ahí está {n}, en la puerta de {lugar}. Llegas a tiempo."],
      "frases_aviso": ["Recuerda: a las {hora} has quedado con {n} en {lugar}.", "Dentro de un rato, a las {hora}, te espera {n} en {lugar}."],
@@ -737,7 +849,7 @@
     {"tipo": "protectora", "abre": 10, "cierra": 18, "cierra_dias": []}
   ],
   "capo": [
-    {"id": "general", "paga_baja_pct": 50, "paga_alta_pct": 180, "lealtad_baja_resta": 2, "lealtad_alta_suma": 1, "olvido_dias": 5, "olvido_resta": 1, "impago_resta": 15, "traicion_lealtad": 25, "traicion_prob": 8, "camello_min": 6, "camello_max": 14, "camello_comision": 30, "camello_detencion": 6, "camello_baja_dias": 3, "sisa_lealtad": 40, "sisa_pct": 30, "camello_lealtad": 1, "cocinero_min": 5, "cocinero_max": 10, "cocinero_incendio": 3, "robo_casa_prob": 3, "robo_casa_dinero_pct": 60, "robo_casa_mercancia_pct": 50, "robo_casa_objetos": 2, "atraco_calle_prob": 3, "atraco_calle_pct": 70, "atraco_calle_minimo": 150, "deposito_libre": 3000, "casino_maximo": 5000, "casino_comision": 12, "gestor_minimo": 5000, "gestor_comision": 25, "gestor_dias": 3, "gestor_estafa": 5, "redada_lab_prob": 50, "tareas": ["vender=vender en la calle tu mercancía", "cocinar=cocinar en uno de tus laboratorios"], "lugares_gestor": ["casino", "club"], "frases_ventas": ["{n} te trae lo de hoy: ha vendido {u} unidades y te da {euros} euros.", "Cae la noche y {n} te pasa un sobre: {euros} euros de {u} unidades vendidas."], "frases_sisa": ["Las cuentas de {n} no cuadran del todo. Falta algo, pero no dice nada.", "{n} te da menos de lo que debería. Se está quedando con una parte."], "frases_camello_detenido": ["Han detenido a {n} con {u} unidades encima. Estará unos días fuera.", "{n} no vuelve: la policía le ha pillado vendiendo. Pierdes lo que llevaba."], "frases_cocina": ["{n} ha cocinado en {casa}: {u} unidades de {sust}, guardadas en el armario.", "En {casa}, {n} saca una tanda de {sust}: {u} unidades al armario."], "frases_cocina_incendio": ["El laboratorio de {casa} ha ardido. {n} sale con quemaduras y los vecinos llaman a la policía.", "{n} se despista y el laboratorio de {casa} se quema. Se ha perdido."], "frases_traicion_robo": ["{n} ha desaparecido. Del armario de {casa} falta {que}.", "{n} no contesta al teléfono. Al pasar por {casa}, ves que falta {que}."], "frases_traicion_rival": ["{n} se ha ido con otra banda. Se llevó lo que sabía de ti.", "Te cuentan que {n} trabaja ahora para otros. No se despidió."], "frases_traicion_chivato": ["La policía ha registrado {casa}. Alguien de los tuyos se ha ido de la lengua.", "Redada en {casa}. Sabían exactamente dónde mirar: alguien de tu banda ha hablado."], "frases_robo_casa": ["Han entrado a robar en {casa}: se han llevado {que}.", "Al volver a {casa}, la puerta está forzada. Falta {que}."], "frases_atraco_calle": ["Un tipo te sale al paso con una navaja: «La cartera. Ya».", "Dos sombras te cortan el paso en un callejón: «Suelta lo que lleves»."], "frases_banco_sospecha": ["En el banco te piden que justifiques de dónde sale tanto efectivo. No puedes. Solo te admiten {ok} euros y avisan a Hacienda.", "La empleada pone mala cara: con tanto efectivo sin justificar, solo te ingresan {ok} euros. Hacienda se va a enterar."], "frases_gestor": ["El gestor cuenta los billetes sin mirarte. «En {dias} días lo tienes en tu cuenta, limpio. Menos lo mío».", "«Déjamelo a mí», dice el gestor. «{dias} días y estará en tu cuenta como si fuera de una herencia»."], "frases_gestor_llega": ["El gestor cumple: te llegan al banco {euros} euros limpios.", "En tu cuenta aparecen {euros} euros de una sociedad que no conoces. El gestor ha cumplido."], "frases_gestor_estafa": ["El gestor ha desaparecido con tu dinero. En este negocio, a veces pasa.", "El teléfono del gestor ya no existe. Ni tu dinero."]}
+    {"id": "general", "paga_baja_pct": 50, "paga_alta_pct": 180, "lealtad_baja_resta": 2, "lealtad_alta_suma": 1, "olvido_dias": 5, "olvido_resta": 1, "impago_resta": 15, "traicion_lealtad": 25, "traicion_prob": 8, "camello_min": 6, "camello_max": 14, "camello_comision": 30, "camello_detencion": 6, "camello_baja_dias": 3, "sisa_lealtad": 40, "sisa_pct": 30, "camello_lealtad": 1, "cocinero_min": 5, "cocinero_max": 10, "cocinero_incendio": 3, "robo_casa_prob": 3, "robo_casa_dinero_pct": 60, "robo_casa_mercancia_pct": 50, "robo_casa_objetos": 2, "atraco_calle_prob": 3, "atraco_calle_pct": 70, "atraco_calle_minimo": 150, "deposito_libre": 3000, "cajero_ingreso_max": 500, "casino_maximo": 5000, "casino_comision": 12, "gestor_minimo": 5000, "gestor_comision": 25, "gestor_dias": 3, "gestor_estafa": 5, "redada_lab_prob": 50, "tareas": ["vender=vender en la calle tu mercancía", "cocinar=cocinar en uno de tus laboratorios"], "lugares_gestor": ["casino", "club"], "frases_ventas": ["{n} te trae lo de hoy: ha vendido {u} unidades y te da {euros} euros.", "Cae la noche y {n} te pasa un sobre: {euros} euros de {u} unidades vendidas."], "frases_sisa": ["Las cuentas de {n} no cuadran del todo. Falta algo, pero no dice nada.", "{n} te da menos de lo que debería. Se está quedando con una parte."], "frases_camello_detenido": ["Han detenido a {n} con {u} unidades encima. Estará unos días fuera.", "{n} no vuelve: la policía le ha pillado vendiendo. Pierdes lo que llevaba."], "frases_cocina": ["{n} ha cocinado en {casa}: {u} unidades de {sust}, guardadas en el armario.", "En {casa}, {n} saca una tanda de {sust}: {u} unidades al armario."], "frases_cocina_incendio": ["El laboratorio de {casa} ha ardido. {n} sale con quemaduras y los vecinos llaman a la policía.", "{n} se despista y el laboratorio de {casa} se quema. Se ha perdido."], "frases_traicion_robo": ["{n} ha desaparecido. Del armario de {casa} falta {que}.", "{n} no contesta al teléfono. Al pasar por {casa}, ves que falta {que}."], "frases_traicion_rival": ["{n} se ha ido con otra banda. Se llevó lo que sabía de ti.", "Te cuentan que {n} trabaja ahora para otros. No se despidió."], "frases_traicion_chivato": ["La policía ha registrado {casa}. Alguien de los tuyos se ha ido de la lengua.", "Redada en {casa}. Sabían exactamente dónde mirar: alguien de tu banda ha hablado."], "frases_robo_casa": ["Han entrado a robar en {casa}: se han llevado {que}.", "Al volver a {casa}, la puerta está forzada. Falta {que}."], "frases_atraco_calle": ["Un tipo te sale al paso con una navaja: «La cartera. Ya».", "Dos sombras te cortan el paso en un callejón: «Suelta lo que lleves»."], "frases_banco_sospecha": ["En el banco te piden que justifiques de dónde sale tanto efectivo. No puedes. Solo te admiten {ok} euros y avisan a Hacienda.", "La empleada pone mala cara: con tanto efectivo sin justificar, solo te ingresan {ok} euros. Hacienda se va a enterar."], "frases_gestor": ["El gestor cuenta los billetes sin mirarte. «En {dias} días lo tienes en tu cuenta, limpio. Menos lo mío».", "«Déjamelo a mí», dice el gestor. «{dias} días y estará en tu cuenta como si fuera de una herencia»."], "frases_gestor_llega": ["El gestor cumple: te llegan al banco {euros} euros limpios.", "En tu cuenta aparecen {euros} euros de una sociedad que no conoces. El gestor ha cumplido."], "frases_gestor_estafa": ["El gestor ha desaparecido con tu dinero. En este negocio, a veces pasa.", "El teléfono del gestor ya no existe. Ni tu dinero."]}
   ],
   "necesidades": [
     {"id": "general", "sucio_umbral": 70, "apesta_umbral": 90, "cita_sucio_pct": 50, "vendedor_sucio": 15, "turno_sucio": 15, "animo_cada": 120, "animo_baja": 2, "ducha_gimnasio_precio": 3, "mar_limpia": 40, "aseo_minimo": 30, "fuente_sed": 60, "locales_exigentes": ["club", "casino"], "frases_portero": ["El portero te para con la mano: «Así no entras. Date una ducha y vuelve.»", "En la puerta te miran de arriba abajo y arrugan la nariz. Hoy no pasas."], "frases_cita_sucio": ["{n} se aparta un poco cuando te acercas. Se nota que no te has duchado.", "A {n} no le hace gracia el olor. La cita se queda en menos de lo que podía ser."], "frases_gesto_sucio": ["{n} arruga la nariz: «Mejor después de una ducha, ¿vale?»", "«Uf. Primero, una ducha», te dice {n}, medio en broma, medio en serio."], "frases_charla_sucio": ["Se echa un poco hacia atrás mientras habláis: hueles mal.", "Te contesta, pero sin acercarse mucho. El olor no ayuda."], "frases_animo": ["Así no se puede estar: tienes el cuerpo pidiendo a gritos lo que le falta.", "Te sientes fatal. El cuerpo se queja."]}
@@ -1047,7 +1159,7 @@
      "invitar_lealtad": 4,
      "paga_precio": 150,
      "paga_lealtad": 8,
-     "frases_charla_banda": ["{nombre} te cuenta que su madre quiere que deje esto y se saque el carné de camión. Se ríe, pero no del todo.", "{nombre} te pregunta si de verdad te fías de todos los de la banda. Dice que de ti, sí.", "Habláis de fútbol. {nombre} es del equipo que siempre pierde, y lo defiende como si le fuera la vida.", "{nombre} te enseña una foto de cuando era crío, en la playa del puerto. Nadie diría que es la misma persona.", "{nombre} dice que está ahorrando para irse un año fuera cuando esto se calme. No dice adónde.", "{nombre} te cuenta, bajando la voz, que el último golpe le quitó el sueño dos noches."],
+     "frases_charla_banda": ["{nombre} te cuenta que su madre quiere que deje esto y se saque el carné de camión. Se ríe, pero no del todo.", "{nombre} te pregunta si de verdad te fías de todos los de la banda. Dice que de ti, sí.", "Habláis de fútbol. {nombre} es del equipo que siempre pierde, y lo defiende como si le fuera la vida.", "{nombre} te enseña una foto de cuando era crío, en la playa del puerto. Nadie diría que es la misma persona.", "{nombre} dice que está ahorrando para irse un año fuera cuando esto se calme. No dice adónde.", "{nombre} te cuenta, bajando la voz, que el último golpe le quitó el sueño dos noches.", "{nombre} te mira y se ríe: «Cuando digo en el barrio que trabajo para {alias}, la gente se aparta.»", "«Tú eres {alias}», te dice {nombre}, «y eso aquí pesa más que cualquier pistola.»"],
      "frases_invitar_banda": ["Invitas a {nombre} a una cerveza en la barra. Acaba siendo una ronda, y luego otra.", "Le pagas a {nombre} un bocadillo y un café. Dice que así da gusto currar contigo."],
      "frases_paga_banda": ["Le das a {nombre} {euros} euros, aparte de su parte. No dice nada, pero se le nota.", "{nombre} se guarda los {euros} euros sin contarlos: «Esto no se me olvida»."],
      "frases_echar_banda": ["{nombre} recoge sus cosas y se va sin mirar atrás. Ya no es de la banda.", "«Tú sabrás», dice {nombre}. Deja la banda y se pierde calle abajo."],

@@ -41,7 +41,7 @@ AJ = Ajustes("reacciones", {
     "frases_favor_no": [tr("{nombre}: ¿Un favor? Si casi no te conozco."), tr("{nombre}: Otro día, cuando haya más confianza."), tr("{nombre}: No me pidas cosas, anda.")],
     "frases_favor_hoy": [tr("{nombre}: Hoy ya te he echado una mano. No abuses.")],
     "frases_recluta_si": [tr("{nombre}: ¿Con {banda}? Llevaba tiempo esperando algo así. Cuenta conmigo."), tr("{nombre} te estrecha la mano: desde hoy es de {banda}."),
-                          tr("{nombre}: Total, peor que mi trabajo no va a ser. Me apunto.")],
+                          tr("{nombre}: Total, peor que mi trabajo no va a ser. Me apunto."), tr("{nombre}: ¿Trabajar para {alias}? Sé quién eres. Cuenta conmigo.")],
     "frases_recluta_no_confianza": [tr("{nombre}: ¿Meterme en una banda con alguien a quien acabo de conocer? Ni loc[o|a]."), tr("{nombre}: Primero tendré que saber quién eres.")],
     "frases_recluta_no_caracter": [tr("{nombre}: Yo no valgo para eso. Me tiemblan las piernas solo de pensarlo."), tr("{nombre}: No, no. Yo quiero una vida tranquila.")],
     "frases_recluta_no_fama": [tr("{nombre}: ¿Y tú quién eres para tener banda? No te conoce nadie."), tr("{nombre}: Cuando tu nombre suene en la calle, hablamos.")],
@@ -248,7 +248,8 @@ class Reacciones:
         nuevo = self.banda_alta(n, f.get("genero"), nervios=30 + 60 * G.caracter(f["caracter"])["valor"], lealtad=min(95, 50 + f["confianza"] / 2))
         q.bid = nuevo["id"] if nuevo else None
         self.son("pareja", cat="interfaz", vol=0.5)
-        return True, (AJ.frase("frases_recluta_si", nombre=n, banda=j.banda_nombre)
+        from .sistemas import alias_de
+        return True, (AJ.frase("frases_recluta_si", nombre=n, banda=j.banda_nombre, alias=alias_de(j))
                       + (tr(' Le das {prima} euros de prima.').format(prima=(prima)) if prima else "") + tr(' Ya sois {banda} además de ti. Cobra {precio} euros cada medianoche, como los demás.').format(banda=(j.banda), precio=(self.precio('sueldo_banda', sistemas.SUELDO))))
 
     # ------------------------------------------------------------------ lo que propone la IA, decidido por el juego

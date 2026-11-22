@@ -102,6 +102,7 @@ li { margin-bottom: .3em; }
 <li><kbd>F9</kbd>: save, check and open the game to test the mod.</li>
 <li><kbd>Control G</kbd>: write the mod's voice script, to record the lines of the missions.</li>
 <li><kbd>Control Shift V</kbd>: open the voices folder.</li>
+<li><kbd>Control Shift A</kbd>: add your own sound, to use it for weapons, vehicles and places.</li>
 </ul>
 <h3>In the item lists</h3>
 <ul>
@@ -243,6 +244,8 @@ li { margin-bottom: .3em; }
 <p>The Flying: numbers and phrases section, which has a single element, carries the rest, by tabs: altitudes and emergency landing; fuel; the flight, with how much it is sped up and the wind; the approach; events and their weights, where a weight of zero removes that event; storms and the obstacles of low flying; radar and hijacking; hangars and commercial flights; and all the phrases, the control tower's and the rest. Places of the heliport or airport type have a new field, Hangar space price. The prices of fuel, hangar rental and transfers are in the Fares and prices section, and the pilot's license is in the qualifications one.</p>
 <h3>Home delivery</h3>
 <p>The Home delivery: the menu section has one element per dish or drink: its name, its price, the hunger and thirst it takes away, from zero to one hundred, and the health it gives. With an identifier from the game you change that dish; with a new one, you add another to the menu. The Home delivery: times and phrases section has a single element: how long the order takes, between a minimum and a maximum in game minutes, how much longer if it's raining, how many things fit, how long the delivery person waits if the player isn't there, and the phrases, with the names of the places that deliver. The delivery charge is in Fares and prices.</p>
+<h3>Menus of the food places and what each shop sells</h3>
+<p>The section Menus of the food places has one menu per kind of place: ice cream parlor, pizzeria, beach bar, tavern... Each one has its dishes and drinks, with their price, the hunger and thirst they take away, from zero to a hundred, the health they give and an explanation for <kbd>F1</kbd>. Each food place, bar or tavern chooses its own in its Menu field; without a menu, a food place serves the general list of meals, as in earlier versions, and a bar or a tavern only the beer with a tapa. With the identifier of one of the game's menus you replace it entirely; with a new one, you add another. In shops, the field What it sells besides food marks whether they sell first aid kits, lockpicks, the headphone player, dog food or the shop weapons; with none ticked, they sell everything.</p>
 <h3>Shopping and cooking: products, aisles, stores and recipes</h3>
 <p>Five sections that go together. With them a mod can add products and recipes, open a new aisle or invent a new kind of store.</p>
 <ul>
@@ -336,17 +339,18 @@ li { margin-bottom: .3em; }
 <p>To share a mod with voices, give out the mod file and, separately, a folder with the recordings to copy into <strong>data\voces\propias</strong>. Use your own voices or synthetic voices you have permission to use: not voices cloned from real people or taken from other games or films.</p>
 
 <h2>6. Sounds</h2>
-<p>Everything you add must make a sound. Each place has a sound field, which is what you hear when passing its door and in the background when you go inside. Choose one of the game's sounds from the drop-down list. If you want a new one, copy your file into <code>data\sonidos\por_defecto</code> with whatever name you like and it will appear in the list the next time you open the editor. The guide <a href="cambiar_sonidos_en.html">cambiar_sonidos_en.html</a> describes all the sounds.</p>
+<p>Everything you add should make a sound. Each place has a sound field, which is what you hear when passing its door and in the background inside, and weapons and vehicles have theirs. Choose one of the game's sounds in the drop-down. If you want one of your own, in the Mod menu choose Add your own sound, with <kbd>Control Shift A</kbd>: you pick a WAV, OGG, FLAC or MP3 file, the editor copies it to <code>data\mods\sonidos</code> with a name without accents or spaces, and it appears in every sound drop-down. If it is named like one of the game's sounds, it gets <code>mod_</code> in front: a mod never replaces the game's sounds, which belong to every pack. The guide <a href="cambiar_sonidos_en.html">cambiar_sonidos_en.html</a> describes all the sounds.</p>
 
 <h2>7. Checking and testing</h2>
 <p><kbd>F5</kbd> checks the mod and lists what it finds: references to things that don't exist, places outside the map or on top of a building, missions without steps, repeated identifiers and inconsistent steps. Each warning says which element it's in. Fix them and check again until none are left.</p>
 <p><kbd>F9</kbd> saves, checks and opens the game. Start a new game or load one, and go and see your content.</p>
+<p>If the check says something points to a town that doesn't exist, it also says why: whether you entered the town's name instead of its identifier, or the town is in another mod. The places that lead to a town have to be in the same mod as the town. When you change the identifier of a town in your mod, everything that pointed to it, places, exits, races and the air map, changes by itself, and the editor says how many references it changed.</p>
 
 <h2>8. Enabling and disabling mods</h2>
-<p>With <kbd>Control M</kbd> a checklist opens with all the mods in the folder. The checked ones are the ones the game loads. A disabled mod isn't deleted: its file changes extension and the game ignores it.</p>
+<p><kbd>Control M</kbd> opens a list of checkboxes with all the mods in the folder. The checked ones are the ones the game loads. A disabled mod is not deleted: its file changes extension and the game ignores it. Since version 1.7.3 you can also do it inside the game, in Options, Mods: turn on or off.</p>
 
 <h2>9. Sharing a mod</h2>
-<p>Send the <code>.pbm</code> file from the <code>data\mods</code> folder. Whoever receives it just has to copy it into their <code>data\mods</code> folder. If your mod uses new sounds, send those files too, which go in <code>data\sonidos\por_defecto</code>.</p>
+<p>Send the <code>.pbm</code> file from the <code>data\mods</code> folder. Whoever receives it just copies it into their <code>data\mods</code> folder. If your mod uses its own sounds, send those files too, which are in <code>data\mods\sonidos</code>, and whoever receives them copies them into the same folder.</p>
 
 <h2>10. Common problems</h2>
 <ul>

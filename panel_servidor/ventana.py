@@ -729,10 +729,12 @@ class VentanaPanel(wx.Frame):
             return
         if not self._necesita_marcha():
             return
-        if texto.split()[0].lower() == "apagar":
+        from servidor.nucleo import orden_espanola
+        que = orden_espanola(texto.split()[0])                   # en español o en inglés: apagar o shutdown, decir o tell
+        if que == "apagar":
             self.parar()
         else:
-            self._linea("%s  > %s" % (time.strftime("%H:%M:%S"), texto.split()[0] if texto.split()[0].lower() == "decir" else texto))
+            self._linea("%s  > %s" % (time.strftime("%H:%M:%S"), texto.split()[0] if que == "decir" else texto))
             self._orden(texto)
         self.campo_orden.SetValue("")
 

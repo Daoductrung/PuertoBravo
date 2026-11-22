@@ -83,6 +83,8 @@ AJ = Ajustes("reconquista", {
     "frases_golpe_suspende": [tr("Y el asalto que preparaban a {barrio} queda suspendido."), tr("Con esto, lo de {barrio} se les ha acabado antes de empezar.")],
     "frases_tregua_rota": [tr("{banda} ha roto la tregua: vuelven a ir a por lo tuyo."), tr("Se acabó la tregua con {banda}: dicen que ya no les compensa.")],
     "frases_tregua_fin": [tr("La tregua con {banda} termina hoy."), tr("Hoy vence lo pactado con {banda}: desde mañana, cada uno a lo suyo.")],
+    "frases_tregua_rompes": [tr("Has atacado a {banda} en plena tregua: se acabó lo pactado, y ahora irán a por lo tuyo con ganas."),
+                             tr("{banda} da la tregua por rota: los has atacado tú. Prepárate, que no tardarán en devolvértela.")],
 }, cero=("alianza_prob", "rumor_prob", "baja_prob", "peso_antiguo", "peso_defensa", "peso_abandono", "peso_rentable", "peso_azar", "descanso_azar",
          "premio_defensa", "fama_defensa", "fama_perdida", "forastera_prob", "golpe_paga", "lealtad_baja", "lealtad_visita", "calma_carga",
          "defensa_banda", "defensa_lealtad", "defensa_resta", "lealtad_impago", "fuerza_inicial_min", "fuerza_inicial_max"))
@@ -191,6 +193,26 @@ class Reconquista:
             b = r["bandas"][nombre] = {"fuerza": round(AJ.entre("fuerza_inicial_min", "fuerza_inicial_max"), 1), "moral": 0.0, "derrotas": 0, "fuera": 0, "tregua": 0, "golpe": -99,
                                        "umbral": round(AJ.entre("umbral_min", "umbral_max"), 1)}
         return b
+
+    def en_tregua(self, nombre):
+        """¿Tienes una tregua en vigor con esa banda?"""
+        if not self.rec_nivel():
+            return False
+        b = self.rec()["bandas"].get(nombre)
+        return bool(b and b.get("tregua") and self.dia <= b["tregua"])
+
+    def romper_tregua(self, nombre, frase=None):
+        """Has atacado a una banda con la que tenías tregua: la tregua se acaba, la banda se crece y se la guarda, y puede
+        devolvértela desde ya, sin los días de descanso de cuando la rompen ellos. Devuelve True si había tregua."""
+        if not self.en_tregua(nombre):
+            return False
+        r, b = self.rec(), self.rec_banda(nombre)
+        b["tregua"] = 0
+        b["moral"] = min(100.0, b["moral"] + 15)
+        r["descanso"] = min(r.get("descanso", 0), self.dia)
+        self.cambiar_rep_banda(nombre, -15, hablar=False)
+        self._rec_decir(frase or AJ.frase("frases_tregua_rompes", banda=nombre), "amenaza_barrio")
+        return True
 
     def rec_nombres(self):
         """Las bandas que cuentan: las de la comarca y, si ha llegado alguna, las forasteras."""
@@ -844,11 +866,7 @@ class Reconquista:
             pasos = [{"tipo": "eliminar", "lugar": l1.id, "texto": tr('El escondite de {banda} está junto a {nombre}: {n} en total, y {llegan} de ellos llegarán en un vehículo en cuanto empiece. Escucha el motor.').format(banda=(banda), nombre=(l1.nombre), n=(n), llegan=(llegan)),
                       "enemigos": [g for g in (grupo(base, n - llegan - 1), grupo(duro, 1, 10), grupo(refuerzo, llegan, 5)) if g["n"] > 0]}]
         b["golpe"] = self.dia
-        if self.dia <= b["tregua"]:                              # golpear a una banda con la que tienes tregua la rompe
-            b["tregua"] = 0
-            b["moral"] = min(100.0, b["moral"] + 15)
-            self.cambiar_rep_banda(banda, -15, hablar=False)
-            self._rec_decir(tr('Con este golpe rompes la tregua con {banda}. No lo olvidarán.').format(banda=(banda)), "amenaza_barrio")
+        self.romper_tregua(banda, tr('Con este golpe rompes la tregua con {banda}. No lo olvidarán.').format(banda=(banda)))
 
         def hecho():
             r, b = self.rec(), self.rec_banda(banda)             # tras reintentar la misión, el estado guardado es otro: se pide otra vez

@@ -1,0 +1,11 @@
+﻿PACK DE SONIDOS «GENNY» PARA PUERTO BRAVO
+
+Los 282 sonidos del juego, todos generados con genny, un generador de sonidos por síntesis.
+No hay grabaciones ni sonidos del juego: cada uno sale de una receta de genny (herramientas\pack_genny.py).
+
+INSTALAR PARA PROBARLO
+  Copia esta carpeta entera dentro de data\sonidos del juego y elígela en
+  Opciones, Sonido y música, Pack de sonidos.
+
+DE DÓNDE SALE
+  https://github.com/ogomez92/genny

@@ -65,7 +65,7 @@ def test_precios_que_suben_y_bajan(robot):
     m = robot.app.pila[-1]
     assert isinstance(m, Menu)
     m.refrescar(False)
-    c = p.datos["comidas"][0]
+    c = menus_juego.carta_de(p, l)[0]                                # desde la 1.7.3, el asador sirve su carta
     factor = p.mercado("comida", "asador") * (3.0 if l.get("caro") else 1.0)
     esperado = int(c["precio"] * factor)
     assert esperado > c["precio"] and f"{esperado} euros" in m.opciones[0].texto

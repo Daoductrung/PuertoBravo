@@ -2,7 +2,7 @@
 
 Otra selección de grabaciones para los mismos sonidos, con otras armas y con clics reales en los menús.
 
-Trae los 279 sonidos del juego: 215 son grabaciones reales descargadas y 64 son el sonido
+Trae los 282 sonidos del juego: 216 son grabaciones reales descargadas y 66 son el sonido
 original del juego, para los que no hay una grabación libre que encaje o que conviene no tocar
 (balizas, tonos, semáforos, radar y firmas de los lugares: de ellos depende orientarse sin ver).
 Todos proceden de colecciones con licencia CC0 (dominio público): se pueden usar, modificar y
@@ -82,6 +82,7 @@ COLECCIONES USADAS
   fantasy accessory sfx library: https://opengameart.org/content/fantasy-accessory-sfx-library
   Wind: https://opengameart.org/content/wind
   BigSoundBank.com, grabaciones CC0 bajadas para la versión 1.7.1: https://bigsoundbank.com
+  crowd shoutingspeaking ambience: https://opengameart.org/content/crowd-shoutingspeaking-ambience
 
 QUÉ SONIDO SALE DE DÓNDE
   abstinencia.flac: old-man-cough.flac, de old man cough. Dura 1,20 segundos.
@@ -231,6 +232,7 @@ QUÉ SONIDO SALE DE DÓNDE
   notificacion.flac: lowRing.wav, de patreon menu soundpacks. Dura 0,97 segundos.
   paisano.flac: alarm2.ogg, de UI sound effects: button clicks, user feedback, notifications. Dura 0,43 segundos.
   pajaro.flac: bird2.wav, de Bird, cricket, frog and mosquito sounds. Dura 0,22 segundos.
+  panico.flac: crowd_shouting_0.ogg, de crowd shoutingspeaking ambience. Dura 3,80 segundos.
   pareja.flac: bell_ding3.wav, de bell dingschimes. Dura 1,21 segundos.
   pasan_horas.flac: Chime_Sleep.mp3, de Chimey UI sounds. Dura 1,33 segundos.
   paso_acera0.flac: sfx100v2_footstep_01.ogg, de 100 CC0 SFX #2. Dura 0,28 segundos.
@@ -302,4 +304,4 @@ QUÉ SONIDO SALE DE DÓNDE
 
 SONIDOS ORIGINALES DEL JUEGO INCLUIDOS PARA QUE EL PACK ESTÉ COMPLETO
   Sustituye cualquiera de ellos por una grabación tuya con el mismo nombre.
-  alarma_cabina, aterrizaje, baliza, baliza_destino, bordillo, chat_accion, chat_fuera, chat_personaje, cruce, cursor_mapa, despido, espera_servidor, factura, inspeccion, loc_casete, loc_lugar, loc_mision, loc_objeto, loc_vehiculo, lugar_academia, lugar_aeropuerto, lugar_armeria, lugar_banco, lugar_bar, lugar_boya, lugar_casa, lugar_casino, lugar_cine, lugar_club, lugar_comida, lugar_comisaria, lugar_contacto, lugar_embarcadero, lugar_empleo, lugar_estacion, lugar_generico, lugar_gimnasio, lugar_helipuerto, lugar_hospital, lugar_iglesia, lugar_mina, lugar_ong, lugar_periodico, lugar_prision, lugar_protectora, lugar_proveedor, lugar_salida, lugar_taller, lugar_taxi, lugar_tienda, lugar_tranvia, lugar_tren, radar, semaforo_pio, semaforo_tic, sonar, titulo, tono_alineacion, tono_altitud, tono_apuntado, tono_libre, tono_objetivo, tono_pared, turbulencia
+  alarma_cabina, aterrizaje, baliza, baliza_destino, bordillo, chat_accion, chat_fuera, chat_personaje, cruce, cursor_mapa, despido, espera_servidor, factura, inspeccion, loc_casete, loc_lugar, loc_mision, loc_objeto, loc_vehiculo, lugar_academia, lugar_aeropuerto, lugar_armeria, lugar_banco, lugar_bar, lugar_boya, lugar_casa, lugar_casino, lugar_cine, lugar_club, lugar_comida, lugar_comisaria, lugar_contacto, lugar_embarcadero, lugar_empleo, lugar_estacion, lugar_generico, lugar_gimnasio, lugar_helipuerto, lugar_hospital, lugar_iglesia, lugar_mina, lugar_ong, lugar_periodico, lugar_prision, lugar_protectora, lugar_proveedor, lugar_salida, lugar_taller, lugar_taxi, lugar_tienda, lugar_tranvia, lugar_tren, radar, semaforo_pio, semaforo_rojo, semaforo_tic, semaforo_verde, sonar, titulo, tono_alineacion, tono_altitud, tono_apuntado, tono_libre, tono_objetivo, tono_pared, turbulencia

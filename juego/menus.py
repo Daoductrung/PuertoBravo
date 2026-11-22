@@ -139,6 +139,8 @@ class Menu:
                 self.app.decir(tr("Flechas arriba y abajo para moverte, Intro para elegir, izquierda y derecha para cambiar un valor, Escape para volver."), True)
         elif k in (pygame.K_PAGEUP, pygame.K_PAGEDOWN) and getattr(ev, "mod", 0) & pygame.KMOD_CTRL:
             self.app.voz.repasar_extremo(k == pygame.K_PAGEDOWN)
+        elif k in (pygame.K_PAGEUP, pygame.K_PAGEDOWN) and getattr(ev, "mod", 0) & pygame.KMOD_SHIFT:
+            self.app.voz.repasar_mensajes(-1 if k == pygame.K_PAGEUP else 1)
         elif k == pygame.K_PAGEUP:
             self.app.voz.repasar(-1)
         elif k == pygame.K_PAGEDOWN:
@@ -242,6 +244,8 @@ class Dialogo:
             self._fin()
         elif k in (pygame.K_PAGEUP, pygame.K_PAGEDOWN) and getattr(ev, "mod", 0) & pygame.KMOD_CTRL:
             self.app.voz.repasar_extremo(k == pygame.K_PAGEDOWN)
+        elif k in (pygame.K_PAGEUP, pygame.K_PAGEDOWN) and getattr(ev, "mod", 0) & pygame.KMOD_SHIFT:
+            self.app.voz.repasar_mensajes(-1 if k == pygame.K_PAGEUP else 1)
         elif k == pygame.K_PAGEUP:
             self.app.voz.repasar(-1)
         elif k == pygame.K_PAGEDOWN:

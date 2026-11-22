@@ -1,0 +1,35 @@
+PUERTO BRAVO: LEY DEL ASFALTO ONLINE SERVER
+
+This folder has everything you need to run your own server, and everything that belongs to it is kept here: the
+settings, the characters and the backups. Game updates don't touch your data.
+
+To get started, on this same computer:
+
+- Panel del servidor (server panel): opens a window to start, stop and manage the server. It's the easiest way.
+- Servidor por consola (console server): starts the server in a text window, where you type commands.
+- Parar el servidor (stop the server): stops the running server cleanly, saving everything.
+- Arrancar con Windows - activar, and Arrancar con Windows - quitar: start the server by itself when you sign in to
+  Windows, or stop doing so.
+
+And also:
+
+- documentacion_en.html: the full guide, step by step. Open it with your browser. From the panel it opens with F1.
+  In Spanish, documentacion_es.html.
+- servidor.conf.ejemplo: every option, explained. The panel changes them from Settings, without touching any files.
+  Add the line  idioma = en  to have the console and the log always in English.
+- otros_sistemas: what to copy to Linux, a Mac, a NAS, a Raspberry Pi or a rented server, and the files to run it
+  with Docker. The game isn't needed there: only Python. It has its own README_en.txt.
+
+The first time you start the server, servidor.conf, with your settings, and the datos_servidor folder, with the
+characters, the certificate and the backups, will appear here. If you move the game to another folder or another
+computer, take those two with you and the server will carry on as it was.
+
+Commands: since version 1.7.3 every command works in English and in Spanish at the same time: help or ayuda,
+players or jugadores, kick or expulsar, ban or vetar, shutdown or apagar, and so on. Type help to hear them all.
+There is a new one, rename name: new name, to change a player's name without losing anything. And nobody can join
+for the first time without a player name: the game asks for one.
+
+Updating the game with the server running: you no longer need to stop it first. The game says so, asks for
+permission, warns the players, stops the server cleanly, updates and, when it finishes, the server starts again by
+itself, just as it was. The players' games wait and join again by themselves, each where they were. Section 20 of the
+guide explains it.

@@ -192,6 +192,18 @@ def cargar(mez, cfg):
             S[nombre] = d
             info["del_pack"] += 1
         info["pack"] = pack
+    info["de_mods"] = 0
+    if os.path.isdir(rutas.SONIDOS_MODS):                        # los sonidos propios de los mods: nombres nuevos, nunca los del juego
+        for nombre, archivo in _archivos(rutas.SONIDOS_MODS).items():
+            if nombre in S:
+                continue
+            try:
+                d = sintesis.leer_audio(archivo, mono=True, maximo=sintesis.MAX_EFECTO)
+            except Exception:
+                continue
+            if len(d) > 8:
+                S[nombre] = d
+                info["de_mods"] += 1
     for nombre, f in cfg["vol_sonidos"].items():
         if nombre in S and isinstance(f, (int, float)):
             S[nombre] = S[nombre] * max(AJUSTE_MIN, min(AJUSTE_MAX, float(f)))

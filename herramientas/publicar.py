@@ -67,28 +67,66 @@ def firmar(manifiesto, semilla):
     return manifiesto
 
 
-def novedades():
-    """El primer apartado de data/docs/novedades.html, en texto."""
+def apartado_novedades(cod="es"):
+    """El título y el HTML del primer apartado de data/docs/novedades_<cod>.html, o None si no hay."""
     try:
-        with open(os.path.join(RAIZ, "data", "docs", "novedades_es.html"), encoding="utf-8") as f:
+        with open(os.path.join(RAIZ, "data", "docs", f"novedades_{cod}.html"), encoding="utf-8") as f:
             pagina = f.read()
     except OSError:
-        return ""
+        return None
     m = re.search(r"<h2[^>]*>(.*?)</h2>(.*?)(?=<h2|</body>)", pagina, re.S)
-    if not m:
+    return (m.group(1), m.group(2)) if m else None
+
+
+def novedades(cod="es"):
+    """El primer apartado de data/docs/novedades_<cod>.html, en texto. Vacío si ese idioma no tiene novedades."""
+    apartado = apartado_novedades(cod)
+    if not apartado:
         return ""
-    cuerpo = re.sub(r"</(li|p|h3)>", "\n", m.group(2))
-    texto = html.unescape(re.sub(r"<[^>]+>", "", m.group(1) + ".\n" + cuerpo))
-    return recortar_novedades([l.strip() for l in texto.splitlines() if l.strip()])
+    cuerpo = re.sub(r"</(li|p|h3)>", "\n", apartado[1])
+    texto = html.unescape(re.sub(r"<[^>]+>", "", apartado[0] + ".\n" + cuerpo))
+    return recortar_novedades([l.strip() for l in texto.splitlines() if l.strip()], cola=COLAS.get(cod, COLAS["en"]))
+
+
+def idiomas_con_novedades():
+    """Los códigos de idioma que tienen su data/docs/novedades_<cod>.html, el español primero."""
+    cods = sorted(f[len("novedades_"):-len(".html")] for f in os.listdir(os.path.join(RAIZ, "data", "docs"))
+                  if re.fullmatch(r"novedades_[a-z]{2,3}\.html", f))
+    return sorted(cods, key=lambda c: c != "es")
+
+
+def notas_github(cods=None):
+    """Las notas de la release de GitHub en Markdown, con lo nuevo de la versión en cada idioma que lo tenga: así quien
+    no lee español encuentra las suyas. publicar() las deja junto al ZIP, en notas_github.md."""
+    partes = []
+    for cod in cods or idiomas_con_novedades():
+        apartado = apartado_novedades(cod)
+        if not apartado:
+            continue
+        md = apartado[1]
+        md = re.sub(r"<h3[^>]*>(.*?)</h3>", lambda m: "\n### " + " ".join(m.group(1).split()) + "\n", md, flags=re.S)
+        md = re.sub(r"<li[^>]*>(.*?)</li>", lambda m: "- " + " ".join(m.group(1).split()) + "\n", md, flags=re.S)
+        md = re.sub(r"<p[^>]*>(.*?)</p>", lambda m: "\n" + " ".join(m.group(1).split()) + "\n", md, flags=re.S)
+        md = html.unescape(re.sub(r"<[^>]+>", "", md))
+        md = re.sub(r"\n[ \t]+", "\n", md)
+        md = re.sub(r"(?<=\n)\n+(?=- )", "", "\n" + md)[1:]       # los puntos de una lista, seguidos, sin línea en blanco
+        md = re.sub(r"\n{3,}", "\n\n", md).strip()
+        partes.append(f"## {TITULO_NOTAS.get(cod, html.unescape(apartado[0]))}\n\n{md}\n")
+    return "\n".join(partes)
 
 
 NOVEDADES_MAX = 6000
+# Lo que se dice cuando no caben todas las novedades, en cada idioma; un idioma sin la suya usa la inglesa.
+COLAS = {
+    "es": "Hay más: la lista completa está en el menú principal del juego, en Acerca de, Novedades de esta versión.",
+    "en": "There is more: the full list is in the game's main menu, in About, What's new in this version.",
+}
+TITULO_NOTAS = {"es": "Novedades (español)", "en": "What's new (English)"}
 
 
-def recortar_novedades(lineas, tope=NOVEDADES_MAX):
+def recortar_novedades(lineas, tope=NOVEDADES_MAX, cola=COLAS["es"]):
     """El resumen de novedades que viaja con la versión: cada línea es un punto, y solo entran puntos completos. Si no
     caben todos, se corta al final del último que quepa (nunca a mitad de palabra) y se dice dónde está el resto."""
-    cola = "Hay más: la lista completa está en el menú principal del juego, en Acerca de, Novedades de esta versión."
     entero = "\n".join(lineas)
     if len(entero) <= tope:
         return entero
@@ -142,6 +180,8 @@ def publicar(destino=None, dist=DIST, prueba=False):
         "url": base_servidor + nombre,
         "espejos": {} if prueba else {"github": f"https://github.com/{A.REPOSITORIO_GITHUB}/releases/download/v{VERSION}/{nombre}"},
         "fecha": datetime.date.today().isoformat(), "novedades": novedades(),
+        # Desde la 1.7.3 cada juego lee las de su idioma; los anteriores solo conocen "novedades", en español.
+        "novedades_por_idioma": {cod: novedades(cod) for cod in idiomas_con_novedades()},
     }, semilla)
     if prueba and destino:
         destino = os.path.join(destino, SUB_PRUEBAS)
@@ -165,7 +205,12 @@ def publicar(destino=None, dist=DIST, prueba=False):
     if prueba:
         print("Es una versión de prueba: la publicada no se ha tocado. Dirección para probarla:", base_servidor + "version.json")
     else:
-        print(f"Para GitHub: crea la release v{VERSION} y sube esos mismos dos archivos.")
+        notas = os.path.join(SALIDA, "notas_github.md")
+        with open(notas, "w", encoding="utf-8", newline="\n") as f:
+            f.write(notas_github())
+        print(f"Para GitHub: crea la release v{VERSION} con esos mismos dos archivos y, como notas, notas_github.md, que trae")
+        print("lo nuevo en cada idioma:")
+        print(f'  gh release create v{VERSION} "{ruta_zip}" "{ruta_json}" --title "Puerto Bravo {VERSION}" --notes-file "{notas}"')
     return ruta_zip, ruta_json
 
 

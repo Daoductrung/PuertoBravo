@@ -608,6 +608,21 @@ def opciones(app):
                 al_cambiar()
         return Opcion(lambda: f"{nombre}: {tr('sí') if cfg[clave] else tr('no')}", ajuste=aj, ayuda=ayuda_)
 
+    def estilo_piloto():
+        from .conduccion import ESTILOS_PILOTO
+        propios = {"normal": tr("normal, a velocidad de ciudad"), "prisa": tr("con prisa, pero para en los semáforos"),
+                   "mucha_prisa": tr("con mucha prisa, sin parar en los semáforos")}
+
+        def aj(d):
+            ops = list(ESTILOS_PILOTO)
+            actual = cfg["piloto_estilo"] if cfg["piloto_estilo"] in ops else "normal"
+            cfg["piloto_estilo"] = ops[(ops.index(actual) + d) % len(ops)]
+        return Opcion(lambda: tr("Cómo conduce el piloto del GPS") + ": " + propios.get(cfg["piloto_estilo"], propios["normal"]), ajuste=aj,
+                      ayuda=tr("Normal: va a velocidad de ciudad, para en los semáforos y se detiene al llegar. Con prisa: corre más, como en un trabajo contra el reloj, "
+                               "pero sigue parando en rojo. Con mucha prisa: va a todo lo que da el vehículo y no para en los semáforos, para huir de la policía o llegar a tiempo; "
+                               "frena solo lo justo para tomar las curvas y para no chocar con el de delante. Si no te busca la policía, correr así te puede costar multas. "
+                               "Al volante se cambia también con Mayúsculas Y."))
+
     def seccion(titulo, ops, ayuda_=None):
         def abrir():
             m = Menu(app, titulo, ops + [Opcion(tr("Volver"), lambda: app.cerrar(m), ayuda=tr("Vuelve al menú de opciones. También sirve Escape."))],
@@ -713,6 +728,9 @@ def opciones(app):
             si_no("igualar_volumen", tr("Igualar el volumen de los sonidos cambiados"), tr("Lleva cada sonido de un pack, o que hayas sustituido a mano, al mismo nivel que tenía el original, para que ninguno quede demasiado fuerte ni demasiado flojo."), al_cambiar=app.recargar_sonidos),
             Opcion(tr("Ajustar el volumen de cada sonido"), lambda: volumen_sonidos(app), ayuda=tr("Todos los sonidos del juego, por los mismos grupos que en Aprender los sonidos, y con un buscador. Intro los hace sonar y las flechas izquierda y derecha suben o bajan ese sonido en concreto, del 30 al 200 por ciento. Se suma a los volúmenes generales de arriba: primero se aplica el de cada sonido y encima el de efectos, ambiente o avisos. Dice cuántos tienes cambiados y deja restablecer uno, un grupo o todos.")),
         ], tr("Volúmenes, música de ambiente y packs de sonidos.")),
+        Opcion(tr("Mods: activar o desactivar"), lambda: __import__("juego.gestor_mods", fromlist=["x"]).menu(app),
+               ayuda=tr("La lista de mods instalados, cada uno con si está activado o no. Intro lo cambia. Los cambios se notan al volver a abrir el juego. "
+                        "Los mods nuevos se instalan en Actualizaciones, Componentes, o se hacen con el editor de mods.")),
         seccion(tr("Movimiento y conducción"), [
             lista("movimiento", tr("Movimiento a pie"), tr("En modo brújula el oído mira siempre al norte. Con giros, el sonido gira contigo.")),
             lista("conduccion", tr("Conducción"), tr("También se cambia durante el juego con F2.")),
@@ -734,6 +752,7 @@ def opciones(app):
             si_no("piloto_gps", tr("Piloto del GPS, el coche va solo hasta el destino"),
                   tr("Con un destino marcado en el GPS y en conducción asistida, el coche conduce solo: acelera, frena, gira, espera en los semáforos y se detiene al llegar. "
                   "Con cualquier flecha o el espacio mandas tú. Se activa también con la tecla Y al volante.")),
+            estilo_piloto(),
             si_no("sonar", tr("Sensor de proximidad al volante"), tr("Al volante, pita cuando tienes un obstáculo cerca: más agudo cuanto más cerca, y por el lado en que está. Al activarlo se oye una muestra."),
                   al_cambiar=lambda: cfg["sonar"] and app.mez.sonar("sonar", cat="interfaz", vol=0.6)),
         ], tr("Cómo caminas y cómo conduces.")),
@@ -754,8 +773,12 @@ def opciones(app):
             si_no("anunciar_superficie", tr("Anunciar los cambios de suelo"), tr("Dice acera, calzada, césped o arena cada vez que cambia el suelo que pisas.")),
             si_no("localizador", tr("Sonido propio de cada lugar cercano"), tr("Cada tipo de lugar suena de una manera cuando pasas cerca. Al activarlo se oye una muestra, la de un bar. En el menú principal, Aprender los sonidos los tiene todos."),
                   al_cambiar=lambda: cfg["localizador"] and app.mez.sonar("lugar_bar", cat="interfaz", vol=0.8)),
-            si_no("semaforos", tr("Semáforos acústicos en los cruces"), tr("En los cruces con semáforo se oye si puedes cruzar. Al activarlo se oye una muestra."),
+            si_no("semaforos", tr("Semáforos acústicos en los cruces"), tr("A pie, en los cruces con semáforo se oye si puedes cruzar. Al activarlo se oye una muestra."),
                   al_cambiar=lambda: cfg["semaforos"] and app.mez.sonar("semaforo_pio", cat="interfaz", vol=0.8)),
+            si_no("semaforos_coche", tr("Semáforos al conducir"),
+                  tr("Con sí, cuando conduces tú, sin el piloto del GPS, se dice si el semáforo del próximo cruce está en rojo o en verde, con un sonido para cada uno, "
+                     "y si cambia mientras te acercas o esperas. Vale en conducción asistida y en la libre, yendo recto por una calle. Al activarlo se oye una muestra, la del rojo."),
+                  al_cambiar=lambda: cfg["semaforos_coche"] and app.mez.sonar("semaforo_rojo", cat="interfaz", vol=0.8)),
         ], tr("GPS, baliza, anuncios y sonidos de orientación.")),
         seccion(tr("Combate y dificultad"), [
             lista("dificultad", tr("Dificultad"), tr("Cambia el daño que recibes.")),
@@ -1403,18 +1426,79 @@ def _menu_lugar(p, l, ops, intro=None):
 
 
 def _comprar_comida(p, c, factor=1.0):
+    """Comer o beber en el local. Lo de una carta (vida.json, cartas) dice en los datos cuánta hambre y cuánta sed quita;
+    lo de la lista general de comidas, solo la salud, y el hambre la quita el comer."""
+    de_carta = "hambre" in c or "sed" in c
+    bebida = c.get("tipo") == "bebida"
+
     def f():
         precio = int(c["precio"] * factor)
-        con_hambre = p.vida_realista() and p.j.hambre >= 15           # con vida realista se come por hambre, aunque la salud esté entera
-        if p.j.salud >= p.j.salud_max and not con_hambre:
-            p.app.decir(tr("No tienes hambre: tu salud está al máximo.") if not p.vida_realista() else tr("Ahora no tienes hambre. La tecla V te dice cómo vas de hambre y de sueño."), True)
+        j = p.j
+        if de_carta:
+            apetece = p.vida_realista() and ((j.hambre >= 15 and c.get("hambre", 0) > 0) or (j.sed >= 15 and c.get("sed", 0) > 0))
+        else:
+            apetece = p.vida_realista() and j.hambre >= 15           # con vida realista se come por hambre, aunque la salud esté entera
+        if j.salud >= j.salud_max and not apetece:
+            if not p.vida_realista():
+                p.app.decir(tr("No tienes hambre: tu salud está al máximo."), True)
+            elif bebida:
+                p.app.decir(tr("Ahora no tienes sed. La tecla V te dice cómo vas de hambre, de sed y de sueño."), True)
+            else:
+                p.app.decir(tr("Ahora no tienes hambre. La tecla V te dice cómo vas de hambre y de sueño."), True)
             return
         if p.pagar(precio):
-            p.j.salud = min(p.j.salud_max, p.j.salud + c["salud"])
-            p.son("comer", cat="interfaz")
-            hambre = p.necesidades_txt()
-            p.app.decir(tr('{nombre}. Salud {int}.{hambre}').format(nombre=(c['nombre']), int=(int(p.j.salud)), hambre=(hambre)), True)
+            j.salud = min(j.salud_max, j.salud + c.get("salud", 0))
+            if de_carta:
+                p.mez.sonar("beber" if bebida else "comer", cat="interfaz")      # sin el hambre de serie de p.son: la dicen los datos
+                p.tomar(c.get("hambre", 0), c.get("sed", 0))
+            else:
+                p.son("comer", cat="interfaz")
+            p.app.decir(tr('{nombre}. Salud {int}.{hambre}').format(nombre=(c['nombre']), int=(int(j.salud)), hambre=(p.necesidades_txt())), True)
     return f
+
+
+def carta_de(p, l):
+    """Los platos y bebidas de la carta de un local (su campo «carta», de la sección cartas de vida.json), o None si no
+    tiene: entonces sirve la lista general de comidas, como siempre."""
+    cid = l.get("carta")
+    if not cid:
+        return None
+    carta = next((c for c in p.datos.get("cartas", []) if isinstance(c, dict) and c.get("id") == cid), None)
+    platos = [x for x in (carta or {}).get("platos", []) if isinstance(x, dict) and x.get("nombre") and x.get("precio") is not None]
+    return platos or None
+
+
+def _que_quita(p, c):
+    """Lo que hace un plato de la carta, para su ayuda: cuánta hambre y sed quita y cuánta salud da."""
+    partes = []
+    if p.vida_realista():
+        for clave, nombre in (("hambre", tr("hambre")), ("sed", tr("sed"))):
+            v = int(c.get(clave, 0) or 0)
+            if v:
+                partes.append(tr("le quita {v} de 100 a tu {nombre}").format(v=v, nombre=nombre))
+    if c.get("salud"):
+        partes.append(tr("te da {v} de salud").format(v=int(c["salud"])))
+    txt = (c.get("desc", "") + " ") if c.get("desc") else ""
+    return txt + (tr("Se toma al momento: ") + ", ".join(partes) + "." if partes else tr("Se toma al momento."))
+
+
+def opciones_carta(p, l, factor=1.0):
+    """Las opciones del menú para pedir lo de la carta del local."""
+    return [Opcion(lambda c=c: tr('{nombre}: {int} euros').format(nombre=(c['nombre']), int=(int(c['precio'] * factor))), _comprar_comida(p, c, factor),
+                   ayuda=_que_quita(p, c)) for c in (carta_de(p, l) or [])]
+
+
+def opcion_pedir_carta(p, l):
+    """En un bar o una taberna con carta: pedir algo de comer o de beber, en un submenú."""
+    if not carta_de(p, l):
+        return []
+    factor = p.mercado("comida", l.id)
+
+    def abrir():
+        mm = Menu(p.app, lambda: tr('La carta de {nombre}. Tienes {dinero} euros').format(nombre=(l.nombre), dinero=(p.j.dinero)),
+                  opciones_carta(p, l, factor) + _agua(p) + [Opcion(tr("Volver"), lambda: p.app.cerrar(mm))])
+        p.app.abrir(mm)
+    return [Opcion(tr("Pedir de la carta: algo de comer o de beber"), abrir, ayuda=tr("Lo que sirven aquí, con su precio. Cada cosa dice cuánta hambre y cuánta sed quita con la vida realista, y cuánta salud da."))]
 
 
 # Las protecciones que se venden en la armería además del chaleco están en los datos (vida.json, protecciones).
@@ -1643,7 +1727,7 @@ def donde_se_vende(a):
     return a.get("donde") or "armeria"
 
 
-def armas_en_venta(p, l, factor=1.0):
+def armas_en_venta(p, l, factor=1.0, con_arma=False):
     """Las armas que se venden en un local que no es una armería (una tienda, una casa de empeños), y su munición."""
     j = p.j
 
@@ -1669,7 +1753,8 @@ def armas_en_venta(p, l, factor=1.0):
                 return tr('{nombre}: ya la tienes').format(nombre=(a['nombre']))
             return tr('Munición para {nombre}, {get} balas: {int} euros. Tienes {reserva} de reserva').format(nombre=(a['nombre']), get=(a.get('balas', 0)), int=(int(a.get('precio_balas', 0) * factor)), reserva=(j.armas[a['id']]['reserva']))
         return f
-    return [Opcion(texto(a), comprar(a), ayuda=ayuda_arma(a)) for a in p.datos["armas"] if a.get("precio", 0) > 0 and donde_se_vende(a) == l.tipo]
+    lista = [(a, Opcion(texto(a), comprar(a), ayuda=ayuda_arma(a))) for a in p.datos["armas"] if a.get("precio", 0) > 0 and donde_se_vende(a) == l.tipo]
+    return lista if con_arma else [o for a, o in lista]
 
 
 def _armeria(p, l):
@@ -1807,7 +1892,12 @@ def _tienda(p, l):
                   ayuda=tr("Comes al momento y recuperas esa salud. Con la salud al máximo no comes, salvo que tengas hambre con la vida realista.")) for c in p.datos["comidas"][:3:2]]
     from . import menus_cocina
     ops += menus_cocina.opcion_rapida(p, l)                      # la comida para casa: lo mismo que en los pasillos, sin pasear
-    ops += [_comprar_objeto(p, "botiquin"), _comprar_objeto(p, "ganzua"), _comprar_walkman(p)] + armas_en_venta(p, l) + ([_comprar_objeto(p, "pienso")] if p.j.perro else []) + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion(tr("Atracar la tienda"), atracar, ayuda=tr("Necesitas un arma de fuego en la mano. La policía te buscará, y la tienda te recuerda: durante unos días no te dejan entrar."))]
+    vende = l.get("vende")                                      # lo que vende además de comida; sin el campo, de todo, como siempre
+    hay = (lambda ident: True) if not isinstance(vende, list) else (lambda ident: ident in vende)
+    ops += ([_comprar_objeto(p, "botiquin")] if hay("botiquin") else []) + ([_comprar_objeto(p, "ganzua")] if hay("ganzua") else []) \
+        + ([_comprar_walkman(p)] if hay("walkman") else []) + [o for a, o in armas_en_venta(p, l, con_arma=True) if hay(a["id"])] \
+        + ([_comprar_objeto(p, "pienso")] if p.j.perro and hay("pienso") else []) \
+        + [__import__("juego.loteria", fromlist=["x"]).opcion_en_local(p, l), Opcion(tr("Atracar la tienda"), atracar, ayuda=tr("Necesitas un arma de fuego en la mano. La policía te buscará, y la tienda te recuerda: durante unos días no te dejan entrar."))]
     m = _menu_lugar(p, l, ops)
 
 
@@ -1841,8 +1931,11 @@ def _agua(p):
 
 def _comida(p, l):
     factor = (3.0 if l.get("caro") else 1.0) * p.mercado("comida", l.id)
-    ops = [Opcion(lambda c=c: tr('{nombre}, recupera {salud} de salud: {int} euros').format(nombre=(c['nombre']), salud=(c['salud']), int=(int(c['precio'] * factor))), _comprar_comida(p, c, factor),
-                  ayuda=tr("Comes al momento y recuperas esa salud. Con la salud al máximo no comes, salvo que tengas hambre con la vida realista.")) for c in p.datos["comidas"]]
+    if carta_de(p, l):                                           # su propia carta: helados en la heladería, pizzas en la pizzería...
+        ops = opciones_carta(p, l, factor)
+    else:
+        ops = [Opcion(lambda c=c: tr('{nombre}, recupera {salud} de salud: {int} euros').format(nombre=(c['nombre']), salud=(c['salud']), int=(int(c['precio'] * factor))), _comprar_comida(p, c, factor),
+                      ayuda=tr("Comes al momento y recuperas esa salud. Con la salud al máximo no comes, salvo que tengas hambre con la vida realista.")) for c in p.datos["comidas"]]
     ops += _agua(p)
     if l.tipo == "pizzeria":
         def trabajar():
@@ -2127,7 +2220,7 @@ def _bar(p, l):
     def hablar():
         app.decir(tr("Encarna: ") + p.objetivo_txt(sugerir=True), True)
     from . import loteria
-    ops = [Opcion(tr('Tomar una caña con tapa: {precio} euros').format(precio=(p.precio('cana_tapa', 4))), beber, ayuda=tr("Recuperas diez de salud y, con la vida realista, se te quita casi toda la sed.")),
+    ops = [Opcion(tr('Tomar una caña con tapa: {precio} euros').format(precio=(p.precio('cana_tapa', 4))), beber, ayuda=tr("Recuperas diez de salud y, con la vida realista, se te quita casi toda la sed."))] + opcion_pedir_carta(p, l) + [
            Opcion(tr("Hablar con Encarna"), hablar, ayuda=tr("Encarna te dice qué tienes que hacer ahora o por dónde deberías pasarte.")), loteria.opcion_en_local(p, l)]
     if p.modo_adulto():
         ops.insert(1, Opcion(tr('Tomar una copa: {precio} euros').format(precio=(p.precio('copa_bar', 6))), lambda: p.consumir("alcohol", de_inventario=False) if p.pagar(p.precio("copa_bar", 6)) else None, ayuda=tr("Alcohol: sube el ánimo, pero caminas torcido y apuntas peor.")))

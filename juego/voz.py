@@ -21,6 +21,10 @@ class Voz:
     def __init__(self, sapi=False, muda=False):
         self.historial = deque(maxlen=300)
         self.cursor = 0
+        # Aparte, solo lo que dicen los demás jugadores y el servidor (chat, avisos, quién entra y sale): se repasa con
+        # Mayúsculas Re Pág y Av Pág sin que se mezcle con las teclas y los menús.
+        self.mensajes = deque(maxlen=100)
+        self.cursor_msj = 0
         self.muda = muda
         self.salida = None
         self.registro = []          # usado por las pruebas
@@ -126,6 +130,33 @@ class Voz:
             self.cursor = len(self.historial) - 1
         elif lleno:
             self.cursor = max(0, self.cursor - 1)               # el más antiguo se ha ido: el tuyo está un puesto antes
+
+    def apuntar_mensaje(self, texto):
+        """Un mensaje de otro jugador o del servidor, a su historial aparte. Se dice como siempre; esto solo lo guarda."""
+        if not texto:
+            return
+        texto = palabras.pulir(genero.resolver(str(texto)))
+        al_final = self.cursor_msj >= len(self.mensajes) - 1
+        self.mensajes.append(texto)
+        if al_final:
+            self.cursor_msj = len(self.mensajes) - 1
+
+    def repasar_mensajes(self, delta):
+        """Mayúsculas Re Pág, Av Pág y punto: el anterior, el siguiente o el último de los mensajes de los jugadores y del
+        servidor. Lo que se dice al repasar no entra en ningún historial."""
+        if not self.mensajes:
+            self.decir(tr("Todavía no hay mensajes de otros jugadores ni del servidor."), True, False)
+            return
+        if delta == 0:
+            self.cursor_msj = len(self.mensajes) - 1
+            self.decir(tr("Último mensaje. ") + self.mensajes[self.cursor_msj], True, False)
+            return
+        nuevo = self.cursor_msj + delta
+        if nuevo < 0 or nuevo >= len(self.mensajes):
+            self.decir((tr("Primer mensaje. ") if nuevo < 0 else tr("Último mensaje. ")) + self.mensajes[self.cursor_msj], True, False)
+            return
+        self.cursor_msj = nuevo
+        self.decir(self.mensajes[nuevo], True, False)
 
     def repasar_extremo(self, al_final):
         """Control Re Pág y Control Av Pág: el primer mensaje del historial, o el último."""

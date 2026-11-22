@@ -77,6 +77,7 @@ def archivo_config(nombre):
     return propia
 DATOS = data("datos")
 MODS = data("mods")
+SONIDOS_MODS = data("mods", "sonidos")         # los sonidos propios de los mods: se suman a los del juego, sin sustituir ninguno
 PACKS = data("sonidos")                       # aquí dentro va una carpeta por pack
 POR_DEFECTO = "por_defecto"
 SONIDOS = data("sonidos", POR_DEFECTO)        # los sonidos de serie, que el juego regenera si faltan
