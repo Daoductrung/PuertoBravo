@@ -3,6 +3,7 @@
 Esta tradução usa a versão inglesa como base e o espanhol para conferir o contexto. O código da pasta é `pt`, pois o jogo usa códigos de duas letras e reduz o idioma do sistema a esse código. Os textos são do Brasil; `br` é o código de bretão.
 
 - `pt.json`: catálogo de trabalho completo, com as chaves espanholas intactas.
+- `correcciones.json`: correções manuais com prioridade sobre os lotes de tradução. A fusão aplica essas correções aos catálogos de trabalho e do jogo.
 - `../../data/idiomas/pt/textos.json`: catálogo carregado pelo jogo, sincronizado com `pt.json`.
 - `../../data/idiomas/pt/idioma.json`: identificação da variante brasileira.
 - `../../data/idiomas/pt/palabras.json`: glossário auxiliar, com as mesmas chaves da versão inglesa.
