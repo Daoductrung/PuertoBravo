@@ -60,7 +60,9 @@ def test_la_carpeta_del_servidor_trae_todo_y_nada_de_nadie(juego):
     otros = s / "otros_sistemas"
     del_proyecto = sorted(n for n in os.listdir(os.path.join(RAIZ, "servidor")) if n.endswith(".py"))
     assert sorted(n for n in os.listdir(otros / "servidor")) == sorted(del_proyecto + ["mundo.json", "idiomas"])
-    assert os.listdir(otros / "servidor" / "idiomas") == ["en.json"]           # el catálogo reducido: solo los textos del servidor
+    idiomas_del_juego = sorted(c + ".json" for c in os.listdir(os.path.join(RAIZ, "data", "idiomas")) if os.path.isfile(os.path.join(RAIZ, "data", "idiomas", c, "textos.json")))
+    assert sorted(os.listdir(otros / "servidor" / "idiomas")) == idiomas_del_juego   # un catálogo reducido por idioma: solo los textos del servidor
+    assert "en.json" in idiomas_del_juego and "vi.json" in idiomas_del_juego
     for n in del_proyecto:
         copia = _leer(otros / "servidor" / n)
         assert b"\r" not in copia and copia == _leer(os.path.join(RAIZ, "servidor", n)).replace(b"\r\n", b"\n"), n

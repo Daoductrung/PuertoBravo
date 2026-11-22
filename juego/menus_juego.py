@@ -2126,15 +2126,7 @@ def _bar(p, l):
             app.decir(tr('Una caña y una tapa. Salud {int}.').format(int=(int(j.salud))), True)
 
     def hablar():
-        if not p.mision and not p.guerra and not p.trabajo:
-            disp = [m for m in p.misiones_disponibles() if not m.get("explicacion")]
-            if disp:
-                m = disp[0]
-                l = p.lugares[m["lugar"]]
-                txt = tr('Deberías pasarte por: {titulo}, en {nombre_lugar}. Abre el móvil con M para marcarla en el GPS.').format(
-                    titulo=(m['titulo']), nombre_lugar=(p.nombre_lugar(l)))
-                return app.decir(tr("Encarna: ") + txt, True)
-        app.decir(tr("Encarna: ") + p.objetivo_txt(), True)
+        app.decir(tr("Encarna: ") + p.objetivo_txt(sugerir=True), True)
     from . import loteria
     ops = [Opcion(tr('Tomar una caña con tapa: {precio} euros').format(precio=(p.precio('cana_tapa', 4))), beber, ayuda=tr("Recuperas diez de salud y, con la vida realista, se te quita casi toda la sed.")),
            Opcion(tr("Hablar con Encarna"), hablar, ayuda=tr("Encarna te dice qué tienes que hacer ahora o por dónde deberías pasarte.")), loteria.opcion_en_local(p, l)]

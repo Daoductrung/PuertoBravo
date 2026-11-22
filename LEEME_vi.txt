@@ -10,12 +10,13 @@ Trải nghiệm hoàn toàn bằng thính giác, sử dụng bàn phím hoặc t
 
 CẨM NANG HƯỚNG DẪN
   Nằm trong thư mục data\docs và cũng có thể mở trực tiếp từ menu chính của trò chơi:
-    manual_vi.html            Cẩm nang hướng dẫn đầy đủ, điều hướng theo tiêu đề.
     teclas_vi.html            Danh sách toàn bộ phím tắt và nút bấm tay cầm.
-    novedades_vi.html         Những điểm mới thay đổi trong từng phiên bản.
     cambiar_sonidos_vi.html   Cách thay đổi âm thanh và âm nhạc.
-    editor_mods_vi.html       Cẩm nang hướng dẫn trình chỉnh sửa mod.
-  Mỗi tài liệu cũng có bản tiếng Anh (_en) và tiếng Tây Ban Nha (_es).
+    manual_en.html            Cẩm nang hướng dẫn đầy đủ (tiếng Anh), điều hướng theo tiêu đề.
+    novedades_en.html         Những điểm mới thay đổi trong từng phiên bản (tiếng Anh).
+    editor_mods_en.html       Cẩm nang hướng dẫn trình chỉnh sửa mod (tiếng Anh).
+  Cẩm nang, những điểm mới và hướng dẫn trình chỉnh sửa mod chưa được dịch sang tiếng Việt,
+  nên trò chơi sẽ mở bản tiếng Anh. Mỗi tài liệu cũng có bản tiếng Tây Ban Nha (_es).
 
 NGÔN NGỮ
   Trò chơi tự động nhận diện theo ngôn ngữ Windows: tiếng Tây Ban Nha nếu Windows dùng tiếng

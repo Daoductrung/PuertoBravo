@@ -1,5 +1,5 @@
 PUERTO BRAVO: LEY DEL ASFALTO
-Audiojuego de mundo abierto, en español y en inglés, y totalmente accesible. Versión 1.7.2.
+Audiojuego de mundo abierto, en español, en inglés y en vietnamita, y totalmente accesible. Versión 1.7.2.
 Se juega con el oído, con teclado o con mando de Xbox o de PlayStation.
 
 PARA JUGAR
@@ -19,7 +19,7 @@ EL MANUAL
 
 EL IDIOMA
   El juego va en el idioma de Windows: en español si es cualquier variante del español, y si no,
-  en inglés. Se puede elegir en Opciones, en la primera línea, Idioma.
+  en inglés. Se puede elegir en Opciones, en la primera línea, Idioma. También está en vietnamita.
 
 PARA JUGAR CON AMIGOS
   Dentro del juego, abre el móvil con M y entra en Jugar con amigos. Tu propio juego abre

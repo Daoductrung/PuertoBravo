@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Thay đổi âm thanh và âm nhạc của Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 54em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+a { color: #8fd0ff; }
+code { color: #9fe89f; }
+kbd { border: 1px solid #aaa; border-radius: 4px; padding: 0 .35em; background: #2a2a2a; }
+li { margin-bottom: .3em; }
+</style>
+</head>
+<body>
+<h1>Thay đổi âm thanh và âm nhạc của Puerto Bravo</h1>
+<p>Tất cả âm thanh trong trò chơi đều là các tệp thông thường nằm trong thư mục <code>data</code>, ngay cạnh tệp thực thi của game. Bạn có thể thay thế bất kỳ tệp nào bằng bản ghi âm của riêng mình. Tài liệu này hướng dẫn cách thực hiện và mô tả chi tiết từng tệp. Tài liệu được cấu trúc theo các tiêu đề: với trình đọc màn hình, bạn có thể nhảy nhanh giữa các mục bằng phím H.</p>
+
+<h2>1. Vị trí của các thư mục</h2>
+<ul>
+<li><code>data\sonidos</code>: Tất cả các hiệu ứng âm thanh, được phân bổ vào các thư mục con.</li>
+<li><code>data\sonidos\por_defecto</code>: Các âm thanh mặc định nguyên bản, mỗi âm thanh là một tệp. Bao gồm 279 tệp. Nếu thiếu hoặc bị xóa, trò chơi sẽ tự động tái tạo lại.</li>
+<li><code>data\radio</code>: Nhạc của các đài phát thanh, mỗi đài là một tệp.</li>
+<li><code>data\radio\mi_musica</code>: Đài phát thanh của riêng bạn. Hãy sao chép những bài hát bạn yêu thích vào đây.</li>
+<li><code>data\musica</code>: Nhạc nền môi trường, mỗi tình huống có một thư mục riêng với nhiều bản nhạc bên trong.</li>
+<li><code>data\sonidos\realista</code>, <code>data\sonidos\alternativo</code>, <code>data\sonidos\retro</code> và các thư mục con khác: Các gói âm thanh (sound packs), mỗi gói nằm trong một thư mục. Bạn có thể chọn trong mục Tùy Chọn của game.</li>
+</ul>
+
+<h2>2. Cách thay đổi một hiệu ứng âm thanh</h2>
+<ol>
+<li>Tìm tên âm thanh bạn muốn thay đổi trong danh sách ở cuối tài liệu này, ví dụ <code>claxon</code> (tiếng còi xe).</li>
+<li>Chuẩn bị bản ghi âm của bạn và đặt tên chính xác như vậy: <code>claxon.wav</code>.</li>
+<li>Sao chép tệp đó vào <code>data\sonidos\por_defecto</code>. Không cần phải xóa tệp gốc của trò chơi (có tên là <code>claxon.flac</code>): nếu có hai tệp trùng tên, trò chơi sẽ ưu tiên phát tệp của bạn.</li>
+<li>Đóng trò chơi và mở lại. Các âm thanh sẽ được tải khi trò chơi khởi động.</li>
+</ol>
+<h3>Các định dạng được hỗ trợ</h3>
+<ul>
+<li>WAV, OGG, FLAC và MP3. Các âm thanh đi kèm trò chơi ở định dạng FLAC. Nếu có hai tệp trùng tên nhưng khác phần mở rộng, trò chơi sẽ dùng tệp không phải FLAC (tức là tệp của bạn). Để quay lại âm thanh mặc định của trò chơi, chỉ cần xóa tệp của bạn đi.</li>
+<li>Tại sao lại dùng FLAC: nén không mất dữ liệu (lossless). Khi giải mã, các mẫu âm thanh xuất ra hoàn toàn giống hệt định dạng WAV, nhưng dung lượng chỉ chiếm chưa đến một nửa. Cho đến phiên bản 1.6.1, âm thanh của game đều là WAV; khi cập nhật, trò chơi sẽ xóa các tệp WAV cũ giống hệt tệp mới và giữ nguyên những tệp bạn đã tự thay đổi. OGG và MP3 thậm chí còn chiếm ít dung lượng hơn nhưng giảm chất lượng một chút: bạn hoàn toàn có thể dùng cho bản ghi âm của mình nếu không quá khắt khe, và trò chơi chỉ dùng chúng ở những phần vốn có sẵn như âm nhạc, đài phát thanh, giọng nói và các âm thanh môi trường dài của gói Âm thanh Vòm.</li>
+<li>Hỗ trợ mọi tần số lấy mẫu (sample rate): trò chơi sẽ tự động chuyển đổi về 44.100 Hz.</li>
+<li>Mono hoặc Stereo. Các hiệu ứng âm thanh sẽ luôn được chuyển đổi về mono, bởi vì chính trò chơi sẽ tính toán vị trí không gian để đặt âm thanh ở bên trái, bên phải, phía trước hay phía sau bạn.</li>
+</ul>
+<h3>Khôi phục âm thanh gốc</h3>
+<p>Chỉ cần xóa tệp của bạn đi. Lần khởi động tiếp theo, trò chơi sẽ tự động tạo lại âm thanh nguyên bản. Để khôi phục toàn bộ âm thanh, hãy xóa toàn bộ thư mục <code>data\sonidos\por_defecto</code>.</p>
+<h3>Mẹo để âm thanh nghe hay và chuẩn</h3>
+<ul>
+<li>Cắt bỏ khoảng lặng ở đầu tệp: nếu âm thanh bị trễ mới phát, bạn sẽ có cảm giác trò chơi phản hồi chậm chạp.</li>
+<li>Giữ thời lượng tương đương với âm thanh gốc, đặc biệt là tiếng bước chân, âm thanh cảnh báo và âm định vị (beacon). Danh sách bên dưới có ghi rõ thời lượng của từng âm thanh.</li>
+<li>Đừng để âm lượng ở mức tối đa tuyệt đối. Các âm thanh gốc thường có đỉnh âm lượng từ 30% đến 90% tùy theo mức độ quan trọng. Nếu âm thanh của bạn quá to hoặc quá nhỏ, hãy tinh chỉnh lại trong phần mềm biên tập âm thanh.</li>
+<li>Tránh để độ vang (reverb) quá dài ở các âm thanh định hướng: tiếng vang sẽ làm nhòe và khó nhận biết phương hướng phát ra âm thanh.</li>
+<li>Những âm thanh đánh dấu lặp (loop) sẽ được phát liên tục không ngừng. Phần cuối tệp phải khớp mượt mà với phần đầu tệp mà không gây ra tiếng lách tách hoặc giật cục: hãy cắt tại điểm cắt qua số không (zero-crossing) hoặc áp dụng kỹ thuật crossfade.</li>
+<li>Âm thanh động cơ xe nên được thu âm ở chế độ chạy không tải (ralentí) và đều ga ổn định. Trò chơi sẽ tự động nâng cao độ (pitch) khi tăng tốc, có thể lên tới hơn gấp đôi.</li>
+</ul>
+<h3>Âm lượng được tự động cân bằng</h3>
+<p>Mỗi bản ghi âm có thể có mức âm lượng khác nhau. Để điều đó không phá vỡ sự cân bằng của trò chơi, khi tải một âm thanh do bạn thay thế, trò chơi sẽ tự động đưa nó về cùng mức âm lượng với âm thanh gốc: hệ thống đo đoạn âm thanh lớn nhất trong tệp của bạn, so sánh với âm thanh gốc và tự động tăng hoặc giảm âm lượng cho phù hợp mà không gây vỡ tiếng (clipping). Nhờ vậy, tiếng bước chân không bao giờ bị kêu to hơn tiếng súng, và âm định vị không bao giờ bị chìm nghỉm. Bạn có thể tắt tính năng này trong Tùy chọn, Âm thanh và âm nhạc, Cân bằng âm lượng các âm thanh tùy chỉnh.</p>
+<p>Nếu bạn vẫn thấy một âm thanh cụ thể kêu quá to hoặc quá nhỏ, hãy vào Tùy chọn, Âm thanh và âm nhạc, Điều chỉnh âm lượng từng âm thanh. Tất cả các âm thanh đều có ở đây, chia theo các nhóm giống hệt danh sách ở cuối tài liệu này: nhấn Enter để nghe thử và dùng phím Mũi tên trái / phải để giảm hoặc tăng từ 30% đến 200%. Mục Tìm kiếm âm thanh cho phép tìm nhanh theo từ khóa trong tên mà không cần biết nó thuộc nhóm nào. Menu sẽ hiển thị bạn đã thay đổi bao nhiêu âm thanh (tổng số và trong từng nhóm), cho phép đặt lại âm lượng mặc định cho một âm thanh, cả nhóm hoặc tất cả. Thiết lập này được lưu trong tùy chọn của bạn theo tên tệp nên sẽ không bị mất khi cập nhật game.</p>
+<h3>Nghe thử bất kỳ âm thanh nào ngay trong trò chơi</h3>
+<p>Tại menu chính và menu tạm dừng, mục Học các âm thanh chứa toàn bộ 279 âm thanh của trò chơi: đầu tiên là nhóm Các âm thanh quan trọng nhất, tiếp theo là Tìm kiếm âm thanh và sau đó là toàn bộ các âm thanh, chia theo các nhóm và thứ tự giống hệt danh sách ở cuối tài liệu này. Hãy vào một nhóm và nhấn Enter trên một âm thanh: trò chơi sẽ đọc tên và ý nghĩa của âm thanh đó, đồng thời phát thử riêng âm thanh đó với gói âm thanh bạn đang dùng. Với Tìm kiếm âm thanh, bạn chỉ cần gõ một từ (ví dụ: còi xe), trò chơi sẽ liệt kê tất cả các âm thanh có từ đó trong tên hoặc mô tả, không phân biệt dấu. Tính năng này giúp bạn kiểm tra ngay bản thu âm của mình mà không cần phải vào game tạo tình huống.</p>
+
+<h2>3. Các gói âm thanh (Sound packs)</h2>
+<p>Một gói âm thanh là một thư mục chứa các tệp có tên giống hệt các âm thanh của trò chơi. Các gói nằm bên trong <code>data\sonidos</code>, mỗi gói nằm trong một thư mục con riêng bên cạnh thư mục <code>por_defecto</code>, và có thể chuyển đổi trong trò chơi tại mục Tùy chọn, Âm thanh và âm nhạc, Gói âm thanh bằng các phím Mũi tên trái và phải. Sự thay đổi có hiệu lực ngay lập tức và không đụng chạm đến các tệp trong <code>data\sonidos\por_defecto</code>: để quay lại, chỉ cần chọn «Mặc định».</p>
+<ul>
+<li>Gói âm thanh của bạn không bắt buộc phải có đầy đủ mọi tệp: những âm thanh nào còn thiếu sẽ tự động phát bằng âm thanh gốc.</li>
+<li>Âm lượng của từng âm thanh trong gói sẽ được tự động cân bằng theo âm thanh gốc như đã giải thích ở trên.</li>
+<li>Các gói âm thanh đi kèm trò chơi có đầy đủ chính xác các tệp giống như <code>por_defecto</code>, trùng khớp từng tên gọi: không thừa, không thiếu một tệp nào. Các bản thu âm này đều thuộc phạm vi công cộng (giấy phép CC0) và được tổng hợp từ kenney.nl, opengameart.org, freesound.org và bigsoundbank.com.</li>
+<li>Các âm báo của các kênh roleplay (<code>chat_personaje</code>, <code>chat_fuera</code> và <code>chat_accion</code>) cũng như âm báo chờ máy chủ (<code>espera_servidor</code>) trong mọi gói âm thanh đều được giữ nguyên mặc định: đây là quy ước âm thanh chuẩn và cần phải luôn đồng nhất.</li>
+<li>Trò chơi đi kèm sẵn các gói âm thanh «Alternativo», với 279 âm thanh, «Envolvente», với 279 âm thanh, «Realista», với 279 âm thanh, «Retro», với 279 âm thanh. Mỗi gói đều có đầy đủ toàn bộ âm thanh của trò chơi: thay thế bằng các bản thu âm phạm vi công cộng cho mọi âm thanh ngoại trừ âm định hướng, và giữ nguyên âm thanh gốc cho các âm định hướng: âm định vị, tín hiệu âm thanh, đèn giao thông, radar, định vị vị trí và âm thanh các địa điểm. Tệp <code>CREDITOS.txt</code> trong mỗi gói nêu rõ nguồn gốc của từng âm thanh và âm thanh nào là nguyên bản.</li>
+</ul>
+<h3>Tự tạo gói âm thanh của riêng bạn</h3>
+<ol>
+<li>Tạo một thư mục bên trong <code>data\sonidos</code> với tên gói âm thanh, không chứa ký tự đặc biệt: ví dụ <code>goi_cua_toi</code>.</li>
+<li>Sao chép các bản ghi âm của bạn vào đó với tên chính xác của âm thanh cần thay thế: <code>claxon.wav</code>, <code>paso_acera0.ogg</code>. Danh sách ở cuối tài liệu này có đầy đủ mọi tên gọi.</li>
+<li>Mở trò chơi và chọn gói âm thanh đó trong mục Tùy Chọn.</li>
+</ol>
+<p>Nếu muốn, bạn có thể thêm tệp <code>pack.json</code> chứa tên hiển thị trong Tùy Chọn và một số thiết lập:</p>
+<pre><code>{
+  "nombre": "Gói của tôi",
+  "descripcion": "Thu âm trên đường phố quê tôi",
+  "autor": "Tên bạn",
+  "licencia": "CC0",
+  "igualar": true,
+  "volumenes": {"claxon": 0.8, "ladrido": 1.3}
+}</code></pre>
+<ul>
+<li><code>igualar</code>: nếu đặt <code>false</code>, âm thanh của gói này sẽ được giữ nguyên mức âm lượng gốc của bạn mà không tự động cân bằng. Chỉ nên dùng nếu bạn đã tự căn chỉnh âm lượng chuẩn xác.</li>
+<li><code>volumenes</code>: tinh chỉnh riêng cho từng âm thanh sau khi đã tự động cân bằng. 1 là giữ nguyên, 0.8 là giảm 20%.</li>
+</ul>
+<p>Để chia sẻ một gói âm thanh, hãy nén thư mục đó lại thành tệp zip. Người nhận chỉ cần giải nén vào thư mục <code>data\sonidos</code> của họ.</p>
+
+<h2>4. Đài phát thanh</h2>
+<h3>Thay đổi âm nhạc của một kênh phát thanh</h3>
+<p>Mỗi kênh phát thanh mặc định có một tên tệp trong <code>data\radio</code>. Hãy thay thế tệp đó bằng một bài hát khác có cùng tên và bài hát đó sẽ được phát.</p>
+<p>Một kênh phát thanh có thể chứa nhiều bài hát: tất cả các bài hát có tên trùng với tên kênh, hoặc tên kênh kèm theo dấu gạch dưới và bất kỳ ký tự nào, đều thuộc về kênh đó. Ví dụ <code>bravo.mp3</code>, <code>bravo_1.mp3</code> và <code>bravo_dos.ogg</code> là ba bài hát của kênh Bravo FM: chúng sẽ phát ngẫu nhiên và khi bài này kết thúc sẽ chuyển sang bài khác. Nếu chỉ có một bài duy nhất, bài hát sẽ lặp lại liên tục.</p>
+<ul>
+<li><code>bravo.mp3</code>: Bravo FM, nhạc rock đường trường.</li>
+<li><code>latina.mp3</code>: Onda Caribe, giai điệu Latin.</li>
+<li><code>neon.mp3</code>: Neón 84, nhạc synth cổ điển.</li>
+<li><code>calma.mp3</code>: Radio Bahía, nhạc thư giãn nhẹ nhàng.</li>
+<li><code>hierro.mp3</code>: Radio Hierro, nhạc hard rock vùng Monteferro.</li>
+<li><code>club.mp3</code>: Lucero Club, nhạc điện tử.</li>
+<li><code>tropical.mp3</code>: Costa Tropical, nhạc lễ hội đường phố.</li>
+</ul>
+<p>Nếu bạn xóa một trong các tệp này, trò chơi sẽ tự động tái tạo lại bản nhạc gốc. Các bài hát sẽ được tự động cân bằng âm lượng khi tải: tệp nhạc có âm lượng to hay nhỏ đều không thành vấn đề.</p>
+<h3>Thêm các kênh phát thanh mới</h3>
+<p>Bất kỳ tệp âm thanh nào khác bạn đặt vào <code>data\radio</code> đều trở thành một kênh phát thanh mới, mang tên của chính tệp đó. Ví dụ, <code>nhac_co_dien.mp3</code> sẽ xuất hiện trên băng tần đài phát thanh là «Nhac co dien». Các dấu gạch dưới sẽ được đọc thành dấu cách.</p>
+<h3>Kênh «Nhạc của tôi»</h3>
+<p>Các tệp nằm trong <code>data\radio\mi_musica</code> tạo thành kênh phát thanh «Nhạc của tôi». Khi ngồi trong ô tô, phím R sẽ chuyển sang bài hát tiếp theo trước khi nhảy sang kênh phát thanh kế tiếp.</p>
+
+<h2>5. Âm nhạc môi trường</h2>
+<p>Khi ra khỏi xe hoặc khi tắt đài phát thanh, một giai điệu nhạc nền êm dịu sẽ vang lên và thay đổi theo từng tình huống. Trong mỗi tình huống có nhiều bản nhạc khác nhau: trò chơi sẽ bắt đầu ngẫu nhiên với một bản nhạc và khi hết sẽ chuyển sang một bản nhạc khác. Khi bạn bật đài phát thanh trên xe, nhạc môi trường sẽ tự động tắt, và sẽ phát lại khi bạn tắt đài hoặc bước xuống xe.</p>
+<p>Mỗi tình huống tương ứng với một thư mục bên trong <code>data\musica</code>:</p>
+<ul>
+<li><code>data\musica\exploracion</code>: ban ngày, thong dong khám phá. Mặc định gồm 4 bản nhạc, từ <code>exploracion_1.mp3</code> đến <code>exploracion_4.mp3</code>.</li>
+<li><code>data\musica\noche</code>: ban đêm. Mặc định gồm 3 bản nhạc, từ <code>noche_1.mp3</code> đến <code>noche_3.mp3</code>.</li>
+<li><code>data\musica\mar</code>: trên biển. Mặc định gồm 3 bản nhạc, từ <code>mar_1.mp3</code> đến <code>mar_3.mp3</code>.</li>
+<li><code>data\musica\tension</code>: khi bị cảnh sát truy đuổi hoặc có kẻ địch ở gần. Mặc định gồm 3 bản nhạc, từ <code>tension_1.mp3</code> đến <code>tension_3.mp3</code>.</li>
+<li><code>data\musica\menu</code>: tại menu chính. Mặc định gồm 4 bản nhạc, từ <code>menu_1.mp3</code> đến <code>menu_4.mp3</code>.</li>
+</ul>
+<ul>
+<li>Để thêm âm nhạc của bạn, hãy sao chép các tệp âm thanh vào thư mục tình huống bạn muốn. Tất cả các tệp trong thư mục sẽ được đưa vào danh sách luân chuyển ngẫu nhiên, bất kể có bao nhiêu tệp: nếu trong thư mục <code>exploracion</code> bạn đặt <code>exploracion_5.wav</code> hoặc hai mươi bài hát với bất kỳ tên nào, tất cả đều được phát ngẫu nhiên cùng các bản nhạc có sẵn. Hỗ trợ các định dạng WAV, OGG, FLAC và MP3.</li>
+<li>Toàn bộ âm nhạc đều được tự động cân bằng âm lượng khi tải: từng bản nhạc môi trường, từng kênh đài, từng kênh mới thêm và từng bài trong Nhạc của tôi đều có mức âm lượng đồng đều để không có bản nào bị kêu quá to. Điều duy nhất làm thay đổi âm lượng là thiết lập của bạn trong mục Tùy Chọn.</li>
+<li>Để loại bỏ một bản nhạc mặc định mà không muốn nó xuất hiện lại, hãy thay thế nó bằng một bản nhạc khác có cùng tên. Nếu bạn chỉ xóa đi, trò chơi sẽ tự động tạo lại bản nhạc đó.</li>
+<li>Để một tình huống chỉ phát riêng âm nhạc của bạn, hãy thay thế toàn bộ các bản nhạc mặc định trong thư mục tình huống đó.</li>
+<li>Nhạc môi trường có thể bật, tắt và điều chỉnh âm lượng trong Tùy chọn, Âm thanh và âm nhạc.</li>
+</ul>
+
+<h2>6. Danh sách đầy đủ các âm thanh</h2>
+<p>Tên tệp là tên xuất hiện ở đầu mỗi dòng, kèm đuôi <code>.flac</code> đối với các âm thanh đi kèm game. Các tệp của bạn có thể sử dụng bất kỳ định dạng nào được hỗ trợ. Phía sau là tên mà trò chơi sẽ đọc thành tiếng và ý nghĩa của âm thanh đó.</p>
+<p>Các nhóm âm thanh ở đây hoàn toàn trùng khớp về tên gọi và thứ tự với mục Học các âm thanh và Tùy chọn, Âm thanh và âm nhạc, Điều chỉnh âm lượng từng âm thanh. Được phân chia theo các hành động trong trò chơi. Trong mỗi nhóm, các âm thanh được sắp xếp theo thứ tự bảng chữ cái của tên đọc thành tiếng. Mỗi nhóm là một tiêu đề: bạn có thể nhảy giữa các nhóm bằng phím H, hoặc tìm kiếm một từ bằng tính năng tìm kiếm của trình duyệt.</p>
+
+<p>Gồm 20 nhóm:</p>
+<ol>
+<li>Định hướng và GPS: 17 âm thanh.</li>
+<li>Âm thanh các địa điểm: 37 âm thanh.</li>
+<li>Di chuyển đi bộ và bơi lội: 20 âm thanh.</li>
+<li>Phương tiện và lái xe: 19 âm thanh.</li>
+<li>Hỏng hóc, xưởng sửa chữa, xăng xe và cướp trộm phương tiện: 10 âm thanh.</li>
+<li>Thuyền bè, trực thăng, tàu hỏa, tàu điện và máy bay: 16 âm thanh.</li>
+<li>Vũ khí, tiếng nổ của từng loại: 14 âm thanh.</li>
+<li>Giao chiến, ngắm bắn và vết thương: 20 âm thanh.</li>
+<li>Cảnh sát và cấp cứu khẩn cấp: 12 âm thanh.</li>
+<li>Người đi đường và động vật: 8 âm thanh.</li>
+<li>Nhà cửa, nấu nướng và ăn uống: 8 âm thanh.</li>
+<li>Cửa hàng, tiền bạc và vật phẩm: 5 âm thanh.</li>
+<li>Menu, điện thoại và thông báo trong game: 17 âm thanh.</li>
+<li>Nhiệm vụ, công việc, danh tiếng và tâm trạng: 14 âm thanh.</li>
+<li>Địa bàn và băng đảng: 4 âm thanh.</li>
+<li>Chơi trực tuyến và nhập vai: 7 âm thanh.</li>
+<li>Câu cá, sòng bạc và trò chơi: 12 âm thanh.</li>
+<li>Môi trường và thời tiết: 19 âm thanh.</li>
+<li>Quan hệ lãng mạn, chỉ có ở nội dung người lớn: 7 âm thanh.</li>
+<li>Chất kích thích và buôn hàng cấm, chỉ có ở nội dung người lớn: 13 âm thanh.</li>
+</ol>
+<h3>Định hướng và GPS</h3>
+<p>17 âm thanh. Đây là nền tảng trợ năng cốt lõi của trò chơi. Nếu bạn tùy biến, hãy giữ cho âm thanh ngắn gọn, rõ ràng và dễ định vị trong không gian 3D. Các âm thanh định vị sẽ phát lặp từ vị trí của vật phẩm hoặc nhiệm vụ.</p>
+<ul>
+<li><code>sonar</code>: Cảm biến tiệm cận. Khi lái xe, có xe phía trước: tiếng bíp kêu nhanh hơn và cao hơn khi càng đến gần. Đây cũng là tiếng bíp báo xa hay gần khi dò tìm kho báu. Thời lượng 0.05 giây.</li>
+<li><code>loc_mision</code>: Có nhiệm vụ mới. Phát ra từ địa điểm có nhiệm vụ đang chờ bạn tiếp nhận. Phát lặp lại liên tục. Thời lượng 1.50 giây.</li>
+<li><code>cursor_mapa</code>: Con trỏ khám phá bản đồ. Con trỏ khám phá bản đồ đã chuyển sang ngã tư kế tiếp. Âm thanh này cũng vang lên khi đọc bảng tin bên trong một địa điểm. Thời lượng 0.04 giây.</li>
+<li><code>cruce</code>: Giao lộ. Bạn bước vào một ngã tư đường, hoặc đang lái xe tiến lại gần ngã tư. Thời lượng 0.39 giây.</li>
+<li><code>bordillo</code>: Gờ vỉa hè. Khi tự do lái xe, bạn bị lệch khỏi làn đường về phía có âm thanh phát ra. Thời lượng 0.12 giây.</li>
+<li><code>tono_pared</code>: Máy quét, phát hiện tường. Máy quét định hướng đã tìm thấy một bức tường. Càng lại gần thì âm thanh càng cao vút. Thời lượng 0.15 giây.</li>
+<li><code>tono_libre</code>: Máy quét, đường đi thông thoáng. Máy quét định hướng không tìm thấy bức tường nào theo hướng đó. Thời lượng 0.08 giây.</li>
+<li><code>loc_vehiculo</code>: Phương tiện nhiệm vụ. Phát ra từ chiếc xe nhiệm vụ yêu cầu, và từ xe của tài xế riêng khi đang chờ bạn. Phát lặp lại liên tục. Thời lượng 1.80 giây.</li>
+<li><code>radar</code>: Ra-đa. Phát ra từ vị trí của vật thể mà ra-đa vừa thông báo. Thời lượng 0.06 giây.</li>
+<li><code>baliza</code>: Tín hiệu định vị GPS. Phát ra theo hướng của điểm tiếp theo trên lộ trình. Càng đến gần, âm thanh lặp lại càng nhanh hơn. Thời lượng 0.35 giây.</li>
+<li><code>baliza_destino</code>: Tín hiệu định vị điểm đến. Tín hiệu định vị GPS chuyển sang âm thanh này khi điểm tiếp theo chính là điểm đến của bạn. Đây cũng là âm sắc định hướng phương bắc. Thời lượng 0.53 giây.</li>
+<li><code>loc_objeto</code>: Vật phẩm có thể nhặt. Phát ra từ vật phẩm nằm dưới đất. Hãy bước tới và nhặt lên. Phát lặp lại liên tục. Thời lượng 1.20 giây.</li>
+<li><code>loc_casete</code>: Vật phẩm sưu tầm. Phát ra từ một trong những cuốn băng cassette giấu quanh thành phố, hoặc từ vật phẩm sưu tầm khác. Phát lặp lại liên tục. Thời lượng 1.60 giây.</li>
+<li><code>semaforo_pio</code>: Đèn giao thông, tiếng bíp chậm. Xe cộ trên đại lộ đang dừng lại: bạn có thể băng qua đại lộ bằng cách đi bộ sang phía đông hoặc phía tây. Thời lượng 0.09 giây.</li>
+<li><code>semaforo_tic</code>: Đèn giao thông, tiếng tích tắc nhanh. Xe cộ trên đường phố đang dừng lại: bạn có thể băng qua đường bằng cách đi bộ lên phía bắc hoặc xuống phía nam. Thời lượng 0.03 giây.</li>
+<li><code>llegada</code>: Đến nơi. Bạn đã đến đích hoặc hoàn thành một bước của nhiệm vụ. Thời lượng 0.82 giây.</li>
+<li><code>loc_lugar</code>: Địa điểm đáng chú ý. Phát ra từ một địa điểm đáng chú ý không có âm thanh riêng. Phát lặp lại liên tục. Thời lượng 2.00 giây.</li>
+</ul>
+<h3>Âm thanh các địa điểm</h3>
+<p>37 âm thanh. Mỗi loại địa điểm phát ra âm thanh lặp lại đặc trưng để bạn nhận biết khi đi ngang qua. Chúng cần phân biệt rõ ràng và không gây khó chịu, vì sẽ được nghe đi nghe lại nhiều lần.</p>
+<ul>
+<li><code>lugar_helipuerto</code>: Bãi đỗ trực thăng. Bạn đang ở cạnh bãi đỗ trực thăng: tiếng cánh quạt quay tít và tiếng bíp từ đài kiểm soát không lưu. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>lugar_embarcadero</code>: Bến tàu hoặc cửa hàng đồ hàng hải. Bạn đang ở cạnh cầu tàu: sóng vỗ vào phao nổi và dây neo cót két. Phát lặp lại liên tục. Thời lượng 3.80 giây.</li>
+<li><code>lugar_taxi</code>: Bến taxi hoặc vạch xuất phát đua xe. Bạn đang ở cạnh bến taxi hoặc vạch xuất phát cuộc đua: hai tiếng còi xe bấm ngắn bíp bíp. Phát lặp lại liên tục. Thời lượng 2.50 giây.</li>
+<li><code>lugar_estacion</code>: Bến xe buýt. Bạn đang ở cạnh bến xe buýt: tiếng phanh hơi và loa phát thanh thông báo. Phát lặp lại liên tục. Thời lượng 4.00 giây.</li>
+<li><code>lugar_hospital</code>: Bệnh viện hoặc hiệu thuốc. Bạn đang ở cạnh bệnh viện hoặc hiệu thuốc: tiếng bíp của máy theo dõi nhịp tim. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>lugar_ong</code>: Bếp ăn từ thiện. Bạn đang ở cạnh bếp ăn từ thiện hoặc tổ chức cứu trợ: tiếng chén đĩa và dao nĩa. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>puerta_entrar</code>: Bước vào một địa điểm. Bạn bước vào một địa điểm: tiếng cửa mở và tiếng chuông leng keng. Trong khi bạn ở bên trong, âm thanh nền của nơi đó sẽ vang lên. Thời lượng 1.10 giây.</li>
+<li><code>lugar_boya</code>: Cầu cảng, phao nổi hoặc điểm câu cá. Bạn đang ở cạnh bến tàu, phao tiêu, điểm câu cá hoặc kho báu trên biển: tiếng chuông phao dập dềnh giữa sóng biển. Phát lặp lại liên tục. Thời lượng 3.50 giây.</li>
+<li><code>lugar_tienda</code>: Cửa hàng. Bạn đang ở cạnh một cửa hàng: tiếng chuông cửa kêu leng keng. Phát lặp lại liên tục. Thời lượng 3.20 giây.</li>
+<li><code>lugar_armeria</code>: Cửa hàng vũ khí. Bạn đang ở cạnh tiệm bán vũ khí: tiếng lên đạn súng lách cách. Phát lặp lại liên tục. Thời lượng 2.60 giây.</li>
+<li><code>lugar_rio</code>: Dòng sông. Bạn đang ở cạnh một dòng sông: tiếng nước róc rách chảy qua khe đá. Phát lặp lại liên tục. Thời lượng 3.80 giây.</li>
+<li><code>lugar_academia</code>: Học viện hoặc trường dạy lái xe. Bạn đang ở cạnh học viện hoặc trường dạy lái xe: tiếng chuông báo vào lớp. Phát lặp lại liên tục. Thời lượng 3.50 giây.</li>
+<li><code>lugar_club</code>: Hộp đêm, nội dung người lớn. Bạn đang ở cạnh hộp đêm: tiếng nhạc dập dình trầm đục và tiếng ly cốc chạm nhau. Phát lặp lại liên tục. Thời lượng 1.96 giây.</li>
+<li><code>lugar_mina</code>: Khu mỏ. Bạn đang ở cạnh mỏ quặng: tiếng cuốc chim bổ chan chát vào vách đá. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>lugar_salida</code>: Lối ra cao tốc. Bạn đang ở cạnh lối ra khỏi thành phố: xe cộ phóng vụt qua rào rào. Đường này dẫn sang khu vực khác. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>lugar_banco</code>: Ngân hàng hoặc tiệm cầm đồ. Bạn đang ở cạnh ngân hàng hoặc tiệm cầm đồ: tiếng bíp bíp của cây ATM. Phát lặp lại liên tục. Thời lượng 2.40 giây.</li>
+<li><code>lugar_casa</code>: Nhà. Bạn đang ở cạnh một ngôi nhà hoặc khách sạn, của bạn hoặc nơi bạn có thể mua: tiếng chuông gió leng keng. Phát lặp lại liên tục. Thời lượng 4.00 giây.</li>
+<li><code>lugar_proveedor</code>: Nhà cung cấp nguồn hàng, nội dung người lớn. Bạn đang ở cạnh đầu mối hàng, nơi mua bán hàng cấm: hai tiếng xì xì và tiếng cửa cuốn kim loại kéo lên. Phát lặp lại liên tục. Thời lượng 3.50 giây.</li>
+<li><code>lugar_tren</code>: Nhà ga xe lửa. Bạn đang ở cạnh nhà ga xe lửa: tiếng đầu máy hơi nước phì phò. Phát lặp lại liên tục. Thời lượng 2.40 giây.</li>
+<li><code>lugar_comida</code>: Nhà hàng, quán pizza hoặc quán ăn ven biển. Bạn đang ở cạnh một quán ăn: tiếng đồ ăn đang xèo xèo chiên rán. Phát lặp lại liên tục. Thời lượng 1.94 giây.</li>
+<li><code>lugar_iglesia</code>: Nhà thờ. Bạn đang ở cạnh nhà thờ: tiếng chuông ngân. Phát lặp lại liên tục. Thời lượng 3.50 giây.</li>
+<li><code>lugar_prision</code>: Nhà tù. Bạn đang ở cạnh nhà tù: tiếng cổng sắt sập lại và còi báo động xa xa. Phát lặp lại liên tục. Thời lượng 4.00 giây.</li>
+<li><code>lugar_gimnasio</code>: Phòng tập gym. Bạn đang ở cạnh phòng gym: tiếng tạ va vào nhau keng keng. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>lugar_bar</code>: Quán bar, quán rượu hoặc vũ trường. Bạn đang ở cạnh quán bar, quán rượu, vũ trường hoặc cơ sở kinh doanh: tiếng nhạc bass dập dình qua vách tường. Phát lặp lại liên tục. Thời lượng 2.00 giây.</li>
+<li><code>lugar_periodico</code>: Quầy báo hoặc hiệu sách. Bạn đang ở cạnh tòa soạn báo hoặc hiệu sách: tiếng lách cách của máy đánh chữ. Phát lặp lại liên tục. Thời lượng 2.00 giây.</li>
+<li><code>lugar_cine</code>: Rạp chiếu phim. Bạn đang ở cạnh rạp chiếu phim: tiếng máy chiếu lách cách. Phát lặp lại liên tục. Thời lượng 1.92 giây.</li>
+<li><code>puerta_salir</code>: Rời khỏi cửa tiệm. Bạn rời khỏi cửa tiệm: tiếng chuông cửa leng keng và tiếng cánh cửa khép lại. Thời lượng 0.70 giây.</li>
+<li><code>lugar_aeropuerto</code>: Sân bay. Bạn đang ở cạnh sân bay: tiếng chuông loa phát thanh thông báo, ba nốt trầm dần. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>lugar_casino</code>: Sòng bạc hoặc hội chợ. Bạn đang ở cạnh sòng bạc hoặc hội chợ: điệu nhạc vui tai từ máy đánh bạc xèng. Phát lặp lại liên tục. Thời lượng 2.40 giây.</li>
+<li><code>lugar_protectora</code>: Trạm cứu hộ động vật. Bạn đang ở cạnh trạm cứu hộ động vật, nơi bạn có thể nhận nuôi chó: tiếng chó sủa. Phát lặp lại liên tục. Thời lượng 4.00 giây.</li>
+<li><code>lugar_tranvia</code>: Trạm dừng tàu điện. Bạn đang ở cạnh trạm đón tàu điện: hai tiếng chuông leng keng. Phát lặp lại liên tục. Thời lượng 2.40 giây.</li>
+<li><code>lugar_empleo</code>: Trung tâm giới thiệu việc làm. Bạn đang ở cạnh trung tâm việc làm: tiếng gõ bàn phím và loa gọi số thứ tự. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>lugar_taller</code>: Xưởng sửa xe, bãi rã xác xe hoặc đại lý ô tô. Bạn đang ở cạnh xưởng sửa xe, bãi phế liệu hoặc đại lý xe hơi: tiếng súng xiết bu-lông khí nén re re. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>lugar_fuente</code>: Đài phun nước. Bạn đang ở cạnh đài phun nước: tiếng nước chảy róc rách. Phát lặp lại liên tục. Thời lượng 2.94 giây.</li>
+<li><code>lugar_contacto</code>: Địa điểm có người liên lạc. Bạn đang ở cạnh nơi có người đang chờ giao việc cho bạn. Phát lặp lại liên tục. Thời lượng 1.50 giây.</li>
+<li><code>lugar_generico</code>: Địa điểm không có âm thanh riêng. Bạn đang ở cạnh một địa điểm không có âm thanh đặc trưng riêng. Phát lặp lại liên tục. Thời lượng 2.00 giây.</li>
+<li><code>lugar_comisaria</code>: Đồn cảnh sát. Bạn đang ở cạnh đồn cảnh sát: tiếng bộ đàm cảnh sát rè rè. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+</ul>
+<h3>Di chuyển đi bộ và bơi lội</h3>
+<p>20 âm thanh. Có hai biến thể tiếng bước chân cho mỗi bề mặt địa hình, luân phiên chân trái và chân phải. Độ dài phải dưới 1/4 giây.</p>
+<ul>
+<li><code>paso_calzada1</code>: Bước chân dưới lòng đường, chân phải. Bạn đang đi bộ dưới lòng đường nhựa, nơi xe cộ qua lại. Thời lượng 0.10 giây.</li>
+<li><code>paso_calzada0</code>: Bước chân dưới lòng đường, chân trái. Bạn đang đi bộ dưới lòng đường nhựa: hãy cẩn thận xe cộ. Thời lượng 0.10 giây.</li>
+<li><code>paso_arena1</code>: Bước chân trên cát, chân phải. Bạn bước chân kia lên bãi cát. Thời lượng 0.20 giây.</li>
+<li><code>paso_arena0</code>: Bước chân trên cát, chân trái. Bạn đang đi trên cát bãi biển. Thời lượng 0.20 giây.</li>
+<li><code>paso_muelle1</code>: Bước chân trên cầu cảng, chân phải. Bạn bước chân kia lên ván gỗ cầu cảng. Thời lượng 0.14 giây.</li>
+<li><code>paso_muelle0</code>: Bước chân trên cầu cảng, chân trái. Bạn đang đi trên ván gỗ cầu cảng. Thời lượng 0.14 giây.</li>
+<li><code>paso_hierba1</code>: Bước chân trên cỏ, chân phải. Bạn bước chân kia lên bãi cỏ. Thời lượng 0.16 giây.</li>
+<li><code>paso_hierba0</code>: Bước chân trên cỏ, chân trái. Bạn đang đi trên bãi cỏ công viên hoặc vùng đồng quê. Thời lượng 0.16 giây.</li>
+<li><code>paso_plaza1</code>: Bước chân trên quảng trường, chân phải. Bạn bước chân kia lên nền đá lát quảng trường. Thời lượng 0.08 giây.</li>
+<li><code>paso_plaza0</code>: Bước chân trên quảng trường, chân trái. Bạn đang đi trên nền đá lát quảng trường. Thời lượng 0.08 giây.</li>
+<li><code>paso_acera1</code>: Bước chân trên vỉa hè, chân phải. Bạn đang đi trên vỉa hè. Tiếng hai bước chân phát ra hơi khác nhau một chút. Thời lượng 0.09 giây.</li>
+<li><code>paso_acera0</code>: Bước chân trên vỉa hè, chân trái. Bạn đang đi trên vỉa hè. Thời lượng 0.09 giây.</li>
+<li><code>paso_via1</code>: Bước chân trên đường ray, chân phải. Bạn vẫn đang ở trên đường ray xe lửa hoặc tàu điện: hãy ra khỏi đường ray ngay. Thời lượng 0.20 giây.</li>
+<li><code>paso_via0</code>: Bước chân trên đường ray, chân trái. Bạn đang đứng giữa đường ray tàu điện hoặc tàu hỏa: tiếng kim loại lách cách của thanh ray cùng sỏi đá bên dưới. Thời lượng 0.20 giây.</li>
+<li><code>bajo_agua</code>: Dưới nước. Bạn đang lặn dưới nước: tiếng ục ục trầm đục kèm bọt khí. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>agacharse</code>: Ngồi xổm. Bạn ngồi xổm: tạo ít tiếng động hơn và đối phương khó phát hiện hơn. Thời lượng 0.25 giây.</li>
+<li><code>brazada</code>: Sải tay bơi. Âm thanh phát ra theo từng sải tay bạn bơi. Thời lượng 0.45 giây.</li>
+<li><code>salpicadura</code>: Tiếng tõm rơi xuống nước. Ai đó hoặc thứ gì đó rơi xuống nước: bạn, xe cộ hoặc thứ bạn vứt xuống biển. Thời lượng 0.90 giây.</li>
+<li><code>choque_pared</code>: Va chạm vào tường. Bạn đã va đầu vào tường khi cố bước tiếp. Thời lượng 0.12 giây.</li>
+<li><code>levantarse</code>: Đứng dậy. Bạn đứng dậy sau khi ngồi xổm. Thời lượng 0.25 giây.</li>
+</ul>
+<h3>Phương tiện và lái xe</h3>
+<p>19 âm thanh. Âm thanh động cơ được phát lặp lại liên tục và trò chơi sẽ tăng cao độ theo tốc độ di chuyển. Thu âm tiếng nổ cầm chừng của động cơ ở vòng tua ổn định.</p>
+<ul>
+<li><code>claxon_bici</code>: Chuông xe đạp. Tiếng chuông xe đạp. Thời lượng 0.54 giây.</li>
+<li><code>claxon</code>: Còi xe hơi. Bạn bấm còi xe, hoặc tài xế khác bấm còi với bạn. Tài xế riêng của bạn sẽ bấm hai tiếng khi đến nơi, và thợ sửa xe bấm khi giao xe cho bạn. Thời lượng 0.45 giây.</li>
+<li><code>claxon_camion</code>: Còi xe tải. Còi hơi của xe tải hoặc xe buýt. Thời lượng 0.70 giây.</li>
+<li><code>puerta_coche</code>: Cửa xe. Bạn bước lên xe hoặc xuống xe. Thời lượng 0.18 giây.</li>
+<li><code>arranque</code>: Khởi động động cơ. Bạn nổ máy khởi động xe. Thời lượng 0.90 giây.</li>
+<li><code>rodadura</code>: Lốp xe miết trên đường nhựa. Tiếng lốp xe của bạn. Bạn chạy càng nhanh thì tiếng càng to. Phát lặp lại liên tục. Thời lượng 1.44 giây.</li>
+<li><code>claxon_helados</code>: Nhạc hiệu xe bán kem. Chiếc xe bán kem phát điệu nhạc vui nhộn đặc trưng thay vì bấm còi xe. Thời lượng 1.47 giây.</li>
+<li><code>frenazo</code>: Tiếng phanh gấp. Một chiếc xe phanh gấp hoặc rê bánh trượt dài. Thời lượng 0.90 giây.</li>
+<li><code>motor_tractor</code>: Tiếng động cơ máy kéo. Tiếng động cơ máy kéo, chậm chạp và phì phò từng nhịp. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>motor_coche</code>: Tiếng động cơ ô tô. Tiếng động cơ ô tô. Cao độ tăng dần theo tốc độ xe. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>motor_moto</code>: Tiếng động cơ xe máy. Tiếng động cơ xe máy. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>motor_camion</code>: Tiếng động cơ xe tải hoặc xe buýt. Tiếng động cơ xe tải hoặc xe buýt, trầm đục và nặng nề. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>motor_deportivo</code>: Tiếng động cơ xe thể thao. Tiếng động cơ xe thể thao, gầm rú gắt gỏng hơn xe hơi thông thường. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>motor_furgoneta</code>: Tiếng động cơ xe van hoặc xe bán tải địa hình. Tiếng động cơ xe van hoặc xe địa hình. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>choque</code>: Va chạm mạnh. Va đụng mạnh bằng xe: xe bị hỏng hóc. Thời lượng 0.60 giây.</li>
+<li><code>choque_leve</code>: Va chạm nhẹ. Một cú quẹt hoặc va quệt nhẹ của xe cộ. Thời lượng 0.30 giây.</li>
+<li><code>motor_bici</code>: Xe đạp. Bạn đang đi xe đạp: tiếng xích líp kêu lách cách. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>intermitente</code>: Đèn xi-nhan. Bạn đã bấm xi-nhan báo rẽ ở ngã tư tiếp theo. Tiếng kêu sẽ kêu liên tục cho đến khi bạn rẽ. Phát lặp lại liên tục. Thời lượng 0.80 giây.</li>
+<li><code>radio_cambio</code>: Đổi đài phát thanh. Bạn đổi kênh radio trên xe, hoặc tắt đài. Thời lượng 0.30 giây.</li>
+</ul>
+<h3>Hỏng hóc, xưởng sửa chữa, xăng xe và cướp trộm phương tiện</h3>
+<p>10 âm thanh. Những gì diễn ra với một phương tiện khi bạn không lái nó nữa.</p>
+<ul>
+<li><code>ganzua</code>: Cây mở khóa. Bạn đang cạy khóa một chiếc xe. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>alarma</code>: Còi báo động ô tô. Còi báo động của một phương tiện hoặc địa điểm đã hú vang. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>motor_seco</code>: Hết nhiên liệu. Động cơ khạc khạc rồi chết máy: bạn đã cạn sạch nhiên liệu. Phát lặp lại liên tục. Thời lượng 0.69 giây.</li>
+<li><code>cristal</code>: Kính vỡ. Tiếng kính vỡ: cửa kính xe hoặc tủ kính trưng bày. Thời lượng 0.70 giây.</li>
+<li><code>fuego</code>: Lửa. Một chiếc xe hoặc tòa nhà đang bốc cháy. Nếu là xe cộ, nó sắp phát nổ: hãy tránh xa ra. Phát lặp lại liên tục. Thời lượng 1.94 giây.</li>
+<li><code>reserva</code>: Sắp hết nhiên liệu. Cảnh báo phương tiện sắp hết nhiên liệu: hãy tìm một trạm xăng. Thời lượng 0.62 giây.</li>
+<li><code>pintura</code>: Sơn đổi màu xe. Xe của bạn được sơn lại ở xưởng: cảnh sát sẽ không còn nhận ra xe nữa. Thời lượng 1.20 giây.</li>
+<li><code>reparar</code>: Sửa chữa tại xưởng. Xe của bạn đang được sửa chữa tại xưởng. Thời lượng 0.75 giây.</li>
+<li><code>pinchazo</code>: Thủng lốp. Nổ lốp xì hơi: tay lái bị nhao hẳn sang một bên. Thời lượng 1.30 giây.</li>
+<li><code>repostar</code>: Đổ xăng. Vòi bơm đang bơm nhiên liệu vào bình. Thời lượng 1.60 giây.</li>
+</ul>
+<h3>Thuyền bè, trực thăng, tàu hỏa, tàu điện và máy bay</h3>
+<p>16 âm thanh. Tiếng tàu hỏa, tàu điện và khoang máy bay phát lặp lại liên tục, y như tiếng động cơ.</p>
+<ul>
+<li><code>tono_alineacion</code>: Âm báo căn chỉnh hướng. Khi lái máy bay thủ công, hai tiếng lách cách phát ra ở hướng bạn cần bẻ lái. Khi tiếng kêu ở chính giữa và âm thanh cao hơn nghĩa là bạn đang bay đúng hướng. Thời lượng 0.11 giây.</li>
+<li><code>tono_altitud</code>: Âm báo độ cao. Khi lái máy bay, một nốt âm vang lên mỗi khi thay đổi độ cao: âm càng bổng thì bạn bay càng cao. Thời lượng 0.13 giây.</li>
+<li><code>alarma_cabina</code>: Cảnh báo buồng lái. Khi lái máy bay, bốn tiếng bíp dồn dập cảnh báo: sắp cạn nhiên liệu, có vật cản hoặc máy bay khác phía trước, hoặc động cơ đã bị chết máy. Thời lượng 0.62 giây.</li>
+<li><code>tranvia_campana</code>: Chuông tàu điện. Tàu điện bắt đầu chạy: hai tiếng chuông keng keng. Thời lượng 0.90 giây.</li>
+<li><code>sirena_barco</code>: Còi tàu biển. Tàu nhổ neo rời bến. Ngoài biển, đây cũng là tín hiệu màn đêm buông xuống. Thời lượng 1.80 giây.</li>
+<li><code>tren_silbato</code>: Còi tàu hỏa. Tàu hỏa rời ga. Thời lượng 1.60 giây.</li>
+<li><code>aterrizaje</code>: Hạ cánh. Máy bay chạm đất: tiếng va chạm, tiếng lốp rít lên ken két và tiếng lăn bánh lịm dần. Thời lượng 1.25 giây.</li>
+<li><code>avion_despegue</code>: Máy bay cất cánh. Máy bay tăng tốc trên đường băng rồi cất cánh. Thời lượng 4.00 giây.</li>
+<li><code>avion</code>: Máy bay chở khách. Bạn đang đi máy bay: tiếng vo vo trong khoang khi đang bay. Phát lặp lại liên tục. Thời lượng 3.00 giây.</li>
+<li><code>motor_avioneta</code>: Máy bay hạng nhẹ. Tiếng quạt vo vo từ cánh quạt máy bay hạng nhẹ. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>tren</code>: Tàu hỏa. Bạn đang đi tàu hỏa: toa tàu chuyển bánh xình xịch cùng tiếng đường ray lách cách. Phát lặp lại liên tục. Thời lượng 2.00 giây.</li>
+<li><code>tranvia</code>: Tàu điện. Bạn đang đi tàu điện: tiếng ro ro của động cơ điện trên đường ray. Phát lặp lại liên tục. Thời lượng 2.00 giây.</li>
+<li><code>motor_lancha</code>: Tiếng động cơ ca nô. Tiếng động cơ ca nô hoặc tàu thuyền cao tốc. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>motor_barco</code>: Tiếng động cơ tàu thủy. Tiếng động cơ của một tàu thuyền lớn: tàu đánh cá, thuyền buồm hoặc du thuyền. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>motor_helicoptero</code>: Trực thăng. Cánh quạt trực thăng nơi bạn đang ngồi bên trong. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>turbulencia</code>: Vùng nhiễu động không khí. Máy bay rung lắc dữ dội: có nhiễu động không khí, hoặc bạn đang bay qua một cơn bão. Thời lượng 1.30 giây.</li>
+</ul>
+<h3>Vũ khí, tiếng nổ của từng loại</h3>
+<p>14 âm thanh. Tiếng súng của từng loại vũ khí phải nhận biết được mà không cần nhìn: hãy đảm bảo chúng không giống nhau.</p>
+<ul>
+<li><code>lanzar</code>: Ném ra. Ai đó ném lựu đạn hoặc bom xăng Molotov, hoặc bắn nỏ. Thời lượng 0.30 giây.</li>
+<li><code>disparo_revolver</code>: Tiếng súng lục ổ quay. Ai đó bắn súng lục ổ quay: tiếng nổ trầm và đanh thép hơn súng ngắn thông thường. Thời lượng 0.50 giây.</li>
+<li><code>disparo_pistola</code>: Tiếng súng ngắn. Ai đó bắn súng ngắn. Thời lượng 0.35 giây.</li>
+<li><code>disparo_rafaga</code>: Tiếng súng ngắn bắn chùm. Một phát bắn khô khốc cực nhanh, nổ liên thanh dồn dập. Thời lượng 0.16 giây.</li>
+<li><code>disparo_silenciado</code>: Tiếng súng ngắn giảm thanh. Một phát súng có giảm thanh: hầu như không ai xung quanh nghe thấy. Thời lượng 0.12 giây.</li>
+<li><code>lanzagranadas</code>: Tiếng súng phóng lựu. Một tiếng thụt rỗng như từ nòng ống phóng: một quả lựu đạn được phóng ra. Thời lượng 0.60 giây.</li>
+<li><code>cohete</code>: Tiếng súng phóng tên lửa. Tên lửa phóng ra: tiếp sau đó sẽ là một vụ nổ kinh hoàng. Thời lượng 1.00 giây.</li>
+<li><code>disparo_escopeta</code>: Tiếng súng shotgun. Ai đó bắn súng hoa cải: tiếng nổ rền vang lan rộng. Thời lượng 0.70 giây.</li>
+<li><code>disparo_corredera</code>: Tiếng súng shotgun bơm đạn. Tiếng nổ trầm uy lực và tiếp sau là tiếng khóa nòng trượt. Thời lượng 1.10 giây.</li>
+<li><code>disparo_subfusil</code>: Tiếng súng tiểu liên. Ai đó bắn súng tiểu liên hoặc súng máy: loạt đạn liên thanh dồn dập. Thời lượng 0.20 giây.</li>
+<li><code>disparo_rifle</code>: Tiếng súng trường. Ai đó bắn súng bắn tỉa hoặc súng carbine: tiếng nổ khô khốc và có độ vang. Thời lượng 0.80 giây.</li>
+<li><code>disparo_semiautomatico</code>: Tiếng súng trường bán tự động. Ai đó bắn súng trường bán tự động: từng phát đanh và uy lực. Thời lượng 0.42 giây.</li>
+<li><code>disparo_fusil</code>: Tiếng súng trường tấn công. Ai đó nổ súng trường tấn công. Thời lượng 0.30 giây.</li>
+<li><code>disparo_palanca</code>: Tiếng súng trường đòn bẩy. Tiếng nổ và theo sau là tiếng gạt đòn bẩy nạp viên tiếp theo. Thời lượng 1.00 giây.</li>
+</ul>
+<h3>Giao chiến, ngắm bắn và vết thương</h3>
+<p>20 âm thanh. Nạp đạn, va đập, đòn đánh, âm thanh ngắm bắn và tiếng la rên khi có người bị thương.</p>
+<ul>
+<li><code>muerte_npc</code>: Ai đó ngã. Ai đó bị bắn gục. Thời lượng 0.70 giây.</li>
+<li><code>dolor</code>: Bạn bị thương. Bạn đã chịu sát thương. Thời lượng 0.30 giây.</li>
+<li><code>sin_balas</code>: Hết đạn. Bạn bóp cò nhưng súng hết đạn: hãy nạp đạn hoặc đổi vũ khí khác. Thời lượng 0.04 giây.</li>
+<li><code>amartillar</code>: Họ sắp nổ súng vào bạn. Kẻ địch chuẩn bị lên đạn: nửa giây sau hắn sẽ nổ súng. Âm thanh này cũng phát ra khi bạn đổi vũ khí. Thời lượng 0.32 giây.</li>
+<li><code>curar</code>: Hồi máu. Bạn hồi phục máu, hoặc xe cứu thương đang sơ cứu cho người bị thương. Thời lượng 0.78 giây.</li>
+<li><code>recarga</code>: Nạp đạn. Bạn nạp đạn cho vũ khí. Thời lượng 0.70 giây.</li>
+<li><code>navaja</code>: Nhát chém dao bấm. Một nhát chém bằng dao bấm, dao rựa hoặc kiếm katana. Thời lượng 0.12 giây.</li>
+<li><code>hacha</code>: Nhát rìu chém. Một nhát chém bằng rìu: tiếng vun vút xé gió và tiếng phập trầm đục của lưỡi rìu. Thời lượng 0.42 giây.</li>
+<li><code>latido</code>: Nhịp tim. Bạn còn rất ít máu: hãy hồi máu hoặc tìm chỗ ẩn nấp ngay. Phát lặp lại liên tục. Thời lượng 1.00 giây.</li>
+<li><code>explosion</code>: Tiếng nổ. Một quả lựu đạn, tên lửa hoặc phương tiện đã phát nổ. Thời lượng 1.80 giây.</li>
+<li><code>dolor_mujer</code>: Tiếng rên rỉ của phụ nữ. Bạn đã làm một phụ nữ bị thương. Thời lượng 0.30 giây.</li>
+<li><code>dolor_npc</code>: Tiếng rên rỉ của đàn ông. Bạn đã làm một gã đàn ông bị thương. Thời lượng 0.28 giây.</li>
+<li><code>hospital_despertar</code>: Tỉnh dậy trong bệnh viện. Bạn bất tỉnh nhân sự và tỉnh dậy trong bệnh viện. Thời lượng 2.60 giây.</li>
+<li><code>golpe_aire</code>: Vung đòn hụt. Một cú vung đòn đánh hụt. Thời lượng 0.15 giây.</li>
+<li><code>tono_apuntado</code>: Đã khóa mục tiêu kẻ địch, ngoài tầm bắn. Phát ra từ vị trí kẻ địch bị khóa mục tiêu: mục tiêu quá xa ngoài tầm bắn của vũ khí. Thời lượng 0.04 giây.</li>
+<li><code>tono_objetivo</code>: Đã khóa mục tiêu kẻ địch, trong tầm bắn. Phát ra từ vị trí kẻ địch bị khóa mục tiêu: mục tiêu nằm trong tầm bắn của vũ khí. Thời lượng 0.07 giây.</li>
+<li><code>recoger_municion</code>: Đã nhặt đạn. Bạn nhặt đạn hoặc vũ khí rơi ra từ kẻ địch bị hạ gục: tiếng lắp băng đạn và kéo thoi nạp. Thời lượng 0.50 giây.</li>
+<li><code>bala_silbido</code>: Đạn bắn trượt. Một viên đạn vừa bay sượt qua người bạn. Thời lượng 0.18 giây.</li>
+<li><code>bala_impacto</code>: Đạn găm trúng. Một viên đạn găm trúng tường, trúng xe hoặc vật khác. Thời lượng 0.12 giây.</li>
+<li><code>golpe</code>: Đòn đánh trúng đích. Một cú đấm, một cú vụt gậy hoặc cú tông xe trúng vào ai đó. Thời lượng 0.10 giây.</li>
+</ul>
+<h3>Cảnh sát và cấp cứu khẩn cấp</h3>
+<p>12 âm thanh. Cảnh báo mức độ truy nã, còi hú và trực thăng cảnh sát.</p>
+<ul>
+<li><code>buscando</code>: Bạn đang bị truy lùng. Cảnh sát đang truy lùng nhưng chưa thấy bạn: giữ nguyên vài giây nữa bạn sẽ cắt đuôi được chúng. Âm thanh cao hơn nghĩa là trực thăng không thấy bạn. Thời lượng 0.12 giây.</li>
+<li><code>emisora</code>: Bộ đàm cảnh sát. Khi làm cảnh sát: tiếng lách cách chuyển kênh bộ đàm và hai tiếng bíp. Bạn bắt đầu ca trực, nhận thông báo hoặc kết thúc ca trực. Thời lượng 0.75 giây.</li>
+<li><code>sirena</code>: Còi xe cảnh sát. Một xe tuần tra cảnh sát đang lao đến bắt bạn, hoặc một xe cứu hỏa. Phát lặp lại liên tục. Thời lượng 2.00 giây.</li>
+<li><code>sirena_ambulancia</code>: Còi xe cấp cứu. Xe cứu thương: xe của bạn hoặc xe lao đến sau một vụ đấu súng hay tông xe. Phát lặp lại liên tục. Thời lượng 1.60 giây.</li>
+<li><code>esposas</code>: Còng tay. Bạn bị bắt giữ. Thời lượng 0.45 giây.</li>
+<li><code>celda</code>: Cửa buồng giam. Bạn đã bị bắt và tống giam: tiếng đóng cửa buồng giam. Thời lượng 0.90 giây.</li>
+<li><code>estrella_baja</code>: Giảm mức độ truy nã. Cảnh sát bớt ráo riết truy lùng bạn hơn. Thời lượng 0.70 giây.</li>
+<li><code>megafono</code>: Loa phóng thanh trực thăng. Trực thăng cảnh sát phát loa gọi bạn: tiếng rít micro và giọng kim loại rè rè. Nội dung nói sẽ được đọc ngay sau đó. Thời lượng 1.10 giây.</li>
+<li><code>estrella_sube</code>: Tăng mức độ truy nã. Cảnh sát ráo riết truy lùng bạn gắt gao hơn. Thời lượng 0.40 giây.</li>
+<li><code>multa</code>: Tiền phạt. Bạn vừa bị phạt tiền: tiếng còi của cảnh sát. Thời lượng 0.76 giây.</li>
+<li><code>helicoptero_policia</code>: Trực thăng cảnh sát. Ở mức độ truy nã cao nhất, trực thăng cảnh sát: bạn sẽ nghe thấy tiếng nó ập đến và lượn vòng trên đầu. Phát lặp lại liên tục. Thời lượng 2.00 giây.</li>
+<li><code>policia_perdida</code>: Đã cắt đuôi cảnh sát. Họ không còn truy lùng bạn nữa. Thời lượng 1.38 giây.</li>
+</ul>
+<h3>Người đi đường và động vật</h3>
+<p>8 âm thanh. Tiếng thì thầm không rõ lời, tiếng bước chân người qua lại và tiếng chó.</p>
+<ul>
+<li><code>evento</code>: Biến cố đường phố. Có chuyện gì đó đang xảy ra gần đây: một vụ cướp, đám côn đồ lảng vảng hoặc một chiếc cặp bị rơi. Giúp hay không là tùy bạn. Thời lượng 0.74 giây.</li>
+<li><code>paso_npc</code>: Bước chân của người khác. Có người đang đi bộ gần bạn. Thời lượng 0.08 giây.</li>
+<li><code>perro_olfatea</code>: Chó đánh hơi. Chó của bạn đánh hơi tìm vật phẩm gần nhất. Thời lượng 0.36 giây.</li>
+<li><code>ladrido</code>: Tiếng chó sủa. Tiếng chó sủa. Nếu là chó của bạn, nó đang cảnh báo kẻ địch ở gần hoặc vừa đánh hơi thấy thứ gì đó. Thời lượng 1.00 giây.</li>
+<li><code>grito</code>: Tiếng hét. Một tiếng hét: của bạn để dọa đuổi đám đông, hoặc của kẻ địch phát hiện ra bạn và báo động cho đồng bọn. Thời lượng 0.75 giây.</li>
+<li><code>grito_mujer</code>: Tiếng hét hoảng sợ của một người phụ nữ. Một người phụ nữ hét lên kinh hãi rồi cắm đầu bỏ chạy. Thời lượng 0.72 giây.</li>
+<li><code>grito_hombre</code>: Tiếng hét hoảng sợ của một người đàn ông. Một người đàn ông thét lên kinh hãi rồi cắm đầu bỏ chạy. Thời lượng 0.63 giây.</li>
+<li><code>murmullo</code>: Tiếng xì xào. Một người đi bộ lẩm bẩm khi nói với bạn, hoặc hai người đi ngang qua đang trò chuyện với nhau. Thời lượng 0.35 giây.</li>
+</ul>
+<h3>Nhà cửa, nấu nướng và ăn uống</h3>
+<p>8 âm thanh. Ăn uống, nấu nướng tại nhà và có tiếng gõ cửa.</p>
+<ul>
+<li><code>comer</code>: Ăn. Bạn ăn chút gì đó: hồi phục thể lực. Thời lượng 0.60 giây.</li>
+<li><code>timbre</code>: Chuông cửa nhà. Tiếng bấm chuông nhà bạn: đồ ăn bạn gọi giao tận nơi đã đến. Hai nốt đinh đoong. Thời lượng 1.30 giây.</li>
+<li><code>cocina_freir</code>: Nấu ăn, tiếng chảo rán. Bạn đang nấu bằng chảo: dầu sôi xèo xèo. Thời lượng 2.40 giây.</li>
+<li><code>cocina_cortar</code>: Nấu ăn, tiếng dao thái. Bạn bắt đầu nấu nướng: tiếng dao băm chặt trên thớt. Thời lượng 1.50 giây.</li>
+<li><code>cocina_hervir</code>: Nấu ăn, tiếng nồi nấu. Bạn đang nấu bằng nồi: nước sôi sùng sục. Thời lượng 2.40 giây.</li>
+<li><code>nevera</code>: Tủ lạnh. Mở tủ lạnh ở nhà hoặc cất đồ vừa mua vào: tiếng gioăng cao su của cửa và tiếng mô tơ chạy ro ro. Thời lượng 1.00 giây.</li>
+<li><code>beber</code>: Uống. Bạn nhấp vài ngụm. Thời lượng 0.33 giây.</li>
+<li><code>plato_servido</code>: Đĩa thức ăn đã dọn lên. Món ăn đã xong: tiếng bát đĩa đặt lên bàn và tiếng dao nĩa. Thời lượng 0.90 giây.</li>
+</ul>
+<h3>Cửa hàng, tiền bạc và vật phẩm</h3>
+<p>5 âm thanh. Mua sắm, nhận tiền và nhặt đồ.</p>
+<ul>
+<li><code>cesta</code>: Giỏ mua hàng. Bạn bỏ món đồ vào giỏ: tiếng bịch trầm đục và tiếng nan sắt rung lên. Âm trầm hơn, bạn đặt nó lại kệ hàng. Thời lượng 0.40 giây.</li>
+<li><code>caja</code>: Máy tính tiền. Bạn thanh toán mua hàng hoặc thực hiện giao dịch ngân hàng. Thời lượng 0.67 giây.</li>
+<li><code>bolsa</code>: Thị trường chứng khoán. Bạn đã mua cổ phiếu trên thị trường chứng khoán. Thời lượng 0.49 giây.</li>
+<li><code>dinero</code>: Tiền. Bạn đã kiếm được tiền. Thời lượng 0.55 giây.</li>
+<li><code>recoger</code>: Đã nhặt vật phẩm. Bạn nhặt một món đồ dưới đất. Thời lượng 0.18 giây.</li>
+</ul>
+<h3>Menu, điện thoại và thông báo trong game</h3>
+<p>17 âm thanh. Các âm thanh giao diện ngắn. Nên giữ cho chúng ngắn gọn và vừa phải.</p>
+<ul>
+<li><code>gallo</code>: Bình minh lên. Bảy giờ sáng: tiếng gà gáy. Thời lượng 1.10 giây.</li>
+<li><code>dialogo</code>: Câu thoại trong cuộc hội thoại. Một câu thoại trong đoạn hội thoại bắt đầu. Thời lượng 0.05 giây.</li>
+<li><code>buho</code>: Hoàng hôn buông. Chín giờ tối: tiếng chim cú rúc. Thời lượng 1.60 giây.</li>
+<li><code>error</code>: Lỗi. Lúc này không thể làm việc đó. Thời lượng 0.22 giây.</li>
+<li><code>menu_ok</code>: Menu, chọn mục. Bạn chọn một tùy chọn trong menu. Thời lượng 0.27 giây.</li>
+<li><code>menu_mover</code>: Menu, chuyển tùy chọn. Bạn chuyển từ tùy chọn này sang tùy chọn khác trong menu. Thời lượng 0.03 giây.</li>
+<li><code>menu_atras</code>: Menu, quay lại. Bạn quay lại trong menu. Thời lượng 0.27 giây.</li>
+<li><code>menu_ajuste</code>: Menu, thay đổi giá trị. Bạn đổi giá trị của tùy chọn bằng phím trái hoặc phải. Thời lượng 0.03 giây.</li>
+<li><code>menu_borde</code>: Menu, đầu hoặc cuối danh sách. Bạn đã đến đầu hoặc cuối menu, hoặc chạm mép bản đồ. Thời lượng 0.08 giây.</li>
+<li><code>campanadas</code>: Nửa đêm. Ngày mới bắt đầu: bạn thu tiền từ cơ sở kinh doanh và giá cả thay đổi. Thời lượng 4.20 giây.</li>
+<li><code>nivel</code>: Tăng cấp kỹ năng. Bạn đã nâng cao kỹ năng lái xe, xạ kích, thể lực hoặc câu cá. Thời lượng 0.80 giây.</li>
+<li><code>pasan_horas</code>: Thời gian trôi qua. Thời gian trôi vùn vụt: bạn ngủ, ẩn nấp hoặc chờ đợi. Thời lượng 1.85 giây.</li>
+<li><code>notificacion</code>: Thông báo khẩn. Thông báo chung: nhiệm vụ mới, điểm đến được đánh dấu hoặc tin nhắn đến. Nội dung cụ thể sẽ được thông báo ngay sau đó. Thời lượng 0.54 giây.</li>
+<li><code>guardado</code>: Đã lưu ván chơi. Trò chơi đã được lưu. Thời lượng 0.67 giây.</li>
+<li><code>logro</code>: Đạt được thành tựu. Bạn đã đạt được một thành tựu trong trò chơi. Thời lượng 1.05 giây.</li>
+<li><code>reloj</code>: Đếm ngược. Còn dưới mười giây: âm thanh phát ra theo từng giây đếm ngược. Thời lượng 0.03 giây.</li>
+<li><code>movil</code>: Điện thoại di động. Bạn mở điện thoại, hoặc có cuộc gọi hay tin nhắn đến. Thời lượng 0.22 giây.</li>
+</ul>
+<h3>Nhiệm vụ, công việc, danh tiếng và tâm trạng</h3>
+<p>14 âm thanh. Âm thanh vang lên khi hoàn thành nhiệm vụ, khi làm ăn lương thiện và khi danh tiếng hoặc trạng thái của bạn thay đổi.</p>
+<ul>
+<li><code>despido</code>: Bị sa thải. Bạn vừa bị sa thải khỏi công việc chính thức: tiếng sập cửa và ba nốt nhạc giáng dần. Thời lượng 1.20 giây.</li>
+<li><code>jornada</code>: Ca làm việc. Bạn làm hết một ca làm việc: còi nhà máy hú lên và thời gian trôi qua vài tiếng. Thời lượng 2.50 giây.</li>
+<li><code>factura</code>: Hóa đơn, thuế hoặc phí lệ. Bạn vừa bị trừ tiền hóa đơn, thuế hoặc tiền trả góp định kỳ: tiếng in hóa đơn và một nốt trầm. Thời lượng 0.95 giây.</li>
+<li><code>mision_ok</code>: Hoàn thành nhiệm vụ. Bạn đã hoàn thành một nhiệm vụ. Thời lượng 1.36 giây.</li>
+<li><code>diploma</code>: Khóa học kết thúc. Bạn đã học xong một khóa học tại học viện và tăng một kỹ năng. Thời lượng 1.38 giây.</li>
+<li><code>donativo</code>: Quyên góp. Bạn quyên góp tiền: tiếng tiền xu rơi leng keng. Thời lượng 0.90 giây.</li>
+<li><code>animo_baja</code>: Tâm trạng của bạn tồi tệ đi. Tâm trạng của bạn tụt dốc: khi tâm trạng quá tệ bạn sẽ ngắm bắn kém hơn và chạy chậm hơn. Thời lượng 0.57 giây.</li>
+<li><code>animo_sube</code>: Tâm trạng được cải thiện. Tâm trạng của bạn phấn chấn hơn: bạn ngắm bắn chuẩn hơn. Thời lượng 0.48 giây.</li>
+<li><code>ascenso</code>: Thăng chức. Bạn thăng hạng trong nghề và kiếm được nhiều tiền hơn, hoặc được thăng chức trong công việc chính thức. Thời lượng 1.40 giây.</li>
+<li><code>inspeccion</code>: Thanh tra kiểm tra. Đoàn thanh tra đã ghé qua một trong những cơ sở kinh doanh của bạn: tiếng gõ cửa cộc cộc, tiếng giấy tờ và đóng dấu xoạch xoạch. Nếu phát hiện sai phạm, thông tin sẽ hiển thị trên điện thoại, trong mục Đời sống, danh tiếng và hậu quả. Thời lượng 1.15 giây.</li>
+<li><code>mision_fallo</code>: Thất bại nhiệm vụ. Bạn đã thất bại nhiệm vụ, hoặc bạn đã gục ngã. Thời lượng 1.60 giây.</li>
+<li><code>fama</code>: Thay đổi danh tiếng giang hồ của bạn. Thay đổi cách nhìn nhận của người đi đường về bạn. Thời lượng 0.68 giây.</li>
+<li><code>prestigio</code>: Uy tín trong lòng người dân. Hàng xóm láng giềng nhìn bạn với ánh mắt thiện cảm hơn. Thời lượng 0.83 giây.</li>
+<li><code>titulo</code>: Đạt được văn bằng / chứng chỉ. Bạn đã hoàn thành chương trình học lấy chứng chỉ: một hồi kèn lệnh ngắn và một hợp âm vang dài. Thời lượng 1.50 giây.</li>
+</ul>
+<h3>Địa bàn và băng đảng</h3>
+<p>4 âm thanh. Các thông báo cảnh báo về địa bàn thuộc quyền kiểm soát của bạn.</p>
+<ul>
+<li><code>barrio_defendido</code>: Bảo vệ địa bàn thành công. Bạn đã đẩy lùi một đợt tấn công, hoặc san phẳng sào huyệt của một băng đảng: một hồi trống dồn và ba nốt vút cao. Thời lượng 1.25 giây.</li>
+<li><code>territorio</code>: Chiếm lĩnh địa bàn thành công. Một khu địa bàn đã về tay bạn. Thời lượng 1.56 giây.</li>
+<li><code>barrio_perdido</code>: Mất địa bàn. Một băng đảng đã cướp mất một địa bàn của bạn: tiếng chuông trầm và chuỗi nốt hạ dần. Thời lượng 1.60 giây.</li>
+<li><code>amenaza_barrio</code>: Mối đe dọa tại khu địa bàn của bạn. Một băng đảng đang chuẩn bị đánh úp địa bàn của bạn, hoặc vừa mới bắt đầu tấn công: tiếng trống dồn dập trầm đục ngày một nhanh và hai nốt nhạc căng thẳng. Hãy kiểm tra điện thoại, trong mục Địa bàn. Thời lượng 1.15 giây.</li>
+</ul>
+<h3>Chơi trực tuyến và nhập vai</h3>
+<p>7 âm thanh. Thông báo từ phòng chơi chung và từ các kênh nhập vai của máy chủ.</p>
+<ul>
+<li><code>amigo_sale</code>: Bạn bè rời đi. Khi chơi cùng bạn bè, có người rời ván đấu, hoặc chính bạn ngắt kết nối. Ba nốt nhạc trầm dần. Thời lượng 0.77 giây.</li>
+<li><code>amigo_entra</code>: Bạn bè tham gia. Khi chơi cùng bạn bè, có người tham gia ván đấu, hoặc chính bạn kết nối vào. Ba nốt nhạc vút cao. Thời lượng 0.77 giây.</li>
+<li><code>espera_servidor</code>: Chờ máy chủ. Trên máy chủ, kết nối bị gián đoạn hoặc máy chủ đang cập nhật, trò chơi chờ để tự động kết nối lại: hai nốt nhạc chậm và khẽ, nốt thứ hai trầm hơn. Lặp lại sau mỗi vài giây. Thời lượng 1.64 giây.</li>
+<li><code>chat_accion</code>: Hành động của nhân vật. Trên máy chủ, ai đó ở gần mô tả hành động nhân vật của họ, ví dụ như mở cửa: một tiếng xột xoạt ngắn kết thúc bằng một nốt nhạc. Thời lượng 0.45 giây.</li>
+<li><code>chat</code>: Tin nhắn. Khi chơi cùng bạn bè, tin nhắn đến hoặc được gửi đi: hai nốt nhạc cao và nhanh. Tin nhắn sẽ được đọc to ngay sau đó. Thời lượng 0.29 giây.</li>
+<li><code>chat_fuera</code>: Tin nhắn ngoài vai (OOC). Trên máy chủ, ai đó đang nói chuyện với tư cách người chơi ngoài đời chứ không phải nhân vật: hai tiếng gõ gỗ khô khốc. Cả máy chủ đều nghe thấy. Thời lượng 0.30 giây.</li>
+<li><code>chat_personaje</code>: Tin nhắn trong vai (IC). Trên máy chủ, ai đó ở gần nhập vai nhân vật nói chuyện, hoặc chính bạn nói: hai nốt nhạc trầm ấm, chậm hơn âm báo tin nhắn bình thường. Thời lượng 0.64 giây.</li>
+</ul>
+<h3>Câu cá, sòng bạc và trò chơi</h3>
+<p>12 âm thanh. Câu cá và các trò chơi trong sòng bạc, hội chợ và phòng gym.</p>
+<ul>
+<li><code>diana_ok</code>: Bắn trúng bia. Bạn đã bắn trúng bia trong trường bắn. Thời lượng 0.20 giây.</li>
+<li><code>diana</code>: Bia tập bắn. Bia tập bắn xuất hiện: nổ súng về hướng phát ra âm thanh. Thời lượng 0.25 giây.</li>
+<li><code>pez_pica</code>: Câu cá, cá cắn câu. Cá đã cắn câu: giật cần ngay lập tức, trong vòng chưa đầy một giây. Thời lượng 0.60 giây.</li>
+<li><code>carrete</code>: Câu cá, kéo dây câu. Bạn quay máy câu kéo dây về. Thời lượng 0.90 giây.</li>
+<li><code>pesca_lanzar</code>: Câu cá, quăng dây câu. Bạn quăng cần: lưỡi câu rơi tõm xuống nước. Thời lượng 1.15 giây.</li>
+<li><code>campana_ring</code>: Chuông trận đấu quyền anh. Một trận đấu võ bắt đầu trong phòng gym. Thời lượng 1.20 giây.</li>
+<li><code>simon_0</code>: Máy ghi nhớ, mũi tên lên. Nốt bổng nhất trong trò chơi ghi nhớ chuỗi âm thanh. Thời lượng 0.45 giây.</li>
+<li><code>simon_1</code>: Máy ghi nhớ, mũi tên phải. Nốt bổng thứ nhì trong trò chơi ghi nhớ chuỗi âm thanh. Thời lượng 0.45 giây.</li>
+<li><code>simon_3</code>: Máy ghi nhớ, mũi tên trái. Nốt trầm thứ nhì trong trò chơi ghi nhớ chuỗi âm thanh. Thời lượng 0.45 giây.</li>
+<li><code>simon_2</code>: Máy ghi nhớ, mũi tên xuống. Nốt trầm nhất trong trò chơi ghi nhớ chuỗi âm thanh. Thời lượng 0.45 giây.</li>
+<li><code>ruleta</code>: Vòng quay Roulette. Vòng quay roulette sòng bạc đang quay. Thời lượng 2.40 giây.</li>
+<li><code>dados</code>: Xúc xắc. Tiếng xúc xắc lăn. Thời lượng 0.80 giây.</li>
+</ul>
+<h3>Môi trường và thời tiết</h3>
+<p>19 âm thanh. Các đoạn âm thanh lặp nền dài phát ở từng khu phố, khi trời mưa và ban đêm, cùng các âm thanh riêng lẻ thỉnh thoảng vang lên xung quanh.</p>
+<ul>
+<li><code>amb_playa</code>: Âm thanh môi trường bãi biển. Bạn đang ở bãi biển: tiếng sóng vỗ rì rào. Phát lặp lại liên tục. Thời lượng 8.70 giây.</li>
+<li><code>amb_noche</code>: Âm thanh môi trường ban đêm. Trời về đêm: tiếng dế kêu rả rích. Phát lặp lại liên tục. Thời lượng 5.80 giây.</li>
+<li><code>amb_puerto</code>: Âm thanh môi trường bến cảng. Bạn đang ở bến cảng: tiếng sóng vỗ và tiếng còi tàu xa xăm. Phát lặp lại liên tục. Thời lượng 8.70 giây.</li>
+<li><code>amb_mar</code>: Âm thanh môi trường biển khơi. Bạn đang ở ngoài biển khơi, xa bờ biển. Phát lặp lại liên tục. Thời lượng 9.70 giây.</li>
+<li><code>amb_parque</code>: Âm thanh môi trường công viên. Bạn đang ở công viên: tiếng chim hót. Phát lặp lại liên tục. Thời lượng 9.70 giây.</li>
+<li><code>amb_industrial</code>: Âm thanh môi trường khu công nghiệp. Bạn đang ở khu công nghiệp: tiếng máy móc vận hành. Phát lặp lại liên tục. Thời lượng 5.70 giây.</li>
+<li><code>amb_residencial</code>: Âm thanh môi trường khu phố yên tĩnh. Bạn đang ở khu dân cư. Phát lặp lại liên tục. Thời lượng 7.70 giây.</li>
+<li><code>amb_montana</code>: Âm thanh môi trường miền núi. Bạn đang ở vùng núi: tiếng gió rít. Phát lặp lại liên tục. Thời lượng 9.70 giây.</li>
+<li><code>amb_ciudad</code>: Âm thanh môi trường thành phố. Bạn đang ở trung tâm thành phố: tiếng xe cộ qua lại xa xa. Phát lặp lại liên tục. Thời lượng 7.70 giây.</li>
+<li><code>amb_campo</code>: Âm thanh môi trường vùng nông thôn. Bạn đang ở vùng đồng quê: tiếng chim hót và tiếng chuông đeo cổ bò leng keng. Phát lặp lại liên tục. Thời lượng 9.70 giây.</li>
+<li><code>pajaro</code>: Chim hót. Tiếng chim hót, trong công viên và các khu phố yên tĩnh. Thời lượng 0.90 giây.</li>
+<li><code>viento_playa</code>: Gió. Tiếng gió tạt vào mặt khi bạn ngồi trên trực thăng. Thời lượng 8.70 giây.</li>
+<li><code>gaviota</code>: Mòng biển. Tiếng mòng biển, trên bãi biển và ngoài bến cảng. Thời lượng 2.00 giây.</li>
+<li><code>lluvia</code>: Mưa. Trời đang mưa: mặt đường trơn trượt hơn và thính giác bị giảm sút. Phát lặp lại liên tục. Thời lượng 4.70 giây.</li>
+<li><code>trueno</code>: Sấm sét. Tiếng sấm sét khi trời mưa. Thời lượng 3.50 giây.</li>
+<li><code>martillo</code>: Tiếng búa đập tại công trường. Công trường thi công từ đằng xa, ở bến cảng và trong các khu công nghiệp. Thời lượng 1.20 giây.</li>
+<li><code>sirena_lejana</code>: Tiếng còi hú từ xa. Tiếng còi hú xa xăm làm nền: họ không nhắm vào bạn đâu. Thời lượng 2.00 giây.</li>
+<li><code>claxon_lejano</code>: Tiếng còi xe từ xa. Tiếng còi xe xa xa của môi trường xung quanh: không phải bấm vào bạn. Thời lượng 0.45 giây.</li>
+<li><code>multitud</code>: Tiếng đám đông xì xào náo nhiệt. Có rất đông người xung quanh. Phát lặp lại liên tục. Thời lượng 5.70 giây.</li>
+</ul>
+<h3>Quan hệ lãng mạn, chỉ có ở nội dung người lớn</h3>
+<p>7 âm thanh. Mối quan hệ tình cảm.</p>
+<ul>
+<li><code>ruptura</code>: Chia tay. Một mối quan hệ tình cảm chấm dứt. Thời lượng 2.60 giây.</li>
+<li><code>afinidad_baja</code>: Giảm độ thiện cảm. Ai đó vừa bực bội với bạn. Thời lượng 1.40 giây.</li>
+<li><code>cita</code>: Hẹn hò. Bạn đang có một buổi hẹn hò, hoặc khoảnh khắc tình tứ bên người yêu. Thời lượng 1.30 giây.</li>
+<li><code>pareja</code>: Người yêu mới. Hai bạn bắt đầu hẹn hò yêu đương: hai tiếng tim đập và một chuỗi hợp âm rải. Thời lượng 1.60 giây.</li>
+<li><code>regalo</code>: Quà tặng. Bạn trao một món quà: tiếng sột soạt của giấy bọc quà. Thời lượng 0.30 giây.</li>
+<li><code>afinidad_sube</code>: Tăng độ thiện cảm. Ai đó quý bạn hơn nhờ trò chuyện, hẹn hò hoặc nhận quà tặng. Thời lượng 1.09 giây.</li>
+<li><code>noche_juntos</code>: Đêm ân ái bên nhau. Hai bạn qua đêm cùng nhau. Cảnh phim kết thúc bằng hiệu ứng mờ dần. Thời lượng 2.94 giây.</li>
+</ul>
+<h3>Chất kích thích và buôn hàng cấm, chỉ có ở nội dung người lớn</h3>
+<p>13 âm thanh. Mỗi chất kích thích đều có âm thanh riêng khi sử dụng, giúp bạn nhận biết mà không cần nhìn màn hình.</p>
+<ul>
+<li><code>rechazo</code>: Bị từ chối. Người đó không hứng thú với món bạn chào bán. Thời lượng 0.22 giây.</li>
+<li><code>tomar_pastillas</code>: Cắn thuốc lắc. Bạn uống một viên thuốc: tiếng bóc vỉ và một ngụm nước. Thời lượng 0.90 giây.</li>
+<li><code>paisano</code>: Cảnh sát chìm. Khách mua hàng hóa ra là một cảnh sát chìm. Thời lượng 1.10 giây.</li>
+<li><code>precio_ganga</code>: Giá hời. Tại đầu mối hàng, chất cấm đó hôm nay đang rất rẻ. Thời lượng 0.51 giây.</li>
+<li><code>precio_escasez</code>: Giá khan hiếm. Tại đầu mối hàng, chất cấm đó hôm nay đang rất đắt. Thời lượng 0.51 giây.</li>
+<li><code>tomar_polvo</code>: Hít bột trắng (hàng trắng). Bạn hít hàng trắng: tiếng miết thẻ và một hơi hít thật sâu. Thời lượng 1.00 giây.</li>
+<li><code>abstinencia</code>: Hội chứng cai nghiện. Cơ thể bạn lên cơn thèm chất kích thích mà bạn nghiện: một cơn run rẩy. Thời lượng 1.20 giây.</li>
+<li><code>tomar_hierba</code>: Hút cỏ. Bạn hút cỏ: tiếng bật lửa, rít một hơi và tiếng thở khói. Thời lượng 1.60 giây.</li>
+<li><code>sobredosis</code>: Sốc thuốc (quá liều). Bạn chơi quá liều: tim đập chậm dần, tiếng bíp kéo dài vang lên và bạn phải vào viện cấp cứu. Thời lượng 3.20 giây.</li>
+<li><code>trato</code>: Thỏa thuận thành công. Bạn đã mua hoặc bán hàng: tiếng sột soạt tiền giấy và gói hàng trao tay. Thời lượng 0.90 giây.</li>
+<li><code>bajon</code>: Tụt phê. Tác dụng của chất kích thích tan biến và cơn tụt phê ập đến. Thời lượng 1.60 giây.</li>
+<li><code>tomar_copa</code>: Uống một ly rượu. Bạn uống rượu: rót ra ly và cụng ly. Thời lượng 1.30 giây.</li>
+<li><code>tomar_cristal</code>: Đập đá (dùng ma túy đá). Bạn dùng ma túy đá: tiếng nổ lách tách. Thời lượng 1.50 giây.</li>
+</ul>
+</body>
+</html>

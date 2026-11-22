@@ -10,7 +10,8 @@
 - Se decide una vez, al arrancar, antes de cargar ningún texto. Cambiar de idioma en las opciones vale al reiniciar.
 - Los textos con huecos llevan nombre en cada hueco: tr("Tienes {dinero} euros").format(dinero=...). El catálogo dice
   «You have {dinero} euros» y el hueco se rellena igual.
-- La documentación va por idioma: manual_es.html, manual_en.html... doc("manual") da la del idioma, o la española.
+- La documentación va por idioma: manual_es.html, manual_en.html... doc("manual") da la del idioma; si ese idioma aún no
+  tiene sus guías, la inglesa, y si tampoco, la española.
 - Las voces grabadas de las escenas van por idioma, como los documentos: data/voces/<historia>_<código>. En un idioma
   sin grabaciones, las escenas las dice el lector de pantalla.
 
@@ -283,8 +284,9 @@ def traducir_datos(obj):
 
 
 def doc(nombre):
-    """Ruta de un documento en el idioma del juego: data/docs/<nombre>_<idioma>.html, o el español si no hay."""
-    for cod in (actual(), ORIGEN):
+    """Ruta de un documento en el idioma del juego: data/docs/<nombre>_<idioma>.html. Un idioma que aún no tiene sus guías
+    traducidas abre las inglesas, como el juego cuando no tiene el idioma del sistema; y si tampoco, las españolas."""
+    for cod in dict.fromkeys((actual(), "en" if actual() != ORIGEN else ORIGEN, ORIGEN)):
         r = rutas.data("docs", f"{nombre}_{cod}.html")
         if os.path.exists(r):
             return r

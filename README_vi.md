@@ -31,12 +31,12 @@ Mọi sự giúp đỡ, dù là nhỏ nhất, đều vô cùng quý giá. Xin ch
 
 ## Về bản bản địa hóa tiếng Việt
 
-Phiên bản tiếng Việt của trò chơi (toàn bộ menu, cốt truyện, cẩm nang hướng dẫn và tài liệu README này) được xây dựng và rà soát kỹ lưỡng nhằm mang đến trải nghiệm tiếp cận trọn vẹn và tự nhiên nhất cho cộng đồng người chơi khiếm thị Việt Nam.
+Phiên bản tiếng Việt của trò chơi (toàn bộ menu, cốt truyện, danh sách phím, hướng dẫn âm thanh và tài liệu README này; cẩm nang hướng dẫn đầy đủ hiện mở bằng tiếng Anh) được xây dựng và rà soát kỹ lưỡng nhằm mang đến trải nghiệm tiếp cận trọn vẹn và tự nhiên nhất cho cộng đồng người chơi khiếm thị Việt Nam.
 
 Mọi ý kiến đóng góp sửa đổi hay hoàn thiện đều rất được hoan nghênh:
 
 - Để báo lỗi dịch thuật hay đề xuất cải tiến, hãy mở một [GitHub issue](https://github.com/hxebolax/PuertoBravo/issues) mô tả rõ nơi xuất hiện và nội dung nên sửa lại, hoặc nhắn tin cho tôi trên Mastodon tại [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX).
-- Nếu bạn muốn dịch trò chơi sang một ngôn ngữ khác, cẩm nang hướng dẫn giải thích quy trình dịch trong mục "Dịch trò chơi sang ngôn ngữ khác" (`data\docs\manual_vi.html` hoặc `manual_en.html`). Mỗi ngôn ngữ là một thư mục trong `data\idiomas`.
+- Nếu bạn muốn dịch trò chơi sang một ngôn ngữ khác, cẩm nang hướng dẫn giải thích quy trình dịch trong mục "Dịch trò chơi sang ngôn ngữ khác" (`data\docs\manual_en.html`, bằng tiếng Anh). Mỗi ngôn ngữ là một thư mục trong `data\idiomas`.
 - Nếu bạn sử dụng Git, việc gửi Pull Request luôn luôn được chào đón.
 
 ## Tài liệu này bằng các ngôn ngữ khác
@@ -99,7 +99,7 @@ Mọi diễn biến xảy ra trong trò chơi đều có âm thanh riêng địn
 - Tai nghe âm thanh nổi (stereo headphones).
 - Một trình đọc màn hình đang chạy, chẳng hạn như NVDA hoặc JAWS. Nếu không có, trò chơi sẽ tự động phát âm bằng giọng đọc tích hợp sẵn của Windows.
 
-Hãy tải về phiên bản mới nhất, giải nén thư mục vào bất kỳ nơi nào bạn thích và chạy tập tin `PuertoBravo.exe`. Trò chơi không cần cài đặt: đây là bản portable độc lập. Trong trò chơi, phím `F1` sẽ nhắc bạn các phím tắt bất cứ lúc nào, và menu chính mở cẩm nang hướng dẫn đầy đủ nằm tại `data\docs\manual_vi.html` (và bản tiếng Anh `manual_en.html`, tiếng Tây Ban Nha `manual_es.html`), có thể điều hướng dễ dàng theo các tiêu đề. Trò chơi tự động nhận diện ngôn ngữ Windows và bạn có thể thay đổi trong Tùy chọn, Ngôn ngữ.
+Hãy tải về phiên bản mới nhất, giải nén thư mục vào bất kỳ nơi nào bạn thích và chạy tập tin `PuertoBravo.exe`. Trò chơi không cần cài đặt: đây là bản portable độc lập. Trong trò chơi, phím `F1` sẽ nhắc bạn các phím tắt bất cứ lúc nào, và menu chính mở cẩm nang hướng dẫn đầy đủ nằm tại `data\docs\manual_en.html` (bằng tiếng Anh, vì cẩm nang chưa được dịch sang tiếng Việt; bản tiếng Tây Ban Nha là `manual_es.html`), có thể điều hướng dễ dàng theo các tiêu đề. Danh sách phím `data\docs\teclas_vi.html` thì đã có bằng tiếng Việt. Trò chơi tự động nhận diện ngôn ngữ Windows và bạn có thể thay đổi trong Tùy chọn, Ngôn ngữ. Với phiên bản 1.7.2, tiếng Việt được cài đặt dưới dạng thành phần: Tùy chọn, Cập nhật, Thành phần.
 
 Nếu gặp sự cố, trò chơi sẽ lưu nhật ký của từng phiên trong thư mục `data\logs`, hoàn toàn không chứa thông tin cá nhân: hãy nén thư mục của phiên bị lỗi thành tệp ZIP và đính kèm vào một [GitHub issue](https://github.com/hxebolax/PuertoBravo/issues), hoặc gửi qua Mastodon cho tác giả [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX). Cẩm nang hướng dẫn có giải thích chi tiết.
 

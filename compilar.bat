@@ -41,6 +41,12 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
+rem Los demas idiomas (vietnamita...): su catalogo, al dia con lo traducido. Lo que aun no lo esta sale en espanol y queda
+rem en traduccion\<idioma>\pendientes para quien lo traduce; no para la compilacion.
+for /d %%L in (traduccion\*) do if /i not "%%~nxL"=="en" if exist "%%L\%%~nxL.json" (
+    ".venv\Scripts\python.exe" herramientas\i18n\extraer.py --idioma %%~nxL
+    ".venv\Scripts\python.exe" herramientas\i18n\fusionar.py --idioma %%~nxL --instalar
+)
 
 echo Exportando el mundo para el servidor en linea...
 ".venv\Scripts\python.exe" herramientas\exportar_mundo_servidor.py
@@ -103,6 +109,7 @@ if exist "data\mods\noches_de_neon.json" copy /y "data\mods\noches_de_neon.json"
 if exist "data\mods\bahia_del_ocaso.json" copy /y "data\mods\bahia_del_ocaso.json" "%D%\data\mods" >nul
 if exist "LEEME.txt" copy /y "LEEME.txt" "%D%\LEEME.txt" >nul
 if exist "LEEME_en.txt" copy /y "LEEME_en.txt" "%D%\LEEME_en.txt" >nul
+if exist "LEEME_vi.txt" copy /y "LEEME_vi.txt" "%D%\LEEME_vi.txt" >nul
 
 echo Preparando la carpeta del servidor: lanzadores, guia, ejemplo de configuracion y lo necesario para otros sistemas...
 ".venv\Scripts\python.exe" herramientas\preparar_carpeta_servidor.py "%D%"
