@@ -175,8 +175,8 @@ def local_abierto(p, l):
             continue
         if k == 0 and p.reloj >= abre * 60:
             continue
-        cuando = "hoy" if k == 0 else "mañana" if k == 1 else tr('el {v}').format(v=(DIAS[d]))
-        return False, tr('{nombre}. Está cerrado. Abre {cuando} a las {_hora}').format(nombre=(l.nombre), cuando=(cuando), _hora=(_hora(abre * 60))) + (tr(', y cierra los {join}').format(join=(', '.join(DIAS[x] for x in cierra_dias))) if cierra_dias else "") + "."
+        cuando = tr("hoy") if k == 0 else tr("mañana") if k == 1 else tr('el {v}').format(v=(tr(DIAS[d])))
+        return False, tr('{nombre}. Está cerrado. Abre {cuando} a las {_hora}').format(nombre=(l.nombre), cuando=(cuando), _hora=(_hora(abre * 60))) + (tr(', y cierra los {join}').format(join=(', '.join(tr(DIAS[x]) for x in cierra_dias))) if cierra_dias else "") + "."
     return False, tr('{nombre}. Está cerrado.').format(nombre=(l.nombre))
 
 
@@ -185,7 +185,7 @@ def horario_txt(p, l):
     if h is None:
         return tr("Abre siempre.")
     abre, cierra, cierra_dias = h
-    return tr('Abre de {_hora} a {_hora2}').format(_hora=(_hora(abre * 60)), _hora2=(_hora((cierra % 24) * 60))) + (tr(', menos los {join}').format(join=(', '.join(DIAS[x] for x in cierra_dias))) if cierra_dias else tr(", todos los días")) + "."
+    return tr('Abre de {_hora} a {_hora2}').format(_hora=(_hora(abre * 60)), _hora2=(_hora((cierra % 24) * 60))) + (tr(', menos los {join}').format(join=(', '.join(tr(DIAS[x]) for x in cierra_dias))) if cierra_dias else tr(", todos los días")) + "."
 
 
 # ====================================================================== la gente
@@ -219,7 +219,7 @@ def donde_txt(p, pers):
     if modo(p) == "apagado":
         return tr('Suele estar en {nom}.').format(nom=(nom))
     desde, hasta, libre = horario_persona(p, pers)
-    base = tr('Suele estar en {nom} de {_hora} a {_hora2}, y libra los {v}.').format(nom=(nom), _hora=(_hora(desde * 60)), _hora2=(_hora((hasta % 24) * 60)), v=(DIAS[libre]))
+    base = tr('Suele estar en {nom} de {_hora} a {_hora2}, y libra los {v}.').format(nom=(nom), _hora=(_hora(desde * 60)), _hora2=(_hora((hasta % 24) * 60)), v=(tr(DIAS[libre])))
     if p.acompanante and p.acompanante.get("pid") == pers["id"]:
         return base + tr(" Ahora va contigo.")
     if presente(p, pers):

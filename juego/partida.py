@@ -844,10 +844,10 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             ops = ["todo", "lugares", "vehiculos", "personas", "objetos"]
             self.cfg["radar_filtro"] = ops[(ops.index(self.cfg["radar_filtro"]) + 1) % len(ops)]
             self.radar_lista = []
-            self.decir(tr("Radar: ") + {"todo": "todo", "lugares": tr("solo lugares"), "vehiculos": tr("solo vehículos"), "personas": tr("solo personas"), "objetos": tr("solo objetos")}[self.cfg["radar_filtro"]], True)
+            self.decir(tr("Radar: ") + {"todo": tr("todo"), "lugares": tr("solo lugares"), "vehiculos": tr("solo vehículos"), "personas": tr("solo personas"), "objetos": tr("solo objetos")}[self.cfg["radar_filtro"]], True)
         elif k == pygame.K_F2:
             self.cfg["conduccion"] = "libre" if self.cfg["conduccion"] == "asistida" else "asistida"
-            self.decir(tr("Conducción ") + self.cfg["conduccion"], True)
+            self.decir(tr("Conducción ") + (tr("libre") if self.cfg["conduccion"] == "libre" else tr("asistida")), True)
             if j.veh:
                 self.preparar_conduccion()
         elif k == pygame.K_F3:
@@ -855,7 +855,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             self.decir(tr("Movimiento a pie: ") + (tr("con giros. Izquierda y derecha giran 45 grados.") if self.cfg["movimiento"] == "giro" else tr("brújula. Cada flecha camina hacia un punto cardinal.")), True)
         elif k == pygame.K_F4:
             self.cfg["baliza"] = not self.cfg["baliza"]
-            self.decir(tr("Baliza sonora del GPS ") + ("activada" if self.cfg["baliza"] else "desactivada"), True)
+            self.decir(tr("Baliza sonora del GPS ") + (tr("activada") if self.cfg["baliza"] else tr("desactivada")), True)
         elif k == pygame.K_F5:
             mj.guardado_rapido(self)
         elif k in (pygame.K_F7, pygame.K_F8):

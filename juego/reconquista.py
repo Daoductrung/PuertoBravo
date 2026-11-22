@@ -106,7 +106,7 @@ def _dias(n):
 
 
 def _cuando(faltan):
-    return "hoy" if faltan <= 0 else "mañana" if faltan == 1 else tr('dentro de {int} días').format(int=(int(faltan)))
+    return tr("hoy") if faltan <= 0 else tr("mañana") if faltan == 1 else tr('dentro de {int} días').format(int=(int(faltan)))
 
 
 def _rato(minutos):

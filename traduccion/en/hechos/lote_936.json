@@ -1,0 +1,22 @@
+{
+  "agente": "officer",
+  "comisari[o|a]": "chief inspector",
+  "inspector[|a]": "inspector",
+  "subinspector[|a]": "deputy inspector",
+  "Estáis casados": "You're married",
+  "Estáis prometidos": "You're engaged",
+  "activada": "on",
+  "asistida": "assisted",
+  "desactivada": "off",
+  "todo": "all",
+  "abrigo=abrigado": "warm",
+  "deporte=deportivo": "sporty",
+  "elegante=elegante": "smart",
+  "tactica=táctico": "tactical",
+  "acelerar": "accelerate",
+  "claxon": "horn",
+  "recargar": "reload",
+  "radar": "radar",
+  "Deberías pasarte por:": "You should stop by:",
+  "Deberías pasarte por: {titulo}, en {nombre_lugar}. Abre el móvil con M para marcarla en el GPS.": "You should stop by: {titulo}, at {nombre_lugar}. Open the phone with M to mark it on the GPS."
+}

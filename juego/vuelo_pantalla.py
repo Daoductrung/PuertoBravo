@@ -733,7 +733,7 @@ def menu_de_vuelo(c):
                               "es lo que conviene si llevas un aparato que no debe ver nadie."))]
         if len(c.destino.get("campos") or []) > 1 and c.modo == "campo":
             lista.append(Opcion(lambda: tr('Campo: {nombre}').format(nombre=(c.campo.nombre)), campo_sig, ayuda=tr("Intro pasa al siguiente campo de esa localidad.")))
-        lista += [Opcion(lambda: tr("Aterrizaje asistido: ") + ("sí" if c.asistido else "no"), asistido,
+        lista += [Opcion(lambda: tr("Aterrizaje asistido: ") + (tr("sí") if c.asistido else tr("no")), asistido,
                          ayuda=tr("Con sí, al acercarte el aparato baja y se encara solo. Con no, y sin piloto automático, lo haces tú: baja a la altitud que dice la torre y mantén los chasquidos en el centro. "
                                "Si entras alto o torcido, la torre te manda dar otra vuelta; a la segunda, te guía ella.")),
                   Opcion(tr("Cambiar de destino"), otro, ayuda=tr("Vale también para desviarte a un campo más cercano si no te llega el combustible.")),

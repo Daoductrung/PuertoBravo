@@ -95,6 +95,7 @@ class Voz:
     def mostrar(self, texto):
         """Para cuando suena una voz grabada: el texto no se lee, pero va al braille, al historial y al registro."""
         texto = genero.resolver(str(texto))
+        texto = palabras.pulir(texto)
         registro.voz(texto)
         self._guardar(texto)
         if self.muda:

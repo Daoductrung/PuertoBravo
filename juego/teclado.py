@@ -65,7 +65,7 @@ def funciones():
     for k, que in ((pygame.K_UP, tr("caminar al norte o hacia delante, y acelerar al volante")), (pygame.K_DOWN, tr("caminar al sur o hacia atrás, y frenar al volante")),
                    (pygame.K_LEFT, tr("caminar al oeste o girar a la izquierda, e intermitente izquierdo")),
                    (pygame.K_RIGHT, tr("caminar al este o girar a la derecha, e intermitente derecho")), (pygame.K_SPACE, tr("atacar o disparar, y freno de mano")),
-                   (pygame.K_TAB, "radar"), (pygame.K_w, tr("escáner: delante. Al volante, la velocidad")), (pygame.K_a, tr("escáner: izquierda. Al volante, cambiar de carril")),
+                   (pygame.K_TAB, tr("radar")), (pygame.K_w, tr("escáner: delante. Al volante, la velocidad")), (pygame.K_a, tr("escáner: izquierda. Al volante, cambiar de carril")),
                    (pygame.K_s, tr("escáner: detrás")), (pygame.K_d, tr("escáner: derecha. Al volante, arrimarte a la acera")), (pygame.K_COMMA, tr("arma siguiente")),
                    (pygame.K_PERIOD, tr("repetir el último mensaje")),
                    (pygame.K_LSHIFT, tr("correr a pie, y hacer las combinaciones con Mayúsculas, como Mayúsculas Tabulador. La Mayúsculas derecha no cambia, y sirve para las combinaciones pero no para correr"))):

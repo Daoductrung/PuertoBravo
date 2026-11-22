@@ -16,6 +16,7 @@ import re
 GENEROS = ("h", "m")
 NOMBRES = {"h": tr("en masculino"), "m": tr("en femenino")}
 _MARCA = re.compile(r"\[([^\[\]|]*)\|([^\[\]|]*)\]")
+_MARCA_ROBUSTA = re.compile(r"\[([^\[\]]+)\]")
 
 actual = "h"          # el de la partida en curso
 
@@ -32,7 +33,13 @@ def resolver(texto, g=None):
     if not isinstance(texto, str) or "|" not in texto:
         return texto
     g = actual if g is None else g
-    return _MARCA.sub((lambda m: m.group(2)) if g == "m" else (lambda m: m.group(1)), texto)
+    def _elegir(m):
+        contenido = m.group(1)
+        if "|" not in contenido:
+            return m.group(0)
+        partes = contenido.split("|")
+        return partes[-1] if g == "m" else partes[0]
+    return _MARCA_ROBUSTA.sub(_elegir, texto)
 
 
 def marcas(texto):

@@ -16,8 +16,8 @@ import random
 
 from .ajustes import Ajustes
 
-_ESTILOS = [tr("calle=de calle"), "deporte=deportivo", "elegante=elegante", tr("trabajo=de trabajo"), tr("fiesta=de fiesta"),
-            tr("playa=de playa"), "abrigo=abrigado", "tactica=táctico"]
+_ESTILOS = [tr("calle=de calle"), tr("deporte=deportivo"), tr("elegante=elegante"), tr("trabajo=de trabajo"), tr("fiesta=de fiesta"),
+            tr("playa=de playa"), tr("abrigo=abrigado"), tr("tactica=táctico")]
 
 AJ = Ajustes("vestuario", {
     "cita_estilo_afinidad": 2, "conjunto_afinidad": 1, "vendedor_elegante": 10, "estilo_se_sabe_citas": 2,

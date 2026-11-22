@@ -32,16 +32,17 @@ def _mapa():
         for es, otro in textos.items():                    # las palabras sueltas del catálogo: «nunca», «fácil»...
             if isinstance(otro, str) and re.fullmatch(r"[a-záéíóúñü]{3,}", es) and otro and otro != es:
                 mapa[es] = otro
+        ingles = set()                                     # una palabra que también es del idioma no se toca: «media», «once»
+        for otro in textos.values():                       # (solo las que van en minúscula: los nombres propios no cuentan)
+            if isinstance(otro, str):
+                otro_limpio = re.sub(r"\{[^}]*\}", " ", otro)
+                ingles.update(re.findall(r"(?<![A-Za-z])[a-z]+(?![A-Za-z])", otro_limpio))
+        mapa = {k: v for k, v in mapa.items() if k not in ingles}
         try:
             with open(os.path.join(i18n.carpeta(cod), "palabras.json"), encoding="utf-8") as f:
                 mapa.update({k: v for k, v in json.load(f).items() if isinstance(v, str) and v and k != v})
         except (OSError, ValueError, AttributeError):
             pass
-        ingles = set()                                     # una palabra que también es del idioma no se toca: «media», «once»
-        for otro in textos.values():                       # (solo las que van en minúscula: los nombres propios no cuentan)
-            if isinstance(otro, str):
-                ingles.update(re.findall(r"(?<![A-Za-z])[a-z]+(?![A-Za-z])", otro))
-        mapa = {k: v for k, v in mapa.items() if k not in ingles}
     _cache.update(idioma=cod, mapa=mapa)
     return mapa
 

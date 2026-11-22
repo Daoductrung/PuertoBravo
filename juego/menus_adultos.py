@@ -324,7 +324,7 @@ def vida_social(p, directo=None):
                                 Opcion(tr("Volver"), lambda: app.cerrar())]
             estado = {"pareja": tr("Sois pareja"), "ex": tr("Lo dejasteis")}.get(r["estado"], tr("Os estáis conociendo"))
             if r["estado"] == "pareja" and r.get("compromiso"):
-                estado = tr("Estáis ") + r["compromiso"]
+                estado = tr("Estáis prometidos") if r["compromiso"] == "prometidos" else tr("Estáis casados") if r["compromiso"] == "casados" else tr("Estáis ") + r["compromiso"]
             herida = encuentros.desconfianza(p, pid) if j.pareja == pid else 0
             lista.append(Opcion(lambda: tr('{estado}. {capitalize}. Habéis tenido {get} citas').format(estado=(estado), capitalize=(p.afinidad_txt(p.relacion(pid)).capitalize()), get=(p.relacion(pid).get('citas', 0)))
                                 + (". " + encuentros.AJ.frase("frases_desconfia", d=encuentros.desconfianza(p, pid)) if j.pareja == pid and encuentros.desconfianza(p, pid) else ""),

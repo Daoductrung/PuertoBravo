@@ -11998,6 +11998,9 @@
 "Debería hacer algo, pero el sofá tira mucho.": [
 "juego/respuestas_datos1.py"
 ],
+"Deberías pasarte por: {titulo}, en {nombre_lugar}. Abre el móvil con M para marcarla en el GPS.": [
+"juego/menus_juego.py"
+],
 "Debes {debe} euros de alquiler de este hangar. Hasta que pagues, no te dejan sacar nada.": [
 "juego/vuelo.py"
 ],
@@ -17774,6 +17777,7 @@
 "data/datos/misiones.json"
 ],
 "Encarna: ": [
+"juego/menus_juego.py",
 "juego/menus_juego.py"
 ],
 "Encarni": [
@@ -19322,11 +19326,17 @@
 "Estáis ": [
 "juego/menus_adultos.py"
 ],
+"Estáis casados": [
+"juego/menus_adultos.py"
+],
 "Estáis casados desde el día {get}": [
 "juego/menus_adultos.py"
 ],
 "Estáis muy cerca. Notas su respiración.": [
 "juego/laboratorio.py"
+],
+"Estáis prometidos": [
+"juego/menus_adultos.py"
 ],
 "Están": [
 "juego/extras2.py"
@@ -49440,6 +49450,9 @@
 "abres tú la caja": [
 "juego/golpes.py"
 ],
+"abrigo=abrigado": [
+"juego/vestuario.py"
+],
 "abrir carpeta": [
 "editor/accesibilidad/ayuda.py"
 ],
@@ -49452,11 +49465,17 @@
 "acción": [
 "juego/enlinea.py"
 ],
+"acelerar": [
+"juego/ayuda.py"
+],
 "acento grave": [
 "juego/teclado.py"
 ],
 "activa o desactiva la baliza sonora del GPS": [
 "juego/ayuda.py"
+],
+"activada": [
+"juego/partida.py"
 ],
 "activado": [
 "juego/menus_juego.py"
@@ -49472,6 +49491,9 @@
 ],
 "agacharte o levantarte. Al agacharte te aciertan menos, pero vas más lento": [
 "juego/ayuda.py"
+],
+"agente": [
+"juego/agente.py"
 ],
 "agente en prácticas": [
 "juego/agente.py",
@@ -49582,6 +49604,9 @@
 ],
 "as": [
 "juego/sistemas.py"
+],
+"asistida": [
+"juego/partida.py"
 ],
 "asistida, el coche sigue el carril solo": [
 "juego/menus_juego.py"
@@ -49836,6 +49861,9 @@
 "juego/atracos.py",
 "data/datos/vida.json"
 ],
+"claxon": [
+"juego/ayuda.py"
+],
 "club=El encargado": [
 "juego/atracos.py",
 "data/datos/vida.json"
@@ -49863,6 +49891,9 @@
 "comida=El camarero": [
 "juego/atracos.py",
 "data/datos/vida.json"
+],
+"comisari[o|a]": [
+"juego/agente.py"
 ],
 "como estas|como te va|como andas|que tal estas|como lo llevas|como va todo|todo bien|estas bien|te encuentras bien|como va eso|que tal todo|que tal va": [
 "juego/respuestas_datos1.py"
@@ -50167,6 +50198,12 @@
 ],
 "dentro de {int} días": [
 "juego/reconquista.py"
+],
+"deporte=deportivo": [
+"juego/vestuario.py"
+],
+"desactivada": [
+"juego/partida.py"
 ],
 "desactivado": [
 "juego/menus_juego.py"
@@ -50832,6 +50869,9 @@
 "el único que envías": [
 "juego/reconquista.py"
 ],
+"elegante=elegante": [
+"juego/vestuario.py"
+],
 "elegir": [
 "herramientas/generar_datos.py"
 ],
@@ -51324,6 +51364,8 @@
 ],
 "hoy": [
 "juego/encuentros.py",
+"juego/encuentros.py",
+"juego/reconquista.py",
 "juego/sistemas.py"
 ],
 "hundes en el sofá": [
@@ -51380,6 +51422,9 @@
 ],
 "ingreso en la caja de la banda": [
 "servidor/nucleo.py"
+],
+"inspector[|a]": [
+"juego/agente.py"
 ],
 "instalar el componente": [
 "juego/componentes.py"
@@ -51951,6 +51996,7 @@
 "juego/vida.py"
 ],
 "libre": [
+"juego/partida.py",
 "servidor/nucleo.py"
 ],
 "libre, tú llevas el volante": [
@@ -52113,7 +52159,9 @@
 "data/datos/vida.json"
 ],
 "mañana": [
-"juego/encuentros.py"
+"juego/encuentros.py",
+"juego/encuentros.py",
+"juego/reconquista.py"
 ],
 "mañana a las nueve de la noche": [
 "juego/loteria.py"
@@ -52299,7 +52347,8 @@
 "juego/menus_juego.py",
 "juego/menus_juego.py",
 "juego/menus_online.py",
-"juego/partida.py"
+"juego/partida.py",
+"juego/vuelo_pantalla.py"
 ],
 "no caduca": [
 "juego/compra.py"
@@ -52438,6 +52487,7 @@
 "juego/partida.py"
 ],
 "oficial": [
+"juego/agente.py",
 "juego/vida.py"
 ],
 "oficial de primera": [
@@ -52810,6 +52860,9 @@
 "qué tal": [
 "juego/charla.py"
 ],
+"radar": [
+"juego/teclado.py"
+],
 "radar: anterior": [
 "juego/mando.py"
 ],
@@ -52818,6 +52871,9 @@
 ],
 "radar: siguiente": [
 "juego/mando.py"
+],
+"recargar": [
+"juego/ayuda.py"
 ],
 "recargar el arma": [
 "juego/mando.py"
@@ -53204,6 +53260,9 @@
 "sube el ánimo": [
 "juego/compra.py"
 ],
+"subinspector[|a]": [
+"juego/agente.py"
+],
 "subir a un vehículo o bajarte": [
 "juego/ayuda.py",
 "juego/mando.py"
@@ -53234,7 +53293,8 @@
 "juego/menus_juego.py",
 "juego/menus_juego.py",
 "juego/menus_juego.py",
-"juego/menus_online.py"
+"juego/menus_online.py",
+"juego/vuelo_pantalla.py"
 ],
 "sí, blanquea tu dinero sin justificar": [
 "juego/menus_honrado.py"
@@ -53251,6 +53311,9 @@
 "taberna=El tabernero": [
 "juego/atracos.py",
 "data/datos/vida.json"
+],
+"tactica=táctico": [
+"juego/vestuario.py"
 ],
 "taller=El mecánico": [
 "juego/atracos.py",
@@ -53426,6 +53489,9 @@
 ],
 "todas las cuentas del servidor, con las vetadas y las que administran": [
 "servidor/nucleo.py"
+],
+"todo": [
+"juego/partida.py"
 ],
 "todo el mundo": [
 "juego/menus_juego.py"
