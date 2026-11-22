@@ -1,0 +1,60 @@
+SERVIDOR DE PUERTO BRAVO PARA LINUX, MAC, NAS, RASPBERRY PI E DOCKER
+
+Esta pasta contém tudo que você precisa para configurar o servidor em uma máquina sem Windows, sem o jogo.
+Copie a pasta inteira para essa máquina, com o nome que preferir, por exemplo puertobravo.
+
+Conteúdo:
+
+- servidor: código do servidor. Exige apenas Python 3.8 ou posterior; não é preciso instalar mais nada.
+- servidor.conf.ejemplo: todas as opções explicadas. Copie como servidor.conf e ajuste como preferir.
+- arrancar.sh, parar.sh e estado.sh: iniciam em segundo plano, encerram e mostram o estado do servidor.
+- reiniciar.sh: encerra o servidor com aviso aos jogadores e inicia novamente. Use após uma atualização.
+- puertobravo.service: início automático com o sistema usando systemd. O arquivo explica a instalação.
+- Dockerfile, docker-compose.yml e entrada_docker.sh: arquivos para usar Docker.
+
+O caminho mais curto, com Python:
+
+    python3 -m servidor --ejemplo      cria servidor.conf
+    python3 -m servidor                inicia o servidor; digite ayuda para listar os comandos
+
+O comando de ajuda na console é escrito em espanhol: ayuda.
+
+Em segundo plano:
+
+    sh arrancar.sh        sh estado.sh        sh parar.sh        sh reiniciar.sh
+
+Com Docker:
+
+    docker compose up -d --build
+
+Atualizar o servidor sem mandar os jogadores para o menu:
+
+Aqui o servidor não é atualizado junto com o jogo: substitua a pasta servidor pela da nova versão e reinicie.
+Se usar o comando de atualização em vez de interromper o processo, ele avisa os jogadores com uma contagem
+regressiva, espera que os jogos salvem, salva tudo e encerra informando o motivo. Os jogos aguardam e se
+reconectam automaticamente quando ele volta, com cada jogador na mesma posição. Você pode usar:
+
+    sh reiniciar.sh                         avisa, encerra e inicia novamente
+    python3 -m servidor --actualizar        pede o encerramento com aviso; depois você, systemd ou Docker inicia
+    actualizar                              mesmo comando na console ou, com / na frente, no chat de um administrador
+
+O comando reiniciar informa que a parada é para manutenção.
+Outra opção é criar parar.txt na pasta de dados, com a palavra actualizar dentro. O servidor verifica a cada segundo.
+
+Nesse tipo de parada, o programa termina com o código 75. O serviço systemd e o docker-compose.yml fornecidos
+iniciam novamente. A contagem regressiva é definida por parada_aviso, com 20 segundos por padrão. Se o sistema
+encerrar o servidor por systemctl stop, docker compose down ou parar.sh, também informa que haverá reinício,
+mas sem contagem regressiva.
+
+A guia completa está em documentacion_pt.html, na pasta servidor do jogo, com versões em espanhol
+(documentacion_es.html) e inglês (documentacion_en.html). As seções 18 e 19 explicam o limite de dinheiro,
+os serviços repetíveis, os canais de interpretação de personagens e o rádio dos veículos na versão 1.7.1.
+A seção 17 explica como jogar com versões diferentes no mesmo servidor: ninguém é rejeitado pela versão,
+exceto se houver uma versão mínima, e o servidor decide com os mesmos valores para todos.
+A seção 20 explica a atualização do servidor.
+
+Idioma: o servidor escreve a console e o registro no idioma do sistema, informado por LANG. Com o catálogo
+brasileiro instalado, use pt na opção idioma de servidor.conf ou na variável PUERTOBRAVO_IDIOMA para fixar
+o português. A opção auto usa o idioma do sistema, quando disponível, com inglês como alternativa.
+Isso não altera o que os jogadores recebem: o servidor envia as mensagens em espanhol e o jogo de cada pessoa
+as apresenta no idioma escolhido, permitindo que pessoas de idiomas diferentes joguem no mesmo servidor.

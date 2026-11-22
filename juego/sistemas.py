@@ -194,12 +194,28 @@ def opciones_taller(p, v, Opcion):
 # ============================================================ banda propia
 PRECIO_RECLUTA = 400
 SUELDO = 60
-TOPE_BANDA = 6
+TOPE_BANDA = 10                  # de serie, si los datos no dicen otra cosa (vida.json, capo, banda_tope)
+
+
+def tope_banda():
+    """Lo más que puede mantener un jefe, tenga los barrios que tenga (vida.json, capo, banda_tope)."""
+    from .capo import AJ as CAPO
+    try:
+        return max(1, CAPO.entero("banda_tope"))
+    except (KeyError, TypeError, ValueError):
+        return TOPE_BANDA
 
 
 def cupo(j):
-    """Cuánta gente puede tener la banda: uno más por cada territorio, hasta seis. Sin territorios, no hay banda."""
-    return min(TOPE_BANDA, len(j.territorios) + 1) if j.territorios else 0
+    """Cuánta gente puede tener la banda: uno más por cada territorio, hasta el tope. Sin territorios, no hay banda."""
+    return min(tope_banda(), len(j.territorios) + 1) if j.territorios else 0
+
+
+def sin_sitio_en_banda(j):
+    """Por qué no cabe nadie más en la banda: le faltan barrios, o ya está al completo."""
+    if cupo(j) >= tope_banda():
+        return tr('Tu banda ya está al completo: {tope} es lo más que puede mantener un jefe, tengas los barrios que tengas.').format(tope=tope_banda())
+    return tr('Con {len} territorios no puedes mantener a más de {cupo}. Conquista otro barrio.').format(len=(len(j.territorios)), cupo=(cupo(j)))
 
 
 def miembros_presentes(p):
@@ -211,7 +227,7 @@ def reclutar(p):
     if not j.territorios:
         return False, tr("Para tener banda necesitas un territorio. Conquista un barrio primero.")
     if j.banda >= cupo(j):
-        return False, tr('Con {len} territorios no puedes mantener a más de {cupo}. Conquista otro barrio.').format(len=(len(j.territorios)), cupo=(cupo(j)))
+        return False, sin_sitio_en_banda(j)
     if not p.pagar(p.precio("recluta", PRECIO_RECLUTA)):
         return False, ""
     j.banda += 1
@@ -317,7 +333,7 @@ def menu_banda(p, Menu, Opcion, EntradaTexto):
     m = Menu(app, lambda: tr('Tu banda: {v}. {banda} de {cupo}').format(v=(j.banda_nombre or tr('sin nombre')), banda=(j.banda), cupo=(cupo(j)))
              + (tr('. Tu alias: {alias}').format(alias=(j.alias)) if getattr(j, "alias", "") else ""), [
         Opcion(lambda: tr('Reclutar a alguien: {precio} euros. Tienes {dinero}').format(precio=(p.precio('recluta', PRECIO_RECLUTA)), dinero=(j.dinero)), hacer(reclutar),
-               ayuda=tr('Cada territorio te deja mantener a uno más, hasta {TOPE_BANDA}. Cada miembro cobra cada medianoche lo que diga la paga de la banda; si no puedes pagar, el menos leal se va y los demás se enfadan.').format(TOPE_BANDA=(TOPE_BANDA))),
+               ayuda=tr('Cada territorio te deja mantener a uno más, hasta {TOPE_BANDA}. Cada miembro cobra cada medianoche lo que diga la paga de la banda; si no puedes pagar, el menos leal se va y los demás se enfadan.').format(TOPE_BANDA=(tope_banda()))),
         Opcion(tr("Llamar a tu banda"), hacer(llamar), ayuda=tr("Acuden a donde estés, te siguen a pie, suben contigo al vehículo y pelean a tu lado.")),
         Opcion(tr("Tu gente, uno por uno: lo que vale cada cual"), lambda: __import__("juego.golpes", fromlist=["x"]).menu_gente(p),
                ayuda=tr("El nombre de cada uno y su puntería, su conducción, sus nervios y su lealtad. Es lo que cuenta cuando preparas un golpe.")),

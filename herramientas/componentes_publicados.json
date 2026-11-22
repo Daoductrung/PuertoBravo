@@ -3697,12 +3697,13 @@
   ]
  },
  "mod-marisma_negra": {
-  "version": 2,
-  "huella": "a3098bdfc559d798076e853395b2f90fd8deefd3e45e8371aada30b0120d45e2",
+  "version": 3,
+  "huella": "d608b5bf79d1d5d14d99a9d77f6c5d88205babb6534954f33468ac2192fc1621",
   "archivos": [
    "data/mods/marisma_negra.pbm",
    "data/idiomas/en/mods/marisma_negra.json",
    "data/idiomas/vi/mods/marisma_negra.json",
+   "data/idiomas/pt/mods/marisma_negra.json",
    "data/voces/marisma_negra_es/mn01_1_1.ogg",
    "data/voces/marisma_negra_es/mn01_1_2.ogg",
    "data/voces/marisma_negra_es/mn01_1_2@alex_h.ogg",
@@ -4271,6 +4272,21 @@
    "data/sonidos/genny/trueno.flac",
    "data/sonidos/genny/turbulencia.flac",
    "data/sonidos/genny/viento_playa.flac"
+  ]
+ },
+ "idioma-pt": {
+  "version": 1,
+  "huella": "196001757b8f26d76c38cfb89c9d4a20b423566c6ebc8c4fb69d6847659c7e00",
+  "archivos": [
+   "data/idiomas/pt/idioma.json",
+   "data/idiomas/pt/palabras.json",
+   "data/idiomas/pt/textos.json",
+   "data/docs/cambiar_sonidos_pt.html",
+   "data/docs/editor_mods_pt.html",
+   "data/docs/manual_pt.html",
+   "data/docs/novedades_pt.html",
+   "data/docs/servidor_pt.html",
+   "data/docs/teclas_pt.html"
   ]
  }
 }

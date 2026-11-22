@@ -44,6 +44,7 @@ data/mods/*
 !data/mods/LEEME_mods.txt
 !data/mods/README_mods_en.txt
 !data/mods/README_mods_vi.txt
+!data/mods/README_mods_pt.txt
 
 # Sistema y editores
 desktop.ini

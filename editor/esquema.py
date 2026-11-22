@@ -1219,6 +1219,7 @@ ESQUEMAS = {
         c("atraco_calle_minimo", tr("Euros encima a partir de los que te pueden atracar"), "entero", minimo=0, maximo=100000, defecto=150, grupo=tr("Robos")),
         c("deposito_libre", tr("Efectivo que admite el banco al día sin preguntar, si tienes dinero negro"), "entero", tr("Por encima, pide explicaciones, no lo admite y avisa a Hacienda."), minimo=0, maximo=1000000, defecto=3000, grupo=tr("Blanqueo")),
         c("cajero_ingreso_max", tr("Efectivo que se puede ingresar al día en los cajeros"), "entero", tr("Los cajeros admiten poco: para más, el banco. Con cero, en los cajeros solo se saca."), minimo=0, maximo=100000, defecto=500),
+        c("banda_tope", tr("Lo más que puede mantener un jefe en su banda"), "entero", tr("Cada barrio deja mantener a uno más, hasta este tope. Con muchos, la calle se llena de los tuyos cuando los llamas."), minimo=1, maximo=30, defecto=10),
         c("casino_maximo", tr("Lo que se blanquea al día en fichas del casino"), "entero", minimo=0, maximo=1000000, defecto=5000, grupo=tr("Blanqueo")),
         c("casino_comision", tr("Lo que se pierde blanqueando en el casino, por ciento"), "entero", minimo=0, maximo=100, defecto=12, grupo=tr("Blanqueo")),
         c("gestor_minimo", tr("Lo mínimo que acepta el gestor, en euros"), "entero", minimo=1, maximo=1000000, defecto=5000, grupo=tr("Blanqueo")),

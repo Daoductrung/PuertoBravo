@@ -181,7 +181,7 @@ def preparar(juego):
     --guia, que compilar.bat lanza antes de copiar la documentación)."""
     destino = os.path.join(juego, CARPETA)
     # Solo se rehace lo que se reparte: si alguien ya tiene ahí su configuración y sus datos, no se tocan.
-    for sobra in LANZADORES + ("LEEME.txt", "README_en.txt", "servidor.conf.ejemplo") + VIEJO + tuple(os.path.basename(r) for r in glob.glob(os.path.join(destino, "documentacion_*.html"))):
+    for sobra in LANZADORES + ("LEEME.txt", "servidor.conf.ejemplo") + VIEJO + tuple(os.path.basename(r) for r in glob.glob(os.path.join(destino, "documentacion_*.html")) + glob.glob(os.path.join(destino, "README_*.txt"))):
         if os.path.exists(os.path.join(destino, sobra)):
             os.remove(os.path.join(destino, sobra))
     shutil.rmtree(os.path.join(destino, OTROS), ignore_errors=True)
@@ -190,7 +190,9 @@ def preparar(juego):
     for nombre in LANZADORES:
         shutil.copyfile(os.path.join(DESPLIEGUE, "windows", nombre), os.path.join(destino, nombre))
     _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_servidor.txt"), os.path.join(destino, "LEEME.txt"), "\r\n")
-    _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_servidor_en.txt"), os.path.join(destino, "README_en.txt"), "\r\n")   # en inglés, con nombre inglés
+    # en cada idioma, su README con nombre que se entiende en él: README_en.txt, README_pt.txt...
+    for ruta in sorted(glob.glob(os.path.join(DESPLIEGUE, "LEEME_servidor_*.txt"))):
+        _copiar_texto(ruta, os.path.join(destino, os.path.basename(ruta).replace("LEEME_servidor_", "README_")), "\r\n")
     with open(os.path.join(destino, "servidor.conf.ejemplo"), "w", encoding="utf-8", newline="\r\n") as f:
         f.write(texto_ejemplo())
     for cod, ruta in guias().items():
@@ -215,7 +217,9 @@ def preparar(juego):
     for nombre in GUIONES + DE_DOCKER + ("puertobravo.service",):
         _copiar_texto(os.path.join(DESPLIEGUE, nombre), os.path.join(otros, nombre), "\n")
     _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_otros_sistemas.txt"), os.path.join(otros, "LEEME.txt"), "\n")
-    _copiar_texto(os.path.join(DESPLIEGUE, "LEEME_otros_sistemas_en.txt"), os.path.join(otros, "README_en.txt"), "\n")
+    # en cada idioma, su README con nombre que se entiende en él: README_en.txt, README_pt.txt...
+    for ruta in sorted(glob.glob(os.path.join(DESPLIEGUE, "LEEME_otros_sistemas_*.txt"))):
+        _copiar_texto(ruta, os.path.join(otros, os.path.basename(ruta).replace("LEEME_otros_sistemas_", "README_")), "\n")
     with open(os.path.join(otros, "servidor.conf.ejemplo"), "w", encoding="utf-8", newline="\n") as f:
         f.write(texto_ejemplo())
     return destino

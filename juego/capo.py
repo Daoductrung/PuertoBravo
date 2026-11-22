@@ -39,7 +39,7 @@ AJ = Ajustes("capo", {
     "robo_casa_prob": 3, "robo_casa_dinero_pct": 60, "robo_casa_mercancia_pct": 50, "robo_casa_objetos": 2,
     "atraco_calle_prob": 3, "atraco_calle_pct": 70, "atraco_calle_minimo": 150,
     # el dinero negro
-    "deposito_libre": 3000, "cajero_ingreso_max": 500, "casino_maximo": 5000, "casino_comision": 12, "gestor_minimo": 5000, "gestor_comision": 25, "gestor_dias": 3,
+    "deposito_libre": 3000, "cajero_ingreso_max": 500, "banda_tope": 10, "casino_maximo": 5000, "casino_comision": 12, "gestor_minimo": 5000, "gestor_comision": 25, "gestor_dias": 3,
     "gestor_estafa": 5, "redada_lab_prob": 50,
 }, {
     "tareas": [tr("vender=vender en la calle tu mercancía"), tr("cocinar=cocinar en uno de tus laboratorios")],

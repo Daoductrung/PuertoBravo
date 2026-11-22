@@ -28,7 +28,7 @@ _estado = {"idioma": None, "textos": {}, "info": {}}
 
 
 # Cómo se llama cada idioma en su propia lengua, por su código: así una carpeta nueva se reconoce sola.
-NOMBRES = {"es": "Español", "en": "English", "it": "Italiano", "fr": "Français", "pt": "Português", "de": "Deutsch", "ca": "Català",
+NOMBRES = {"es": "Español", "en": "English", "it": "Italiano", "fr": "Français", "pt": "Português do Brasil", "de": "Deutsch", "ca": "Català",
            "eu": "Euskara", "gl": "Galego", "nl": "Nederlands", "pl": "Polski", "ru": "Русский", "uk": "Українська", "tr": "Türkçe",
            "ro": "Română", "sv": "Svenska", "da": "Dansk", "no": "Norsk", "nb": "Norsk bokmål", "fi": "Suomi", "cs": "Čeština", "sk": "Slovenčina",
            "hu": "Magyar", "el": "Ελληνικά", "ar": "العربية", "he": "עברית", "hi": "हिन्दी", "ja": "日本語", "ko": "한국어", "zh": "中文",
@@ -42,7 +42,7 @@ def es(texto):
 
 
 # Cómo se llama cada idioma en español: el catálogo de cada idioma dice cómo se llama en ese idioma.
-NOMBRES_ES = {"es": es("español"), "en": es("inglés"), "it": es("italiano"), "fr": es("francés"), "pt": es("portugués"), "de": es("alemán"),
+NOMBRES_ES = {"es": es("español"), "en": es("inglés"), "it": es("italiano"), "fr": es("francés"), "pt": es("portugués de Brasil"), "de": es("alemán"),
               "ca": es("catalán"), "eu": es("euskera"), "gl": es("gallego"), "nl": es("neerlandés"), "pl": es("polaco"), "ru": es("ruso"),
               "uk": es("ucraniano"), "tr": es("turco"), "ro": es("rumano"), "sv": es("sueco"), "da": es("danés"), "no": es("noruego"),
               "nb": es("noruego bokmål"), "fi": es("finés"), "cs": es("checo"), "sk": es("eslovaco"), "hu": es("húngaro"), "el": es("griego"),

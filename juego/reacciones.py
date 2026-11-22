@@ -207,7 +207,7 @@ class Reacciones:
         if not j.territorios:
             return "frases_recluta_no_fama", tr("Para tener banda necesitas un territorio. Conquista o compra un barrio primero.")
         if j.banda >= sistemas.cupo(j):
-            return "x", tr('Con {len} territorios no puedes mantener a más de {cupo}.').format(len=(len(j.territorios)), cupo=(sistemas.cupo(j)))
+            return "x", sistemas.sin_sitio_en_banda(j)
         if f["edad"] > AJ("recluta_edad_max"):
             return "frases_recluta_no_edad", ""
         if G.caracter(f["caracter"])["valor"] * 100 < AJ("recluta_valor"):

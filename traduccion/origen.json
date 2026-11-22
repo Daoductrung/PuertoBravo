@@ -6825,6 +6825,9 @@
 "Cada banda tiene su listón, al azar entre estos dos números.": [
 "editor/esquema.py"
 ],
+"Cada barrio deja mantener a uno más, hasta este tope. Con muchos, la calle se llena de los tuyos cuando los llamas.": [
+"editor/esquema.py"
+],
 "Cada coche, moto o camión tiene su depósito y gasta al rodar, más cuanto más deprisa. Avisa al entrar en reserva; con el depósito vacío, el motor se para. Se reposta en las gasolineras sin bajarte del vehículo, con un bidón comprado en ellas o llamando a la asistencia en carretera desde el móvil, en Servicios. La tecla V te dice cuánto queda. No cuenta en los barcos, en lo que vuela, en las bicicletas ni en los vehículos de las misiones.": [
 "juego/menus_juego.py"
 ],
@@ -10153,9 +10156,6 @@
 ],
 "Con uno, ir con un solo acompañante no cambia nada.": [
 "editor/esquema.py"
-],
-"Con {len} territorios no puedes mantener a más de {cupo}.": [
-"juego/reacciones.py"
 ],
 "Con {len} territorios no puedes mantener a más de {cupo}. Conquista otro barrio.": [
 "juego/sistemas.py"
@@ -27339,6 +27339,9 @@
 ],
 "Lo más que paga el servidor por la nómina de un periodo, en euros, diga lo que diga el mundo del juego o un mod.": [
 "servidor/opciones.py"
+],
+"Lo más que puede mantener un jefe en su banda": [
+"editor/esquema.py"
 ],
 "Lo más que se da por bueno de la paga de un solo encargo repetible, en euros. Lo que pase de ahí cuenta contra la ganancia por hora.": [
 "servidor/opciones.py"
@@ -44640,6 +44643,9 @@
 "Tu banda va sin ti y el resultado se calcula al momento: la fuerza de ellos contra la defensa del barrio más lo que suma cada uno de los tuyos, y la suerte de cada bando. Se te dice con sus números. Puede caer alguno de los tuyos. Si sale mal, pierdes el barrio.": [
 "juego/reconquista.py"
 ],
+"Tu banda ya está al completo: {tope} es lo más que puede mantener un jefe, tengas los barrios que tengas.": [
+"juego/sistemas.py"
+],
 "Tu banda: ": [
 "juego/menus_enlinea.py"
 ],
@@ -53450,7 +53456,7 @@
 "servidor/nucleo.py",
 "servidor/nucleo.py"
 ],
-"portugués": [
+"portugués de Brasil": [
 "juego/i18n.py"
 ],
 "prefiero no decirlo": [

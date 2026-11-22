@@ -35,7 +35,7 @@ VARIABLE = "PUERTOBRAVO_IDIOMA"
 
 # Cómo se llama cada idioma en su propia lengua, por su código.
 # La misma lista que la del juego (juego/i18n.py); un idioma que no esté aquí lo dice su idioma.json, {"nombre": "..."}.
-NOMBRES = {"es": "Español", "en": "English", "it": "Italiano", "fr": "Français", "pt": "Português", "de": "Deutsch", "ca": "Català",
+NOMBRES = {"es": "Español", "en": "English", "it": "Italiano", "fr": "Français", "pt": "Português do Brasil", "de": "Deutsch", "ca": "Català",
            "eu": "Euskara", "gl": "Galego", "nl": "Nederlands", "pl": "Polski", "ru": "Русский", "uk": "Українська", "tr": "Türkçe",
            "ro": "Română", "sv": "Svenska", "da": "Dansk", "no": "Norsk", "nb": "Norsk bokmål", "fi": "Suomi", "cs": "Čeština", "sk": "Slovenčina",
            "hu": "Magyar", "el": "Ελληνικά", "ar": "العربية", "he": "עברית", "hi": "हिन्दी", "ja": "日本語", "ko": "한국어", "zh": "中文",

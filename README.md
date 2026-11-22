@@ -1,6 +1,6 @@
 # Puerto Bravo: Ley del Asfalto
 
-**Idioma de este documento:** Español · [English](README_en.md) · [Tiếng Việt](README_vi.md)
+**Idioma de este documento:** Español · [English](README_en.md) · [Tiếng Việt](README_vi.md) · [Português do Brasil](README_pt.md)
 
 > *This README is also available in English: [read it in English](README_en.md).*
 
