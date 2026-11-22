@@ -754,6 +754,9 @@ class Combate:
             nx, ny = p.x + ux * paso, p.y + uy * paso
             if self.mundo.transitable(nx, ny):
                 lejos = math.hypot(nx - px, ny - py)
+                # por la acera: a la calzada solo se baja si no queda otra (o si ya se está en ella), y ahí la atropellan
+                if self.mundo.superficie(nx, ny) == "calzada" and self.mundo.superficie(p.x, p.y) != "calzada":
+                    lejos -= 1000.0
                 if mejor is None or lejos > mejor[0]:
                     mejor = (lejos, nx, ny)
         if mejor is not None:

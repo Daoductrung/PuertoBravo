@@ -403,3 +403,19 @@ def test_los_leeme_viejos_se_quitan_al_actualizar(tmp_path, monkeypatch):
     assert i18n.quitar_leemes_viejos() == 2
     assert (tmp_path / "LEEME.txt").exists() and (tmp_path / "LEEME_vi.txt").exists()             # sin su README, se queda
     assert not (tmp_path / "LEEME_en.txt").exists() and not (tmp_path / "data/mods/LEEME_mods_en.txt").exists()
+
+
+def test_quien_huye_no_se_mete_en_la_calzada(robot):
+    """Huye por la acera: bajar a la calzada solo si no le queda otra, porque ahí lo atropellan."""
+    p = _empezar(robot)
+    x, y = p.pos()
+    q = Persona("civil", *p.mundo.punto_libre(x + 6, y), "Paco")
+    p.personas.append(q)
+    p.asustar(q, 10)
+    pisa = []
+    for _ in range(150):
+        p.actualizar_personas(1 / 30)
+        if q in p.personas:
+            pisa.append(p.mundo.superficie(q.x, q.y))
+    if pisa and pisa[0] != "calzada":
+        assert pisa.count("calzada") <= len(pisa) // 4, pisa.count("calzada")
