@@ -3966,5 +3966,20 @@
    "data/voces/marisma_negra_en/mn05_6_2@sam_h.ogg",
    "data/voces/marisma_negra_en/mn05_6_2@sam_m.ogg"
   ]
+ },
+ "idioma-vi": {
+  "version": 1,
+  "huella": "e7f1086b1e8c7682b4ba905803ab858e9eb7070a0a9f6a3a342156798965e6b8",
+  "archivos": [
+   "data/idiomas/vi/idioma.json",
+   "data/idiomas/vi/palabras.json",
+   "data/idiomas/vi/textos.json",
+   "data/docs/cambiar_sonidos_vi.html",
+   "data/docs/editor_mods_vi.html",
+   "data/docs/manual_vi.html",
+   "data/docs/novedades_vi.html",
+   "data/docs/servidor_vi.html",
+   "data/docs/teclas_vi.html"
+  ]
  }
 }
