@@ -1048,8 +1048,8 @@ a { color: #9fd0ff; }
 <li>Padrão: <code>150</code>.</li>
 <li>Aplica-se sem reiniciar o servidor.</li>
 </ul>
-<h3>Economia e propriedades</h3>
-<p>O dinheiro que o servidor reconhece, casas, empresas e veículos.</p>
+<h3>Economia e veículos</h3>
+<p>O dinheiro que o servidor reconhece e os veículos deixados na rua.</p>
 <h4>O servidor controla o dinheiro: <code>economia</code></h4>
 <p>Com si, o servidor acompanha o dinheiro de cada jogador e não aceita o que não pode justificar.</p>
 <ul>
@@ -1092,6 +1092,22 @@ a { color: #9fd0ff; }
 <li>Padrão: <code>5000</code>.</li>
 <li>Aplica-se sem reiniciar o servidor.</li>
 </ul>
+<h4>Horas que um veículo dura na rua: <code>vehiculos_horas</code></h4>
+<p>Horas reais um veículo deixado na rua fica lá.</p>
+<ul>
+<li>Um número inteiro entre 1 e 8760.</li>
+<li>Padrão: <code>12</code>.</li>
+<li>Aplica-se sem reiniciar o servidor.</li>
+</ul>
+<h4>Veículos estacionados por jogador: <code>vehiculos_por_jugador</code></h4>
+<p>Quantos veículos cada jogador pode ter estacionados na rua. Quando sobra mais um, o mais antigo desaparece.</p>
+<ul>
+<li>Um número inteiro entre 1 e 100.</li>
+<li>Padrão: <code>3</code>.</li>
+<li>Aplica-se sem reiniciar o servidor.</li>
+</ul>
+<h3>Casas e estabelecimentos</h3>
+<p>Vendê-los, perdê-los por não entrar e garantir que ninguém fique com todos os estabelecimentos.</p>
 <h4>Venda ao mercado, em percentual: <code>venta_mercado</code></h4>
 <p>A percentagem do preço recuperada por quem vende a sua casa ou negócio ao mercado.</p>
 <ul>
@@ -1124,20 +1140,6 @@ a { color: #9fd0ff; }
 <p>Durante estes dias reais depois da compra, ninguém pode ficar à força com esse estabelecimento.</p>
 <ul>
 <li>Um número inteiro entre 0 e 365.</li>
-<li>Padrão: <code>3</code>.</li>
-<li>Aplica-se sem reiniciar o servidor.</li>
-</ul>
-<h4>Horas que um veículo dura na rua: <code>vehiculos_horas</code></h4>
-<p>Horas reais um veículo deixado na rua fica lá.</p>
-<ul>
-<li>Um número inteiro entre 1 e 8760.</li>
-<li>Padrão: <code>12</code>.</li>
-<li>Aplica-se sem reiniciar o servidor.</li>
-</ul>
-<h4>Veículos estacionados por jogador: <code>vehiculos_por_jugador</code></h4>
-<p>Quantos veículos cada jogador pode ter estacionados na rua. Quando sobra mais um, o mais antigo desaparece.</p>
-<ul>
-<li>Um número inteiro entre 1 e 100.</li>
 <li>Padrão: <code>3</code>.</li>
 <li>Aplica-se sem reiniciar o servidor.</li>
 </ul>

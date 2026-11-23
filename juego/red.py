@@ -290,6 +290,12 @@ class Servidor:
             _enviar(j["sock"], j["lock"], {"t": "expulsado"})
         except OSError:
             pass
+        # Se le quita de la lista y se avisa a los demás ya: no se espera a que su conexión acabe de cerrarse, que puede
+        # tardar. El cierre de su conexión no lo vuelve a decir, porque ya no está en la lista.
+        with self._lock:
+            fuera = self.jugadores.pop(ident, None)
+        if fuera:
+            self._a_todos({"t": "sale", "id": ident, "nombre": fuera["nombre"]})
 
         def cortar():
             time.sleep(0.4)                      # se le da tiempo a recibir el aviso antes de cortar

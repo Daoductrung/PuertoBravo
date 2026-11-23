@@ -1099,7 +1099,7 @@ def test_la_opcion_de_serie_normal_y_apagada_no_ocurre_nada(robot, datos_de_seri
     j = p.j
     barrios = _ciudad(p)
     j.banda = 0
-    # apagada: ni estado, ni aviso, ni asaltos; los ataques de siempre siguen como antes
+    # apagada: ni estado, ni aviso, ni asaltos; y desde la 1.7.3, tampoco los ataques sueltos de siempre: «nadie intenta quitártelos»
     n = len(robot_voz(p))
     robot.frames(80)
     for _ in range(40):
@@ -1108,8 +1108,7 @@ def test_la_opcion_de_serie_normal_y_apagada_no_ocurre_nada(robot, datos_de_seri
     assert p.rec_nivel() == "" and not p.rec_activa() and not j.reconquista.get("v") and _desde(p, n) == ""
     p.cfg["sucesos"] = True
     sistemas.sucesos_territorio(p, _Azar())
-    assert j.amenaza and j.amenaza["banda"] == G.nombres_bandas()[0]
-    j.amenaza = None
+    assert j.amenaza is None
     menus_extra.territorios(p)
     textos = [_texto(o) for o in robot.app.pila[-1].opciones]
     assert not any("Defensa de tus barrios" in t or "Lealtad" in t for t in textos)

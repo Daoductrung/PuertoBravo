@@ -1049,8 +1049,8 @@ a { color: #9fd0ff; }
 <li>Default: <code>150</code>.</li>
 <li>It applies without restarting the server.</li>
 </ul>
-<h3>Economy and properties</h3>
-<p>The money the server recognizes, houses, businesses and vehicles.</p>
+<h3>Economy and vehicles</h3>
+<p>The money the server recognises and the vehicles left on the street.</p>
 <h4>The server keeps track of money: <code>economia</code></h4>
 <p>With si, the server keeps track of each player&#x27;s money and does not accept what it cannot justify.</p>
 <ul>
@@ -1093,6 +1093,22 @@ a { color: #9fd0ff; }
 <li>Default: <code>5000</code>.</li>
 <li>It applies without restarting the server.</li>
 </ul>
+<h4>Hours a vehicle lasts on the street: <code>vehiculos_horas</code></h4>
+<p>Real hours a vehicle left on the street stays there.</p>
+<ul>
+<li>A whole number between 1 and 8760.</li>
+<li>Default: <code>12</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Parked vehicles per player: <code>vehiculos_por_jugador</code></h4>
+<p>How many vehicles each player can have parked on the street. When one more is left, the oldest disappears.</p>
+<ul>
+<li>A whole number between 1 and 100.</li>
+<li>Default: <code>3</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h3>Homes and businesses</h3>
+<p>Selling them, losing them for not logging in, and making sure nobody grabs every business.</p>
 <h4>Sale to the market, as a percentage: <code>venta_mercado</code></h4>
 <p>The percentage of the price recovered by whoever sells their house or business to the market.</p>
 <ul>
@@ -1125,20 +1141,6 @@ a { color: #9fd0ff; }
 <p>For these real days after buying it, nobody can take over that business by force.</p>
 <ul>
 <li>A whole number between 0 and 365.</li>
-<li>Default: <code>3</code>.</li>
-<li>It applies without restarting the server.</li>
-</ul>
-<h4>Hours a vehicle lasts on the street: <code>vehiculos_horas</code></h4>
-<p>Real hours a vehicle left on the street stays there.</p>
-<ul>
-<li>A whole number between 1 and 8760.</li>
-<li>Default: <code>12</code>.</li>
-<li>It applies without restarting the server.</li>
-</ul>
-<h4>Parked vehicles per player: <code>vehiculos_por_jugador</code></h4>
-<p>How many vehicles each player can have parked on the street. When one more is left, the oldest disappears.</p>
-<ul>
-<li>A whole number between 1 and 100.</li>
 <li>Default: <code>3</code>.</li>
 <li>It applies without restarting the server.</li>
 </ul>

@@ -61,5 +61,10 @@
   "Cuántos negocios puede tener a la vez un mismo jugador, para que nadie se quede con todos. Con 0 no hay tope. Si alguien tiene más de los que permite el tope, a medianoche vuelven al mercado los últimos que compró, y se le devuelve lo que pagó por ellos.": "How many businesses one player can own at once, so nobody grabs them all. With 0 there is no limit. If someone owns more than the limit allows, at midnight the last ones they bought go back on the market, and they get back what they paid for them.",
   "Durante estos días de verdad después de comprarlo, nadie puede quedarse a la fuerza con ese negocio.": "For these real days after buying it, nobody can take over that business by force.",
   "Días de protección de un negocio recién comprado": "Days of protection for a newly bought business",
-  "Negocios por jugador": "Businesses per player"
+  "Negocios por jugador": "Businesses per player",
+  "cómo conduce el piloto del GPS: normal, con prisa, con mucha prisa o temerario": "how the GPS autopilot drives: normal, in a hurry, in a big hurry or careless",
+  "Economía y vehículos": "Economy and vehicles",
+  "El dinero que reconoce el servidor y los vehículos que se dejan en la calle.": "The money the server recognises and the vehicles left on the street.",
+  "Casas y negocios": "Homes and businesses",
+  "Venderlos, perderlos por no entrar y que nadie se quede con todos los negocios.": "Selling them, losing them for not logging in, and making sure nobody grabs every business."
 }

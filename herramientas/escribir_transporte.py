@@ -13,6 +13,8 @@ import json
 import os
 import sys
 
+os.environ["PUERTOBRAVO_IDIOMA"] = "es"          # escribe datos del juego: en español, el idioma de origen, sea cual sea el de Windows
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from juego import mundo as M, rutas          # noqa: E402

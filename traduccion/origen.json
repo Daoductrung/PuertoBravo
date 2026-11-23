@@ -8007,6 +8007,9 @@
 "Casas colgadas de la montaña, el parador y el helipuerto.": [
 "data/datos/mapas/monteferro.json"
 ],
+"Casas y negocios": [
+"servidor/opciones.py"
+],
 "Casas y negocios de {nombre}": [
 "juego/menus_enlinea.py"
 ],
@@ -14144,7 +14147,7 @@
 "Economato minero": [
 "data/datos/mapas/monteferro.json"
 ],
-"Economía y propiedades": [
+"Economía y vehículos": [
 "servidor/opciones.py"
 ],
 "Edad": [
@@ -15188,7 +15191,7 @@
 "El dinero que guardas en el armario de esta casa está a salvo de los ladrones.": [
 "data/datos/vida.json"
 ],
-"El dinero que reconoce el servidor, las casas, los negocios y los vehículos.": [
+"El dinero que reconoce el servidor y los vehículos que se dejan en la calle.": [
 "servidor/opciones.py"
 ],
 "El dinero que tienes en el banco, aparte del que llevas encima. Se ingresa y se saca en los bancos.": [
@@ -48304,6 +48307,9 @@
 "Vender {nombre}, {v}, por {moc_precio} euros": [
 "juego/mochila.py"
 ],
+"Venderlos, perderlos por no entrar y que nadie se quede con todos los negocios.": [
+"servidor/opciones.py"
+],
 "Vendes todas las que tienes de esta empresa al precio de hoy, y te dice cuánto ganas o pierdes con la venta.": [
 "juego/menus_extra.py"
 ],
@@ -50942,7 +50948,7 @@
 "código": [
 "servidor/nucleo.py"
 ],
-"cómo conduce el piloto del GPS: normal, con prisa o con mucha prisa": [
+"cómo conduce el piloto del GPS: normal, con prisa, con mucha prisa o temerario": [
 "juego/mando.py"
 ],
 "cómo conduce el piloto del GPS: normal; con prisa, que corre más y para en rojo; con mucha prisa, a toda velocidad y sin parar en los semáforos, para huir de la policía; o temerario, que además no frena por el que va delante": [

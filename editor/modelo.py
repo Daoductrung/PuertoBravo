@@ -446,8 +446,10 @@ def comprobar(mod, cat):
                     avisos.append(tr('{donde}: conviene que el identificador solo tenga minúsculas, números y guiones bajos.').format(donde=(donde)))
             _recorrer(esq, d, cat, mod, donde, errores, avisos)
     # un vehículo sin precio no se vende en ningún sitio: quien lo crea suele esperar poder comprarlo
+    otros = {k: v for k, v in mod.secciones.items() if k != "vehiculos"}
+    usados = json.dumps(otros, ensure_ascii=False)                  # si el mod lo usa en una misión, un barrio o un lugar, no es para venderse
     for d in mod.secciones.get("vehiculos", []):
-        if not d.get("precio") and not d.get("vuela"):
+        if not d.get("precio") and not d.get("vuela") and f'"{d.get("id")}"' not in usados:
             avisos.append(tr('Vehículos, «{ident}»: no tiene precio, así que no se vende en ningún concesionario ni náutica y el jugador no podrá comprarlo. '
                              'Ponle un precio para que salga en todos los que no limitan sus modelos.').format(ident=d.get("id") or d.get("nombre") or tr("sin nombre")))
     # mapas: tienen que poder construirse

@@ -75,7 +75,7 @@ ACCIONES = {
     "disparar_veh": (tr("disparar desde el vehículo"), K.K_LCTRL, 0, True),
     "trabajo": (tr("empezar o terminar un trabajo con el vehículo"), K.K_j, 0, False),
     "piloto": (tr("piloto del GPS"), K.K_y, 0, False),
-    "piloto_estilo": (tr("cómo conduce el piloto del GPS: normal, con prisa o con mucha prisa"), K.K_y, S, False),
+    "piloto_estilo": (tr("cómo conduce el piloto del GPS: normal, con prisa, con mucha prisa o temerario"), K.K_y, S, False),
     "paseo": (tr("caminar solo siguiendo el GPS"), K.K_u, 0, False),
     "hablar": (tr("hablar con la persona de al lado"), K.K_j, 0, False),
     "especial": (tr("pescar en el mar, o sirena en vehículos de emergencias"), K.K_p, 0, False),

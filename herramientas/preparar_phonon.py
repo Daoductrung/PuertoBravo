@@ -72,7 +72,10 @@ def main():
     for n in (("config.json", "tokenizer.json", "model.q8.gguf") if IDIOMA == "es" else ()):     # otro idioma usa el de data/phonon
         origen = next((p for p in (os.path.join(apk, n), os.path.join(MODELO, n)) if os.path.exists(p)), None)
         if origen is None:
-            print("FALTA", n, "en", MODELO)
+            if os.path.exists(os.path.join(DESTINO, n)):        # sin la carpeta del modelo, pero data/phonon ya lo tiene: vale
+                print("No está", n, "en", MODELO, "- se usa el que ya hay en data/phonon.")
+                continue
+            print("FALTA", n, "en", MODELO, "y tampoco está en data/phonon")
             return 1
         if not os.path.exists(os.path.join(DESTINO, n)) or os.path.getsize(os.path.join(DESTINO, n)) != os.path.getsize(origen):
             shutil.copy2(origen, os.path.join(DESTINO, n))

@@ -625,7 +625,8 @@ class Conduccion:
         # semáforos con la sirena o en una misión: en un trabajo (el autobús, el taxi, el reparto) te costaría multas y
         # puntos del carné, así que espera en rojo como cualquiera, aunque vaya más deprisa.
         # El estilo que eliges manda además: con prisa corre como en un trabajo contra el reloj y espera en rojo; con mucha
-        # prisa va a todo lo que da el vehículo y no para en los semáforos, para huir de la policía o llegar a tiempo.
+        # prisa va a todo lo que da el vehículo y no para en los semáforos, para huir de la policía o llegar a tiempo; y el
+        # temerario, además, va al cien por cien y no frena por el de delante (ver conducir). Todos frenan para las curvas.
         estilo = self.estilo_piloto()
         salta = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None) or estilo in ("mucha_prisa", "temerario")
         prisa = salta or bool(self.trabajo and self.trabajo.get("limite") is not None) or estilo == "prisa"

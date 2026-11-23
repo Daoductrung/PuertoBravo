@@ -61,5 +61,10 @@
   "Cuántos negocios puede tener a la vez un mismo jugador, para que nadie se quede con todos. Con 0 no hay tope. Si alguien tiene más de los que permite el tope, a medianoche vuelven al mercado los últimos que compró, y se le devuelve lo que pagó por ellos.": "Số cơ sở kinh doanh tối đa một người chơi được sở hữu cùng lúc, để không ai chiếm hết. Đặt 0 thì không giới hạn. Nếu ai đó sở hữu nhiều hơn mức cho phép, vào nửa đêm những cơ sở mua sau cùng sẽ quay lại thị trường và họ được hoàn lại số tiền đã trả.",
   "Durante estos días de verdad después de comprarlo, nadie puede quedarse a la fuerza con ese negocio.": "Trong số ngày thực này sau khi mua, không ai có thể cưỡng ép mua lại cơ sở đó.",
   "Días de protección de un negocio recién comprado": "Số ngày bảo vệ cơ sở kinh doanh vừa mua",
-  "Negocios por jugador": "Số cơ sở kinh doanh mỗi người chơi"
+  "Negocios por jugador": "Số cơ sở kinh doanh mỗi người chơi",
+  "cómo conduce el piloto del GPS: normal, con prisa, con mucha prisa o temerario": "cách lái tự động GPS điều khiển xe: bình thường, vội, rất vội hoặc liều lĩnh",
+  "Economía y vehículos": "Kinh tế và phương tiện",
+  "El dinero que reconoce el servidor y los vehículos que se dejan en la calle.": "Số tiền máy chủ công nhận và các phương tiện để ngoài đường.",
+  "Casas y negocios": "Nhà ở và cơ sở kinh doanh",
+  "Venderlos, perderlos por no entrar y que nadie se quede con todos los negocios.": "Bán chúng, mất chúng vì không vào, và không để ai chiếm hết các cơ sở kinh doanh."
 }

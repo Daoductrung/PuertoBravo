@@ -2,6 +2,9 @@
 chcp 65001 >nul
 setlocal
 cd /d "%~dp0"
+rem Las herramientas que escriben datos del juego lo hacen en espanol, el idioma de origen, sea cual sea el de Windows:
+rem si no, en un Windows en ingles los mods de ejemplo se reescribirian en ingles y la traduccion se pararia.
+set "PUERTOBRAVO_IDIOMA=es"
 echo ============================================================
 echo  Puerto Bravo: Ley del Asfalto - Compilar con cx_Freeze
 echo ============================================================

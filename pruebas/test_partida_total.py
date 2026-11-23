@@ -584,7 +584,10 @@ def test_muchos_dias_con_barrios_banda_y_sucesos(robot):
     app = robot.app
     j = p.j
     p.cfg["sucesos"] = True
-    p.cfg["reconquista"] = "apagado"          # con ella, los asaltos los lleva la reconquista (que tiene sus pruebas); aquí, los sucesos de siempre
+    # Aquí, los sucesos de siempre. Con la reconquista en marcha los asaltos los lleva ella (tiene sus pruebas), y apagada
+    # nadie te ataca (desde la 1.7.3): los de siempre salen con la opción encendida y pocos barrios, o en un servidor.
+    p.cfg["reconquista"] = "normal"
+    p.rec_activa = lambda: False
     random.seed(21)
     for b in p.mundo.barrios[:4]:
         j.territorios.append(b["id"])
@@ -600,7 +603,7 @@ def test_muchos_dias_con_barrios_banda_y_sucesos(robot):
         t.al_juego(f"día {dia}")
         if j.amenaza or "sin que tuvieras que ir" in " ".join(app.voz.registro[marca:]):     # o tu banda los ha echado ella sola
             vistos.add("ataque")
-            if dia % 2 == 0:                                                  # la mitad de las veces se defiende
+            if dia % 2 == 0 and j.amenaza:                                    # la mitad de las veces se defiende (si tu banda no los echó ya)
                 mapa = next(m for m in p.mapas.values() if any(b["id"] == j.amenaza["territorio"] for b in m.barrios))
                 if p.mundo.id != mapa.id:
                     l0 = next(iter(mapa.lugares.values()))
