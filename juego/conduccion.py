@@ -18,7 +18,7 @@ LOCALES_CON_MUSICA = ("tienda", "comida", "pizzeria", "bar", "taberna", "ropa", 
                       "feria", "empenos", "nautica", "armeria")
 
 # Los estilos del piloto del GPS, en el orden en que los recorre Mayúsculas Y.
-ESTILOS_PILOTO = ("normal", "prisa", "mucha_prisa")
+ESTILOS_PILOTO = ("normal", "prisa", "mucha_prisa", "temerario")
 
 
 def texto_estilo_piloto(estilo):
@@ -27,6 +27,8 @@ def texto_estilo_piloto(estilo):
         return tr("Piloto con prisa: corre más, pero espera en los semáforos.")
     if estilo == "mucha_prisa":
         return tr("Piloto con mucha prisa: a toda velocidad y sin parar en los semáforos. Para huir de la policía; si no te buscan, te pueden multar.")
+    if estilo == "temerario":
+        return tr("Piloto temerario: a toda la velocidad del vehículo, sin parar en los semáforos y sin frenar por el que va delante. Choca a menudo.")
     return tr("Piloto normal: velocidad de ciudad, y para en los semáforos.")
 
 
@@ -590,7 +592,7 @@ class Conduccion:
                 self.decir(tr('Piloto del GPS activado: el coche va solo hasta {nombre}. Con cualquier flecha o el espacio mandas tú.').format(nombre=(self.gps['nombre'])), True)
 
     def estilo_piloto(self):
-        """Cómo conduce el piloto del GPS: normal, prisa o mucha_prisa (Opciones, o Mayúsculas Y al volante)."""
+        """Cómo conduce el piloto del GPS: normal, prisa, mucha_prisa o temerario (Opciones, o Mayúsculas Y al volante)."""
         e = self.cfg["piloto_estilo"]
         return e if e in ESTILOS_PILOTO else "normal"
 
@@ -625,10 +627,12 @@ class Conduccion:
         # El estilo que eliges manda además: con prisa corre como en un trabajo contra el reloj y espera en rojo; con mucha
         # prisa va a todo lo que da el vehículo y no para en los semáforos, para huir de la policía o llegar a tiempo.
         estilo = self.estilo_piloto()
-        salta = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None) or estilo == "mucha_prisa"
+        salta = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None) or estilo in ("mucha_prisa", "temerario")
         prisa = salta or bool(self.trabajo and self.trabajo.get("limite") is not None) or estilo == "prisa"
         if estilo == "mucha_prisa":
             objetivo = mo["vel_max"] * 0.95
+        elif estilo == "temerario":                              # al cien por cien, y sin la frenada automática (ver conducir)
+            objetivo = mo["vel_max"]
         else:
             objetivo = min(mo["vel_max"] * 0.85, 21.0) if prisa else min(mo["vel_max"] * 0.6, 14.0)
         quien = self.chofer["nombre"].split(",")[0] if self.chofer_conduce() else tr("El piloto")
@@ -696,6 +700,7 @@ class Conduccion:
         from . import sistemas                          # las mejoras del taller cambian cómo va el vehículo
         freno = mo["freno"] * (sistemas.factor_lluvia(v) if self.lluvia else 1.0) * sistemas.factor_frenada(v) * self.factor_averia_frenos(v)
         con_motor = self.gastar_combustible(v, dt)
+        temerario = False                               # el piloto temerario se salta la frenada automática
         self.rodar(v, dt)
         self.vigilar_velocidad(v, dt)
         if v.ardiendo >= 0 or not con_motor:
@@ -713,6 +718,7 @@ class Conduccion:
                 v.vel = max(-6.0, v.vel - 4 * dt)
         elif self.piloto_completo() and pygame.K_SPACE not in t:
             self._pilotando = True
+            temerario = self.estilo_piloto() == "temerario"     # lleva él los pedales y no frena por el que va delante
             self._pilotar(v, dt, freno)
         elif (getattr(self, "_pilotando", False) or self.chofer_conduce()) and self.piloto_puesto() and not self.gps and v.vel > 0:
             v.vel = max(0.0, v.vel - freno * dt)                 # el piloto ha llegado: no suelta el coche rodando, lo para
@@ -730,7 +736,7 @@ class Conduccion:
         x0, y0 = v.x, v.y
         if self.modo_asistido():
             lat = -6.0 if pygame.K_a in t else 2.2 if pygame.K_d in t else 0.0
-            if (self.cfg["frenada_auto"] or self.piloto_completo()) and v.vel > 0:
+            if (self.cfg["frenada_auto"] or self.piloto_completo()) and v.vel > 0 and not temerario:
                 self._frenada_auto(v, dt, freno)
             self._aviso_cruce(v)
             if not self.piloto_completo():

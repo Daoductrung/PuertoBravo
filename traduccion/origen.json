@@ -33271,7 +33271,7 @@
 "juego/respuestas_datos1.py",
 "juego/respuestas_datos1.py"
 ],
-"Normal: va a velocidad de ciudad, para en los semáforos y se detiene al llegar. Con prisa: corre más, como en un trabajo contra el reloj, pero sigue parando en rojo. Con mucha prisa: va a todo lo que da el vehículo y no para en los semáforos, para huir de la policía o llegar a tiempo; frena solo lo justo para tomar las curvas y para no chocar con el de delante. Si no te busca la policía, correr así te puede costar multas. Al volante se cambia también con Mayúsculas Y.": [
+"Normal: va a velocidad de ciudad, para en los semáforos y se detiene al llegar. Con prisa: corre más, como en un trabajo contra el reloj, pero sigue parando en rojo. Con mucha prisa: va a todo lo que da el vehículo y no para en los semáforos, para huir de la policía o llegar a tiempo; frena solo lo justo para tomar las curvas y para no chocar con el de delante. Temerario: a toda la velocidad del vehículo, sin parar en los semáforos y sin frenar por el que va delante, así que choca a menudo; solo frena para las curvas. Si no te busca la policía, correr así te puede costar multas. Al volante se cambia también con Mayúsculas Y.": [
 "juego/menus_juego.py"
 ],
 "Normas de tráfico: multas y carné por puntos": [
@@ -35553,6 +35553,9 @@
 "juego/menus_juego.py"
 ],
 "Piloto normal: velocidad de ciudad, y para en los semáforos.": [
+"juego/conduccion.py"
+],
+"Piloto temerario: a toda la velocidad del vehículo, sin parar en los semáforos y sin frenar por el que va delante. Choca a menudo.": [
 "juego/conduccion.py"
 ],
 "Pimientos": [
@@ -50783,7 +50786,7 @@
 "cómo conduce el piloto del GPS: normal, con prisa o con mucha prisa": [
 "juego/mando.py"
 ],
-"cómo conduce el piloto del GPS: normal; con prisa, que corre más y para en rojo; o con mucha prisa, a toda velocidad y sin parar en los semáforos, para huir de la policía": [
+"cómo conduce el piloto del GPS: normal; con prisa, que corre más y para en rojo; con mucha prisa, a toda velocidad y sin parar en los semáforos, para huir de la policía; o temerario, que además no frena por el que va delante": [
 "juego/ayuda.py"
 ],
 "cómo está el servidor: puerto, cifrado, mundo, tiempo en marcha y cuánta gente hay": [
@@ -54197,6 +54200,9 @@
 "tecla {k}": [
 "juego/teclado.py",
 "juego/teclado.py"
+],
+"temerario, a toda velocidad y sin frenar por nada": [
+"juego/menus_juego.py"
 ],
 "tener un contrato fijo, que se firma en una oficina de empleo": [
 "juego/honrado.py"

@@ -82,7 +82,7 @@ TECLAS = {
         (tr("Frenada automática"), tr("en conducción asistida el coche frena solo si hay un vehículo delante en tu carril. Se desactiva en Opciones")),
         ("U", tr("media vuelta, con el coche casi parado. Con el piloto del GPS, la da él solo cuando el destino queda a tu espalda")),
         ("Y", tr("piloto del GPS: el coche va solo hasta el destino marcado; acelera, frena, gira, espera en los semáforos y se detiene al llegar")),
-        (tr("Mayúsculas Y"), tr("cómo conduce el piloto del GPS: normal; con prisa, que corre más y para en rojo; o con mucha prisa, a toda velocidad y sin parar en los semáforos, para huir de la policía")),
+        (tr("Mayúsculas Y"), tr("cómo conduce el piloto del GPS: normal; con prisa, que corre más y para en rojo; con mucha prisa, a toda velocidad y sin parar en los semáforos, para huir de la policía; o temerario, que además no frena por el que va delante")),
         ("E", tr("en conducción libre, endereza el coche hacia el punto cardinal más cercano")),
         ("W", tr("velocidad actual")),
         ("H", tr("claxon")),
