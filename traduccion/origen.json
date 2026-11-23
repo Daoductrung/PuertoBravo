@@ -6958,6 +6958,9 @@
 "Cada orden vale en español y en inglés: ayuda o help, jugadores o players, expulsar o kick, apagar o shutdown...": [
 "servidor/nucleo.py"
 ],
+"Cada partida en su ranura, con su guardado automático y el rápido": [
+"juego/menus_juego.py"
+],
 "Cada patrulla que sale a por el jugador con este nivel trae agentes de uno de estos tipos, al azar. El tipo dice su arma, su salud, su vehículo y cuántos se bajan.": [
 "editor/esquema.py"
 ],
@@ -10089,6 +10092,9 @@
 "Con sí, no es una misión que se empiece en un lugar: sale en el móvil, en Misiones, con la palabra Explicación delante, y al pulsar Intro se leen seguidas las frases de todos sus pasos de diálogo. Los demás pasos no cuentan. Al llegar al final queda hecha y da su recompensa.": [
 "editor/esquema.py"
 ],
+"Con sí, que es como viene, cada partida es la de su ranura: el guardado automático, el rápido y el de un cierre inesperado van a la ranura de la partida que juegas, y nunca pisan la de otro personaje. Una partida nueva toma la primera ranura libre al guardarse. Antes de escribir encima, lo que había queda como copia anterior, y en Cargar partida puedes volver a ella. Con no, como antes de la versión 1.7.4: el guardado automático y el rápido van a dos archivos que comparten todas las partidas.": [
+"juego/menus_juego.py"
+],
 "Con sí, que es lo normal, tumbar a los rivales no es delito ni baja tu prestigio entre los vecinos. Con no, es una pelea ilegal: cada rival que cae cuenta como una agresión si alguien lo ve.": [
 "editor/esquema.py"
 ],
@@ -10616,6 +10622,9 @@
 ],
 "Copia al portapapeles la dirección de este servidor en tu red, para dársela a quien juegue en tu misma casa.": [
 "panel_servidor/ventana.py"
+],
+"Copia anterior de la ranura {ranura}": [
+"juego/menus_juego.py"
 ],
 "Copia de seguridad automática hecha: %s": [
 "servidor/nucleo.py"
@@ -14080,6 +14089,9 @@
 "Dónde se compra": [
 "editor/esquema.py"
 ],
+"Dónde se guarda cada partida.": [
+"juego/menus_juego.py"
+],
 "Dónde se guarda en casa": [
 "editor/esquema.py"
 ],
@@ -16750,16 +16762,16 @@
 "Elige un servidor y pulsa Intro. F1 explica cada opción": [
 "juego/menus_enlinea.py"
 ],
-"Elige una de las cinco ranuras para guardar la partida tal como está.": [
+"Elige una de las diez ranuras para guardar la partida tal como está.": [
 "juego/menus_juego.py"
 ],
-"Elige una de las cinco ranuras para guardar la partida tal como está. Durante una misión no se puede.": [
+"Elige una de las diez ranuras para guardar la partida tal como está. Durante una misión no se puede.": [
 "juego/menus_juego.py"
 ],
 "Elige una de tus partidas guardadas y sigues desde ahí. Lo que no hayas guardado de esta partida se pierde.": [
 "juego/menus_juego.py"
 ],
-"Elige una de tus partidas guardadas: el guardado automático, el rápido o una de las cinco ranuras.": [
+"Elige una de tus partidas guardadas: cada ranura es una partida, y debajo están las copias anteriores de cada una.": [
 "juego/menus_juego.py"
 ],
 "Elige una función y pulsa Intro. No se pueden cambiar Escape, Intro, F1, F12, la Mayúsculas derecha ni las teclas de control y alt": [
@@ -19258,6 +19270,9 @@
 "Esta partida es de una versión más nueva del juego, formato {v}. Actualiza el juego para cargarla.": [
 "juego/partida.py"
 ],
+"Esta partida se guarda desde ahora en la ranura {r}.": [
+"juego/menus_juego.py"
+],
 "Esta versión no trae notas.": [
 "juego/menus_actualizar.py"
 ],
@@ -21706,6 +21721,9 @@
 ],
 "Guantes de oro": [
 "juego/extras2.py"
+],
+"Guarda aquí la partida tal como está ahora. Desde entonces, su guardado automático y el rápido van también a esta ranura. Si tenía otra partida, la sustituye; lo que había queda como copia anterior, y se recupera en Cargar partida.": [
+"juego/menus_juego.py"
 ],
 "Guarda aquí la partida tal como está ahora. Si la ranura ya tenía una partida, la sustituye.": [
 "juego/menus_juego.py"
@@ -27682,6 +27700,9 @@
 "Lo que ha decidido quien lleva el servidor: combate, zonas seguras, precios de las bandas, tope de ganancias y más.": [
 "juego/menus_enlinea.py"
 ],
+"Lo que había en esta ranura antes de su último guardado. Si lo cargas, sigues desde ahí, en la misma ranura; al volver a guardar, lo que hay ahora pasa a ser la copia anterior.": [
+"juego/menus_juego.py"
+],
 "Lo que hace": [
 "editor/esquema_golpes.py"
 ],
@@ -32502,6 +32523,9 @@
 "No queda combustible.": [
 "juego/vuelo_pantalla.py"
 ],
+"No queda ninguna ranura libre: el guardado automático y el rápido de esta partida van a sus archivos de siempre hasta que la guardes en una ranura.": [
+"juego/menus_juego.py"
+],
 "No quiere quedar todavía, tras un plantón": [
 "editor/esquema.py"
 ],
@@ -34930,6 +34954,9 @@
 "juego/menus_juego.py"
 ],
 "Partida guardada en la ranura {r}.": [
+"juego/menus_juego.py"
+],
+"Partidas guardadas": [
 "juego/menus_juego.py"
 ],
 "Paráis el motor mar adentro. Solo se oye el agua contra el casco.": [
@@ -56763,6 +56790,9 @@
 ],
 "{nombre}, junto a {nombre2}": [
 "juego/mundo.py"
+],
+"{nombre}, la de esta partida": [
+"juego/menus_juego.py"
 ],
 "{nombre}, por dentro. Coges una cesta. Estás en {nombre2}. {desc} Hay {_cuantos}: {nombres}. ": [
 "juego/compra.py"

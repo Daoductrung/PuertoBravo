@@ -4,6 +4,7 @@ import json
 import math
 import os
 import random
+import shutil
 import time
 
 import zlib
@@ -14,37 +15,70 @@ from .config import OPCIONES
 from .combate import ayuda_arma, ficha_corta
 from .menus import Dialogo, Menu, Opcion
 
-RANURAS = ["auto", "rapido", "1", "2", "3", "4", "5"]
+NUMERADAS = [str(n) for n in range(1, 11)]                # las ranuras de las partidas: diez, una por partida
+RANURAS = ["auto", "rapido"] + NUMERADAS                  # «auto» y «rapido», los archivos compartidos de antes de la 1.7.4
 NOMBRE_RANURA = {"auto": tr("Guardado automático"), "rapido": tr("Guardado rápido")}
 
 
 # ====================================================================== guardado
+# Desde la 1.7.4 la ranura es la partida (Opciones, Partidas guardadas): cada partida recuerda en qué ranura está y quién
+# es (id_partida), y el guardado automático, el rápido, el de un cierre inesperado y el de antes de actualizar van a esa
+# ranura, nunca a la de otra partida. Antes de escribir encima, lo que había se aparta a data/partidas/anteriores, para
+# poder volver a ello desde Cargar partida. Una partida que aún no tiene ranura toma la primera libre al guardarse; si no
+# queda ninguna, usa los archivos compartidos de siempre. Con la opción apagada, todo va como antes.
 CARPETA = "partidas"
+ANTERIORES = "anteriores"
 
 
-def _archivo(ranura, ext=None):
+def _archivo(ranura, ext=None, anterior=False):
     """Archivo de una ranura. En el juego compilado las partidas van protegidas y con extensión propia."""
     ext = ext or (rutas.EXT_PARTIDA if cifrado.COMPILADO else ".json")
-    return os.path.join(rutas.carpeta_data(CARPETA), f"partida_{ranura}{ext}")
+    carpeta = rutas.carpeta_data(CARPETA)
+    if anterior:
+        carpeta = os.path.join(carpeta, ANTERIORES)
+    return os.path.join(carpeta, f"partida_{ranura}{ext}")
 
 
-def _archivos_validos(ranura):
+def _archivos_validos(ranura, anterior=False):
     """Los archivos de una ranura que el juego acepta. En el juego compilado solo valen las partidas protegidas:
     una partida legible, escrita o retocada a mano, no se carga."""
-    posibles = [r for r in (_archivo(ranura, rutas.EXT_PARTIDA), _archivo(ranura, ".json")) if os.path.exists(r)]
+    posibles = [r for r in (_archivo(ranura, rutas.EXT_PARTIDA, anterior), _archivo(ranura, ".json", anterior)) if os.path.exists(r)]
     if cifrado.COMPILADO:
         posibles = [r for r in posibles if cifrado.esta_cifrado(r)]
     return posibles
 
 
-def leer_ranura(ranura):
-    """Lee la ranura. En el código fuente, si hay una partida con cada extensión, vale la más reciente."""
-    for ruta in sorted(_archivos_validos(ranura), key=os.path.getmtime, reverse=True):
+def leer_ranura(ranura, anterior=False):
+    """Lee la ranura, o su copia anterior. En el código fuente, si hay una partida con cada extensión, vale la más reciente."""
+    for ruta in sorted(_archivos_validos(ranura, anterior), key=os.path.getmtime, reverse=True):
         try:
             return cifrado.leer_json(ruta)
         except (OSError, ValueError, zlib.error):
             continue
     return None
+
+
+def _apartar_anterior(ranura):
+    """Antes de escribir encima de una ranura, lo que había pasa a ser su copia anterior."""
+    actuales = _archivos_validos(ranura)
+    if not actuales:
+        return
+    origen = max(actuales, key=os.path.getmtime)
+    destino = _archivo(ranura, os.path.splitext(origen)[1], anterior=True)
+    try:
+        os.makedirs(os.path.dirname(destino), exist_ok=True)
+        for viejo in _archivos_validos(ranura, anterior=True):
+            os.remove(viejo)
+        shutil.copy2(origen, destino)
+    except OSError:
+        pass                                             # sin copia anterior, se guarda igual
+
+
+def id_partida(p):
+    """Quién es esta partida: se crea al guardarla por primera vez y viaja con ella en cada guardado."""
+    if not getattr(p, "id_partida", None):
+        p.id_partida = "%016x" % random.getrandbits(64)
+    return p.id_partida
 
 
 def escribir_ranura(p, ranura):
@@ -53,16 +87,61 @@ def escribir_ranura(p, ranura):
     d = p.a_dict()
     d["fecha"] = time.strftime("%d/%m/%Y %H:%M")
     d["resumen"] = tr('{len} misiones, {dinero} euros, día {dia}').format(len=(len(p.completadas)), dinero=(p.j.dinero), dia=(p.dia))
+    d["id_partida"] = id_partida(p)
+    ranura = str(ranura)
+    if ranura in NUMERADAS:
+        d["ranura"] = ranura
+        _apartar_anterior(ranura)
     try:
         cifrado.escribir_json(_archivo(ranura), d)          # en el juego compilado la partida queda protegida
-        return True
     except OSError:
         return False
+    if ranura in NUMERADAS:
+        p.ranura = ranura                                # desde ahora, esta partida es la de esta ranura
+    return True
 
 
-def texto_ranura(ranura):
-    d = leer_ranura(ranura)
+def por_ranura(app):
+    return bool(app.cfg["guardado_por_ranura"])
+
+
+def _libre_o_nuestra(p, r):
+    d = leer_ranura(r)
+    # libre, de esta misma partida, o de antes de la 1.7.4 (sin identidad): si la cargaste de ahí, es tuya
+    return d is None or not d.get("id_partida") or d.get("id_partida") == getattr(p, "id_partida", None)
+
+
+def ranura_para(p, compartida, callar=False):
+    """Dónde va un guardado automático o rápido. Con la opción de serie, a la ranura de esta partida; si aún no tiene, o
+    en la suya ya hay otra partida, a la primera libre; y si no queda ninguna, al archivo compartido de siempre."""
+    if not por_ranura(p.app):
+        return compartida
+    r = getattr(p, "ranura", None)
+    if r in NUMERADAS and _libre_o_nuestra(p, r):
+        return r
+    libre = next((x for x in NUMERADAS if leer_ranura(x) is None), None)
+    if libre is not None:
+        if not callar:
+            p.decir(tr('Esta partida se guarda desde ahora en la ranura {r}.').format(r=libre))
+        return libre
+    if not callar and not getattr(p, "aviso_sin_ranura", False):
+        p.aviso_sin_ranura = True
+        p.decir(tr("No queda ninguna ranura libre: el guardado automático y el rápido de esta partida van a sus archivos de siempre hasta que la guardes en una ranura."))
+    return compartida
+
+
+def guardar_por_si_acaso(p):
+    """El guardado de un cierre inesperado y el de antes de actualizar: a la ranura de la partida, con su copia anterior."""
+    return escribir_ranura(p, ranura_para(p, "auto", callar=True))
+
+
+def texto_ranura(ranura, p=None, anterior=False):
+    d = leer_ranura(ranura, anterior)
     nombre = NOMBRE_RANURA.get(ranura, tr('Ranura {ranura}').format(ranura=(ranura)))
+    if anterior:
+        nombre = tr('Copia anterior de la ranura {ranura}').format(ranura=ranura)
+    elif p is not None and getattr(p, "ranura", None) == ranura:
+        nombre = tr('{nombre}, la de esta partida').format(nombre=nombre)
     if not d:
         return tr('{nombre}: vacía').format(nombre=(nombre))
     return tr('{nombre}: {get}. {get2}. Guardada el {get3}').format(nombre=(nombre), get=(d.get('resumen', '')), get2=(d.get('lugar', '')), get3=(d.get('fecha', '')))
@@ -80,8 +159,24 @@ def mas_reciente():
     return mejor[1] if mejor else None
 
 
+def cargar(app, ranura, anterior=False):
+    """Carga una ranura (o su copia anterior) y deja la partida unida a ella: sus guardados irán ahí."""
+    d = leer_ranura(ranura, anterior)
+    if not d:
+        app.son("error")
+        app.decir(tr("Esa ranura está vacía."), True)
+        return False
+    antes = app.partida
+    app.empezar_partida(d)
+    p = app.partida
+    if p is None or p is antes:                              # no se ha podido cargar (una partida de una versión más nueva)
+        return False
+    p.ranura = ranura if ranura in NUMERADAS else (d.get("ranura") if d.get("ranura") in NUMERADAS else None)
+    return True
+
+
 def autoguardar(p):
-    if escribir_ranura(p, "auto"):
+    if escribir_ranura(p, ranura_para(p, "auto")):
         p.decir(tr("Partida guardada automáticamente."))
 
 
@@ -92,7 +187,7 @@ def guardado_rapido(p):
     elif p.j.estrellas:
         p.app.son("error")
         p.decir(tr("No se puede guardar mientras te busca la policía."), True)
-    elif escribir_ranura(p, "rapido"):
+    elif escribir_ranura(p, ranura_para(p, "rapido")):
         p.app.son("guardado")
         p.decir(tr("Guardado rápido hecho."), True)
 
@@ -114,21 +209,27 @@ def menu_guardar(p):
                 app.son("error")
                 app.decir(tr("No se pudo guardar la partida."), True)
         return f
-    m = Menu(app, tr("Guardar partida. Elige una ranura"), lambda: [Opcion(texto_ranura(r), hacer(r), ayuda=tr("Guarda aquí la partida tal como está ahora. Si la ranura ya tenía una partida, la sustituye.")) for r in RANURAS[2:]])
+    ayuda = (tr("Guarda aquí la partida tal como está ahora. Desde entonces, su guardado automático y el rápido van también a esta ranura. Si tenía otra partida, la sustituye; "
+                "lo que había queda como copia anterior, y se recupera en Cargar partida.") if por_ranura(app) else
+             tr("Guarda aquí la partida tal como está ahora. Si la ranura ya tenía una partida, la sustituye."))
+    m = Menu(app, tr("Guardar partida. Elige una ranura"), lambda: [Opcion(texto_ranura(r, p), hacer(r), ayuda=ayuda) for r in NUMERADAS])
     app.abrir(m)
 
 
 def menu_cargar(app):
-    def hacer(r):
-        def f():
-            d = leer_ranura(r)
-            if not d:
-                app.son("error")
-                app.decir(tr("Esa ranura está vacía."), True)
-                return
-            app.empezar_partida(d)
-        return f
-    app.abrir(Menu(app, tr("Cargar partida"), lambda: [Opcion(texto_ranura(r), hacer(r), ayuda=tr("Carga la partida guardada en esta ranura y sigues desde ahí. Si estabas jugando, lo que no hayas guardado se pierde.")) for r in RANURAS]))
+    def hacer(r, anterior=False):
+        return lambda: cargar(app, r, anterior)
+
+    def ops():
+        lista = [Opcion(texto_ranura(r), hacer(r), ayuda=tr("Carga la partida guardada en esta ranura y sigues desde ahí. Si estabas jugando, lo que no hayas guardado se pierde."))
+                 for r in RANURAS if r in NUMERADAS or leer_ranura(r) is not None]        # los compartidos de antes, solo si los hay
+        for r in NUMERADAS:
+            if leer_ranura(r, anterior=True) is not None:
+                lista.append(Opcion(texto_ranura(r, anterior=True), hacer(r, True),
+                                    ayuda=tr("Lo que había en esta ranura antes de su último guardado. Si lo cargas, sigues desde ahí, en la misma ranura; al volver a guardar, "
+                                          "lo que hay ahora pasa a ser la copia anterior.")))
+        return lista
+    app.abrir(Menu(app, tr("Cargar partida"), ops))
 
 
 # Lo que pasa de una partida a la siguiente al empezar de nuevo conservando lo ganado.
@@ -175,11 +276,11 @@ def principal(app):
         lista = []
         r = mas_reciente()
         if r:
-            lista.append(Opcion(tr("Continuar"), lambda: app.empezar_partida(leer_ranura(r)), ayuda=tr("Carga la partida guardada más reciente.")))
+            lista.append(Opcion(tr("Continuar"), lambda: cargar(app, r), ayuda=tr("Carga la partida guardada más reciente.")))
         lista += [
             Opcion(tr("Nueva partida"), lambda: __import__("juego.menus_vida", fromlist=["x"]).elegir_personaje(app),
                    ayuda=tr("Eliges con qué personaje juegas y empiezas la historia desde el principio. Tus partidas guardadas no se tocan.")),
-            Opcion(tr("Cargar partida"), lambda: menu_cargar(app), ayuda=tr("Elige una de tus partidas guardadas: el guardado automático, el rápido o una de las cinco ranuras.")),
+            Opcion(tr("Cargar partida"), lambda: menu_cargar(app), ayuda=tr("Elige una de tus partidas guardadas: cada ranura es una partida, y debajo están las copias anteriores de cada una.")),
             Opcion(tr("Nueva partida conservando lo ganado"), lambda: partida_mas(app),
                    ayuda=tr("Empiezas la historia desde el principio, pero con el dinero, las armas, las habilidades, las casas, los vehículos y los barcos de una partida guardada. "
                          "Los enemigos de las misiones aguantan algo más cada vez. La partida guardada no se toca.")),
@@ -932,6 +1033,12 @@ def opciones(app):
                ayuda=tr("El juego anota lo que pasa en cada sesión para poder encontrar los fallos. Aquí ves dónde está, qué contiene y cómo enviarlo.")),
         Opcion(tr("Actualizaciones"), lambda: __import__("juego.menus_actualizar", fromlist=["x"]).opciones(app),
                ayuda=tr("Buscar una versión nueva del juego e instalarla, y elegir de dónde se actualiza: el servidor del juego, GitHub, los dos o una dirección tuya.")),
+        seccion(tr("Partidas guardadas"), [
+            si_no("guardado_por_ranura", tr("Cada partida en su ranura, con su guardado automático y el rápido"),
+                  tr("Con sí, que es como viene, cada partida es la de su ranura: el guardado automático, el rápido y el de un cierre inesperado van a la ranura de la partida que juegas, "
+                  "y nunca pisan la de otro personaje. Una partida nueva toma la primera ranura libre al guardarse. Antes de escribir encima, lo que había queda como copia anterior, "
+                  "y en Cargar partida puedes volver a ella. Con no, como antes de la versión 1.7.4: el guardado automático y el rápido van a dos archivos que comparten todas las partidas.")),
+        ], tr("Dónde se guarda cada partida.")),
         seccion(tr("Contenido para adultos"), [
             Opcion(lambda: tr('Contenido para mayores de 18 años: {v}').format(v=(tr('activado') if cfg['adultos'] else tr('desactivado'))), ajuste=adultos,
                    ayuda=tr("Añade relaciones sentimentales y sexuales, ligar con cualquiera, aventuras, compañía de pago, drogas y trapicheo, contado de forma sensual pero sin escenas explícitas. Todo tiene consecuencias en el ánimo, la salud, la reputación y las relaciones. Desactivado, nada de eso aparece en el juego.")),
@@ -985,7 +1092,7 @@ def pausa(p):
     ops = [
         Opcion(tr("Reanudar"), lambda: app.cerrar()),
         Opcion(tr("Objetivo actual"), lambda: app.decir(p.objetivo_txt(), True), ayuda=tr("Dice qué tienes que hacer ahora en la misión o el trabajo en curso, o qué misión te espera si no tienes ninguna.")),
-        Opcion(tr("Guardar partida"), lambda: menu_guardar(p), ayuda=tr("Elige una de las cinco ranuras para guardar la partida tal como está. Durante una misión no se puede.")),
+        Opcion(tr("Guardar partida"), lambda: menu_guardar(p), ayuda=tr("Elige una de las diez ranuras para guardar la partida tal como está. Durante una misión no se puede.")),
         Opcion(tr("Cargar partida"), lambda: menu_cargar(app), ayuda=tr("Elige una de tus partidas guardadas y sigues desde ahí. Lo que no hayas guardado de esta partida se pierde.")),
         Opcion(tr("Opciones"), lambda: opciones(app), ayuda=tr("Sonido, voz, movimiento, orientación, dificultad, teclas, mando y el resto de ajustes, por secciones. Los cambios se guardan al salir.")),
         Opcion(tr("Ayuda de teclas"), lambda: ayuda_teclas(app, "todo"), ayuda=tr("Todas las teclas del juego, a pie, al volante y en cualquier momento, y los botones del mando. Si has cambiado alguna tecla, dice la tuya.")),
@@ -1656,7 +1763,7 @@ def _casa(p, l):
     def ops():
         lista = []
         if not p.mision:
-            lista.append(Opcion(tr("Guardar la partida"), lambda: menu_guardar(p), ayuda=tr("Elige una de las cinco ranuras para guardar la partida tal como está.")))
+            lista.append(Opcion(tr("Guardar la partida"), lambda: menu_guardar(p), ayuda=tr("Elige una de las diez ranuras para guardar la partida tal como está.")))
         if j.veh:
             lista.append(Opcion(tr('Meter {nombre} en el garaje').format(nombre=(j.veh.nombre)), guardar_veh,
                                 ayuda=tr("Guardas el vehículo en el que has venido y te quedas a pie en la puerta. No caben las aeronaves ni los vehículos que no puedes quedarte, y nada si el garaje está lleno.")))

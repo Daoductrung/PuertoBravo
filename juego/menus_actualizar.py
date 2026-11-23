@@ -302,7 +302,7 @@ def _instalar(app, bat, confirmado=False):
         if p is not None and not p.mision:
             try:
                 from . import menus_juego
-                menus_juego.escribir_ranura(p, "auto")
+                menus_juego.guardar_por_si_acaso(p)      # a la ranura de la partida, con su copia anterior
             except Exception:
                 pass
         amigos = False

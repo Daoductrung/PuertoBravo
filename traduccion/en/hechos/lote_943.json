@@ -1,0 +1,15 @@
+{
+  "Cada partida en su ranura, con su guardado automático y el rápido": "Each game in its own slot, with its automatic and quick saves",
+  "Con sí, que es como viene, cada partida es la de su ranura: el guardado automático, el rápido y el de un cierre inesperado van a la ranura de la partida que juegas, y nunca pisan la de otro personaje. Una partida nueva toma la primera ranura libre al guardarse. Antes de escribir encima, lo que había queda como copia anterior, y en Cargar partida puedes volver a ella. Con no, como antes de la versión 1.7.4: el guardado automático y el rápido van a dos archivos que comparten todas las partidas.": "With yes, the default, each game is the one in its slot: the automatic save, the quick save and the one made after an unexpected crash go to the slot of the game you are playing, and never overwrite another character's. A new game takes the first free slot when it is saved. Before writing over it, what was there is kept as the previous copy, and in Load game you can go back to it. With no, as before version 1.7.4: the automatic and quick saves go to two files shared by every game.",
+  "Copia anterior de la ranura {ranura}": "Previous copy of slot {ranura}",
+  "Dónde se guarda cada partida.": "Where each game is saved.",
+  "Elige una de las diez ranuras para guardar la partida tal como está.": "Choose one of the ten slots to save the game as it is.",
+  "Elige una de las diez ranuras para guardar la partida tal como está. Durante una misión no se puede.": "Choose one of the ten slots to save the game as it is. You cannot do it during a mission.",
+  "Elige una de tus partidas guardadas: cada ranura es una partida, y debajo están las copias anteriores de cada una.": "Choose one of your saved games: each slot is a game, and below them are the previous copies of each one.",
+  "Esta partida se guarda desde ahora en la ranura {r}.": "From now on this game is saved in slot {r}.",
+  "Guarda aquí la partida tal como está ahora. Desde entonces, su guardado automático y el rápido van también a esta ranura. Si tenía otra partida, la sustituye; lo que había queda como copia anterior, y se recupera en Cargar partida.": "Saves the game here as it is now. From then on, its automatic and quick saves also go to this slot. If it held another game, this replaces it; what was there is kept as the previous copy, and you get it back in Load game.",
+  "Lo que había en esta ranura antes de su último guardado. Si lo cargas, sigues desde ahí, en la misma ranura; al volver a guardar, lo que hay ahora pasa a ser la copia anterior.": "What this slot held before its last save. If you load it, you carry on from there, in the same slot; when you save again, what is there now becomes the previous copy.",
+  "No queda ninguna ranura libre: el guardado automático y el rápido de esta partida van a sus archivos de siempre hasta que la guardes en una ranura.": "There is no free slot left: this game's automatic and quick saves go to their usual files until you save it in a slot.",
+  "Partidas guardadas": "Saved games",
+  "{nombre}, la de esta partida": "{nombre}, this game's slot"
+}

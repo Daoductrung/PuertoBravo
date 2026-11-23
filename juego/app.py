@@ -400,7 +400,7 @@ class App:
         registro.excepcion("juego", "El juego se ha cerrado por un error inesperado")
         if self.partida and not self.partida.mision:
             try:
-                menus_juego.escribir_ranura(self.partida, "auto")
+                menus_juego.guardar_por_si_acaso(self.partida)      # a la ranura de la partida, con su copia anterior
             except Exception:
                 pass
         sesion = os.path.basename(registro.carpeta_sesion() or "")

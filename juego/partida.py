@@ -526,6 +526,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.fallos = {str(k): int(v) for k, v in dict(d.get("fallos", {})).items()}
         self.decisiones = dict(d.get("decisiones", {}))
         self.saltadas = list(d.get("saltadas", []))
+        self.id_partida = d.get("id_partida") or None        # quién es esta partida: así su guardado no pisa el de otra
         fecha = d.get("momento")
         # si hace días que no juegas, al volver se te recuerda por dónde ibas
         self.resumen_pendiente = isinstance(fecha, (int, float)) and time.time() - fecha > 2 * 86400

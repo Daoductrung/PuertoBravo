@@ -46,6 +46,7 @@ POR_DEFECTO = {
     "voz_tono": 0,                 # de -10 a 10
     "voz_volumen": 100,            # de 0 a 100
     "detalle_voz": "normal",       # cuánto explica el juego al hablar: mucho, normal o poco
+    "guardado_por_ranura": True,   # desde la 1.7.4: cada partida en su ranura, con su guardado automático y el rápido dentro
     "historial_menus": False,      # lo que se lee al moverse por los menús también va al historial (antes de la 1.7.3, siempre)
     "historial_al_final": True,    # cada mensaje nuevo lleva el historial (Re Pág y Av Pág) al final; con no, se queda donde lo dejaste
     "vol_senales": 1.0,            # volumen propio de balizas, radar, tonos de puntería y sonidos de los lugares

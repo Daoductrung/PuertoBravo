@@ -1,0 +1,15 @@
+{
+  "Cada partida en su ranura, con su guardado automático y el rápido": "Mỗi ván chơi một ô lưu riêng, kèm bản lưu tự động và lưu nhanh",
+  "Con sí, que es como viene, cada partida es la de su ranura: el guardado automático, el rápido y el de un cierre inesperado van a la ranura de la partida que juegas, y nunca pisan la de otro personaje. Una partida nueva toma la primera ranura libre al guardarse. Antes de escribir encima, lo que había queda como copia anterior, y en Cargar partida puedes volver a ella. Con no, como antes de la versión 1.7.4: el guardado automático y el rápido van a dos archivos que comparten todas las partidas.": "Chọn có, mặc định, mỗi ván chơi thuộc về ô lưu của nó: bản lưu tự động, lưu nhanh và bản lưu khi trò chơi đóng bất ngờ đều vào ô lưu của ván bạn đang chơi, và không bao giờ ghi đè lên ván của nhân vật khác. Ván mới chiếm ô trống đầu tiên khi được lưu. Trước khi ghi đè, nội dung cũ được giữ làm bản sao trước đó, và trong Tải ván chơi bạn có thể quay lại nó. Chọn không, như trước phiên bản 1.7.4: bản lưu tự động và lưu nhanh vào hai tệp dùng chung cho mọi ván chơi.",
+  "Copia anterior de la ranura {ranura}": "Bản sao trước đó của ô {ranura}",
+  "Dónde se guarda cada partida.": "Nơi lưu từng ván chơi.",
+  "Elige una de las diez ranuras para guardar la partida tal como está.": "Chọn một trong mười ô để lưu ván chơi như hiện tại.",
+  "Elige una de las diez ranuras para guardar la partida tal como está. Durante una misión no se puede.": "Chọn một trong mười ô để lưu ván chơi như hiện tại. Không thể lưu trong khi làm nhiệm vụ.",
+  "Elige una de tus partidas guardadas: cada ranura es una partida, y debajo están las copias anteriores de cada una.": "Chọn một ván đã lưu: mỗi ô là một ván chơi, và bên dưới là bản sao trước đó của từng ô.",
+  "Esta partida se guarda desde ahora en la ranura {r}.": "Từ giờ ván chơi này được lưu vào ô {r}.",
+  "Guarda aquí la partida tal como está ahora. Desde entonces, su guardado automático y el rápido van también a esta ranura. Si tenía otra partida, la sustituye; lo que había queda como copia anterior, y se recupera en Cargar partida.": "Lưu ván chơi vào đây như hiện tại. Từ đó, bản lưu tự động và lưu nhanh của nó cũng vào ô này. Nếu ô đã có ván khác thì sẽ bị thay thế; nội dung cũ được giữ làm bản sao trước đó và lấy lại được trong Tải ván chơi.",
+  "Lo que había en esta ranura antes de su último guardado. Si lo cargas, sigues desde ahí, en la misma ranura; al volver a guardar, lo que hay ahora pasa a ser la copia anterior.": "Nội dung của ô này trước lần lưu gần nhất. Nếu tải nó, bạn tiếp tục từ đó, trong cùng ô; khi lưu lại, nội dung hiện tại sẽ thành bản sao trước đó.",
+  "No queda ninguna ranura libre: el guardado automático y el rápido de esta partida van a sus archivos de siempre hasta que la guardes en una ranura.": "Không còn ô trống nào: bản lưu tự động và lưu nhanh của ván này vào các tệp như trước cho đến khi bạn lưu nó vào một ô.",
+  "Partidas guardadas": "Ván chơi đã lưu",
+  "{nombre}, la de esta partida": "{nombre}, ô của ván này"
+}

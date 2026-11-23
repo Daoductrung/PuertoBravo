@@ -1,0 +1,15 @@
+{
+  "Cada partida en su ranura, con su guardado automático y el rápido": "Cada jogo no seu slot, com o salvamento automático e o rápido",
+  "Con sí, que es como viene, cada partida es la de su ranura: el guardado automático, el rápido y el de un cierre inesperado van a la ranura de la partida que juegas, y nunca pisan la de otro personaje. Una partida nueva toma la primera ranura libre al guardarse. Antes de escribir encima, lo que había queda como copia anterior, y en Cargar partida puedes volver a ella. Con no, como antes de la versión 1.7.4: el guardado automático y el rápido van a dos archivos que comparten todas las partidas.": "Com sim, que é o padrão, cada jogo é o do seu slot: o salvamento automático, o rápido e o de um fechamento inesperado vão para o slot do jogo que você está jogando, e nunca sobrescrevem o de outro personagem. Um jogo novo ocupa o primeiro slot livre ao ser salvo. Antes de gravar por cima, o que havia fica como cópia anterior, e em Carregar jogo você pode voltar a ela. Com não, como antes da versão 1.7.4: o salvamento automático e o rápido vão para dois arquivos compartilhados por todos os jogos.",
+  "Copia anterior de la ranura {ranura}": "Cópia anterior do slot {ranura}",
+  "Dónde se guarda cada partida.": "Onde cada jogo é salvo.",
+  "Elige una de las diez ranuras para guardar la partida tal como está.": "Escolha um dos dez slots para salvar o jogo como está.",
+  "Elige una de las diez ranuras para guardar la partida tal como está. Durante una misión no se puede.": "Escolha um dos dez slots para salvar o jogo como está. Não é possível durante uma missão.",
+  "Elige una de tus partidas guardadas: cada ranura es una partida, y debajo están las copias anteriores de cada una.": "Escolha um dos seus jogos salvos: cada slot é um jogo, e abaixo estão as cópias anteriores de cada um.",
+  "Esta partida se guarda desde ahora en la ranura {r}.": "A partir de agora este jogo é salvo no slot {r}.",
+  "Guarda aquí la partida tal como está ahora. Desde entonces, su guardado automático y el rápido van también a esta ranura. Si tenía otra partida, la sustituye; lo que había queda como copia anterior, y se recupera en Cargar partida.": "Salva aqui o jogo como está agora. A partir daí, o salvamento automático e o rápido dele também vão para este slot. Se havia outro jogo, ele é substituído; o que havia fica como cópia anterior, e você o recupera em Carregar jogo.",
+  "Lo que había en esta ranura antes de su último guardado. Si lo cargas, sigues desde ahí, en la misma ranura; al volver a guardar, lo que hay ahora pasa a ser la copia anterior.": "O que havia neste slot antes do último salvamento. Se você carregar, continua dali, no mesmo slot; ao salvar de novo, o que há agora passa a ser a cópia anterior.",
+  "No queda ninguna ranura libre: el guardado automático y el rápido de esta partida van a sus archivos de siempre hasta que la guardes en una ranura.": "Não sobrou nenhum slot livre: o salvamento automático e o rápido deste jogo vão para os arquivos de sempre até você salvá-lo num slot.",
+  "Partidas guardadas": "Jogos salvos",
+  "{nombre}, la de esta partida": "{nombre}, o deste jogo"
+}
