@@ -4275,8 +4275,8 @@
   ]
  },
  "idioma-pt": {
-  "version": 1,
-  "huella": "196001757b8f26d76c38cfb89c9d4a20b423566c6ebc8c4fb69d6847659c7e00",
+  "version": 2,
+  "huella": "f6c2a1610f60c3884ef62801a98ee62fedaa76e176b7ebf0264bba3e6dcb2baf",
   "archivos": [
    "data/idiomas/pt/idioma.json",
    "data/idiomas/pt/palabras.json",
