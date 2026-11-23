@@ -1348,6 +1348,9 @@
 "%s acaba de llegar y está protegido unos segundos.": [
 "servidor/nucleo.py"
 ],
+"%s cambió de dueño hace menos de %d días: aún no se le puede quitar.": [
+"servidor/nucleo.py"
+],
 "%s compra %s, en %s.": [
 "servidor/nucleo.py"
 ],
@@ -1423,6 +1426,9 @@
 "%s se llama ahora %s.": [
 "servidor/nucleo.py"
 ],
+"%s se queda a la fuerza con %s, en %s.": [
+"servidor/nucleo.py"
+],
 "%s se une al grupo.": [
 "servidor/nucleo.py"
 ],
@@ -1436,9 +1442,13 @@
 "servidor/nucleo.py"
 ],
 "%s vuelve a estar en venta, en %s.": [
+"servidor/nucleo.py",
 "servidor/nucleo.py"
 ],
 "%s vuelve al mercado, pero no te da dinero: a este servidor no le consta que la pagaras aquí.": [
+"servidor/nucleo.py"
+],
+"%s vuelve al mercado: pasabas del tope de negocios de este servidor.": [
 "servidor/nucleo.py"
 ],
 "%s y %d más": [
@@ -1466,6 +1476,12 @@
 "servidor/nucleo.py"
 ],
 "%s, por %s": [
+"servidor/nucleo.py"
+],
+"%s, que se ha quedado a la fuerza con %s": [
+"servidor/nucleo.py"
+],
+"%s, que vuelve al mercado por el tope de negocios": [
 "servidor/nucleo.py"
 ],
 "%s, vetado: no podrá volver a entrar.": [
@@ -5239,6 +5255,9 @@
 "Aulario de la Universidad": [
 "data/datos/mapas/san_lucero.json"
 ],
+"Aunque {dueno} no lo venda, el servidor te deja quedártelo pagándole más de lo que vale. No vale con los negocios de tu banda ni de una banda aliada, ni con uno que ha cambiado de dueño hace muy poco: {dias} días.": [
+"juego/menus_juego.py"
+],
 "Aurelio": [
 "data/mods/valdeolmos.json",
 "data/mods/valdeolmos.json",
@@ -7627,6 +7646,7 @@
 ],
 "Cancelado.": [
 "juego/menus.py",
+"juego/menus_actualizar.py",
 "juego/teclado.py"
 ],
 "Cancelando.": [
@@ -8069,6 +8089,12 @@
 ],
 "Catedral, Bingo y Lonja. En ese orden. El tiempo corre.": [
 "data/datos/misiones_extra2.json"
+],
+"Categorías de componentes que te interesan": [
+"juego/menus_componentes.py"
+],
+"Categorías que te interesan: ": [
+"juego/menus_componentes.py"
 ],
 "Catálogos y un bolígrafo listo. Aquí se compra.": [
 "juego/sistemas.py"
@@ -9294,6 +9320,9 @@
 "Comprar 100 acciones": [
 "juego/menus_extra.py"
 ],
+"Comprar a la fuerza un negocio ajeno, en tanto por ciento de su precio": [
+"servidor/opciones.py"
+],
 "Comprar boletos para el sorteo de las nueve de la noche, comprobarlos y cobrar los premios pequeños.": [
 "juego/loteria.py"
 ],
@@ -9844,6 +9873,9 @@
 "Con nivel {n}: {multa} euros de multa, {horas} horas de calabozo y te quedas sin tus armas de fuego": [
 "juego/calle.py"
 ],
+"Con no, el historial guarda lo que pasa y no se repite: diálogos, conversaciones, compras, pagos y avisos. Lo que se lee al abrir un menú o al moverte por sus opciones no entra, porque se vuelve a oír volviendo a él. Con sí, entra todo, como antes.": [
+"juego/menus_juego.py"
+],
 "Con no, los de la banda no os podéis herir entre vosotros.": [
 "juego/menus_enlinea.py"
 ],
@@ -9870,6 +9902,9 @@
 ],
 "Con poco, se quitan las frases que solo recuerdan qué tecla pulsar. Con mucho, en los menús se lee además la explicación de cada opción, sin tener que pulsar F1. Normal es lo de siempre.": [
 "juego/menus_juego.py"
+],
+"Con precio, se vende en todos los concesionarios que no limitan sus modelos, o en las náuticas si es una embarcación; para que solo lo venda uno, márcalo en los Modelos a la venta de ese concesionario. Sin precio no se puede comprar en ningún sitio.": [
+"editor/esquema.py"
 ],
 "Con precios altos, lo que baja el nombre cada día": [
 "editor/esquema_honrado.py"
@@ -10828,6 +10863,9 @@
 "Cuadrado": [
 "juego/mando.py"
 ],
+"Cualquier jugador puede quedarse con el negocio de otro pagándole este tanto por ciento de su precio, aunque no lo venda. Lo cobra su dueño. No vale con los negocios de tu banda ni de una banda aliada. Con 0 no se puede.": [
+"servidor/opciones.py"
+],
 "Cualquier tecla": [
 "juego/reconexion.py"
 ],
@@ -11310,6 +11348,9 @@
 ],
 "Cuántos la guardan": [
 "editor/esquema.py"
+],
+"Cuántos negocios puede tener a la vez un mismo jugador, para que nadie se quede con todos. Con 0 no hay tope. Si alguien tiene más de los que permite el tope, a medianoche vuelven al mercado los últimos que compró, y se le devuelve lo que pagó por ellos.": [
+"servidor/opciones.py"
 ],
 "Cuántos niveles tiene": [
 "editor/esquema.py"
@@ -12301,6 +12342,9 @@
 "juego/enlinea.py",
 "juego/partida.py"
 ],
+"Deja de salir en Vida social. No se pierde lo que habéis vivido: al final de la lista, en Personas que has quitado, la puedes recuperar.": [
+"juego/menus_adultos.py"
+],
 "Deja de vender o de cocinar. Sigue en tu banda y viene contigo cuando llamas a los tuyos.": [
 "juego/golpes.py"
 ],
@@ -12630,7 +12674,10 @@
 "juego/menus_actualizar.py",
 "juego/menus_actualizar.py"
 ],
-"Descarga e instala, uno tras otro, todos los componentes de esta lista.": [
+"Descarga e instala, uno tras otro, todos los componentes de las categorías que te interesan.": [
+"juego/menus_componentes.py"
+],
+"Descarga e instala, uno tras otro, todos los de esta categoría, y nada más.": [
 "juego/menus_componentes.py"
 ],
 "Descarga la versión nueva, comprueba que es auténtica, cierra el juego, lo actualiza y lo vuelve a abrir. Tus partidas, tus opciones, tu música y tus mods no se tocan.": [
@@ -12963,6 +13010,9 @@
 ],
 "Destino, {situar}.": [
 "juego/partida.py"
+],
+"Destino: {nombre}. Allí, en el menú de la oficina, eliges la jornada y cuenta como turno.": [
+"juego/menus_honrado.py"
 ],
 "Destruye casi cualquier vehículo de un disparo, desde muy lejos.": [
 "data/datos/armas.json"
@@ -13739,6 +13789,9 @@
 "Durante ese tiempo, al entrar en el servidor y después de que te tumben, nadie puede herirte.": [
 "juego/menus_enlinea.py"
 ],
+"Durante estos días de verdad después de comprarlo, nadie puede quedarse a la fuerza con ese negocio.": [
+"servidor/opciones.py"
+],
 "Durante una misión no te la juegas con esto.": [
 "juego/menus_lugares.py"
 ],
@@ -13846,6 +13899,9 @@
 ],
 "Días de más, al azar, hasta": [
 "editor/esquema.py"
+],
+"Días de protección de un negocio recién comprado": [
+"servidor/opciones.py"
 ],
 "Días de verdad sin entrar tras los que las propiedades de un jugador vuelven al mercado. Se le guarda su parte.": [
 "servidor/opciones.py"
@@ -15520,6 +15576,9 @@
 ],
 "El juego lo hace solo cada semana, y cuando un modelo deja de existir. Úsalo si quieres forzarlo.": [
 "juego/menus_charla.py"
+],
+"El juego lo usa con la opción Me atraen: a quien no te atrae no se le pueden pedir citas románticas. Sin valor, sale para cualquiera.": [
+"editor/esquema.py"
 ],
 "El juego monta la misión según esto. Al cambiarlo aparecen sus campos.": [
 "editor/esquema.py"
@@ -17251,8 +17310,14 @@
 "En esta localidad no hay casas ni negocios que se puedan comprar": [
 "juego/menus_enlinea.py"
 ],
+"En esta localidad no hay ningún sitio fijo donde encontrar {v}.": [
+"juego/menus_honrado.py"
+],
 "En esta localidad no hay ningún sitio fijo donde encontrar {v}. Tendrás que comprarlo, o tomarlo prestado.": [
 "juego/menus_vida.py"
+],
+"En esta localidad no hay oficina de empleo. Las jornadas se hacen en la de otra localidad.": [
+"juego/menus_honrado.py"
 ],
 "En esta localidad no hay sitios suficientes para un reparto.": [
 "juego/online.py"
@@ -17278,6 +17343,15 @@
 "En este servidor los canales de rol están apagados: usa el chat de siempre.": [
 "servidor/nucleo.py"
 ],
+"En este servidor nadie puede tener más de %d negocios, y tú ya los tienes. Vende uno antes de comprar otro.": [
+"servidor/nucleo.py"
+],
+"En este servidor nadie puede tener más de {n} negocios, y tú ya los tienes. Vende uno antes de comprar otro.": [
+"juego/enlinea.py"
+],
+"En este servidor nadie puede tener más de {n} negocios. {nombre} no es tuyo: te devuelven lo que pagaste.": [
+"juego/enlinea.py"
+],
 "En este servidor no hay combate entre jugadores.": [
 "servidor/nucleo.py"
 ],
@@ -17289,6 +17363,9 @@
 ],
 "En este servidor no hay tope de ganancias: el dinero lo lleva tu juego": [
 "juego/enlinea.py"
+],
+"En este servidor no se puede comprar un negocio a la fuerza.": [
+"servidor/nucleo.py"
 ],
 "En este servidor no se roba a otros jugadores.": [
 "servidor/nucleo.py"
@@ -17508,6 +17585,9 @@
 ],
 "En las casas de empeños": [
 "editor/esquema.py"
+],
+"En las categorías que no te interesan hay {n} más": [
+"juego/menus_componentes.py"
 ],
 "En las fiestas bailo hasta que me echan.": [
 "juego/respuestas_datos1.py"
@@ -18494,6 +18574,9 @@
 "Es un empleo de confianza y piden el certificado de antecedentes penales. Con los que tienes en vigor, no te contratan.": [
 "juego/honrado.py"
 ],
+"Es un hombre o una mujer": [
+"editor/esquema.py"
+],
 "Es un paso de la explicación: Intro lo vuelve a leer. La opción que abre la carpeta está después del último paso.": [
 "juego/menus_juego.py"
 ],
@@ -18872,6 +18955,7 @@
 "juego/menus_extra.py"
 ],
 "Ese negocio es de alguien de tu banda o de una banda aliada.": [
+"servidor/nucleo.py",
 "servidor/nucleo.py"
 ],
 "Ese no es tan fiero como lo pintan.": [
@@ -19300,6 +19384,7 @@
 "juego/menus_juego.py"
 ],
 "Este negocio no es de otro jugador.": [
+"servidor/nucleo.py",
 "servidor/nucleo.py"
 ],
 "Este negocio ya no puede crecer más.": [
@@ -21714,6 +21799,9 @@
 "Guardar el registro en un archivo": [
 "servidor/opciones.py"
 ],
+"Guardar en el historial lo que se lee al moverse por los menús": [
+"juego/menus_juego.py"
+],
 "Guardar en un arc&hivo...": [
 "panel_servidor/ventana.py"
 ],
@@ -22686,6 +22774,7 @@
 "juego/misiones.py"
 ],
 "Hay {v} aparcado junto a {nombre}. Sube con F y pulsa J para empezar a trabajar.": [
+"juego/menus_honrado.py",
 "juego/menus_vida.py"
 ],
 "Haz como yo: no dejes que te vean mal.": [
@@ -22953,6 +23042,9 @@
 "juego/ia.py",
 "juego/vozgen.py",
 "data/datos/gente.json"
+],
+"Hombre": [
+"editor/esquema.py"
 ],
 "Hombre de ": [
 "juego/contratos.py",
@@ -23661,7 +23753,10 @@
 "Instalar la versión descargada, la {v}": [
 "juego/menus_actualizar.py"
 ],
-"Instalar todo: {n} componentes, {tamano}": [
+"Instalar todo en {tipo}: {n} componentes, {tamano}": [
+"juego/menus_componentes.py"
+],
+"Instalar todo lo que te interesa: {n} componentes, {tamano}": [
 "juego/menus_componentes.py"
 ],
 "Instrumentos de una orquesta": [
@@ -23729,6 +23824,9 @@
 "Intro abre el barrio: guardia fija, refuerzos, invertir y marcarlo en el GPS. La lealtad y la defensa van de 0 a 100. La amenaza se puede consultar siempre; con informantes, o con el barrio de tu parte, sabrás además quién viene y cuándo.": [
 "juego/reconquista.py"
 ],
+"Intro abre la lista para volver a poner a alguien en Vida social.": [
+"juego/menus_adultos.py"
+],
 "Intro abre lo que puedes hacer con esta banda: darle un golpe a su escondite o pactar una tregua. Su fuerza crece cada día; cuando es bastante, prepara un asalto. Con informantes de nivel 2 ves la cifra exacta.": [
 "juego/reconquista.py"
 ],
@@ -23737,6 +23835,9 @@
 ],
 "Intro abre lo que puedes hacer con él: marcarlo en el GPS, que te lo traigan, mandarlo a un garaje o cambiarle el nombre.": [
 "juego/misvehiculos.py"
+],
+"Intro abre los componentes de esta categoría: puedes instalar solo esos, todos o uno a uno.": [
+"juego/menus_componentes.py"
 ],
 "Intro abre tu trabajo: el contrato que tienes, tu jefe, el siguiente puesto y la dimisión.": [
 "juego/menus_honrado.py"
@@ -23758,6 +23859,12 @@
 ],
 "Intro cambia entre las tres formas: que te lo traigan en mano cada medianoche, que te lo ingresen en el banco, o venir tú a recogerlo, con un diez por ciento más.": [
 "juego/menus_juego.py"
+],
+"Intro cambia entre sí y no": [
+"juego/menus_componentes.py"
+],
+"Intro cambia entre sí y no. Con no, esta clase de componentes no sale en la lista ni te avisa al arrancar.": [
+"juego/menus_componentes.py"
 ],
 "Intro cambia. Aterrizar en el campo te deja en tierra, en el helipuerto o en la pista. Entrar volando bajo te deja en el aire sobre la localidad, para posarte donde quieras: es lo que conviene si llevas un aparato que no debe ver nadie.": [
 "juego/vuelo_pantalla.py"
@@ -23782,6 +23889,9 @@
 ],
 "Intro la copia al portapapeles.": [
 "juego/menus_online.py"
+],
+"Intro la vuelve a poner en Vida social.": [
+"juego/menus_adultos.py"
 ],
 "Intro lo contrata o lo da de baja. Cubre a todos tus vehículos de tierra desde el día siguiente a contratarlo, no a las aeronaves. Cada medianoche cobra {seguro_cuota} euros por cada vehículo tuyo en la calle, del bolsillo o del banco; los del garaje no pagan. Si uno explota, al día siguiente te lo devuelven reparado y con sus mejoras, en un garaje tuyo con sitio o a la puerta de un taller, pagando una franquicia: el {seguro_franquicia_pct} por ciento de lo que cuesta el modelo, y como poco {seguro_franquicia_min} euros.": [
 "juego/misvehiculos.py"
@@ -23961,6 +24071,12 @@
 ],
 "Ir a bailar": [
 "data/datos/adultos.json"
+],
+"Ir a hacer un turno de {nombre}": [
+"juego/menus_honrado.py"
+],
+"Ir a hacer un turno: {nombres}, en la oficina de empleo": [
+"juego/menus_honrado.py"
 ],
 "Ir a la caja a pagar": [
 "juego/compra.py"
@@ -24448,6 +24564,9 @@
 ],
 "La ambulancia no entra mientras haya tiros. Aléjate de los enemigos.": [
 "juego/menus_extra.py"
+],
+"La ambulancia no puede acercarse más: los sanitarios bajan y van a pie hasta los heridos. {situar}.": [
+"juego/calle.py"
 ],
 "La ambulancia tarda en salir, como poco, estos segundos": [
 "editor/esquema.py"
@@ -29084,8 +29203,17 @@
 "Marca el barrio en el GPS. La defensa empieza al entrar en él: vienen por oleadas, cada una más dura, y tu banda acude a tu lado. Mientras peleas, el plazo no corre. Si sales del barrio o caes, el asalto sigue y puedes volver a intentarlo o enviar a tu gente.": [
 "juego/reconquista.py"
 ],
+"Marca en el GPS dónde hay aparcado un vehículo de ese oficio. Tres servicios hacen un turno.": [
+"juego/menus_honrado.py"
+],
+"Marca en el GPS la oficina de empleo más cercana. Allí eliges la jornada, y cuenta como turno de tu contrato.": [
+"juego/menus_honrado.py"
+],
 "Marca los mods que quieres que cargue el juego. Los desmarcados se conservan, pero el juego no los lee.": [
 "editor/ventana.py"
+],
+"Marca qué clase de componentes quieres ver: si no quieres mods, quítalos; si solo quieres idiomas, deja solo los idiomas. Lo que no te interesa no sale aquí ni te avisa al arrancar el juego.": [
+"juego/menus_componentes.py"
 ],
 "Marca todos los elementos de la lista.": [
 "editor/accesibilidad/ayuda.py"
@@ -30789,6 +30917,9 @@
 "Mueve el elemento un puesto hacia arriba.": [
 "editor/formulario.py"
 ],
+"Mujer": [
+"editor/esquema.py"
+],
 "Mulo Pickup": [
 "data/datos/vehiculos.json"
 ],
@@ -31402,6 +31533,9 @@
 ],
 "Negocio que da ingresos": [
 "editor/esquema.py"
+],
+"Negocios por jugador": [
+"servidor/opciones.py"
 ],
 "Negocios propios": [
 "editor/esquema_honrado.py"
@@ -32484,6 +32618,9 @@
 ],
 "No se muda nunca": [
 "editor/esquema.py"
+],
+"No se muestran ni te avisan al arrancar. Cámbialo en Categorías que te interesan, aquí debajo.": [
+"juego/menus_componentes.py"
 ],
 "No se para el servidor": [
 "juego/menus_actualizar.py"
@@ -34309,6 +34446,7 @@
 "data/datos/misiones.json"
 ],
 "Para la mensajería del mar, zarpa en cualquier barco desde un embarcadero y pulsa J.": [
+"juego/menus_honrado.py",
 "juego/menus_vida.py"
 ],
 "Para la verbena tiran la casa por la ventana.": [
@@ -35367,6 +35505,12 @@
 "juego/menus_charla.py",
 "juego/menus_juego.py"
 ],
+"Personas que has quitado de tu móvil": [
+"juego/menus_adultos.py"
+],
+"Personas que has quitado de tu móvil: {n}": [
+"juego/menus_adultos.py"
+],
 "Personas, contenido para adultos": [
 "editor/esquema.py"
 ],
@@ -35972,6 +36116,9 @@
 ],
 "Por carretera no. En el helipuerto está el helicóptero de la compañía. ¿Has pilotado alguna vez?": [
 "data/datos/misiones_extra2.json"
+],
+"Por categorías. Intro abre una y ves solo sus componentes. F1 dice qué hace cada opción": [
+"juego/menus_componentes.py"
 ],
 "Por cierto: el fondo que compró la cooperativa de Villaseca también es cliente nuestro. Allí ya te conocen. Todo queda en casa.": [
 "data/datos/misiones_extra2.json"
@@ -37228,6 +37375,9 @@
 "Quedarte con todo": [
 "data/datos/misiones_extra2.json"
 ],
+"Quedarte con él a la fuerza: le pagas {n} euros": [
+"juego/menus_juego.py"
+],
 "Quedarte con él y buscar al abuelo por las calles de alrededor": [
 "data/datos/vida.json"
 ],
@@ -37343,6 +37493,9 @@
 ],
 "Quitado de tu lista. Tu personaje sigue guardado en ese servidor.": [
 "juego/menus_enlinea.py"
+],
+"Quitar a {nombre} de tu móvil": [
+"juego/menus_adultos.py"
 ],
 "Quitar de en medio": [
 "juego/contratos.py",
@@ -48054,6 +48207,9 @@
 "Vehículos y conducción": [
 "juego/catalogo_sonidos.py"
 ],
+"Vehículos, «{ident}»: no tiene precio, así que no se vende en ningún concesionario ni náutica y el jugador no podrá comprarlo. Ponle un precio para que salga en todos los que no limitan sus modelos.": [
+"editor/modelo.py"
+],
 "Veinte años hace que no piso esa taberna. Fuimos socias, la Fundi y yo. Ella se quedó la chatarra y yo las cisternas, y nos dijimos de todo.": [
 "data/mods/bahia_del_ocaso.json"
 ],
@@ -48669,6 +48825,7 @@
 "juego/menus_adultos.py",
 "juego/menus_adultos.py",
 "juego/menus_adultos.py",
+"juego/menus_adultos.py",
 "juego/menus_capo.py",
 "juego/menus_capo.py",
 "juego/menus_capo.py",
@@ -48676,6 +48833,8 @@
 "juego/menus_charla.py",
 "juego/menus_charla.py",
 "juego/menus_charla.py",
+"juego/menus_componentes.py",
+"juego/menus_componentes.py",
 "juego/menus_componentes.py",
 "juego/menus_extra.py",
 "juego/menus_extra.py",
@@ -53074,6 +53233,9 @@
 "juego/gente.py",
 "data/datos/gente.json"
 ],
+"ninguna": [
+"juego/menus_componentes.py"
+],
 "ninguna, de momento": [
 "juego/reconquista.py"
 ],
@@ -53579,6 +53741,9 @@
 "quedar otro día": [
 "juego/charla.py"
 ],
+"quedarte con %s": [
+"servidor/nucleo.py"
+],
 "quien entra": [
 "servidor/nucleo.py"
 ],
@@ -53963,6 +54128,7 @@
 "editor/modelo.py",
 "editor/modelo.py",
 "editor/modelo.py",
+"editor/modelo.py",
 "editor/modelo.py"
 ],
 "sin papel, viene contigo": [
@@ -54277,6 +54443,9 @@
 ],
 "tienes una ciudad entera: las bandas quieren recuperarla": [
 "juego/reconquista.py"
+],
+"todas": [
+"juego/menus_componentes.py"
 ],
 "todas las ciudades": [
 "juego/reconquista.py"
@@ -55664,6 +55833,9 @@
 "{get} patrullas de ronda; reacciones de la gente, botín, ambulancias, rendición y helicóptero": [
 "editor/esquema.py"
 ],
+"{get} se ha quedado a la fuerza con {nombre} y te ha pagado {n} euros.": [
+"juego/enlinea.py"
+],
 "{get} se ha unido a la partida.": [
 "juego/online.py"
 ],
@@ -56156,6 +56328,9 @@
 "{nombre} ha olfateado algo: {situar}. Te marca el camino.": [
 "juego/extras3.py"
 ],
+"{nombre} ha vuelto al mercado, porque pasabas del tope de negocios de este servidor. Te devuelven {n} euros.": [
+"juego/enlinea.py"
+],
 "{nombre} ha vuelto, pero no presenta el mismo certificado que antes, y por seguridad no entro solo. Si quien lo lleva te ha dicho que lo ha cambiado, entra desde Jugar en un servidor y acéptalo allí. ": [
 "juego/reconexion.py"
 ],
@@ -56460,6 +56635,9 @@
 "{nombre} vive en otra parte y allí no hay dónde tomar algo.": [
 "juego/encuentros.py"
 ],
+"{nombre} vuelve a salir en tu móvil.": [
+"juego/menus_adultos.py"
+],
 "{nombre} vuelve a ser un negocio limpio.": [
 "juego/honrado.py"
 ],
@@ -56497,6 +56675,9 @@
 ],
 "{nombre} ya no está: no se puede recuperar ese destino.": [
 "juego/destinos.py"
+],
+"{nombre} ya no sale en tu móvil. La puedes recuperar al final de la lista.": [
+"juego/menus_adultos.py"
 ],
 "{nombre} ya te ha contado hoy todo lo que sabía.": [
 "juego/charla.py"
@@ -57861,13 +58042,27 @@
 "{texto}: llevas {dinero}": [
 "juego/mochila.py"
 ],
+"{tipo} para instalar o actualizar: {n}": [
+"juego/menus_componentes.py"
+],
 "{tipo} sin texto (name={GetName!r})": [
 "editor/accesibilidad/revision_teclado.py"
+],
+"{tipo}: no": [
+"juego/menus_componentes.py",
+"juego/menus_componentes.py"
+],
+"{tipo}: sí": [
+"juego/menus_componentes.py",
+"juego/menus_componentes.py"
 ],
 "{tipo}: {nombre}, actualización a la versión {version}, {tamano}": [
 "juego/menus_componentes.py"
 ],
 "{tipo}: {nombre}, nuevo, {tamano}": [
+"juego/menus_componentes.py"
+],
+"{tipo}: {n} para instalar o actualizar, {tamano}": [
 "juego/menus_componentes.py"
 ],
 "{titulo} con {nombre}, en {donde}. {choice}{extra}": [

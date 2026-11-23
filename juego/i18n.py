@@ -356,10 +356,20 @@ def traducir_datos(obj):
     return obj
 
 
+SOLO_ES_EN = ("novedades",)      # se escriben en español y en inglés: con el juego en español, en español; en cualquier otro, en inglés
+
+
+def idioma_novedades():
+    """En qué idioma se leen las novedades: español con el juego en español, inglés con cualquier otro."""
+    return ORIGEN if actual() == ORIGEN else "en"
+
+
 def doc(nombre):
     """Ruta de un documento en el idioma del juego: data/docs/<nombre>_<idioma>.html. Un idioma que aún no tiene sus guías
-    traducidas abre las inglesas, como el juego cuando no tiene el idioma del sistema; y si tampoco, las españolas."""
-    for cod in dict.fromkeys((actual(), "en" if actual() != ORIGEN else ORIGEN, ORIGEN)):
+    traducidas abre las inglesas, como el juego cuando no tiene el idioma del sistema; y si tampoco, las españolas.
+    Las novedades solo están en español y en inglés (SOLO_ES_EN)."""
+    primero = idioma_novedades() if nombre in SOLO_ES_EN else actual()
+    for cod in dict.fromkeys((primero, "en" if primero != ORIGEN else ORIGEN, ORIGEN)):
         r = rutas.data("docs", f"{nombre}_{cod}.html")
         if os.path.exists(r):
             return r

@@ -913,6 +913,9 @@ def opciones(app):
             si_no("historial_al_final", tr("Al llegar un mensaje nuevo, el historial salta al final"),
                   tr("El historial de mensajes se repasa con Re Pág y Av Pág; Control Re Pág va al primero y Control Av Pág al último. Con sí, cada mensaje nuevo te lleva al final, "
                   "como siempre. Con no, si estás repasando, sigues donde estabas aunque lleguen mensajes, y vas al último con Control Av Pág.")),
+            si_no("historial_menus", tr("Guardar en el historial lo que se lee al moverse por los menús"),
+                  tr("Con no, el historial guarda lo que pasa y no se repite: diálogos, conversaciones, compras, pagos y avisos. Lo que se lee al abrir un menú o al moverte por sus opciones "
+                  "no entra, porque se vuelve a oír volviendo a él. Con sí, entra todo, como antes.")),
             si_no("menu_posicion", tr("Decir la posición en los menús, por ejemplo 3 de 9"),
                   tr("Al moverte por un menú, después de cada opción dice cuál es y cuántas hay.")),
             si_no("voces_grabadas", tr("Voces en las escenas"),
@@ -2134,14 +2137,19 @@ def _negocio(p, l):
         _menu_lugar(p, l, [
             Opcion(tr('Este negocio es de {dueno}, otro jugador. ').format(dueno=(dueno)) + (tr('Lo vende por {oferta} euros').format(oferta=(oferta)) if oferta else tr("No está en venta")),
                    ayuda=tr("En un servidor, cada negocio es de un solo jugador. Si su dueño lo vende, aquí sale el precio.")),
-        ] + ([Opcion(tr('Comprárselo por {oferta} euros').format(oferta=(oferta)), lambda: p.red.enviar({"t": "prop_adquirir", "lugar": l.id}),
-                    ayuda=tr("Se lo pides al servidor: si tienes el dinero y sigue en venta, el negocio pasa a ser tuyo."))] if oferta else []) + [
+        ] + ([Opcion(tr('Comprárselo por {oferta} euros').format(oferta=(oferta)), lambda: p.sv_sin_sitio_negocio(l) or p.red.enviar({"t": "prop_adquirir", "lugar": l.id}),
+                    ayuda=tr("Se lo pides al servidor: si tienes el dinero y sigue en venta, el negocio pasa a ser tuyo."))] if oferta else [])
+            + ([Opcion(tr('Quedarte con él a la fuerza: le pagas {n} euros').format(n=p.sv_forzosa(l)), lambda: p.sv_forzar_negocio(l),
+                       ayuda=tr('Aunque {dueno} no lo venda, el servidor te deja quedártelo pagándole más de lo que vale. No vale con los negocios de tu banda ni de una banda aliada, ni con uno que ha cambiado de dueño hace muy poco: {dias} días.').format(dueno=dueno, dias=int(p.sv["info"].get("forzosa_dias") or 0)))]
+               if p.sv_forzosa(l) else []) + [
             Opcion(tr("Atracar el negocio"), lambda: (__import__("juego.menus_extra", fromlist=["x"])._volver_al_juego(p), p.sv_robar_negocio(l)),
                    ayuda=tr('Con un arma en la mano. Salta la alarma, a {dueno} y a su banda les llega el aviso, y tienes que aguantar en la puerta veinte segundos, a pie y sin alejarte. Si lo consigues te llevas la caja del día, {ingresos} euros, que a él se le descuentan a medianoche. A cada negocio solo se le puede vaciar la caja una vez al día.').format(dueno=(dueno), ingresos=(ingresos))),
             Opcion(tr("Descripción"), lambda: app.decir(l.desc, True), ayuda=tr("Dice cómo es este sitio."))])
         return
 
     def comprar():
+        if p.sv_sin_sitio_negocio(l):
+            return
         if p.pagar(precio):
             j.propiedades.append(l.id)
             p.sv_comprado(l)
@@ -2149,7 +2157,7 @@ def _negocio(p, l):
             app.son("mision_ok")
             app.decir(tr('¡{nombre} es tuyo! Ganarás {ingresos} euros cada día.').format(nombre=(l.nombre), ingresos=(ingresos)), True)
     m = _menu_lugar(p, l, [Opcion(tr('Comprar el negocio por {precio} euros. Da {ingresos} euros al día').format(precio=(precio), ingresos=(ingresos)), comprar, ayuda=l.desc)]
-                    + __import__("juego.menus_honrado", fromlist=["x"]).opcion_hipoteca(p, l, lambda: app.cerrar(m)))
+                    + ([] if p.sv_sin_sitio_negocio(l, callar=True) else __import__("juego.menus_honrado", fromlist=["x"]).opcion_hipoteca(p, l, lambda: app.cerrar(m))))
 
 
 def _taxi(p, l):

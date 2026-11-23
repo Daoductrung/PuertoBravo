@@ -89,10 +89,10 @@ def novedades(cod="es"):
 
 
 def idiomas_con_novedades():
-    """Los códigos de idioma que tienen su data/docs/novedades_<cod>.html, el español primero."""
-    cods = sorted(f[len("novedades_"):-len(".html")] for f in os.listdir(os.path.join(RAIZ, "data", "docs"))
-                  if re.fullmatch(r"novedades_[a-z]{2,3}\.html", f))
-    return sorted(cods, key=lambda c: c != "es")
+    """Las novedades se escriben en español y en inglés, y solo en esos dos (desde la 1.7.3): con el juego en español se
+    leen en español; con cualquier otro idioma, en inglés. El español primero."""
+    cods = [c for c in ("es", "en") if os.path.exists(os.path.join(RAIZ, "data", "docs", f"novedades_{c}.html"))]
+    return cods
 
 
 def notas_github(cods=None):

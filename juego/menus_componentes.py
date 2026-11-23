@@ -51,26 +51,113 @@ def buscar(app):
     app.abrir(Tarea(app, tr("Buscando componentes en {v}").format(v=TEXTO_FUENTE[cfg["act_fuente"]]), trabajo, fin))
 
 
+ORDEN = ("idioma", "voces", "documentacion", "sonidos", "mod", "musica", "radio")
+
+
+def _orden(tipo):
+    return ORDEN.index(tipo) if tipo in ORDEN else len(ORDEN)
+
+
+def interesa(app, c):
+    """¿Es de una categoría que quieres ver? Las que no (Categorías que te interesan) no salen ni te avisan."""
+    return c.tipo not in (app.cfg["comp_sin_interes"] or [])
+
+
+def pendientes(app, publicados):
+    """Lo que puedes instalar o actualizar de las categorías que te interesan."""
+    return [c for c, _ in C.novedades(publicados) if interesa(app, c)]      # novedades() ya deja fuera los que piden un juego más nuevo
+
+
 def lista(app, publicados, antes=None):
-    """Los componentes que hay que instalar o actualizar. None, sin abrir nada, si no hay ninguno. `antes`: una frase que
-    se dice delante del título, al abrir (lo que se acaba de instalar)."""
-    hay = C.instalados()
-    nuevos = [c for c, _ in C.novedades(publicados)]                 # novedades() ya deja fuera los que piden un juego más nuevo
-    if not nuevos:
+    """Los componentes que hay que instalar o actualizar, por categorías: idiomas, voces, documentación, sonidos y mods. Cada
+    categoría abre los suyos, con un Instalar todo solo de esa categoría. None, sin abrir nada, si no hay ninguno.
+    `antes`: una frase que se dice delante del título, al abrir (lo que se acaba de instalar)."""
+    todos = [c for c, _ in C.novedades(publicados)]
+    if not todos:
         return None
-    ops = []
-    if len(nuevos) > 1:
-        total = sum(c.tamano for c in nuevos)
-        ops.append(Opcion(tr("Instalar todo: {n} componentes, {tamano}").format(n=len(nuevos), tamano=tamano_txt(total)),
-                          lambda: instalar(app, nuevos, publicados),
-                          ayuda=tr("Descarga e instala, uno tras otro, todos los componentes de esta lista.")))
-    for c in sorted(nuevos, key=lambda c: (c.tipo_txt, c.nombre)):
-        ops.append(Opcion(_linea(c, hay), lambda c=c: instalar(app, [c], publicados), ayuda=c.descripcion or tr("Intro lo instala o lo actualiza.")))
-    ops.append(Opcion(tr("Volver"), lambda: app.cerrar(m)))
-    titulo = tr("Componentes para instalar o actualizar: {n}").format(n=len(nuevos))
-    m = Menu(app, titulo, ops, intro=tr("Intro instala o actualiza el componente elegido. F1 dice qué trae"))
+
+    def ops():
+        nuevos = pendientes(app, publicados)
+        lista_ = []
+        if len(nuevos) > 1:
+            lista_.append(Opcion(tr("Instalar todo lo que te interesa: {n} componentes, {tamano}").format(n=len(nuevos), tamano=tamano_txt(sum(c.tamano for c in nuevos))),
+                                 lambda: instalar(app, nuevos, publicados),
+                                 ayuda=tr("Descarga e instala, uno tras otro, todos los componentes de las categorías que te interesan.")))
+        for tipo in sorted({c.tipo for c in nuevos}, key=_orden):
+            suyos = [c for c in nuevos if c.tipo == tipo]
+            lista_.append(Opcion(tr("{tipo}: {n} para instalar o actualizar, {tamano}").format(tipo=suyos[0].tipo_txt, n=len(suyos), tamano=tamano_txt(sum(c.tamano for c in suyos))),
+                                 lambda t=tipo: categoria(app, publicados, t),
+                                 ayuda=tr("Intro abre los componentes de esta categoría: puedes instalar solo esos, todos o uno a uno.")))
+        ocultos = len(todos) - len(nuevos)
+        if ocultos:
+            lista_.append(Opcion(tr("En las categorías que no te interesan hay {n} más").format(n=ocultos),
+                                 ayuda=tr("No se muestran ni te avisan al arrancar. Cámbialo en Categorías que te interesan, aquí debajo.")))
+        lista_.append(Opcion(lambda: tr("Categorías que te interesan: ") + categorias_txt(app), lambda: elegir_categorias(app, al_cambiar=lambda: m.refrescar(False)),
+                             ayuda=tr("Marca qué clase de componentes quieres ver: si no quieres mods, quítalos; si solo quieres idiomas, deja solo los idiomas. "
+                                   "Lo que no te interesa no sale aquí ni te avisa al arrancar el juego.")))
+        lista_.append(Opcion(tr("Volver"), lambda: app.cerrar(m)))
+        return lista_
+    n = len(pendientes(app, publicados))
+    titulo = tr("Componentes para instalar o actualizar: {n}").format(n=n)
+    m = Menu(app, titulo, ops, intro=tr("Por categorías. Intro abre una y ves solo sus componentes. F1 dice qué hace cada opción"))
     m.es_componentes = True
     m.antes = antes
+    app.abrir(m)
+    return m
+
+
+def categoria(app, publicados, tipo):
+    """Los componentes de una sola categoría: así se pueden poner al día solo los idiomas, solo los packs..."""
+    hay = C.instalados()
+    suyos = sorted((c for c in pendientes(app, publicados) if c.tipo == tipo), key=lambda c: c.nombre)
+    if not suyos:
+        return
+    ops = []
+    if len(suyos) > 1:
+        ops.append(Opcion(tr("Instalar todo en {tipo}: {n} componentes, {tamano}").format(tipo=suyos[0].tipo_txt, n=len(suyos), tamano=tamano_txt(sum(c.tamano for c in suyos))),
+                          lambda: instalar(app, suyos, publicados),
+                          ayuda=tr("Descarga e instala, uno tras otro, todos los de esta categoría, y nada más.")))
+    for c in suyos:
+        ops.append(Opcion(_linea(c, hay), lambda c=c: instalar(app, [c], publicados), ayuda=c.descripcion or tr("Intro lo instala o lo actualiza.")))
+    ops.append(Opcion(tr("Volver"), lambda: app.cerrar(m)))
+    m = Menu(app, tr("{tipo} para instalar o actualizar: {n}").format(tipo=suyos[0].tipo_txt, n=len(suyos)), ops,
+             intro=tr("Intro instala o actualiza el componente elegido. F1 dice qué trae"))
+    m.es_componentes = True
+    app.abrir(m)
+    return m
+
+
+def categorias_txt(app):
+    fuera = app.cfg["comp_sin_interes"] or []
+    dentro = [C.NOMBRE_TIPO[t] for t in ORDEN[:5] if t not in fuera]
+    if len(dentro) == 5:
+        return tr("todas")
+    return ", ".join(tr(x) for x in dentro) if dentro else tr("ninguna")
+
+
+def elegir_categorias(app, al_cambiar=None):
+    """Sí o no por cada categoría de componentes. Se guarda al momento."""
+    def cambiar(tipo):
+        def f():
+            fuera = list(app.cfg["comp_sin_interes"] or [])
+            if tipo in fuera:
+                fuera.remove(tipo)
+            else:
+                fuera.append(tipo)
+            app.cfg["comp_sin_interes"] = fuera
+            app.cfg.guardar()
+            m.refrescar(False)
+            app.decir((tr("{tipo}: sí") if tipo not in fuera else tr("{tipo}: no")).format(tipo=tr(C.NOMBRE_TIPO[tipo])), True)
+            if al_cambiar:
+                al_cambiar()
+        return f
+
+    def ops():
+        fuera = app.cfg["comp_sin_interes"] or []
+        return [Opcion(lambda t=t: (tr("{tipo}: sí") if t not in fuera else tr("{tipo}: no")).format(tipo=tr(C.NOMBRE_TIPO[t])), cambiar(t),
+                       ayuda=tr("Intro cambia entre sí y no. Con no, esta clase de componentes no sale en la lista ni te avisa al arrancar."))
+                for t in ORDEN[:5]] + [Opcion(tr("Volver"), lambda: app.cerrar(m))]
+    m = Menu(app, tr("Categorías de componentes que te interesan"), ops, intro=tr("Intro cambia entre sí y no"))
     app.abrir(m)
     return m
 
@@ -78,8 +165,8 @@ def lista(app, publicados, antes=None):
 def instalar(app, cuales, publicados=None):
     """Instala uno o varios componentes, uno tras otro, con su progreso. Al terminar dice qué ha quedado y si hay que reiniciar."""
     estado = {"hechos": [], "reiniciar": False}
-    if publicados is not None and app.pila and getattr(app.pila[-1], "es_componentes", False):
-        app.cerrar(app.pila[-1])          # la lista se rehace al terminar, con lo que quede: no se vuelve a leer la de antes
+    while publicados is not None and app.pila and getattr(app.pila[-1], "es_componentes", False):
+        app.cerrar(app.pila[-1])          # la lista (y la categoría) se rehacen al terminar, con lo que quede: no se vuelve a leer la de antes
 
     def trabajo(tarea):
         for i, c in enumerate(cuales, 1):
@@ -123,7 +210,7 @@ def instalar(app, cuales, publicados=None):
 def mirar_al_arrancar(app):
     """En el hilo de la comprobación del arranque: apunta cuántos componentes nuevos hay, para avisar luego."""
     try:
-        app.comp_aviso = len(C.novedades(C.consultar(app.cfg["act_fuente"], app.cfg["act_url"])))
+        app.comp_aviso = len(pendientes(app, C.consultar(app.cfg["act_fuente"], app.cfg["act_url"])))      # solo de las categorías que te interesan
         registro.info("componentes", "Comprobación al arrancar", nuevos=app.comp_aviso)
     except Exception as e:
         registro.info("componentes", "Comprobación de componentes al arrancar sin resultado", motivo=f"{type(e).__name__}: {e}")

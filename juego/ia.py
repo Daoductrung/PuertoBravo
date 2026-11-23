@@ -397,7 +397,7 @@ def _bajar(url, destino, tamano, sha256, progreso=None, cancelado=None, abrir=No
             while True:
                 if cancelado and cancelado():
                     raise Cancelado()
-                bloque = r.read(512 * 1024)
+                bloque = r.read(64 * 1024)
                 if not bloque:
                     break
                 hecho += len(bloque)

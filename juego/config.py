@@ -30,7 +30,8 @@ POR_DEFECTO = {
     "semaforos_coche": True,       # al conducir tú, el semáforo del próximo cruce: si está en rojo o en verde
     "frenada_auto": True,
     "sucesos": True,
-    "servidores": [],              # servidores en línea guardados: nombre, dirección y huella de su certificado
+    "servidores": [],
+    "comp_sin_interes": [],        # categorías de componentes que no quieres ver ni que te avisen: idioma, voces, documentacion, sonidos, mod              # servidores en línea guardados: nombre, dirección y huella de su certificado
     "mando_vibracion": True,
     "mando_textos": True,          # con un mando conectado, decir los botones en lugar de las teclas
     "invulnerable": False,
@@ -45,6 +46,7 @@ POR_DEFECTO = {
     "voz_tono": 0,                 # de -10 a 10
     "voz_volumen": 100,            # de 0 a 100
     "detalle_voz": "normal",       # cuánto explica el juego al hablar: mucho, normal o poco
+    "historial_menus": False,      # lo que se lee al moverse por los menús también va al historial (antes de la 1.7.3, siempre)
     "historial_al_final": True,    # cada mensaje nuevo lleva el historial (Re Pág y Av Pág) al final; con no, se queda donde lo dejaste
     "vol_senales": 1.0,            # volumen propio de balizas, radar, tonos de puntería y sonidos de los lugares
     "red_upnp": True,              # al abrir tu partida, intentar abrir el puerto del router automáticamente

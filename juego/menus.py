@@ -6,6 +6,15 @@ import pygame
 from . import registro
 
 
+def _dice_menu(app, texto):
+    """Lo que se lee al abrir un menú o al moverse por él: vuelve a oírse al volver, así que no llena el historial."""
+    f = getattr(app, "decir_menu", None)
+    if f is not None:
+        f(texto)
+    else:
+        app.decir(texto, True)
+
+
 def _llana(letra):
     """Una letra en minúscula y sin tilde, para saltar por inicial: la eñe sigue siendo eñe."""
     letra = letra.lower()
@@ -72,14 +81,14 @@ class Menu:
             self.intro = None
         if self.opciones:
             partes.append(tr('{texto}. {v} de {len}').format(texto=(self.opciones[self.i].texto), v=(self.i + 1), len=(len(self.opciones))))
-        self.app.decir(". ".join(partes), True)
+        _dice_menu(self.app, ". ".join(partes))
 
     def leer(self):
         if self.opciones:
             pos = tr('. {v} de {len}').format(v=(self.i + 1), len=(len(self.opciones))) if self.app.cfg["menu_posicion"] else ""
             o = self.opciones[self.i]
             extra = f". {o.ayuda}" if self.app.cfg["detalle_voz"] == "mucho" and getattr(o, "ayuda", None) else ""      # con mucho detalle, la explicación va detrás
-            self.app.decir(o.texto + pos + extra, True)
+            _dice_menu(self.app, o.texto + pos + extra)
 
     def _mover(self, nuevo):
         n = len(self.opciones)
@@ -132,11 +141,11 @@ class Menu:
                 self.app.cerrar(self)
         elif k == pygame.K_F1:
             if self.opciones and self.opciones[self.i].ayuda:
-                self.app.decir(self.opciones[self.i].ayuda, True)
+                _dice_menu(self.app, self.opciones[self.i].ayuda)
             elif self.opciones and self.opciones[self.i].texto.startswith(SALIDAS):
-                self.app.decir(tr("Sale de este menú y vuelve a donde estabas. También sirve Escape."), True)
+                _dice_menu(self.app, tr("Sale de este menú y vuelve a donde estabas. También sirve Escape."))
             else:
-                self.app.decir(tr("Flechas arriba y abajo para moverte, Intro para elegir, izquierda y derecha para cambiar un valor, Escape para volver."), True)
+                _dice_menu(self.app, tr("Flechas arriba y abajo para moverte, Intro para elegir, izquierda y derecha para cambiar un valor, Escape para volver."))
         elif k in (pygame.K_PAGEUP, pygame.K_PAGEDOWN) and getattr(ev, "mod", 0) & pygame.KMOD_CTRL:
             self.app.voz.repasar_extremo(k == pygame.K_PAGEDOWN)
         elif k in (pygame.K_PAGEUP, pygame.K_PAGEDOWN) and getattr(ev, "mod", 0) & pygame.KMOD_SHIFT:
@@ -324,7 +333,7 @@ class EntradaTexto:
                     + (tr('{n} pasa por {hay} propuestas ya escritas. ').format(n=(n('x')), hay=(hay)) if hay else "") + tr('El {n} dice todos los botones.').format(n=(n('back'))))
         else:
             como = tr("Escribe y pulsa Intro. Escape cancela.") + (tr(' Tabulador pasa por {hay} propuestas ya escritas.').format(hay=(hay)) if hay else "")
-        self.app.decir(f"{self.titulo}. {como} {self._leer()}", True)
+        _dice_menu(self.app, f"{self.titulo}. {como} {self._leer()}")
 
     def tecla(self, ev):
         with registro.privado():               # lo que se escribe y lo que se lee al escribir no se registra
@@ -334,31 +343,31 @@ class EntradaTexto:
         lista = self.propuestas()
         if not lista:
             self.app.son("menu_borde")
-            self.app.decir(tr("Aquí no hay propuestas: hay que escribirlo."), True)
+            _dice_menu(self.app, tr("Aquí no hay propuestas: hay que escribirlo."))
             return
         self.i_prop = (self.i_prop + paso) % len(lista)
         self.texto = lista[self.i_prop]
         self.app.son("menu_ajuste")
-        self.app.decir(tr('{texto}. {v} de {len}').format(texto=(self.texto), v=(self.i_prop + 1), len=(len(lista))), True)
+        _dice_menu(self.app, tr('{texto}. {v} de {len}').format(texto=(self.texto), v=(self.i_prop + 1), len=(len(lista))))
 
     def _poner(self, letra):
         if len(self.texto) >= self.maximo:
             self.app.son("menu_borde")
-            self.app.decir(tr("No cabe más."), True)
+            _dice_menu(self.app, tr("No cabe más."))
             return
         self.texto += letra
         self.app.son("menu_mover")
-        self.app.decir("asterisco" if self.secreto else self._nombre(letra), True)
+        _dice_menu(self.app, "asterisco" if self.secreto else self._nombre(letra))
 
     def _borrar(self):
         if self.texto:
             quitada = self.texto[-1]
             self.texto = self.texto[:-1]
             self.app.son("menu_ajuste")
-            self.app.decir(tr("Borrado") if self.secreto else tr('Borrado {_nombre}').format(_nombre=(self._nombre(quitada))), True)
+            _dice_menu(self.app, tr("Borrado") if self.secreto else tr('Borrado {_nombre}').format(_nombre=(self._nombre(quitada))))
         else:
             self.app.son("menu_borde")
-            self.app.decir(tr("Vacío"), True)
+            _dice_menu(self.app, tr("Vacío"))
 
     def _rueda(self, k):
         """Las teclas que llegan del mando: la rueda de letras. Devuelve False si esa no es de la rueda."""
@@ -366,7 +375,7 @@ class EntradaTexto:
         if k in (pygame.K_UP, pygame.K_DOWN):
             self.letra = (self.letra + (1 if k == pygame.K_DOWN else -1)) % len(letras)
             self.app.son("menu_mover")
-            self.app.decir(self._nombre(letras[self.letra]), True)
+            _dice_menu(self.app, self._nombre(letras[self.letra]))
         elif k == pygame.K_RIGHT:
             self._poner(letras[self.letra])
         elif k == pygame.K_LEFT:
@@ -377,11 +386,11 @@ class EntradaTexto:
             self.grupo = (self.grupo + 1) % len(self.GRUPOS)
             self.letra = 0
             self.app.son("menu_ajuste")
-            self.app.decir(f"{self.GRUPOS[self.grupo][0].capitalize()}. {self._nombre(self.GRUPOS[self.grupo][1][0])}", True)
+            _dice_menu(self.app, f"{self.GRUPOS[self.grupo][0].capitalize()}. {self._nombre(self.GRUPOS[self.grupo][1][0])}")
         elif k == pygame.K_n:                                    # Y o Triángulo
-            self.app.decir(self._leer(), True)
+            _dice_menu(self.app, self._leer())
         elif k == pygame.K_F1:                                   # Vista, Crear o Share
-            self.app.decir((self.ayuda + " " if self.ayuda else "") + self.ayuda_mando() + " " + self._leer(), True)
+            _dice_menu(self.app, (self.ayuda + " " if self.ayuda else "") + self.ayuda_mando() + " " + self._leer())
         else:
             return False
         return True
@@ -400,19 +409,19 @@ class EntradaTexto:
             self.app.cerrar(self)
         elif k == pygame.K_ESCAPE:
             self.app.son("menu_atras")
-            self.app.decir(tr("Cancelado."), True)
+            _dice_menu(self.app, tr("Cancelado."))
             self.app.cerrar(self)
         elif k == pygame.K_BACKSPACE:
             if self.texto:
                 quitada = self.texto[-1]
                 self.texto = self.texto[:-1]
                 self.app.son("menu_ajuste")
-                self.app.decir(tr("Borrado") if self.secreto else tr('Borrado {_nombre}').format(_nombre=(self._nombre(quitada))), True)
+                _dice_menu(self.app, tr("Borrado") if self.secreto else tr('Borrado {_nombre}').format(_nombre=(self._nombre(quitada))))
             else:
                 self.app.son("menu_borde")
-                self.app.decir(tr("Vacío"), True)
+                _dice_menu(self.app, tr("Vacío"))
         elif k in (pygame.K_UP, pygame.K_F1):
-            self.app.decir((self.ayuda + " " if self.ayuda and k == pygame.K_F1 else "") + self._leer(), True)
+            _dice_menu(self.app, (self.ayuda + " " if self.ayuda and k == pygame.K_F1 else "") + self._leer())
         elif k == pygame.K_v and mod & pygame.KMOD_CTRL:
             try:
                 pegado = pygame.scrap.get_text() or ""
@@ -421,10 +430,10 @@ class EntradaTexto:
             pegado = "".join(c for c in pegado if c.isprintable())
             if pegado:
                 self.texto = (self.texto + pegado)[:self.maximo]
-                self.app.decir(tr("Pegado. ") + self._leer(), True)
+                _dice_menu(self.app, tr("Pegado. ") + self._leer())
             else:
                 self.app.son("error")
-                self.app.decir(tr("No hay texto en el portapapeles."), True)
+                _dice_menu(self.app, tr("No hay texto en el portapapeles."))
         else:
             letra = getattr(ev, "unicode", "") or ""
             if letra and letra.isprintable() and not (mod & (pygame.KMOD_CTRL | pygame.KMOD_ALT) and not (mod & pygame.KMOD_MODE)):
@@ -434,7 +443,7 @@ class EntradaTexto:
                 self.texto += letra
                 self._eco = letra                    # el mismo carácter llegará enseguida como texto: no se escribe dos veces
                 self.app.son("menu_mover")
-                self.app.decir("asterisco" if self.secreto else self._nombre(letra), True)
+                _dice_menu(self.app, "asterisco" if self.secreto else self._nombre(letra))
 
     def texto_tecleado(self, texto):
         """El texto que manda el teclado aparte de la pulsación (ver App.evento_texto). Lo que ya se escribió con la
@@ -452,7 +461,7 @@ class EntradaTexto:
             texto = texto[:self.maximo - len(self.texto)]
             self.texto += texto
             self.app.son("menu_mover")
-            self.app.decir("asterisco" if self.secreto else (self._nombre(texto) if len(texto) == 1 else texto), True)
+            _dice_menu(self.app, "asterisco" if self.secreto else (self._nombre(texto) if len(texto) == 1 else texto))
 
     @staticmethod
     def _nombre(c):

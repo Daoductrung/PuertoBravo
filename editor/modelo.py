@@ -445,6 +445,11 @@ def comprobar(mod, cat):
                 if d.get("id") and not re.fullmatch(r"[a-z0-9_]+", str(d["id"])):
                     avisos.append(tr('{donde}: conviene que el identificador solo tenga minúsculas, números y guiones bajos.').format(donde=(donde)))
             _recorrer(esq, d, cat, mod, donde, errores, avisos)
+    # un vehículo sin precio no se vende en ningún sitio: quien lo crea suele esperar poder comprarlo
+    for d in mod.secciones.get("vehiculos", []):
+        if not d.get("precio") and not d.get("vuela"):
+            avisos.append(tr('Vehículos, «{ident}»: no tiene precio, así que no se vende en ningún concesionario ni náutica y el jugador no podrá comprarlo. '
+                             'Ponle un precio para que salga en todos los que no limitan sus modelos.').format(ident=d.get("id") or d.get("nombre") or tr("sin nombre")))
     # mapas: tienen que poder construirse
     for m in mod.secciones.get("mapas", []):
         donde = tr('Localidades y mapas, «{get}»').format(get=(m.get('id', tr('sin nombre'))))

@@ -8,7 +8,7 @@ import subprocess
 import sys
 
 RAIZ = Path(__file__).resolve().parents[1]
-GUIAS = ("manual", "teclas", "novedades", "cambiar_sonidos", "editor_mods", "servidor")
+GUIAS = ("manual", "teclas", "cambiar_sonidos", "editor_mods", "servidor")      # las novedades, desde la 1.7.3, solo en español y en inglés
 HUECOS = re.compile(r"\{[^{}]*\}")
 PORCIENTOS = re.compile(r"%[-+ #0-9.]*[sdifr]")
 
@@ -55,7 +55,8 @@ def test_el_juego_carga_portugues_y_respeta_los_nombres():
         "print(d['ciudad']['nombre']); print(d['ciudad']['barrios'][0]['nombre'])\n"
         "print(i18n.tr('Dani')); print(i18n.tr('Ganzúas'))\n"
         "print(all(i18n.doc(g).endswith('_pt.html') for g in " + repr(GUIAS) + "))\n"
-    ) == ["pt", "Opções", "Puerto Bravo", "El Puerto", "Dani", "Gazuas", "True"]
+        "print(i18n.doc('novedades').endswith('novedades_en.html'))\n"
+    ) == ["pt", "Opções", "Puerto Bravo", "El Puerto", "Dani", "Gazuas", "True", "True"]
 
 
 def test_las_distancias_y_el_resumen_de_voz_son_comprensibles():

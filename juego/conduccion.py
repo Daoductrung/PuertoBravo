@@ -1174,7 +1174,7 @@ class Conduccion:
             return 0.0, self._decidir_policia
         vel_j = abs(j.veh.vel) if j.veh else 0.0
         px, py = self.pos()
-        if d < 14 and vel_j < 4:
+        if (d < 14 or (not j.veh and self.no_se_acerca(v, d, 60))) and vel_j < 4:      # dentro de una manzana: se bajan y van a pie
             if v.vel < 1.0:
                 v.desplegado = True
                 v.ocupado = False

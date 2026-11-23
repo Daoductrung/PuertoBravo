@@ -248,7 +248,7 @@ def local(app):
 
             def fin(ok, error):
                 if error is not None:
-                    if isinstance(error, ia.Cancelado):
+                    if isinstance(error, ia.Cancelado) or type(error).__name__ == "Cancelado":
                         app.decir(tr("Descarga cancelada. No se ha instalado nada nuevo."), True)
                     else:
                         app.son("error")

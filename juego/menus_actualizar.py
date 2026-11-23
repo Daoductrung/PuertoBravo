@@ -53,6 +53,8 @@ class Tarea:
 
     def tecla(self, ev):
         if ev.key == pygame.K_ESCAPE:
+            if not self.cancelada:
+                self.t_cancelar = 0.0
             self.cancelada = True
             self.app.decir(tr("Cancelando."), True)
         elif ev.key in (pygame.K_b, pygame.K_TAB) and self.fondo and not self.hecho and self.hilo is not None and not self.app.pruebas:
@@ -82,6 +84,14 @@ class Tarea:
             else:
                 self.hilo = threading.Thread(target=self._correr, daemon=True)
                 self.hilo.start()
+        if self.cancelada and not self.hecho:
+            self.avisos.clear()                # cancelada: ya no se canta cómo va
+            self.t_cancelar = getattr(self, "t_cancelar", 0.0) + dt
+            if self.t_cancelar >= 2.0:         # la red no contesta: no se espera a ella. El hilo lo deja al recibir el siguiente trozo
+                self.hecho = True
+                self.app.cerrar(self)
+                self.al_terminar(None, A.Cancelado(tr("Cancelado.")))
+            return
         while self.avisos:
             self.app.decir(self.avisos.pop(0))
         if not self.hecho:

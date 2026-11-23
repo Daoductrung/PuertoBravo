@@ -386,6 +386,11 @@ def test_las_novedades_van_en_el_idioma_del_juego():
         assert actualizador.notas_en_mi_idioma(m) == en
         i18n.actual = lambda: "vi"                                       # sin las suyas, las inglesas
         assert actualizador.notas_en_mi_idioma(m) == en
+        i18n.actual = lambda: "pt"                                       # y desde la 1.7.3, aunque las tuviera: solo español e inglés
+        assert actualizador.notas_en_mi_idioma(dict(m, novedades_por_idioma={"es": es, "en": en, "pt": "novidades"})) == en
+        assert i18n.doc("novedades").endswith("novedades_en.html") and i18n.doc("manual").endswith("manual_pt.html")
+        i18n.actual = lambda: "es"
+        assert i18n.doc("novedades").endswith("novedades_es.html")
     finally:
         i18n.actual = original
     assert actualizador.notas_en_mi_idioma({"novedades": es}) == es            # una versión anterior, en español

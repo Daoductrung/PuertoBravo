@@ -255,6 +255,16 @@ OPCIONES = (
     _o("propiedad_dias", "economia", tr("Días sin entrar para perder las propiedades"),
        tr("Días de verdad sin entrar tras los que las propiedades de un jugador vuelven al mercado. Se le guarda su parte."),
        ENTERO, 30, 1, 3650),
+    _o("negocios_max", "economia", tr("Negocios por jugador"),
+       tr("Cuántos negocios puede tener a la vez un mismo jugador, para que nadie se quede con todos. Con 0 no hay tope. "
+       "Si alguien tiene más de los que permite el tope, a medianoche vuelven al mercado los últimos que compró, y se le "
+       "devuelve lo que pagó por ellos."), ENTERO, 3, 0, 1000),
+    _o("compra_forzosa", "economia", tr("Comprar a la fuerza un negocio ajeno, en tanto por ciento de su precio"),
+       tr("Cualquier jugador puede quedarse con el negocio de otro pagándole este tanto por ciento de su precio, aunque no lo "
+       "venda. Lo cobra su dueño. No vale con los negocios de tu banda ni de una banda aliada. Con 0 no se puede."), ENTERO, 200, 0, 10000),
+    _o("forzosa_dias", "economia", tr("Días de protección de un negocio recién comprado"),
+       tr("Durante estos días de verdad después de comprarlo, nadie puede quedarse a la fuerza con ese negocio."),
+       ENTERO, 3, 0, 365),
     _o("vehiculos_horas", "economia", tr("Horas que dura un vehículo en la calle"),
        tr("Horas de verdad que un vehículo dejado en la calle sigue ahí."), ENTERO, 12, 1, 8760),
     _o("vehiculos_por_jugador", "economia", tr("Vehículos aparcados por jugador"),

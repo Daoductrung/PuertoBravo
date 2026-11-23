@@ -1106,6 +1106,27 @@ a { color: #9fd0ff; }
 <li>Padrão: <code>30</code>.</li>
 <li>Aplica-se sem reiniciar o servidor.</li>
 </ul>
+<h4>Estabelecimentos por jogador: <code>negocios_max</code></h4>
+<p>Quantos estabelecimentos um mesmo jogador pode ter ao mesmo tempo, para que ninguém fique com todos. Com 0 não há limite. Se alguém tiver mais do que o limite permite, à meia-noite voltam ao mercado os últimos que comprou, e ele recebe de volta o que pagou por eles.</p>
+<ul>
+<li>Um número inteiro entre 0 e 1000.</li>
+<li>Padrão: <code>3</code>.</li>
+<li>Aplica-se sem reiniciar o servidor.</li>
+</ul>
+<h4>Ficar à força com o estabelecimento de outro, em porcentagem do preço: <code>compra_forzosa</code></h4>
+<p>Qualquer jogador pode ficar com o estabelecimento de outro pagando esta porcentagem do preço, mesmo que não esteja à venda. Quem recebe é o dono. Não vale com os estabelecimentos da sua gangue nem de uma gangue aliada. Com 0 não é possível.</p>
+<ul>
+<li>Um número inteiro entre 0 e 10000.</li>
+<li>Padrão: <code>200</code>.</li>
+<li>Aplica-se sem reiniciar o servidor.</li>
+</ul>
+<h4>Dias de proteção de um estabelecimento recém-comprado: <code>forzosa_dias</code></h4>
+<p>Durante estes dias reais depois da compra, ninguém pode ficar à força com esse estabelecimento.</p>
+<ul>
+<li>Um número inteiro entre 0 e 365.</li>
+<li>Padrão: <code>3</code>.</li>
+<li>Aplica-se sem reiniciar o servidor.</li>
+</ul>
 <h4>Horas que um veículo dura na rua: <code>vehiculos_horas</code></h4>
 <p>Horas reais um veículo deixado na rua fica lá.</p>
 <ul>

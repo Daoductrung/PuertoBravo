@@ -274,7 +274,7 @@ class Calle:
             return v.vel_obj, self._decidir_trafico
         if v.sirena is None:
             v.sirena = self.son("sirena", bucle=True, xy=(v.x, v.y), ref=14, maxd=260, vol=0.7)
-        if d < 16:
+        if d < 16 or self.no_se_acerca(v, d, 60):
             if v.vel < 1.0:
                 self._desplegar_auxilio(v)
             return 0.0, self._decidir_policia
@@ -287,6 +287,15 @@ class Calle:
         if self._obstaculo(v, 9):                                # acude deprisa, pero no se lleva a nadie por delante
             return 0.0, self._decidir_policia
         return (min(v.modelo["vel_max"] * 0.6, 9.0) if d < 35 else v.modelo["vel_max"] * 0.6), self._decidir_policia
+
+    def no_se_acerca(self, v, d, cerca):
+        """¿Lleva un rato sin poder acercarse más a donde va? Pasa cuando el sitio está dentro de una manzana (una plaza,
+        un parque, la playa), lejos de toda calzada: rodearla no acerca. Entonces, si ya está cerca, se para y se sigue a pie."""
+        mejor = getattr(v, "d_mejor", None)
+        if mejor is None or d < mejor - 1.0:
+            v.d_mejor, v.t_mejor = d, self.t
+            return False
+        return d < cerca and self.t - v.t_mejor > 5.0
 
     def _desplegar_auxilio(self, v):
         v.desplegado = True
@@ -314,6 +323,13 @@ class Calle:
         v.ocupado = True
         v.auxilio = None
         v.ronda = True
+        v.d_mejor = None
+        v.vel_obj =max(getattr(v, "vel_obj", 0) or 0, 9.0)
+        px, py = self.pos()
+        dx, dy = M.DIRS[v.dir]
+        if 0 < (px - v.x) * dx + (py - v.y) * dy < 25 and abs((px - v.x) * dy - (py - v.y) * dx) < 4:
+            v.dir = (v.dir + 2) % 4                              # le cortas el paso: da media vuelta y se va, no se queda esperando a tu lado
+            v.t_giro = self.t + 3
         if v.sirena:
             v.sirena.parar()
             v.sirena = None
@@ -563,15 +579,17 @@ class Calle:
             a["limite"] -= dt
             if dd < 40:
                 v.lat_obj = 2.2                                  # se arrima a la acera para no cortar la calle
-            if dd < 20 or a["limite"] <= 0:
+            lejos = dd >= 20 and self.no_se_acerca(v, dd, 70)    # los heridos están dentro de una manzana: se para y van a pie
+            if dd < 20 or lejos or a["limite"] <= 0:
                 if v.vel < 1.0:
                     if v.sirena:
                         v.sirena.parar()
                         v.sirena = None
-                    a.update(estado="atiende", t=aj("ambulancia_atiende"), x=v.x, y=v.y)
+                    a.update(estado="atiende", t=aj("ambulancia_atiende") + (8.0 if dd >= 20 else 0.0))      # los heridos siguen donde cayeron
                     self.son("puerta_coche", xy=(v.x, v.y), tono=0.82)
                     if d < 120:
-                        self.decir(tr('Llega la ambulancia y los sanitarios atienden a los heridos. {situar}.').format(situar=(self.situar(v.x, v.y, tr('Está')))))
+                        self.decir((tr('Llega la ambulancia y los sanitarios atienden a los heridos. {situar}.') if dd < 20 else
+                                    tr('La ambulancia no puede acercarse más: los sanitarios bajan y van a pie hasta los heridos. {situar}.')).format(situar=(self.situar(v.x, v.y, tr('Está')))))
                 return 0.0, self._decidir_destino
             if self._obstaculo(v, 11):
                 return 0.0, self._decidir_destino

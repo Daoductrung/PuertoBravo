@@ -253,7 +253,9 @@ ESQUEMAS = {
         c("salud", tr("Resistencia"), "entero", req=True, defecto=120),
         c("motor", tr("Sonido del motor"), "ref", ref="sonido", req=True, defecto="motor_coche"),
         c("tono", tr("Tono del motor"), "decimal", tr("1 es normal; más alto suena más agudo."), req=True, defecto=1.0),
-        c("valor", tr("Valor en el desguace"), "entero", defecto=0), c("precio", tr("Precio en concesionario o náutica"), "entero"),
+        c("valor", tr("Valor en el desguace"), "entero", defecto=0),
+        c("precio", tr("Precio en concesionario o náutica"), "entero", tr("Con precio, se vende en todos los concesionarios que no limitan sus modelos, o en las náuticas si es una embarcación; "
+          "para que solo lo venda uno, márcalo en los Modelos a la venta de ese concesionario. Sin precio no se puede comprar en ningún sitio.")),
         c("claxon", tr("Claxon"), "ref", ref="sonido"), c("sirena", tr("Sirena"), "ref", ref="sonido"),
         c("trabajo", tr("Trabajo con la tecla J"), "opcion", ops=TRABAJOS),
         c("barco", tr("Es una embarcación"), "si_no"), c("vuela", tr("Vuela"), "si_no"),
@@ -279,6 +281,8 @@ ESQUEMAS = {
         c("peso", tr("Frecuencia"), "entero", tr("Cuanto más alto, más veces pica."), req=True, defecto=10)]},
     "persona": {"titulo": tr("Persona, contenido para adultos"), "resumen": lambda d: tr('{get}, {get2} años').format(get=(d.get('nombre', '?')), get2=(d.get('edad', '?'))), "campos": [
         c("id", tr("Identificador"), req=True), c("nombre", tr("Nombre"), req=True),
+        c("genero", tr("Es un hombre o una mujer"), "opcion", tr("El juego lo usa con la opción Me atraen: a quien no te atrae no se le pueden pedir citas románticas. Sin valor, sale para cualquiera."),
+          ops=[("h", tr("Hombre")), ("m", tr("Mujer"))]),
         c("edad", tr("Edad"), "entero", tr("Tiene que ser una persona adulta: 18 años o más."), req=True, minimo=18, defecto=30),
         c("lugar", tr("Lugar donde suele estar"), "ref", ref="lugar", req=True),
         c("gustos", tr("Planes favoritos"), "refs", ref="actividad"), c("regalo", tr("Regalo favorito"), "ref", ref="regalo"),

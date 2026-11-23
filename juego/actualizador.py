@@ -294,7 +294,7 @@ def notas_en_mi_idioma(m):
     lo único que traen las versiones anteriores y lo que leen los juegos anteriores."""
     from . import i18n
     por_idioma = m.get("novedades_por_idioma") if isinstance(m.get("novedades_por_idioma"), dict) else {}
-    actual = i18n.actual()
+    actual = i18n.idioma_novedades()                       # desde la 1.7.3, las novedades son en español o en inglés
     for cod in dict.fromkeys((actual, "en" if actual != i18n.ORIGEN else i18n.ORIGEN)):
         if isinstance(por_idioma.get(cod), str) and por_idioma[cod].strip():
             return por_idioma[cod]
@@ -369,7 +369,7 @@ def descargar(info, carpeta=None, progreso=None, cancelado=None, abrir=None):
                         while True:
                             if cancelado and cancelado():
                                 raise Cancelado(tr("Descarga cancelada."))
-                            bloque = r.read(256 * 1024)
+                            bloque = r.read(64 * 1024)                # trozos pequeños: Escape corta enseguida aunque la red vaya lenta
                             if not bloque:
                                 break
                             hecho += len(bloque)

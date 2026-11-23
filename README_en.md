@@ -101,7 +101,7 @@ Everything that happens has its own sound, placed around you: what sounds to the
 - Stereo headphones.
 - A screen reader running, such as NVDA or JAWS. If there is none, the game speaks with the Windows voice.
 
-Download the latest version, unzip the folder wherever you like and run `PuertoBravo.exe`. It installs nothing: it is portable. Inside the game, `F1` tells you the keys at any time, and the main menu opens the full manual, which is in `data\docs\manual_en.html` (and in Spanish, `manual_es.html`) and can be navigated by headings. The game uses the language of Windows, Spanish, English or Vietnamese, and you can choose it in Options, Language. With version 1.7.2, Vietnamese is installed as a component, in Options, Updates, Components.
+Download the latest version, unzip the folder wherever you like and run `PuertoBravo.exe`. It installs nothing: it is portable. Inside the game, `F1` tells you the keys at any time, and the main menu opens the full manual, which is in `data\docs\manual_en.html` (and in Spanish, `manual_es.html`) and can be navigated by headings. The game uses the language of Windows, Spanish, English, Vietnamese or Brazilian Portuguese, and you can choose it in Options, Language. The release notes of each version are written in Spanish and in English: with the game in Spanish you read them in Spanish, and with any other language, in English.
 
 If something goes wrong, the game keeps a log of each session in `data\logs`, with no personal data: zip the session's folder and attach it to an [issue](https://github.com/hxebolax/PuertoBravo/issues), or send it on Mastodon to [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX). The manual explains how.
 

@@ -15,7 +15,7 @@ li { margin-bottom: .3em; }
 <p>Lo que cambia en cada versión, de la más reciente a la más antigua.</p>
 
 <h2>Versión 1.7.3</h2>
-<p>En preparación, con lo que habéis pedido en el hilo y en GitHub tras la 1.7.2. Las partidas guardadas cargan igual.</p>
+<p>Con lo que habéis pedido en el hilo y en GitHub tras la 1.7.2. Las partidas guardadas cargan igual. Desde esta versión, las novedades se escriben en español y en inglés: con el juego en español las lees en español, y con cualquier otro idioma, en inglés.</p>
 <h3>Novedades</h3>
 <ul>
 <li>El juego en portugués de Brasil, Português do Brasil, gracias a una traducción aportada en GitHub: los menús, la historia, los lugares con sus nombres propios de siempre, los objetos, las teclas, el editor de mods, el panel del servidor y las seis guías. Con la versión 1.7.2 se instala ya como componente, en Opciones, Actualizaciones, Componentes, y se elige en Opciones, Idioma al volver a abrir el juego; desde esta versión viene con el juego, junto al inglés y al vietnamita. No tiene voces grabadas: las escenas las dice tu lector de pantalla. El mod Marisma Negra también está en portugués, y llega a la 1.7.2 como actualización del componente.</li>
@@ -34,8 +34,14 @@ li { margin-bottom: .3em; }
 <li>Los mods pueden llevar sus propios sonidos: en el editor, Mod, Añadir un sonido propio.</li>
 <li>En un servidor, los mensajes de los demás jugadores y del servidor tienen su propio historial, aparte de todo lo demás: Mayúsculas Re Pág y Mayúsculas Av Pág. Así no se pierden entre las teclas y los menús.</li>
 <li>Las órdenes de la consola del servidor valen también en inglés, a la vez que en español: help, players, kick, ban, shutdown y las demás. La ayuda las dice en el idioma de la consola. Hay una orden nueva, renombrar, para cambiarle el nombre a un jugador sin perder nada.</li>
-<li>Las novedades que se leen antes de actualizar llegan en el idioma del juego. Y el LEEME de cada idioma se llama de manera que se entienda en él: README_en.txt en inglés. En el servidor hay también un README_en.txt.</li>
+<li>Las novedades que se leen antes de actualizar llegan en español o, con el juego en cualquier otro idioma, en inglés. Y el LEEME de cada idioma se llama de manera que se entienda en él: README_en.txt en inglés. En el servidor hay también un README_en.txt.</li>
 <li>Un pack de sonidos nuevo, Genny, que se descarga como componente en Opciones, Actualizaciones, Componentes, y llega también a la 1.7.2: los 282 sonidos del juego generados por síntesis, sin grabaciones, cada uno distinto de los demás y con la lógica del juego. Se elige en Opciones, Sonido y música, Pack de sonidos.</li>
+<li>En un servidor nadie puede quedarse con todos los negocios. Cada jugador puede tener tres como mucho, y quien tenga más los devuelve al mercado a medianoche: los últimos que compró, recuperando lo que pagó. Además, puedes quedarte a la fuerza con el negocio de otro jugador pagándole el doble de lo que vale, aunque no lo venda, salvo si es de tu banda o de una aliada, o si ha cambiado de dueño hace menos de tres días. Quien administra el servidor ajusta las tres cosas, o las apaga, en el panel o en servidor.conf: negocios_max, compra_forzosa y forzosa_dias.</li>
+<li>Los componentes van por categorías: idiomas, voces, documentación, packs de sonidos y mods. En Opciones, Actualizaciones, Componentes, cada categoría abre solo los suyos, con su propio Instalar todo, para poner al día solo los idiomas, por ejemplo. Y en Categorías que te interesan marcas las que quieres ver: si no quieres mods, no salen ni te avisan al arrancar.</li>
+<li>El historial de mensajes guarda lo que pasa y no se repite: diálogos, conversaciones, compras, pagos y avisos. Lo que se lee al abrir un menú o al moverte por sus opciones ya no entra, porque se vuelve a oír volviendo a él. Si lo quieres como antes, en Opciones, Voz, Guardar en el historial lo que se lee al moverse por los menús.</li>
+<li>En la vida social, quien no te atrae según Opciones, Me atraen, ya no sale como posible pareja: si no la conoces, no aparece, y si la conoces, solo os queda la amistad, sin besos, noches ni pedirle que sea tu pareja. Y en la ficha de cada persona puedes quitarla de tu móvil, y recuperarla al final de la lista.</li>
+<li>Con un contrato fijo, el menú de tu trabajo tiene Ir a hacer un turno: el GPS te lleva a la oficina de empleo más cercana, para las jornadas, o a donde hay aparcado un vehículo de tu oficio.</li>
+<li>En el editor de mods, cada persona de la vida social dice si es un hombre o una mujer, y la comprobación del mod avisa de los vehículos sin precio, que no se pueden comprar en ningún sitio. La ayuda del precio explica que, con él, el vehículo se vende en todos los concesionarios que no limitan sus modelos.</li>
 </ul>
 <h3>Corregido</h3>
 <ul>
@@ -54,6 +60,10 @@ li { margin-bottom: .3em; }
 <li>En el editor de mods, la F9 explica por qué una localidad no existe: si has puesto su nombre en vez de su identificador, o si está en otro mod. Al cambiar el identificador de una localidad, todo lo que apuntaba a ella se cambia solo. Y un lugar de un mod encuentra su localidad aunque venga en otro mod.</li>
 <li>En inglés, el intermitente, el cruce que viene y los mensajes de contraseña e invitación al entrar en un servidor ya no salen en español.</li>
 <li>Tu banda puede crecer hasta diez, uno más por cada barrio tuyo; antes se quedaba en seis aunque tuvieras muchos más barrios, y el juego seguía diciendo que conquistaras otro. Al llegar al tope, lo dice. El tope se cambia en el editor de mods.</li>
+<li>Con Las bandas intentan reconquistar tus barrios en apagado, ya nadie intenta quitarte un barrio jugando solo. Antes seguían llegando los ataques sueltos de siempre.</li>
+<li>Cuando una patrulla viene a defenderte y sus agentes vuelven al coche, el coche se va de verdad. Si le cortabas el paso, se quedaba parado a tu lado aunque el juego dijera que seguía su ronda.</li>
+<li>Si te metes dentro de una manzana, en una plaza, un parque o la playa, la policía ya no da vueltas alrededor sin fin: cuando no puede acercarse más, aparca y los agentes van a por ti a pie. La ambulancia, igual: se para y los sanitarios van andando hasta los heridos.</li>
+<li>Escape cancela las descargas enseguida, también con una conexión lenta: los componentes, las actualizaciones y el modelo de inteligencia artificial local. Antes había que esperar a que llegara un trozo grande de la descarga, y parecía que no cancelaba.</li>
 </ul>
 
 <h2>Versión 1.7.2</h2>

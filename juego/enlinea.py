@@ -519,15 +519,18 @@ class EnLinea:
             self.hon_sv_al_entrar(ok.get("contrato"))               # tu contrato fijo, como lo tiene apuntado el servidor
         self.sv_al_dia(int(ok.get("dias_fuera") or 0))
         for cosa in ok.get("pendientes", []):                    # lo que pasó con tus propiedades mientras no estabas
-            if cosa.get("que") in ("venta", "caducada"):
+            if cosa.get("que") in ("venta", "caducada", "forzada", "tope"):
                 l = self.lugares.get(cosa.get("lugar"))
                 if l is not None and l.id in self.j.propiedades:
                     self.j.propiedades.remove(l.id)
                 n = max(0, int(cosa.get("n", 0)))
                 self.j.dinero += n
                 nombre = l.nombre if l is not None else tr("una propiedad")
-                self.decir(tr('{get} te ha comprado {nombre} por {n} euros.').format(get=(cosa.get('por', 'Alguien')), nombre=(nombre), n=(n)) if cosa["que"] == "venta" else
-                           tr('Llevabas tanto sin entrar que {nombre} ha vuelto al mercado. Te quedan {n} euros de su valor.').format(nombre=(nombre), n=(n)))
+                self.decir({"venta": tr('{get} te ha comprado {nombre} por {n} euros.'),
+                            "forzada": tr('{get} se ha quedado a la fuerza con {nombre} y te ha pagado {n} euros.'),
+                            "tope": tr('{nombre} ha vuelto al mercado, porque pasabas del tope de negocios de este servidor. Te devuelven {n} euros.'),
+                            "caducada": tr('Llevabas tanto sin entrar que {nombre} ha vuelto al mercado. Te quedan {n} euros de su valor.')}[cosa["que"]]
+                           .format(get=(cosa.get('por', 'Alguien')), nombre=(nombre), n=(n)))
         if ok.get("saldo") is not None and not vuelta:           # el dinero lo lleva el servidor: manda lo que él tiene apuntado
             self._sv_ajustar_saldo(self.j.dinero + self.j.banco - int(ok["saldo"]), callar=True)
         # Al volver no se corta aquí: tu juego manda lo que tiene y el servidor lo juzga con sus reglas de siempre (lo que
@@ -1849,9 +1852,41 @@ class EnLinea:
 
     def _svm_prop_no(self, m):
         l = self.lugares.get(m.get("lugar"))
+        if l is not None and m.get("tope"):                      # el tope de negocios del servidor: sigue en venta para otros
+            if l.id in self.j.propiedades:
+                self.j.propiedades.remove(l.id)
+                self.j.dinero += int(l.get("precio", 0) or 0)
+            self.app.son("error")
+            self.decir(tr('En este servidor nadie puede tener más de {n} negocios. {nombre} no es tuyo: te devuelven lo que pagaste.').format(n=int(m["tope"]), nombre=l.nombre))
+            return
         if l is not None:
             self.sv["props"][l.id] = {"cuenta": -1, "nombre": str(m.get("nombre", ""))}
             self._sv_devolver(l, str(m.get("nombre", "otro jugador")))
+
+    def sv_tope_negocios(self):
+        """Cuántos negocios deja tener este servidor a cada jugador. Cero sin tope, o fuera de un servidor."""
+        return int(self.sv["info"].get("negocios_max") or 0) if self.en_servidor else 0
+
+    def sv_sin_sitio_negocio(self, l, callar=False):
+        """¿Te impide el tope del servidor comprar este negocio? Lo dice, salvo con callar, y devuelve True."""
+        tope = self.sv_tope_negocios()
+        if not tope or l.tipo != "negocio" or sum(1 for i in self.j.propiedades if (self.lug(i) is not None and self.lug(i).tipo == "negocio")) < tope:
+            return False
+        if callar:
+            return True
+        self.app.son("error")
+        self.decir(tr('En este servidor nadie puede tener más de {n} negocios, y tú ya los tienes. Vende uno antes de comprar otro.').format(n=tope), True)
+        return True
+
+    def sv_forzosa(self, l):
+        """Lo que cuesta quedarte a la fuerza con este negocio de otro jugador. Cero si el servidor no lo permite."""
+        pct = int(self.sv["info"].get("forzosa") or 0) if self.en_servidor else 0
+        return int(l.get("precio", 0) or 0) * pct // 100
+
+    def sv_forzar_negocio(self, l):
+        if self.sv_sin_sitio_negocio(l):
+            return
+        self.red.enviar({"t": "prop_forzar", "lugar": l.id})
 
     def sv_robar_negocio(self, l):
         self.red.enviar({"t": "robo", "lugar": l.id})

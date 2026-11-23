@@ -1107,6 +1107,27 @@ a { color: #9fd0ff; }
 <li>Default: <code>30</code>.</li>
 <li>It applies without restarting the server.</li>
 </ul>
+<h4>Businesses per player: <code>negocios_max</code></h4>
+<p>How many businesses one player can own at once, so nobody grabs them all. With 0 there is no limit. If someone owns more than the limit allows, at midnight the last ones they bought go back on the market, and they get back what they paid for them.</p>
+<ul>
+<li>A whole number between 0 and 1000.</li>
+<li>Default: <code>3</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Taking over someone else&#x27;s business by force, as a percentage of its price: <code>compra_forzosa</code></h4>
+<p>Any player can take over someone else&#x27;s business by paying them this percentage of its price, even if they are not selling. The owner gets the money. Not with the businesses of your gang or of an allied gang. With 0 it is not possible.</p>
+<ul>
+<li>A whole number between 0 and 10000.</li>
+<li>Default: <code>200</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
+<h4>Days of protection for a newly bought business: <code>forzosa_dias</code></h4>
+<p>For these real days after buying it, nobody can take over that business by force.</p>
+<ul>
+<li>A whole number between 0 and 365.</li>
+<li>Default: <code>3</code>.</li>
+<li>It applies without restarting the server.</li>
+</ul>
 <h4>Hours a vehicle lasts on the street: <code>vehiculos_horas</code></h4>
 <p>Real hours a vehicle left on the street stays there.</p>
 <ul>

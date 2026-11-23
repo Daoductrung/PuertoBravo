@@ -152,10 +152,62 @@ def menu_contrato(p):
                 falta = p.hon_puesto_falta(sig)
                 lista.append(Opcion(tr('Siguiente puesto: {nombre}, {int} euros de nómina').format(nombre=(sig['nombre']), int=(int(_n(sig, 'sueldo')))) + (tr('. Te falta {falta}').format(falta=(falta)) if falta else tr(". Cumples lo que pide")),
                                     ayuda=tr("El puesto al que subes con las evaluaciones buenas. Si pide un título o más prestigio, no asciendes hasta tenerlo.")))
+            lista += opciones_ir_a_trabajar(p, c)
         lista.append(Opcion(tr("Presentar la dimisión"), dimitir,
                             ayuda=tr("Te pregunta antes. Al dejarlo te quedas sin contrato y vuelves a trabajar por tu cuenta, cuando quieras.")))
         return lista
     m = _abrir(p, tr("Tu trabajo"), ops)
+
+
+def opciones_ir_a_trabajar(p, c):
+    """Una opción por cada cosa que cuenta como turno: marca en el GPS dónde hacerla. Las jornadas, en la oficina de
+    empleo más cercana; los oficios con vehículo, donde hay uno aparcado."""
+    from .menus_vida import DONDE
+    from .trabajos import NOMBRE_TRABAJO
+    jornadas = {x["id"]: x["nombre"].lower() for x in p.datos.get("jornadas", [])}
+
+    def ir(lugar, frase):
+        app = p.app
+        while len(app.pila) > 1 and app.pila[-1] is not p:
+            app.pila.pop()
+        app.teclas.clear()
+        p.salir_interior()
+        p.gps_a_lugar(lugar)
+        p.decir(frase)
+
+    def oficina():
+        x, y = p.pos()
+        ls = [l for l in p.mundo.lugares.values() if l.tipo == "empleo"]
+        if not ls:
+            p.app.son("error")
+            p.app.decir(tr("En esta localidad no hay oficina de empleo. Las jornadas se hacen en la de otra localidad."), True)
+            return
+        l = min(ls, key=lambda l: (l.x - x) ** 2 + (l.y - y) ** 2)
+        ir(l, tr('Destino: {nombre}. Allí, en el menú de la oficina, eliges la jornada y cuenta como turno.').format(nombre=l.nombre))
+
+    def oficio(tipo):
+        def f():
+            if tipo == "mensajeria":
+                p.app.decir(tr("Para la mensajería del mar, zarpa en cualquier barco desde un embarcadero y pulsa J."), True)
+                return
+            donde = p.vehiculo_de_trabajo_cercano(tipo)
+            if donde is None:
+                p.app.son("error")
+                p.app.decir(tr('En esta localidad no hay ningún sitio fijo donde encontrar {v}.').format(v=DONDE.get(tipo, tipo)), True)
+                return
+            ir(donde, tr('Hay {v} aparcado junto a {nombre}. Sube con F y pulsa J para empezar a trabajar.').format(v=DONDE.get(tipo, tipo), nombre=donde.nombre))
+        return f
+    ops = []
+    if any(cl.startswith("jornada:") for cl in c.get("cuenta") or []):
+        nombres = ", ".join(jornadas.get(cl.partition(":")[2], cl.partition(":")[2]) for cl in c["cuenta"] if cl.startswith("jornada:"))
+        ops.append(Opcion(tr('Ir a hacer un turno: {nombres}, en la oficina de empleo').format(nombres=nombres), oficina,
+                          ayuda=tr("Marca en el GPS la oficina de empleo más cercana. Allí eliges la jornada, y cuenta como turno de tu contrato.")))
+    for cl in c.get("cuenta") or []:
+        tipo, _, ident = cl.partition(":")
+        if tipo == "oficio":
+            ops.append(Opcion(tr('Ir a hacer un turno de {nombre}').format(nombre=NOMBRE_TRABAJO.get(ident, ident)), oficio(ident),
+                              ayuda=tr("Marca en el GPS dónde hay aparcado un vehículo de ese oficio. Tres servicios hacen un turno.")))
+    return ops
 
 
 def cuenta_txt(p, c):

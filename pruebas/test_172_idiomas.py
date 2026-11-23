@@ -175,12 +175,33 @@ def test_la_pantalla_de_componentes(robot, monkeypatch):
     c3 = C.Componente(dict(d, id="mod-y", tipo="mod", nombre="Mod Y", file="mod-y_3.zip", version=3, size=200 * 1024), "https://ejemplo.invalid/componentes/componentes.json", "servidor")
     publicados = {c.id: c, c2.id: c2, c3.id: c3}
     monkeypatch.setattr(C, "instalados", lambda: {"sonidos-x": 1, "mod-y": 2})
+    app.cfg["comp_sin_interes"] = []
     m = MC.lista(app, publicados)
     textos = [o.texto for o in m.opciones]
-    assert not any("Pack X" in t for t in textos), textos                           # lo que ya está al día no sale
-    assert any("Italiano" in t and "nuevo" in t and "3 megas" in t for t in textos), textos
-    assert any("Mod Y" in t and "actualización a la versión 3" in t and "200 kilobytes" in t for t in textos), textos
-    assert textos[0].startswith("Instalar todo: 2 componentes") and textos[-1] == "Volver"
+    # primero las categorías: cada una con cuántos tiene; lo que ya está al día no cuenta
+    assert textos[0].startswith("Instalar todo lo que te interesa: 2 componentes") and textos[-1] == "Volver", textos
+    assert any(t.startswith("Idiomas: 1 para instalar o actualizar, 3 megas") for t in textos), textos
+    assert any(t.startswith("Mods: 1 para instalar o actualizar") for t in textos), textos
+    assert not any(t.startswith("Packs de sonidos") for t in textos), textos
+    assert any(t.startswith("Categorías que te interesan: todas") for t in textos), textos
+    # dentro de una categoría, solo los suyos
+    mi = MC.categoria(app, publicados, "mod")
+    ti = [o.texto for o in mi.opciones]
+    assert any("Mod Y" in t and "actualización a la versión 3" in t and "200 kilobytes" in t for t in ti) and not any("Italiano" in t for t in ti), ti
+    app.cerrar(mi)
+    mi = MC.categoria(app, publicados, "idioma")
+    assert any("Italiano" in o.texto and "nuevo" in o.texto and "3 megas" in o.texto for o in mi.opciones)
+    app.cerrar(mi)
+    # quien no quiere mods: no los ve, no cuentan en el aviso al arrancar, y se le dice que hay más en lo que no le interesa
+    app.cfg["comp_sin_interes"] = ["mod"]
+    assert [c.id for c in MC.pendientes(app, publicados)] == ["idioma-it"]
+    m.refrescar(False)
+    textos2 = [o.texto for o in m.opciones]
+    assert not any(t.startswith("Mods") for t in textos2) and any("no te interesan hay 1 más" in t for t in textos2), textos2
+    assert any(t.startswith("Categorías que te interesan: Idiomas, Voces, Documentación, Packs de sonidos") for t in textos2), textos2
+    app.cfg["comp_sin_interes"] = []
+    m.refrescar(False)
+    textos = [o.texto for o in m.opciones]
     # con todo al día, no se abre ninguna lista: se dice
     monkeypatch.setattr(C, "instalados", lambda: {"sonidos-x": 1, "mod-y": 3, "idioma-it": 2})
     cima = app.pila[-1]
@@ -194,15 +215,21 @@ def test_la_pantalla_de_componentes(robot, monkeypatch):
         hay[comp.id] = comp.version
         return f"{comp.nombre} instalado, versión {comp.version}."
     monkeypatch.setattr(C, "instalar", instalar)
-    m.i = next(k for k, t in enumerate(textos) if "Italiano" in t)
+    m.i = next(k for k, t in enumerate(textos) if t.startswith("Idiomas"))
+    robot.tecla(pygame.K_RETURN)                         # abre la categoría de los idiomas
+    mc = app.pila[-1]
+    mc.i = next(k for k, o in enumerate(mc.opciones) if "Italiano" in o.texto)
     robot.tecla(pygame.K_RETURN)
     robot.frames(3)
     assert hechos == ["idioma-it"]
     assert "Se nota la próxima vez que abras el juego" in robot.dicho()
-    m2 = app.pila[-1]                                    # la lista se rehace con lo que queda: solo el mod
-    assert getattr(m2, "es_componentes", False) and m2 is not m and [o.texto for o in m2.opciones][0].startswith("Mods: Mod Y")
-    assert m not in app.pila
+    m2 = app.pila[-1]                                    # la lista se rehace con lo que queda: solo los mods
+    assert getattr(m2, "es_componentes", False) and m2 is not m and [o.texto for o in m2.opciones][0].startswith("Mods: 1 para instalar")
+    assert m not in app.pila and mc not in app.pila
     m2.i = 0
+    robot.tecla(pygame.K_RETURN)
+    mc = app.pila[-1]
+    mc.i = next(k for k, o in enumerate(mc.opciones) if "Mod Y" in o.texto)
     robot.tecla(pygame.K_RETURN)
     robot.frames(3)
     assert hechos == ["idioma-it", "mod-y"]

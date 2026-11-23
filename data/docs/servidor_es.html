@@ -1107,6 +1107,27 @@ a { color: #9fd0ff; }
 <li>De serie: <code>30</code>.</li>
 <li>Se aplica sin reiniciar el servidor.</li>
 </ul>
+<h4>Negocios por jugador: <code>negocios_max</code></h4>
+<p>Cuántos negocios puede tener a la vez un mismo jugador, para que nadie se quede con todos. Con 0 no hay tope. Si alguien tiene más de los que permite el tope, a medianoche vuelven al mercado los últimos que compró, y se le devuelve lo que pagó por ellos.</p>
+<ul>
+<li>Un número entero entre 0 y 1000.</li>
+<li>De serie: <code>3</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Comprar a la fuerza un negocio ajeno, en tanto por ciento de su precio: <code>compra_forzosa</code></h4>
+<p>Cualquier jugador puede quedarse con el negocio de otro pagándole este tanto por ciento de su precio, aunque no lo venda. Lo cobra su dueño. No vale con los negocios de tu banda ni de una banda aliada. Con 0 no se puede.</p>
+<ul>
+<li>Un número entero entre 0 y 10000.</li>
+<li>De serie: <code>200</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
+<h4>Días de protección de un negocio recién comprado: <code>forzosa_dias</code></h4>
+<p>Durante estos días de verdad después de comprarlo, nadie puede quedarse a la fuerza con ese negocio.</p>
+<ul>
+<li>Un número entero entre 0 y 365.</li>
+<li>De serie: <code>3</code>.</li>
+<li>Se aplica sin reiniciar el servidor.</li>
+</ul>
 <h4>Horas que dura un vehículo en la calle: <code>vehiculos_horas</code></h4>
 <p>Horas de verdad que un vehículo dejado en la calle sigue ahí.</p>
 <ul>

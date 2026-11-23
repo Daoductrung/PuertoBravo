@@ -105,7 +105,7 @@ Tudo o que acontece tem um som próprio, colocado ao seu redor: o que soa à dir
 - Fones de ouvido estéreo.
 - Um leitor de tela em execução, como NVDA ou JAWS. Se não houver, o jogo fala com a voz Windows.
 
-Baixe a versão mais recente, descompacte a pasta onde quiser e execute `PuertoBravo.exe`. Não instala nada: é portátil. Dentro do jogo, `F1` informa as teclas a qualquer momento, e o menu principal abre o manual completo, que está em `data\docs\manual_pt.html` (e em espanhol, `manual_es.html`) e pode ser navegado por títulos. O jogo usa o idioma Windows, espanhol, inglês ou vietnamita, e você pode escolher em Opções, Idioma. Com a versão 1.7.2, o vietnamita é instalado como componente, em Opções, Atualizações, Componentes.
+Baixe a versão mais recente, descompacte a pasta onde quiser e execute `PuertoBravo.exe`. Não instala nada: é portátil. Dentro do jogo, `F1` informa as teclas a qualquer momento, e o menu principal abre o manual completo, que está em `data\docs\manual_pt.html` (e em espanhol, `manual_es.html`) e pode ser navegado por títulos. O jogo usa o idioma do Windows, espanhol, inglês, vietnamita ou português do Brasil, e você pode escolher em Opções, Idioma. As novidades de cada versão são escritas em espanhol e em inglês: com o jogo em espanhol você as lê em espanhol, e com qualquer outro idioma, em inglês.
 
 Se algo der errado, o jogo mantém um log de cada sessão em `data\logs`, sem dados pessoais: compacte a pasta da sessão e anexe-a a um [issue](https://github.com/hxebolax/PuertoBravo/issues), ou envie em Mastodon para [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX). O manual explica como.
 
@@ -373,7 +373,7 @@ A proteção utiliza uma chave que fica dentro do próprio programa. Impede a ed
 
 O jogo é atualizado lendo um arquivo `version.json` assinado com Ed25519. A fonte (o servidor, GitHub, ambos ou um endereço personalizado) apenas decide de onde será baixado: o que estiver instalado deve ser assinado com a chave privada do editor, cuja chave pública está em `juego/actualizador.py`.
 
-1. Insira `VERSION` em `juego/__init__.py` e adicione as notas de versão na parte superior de `data/docs/novedades_es.html` e de `data/docs/novedades_pt.html`.
+1. Insira `VERSION` em `juego/__init__.py` e adicione as notas de versão na parte superior de `data/docs/novedades_es.html` e de `data/docs/novedades_en.html` (as novidades ficam só em espanhol e em inglês).
 2. Execute `compilar.bat`.
 3. Execute `publicar.bat`. Ele cria em `dist\publicar` o arquivo `PuertoBravo_v<versión>.zip` e seu `version.json` assinado, e os copia para a pasta escrita em `publicar_destino.txt`, que é a pasta web do servidor.
 4. Para GitHub, crie a versão `v<versión>` e carregue esses mesmos dois arquivos.

@@ -353,9 +353,10 @@ def vida_social(p, directo=None):
                                     ayuda=tr("Se viene contigo de verdad: te sigue a pie y sube al vehículo que lleves. Pasear, llevarle a comer, a un bar, al cine o a la feria le gusta y os acerca. "
                                           "Si te metes en líos con la policía, no. Una vez al día; dura como mucho tres horas del juego.")))
             adulto = p.modo_adulto()                             # sin el contenido para adultos: un beso, un baile, y nada de noches
+            atrae = te_atrae(p, pers) or j.pareja == pid         # a quien no te atrae (Opciones, Me atraen) solo se le trata como amistad
             lista += [Opcion(GESTOS[g][0], exige(lambda g=g: p.gesto(pid, pers, g)), ayuda=tr("Un gesto de cariño, cara a cara. Hace falta cierta confianza, y cada uno se puede repetir una vez al día."))
-                      for g in GESTOS if adulto or g in ("beso", "baile")]
-            if adulto:
+                      for g in GESTOS if atrae and (adulto or g in ("beso", "baile"))]
+            if adulto and atrae:
                 lista += [
                       Opcion(tr("Pasar la noche juntos"), noche, ayuda=tr('Necesitáis mucha confianza. Vais a una de tus casas en esta localidad o, si no tienes, a un hotel por {precio} euros.').format(precio=(p.precio('hotel_cita', 70))))]
             if j.pareja == pid:
@@ -394,8 +395,11 @@ def vida_social(p, directo=None):
                                         ayuda=tr("Es el último paso de la relación. Si rompéis, se acaba también el matrimonio.")))
                 lista.append(Opcion(tr("Romper la relación"), romper,
                                     ayuda=tr("Lo dejáis al momento, sin pedir confirmación. La relación cae mucho, tu ánimo baja y, si vivíais juntos, se va de casa.")))
-            else:
+            elif atrae:
                 lista.append(Opcion(tr("Pedirle que sea tu pareja"), pedir, ayuda=tr("Hace falta mucha química. Tener pareja sube tu ánimo cada día, pero hay que cuidarla.")))
+            if j.pareja != pid:
+                lista.append(Opcion(tr('Quitar a {nombre} de tu móvil').format(nombre=pers["nombre"]), lambda: quitar_del_movil(pers),
+                                    ayuda=tr("Deja de salir en Vida social. No se pierde lo que habéis vivido: al final de la lista, en Personas que has quitado, la puedes recuperar.")))
             lista.append(Opcion(tr("Volver"), lambda: app.cerrar()))
             return lista
         if nuevo and aqui is not None and aqui.id == pers["lugar"]:
@@ -405,13 +409,41 @@ def vida_social(p, directo=None):
         mf = Menu(app, pers["nombre"], ops)
         app.abrir(mf)
 
+    def quitar_del_movil(pers):
+        if pers["id"] not in j.ocultos_social:
+            j.ocultos_social.append(pers["id"])
+        app.cerrar()
+        app.son("menu_atras")
+        app.decir(tr('{nombre} ya no sale en tu móvil. La puedes recuperar al final de la lista.').format(nombre=pers["nombre"]), True)
+        if app.pila and getattr(app.pila[-1], "es_vida_social", False):
+            app.pila[-1].refrescar(False)
+
+    def recuperar():
+        def ops_ocultos():
+            lista = []
+            for pers in p.dato_adulto("personas"):
+                if pers["id"] in j.ocultos_social:
+                    lista.append(Opcion(pers["nombre"], (lambda pers=pers: (j.ocultos_social.remove(pers["id"]), app.decir(tr('{nombre} vuelve a salir en tu móvil.').format(nombre=pers["nombre"]), True),
+                                                                           mo.refrescar(False))), ayuda=tr("Intro la vuelve a poner en Vida social.")))
+            return lista + [Opcion(tr("Volver"), lambda: app.cerrar())]
+        mo = Menu(app, tr("Personas que has quitado de tu móvil"), ops_ocultos, al_cerrar=lambda: m_social.refrescar(False) if m_social else None)
+        app.abrir(mo)
+
+    m_social = None
+
     def ops():
         lista = []
+        ocultas = 0
         for pers in p.dato_adulto("personas"):
             l = p.lug(pers["lugar"])
             if l is None:
                 continue
+            if pers["id"] in j.ocultos_social:
+                ocultas += 1
+                continue
             r = j.relaciones.get(pers["id"])
+            if r is None and not te_atrae(p, pers):              # a quien no conoces y no te atrae no se te ofrece como relación
+                continue
             if r is None:
                 if aqui is not None and aqui.id == pers["lugar"]:
                     lista.append(Opcion(tr('Presentarte a {nombre}, que está aquí mismo').format(nombre=(pers['nombre'])), (lambda pers=pers: ficha(pers)),
@@ -429,6 +461,9 @@ def vida_social(p, directo=None):
                                 ayuda=tr("Con quién has quedado, dónde y a qué hora. Intro marca el sitio en el GPS; también puedes anularla.")))
         lista.append(Opcion(lambda: tr('Tu ánimo es {animo_txt}. En la calle, {reputacion_txt}').format(animo_txt=(p.animo_txt()), reputacion_txt=(p.reputacion_txt())),
                             ayuda=tr("Cómo estás de ánimo y lo que se dice de ti en la calle. Tener pareja sube el ánimo cada día; las citas y los buenos ratos también, y romper lo baja.")))
+        if ocultas:
+            lista.append(Opcion(tr('Personas que has quitado de tu móvil: {n}').format(n=ocultas), recuperar,
+                                ayuda=tr("Intro abre la lista para volver a poner a alguien en Vida social.")))
         lista.append(Opcion(tr("Volver"), lambda: app.cerrar()))
         return lista
     if directo:                                              # desde el propio local, vas derecho a la persona
@@ -436,7 +471,15 @@ def vida_social(p, directo=None):
         if pers is not None:
             ficha(pers)
         return
-    app.abrir(Menu(app, tr("Vida social") if p.modo_adulto() else tr("Vida sentimental"), ops, intro=tr("Aquí están las personas con las que puedes tener una relación")))
+    m_social = Menu(app, tr("Vida social") if p.modo_adulto() else tr("Vida sentimental"), ops, intro=tr("Aquí están las personas con las que puedes tener una relación"))
+    m_social.es_vida_social = True
+    app.abrir(m_social)
+
+
+def te_atrae(p, pers):
+    """¿Te puede atraer esa persona, según la opción Me atraen? Sin género en sus datos (un mod antiguo), sí."""
+    g = pers.get("genero")
+    return g not in ("h", "m") or p.me_atrae(g)
 
 
 # =================================================================== sustancias

@@ -137,9 +137,13 @@ class App:
         kw.setdefault("cat", "interfaz")
         return self.mez.sonar(nombre, **kw)
 
-    def decir(self, texto, interrumpir=False):
+    def decir(self, texto, interrumpir=False, guardar=True):
         self.voz.detalle = self.cfg["detalle_voz"]
-        self.voz.decir(texto, interrumpir)
+        self.voz.decir(texto, interrumpir, guardar)
+
+    def decir_menu(self, texto):
+        """Lo que se lee al abrir un menú o al moverse por él: se vuelve a oír volviendo, así que no llena el historial."""
+        self.decir(texto, True, guardar=bool(self.cfg["historial_menus"]))
 
     def recargar_sonidos(self):
         """Vuelve a cargar los sonidos: tras elegir otro pack o cambiar el igualado de volumen."""

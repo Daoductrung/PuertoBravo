@@ -1168,6 +1168,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             "servidor": {"nombre": self.cfg["nombre"], "bienvenida": self.cfg["bienvenida"], "pvp": si(self.cfg["pvp"]), "pasivo": si(self.cfg["modo_pasivo"]),
                          "seguras": si(self.cfg["zonas_seguras"]), "adultos": si(self.cfg["adultos"]), "trafico": self._tr_activo(), "peatones": self._pe_activo(), "policia": self._po_activo(), "proteccion": int(self.cfg["proteccion"]),
                          "max_jugadores": tope,
+                         # lo de la 1.7.3: el tope de negocios y la compra a la fuerza
+                         "negocios_max": int(self.cfg["negocios_max"]), "forzosa": int(self.cfg["compra_forzosa"]), "forzosa_dias": int(self.cfg["forzosa_dias"]),
                          # lo de la 1.7.1: un juego anterior no mira estas claves
                          "rol": si(self.cfg["rol"]), "rol_metros": int(self.cfg["rol_metros"]), "radio_coches": si(self.cfg["radio_coches"]),
                          # la vida honrada, conectado: si hay nóminas de contrato fijo y si las tiendas tratan según el prestigio
@@ -2032,6 +2034,7 @@ class Servidor(Bots, Trafico, Peatones, Policia):
             self._banda_difundir(banda)
         self._a_todos({"t": "hora", "h": self._hora(), "medianoche": True})
         self._propiedades_abandonadas()
+        self._negocios_sobrantes()
         for j in self.jugadores.values():                     # lo que les robaron ayer a sus negocios se descuenta ahora
             if j.dentro:
                 total = self.alm.cobrar_robos(j.cuenta)
@@ -2266,6 +2269,8 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if f is None or f["cuenta"] == j.cuenta or not f["oferta"]:
             return self._aviso(j, es("Eso no está en venta."))
         precio = int(f["oferta"])
+        if self._sin_sitio_negocio(j, l):
+            return
         if not self._cobrar(j, precio, es("comprar %s") % l["nombre"]):
             return
         vendedor = f["cuenta"]
@@ -2291,6 +2296,76 @@ class Servidor(Bots, Trafico, Peatones, Policia):
                                                    "n": int(l["precio"]) * int(self.cfg["venta_mercado"]) // 100 if f["pagada"] or not si(self.cfg["economia"]) else 0})
             self._prop_difundir(f["lugar"], antes=f["cuenta"])
 
+    # ------------------------------------------------------------------ negocios: que nadie se quede con todos
+    def _negocios_de(self, cuenta):
+        """Los negocios de una cuenta, del más antiguo al más reciente."""
+        return sorted((f for f in self.alm.propiedades() if f["cuenta"] == cuenta and (self.lugares.get(f["lugar"]) or {}).get("tipo") == "negocio"),
+                      key=lambda f: f["desde"] or 0)
+
+    def _sin_sitio_negocio(self, j, l):
+        """¿Le impide el tope tener otro negocio? Si es así, se lo dice y devuelve True."""
+        tope = int(self.cfg["negocios_max"])
+        if l["tipo"] != "negocio" or not tope or j.bot or len(self._negocios_de(j.cuenta)) < tope:
+            return False
+        self._aviso(j, es("En este servidor nadie puede tener más de %d negocios, y tú ya los tienes. Vende uno antes de comprar otro.") % tope, "error")
+        return True
+
+    def _negocios_sobrantes(self):
+        """Quien tiene más negocios de los que permite el tope devuelve al mercado los últimos que compró, y recupera lo que pagó."""
+        tope = int(self.cfg["negocios_max"])
+        if not tope:
+            return
+        for cuenta in {f["cuenta"] for f in self.alm.propiedades()}:
+            sobran = self._negocios_de(cuenta)[tope:]
+            en_linea = next((o for o in self.jugadores.values() if o.dentro and o.cuenta == cuenta), None)
+            if not sobran or (en_linea is not None and en_linea.bot):
+                continue
+            for f in sobran:
+                l = self.lugares[f["lugar"]]
+                n = int(l["precio"]) if f["pagada"] or not si(self.cfg["economia"]) else 0
+                self.alm.quitar_propiedad(f["lugar"])
+                if en_linea is not None:
+                    if n:
+                        en_linea.dinero += n
+                        self._enviar(en_linea, {"t": "dinero", "nombre": es("%s, que vuelve al mercado por el tope de negocios") % l["nombre"], "n": n})
+                    else:
+                        self._aviso(en_linea, es("%s vuelve al mercado: pasabas del tope de negocios de este servidor.") % l["nombre"])
+                else:
+                    self.alm.dejar_pendiente(cuenta, {"que": "tope", "lugar": f["lugar"], "n": n})
+                self._prop_difundir(f["lugar"], antes=cuenta)
+                self._a_todos({"t": "aviso", "texto": es("%s vuelve a estar en venta, en %s.") % (l["nombre"], self.mundo["mapas"][l["mapa"]]["nombre"])})
+
+    def _m_prop_forzar(self, j, m):
+        """Quedarte a la fuerza con el negocio de otro jugador: le pagas lo que diga el servidor, aunque no lo venda."""
+        l = self.lugares.get(m.get("lugar"))
+        f = self.alm.propiedad(l["id"]) if l is not None and l["tipo"] == "negocio" else None
+        pct = int(self.cfg["compra_forzosa"])
+        if f is None or f["cuenta"] == j.cuenta:
+            return self._aviso(j, es("Este negocio no es de otro jugador."))
+        if not pct:
+            return self._aviso(j, es("En este servidor no se puede comprar un negocio a la fuerza."), "error")
+        banda = self._banda_de(f["cuenta"])
+        if banda is not None and j.banda is not None and (banda == j.banda or banda in self.alm.aliadas(j.banda)):
+            return self._aviso(j, es("Ese negocio es de alguien de tu banda o de una banda aliada."), "error")
+        dias = int(self.cfg["forzosa_dias"])
+        if dias and self.ahora() - float(f["desde"] or 0) < 86400.0 * dias:
+            return self._aviso(j, es("%s cambió de dueño hace menos de %d días: aún no se le puede quitar.") % (l["nombre"], dias), "error")
+        if self._sin_sitio_negocio(j, l):
+            return
+        precio = int(l["precio"]) * pct // 100
+        if not self._cobrar(j, precio, es("quedarte con %s") % l["nombre"]):
+            return
+        vendedor = f["cuenta"]
+        self.alm.poner_propiedad(l["id"], j.cuenta, pagada=True)
+        en_linea = next((o for o in self.jugadores.values() if o.dentro and o.cuenta == vendedor), None)
+        if en_linea is not None:
+            en_linea.dinero += precio
+            self._enviar(en_linea, {"t": "dinero", "nombre": es("%s, que se ha quedado a la fuerza con %s") % (j.nombre, l["nombre"]), "n": precio})
+        else:
+            self.alm.dejar_pendiente(vendedor, {"que": "forzada", "lugar": l["id"], "n": precio, "por": j.nombre})
+        self._prop_difundir(l["id"], antes=vendedor)
+        self._a_todos({"t": "aviso", "texto": es("%s se queda a la fuerza con %s, en %s.") % (j.nombre, l["nombre"], self.mundo["mapas"][l["mapa"]]["nombre"])}, menos=j)
+
     def _m_prop_comprar(self, j, m):
         """Una casa o un negocio solo puede ser de un jugador. El primero que lo compra se lo queda."""
         l = self.lugares.get(m.get("lugar"))
@@ -2300,6 +2375,9 @@ class Servidor(Bots, Trafico, Peatones, Policia):
         if f is not None and f["cuenta"] != j.cuenta:
             self._devolucion(j, int(l.get("precio", 0)))       # su juego le devuelve lo pagado: es dinero que ya era suyo
             return self._enviar(j, {"t": "prop_no", "lugar": l["id"], "nombre": f["nombre"]})
+        if f is None and self._sin_sitio_negocio(j, l):         # el tope de negocios: su juego también se lo devuelve
+            self._devolucion(j, int(l.get("precio", 0)))
+            return self._enviar(j, {"t": "prop_no", "lugar": l["id"], "nombre": "", "tope": int(self.cfg["negocios_max"])})
         if f is None:
             self.alm.poner_propiedad(l["id"], j.cuenta, pagada=not si(self.cfg["economia"]) or j.bot)
             if si(self.cfg["economia"]) and not j.bot and int(l.get("precio", 0) or 0) > 0:

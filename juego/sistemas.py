@@ -834,6 +834,8 @@ def sucesos_territorio(p, azar=None):
         return                                                    # hay un pacto en vigor: nadie ataca
     if tipo == "ataque" and p.rec_activa():
         return                                                    # con la reconquista en marcha, los asaltos los lleva ella (reconquista.py): nunca dos a la vez
+    if tipo == "ataque" and p.cfg["reconquista"] == "apagado" and not getattr(p, "en_servidor", False) and not p.online_activo():
+        return                                                    # con la reconquista apagada nadie intenta quitarte un barrio: es lo que promete la opción
     if tipo == "ataque" and banda in j.tributos:
         return                                                    # esa banda te paga por estar tranquila: no va a atacarte
     if tipo == "ataque" and hasattr(p, "en_tregua") and p.en_tregua(banda):
