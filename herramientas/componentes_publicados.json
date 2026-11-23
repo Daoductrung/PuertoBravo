@@ -1,7 +1,7 @@
 {
  "idioma-en": {
-  "version": 1,
-  "huella": "cf536cb6bbfeb5d918b940f4e57baed5098d267f2b95da571f5772710a0a4f78",
+  "version": 2,
+  "huella": "13820d2496007218b66e2f42c89189252c40eb07dd1ef4dc72f13d0d2566f54a",
   "archivos": [
    "data/idiomas/en/palabras.json",
    "data/idiomas/en/textos.json",
@@ -2481,8 +2481,8 @@
   ]
  },
  "docs-es": {
-  "version": 1,
-  "huella": "507280bded7fd6f8fee15b33952bcb91aae4c9f823f8c1e16a46b7e70d14ba13",
+  "version": 2,
+  "huella": "f34f4aafcf691f2c60058e145e6231c485058327e14750607c6dce0d647bdba1",
   "archivos": [
    "data/docs/cambiar_sonidos_es.html",
    "data/docs/editor_mods_es.html",
@@ -2493,8 +2493,8 @@
   ]
  },
  "sonidos-alternativo": {
-  "version": 1,
-  "huella": "954af52750dc126c41f14a0983321e42588a8c7920a84d8be48e43309827176a",
+  "version": 2,
+  "huella": "c9e81fd80cc47b370c817d67f363510e495c7518a152d46fcf90f779d5cba249",
   "archivos": [
    "data/sonidos/alternativo/CREDITOS.txt",
    "data/sonidos/alternativo/abstinencia.flac",
@@ -2697,6 +2697,7 @@
    "data/sonidos/alternativo/pack.pbd",
    "data/sonidos/alternativo/paisano.flac",
    "data/sonidos/alternativo/pajaro.flac",
+   "data/sonidos/alternativo/panico.flac",
    "data/sonidos/alternativo/pareja.flac",
    "data/sonidos/alternativo/pasan_horas.flac",
    "data/sonidos/alternativo/paso_acera0.flac",
@@ -2743,7 +2744,9 @@
    "data/sonidos/alternativo/ruptura.flac",
    "data/sonidos/alternativo/salpicadura.flac",
    "data/sonidos/alternativo/semaforo_pio.flac",
+   "data/sonidos/alternativo/semaforo_rojo.flac",
    "data/sonidos/alternativo/semaforo_tic.flac",
+   "data/sonidos/alternativo/semaforo_verde.flac",
    "data/sonidos/alternativo/simon_0.flac",
    "data/sonidos/alternativo/simon_1.flac",
    "data/sonidos/alternativo/simon_2.flac",
@@ -2780,8 +2783,8 @@
   ]
  },
  "sonidos-envolvente": {
-  "version": 1,
-  "huella": "dfd4450fca2458ac526da52de4349c2a1e33e04926472500b86a5e9e870f34c5",
+  "version": 2,
+  "huella": "44c24045eef2f20fac05c34f0ac544d87172d4e56f547302b5f18013f3336556",
   "archivos": [
    "data/sonidos/envolvente/CREDITOS.txt",
    "data/sonidos/envolvente/abstinencia.flac",
@@ -2984,6 +2987,7 @@
    "data/sonidos/envolvente/pack.pbd",
    "data/sonidos/envolvente/paisano.flac",
    "data/sonidos/envolvente/pajaro.flac",
+   "data/sonidos/envolvente/panico.flac",
    "data/sonidos/envolvente/pareja.flac",
    "data/sonidos/envolvente/pasan_horas.flac",
    "data/sonidos/envolvente/paso_acera0.flac",
@@ -3030,7 +3034,9 @@
    "data/sonidos/envolvente/ruptura.flac",
    "data/sonidos/envolvente/salpicadura.flac",
    "data/sonidos/envolvente/semaforo_pio.flac",
+   "data/sonidos/envolvente/semaforo_rojo.flac",
    "data/sonidos/envolvente/semaforo_tic.flac",
+   "data/sonidos/envolvente/semaforo_verde.flac",
    "data/sonidos/envolvente/simon_0.flac",
    "data/sonidos/envolvente/simon_1.flac",
    "data/sonidos/envolvente/simon_2.flac",
@@ -3067,8 +3073,8 @@
   ]
  },
  "sonidos-realista": {
-  "version": 1,
-  "huella": "9d0fce94c1994b565d8d2e52957494555d6ec468c065f47e0ee11d43dc61a7d5",
+  "version": 2,
+  "huella": "2df81989fa13a219ed2a8f784ac6f36cb33c8fa80577d1cf7fa76fd5e77f16c1",
   "archivos": [
    "data/sonidos/realista/CREDITOS.txt",
    "data/sonidos/realista/abstinencia.flac",
@@ -3271,6 +3277,7 @@
    "data/sonidos/realista/pack.pbd",
    "data/sonidos/realista/paisano.flac",
    "data/sonidos/realista/pajaro.flac",
+   "data/sonidos/realista/panico.flac",
    "data/sonidos/realista/pareja.flac",
    "data/sonidos/realista/pasan_horas.flac",
    "data/sonidos/realista/paso_acera0.flac",
@@ -3317,7 +3324,9 @@
    "data/sonidos/realista/ruptura.flac",
    "data/sonidos/realista/salpicadura.flac",
    "data/sonidos/realista/semaforo_pio.flac",
+   "data/sonidos/realista/semaforo_rojo.flac",
    "data/sonidos/realista/semaforo_tic.flac",
+   "data/sonidos/realista/semaforo_verde.flac",
    "data/sonidos/realista/simon_0.flac",
    "data/sonidos/realista/simon_1.flac",
    "data/sonidos/realista/simon_2.flac",
@@ -3354,8 +3363,8 @@
   ]
  },
  "sonidos-retro": {
-  "version": 1,
-  "huella": "68f0029e0dd08d9f9584c4f98c6ebdd47dfe52efa73e26de27aeca77f86591e5",
+  "version": 2,
+  "huella": "0877adc6264b2f1e76ba0d7bb1152afc704510ad97f04710fd8565bc966c43a4",
   "archivos": [
    "data/sonidos/retro/CREDITOS.txt",
    "data/sonidos/retro/abstinencia.flac",
@@ -3558,6 +3567,7 @@
    "data/sonidos/retro/pack.pbd",
    "data/sonidos/retro/paisano.flac",
    "data/sonidos/retro/pajaro.flac",
+   "data/sonidos/retro/panico.flac",
    "data/sonidos/retro/pareja.flac",
    "data/sonidos/retro/pasan_horas.flac",
    "data/sonidos/retro/paso_acera0.flac",
@@ -3604,7 +3614,9 @@
    "data/sonidos/retro/ruptura.flac",
    "data/sonidos/retro/salpicadura.flac",
    "data/sonidos/retro/semaforo_pio.flac",
+   "data/sonidos/retro/semaforo_rojo.flac",
    "data/sonidos/retro/semaforo_tic.flac",
+   "data/sonidos/retro/semaforo_verde.flac",
    "data/sonidos/retro/simon_0.flac",
    "data/sonidos/retro/simon_1.flac",
    "data/sonidos/retro/simon_2.flac",
@@ -3641,57 +3653,57 @@
   ]
  },
  "mod-bahia_del_ocaso": {
-  "version": 1,
-  "huella": "975dfc1731f2257608ceb4d685e7a0035e665148c872193589a6bd4a47472d47",
+  "version": 2,
+  "huella": "38ae5c7e1a22b11505fcb38c41f96910eecbf8baf1a6c35648632ce823664673",
   "archivos": [
    "data/mods/bahia_del_ocaso.pbm"
   ]
  },
  "mod-costa_dorada": {
-  "version": 1,
-  "huella": "babfd86d9a81a7c8817db4b4e91ef352cf7b9c1e989b2a65e44cd036cfd7ed54",
+  "version": 2,
+  "huella": "3bf9e91773f4cd396faa2dfca68e168ff017e7a01e1bbdec59a401e3d1a894c0",
   "archivos": [
    "data/mods/costa_dorada.pbm"
   ]
  },
  "mod-isla_de_los_vientos": {
-  "version": 1,
-  "huella": "6ab81761df55b485f131ef666d77ed2b72219f556111f7ef8b909b3d6f2e156f",
+  "version": 2,
+  "huella": "72e70d36bf430b70d9e0803e3829dd48ffa707b6a211bba8d4770a36f828cb84",
   "archivos": [
    "data/mods/isla_de_los_vientos.pbm"
   ]
  },
  "mod-motor_y_asfalto": {
-  "version": 1,
-  "huella": "12cef8334a4288c67476ae34dcd0515ec6dd07bdbb1d511e83d72ec9117cc7c9",
+  "version": 2,
+  "huella": "5ad0b74e40b9a605992158578b10bc1f98974006ec3c7025dba2faaaa8235785",
   "archivos": [
    "data/mods/motor_y_asfalto.pbm"
   ]
  },
  "mod-noches_de_neon": {
-  "version": 1,
-  "huella": "f31f453abe6de38dd300e49e6b68405b5611ac60e56d954c5b675948b4aad7d0",
+  "version": 2,
+  "huella": "937c2b9c0b5d1a5bd7be27122368b82057bfe20cc90698fdd982a5169f059dbe",
   "archivos": [
    "data/mods/noches_de_neon.pbm"
   ]
  },
  "mod-oficios_y_recados": {
-  "version": 1,
-  "huella": "b390b720f74af35a8e2d00e71124d3847cafc3e84cfff653a183ba6fcd46f680",
+  "version": 2,
+  "huella": "fa7cd6c0d5e12f5b9a953811b29fe75ac862ef997a6d8cb6a08bdbc807ac7e90",
   "archivos": [
    "data/mods/oficios_y_recados.pbm"
   ]
  },
  "mod-penas_altas": {
-  "version": 1,
-  "huella": "96d1ca3eb51250fa6d828c14355807c47ae9d84ffb6220747f6a8a2333a9f64d",
+  "version": 2,
+  "huella": "80431b446f852c745f1e513630d16566280119aa4a1d6cd2f65638a260b8beda",
   "archivos": [
    "data/mods/penas_altas.pbm"
   ]
  },
  "mod-valdeolmos": {
-  "version": 1,
-  "huella": "d613670ca35f7697a1ef1f3a524db05368442b2ea2bed372aba6e3e715378197",
+  "version": 2,
+  "huella": "a722c861fd1e5f0602e1837f11b4d8e6f68c8af914667f8bb52730a41103016e",
   "archivos": [
    "data/mods/valdeolmos.pbm"
   ]
@@ -3970,17 +3982,13 @@
   ]
  },
  "idioma-vi": {
-  "version": 2,
-  "huella": "12bd21222ef6ef676b4b6a7dd6d060fb90b8aebbda1883f41dcd68ba29ecb1e3",
+  "version": 3,
+  "huella": "592a77670436043ae3ae9101704d3e016ce3e4c49919312e856ebf0ad1aeba91",
   "archivos": [
    "data/idiomas/vi/idioma.json",
    "data/idiomas/vi/palabras.json",
    "data/idiomas/vi/textos.json",
    "data/docs/cambiar_sonidos_vi.html",
-   "data/docs/editor_mods_vi.html",
-   "data/docs/manual_vi.html",
-   "data/docs/novedades_vi.html",
-   "data/docs/servidor_vi.html",
    "data/docs/teclas_vi.html"
   ]
  },
@@ -4275,8 +4283,8 @@
   ]
  },
  "idioma-pt": {
-  "version": 2,
-  "huella": "f6c2a1610f60c3884ef62801a98ee62fedaa76e176b7ebf0264bba3e6dcb2baf",
+  "version": 3,
+  "huella": "fa7787675a43a70ce942b7db734bf737a3ab39446c72ea3a7263d0be9b98c209",
   "archivos": [
    "data/idiomas/pt/idioma.json",
    "data/idiomas/pt/palabras.json",
@@ -4284,7 +4292,6 @@
    "data/docs/cambiar_sonidos_pt.html",
    "data/docs/editor_mods_pt.html",
    "data/docs/manual_pt.html",
-   "data/docs/novedades_pt.html",
    "data/docs/servidor_pt.html",
    "data/docs/teclas_pt.html"
   ]
