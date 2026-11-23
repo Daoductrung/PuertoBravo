@@ -26,7 +26,7 @@ POR_DEFECTO = {
     "anunciar_barrios": True,
     "anunciar_superficie": False,
     "piloto_gps": False,
-    "piloto_estilo": "normal",     # normal | prisa | mucha_prisa: cómo conduce el piloto del GPS
+    "piloto_estilo": "normal",     # normal | prisa | mucha_prisa | temerario: cómo conduce el piloto del GPS
     "semaforos_coche": True,       # al conducir tú, el semáforo del próximo cruce: si está en rojo o en verde
     "frenada_auto": True,
     "sucesos": True,
@@ -127,7 +127,7 @@ POR_DEFECTO = {
 OPCIONES = {
     "movimiento": ["brujula", "giro"],
     "conduccion": ["asistida", "libre"],
-    "piloto_estilo": ["normal", "prisa", "mucha_prisa"],
+    "piloto_estilo": ["normal", "prisa", "mucha_prisa", "temerario"],
     "punteria": ["completa", "manual"],
     "dificultad": ["facil", "normal", "dificil"],
     "direcciones": ["cardinal", "reloj", "relativa"],

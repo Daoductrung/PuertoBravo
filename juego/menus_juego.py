@@ -611,7 +611,8 @@ def opciones(app):
     def estilo_piloto():
         from .conduccion import ESTILOS_PILOTO
         propios = {"normal": tr("normal, a velocidad de ciudad"), "prisa": tr("con prisa, pero para en los semáforos"),
-                   "mucha_prisa": tr("con mucha prisa, sin parar en los semáforos")}
+                   "mucha_prisa": tr("con mucha prisa, sin parar en los semáforos"),
+                   "temerario": tr("temerario, a toda velocidad y sin frenar por nada")}
 
         def aj(d):
             ops = list(ESTILOS_PILOTO)
@@ -620,7 +621,8 @@ def opciones(app):
         return Opcion(lambda: tr("Cómo conduce el piloto del GPS") + ": " + propios.get(cfg["piloto_estilo"], propios["normal"]), ajuste=aj,
                       ayuda=tr("Normal: va a velocidad de ciudad, para en los semáforos y se detiene al llegar. Con prisa: corre más, como en un trabajo contra el reloj, "
                                "pero sigue parando en rojo. Con mucha prisa: va a todo lo que da el vehículo y no para en los semáforos, para huir de la policía o llegar a tiempo; "
-                               "frena solo lo justo para tomar las curvas y para no chocar con el de delante. Si no te busca la policía, correr así te puede costar multas. "
+                               "frena solo lo justo para tomar las curvas y para no chocar con el de delante. Temerario: a toda la velocidad del vehículo, sin parar en los semáforos "
+                               "y sin frenar por el que va delante, así que choca a menudo; solo frena para las curvas. Si no te busca la policía, correr así te puede costar multas. "
                                "Al volante se cambia también con Mayúsculas Y."))
 
     def seccion(titulo, ops, ayuda_=None):

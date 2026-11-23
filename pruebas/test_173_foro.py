@@ -55,9 +55,42 @@ def test_mayusculas_y_cambia_el_estilo_y_se_dice(robot):
     robot.tecla(pygame.K_y, pygame.KMOD_SHIFT)
     assert p.cfg["piloto_estilo"] == "mucha_prisa" and "semáforos" in robot.dicho()
     robot.tecla(pygame.K_y, pygame.KMOD_SHIFT)
+    assert p.cfg["piloto_estilo"] == "temerario" and "temerario" in robot.dicho().lower()
+    robot.tecla(pygame.K_y, pygame.KMOD_SHIFT)
     assert p.cfg["piloto_estilo"] == "normal"
     assert not p.cfg["piloto_gps"]                                   # Mayúsculas Y no enciende ni apaga el piloto
 
+
+def test_el_piloto_temerario_va_al_cien_por_cien_y_no_frena_por_el_de_delante(robot, monkeypatch):
+    p = robot.nueva_partida()
+    p.cfg["conduccion"] = "asistida"
+    p.cfg["piloto_gps"] = True
+    p.cfg["sucesos"] = False
+    p.cfg["frenada_auto"] = True
+    v = _al_volante(robot, "deportivo")
+    robot.frames(10)
+    destino = max(p.mundo.lugares.values(), key=lambda l: math.hypot(l.x - v.x, l.y - v.y))
+    p.gps_a_lugar(destino, callar=True)
+    assert p.piloto_completo()
+    p._piloto_semaforo = lambda *a: None                            # sin semáforos ni curvas: solo cuenta la velocidad que busca
+    p._piloto_curva = lambda *a: 999.0
+    for estilo, parte in (("mucha_prisa", 0.95), ("temerario", 1.0)):
+        p.cfg["piloto_estilo"] = estilo
+        v.vel = v.modelo["vel_max"] + 5.0                            # por encima: con un frenazo enorme se queda en la suya
+        p._pilotar(v, 1.0, 100.0)
+        assert abs(v.vel - v.modelo["vel_max"] * parte) < 0.01, estilo
+    del p._piloto_semaforo, p._piloto_curva
+    frenadas = []
+    monkeypatch.setattr(p, "_frenada_auto", lambda *a: frenadas.append(p.cfg["piloto_estilo"]))
+    for estilo in ("mucha_prisa", "temerario"):
+        p.cfg["piloto_estilo"] = estilo
+        frenadas.clear()
+        robot.frames(20)
+        assert bool(frenadas) == (estilo != "temerario")            # solo el temerario se salta la frenada automática
+    frenadas.clear()                                                 # si pisas el freno, los pedales vuelven a ser tuyos
+    v.vel = 10.0
+    robot.frames(3, mantener=(pygame.K_DOWN,))
+    assert frenadas
 
 def test_semaforo_al_conducir_a_mano(robot):
     """Conduciendo tú, se dice el semáforo del próximo cruce, en rojo o en verde, y cuándo cambia."""
@@ -104,5 +137,5 @@ def test_opciones_del_piloto_y_del_semaforo(robot):
     menus_juego.opciones(robot.app)
     textos = robot.textos_menus() if hasattr(robot, "textos_menus") else None
     from juego.config import OPCIONES, POR_DEFECTO
-    assert POR_DEFECTO["piloto_estilo"] == "normal" and OPCIONES["piloto_estilo"] == ["normal", "prisa", "mucha_prisa"]
+    assert POR_DEFECTO["piloto_estilo"] == "normal" and OPCIONES["piloto_estilo"] == ["normal", "prisa", "mucha_prisa", "temerario"]
     assert POR_DEFECTO["semaforos_coche"] is True
