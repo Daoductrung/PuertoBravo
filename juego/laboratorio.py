@@ -127,6 +127,7 @@ PRECIO_LAB = 9000
 PRECIO_MATERIAL = 180
 PRODUCTOS = ("pastillas", "polvo", "cristal")
 DURA = 24.0
+CALIDAD_SIN_MINIJUEGO = 0.5       # sin el minijuego (opción minijuego_laboratorio), cada tanda sale normal: ni limpia ni floja, y no arde
 
 
 def puede_montar(p, lugar):
@@ -159,16 +160,22 @@ def opciones_casa(p, lugar, Menu, Opcion):
                 app.decir(tr("No te cabe más mercancía encima. Vende antes."), True)
                 return
             j.material -= 1
-            app.abrir(Coccion(p, lugar, s))
+            if p.cfg["minijuego_laboratorio"]:
+                app.abrir(Coccion(p, lugar, s))
+            else:
+                Coccion(p, lugar, s).sin_minijuego()
         return f
+    if p.cfg["minijuego_laboratorio"]:
+        ayuda_fabricar = tr("Un minijuego de oído. Suenan dos tonos: uno fijo, que es el punto bueno, y otro que se te va. Con flecha arriba y flecha abajo llevas el tuyo "
+                            "hasta igualarlo al fijo, y lo mantienes ahí. Cuanto más tiempo estén iguales, mejor sale la tanda y más unidades sacas. "
+                            "Si lo dejas irse muy arriba mucho rato, puede arder.")
+    else:
+        ayuda_fabricar = tr("La tanda sale al momento, normal: ni limpia ni floja, y sin peligro de que arda. El minijuego se vuelve a poner en Opciones, Contenido para adultos.")
     ops = [Opcion(lambda: tr('Laboratorio. Tienes material para {material} {v}').format(material=(j.material), v=(tr('tanda') if j.material == 1 else tr('tandas'))),
                   ayuda=tr("Cada tanda que fabricas gasta una de material. El material lo vende cualquier proveedor."))]
     for s in p.dato_adulto("sustancias"):
         if s["id"] in PRODUCTOS:
-            ops.append(Opcion(tr('Fabricar {lower}').format(lower=(s['nombre'].lower())), trabajar(s),
-                              ayuda=tr("Un minijuego de oído. Suenan dos tonos: uno fijo, que es el punto bueno, y otro que se te va. Con flecha arriba y flecha abajo llevas el tuyo "
-                                    "hasta igualarlo al fijo, y lo mantienes ahí. Cuanto más tiempo estén iguales, mejor sale la tanda y más unidades sacas. "
-                                    "Si lo dejas irse muy arriba mucho rato, puede arder.")))
+            ops.append(Opcion(tr('Fabricar {lower}').format(lower=(s['nombre'].lower())), trabajar(s), ayuda=ayuda_fabricar))
     return [Opcion(tr("Entrar en el laboratorio"), lambda: app.abrir(Menu(app, tr("Laboratorio"), ops)),
                    ayuda=tr("Fabricar mercancía para venderla después a los proveedores o por la calle."))]
 
@@ -200,6 +207,13 @@ class Coccion:
         self.alto = 0.0                # segundos muy por encima: peligro
         self.t_tono = 0.0
         self.hecho = False
+
+    def sin_minijuego(self):
+        """La tanda sin jugar: sale con CALIDAD_SIN_MINIJUEGO y sin estar nunca muy arriba, así que no arde. Lo demás
+        (lo que cabe en la mochila, el armario, el vecino que nota el olor) es igual que al jugarla."""
+        self.bien = DURA * CALIDAD_SIN_MINIJUEGO
+        self.alto = 0.0
+        self._fin()
 
     def al_entrar(self):
         self.app.decir(tr('Empiezas una tanda de {lower}. Oirás un tono fijo y otro que se mueve. Con flecha arriba y flecha abajo, iguala el tuyo al fijo y mantenlo. Dura {int} segundos. Escape lo deja a medias.').format(lower=(self.s['nombre'].lower()), int=(int(DURA))), True)
