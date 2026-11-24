@@ -3709,13 +3709,14 @@
   ]
  },
  "mod-marisma_negra": {
-  "version": 4,
-  "huella": "bb40d337bf0f403ca059c82e49ecf91d6d8071676db2433dc1e08a592ae42d7d",
+  "version": 5,
+  "huella": "3eff01367d7759f5817f399a458397ebdb21c28943df069952160ebe3a0c4c21",
   "archivos": [
    "data/mods/marisma_negra.pbm",
    "data/idiomas/en/mods/marisma_negra.json",
    "data/idiomas/vi/mods/marisma_negra.json",
    "data/idiomas/pt/mods/marisma_negra.json",
+   "data/idiomas/ru/mods/marisma_negra.json",
    "data/voces/marisma_negra_es/mn01_1_1.ogg",
    "data/voces/marisma_negra_es/mn01_1_2.ogg",
    "data/voces/marisma_negra_es/mn01_1_2@alex_h.ogg",
@@ -4300,13 +4301,14 @@
   ]
  },
  "mod-el_diablo": {
-  "version": 1,
-  "huella": "5d6891332a24ce22b75947565c57595034b8fc2c85c42271fa64f8fc34d73047",
+  "version": 2,
+  "huella": "73e3578239a6c78dfeb27318905c097774b6c53b3bec88d2e5801f4a7892e4fb",
   "archivos": [
    "data/mods/el_diablo.pbm",
    "data/idiomas/en/mods/el_diablo.json",
    "data/idiomas/vi/mods/el_diablo.json",
    "data/idiomas/pt/mods/el_diablo.json",
+   "data/idiomas/ru/mods/el_diablo.json",
    "data/voces/el_diablo_es/di01_1_1.ogg",
    "data/voces/el_diablo_es/di01_1_2.ogg",
    "data/voces/el_diablo_es/di01_1_2@alex_h.ogg",
@@ -4359,6 +4361,17 @@
    "data/voces/el_diablo_en/di04_3_1.ogg",
    "data/voces/el_diablo_en/di04_6_1.ogg",
    "data/voces/el_diablo_en/di04_6_2.ogg"
+  ]
+ },
+ "idioma-ru": {
+  "version": 1,
+  "huella": "120af63ef9f1416a1743d7d7996490e6c8051abacce5d53c27c1ff4848052819",
+  "archivos": [
+   "data/idiomas/ru/idioma.json",
+   "data/idiomas/ru/palabras.json",
+   "data/idiomas/ru/textos.json",
+   "data/docs/cambiar_sonidos_ru.html",
+   "data/docs/teclas_ru.html"
   ]
  }
 }

@@ -1,0 +1,10 @@
+{
+  "Dejas el volquete atravesado delante de la puerta. Bajo la lona hay mineral, sí, y unas cajas con el sello de una naviera de Puerto Bravo.": "Вы ставите самосвал поперёк двери. Под брезентом руда, да, и какие-то ящики с печатью судоходной компании из Пуэрто Браво.",
+  "Dejas la cesta junto a la puerta, con todo dentro.": "Вы оставляете корзину у двери, со всем содержимым.",
+  "Del dinero del armario, cuánto se llevan, por ciento": "Сколько процентов денег из шкафа уносят",
+  "Dentro, los sonidos van por orden alfabético de su nombre.": "Внутри звуки идут по алфавиту их названий.",
+  "Para esa mejora los vecinos tienen que hablar mejor de ti: hacen falta {int} de prestigio y tienes {int2}.": "Для этого улучшения соседи должны лучше о вас отзываться: нужно {int} репутации, а у вас {int2}.",
+  "Para {lower} te falta {_junta}.": "Для {lower} вам не хватает: {_junta}.",
+  "Que venga con {nombre_completo}, del garaje de {v}: {precio} euros": "Пусть приедет {nombre_completo} из гаража {v}: {precio} евро",
+  "Si ganamos el derbi, me doy por satisfech{o} todo el año.": "Если мы выиграем дерби, я буду доволен весь год."
+}

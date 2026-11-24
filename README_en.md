@@ -101,7 +101,7 @@ Everything that happens has its own sound, placed around you: what sounds to the
 - Stereo headphones.
 - A screen reader running, such as NVDA or JAWS. If there is none, the game speaks with the Windows voice.
 
-Download the latest version, unzip the folder wherever you like and run `PuertoBravo.exe`. It installs nothing: it is portable. Inside the game, `F1` tells you the keys at any time, and the main menu opens the full manual, which is in `data\docs\manual_en.html` (and in Spanish, `manual_es.html`) and can be navigated by headings. The game uses the language of Windows, Spanish, English, Vietnamese or Brazilian Portuguese, and you can choose it in Options, Language. The release notes of each version are written in Spanish and in English: with the game in Spanish you read them in Spanish, and with any other language, in English.
+Download the latest version, unzip the folder wherever you like and run `PuertoBravo.exe`. It installs nothing: it is portable. Inside the game, `F1` tells you the keys at any time, and the main menu opens the full manual, which is in `data\docs\manual_en.html` (and in Spanish, `manual_es.html`) and can be navigated by headings. The game uses the language of Windows, Spanish, English, Vietnamese, Brazilian Portuguese or Russian, and you can choose it in Options, Language. The release notes of each version are written in Spanish and in English: with the game in Spanish you read them in Spanish, and with any other language, in English.
 
 If something goes wrong, the game keeps a log of each session in `data\logs`, with no personal data: zip the session's folder and attach it to an [issue](https://github.com/hxebolax/PuertoBravo/issues), or send it on Mastodon to [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX). The manual explains how.
 
@@ -496,6 +496,7 @@ Thanks to everyone who has helped make Puerto Bravo better through GitHub. Whene
 - [patricus3](https://github.com/patricus3): the careless style of the GPS autopilot and the El Diablo mod, a hitman agency with its own missions and contracts. Their reports and suggestions also brought the English release notes and the hurried driving styles, building on any Windows, fixes for failing tests, each game saving to its own slot, the scrapyard paying for your vehicles' upgrades and the places list sorted from nearest to farthest.
 - [Daoductrung](https://github.com/Daoductrung): the Vietnamese translation of the game, all of its documentation and the Marisma Negra mod.
 - [leoguimaoficial](https://github.com/leoguimaoficial): the complete Brazilian Portuguese translation and its corrections.
+- [dimasya34](https://github.com/dimasya34): the Russian translation of the game.
 
 ### Bug reports and suggestions
 

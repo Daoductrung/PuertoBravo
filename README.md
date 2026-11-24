@@ -89,7 +89,7 @@ Todo lo que ocurre tiene su sonido, colocado a tu alrededor: lo que suena a la d
 - Auriculares estéreo.
 - Un lector de pantalla abierto, como NVDA o JAWS. Si no hay ninguno, el juego habla con la voz de Windows.
 
-Descarga la última versión, descomprime la carpeta donde quieras y ejecuta `PuertoBravo.exe`. No instala nada: es portable. Dentro del juego, `F1` dice las teclas en cualquier momento, y el menú principal abre el manual completo, que está en `data\docs\manual_es.html` (y en inglés, `manual_en.html`) y se navega por encabezados. El juego va en el idioma de Windows, en español, en inglés, en vietnamita o en portugués de Brasil, y se puede elegir en Opciones, Idioma. Las novedades de cada versión se escriben en español y en inglés: con el juego en español se leen en español, y con cualquier otro idioma, en inglés.
+Descarga la última versión, descomprime la carpeta donde quieras y ejecuta `PuertoBravo.exe`. No instala nada: es portable. Dentro del juego, `F1` dice las teclas en cualquier momento, y el menú principal abre el manual completo, que está en `data\docs\manual_es.html` (y en inglés, `manual_en.html`) y se navega por encabezados. El juego va en el idioma de Windows, en español, en inglés, en vietnamita, en portugués de Brasil o en ruso, y se puede elegir en Opciones, Idioma. Las novedades de cada versión se escriben en español y en inglés: con el juego en español se leen en español, y con cualquier otro idioma, en inglés.
 
 Si algo falla, el juego deja un registro de cada sesión en `data\logs`, sin datos personales: comprimes la carpeta de la sesión y la adjuntas a una [incidencia](https://github.com/hxebolax/PuertoBravo/issues), o la envías por Mastodon a [@HXeBoLaX](https://comunidad.nvda.es/@HXeBoLaX). El manual explica cómo.
 
@@ -482,6 +482,7 @@ Gracias a todas las personas que han ayudado a mejorar Puerto Bravo desde GitHub
 - [patricus3](https://github.com/patricus3): el estilo temerario del piloto automático del GPS y el mod El Diablo, una agencia de sicarios con sus misiones y sus contratos. Además, sus avisos y propuestas trajeron las novedades en inglés y los estilos de conducción con prisa, la compilación en cualquier Windows, el arreglo de pruebas que fallaban, que cada partida guarde en su propia ranura, que el desguace pague las mejoras de tus vehículos y la lista de lugares de más cerca a más lejos.
 - [Daoductrung](https://github.com/Daoductrung): la traducción al vietnamita del juego, de toda su documentación y del mod Marisma Negra.
 - [leoguimaoficial](https://github.com/leoguimaoficial): la traducción completa al portugués de Brasil y sus correcciones.
+- [dimasya34](https://github.com/dimasya34): la traducción al ruso del juego.
 
 ### Con avisos de fallos y propuestas
 
