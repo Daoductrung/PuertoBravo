@@ -46,7 +46,12 @@ POR_DEFECTO = {
     "voz_tono": 0,                 # de -10 a 10
     "voz_volumen": 100,            # de 0 a 100
     "detalle_voz": "normal",       # cuánto explica el juego al hablar: mucho, normal o poco
-    "guardado_por_ranura": True,   # desde la 1.7.4: cada partida en su ranura, con su guardado automático y el rápido dentro
+    "guardado_por_ranura": True,
+    "dia_semana": "ambos",         # cómo se dicen los días: numero (día 22) | nombre (lunes) | ambos (lunes, día 22)
+    "pasos_alternos": True,        # tus pasos, uno a cada lado (izquierda y derecha); con no, todos al centro
+    "callar_sin_foco": True,       # con el juego en segundo plano no habla: no interrumpe a tu lector en otra ventana
+    "act_instalar_solo": False,    # al arrancar, si hay versión nueva, se descarga e instala sin preguntar
+    "comp_instalar_solo": False,   # al arrancar, los componentes nuevos de las categorías que te interesan se instalan solos   # desde la 1.7.4: cada partida en su ranura, con su guardado automático y el rápido dentro
     "historial_menus": False,      # lo que se lee al moverse por los menús también va al historial (antes de la 1.7.3, siempre)
     "historial_al_final": True,    # cada mensaje nuevo lleva el historial (Re Pág y Av Pág) al final; con no, se queda donde lo dejaste
     "vol_senales": 1.0,            # volumen propio de balizas, radar, tonos de puntería y sonidos de los lugares
@@ -129,6 +134,7 @@ OPCIONES = {
     "movimiento": ["brujula", "giro"],
     "conduccion": ["asistida", "libre"],
     "piloto_estilo": ["normal", "prisa", "mucha_prisa", "temerario"],
+    "dia_semana": ["ambos", "numero", "nombre"],
     "punteria": ["completa", "manual"],
     "dificultad": ["facil", "normal", "dificil"],
     "direcciones": ["cardinal", "reloj", "relativa"],
@@ -179,6 +185,15 @@ class Config:
             cifrado.escribir_json(self.archivo, v, sangria=2)          # protegido en el juego compilado
         except OSError:
             pass
+
+    # Lo que es tuyo y no una preferencia: no se toca al restablecer las opciones de serie.
+    CONSERVAR = ("idioma", "servidores", "red_nombre", "red_ultima", "act_url", "ia_url_otro", "ia_modelo_otro", "ia_servicio", "tutorial_visto")
+
+    def restablecer(self):
+        """Todas las opciones como vienen de serie, menos lo de CONSERVAR."""
+        guardado = {k: self.v[k] for k in self.CONSERVAR if k in self.v}
+        self.v = {k: (dict(v) if isinstance(v, dict) else list(v) if isinstance(v, list) else v) for k, v in POR_DEFECTO.items()}
+        self.v.update(guardado)
 
     def __getitem__(self, k):
         return self.v[k]

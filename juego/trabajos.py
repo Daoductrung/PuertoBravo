@@ -20,9 +20,9 @@ def _resto(t):
     return max(0, t.get("limite") or 0)
 
 class Trabajos:
-    def _destino_azar(self, minimo=150, maximo=650, excluir=None):
+    def _destino_azar(self, minimo=150, maximo=650, excluir=None, sin_tipos=()):
         x, y = self.pos()
-        todos = [l for l in self.mundo.lugares.values() if l.tipo not in ("salida", "muelle", "embarcadero") and "xy" not in l.d]
+        todos = [l for l in self.mundo.lugares.values() if l.tipo not in ("salida", "muelle", "embarcadero") + tuple(sin_tipos) and "xy" not in l.d]
         ops = [l for l in todos if minimo <= math.hypot(l.x - x, l.y - y) <= maximo and l is not excluir]
         return random.choice(ops or todos or list(self.mundo.lugares.values()))
 
@@ -100,7 +100,7 @@ class Trabajos:
             t.update(fase="recoger", lugar=l, limite=None, texto=tr('Taxi: recoge al cliente en {nombre}.').format(nombre=(l.nombre)))
             self.gps_a_lugar(l, auto=True, callar=True)
         elif tipo == "ambulancia":
-            l = self._destino_azar(120, 500)
+            l = self._destino_azar(120, 500, sin_tipos=("hospital",))       # el herido nunca está ya en un hospital
             d = self._dist(l)
             t.update(fase="recoger", lugar=l, limite=45 + d / 6.0, texto=tr('Ambulancia: hay un herido en {nombre}. ¡Date prisa!').format(nombre=(l.nombre)))
             self.gps_a_lugar(l, auto=True, callar=True)
@@ -284,7 +284,9 @@ class Trabajos:
             elif self._parado_en(l):
                 self.son("puerta_coche")
                 if t["fase"] == "recoger":
-                    h = min((q for q in self.mundo.lugares.values() if q.tipo == "hospital"), key=lambda q: math.hypot(q.x - x, q.y - y))
+                    hospitales = [q for q in self.mundo.lugares.values() if q.tipo == "hospital"]
+                    otros = [q for q in hospitales if q is not l] or hospitales              # a otro hospital que el sitio del herido
+                    h = min(otros, key=lambda q: math.hypot(q.x - x, q.y - y))
                     d = self._dist(h)
                     t.update(fase="llevar", lugar=h, limite=40 + d / 6.0, dist=d, texto=tr('Ambulancia: lleva al herido a {nombre}.').format(nombre=(h.nombre)))
                     self.decir(tr('Herido a bordo. Llévalo a {nombre} cuanto antes.').format(nombre=(h.nombre)))

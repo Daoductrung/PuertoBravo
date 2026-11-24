@@ -318,7 +318,8 @@ class Extras2:
 
     def empezar_combate(self, l, c):
         """Un combate del gimnasio, definido en los datos: uno o varios asaltos seguidos, solo con los puños."""
-        g = self.j.stats.get(c["id"], 0)
+        # Cada victoria sube el premio y la dureza del rival, hasta un tope (victorias_tope, en los datos): después, ya no.
+        g = min(self.j.stats.get(c["id"], 0), max(0, int(c.get("victorias_tope", 10))))
         asaltos = max(1, int(c.get("asaltos", 1)))
         nombres = list(c.get("rivales") or [tr("el Rival")])
         rivales = random.sample(nombres, asaltos) if len(nombres) >= asaltos else [random.choice(nombres) for _ in range(asaltos)]
@@ -334,7 +335,7 @@ class Extras2:
                           "enemigos": [{"n": 1, "tipo": rival[0].upper() + rival[1:], "arma": "punos", "deportivo": bool(c.get("deportivo", True)),
                                         "salud": int(c.get("salud", 60)) + int(c.get("salud_asalto", 0)) * n + int(c.get("salud_victoria", 20)) * g}]})
         self._empezar_repetible({"id": c["id"], "titulo": tr('{nombre} contra {v}').format(nombre=(c['nombre']), v=(rivales[0])) if asaltos == 1 else c["nombre"], "lugar": l.id, "contador": c["id"],
-                                 "pasos": pasos, "recompensa": {"dinero": int(c.get("premio", 150)) + int(c.get("premio_victoria", 100)) * g}})
+                                 "pasos": pasos, "solo_punos": True, "recompensa": {"dinero": int(c.get("premio", 150)) + int(c.get("premio_victoria", 100)) * g}})
         self.son("campana_ring", cat="interfaz")
 
     def empezar_boxeo(self, l):

@@ -139,7 +139,10 @@ class App:
 
     def decir(self, texto, interrumpir=False, guardar=True):
         self.voz.detalle = self.cfg["detalle_voz"]
-        self.voz.decir(texto, interrumpir, guardar)
+        # En segundo plano, con la opción de serie, no habla: no interrumpe a tu lector en otra ventana. Lo dicho va igual
+        # al historial, así que al volver lo repasas con Re Pág.
+        hablar = getattr(self, "con_foco", True) or not self.cfg["callar_sin_foco"]
+        self.voz.decir(texto, interrumpir, guardar, hablar=hablar)
 
     def decir_menu(self, texto):
         """Lo que se lee al abrir un menú o al moverse por él: se vuelve a oír volviendo, así que no llena el historial."""
@@ -387,6 +390,9 @@ class App:
                             self.teclas.discard(teclado.traducir(self.cfg, ev.key))
                     elif ev.type in (pygame.WINDOWFOCUSLOST,):
                         self.teclas.clear()
+                        self.con_foco = False
+                    elif ev.type in (pygame.WINDOWFOCUSGAINED,):
+                        self.con_foco = True
                 self.paso(dt)
                 if self.voz.ultimo() != ultimo:
                     ultimo = self.voz.ultimo()

@@ -50,6 +50,8 @@ AJ = Ajustes("capo", {
     "frases_cocina": [tr("{n} ha cocinado en {casa}: {u} unidades de {sust}, guardadas en el armario."), tr("En {casa}, {n} saca una tanda de {sust}: {u} unidades al armario.")],
     "frases_cocina_incendio": [tr("El laboratorio de {casa} ha ardido. {n} sale con quemaduras y los vecinos llaman a la policía."),
                                tr("{n} se despista y el laboratorio de {casa} se quema. Se ha perdido.")],
+    # si el laboratorio ya no está (una redada, un incendio, otro cocinero que lo quemó), el cocinero lo dice y se queda libre
+    "frases_cocina_sin_lab": [tr("{n} iba a cocinar en {casa}, pero allí ya no tienes laboratorio. Se queda sin tarea hasta que le des otra desde su ficha."), tr("En {casa} ya no hay laboratorio, y {n} se queda sin nada que cocinar. Dale otra tarea desde su ficha.")],
     "frases_traicion_robo": [tr("{n} ha desaparecido. Del armario de {casa} falta {que}."), tr("{n} no contesta al teléfono. Al pasar por {casa}, ves que falta {que}.")],
     "frases_traicion_rival": [tr("{n} se ha ido con otra banda. Se llevó lo que sabía de ti."), tr("Te cuentan que {n} trabaja ahora para otros. No se despidió.")],
     "frases_traicion_chivato": [tr("La policía ha registrado {casa}. Alguien de los tuyos se ha ido de la lengua."), tr("Redada en {casa}. Sabían exactamente dónde mirar: alguien de tu banda ha hablado.")],
@@ -196,7 +198,7 @@ class Capo:
         l = self.lug(casa_id)
         if l is None or casa_id not in j.laboratorios or casa_id not in j.propiedades:
             f["tarea"] = ""
-            return ""
+            return AJ.frase("frases_cocina_sin_lab", n=f["n"], casa=self.nombre_lugar(l) if l else tr("una casa"))
         if int(j.material or 0) <= 0:
             return tr('{n} no ha podido cocinar en {nombre_lugar}: no te queda material. Se compra a un proveedor.').format(n=(f['n']), nombre_lugar=(self.nombre_lugar(l)))
         j.material = int(j.material) - 1

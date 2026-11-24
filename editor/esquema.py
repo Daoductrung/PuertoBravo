@@ -435,6 +435,7 @@ ESQUEMAS = {
         c("salud_victoria", tr("Salud de más por cada victoria que lleves"), "entero", minimo=0, defecto=20),
         c("premio", tr("Premio"), "entero", req=True, minimo=0),
         c("premio_victoria", tr("Premio de más por cada victoria que lleves"), "entero", minimo=0),
+        c("victorias_tope", tr("Victorias que cuentan para subir el premio y la dureza"), "entero", tr("Pasadas esas victorias, el premio y la dureza del rival ya no suben más. De serie, 10."), minimo=0, defecto=10),
         c("deportivo", tr("Es un combate deportivo"), "si_no", tr("Con sí, que es lo normal, tumbar a los rivales no es delito ni baja tu prestigio entre los vecinos. "
           "Con no, es una pelea ilegal: cada rival que cae cuenta como una agresión si alguien lo ve."), defecto=True),
         c("ayuda", tr("Explicación"), "largo", tr("Lo que se oye con la ayuda de la opción."))]},
@@ -1237,6 +1238,7 @@ ESQUEMAS = {
         c("frases_camello_detenido", tr("Camello detenido"), "textos", tr("Una por línea."), grupo=tr("Frases")),
         c("frases_cocina", tr("Cocina"), "textos", tr("Una por línea."), grupo=tr("Frases")),
         c("frases_cocina_incendio", tr("Cocina incendio"), "textos", tr("Una por línea."), grupo=tr("Frases")),
+        c("frases_cocina_sin_lab", tr("Cocina sin laboratorio"), "textos", tr("Cuando el laboratorio donde cocinaba ya no está. Una por línea."), grupo=tr("Frases")),
         c("frases_traicion_robo", tr("Traicion robo"), "textos", tr("Una por línea."), grupo=tr("Frases")),
         c("frases_traicion_rival", tr("Traicion rival"), "textos", tr("Una por línea."), grupo=tr("Frases")),
         c("frases_traicion_chivato", tr("Traicion chivato"), "textos", tr("Una por línea."), grupo=tr("Frases")),

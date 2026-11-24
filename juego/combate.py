@@ -99,6 +99,10 @@ class Combate:
 
     def elegir_arma(self, idx, paso=1):
         j = self.j
+        if self.mision and self.mision["def"].get("solo_punos") and idx != "punos":
+            self.app.son("error")                                # en el ring y en la jaula, solo los puños: ni katana ni nada
+            self.decir(tr("En un combate del gimnasio solo valen los puños."), True)
+            return
         if isinstance(idx, str):
             j.arma = idx
         elif idx is None:
@@ -146,11 +150,18 @@ class Combate:
             self.son("recarga", vol=0.7)
 
     # --------------------------------------------------------------- objetivos
+    def alcance_avistar(self):
+        """Hasta dónde llega a ver y fijar enemigos: noventa metros o, con un arma de más alcance en la mano (el rifle de
+        precisión, el lanzacohetes), un poco más que su alcance. Los de una misión aparecen a esa distancia."""
+        a = self.armas_d.get(self.j.arma or "punos", {})
+        return max(45.0, float(a.get("alcance", 0)) * 1.1) if a.get("tipo") == "fuego" else 45.0
+
     def _objetivos(self, todos=False):
         x, y = self.pos()
         lista = []
+        radio = max(90.0, self.alcance_avistar())
         for p in self.personas:
-            if not p.muerto and (p.hostil or todos) and p.dist(x, y) < 90:
+            if not p.muerto and (p.hostil or todos) and p.dist(x, y) < radio:
                 if p.tipo in ("aliado", "perro") and not self.cfg["fuego_amigo"]:
                     continue                                     # sin fuego amigo, a los tuyos ni se les apunta
                 lista.append(p)
@@ -428,6 +439,7 @@ class Combate:
         self.sv_golpe_agente(p, dano)                            # o un agente de los que lleva el servidor
         if self.se_rinde_con(p, dano):                           # uno al que hay que asustar o detener: se rinde en vez de caer
             return
+        p.activo = True                                          # quien recibe un disparo deja de esperar: va a por ti
         p.salud -= dano
         if p.salud <= 0:
             p.muerto = True

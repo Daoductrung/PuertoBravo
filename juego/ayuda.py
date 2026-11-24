@@ -38,7 +38,7 @@ TECLAS = {
         (tr("Números del 1 al 9"), tr("eligen arma. La coma pasa a la siguiente y Mayúsculas coma a la anterior")),
         ("I", tr("abre la lista de tus armas para elegir una")),
         ("P", tr("en el mar, lanza la caña para pescar; cuando oigas que pican, pulsa Espacio. En vehículos de emergencias, enciende la sirena")),
-        ("Z", tr("usa un botiquín")),
+        ("Z", tr("usa un botiquín. Con tu salud al máximo, cura a uno de los tuyos que tengas al lado")),
         (tr("Mayúsculas H"), tr("rendirte: con la policía buscándote y un agente cerca, levantas las manos. Los agentes dejan de disparar y vienen a detenerte; no te muevas ni ataques. "
                          "Cuanto más nivel de búsqueda, más multa y más horas de calabozo, y con el nivel más alto pierdes todas las armas. Otra pulsación baja las manos")),
         (tr("Re Pág y Av Pág"), tr("repasan los mensajes anteriores. El punto repite el último")),
@@ -85,6 +85,7 @@ TECLAS = {
         (tr("Mayúsculas Y"), tr("cómo conduce el piloto del GPS: normal; con prisa, que corre más y para en rojo; con mucha prisa, a toda velocidad y sin parar en los semáforos, para huir de la policía; o temerario, que además no frena por el que va delante")),
         ("E", tr("en conducción libre, endereza el coche hacia el punto cardinal más cercano")),
         ("W", tr("velocidad actual")),
+        (tr("Mayúsculas W"), tr("estado del vehículo: cómo está, sus mejoras, el combustible y las averías")),
         ("H", tr("claxon")),
         ("R", tr("cambia de emisora. Mayúsculas R apaga la radio")),
         (tr("Control"), tr("disparar desde el vehículo sin bajarte, con un arma de fuego en la mano: primero la Q fija a quien tengas cerca, y Control le dispara. La I cambia de arma. Con un arma automática, mantenla pulsada")),

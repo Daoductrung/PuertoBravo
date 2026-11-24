@@ -693,6 +693,8 @@ class Misiones:
                     e.x, e.y = x, y
                 self.personas.append(e)
                 ms["enemigos"].append(e)
+                if e.dist(*self.pos()) > 60:                      # más lejos que nunca (con un rifle): esperan quietos a que te acerques o les dispares
+                    e.activo = False
         n = ms["quedan"] = len(ms["enemigos"])
         self.escolta_endurecer(ms["enemigos"], escolta)
         if all(getattr(e, "inofensivo", False) for e in ms["enemigos"]):         # muñecos y dianas: no son enemigos
@@ -825,7 +827,7 @@ class Misiones:
                 ms["avisos"].discard("fuera")
         elif tipo == "eliminar":
             if not ms["generado"]:
-                if l and math.hypot(l.x - x, l.y - y) < 45:
+                if l and math.hypot(l.x - x, l.y - y) < self.alcance_avistar():      # con un rifle se les ve llegar desde más lejos
                     self._generar_enemigos(p, l)
             else:
                 if any(e.muerto and getattr(e, "intimidar", False) for e in ms["enemigos"]):

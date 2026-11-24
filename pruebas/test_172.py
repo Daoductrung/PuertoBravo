@@ -266,6 +266,7 @@ def test_control_re_pag_y_av_pag_y_la_opcion_de_seguir_al_final(robot):
     p.decir("otro mensaje")
     assert voz.cursor == donde                               # te quedas donde estabas
     p.cfg["historial_al_final"] = True
+    voz.repaso_t = -1e9                                      # hace rato que no repasas
     p.decir("y otro")
     assert voz.cursor == len(voz.historial) - 1
 

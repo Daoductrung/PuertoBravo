@@ -999,6 +999,19 @@ def duracion_audio(ruta):
         return 0.0
 
 
+def a_mono(d):
+    """Pasa a mono un sonido de varios canales. Con la media de los canales, una grabación estéreo de verdad (dos
+    micrófonos, con los canales algo desfasados) se anula en parte: pierde volumen y suena hueca. Si la media se queda en
+    menos de las tres cuartas partes del canal más fuerte, se usa ese canal solo."""
+    if d.ndim == 1 or d.shape[1] == 1:
+        return d.reshape(-1)
+    media = d.mean(axis=1)
+    fuerza = np.sqrt(np.mean(np.square(d.astype(np.float64)), axis=0))
+    if fuerza.max() > 1e-6 and np.sqrt(np.mean(np.square(media.astype(np.float64)))) < 0.75 * fuerza.max():
+        return np.ascontiguousarray(d[:, int(np.argmax(fuerza))])
+    return media
+
+
 def leer_audio(ruta, mono=True, maximo=None, desde=0.0):
     """Lee un archivo de audio y lo adapta al motor: 44100 Hz, y mono o estéreo según se pida.
 
@@ -1012,7 +1025,7 @@ def leer_audio(ruta, mono=True, maximo=None, desde=0.0):
             f.seek(min(int(desde * sr), f.frames))
         d = f.read(frames=int(maximo * sr) if maximo else -1, dtype="float32", always_2d=True)
     if mono:
-        d = d.mean(axis=1)
+        d = a_mono(d)
     elif d.shape[1] == 1:
         d = d[:, 0]                                  # un archivo mono se queda mono: no se gana nada duplicándolo
     else:

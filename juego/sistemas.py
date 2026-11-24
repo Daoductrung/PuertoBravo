@@ -432,10 +432,15 @@ def al_dormir_en_casa(p, lugar):
         texto += tr(" Has dormido de maravilla.")
     if "taller" in tengo:
         arreglados = 0
+        from types import SimpleNamespace
         for d in j.garajes.get(lugar.id, []):
             modelo = p.modelos.get(d.get("modelo"))
-            if modelo and float(d.get("salud", 0)) < float(modelo["salud"]):
-                d["salud"] = float(modelo["salud"])
+            if not modelo:
+                continue
+            # al máximo de verdad: con el blindaje del taller, más que el modelo de serie (antes salía por debajo del cien por cien)
+            maximo = float(modelo["salud"]) * factor_blindaje(SimpleNamespace(mejoras=dict(d.get("mejoras") or {})))
+            if float(d.get("salud", 0)) < maximo:
+                d["salud"] = maximo
                 arreglados += 1
         if arreglados:
             texto += tr(' En el garaje, {arreglados} {v}.').format(arreglados=(arreglados), v=(tr('vehículo ha quedado reparado') if arreglados == 1 else tr('vehículos han quedado reparados')))

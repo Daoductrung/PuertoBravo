@@ -53,8 +53,8 @@ def test_opciones_por_secciones_con_volver(robot):
     menus_juego.opciones(app)
     raiz = app.pila[-1]
     textos = [o.texto for o in raiz.opciones]
-    assert textos[-1] == "Volver" and len(textos) == 18 and "Mods: activar o desactivar" in textos and "Partidas guardadas" in textos and textos[0].startswith("Idioma: ") and "Teclado: cambiar las teclas" in textos and "Registro para informar de fallos" in textos and "Personas e inteligencia artificial" in textos and "Actualizaciones" in textos
-    for k in range(1, len(textos) - 1):                 # la primera, Idioma, se cambia con las flechas: no abre nada
+    assert textos[-1] == "Volver" and len(textos) == 19 and textos[-2] == "Restablecer todas las opciones de serie" and "Mods: activar o desactivar" in textos and "Partidas guardadas" in textos and textos[0].startswith("Idioma: ") and "Teclado: cambiar las teclas" in textos and "Registro para informar de fallos" in textos and "Personas e inteligencia artificial" in textos and "Actualizaciones" in textos
+    for k in range(1, len(textos) - 2):                 # la primera, Idioma, se cambia con las flechas: no abre nada; la penúltima, restablecer, pregunta
         raiz.i = k
         robot.tecla(pygame.K_RETURN)
         sub = app.pila[-1]
@@ -67,6 +67,21 @@ def test_opciones_por_secciones_con_volver(robot):
         else:
             robot.tecla(pygame.K_ESCAPE)
         assert app.pila[-1] is raiz
+    # restablecer: pregunta, con «No» no cambia nada, y con «Sí» todo vuelve a como viene, menos lo que es tuyo
+    from juego import config
+    app.cfg["vol_maestro"], app.cfg["dia_semana"], app.cfg["servidores"] = 0.3, "numero", [{"nombre": "x"}]
+    raiz.i = len(textos) - 2
+    robot.tecla(pygame.K_RETURN)
+    pregunta = app.pila[-1]
+    assert pregunta is not raiz and pregunta.opciones[0].texto.startswith("No")
+    robot.tecla(pygame.K_RETURN)
+    assert app.pila[-1] is raiz and app.cfg["vol_maestro"] == 0.3
+    robot.tecla(pygame.K_RETURN)
+    app.pila[-1].i = 1
+    robot.tecla(pygame.K_RETURN)
+    assert app.pila[-1] is raiz and app.cfg["vol_maestro"] == config.POR_DEFECTO["vol_maestro"] and app.cfg["dia_semana"] == "ambos"
+    assert app.cfg["servidores"] == [{"nombre": "x"}]
+    app.cfg["servidores"] = []
     raiz.i = len(textos) - 1
     robot.tecla(pygame.K_RETURN)
     assert raiz not in app.pila

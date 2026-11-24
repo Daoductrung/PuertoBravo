@@ -377,7 +377,11 @@ def opciones(app):
         Opcion(tr("Buscar actualizaciones ahora"), lambda: buscar(app),
                ayuda=tr("Mira en la fuente elegida si hay una versión más nueva. Si la hay, te ofrece leer las novedades e instalarla; si no, te dice que tienes la última. Hace falta conexión.")),
         Opcion(lambda: tr('Buscar al arrancar el juego: {v}').format(v=(tr('sí') if cfg['act_auto'] else tr('no'))), ajuste=auto,
-               ayuda=tr("Al abrir el juego mira si hay una versión nueva y te avisa. No descarga ni instala nada sin que tú lo pidas.")),
+               ayuda=tr("Al abrir el juego mira si hay una versión nueva y te avisa. No descarga ni instala nada sin que tú lo pidas, salvo que actives la opción de abajo.")),
+        Opcion(lambda: tr('Si hay una versión nueva al arrancar, instalarla sola: {v}').format(v=(tr('sí') if cfg['act_instalar_solo'] else tr('no'))),
+               ajuste=lambda d: cfg.__setitem__("act_instalar_solo", not cfg["act_instalar_solo"]),
+               ayuda=tr("Con sí, cuando al abrir el juego encuentra una versión nueva, la descarga, la comprueba y la instala sin preguntarte, en cuanto estás en el menú principal. "
+                     "Te lo dice antes de empezar, y Escape lo cancela. Hace falta tener activado Buscar al arrancar. Con no, que es como viene, solo te avisa.")),
         Opcion(lambda: tr('Actualizar desde: {v}').format(v=(TEXTO_FUENTE[cfg['act_fuente']])), ajuste=fuente,
                ayuda=tr("Con las flechas izquierda y derecha eliges de dónde se buscan y se descargan las versiones: el servidor del juego, GitHub, las dos o una dirección que escribas tú. "
                      "Con las dos, se usa la versión más nueva y, si una falla, la otra. Venga de donde venga, solo se instala una versión firmada por quien publica el juego.")),
@@ -387,7 +391,11 @@ def opciones(app):
                      "Se busca en la misma fuente que las versiones, y se instala sin cerrar el juego. Todo va firmado por quien publica el juego.")),
         Opcion(lambda: tr('Buscar componentes nuevos al arrancar: {v}').format(v=(tr('sí') if cfg['comp_auto'] else tr('no'))),
                ajuste=lambda d: cfg.__setitem__("comp_auto", not cfg["comp_auto"]),
-               ayuda=tr("Al abrir el juego mira si hay componentes nuevos o con versión nueva y te avisa. No instala nada sin que tú lo pidas.")),
+               ayuda=tr("Al abrir el juego mira si hay componentes nuevos o con versión nueva y te avisa. No instala nada sin que tú lo pidas, salvo que actives la opción de abajo.")),
+        Opcion(lambda: tr('Instalar solos los componentes nuevos de las categorías que te interesan: {v}').format(v=(tr('sí') if cfg['comp_instalar_solo'] else tr('no'))),
+               ajuste=lambda d: cfg.__setitem__("comp_instalar_solo", not cfg["comp_instalar_solo"]),
+               ayuda=tr("Con sí, al abrir el juego se instalan solos, sin preguntarte, los componentes nuevos o con versión nueva, pero solo de las categorías que marcaste en Componentes, "
+                     "Categorías que te interesan. Si no quieres mods, no se instala ninguno. Hace falta tener activado Buscar componentes nuevos al arrancar. Con no, que es como viene, solo te avisa.")),
         Opcion(tr("Actualizar a mano, si desde aquí no hay manera"), lambda: a_mano(app),
                ayuda=tr("Los pasos para poner la versión nueva tú mismo, descargándola con el navegador y descomprimiéndola encima de la carpeta del juego. Tus partidas y tus opciones se conservan.")),
         Opcion(tr("Volver"), lambda: app.cerrar(m)),
@@ -488,4 +496,9 @@ def paso(app):
         return
     app.act_aviso = None
     app.son("evento")
+    if app.cfg["act_instalar_solo"] and A.puede_instalar() and not A.problema_para_descargar(info, libre=getattr(app, "act_libre", None), escribible=getattr(app, "act_escribible", None)):
+        registro.info("actualizar", "Instalación sola al arrancar", version=info.version)
+        app.decir(tr('Hay una versión nueva del juego, la {version}, y la instalas sola, como pediste en Opciones, Actualizaciones. Escape la cancela.').format(version=(info.version)))
+        descargar(app, info)
+        return
     app.decir(tr('Hay una versión nueva del juego, la {version}. Para instalarla entra en Opciones, Actualizaciones.').format(version=(info.version)))

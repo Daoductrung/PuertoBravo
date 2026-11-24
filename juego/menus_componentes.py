@@ -210,7 +210,8 @@ def instalar(app, cuales, publicados=None):
 def mirar_al_arrancar(app):
     """En el hilo de la comprobación del arranque: apunta cuántos componentes nuevos hay, para avisar luego."""
     try:
-        app.comp_aviso = len(pendientes(app, C.consultar(app.cfg["act_fuente"], app.cfg["act_url"])))      # solo de las categorías que te interesan
+        app.comp_publicados = C.consultar(app.cfg["act_fuente"], app.cfg["act_url"])
+        app.comp_aviso = len(pendientes(app, app.comp_publicados))      # solo de las categorías que te interesan
         registro.info("componentes", "Comprobación al arrancar", nuevos=app.comp_aviso)
     except Exception as e:
         registro.info("componentes", "Comprobación de componentes al arrancar sin resultado", motivo=f"{type(e).__name__}: {e}")
@@ -224,4 +225,11 @@ def paso(app):
         return
     app.comp_aviso = 0
     app.son("evento")
+    publicados = getattr(app, "comp_publicados", None)
+    cuales = pendientes(app, publicados) if publicados else []
+    if app.cfg["comp_instalar_solo"] and cuales:                 # se instalan solos, pero solo de las categorías que te interesan
+        registro.info("componentes", "Instalación sola al arrancar", n=len(cuales))
+        app.decir(tr("Hay componentes nuevos: {n}. Se instalan solos, como pediste en Opciones, Actualizaciones. Escape lo cancela.").format(n=len(cuales)))
+        instalar(app, cuales)
+        return
     app.decir(tr("Hay componentes nuevos: {n}. Puede ser un idioma, unas voces o un pack de sonidos. Están en Opciones, Actualizaciones, Componentes.").format(n=n))

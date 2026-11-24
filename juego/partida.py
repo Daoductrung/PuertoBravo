@@ -485,6 +485,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         d = {"version": FORMATO, "jugador": j, "reloj": self.reloj, "dia": self.dia, "momento": time.time(),
              "fallos": dict(self.fallos), "decisiones": dict(self.decisiones), "saltadas": list(self.saltadas),
              "completadas": list(self.completadas), "lluvia": self.lluvia, "atracadas": self.atracadas,
+             "correr_fijo": bool(getattr(self, "correr_fijo", False)),       # andar o correr con Mayúsculas: como lo dejaste
              "lugar": f"{self.mundo.describir(px, py)}, {self.mundo.nombre}"}
         v = self.j.veh
         if v and not v.tag:
@@ -527,6 +528,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         self.decisiones = dict(d.get("decisiones", {}))
         self.saltadas = list(d.get("saltadas", []))
         self.id_partida = d.get("id_partida") or None        # quién es esta partida: así su guardado no pisa el de otra
+        self.correr_fijo = bool(d.get("correr_fijo", False))     # si ibas corriendo con Mayúsculas, sigues corriendo
         fecha = d.get("momento")
         # si hace días que no juegas, al volver se te recuerda por dónde ibas
         self.resumen_pendiente = isinstance(fecha, (int, float)) and time.time() - fecha > 2 * 86400
@@ -793,7 +795,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             else:
                 self.estado()
         elif k == pygame.K_t:
-            self.decir(tr("Son las {hora}, día {dia}. {cielo} {dia_txt}").format(hora=self.hora_txt(), dia=self.dia, cielo=tr('Llueve.') if self.lluvia else tr('Cielo despejado.'), dia_txt=self.dia_txt()).strip(), True)
+            self.decir(tr("Son las {hora}, {fecha}. {cielo} {dia_txt}").format(hora=self.hora_txt(), fecha=self.fecha_txt(), cielo=tr('Llueve.') if self.lluvia else tr('Cielo despejado.'), dia_txt=self.dia_txt()).strip(), True)
         elif k == pygame.K_o:
             if mayus:
                 self.enfocar_objetivo()
@@ -1210,9 +1212,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
         if self.modo_adulto() and self.estado_intimo_txt():
             t += " " + self.estado_intimo_txt()
         if j.veh:
-            v = j.veh
-            t += tr(' Conduces {nombre}, a {int} kilómetros por hora, estado {int2} por ciento.').format(nombre=(v.nombre), int=(int(abs(v.vel) * 3.6)), int2=(int(100 * v.salud / v.salud_max)))
-            t += self.combustible_txt(v) + self.averias_txt(v)
+            # el estado del vehículo entero está en Mayúsculas W: aquí, solo en qué vas, para no alargar la V
+            t += tr(' Conduces {nombre}. Su estado, con Mayúsculas W.').format(nombre=j.veh.nombre)
         t += self.carne_txt()
         self.decir(t, True)
 
@@ -1753,7 +1754,7 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
             nombre = f"paso_{s}{self.pie}"
             if nombre not in self.mez.sonidos:
                 nombre = f"paso_acera{self.pie}"
-            self.son(nombre, vol=0.35 if j.agachado else 0.6, tono=random.uniform(0.93, 1.07), pan=-0.15 if self.pie else 0.15)
+            self.son(nombre, vol=0.35 if j.agachado else 0.6, tono=random.uniform(0.93, 1.07), pan=(-0.15 if self.pie else 0.15) if self.cfg["pasos_alternos"] else 0.0)
 
     def interactuar(self):
         from . import menus_juego as mj
@@ -1790,7 +1791,8 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                     menus_extra.menu_perro(self)
                 elif p.tipo == "aliado":
                     self.son("murmullo", xy=(p.x, p.y))
-                    self.decir(f"{p.nombre}: " + random.choice((tr("Aquí estoy. Tú mandas."), tr("Todo tranquilo por ahora."), tr("Yo te cubro."), tr("Cuando quieras nos movemos."))), True)
+                    self.decir(f"{p.nombre}: " + random.choice((tr("Aquí estoy. Tú mandas."), tr("Todo tranquilo por ahora."), tr("Yo te cubro."), tr("Cuando quieras nos movemos.")))
+                               + " " + self.salud_aliado_txt(p), True)
                 elif p.hostil:
                     self.decir(tr('{nombre} no quiere hablar.').format(nombre=(p.nombre)), True)
                 elif p.estado == "huye":
@@ -1840,11 +1842,52 @@ class Partida(Conduccion, Combate, Misiones, Trabajos, Extras, Extras2, Extras3,
                 self.mision["objeto"] = None
                 self.mision["recogido"] = True
 
+    def vehiculo_estado_txt(self, v):
+        """Mayúsculas W al volante: cómo está el vehículo. Su estado, la velocidad, sus mejoras (el blindaje), el combustible
+        y las averías. Antes iba todo en la V."""
+        from . import sistemas
+        t = tr('{nombre}, a {int} kilómetros por hora, estado {int2} por ciento.').format(nombre=v.nombre, int=int(abs(v.vel) * 3.6), int2=int(100 * v.salud / v.salud_max))
+        mejoras = sistemas.resumen(v)
+        if mejoras:
+            t += " " + mejoras.rstrip(".") + "."
+        return t + self.combustible_txt(v) + self.averias_txt(v)
+
+    def fecha_txt(self, dia=None):
+        """El día dicho como prefiere quien juega (Opciones, Orientación y avisos): con su número, con su nombre o con los dos.
+        El primer día de la partida es lunes, como en los horarios de los locales."""
+        from .encuentros import dia_semana
+        dia = self.dia if dia is None else dia
+        semana = (tr("lunes"), tr("martes"), tr("miércoles"), tr("jueves"), tr("viernes"), tr("sábado"), tr("domingo"))[dia_semana(self, dia)]
+        modo = self.cfg["dia_semana"]
+        if modo == "nombre":
+            return semana
+        if modo == "numero":
+            return tr("día {dia}").format(dia=dia)
+        return tr("{semana}, día {dia}").format(semana=semana, dia=dia)
+
+    def salud_max_aliado(self, a):
+        return float(getattr(a, "salud_max", 0) or max(95.0, a.salud))
+
+    def salud_aliado_txt(self, a):
+        return tr('Salud {n} por ciento.').format(n=int(100 * max(0.0, a.salud) / self.salud_max_aliado(a)))
+
+    def aliado_herido_cerca(self):
+        """Uno de los tuyos herido, a tu lado: con tu salud al máximo, la Z le cura a él."""
+        x, y = self.pos()
+        cerca = [a for a in self.personas if a.tipo == "aliado" and not a.muerto and a.dist(x, y) < 4 and a.salud < self.salud_max_aliado(a)]
+        return min(cerca, key=lambda a: a.dist(x, y)) if cerca else None
+
     def usar_botiquin(self):
         j = self.j
+        herido = self.aliado_herido_cerca() if j.salud >= j.salud_max else None
         if j.objetos.get("botiquin", 0) <= 0:
             self.app.son("error")
             self.decir(tr("No te quedan botiquines."), True)
+        elif herido is not None:
+            j.objetos["botiquin"] -= 1
+            herido.salud = min(self.salud_max_aliado(herido), herido.salud + 50)
+            self.son("curar", cat="interfaz")
+            self.decir(tr('Curas a {nombre} con un botiquín. {salud} Te quedan {botiquin}.').format(nombre=herido.nombre, salud=self.salud_aliado_txt(herido), botiquin=j.objetos['botiquin']), True)
         elif j.salud >= j.salud_max:
             self.decir(tr("Tu salud ya está al máximo."), True)
         else:

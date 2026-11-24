@@ -179,7 +179,7 @@
 " Condenas en total: {get}": [
 "juego/menus_vida.py"
 ],
-" Conduces {nombre}, a {int} kilómetros por hora, estado {int2} por ciento.": [
+" Conduces {nombre}. Su estado, con Mayúsculas W.": [
 "juego/partida.py"
 ],
 " Conducirás tú.": [
@@ -3588,10 +3588,10 @@
 "Ajá.": [
 "juego/respuestas.py"
 ],
-"Al abrir el juego mira si hay componentes nuevos o con versión nueva y te avisa. No instala nada sin que tú lo pidas.": [
+"Al abrir el juego mira si hay componentes nuevos o con versión nueva y te avisa. No instala nada sin que tú lo pidas, salvo que actives la opción de abajo.": [
 "juego/menus_actualizar.py"
 ],
-"Al abrir el juego mira si hay una versión nueva y te avisa. No descarga ni instala nada sin que tú lo pidas.": [
+"Al abrir el juego mira si hay una versión nueva y te avisa. No descarga ni instala nada sin que tú lo pidas, salvo que actives la opción de abajo.": [
 "juego/menus_actualizar.py"
 ],
 "Al abrir el juego se buscó una versión nueva y no se pudo: {act_sin_red} Elige Buscar actualizaciones ahora para probar otra vez.": [
@@ -6985,7 +6985,7 @@
 "Cada pulsación la sube un poco. El menú no se cierra.": [
 "juego/mando.py"
 ],
-"Cada pulsación pasa al estilo siguiente. Con prisa corre más y para en rojo; con mucha prisa va a toda velocidad y no para en los semáforos.": [
+"Cada pulsación pasa al estilo siguiente. Con prisa corre más y para en rojo; con mucha prisa va a toda velocidad y no para en los semáforos; temerario, además, no frena por el que va delante.": [
 "juego/mando.py"
 ],
 "Cada ración": [
@@ -7240,6 +7240,9 @@
 ],
 "Calla, calla, ": [
 "juego/respuestas.py"
+],
+"Callar mientras el juego está en segundo plano": [
+"juego/menus_juego.py"
 ],
 "Callar y pagarle tú también, para que te deje en paz": [
 "data/datos/misiones_honrada.json"
@@ -8881,6 +8884,9 @@
 "Cocina para los dos o, a veces, te toca a ti. Da salud y quita el hambre y la sed de la vida realista. Una vez al día.": [
 "juego/convivencia.py"
 ],
+"Cocina sin laboratorio": [
+"editor/esquema.py"
+],
 "Cocina. {cocina_txt}": [
 "juego/menus_cocina.py"
 ],
@@ -9685,6 +9691,9 @@
 "Con humor todo se lleva mejor.": [
 "juego/respuestas_datos2.py"
 ],
+"Con la T y en los avisos del día. Con su nombre y su número, que es como viene; solo con el número, como antes; o solo con el nombre. La partida empieza en lunes, y los locales que cierran algún día, con los horarios activados, cierran según el día de la semana.": [
+"juego/menus_juego.py"
+],
 "Con la ayuda": [
 "editor/esquema.py",
 "editor/esquema.py",
@@ -10005,6 +10014,9 @@
 "Con sí, a pie suena un toque al llegar a un cruce y se dice dónde estás; al volante se avisa del cruce que viene y de con qué calle es. Con no, los cruces no se anuncian.": [
 "juego/menus_juego.py"
 ],
+"Con sí, al abrir el juego se instalan solos, sin preguntarte, los componentes nuevos o con versión nueva, pero solo de las categorías que marcaste en Componentes, Categorías que te interesan. Si no quieres mods, no se instala ninguno. Hace falta tener activado Buscar componentes nuevos al arrancar. Con no, que es como viene, solo te avisa.": [
+"juego/menus_actualizar.py"
+],
 "Con sí, al acercarte al campo de destino el aparato baja y se encara solo, aunque pilotes a mano. Con no, lo haces tú: bajas a la altitud que dice la torre y mantienes en el centro los chasquidos de alineación; si entras alto o torcido, la torre te manda dar otra vuelta, y a la segunda te guía ella. Se cambia también durante el vuelo, en el menú de vuelo.": [
 "juego/menus_juego.py"
 ],
@@ -10040,6 +10052,9 @@
 ],
 "Con sí, cerca del vehículo de otro jugador oyes floja la emisora que lleva puesta. En las opciones del juego puedes dejar de oírla.": [
 "juego/menus_enlinea.py"
+],
+"Con sí, cuando al abrir el juego encuentra una versión nueva, la descarga, la comprueba y la instala sin preguntarte, en cuanto estás en el menú principal. Te lo dice antes de empezar, y Escape lo cancela. Hace falta tener activado Buscar al arrancar. Con no, que es como viene, solo te avisa.": [
+"juego/menus_actualizar.py"
 ],
 "Con sí, cuando conduces tú, sin el piloto del GPS, se dice si el semáforo del próximo cruce está en rojo o en verde, con un sonido para cada uno, y si cambia mientras te acercas o esperas. Vale en conducción asistida y en la libre, yendo recto por una calle. Al activarlo se oye una muestra, la del rojo.": [
 "juego/menus_juego.py"
@@ -10093,6 +10108,12 @@
 "editor/esquema.py"
 ],
 "Con sí, que es como viene, cada partida es la de su ranura: el guardado automático, el rápido y el de un cierre inesperado van a la ranura de la partida que juegas, y nunca pisan la de otro personaje. Una partida nueva toma la primera ranura libre al guardarse. Antes de escribir encima, lo que había queda como copia anterior, y en Cargar partida puedes volver a ella. Con no, como antes de la versión 1.7.4: el guardado automático y el rápido van a dos archivos que comparten todas las partidas.": [
+"juego/menus_juego.py"
+],
+"Con sí, que es como viene, cuando cambias a otra ventana el juego deja de hablar, para no interrumpir a tu lector de pantalla en lo que estés haciendo. Lo que pase mientras tanto va al historial: al volver, lo repasas con Re Pág. Los sonidos siguen. Con no, habla aunque estés en otra ventana, como antes.": [
+"juego/menus_juego.py"
+],
+"Con sí, que es como viene, tus pasos suenan uno un poco a la izquierda y el siguiente un poco a la derecha, como los dos pies. Con no, todos suenan al centro, delante de ti. Vale con los dos motores de sonido.": [
 "juego/menus_juego.py"
 ],
 "Con sí, que es lo normal, tumbar a los rivales no es delito ni baja tu prestigio entre los vecinos. Con no, es una pelea ilegal: cada rival que cae cuenta como una agresión si alguien lo ve.": [
@@ -10896,6 +10917,9 @@
 "Cuando el cargador se vacía, la R recarga. La V te dice cuántas balas te quedan.": [
 "data/datos/misiones.json"
 ],
+"Cuando el laboratorio donde cocinaba ya no está. Una por línea.": [
+"editor/esquema.py"
+],
 "Cuando el radar diga algo que te interesa, pulsa B: pone el GPS y la baliza hacia ello.": [
 "data/datos/misiones.json"
 ],
@@ -11146,6 +11170,9 @@
 ],
 "Curarle con tu botiquín y quedarte hasta que llegue la ambulancia": [
 "data/datos/vida.json"
+],
+"Curas a {nombre} con un botiquín. {salud} Te quedan {botiquin}.": [
+"juego/partida.py"
 ],
 "Current thread ": [
 "juego/registro.py"
@@ -11448,7 +11475,7 @@
 "Cómo conduce el piloto del GPS": [
 "juego/menus_juego.py"
 ],
-"Cómo conduce el piloto del GPS: normal, con prisa o con mucha prisa": [
+"Cómo conduce el piloto del GPS: normal, con prisa, con mucha prisa o temerario": [
 "juego/mando.py"
 ],
 "Cómo contestan las personas de la calle cuando les escribes lo que quieres: con el motor del juego o con una inteligencia artificial.": [
@@ -11474,6 +11501,9 @@
 ],
 "Cómo está el servidor: si está en marcha, cuánta gente hay, el puerto, la dirección para tus amigos, el cifrado y el mundo con el que trabaja. Una cosa por línea. Se pone al día solo cuando cambia algo; F6 lo pone al día en el momento.": [
 "panel_servidor/ventana.py"
+],
+"Cómo está el vehículo en el que vas: su estado, sus mejoras, el combustible y las averías.": [
+"juego/mando.py"
 ],
 "Cómo está y qué necesita {perro}": [
 "juego/menus_extra.py"
@@ -11557,6 +11587,9 @@
 "editor/esquema.py"
 ],
 "Cómo se dicen las direcciones del radar y del GPS.": [
+"juego/menus_juego.py"
+],
+"Cómo se dicen los días": [
 "juego/menus_juego.py"
 ],
 "Cómo se hace": [
@@ -12380,6 +12413,9 @@
 ],
 "Deja los periódicos en la iglesia, la Plaza Mayor, el ayuntamiento y la estación de autobuses, por ese orden, en cinco minutos.": [
 "data/datos/misiones_extra2.json"
+],
+"Deja todas las opciones como vienen con el juego, después de preguntarte. Se conservan tu idioma, tus servidores y tu nombre en la red.": [
+"juego/menus_juego.py"
 ],
 "Deja una señal en el registro para indicar que en este momento ha pasado algo raro. Jugando se hace con F12.": [
 "juego/menus_registro.py"
@@ -17780,6 +17816,9 @@
 "En un banco del paseo alguien se ha dejado un teléfono, y está sonando.": [
 "data/datos/vida.json"
 ],
+"En un combate del gimnasio solo valen los puños.": [
+"juego/combate.py"
+],
 "En un grupo caben cuatro.": [
 "servidor/nucleo.py"
 ],
@@ -17960,6 +17999,10 @@
 ],
 "En {casa} se ha roto el calentador. El arreglo, {euros} euros, corre de tu cuenta.": [
 "juego/alquiler.py",
+"data/datos/vida.json"
+],
+"En {casa} ya no hay laboratorio, y {n} se queda sin nada que cocinar. Dale otra tarea desde su ficha.": [
+"juego/capo.py",
 "data/datos/vida.json"
 ],
 "En {casa}, {n} saca una tanda de {sust}: {u} unidades al armario.": [
@@ -19349,6 +19392,9 @@
 "Estado": [
 "panel_servidor/ventana.py"
 ],
+"Estado del vehículo": [
+"juego/mando.py"
+],
 "Estado mínimo del vehículo, en porcentaje": [
 "editor/esquema.py"
 ],
@@ -20701,6 +20747,7 @@
 "juego/catalogo_sonidos.py"
 ],
 "Frases": [
+"editor/esquema.py",
 "editor/esquema.py",
 "editor/esquema.py",
 "editor/esquema.py",
@@ -22648,6 +22695,9 @@
 "Hay componentes nuevos: {n}. Puede ser un idioma, unas voces o un pack de sonidos. Están en Opciones, Actualizaciones, Componentes.": [
 "juego/menus_componentes.py"
 ],
+"Hay componentes nuevos: {n}. Se instalan solos, como pediste en Opciones, Actualizaciones. Escape lo cancela.": [
+"juego/menus_componentes.py"
+],
 "Hay contrabandistas usando el pecio del Santa Clara. Tiran fardos al agua y otros los recogen de noche. Esta cala ha sido siempre de pescadores, no de maleantes.": [
 "data/datos/misiones_extra.json"
 ],
@@ -22772,6 +22822,9 @@
 ],
 "Hay una reunión en la Torre Belmonte. La planta de arriba lleva vacía desde que cayó su dueño. Alguien tiene que ocuparla.": [
 "data/datos/misiones_extra2.json"
+],
+"Hay una versión nueva del juego, la {version}, y la instalas sola, como pediste en Opciones, Actualizaciones. Escape la cancela.": [
+"juego/menus_actualizar.py"
 ],
 "Hay una versión nueva del juego, la {version}. Para instalarla entra en Opciones, Actualizaciones.": [
 "juego/menus_actualizar.py"
@@ -23772,6 +23825,9 @@
 "juego/menus_componentes.py"
 ],
 "Instalar la versión descargada, la {v}": [
+"juego/menus_actualizar.py"
+],
+"Instalar solos los componentes nuevos de las categorías que te interesan: {v}": [
 "juego/menus_actualizar.py"
 ],
 "Instalar todo en {tipo}: {n} componentes, {tamano}": [
@@ -29466,6 +29522,9 @@
 "Mayúsculas V": [
 "juego/ayuda.py"
 ],
+"Mayúsculas W": [
+"juego/ayuda.py"
+],
 "Mayúsculas X": [
 "juego/ayuda.py"
 ],
@@ -31854,6 +31913,9 @@
 "No cabe nada más. ": [
 "juego/menus_cocina.py"
 ],
+"No cambia nada.": [
+"juego/menus_juego.py"
+],
 "No cobra parte del botín.": [
 "juego/golpes.py"
 ],
@@ -33137,6 +33199,9 @@
 "No, dejarla como está": [
 "juego/alquiler.py"
 ],
+"No, dejarlas como están": [
+"juego/menus_juego.py"
+],
 "No, dejarlo como está": [
 "juego/convivencia.py",
 "juego/menus_charla.py"
@@ -33802,6 +33867,9 @@
 ],
 "Opciones entre las que elige": [
 "editor/esquema.py"
+],
+"Opciones restablecidas como vienen de serie. Se conservan tu idioma, tus servidores y tu nombre en la red. Algún cambio, como el motor de sonido, se nota al volver a abrir el juego.": [
+"juego/menus_juego.py"
 ],
 "Opción": [
 "editor/esquema_honrado.py",
@@ -34986,6 +35054,9 @@
 ],
 "Pasa que la mina es de Belmonte. Llevamos un mes de huelga y ha mandado matones para romperla. Ahora mismo hay tres en la bocamina apaleando a los piquetes.": [
 "data/datos/misiones_extra2.json"
+],
+"Pasadas esas victorias, el premio y la dureza del rival ya no suben más. De serie, 10.": [
+"editor/esquema.py"
 ],
 "Pasado el cupo, hay que volver al día siguiente o ir a otro desguace.": [
 "editor/esquema.py"
@@ -36678,6 +36749,7 @@
 "juego/reconquista.py"
 ],
 "Primero. ": [
+"juego/voz.py",
 "juego/voz.py"
 ],
 "Prisión": [
@@ -38763,6 +38835,9 @@
 "Restablecer los botones originales": [
 "juego/menus_extra.py"
 ],
+"Restablecer todas las opciones de serie": [
+"juego/menus_juego.py"
+],
 "Restablecer todos. Tienes {_n_sonidos} {v}": [
 "juego/menus_juego.py"
 ],
@@ -39644,6 +39719,9 @@
 ],
 "Salud {int}.{extra}": [
 "juego/combate.py"
+],
+"Salud {n} por ciento.": [
+"juego/partida.py"
 ],
 "Saludar": [
 "juego/menus_charla.py"
@@ -40882,6 +40960,9 @@
 "Si hay un mando conectado y cuál es. Se detecta solo al conectarlo, sin salir del juego.": [
 "juego/menus_extra.py"
 ],
+"Si hay una versión nueva al arrancar, instalarla sola: {v}": [
+"juego/menus_actualizar.py"
+],
 "Si insistes a quien has ofendido: de cada cien veces, cuántas te pega": [
 "editor/esquema.py"
 ],
@@ -41684,7 +41765,7 @@
 "Son las {hora_txt}. Ahora {afinidad_txt}.": [
 "juego/convivencia.py"
 ],
-"Son las {hora}, día {dia}. {cielo} {dia_txt}": [
+"Son las {hora}, {fecha}. {cielo} {dia_txt}": [
 "juego/partida.py"
 ],
 "Son todos iguales. Prometen y luego ni se acuerdan.": [
@@ -42248,6 +42329,9 @@
 "juego/alquiler.py"
 ],
 "Sí, repetirla": [
+"juego/menus_juego.py"
+],
+"Sí, restablecerlas": [
 "juego/menus_juego.py"
 ],
 "Sí, salir": [
@@ -44026,6 +44110,9 @@
 "Todas las opciones del servidor, por pestañas.": [
 "panel_servidor/ventana.py"
 ],
+"Todas las opciones vuelven a como vienen de serie, también las teclas y los volúmenes de cada sonido. Se conservan tu idioma, tus servidores guardados, tu nombre en la red y tus datos de la inteligencia artificial. Tus partidas no se tocan.": [
+"juego/menus_juego.py"
+],
 "Todas las teclas del juego, a pie, al volante y en cualquier momento, y los botones del mando. Si has cambiado alguna tecla, dice la tuya.": [
 "juego/menus_juego.py",
 "juego/menus_juego.py"
@@ -45261,6 +45348,9 @@
 ],
 "Tus negocios: nivel, empleados, nombre entre la clientela y lo que dan. Se dirigen yendo a cada uno.": [
 "juego/menus_honrado.py"
+],
+"Tus pasos, uno a cada lado": [
+"juego/menus_juego.py"
 ],
 "Tus propiedades": [
 "juego/menus_juego.py"
@@ -48501,6 +48591,9 @@
 "Vicenta": [
 "data/mods/costa_dorada.json"
 ],
+"Victorias que cuentan para subir el premio y la dureza": [
+"editor/esquema.py"
+],
 "Vida": [
 "editor/esquema.py",
 "editor/esquema.py",
@@ -50829,6 +50922,15 @@
 "con sed": [
 "juego/necesidades.py"
 ],
+"con su nombre y su número: lunes, día 22": [
+"juego/menus_juego.py"
+],
+"con su nombre: lunes": [
+"juego/menus_juego.py"
+],
+"con su número: día 22": [
+"juego/menus_juego.py"
+],
 "con sueño": [
 "juego/ia.py",
 "juego/necesidades.py"
@@ -51157,6 +51259,9 @@
 "dobla las rodillas y cae.": [
 "juego/combate.py"
 ],
+"domingo": [
+"juego/partida.py"
+],
 "don Anselmo": [
 "data/datos/misiones_extra2.json"
 ],
@@ -51192,6 +51297,9 @@
 "juego/loteria.py",
 "juego/menus_adultos.py",
 "panel_servidor/ventana.py"
+],
+"día {dia}": [
+"juego/partida.py"
 ],
 "días": [
 "juego/convivencia.py",
@@ -51934,6 +52042,10 @@
 "esta noche a las nueve": [
 "juego/loteria.py"
 ],
+"estado del vehículo: cómo está, sus mejoras, el combustible y las averías": [
+"juego/ayuda.py",
+"juego/mando.py"
+],
 "estado {int} por ciento": [
 "juego/misvehiculos.py"
 ],
@@ -52400,6 +52512,9 @@
 "juego ": [
 "panel_servidor/ventana.py",
 "panel_servidor/ventana.py"
+],
+"jueves": [
+"juego/partida.py"
 ],
 "jugador": [
 "servidor/nucleo.py"
@@ -53067,6 +53182,9 @@
 "juego/atracos.py",
 "data/datos/vida.json"
 ],
+"lunes": [
+"juego/partida.py"
+],
 "luz y agua de {len} {v}": [
 "juego/honrado.py"
 ],
@@ -53094,6 +53212,9 @@
 ],
 "marcar todos": [
 "editor/accesibilidad/ayuda.py"
+],
+"martes": [
+"juego/partida.py"
 ],
 "material para su afición": [
 "juego/convivencia.py",
@@ -53181,6 +53302,9 @@
 "mira alrededor": [
 "juego/gente.py",
 "data/datos/gente.json"
+],
+"miércoles": [
+"juego/partida.py"
 ],
 "mod sin guardar": [
 "editor/ventana.py"
@@ -53285,6 +53409,8 @@
 "juego/pantallas.py"
 ],
 "no": [
+"juego/menus_actualizar.py",
+"juego/menus_actualizar.py",
 "juego/menus_actualizar.py",
 "juego/menus_actualizar.py",
 "juego/menus_charla.py",
@@ -54274,7 +54400,12 @@
 "sus cosas": [
 "juego/convivencia.py"
 ],
+"sábado": [
+"juego/partida.py"
+],
 "sí": [
+"juego/menus_actualizar.py",
+"juego/menus_actualizar.py",
 "juego/menus_actualizar.py",
 "juego/menus_actualizar.py",
 "juego/menus_charla.py",
@@ -54953,6 +55084,7 @@
 ],
 "una casa": [
 "juego/capo.py",
+"juego/capo.py",
 "juego/misvehiculos.py",
 "juego/misvehiculos.py"
 ],
@@ -55110,7 +55242,7 @@
 "unos segundos": [
 "juego/menus_actualizar.py"
 ],
-"usa un botiquín": [
+"usa un botiquín. Con tu salud al máximo, cura a uno de los tuyos que tengas al lado": [
 "juego/ayuda.py"
 ],
 "usada por ": [
@@ -55197,6 +55329,9 @@
 ],
 "veteran[o|a]": [
 "juego/vida.py"
+],
+"viernes": [
+"juego/partida.py"
 ],
 "vietnamita": [
 "juego/i18n.py"
@@ -56730,8 +56865,14 @@
 "{nombre}, a la cesta. Llevas {v} de esto; en total {_cuantos}, {_euros}.": [
 "juego/compra.py"
 ],
+"{nombre}, a {int} kilómetros por hora, estado {int2} por ciento.": [
+"juego/partida.py"
+],
 "{nombre}, a {metros} al {cardinal} de {nombre2}": [
 "juego/mundo.py"
+],
+"{nombre}, aparcado aquí al lado. ": [
+"juego/menus_juego.py"
 ],
 "{nombre}, aquí mismo": [
 "juego/partida.py"
@@ -57390,6 +57531,10 @@
 "juego/convivencia.py",
 "data/datos/vida.json"
 ],
+"{n} iba a cocinar en {casa}, pero allí ya no tienes laboratorio. Se queda sin tarea hasta que le des otra desde su ficha.": [
+"juego/capo.py",
+"data/datos/vida.json"
+],
 "{n} kilobytes": [
 "juego/menus_componentes.py"
 ],
@@ -58039,6 +58184,9 @@
 ],
 "{robocopy} \"{origen}\" \"{destino}\" {nombres} /r:2 /w:1 {callado}": [
 "juego/actualizador.py"
+],
+"{semana}, día {dia}": [
+"juego/partida.py"
 ],
 "{situar}. Sube con F y sal de aquí.": [
 "juego/menus_lugares.py"
@@ -59175,6 +59323,9 @@
 "¿Repetir {titulo}? Te lleva al lugar donde empieza. No cuenta ni da recompensa": [
 "juego/menus_juego.py"
 ],
+"¿Restablecer todas las opciones como vienen de serie?": [
+"juego/menus_juego.py"
+],
 "¿Sabes llevar un barco? No, claro. Los de ciudad no sabéis ni nadar. Pues hoy aprendes.": [
 "data/datos/misiones_extra.json"
 ],
@@ -59397,6 +59548,7 @@
 "juego/voz.py"
 ],
 "Último. ": [
+"juego/voz.py",
 "juego/voz.py"
 ],
 "Últimos mensajes": [

@@ -666,7 +666,8 @@ def opciones(app):
                "apagado": tr("apagado, nadie intenta quitártelos"), "tranquilo": tr("tranquilo, pocos asaltos y con mucho plazo"), "duro": tr("duro, asaltos seguidos y con poco plazo"),
                "no": tr("no, te esperan los mismos vayas con quien vayas"), "moderado": tr("moderado, algo más de oposición si vas acompañado"),
                "fuerte": tr("fuerte, bastante más oposición si vas acompañado"),
-               "suave": tr("suave, se nota sin agobiar"), "exigente": tr("exigente, todo pesa más")}
+               "suave": tr("suave, se nota sin agobiar"), "exigente": tr("exigente, todo pesa más"),
+               "ambos": tr("con su nombre y su número: lunes, día 22"), "numero": tr("con su número: día 22"), "nombre": tr("con su nombre: lunes")}
     from .honrado import AJ as HON
     from .reconquista import AJ as REC
     OPCIONES.setdefault("detalle_voz", ["poco", "normal", "mucho"])
@@ -822,6 +823,9 @@ def opciones(app):
                   tr("Con el motor envolvente, los sonidos del mundo llevan el eco del sitio donde estás: poco en el campo y en la playa, algo en la calle, más entre naves, largo en la montaña y corto y cercano dentro de un local. "
                   "Además, lo que vuela suena por encima, y si vuelas tú, la ciudad suena por debajo. Con el motor clásico esta opción no hace nada."),
                   al_cambiar=app.aplicar_volumenes),
+            si_no("pasos_alternos", tr("Tus pasos, uno a cada lado"),
+                  tr("Con sí, que es como viene, tus pasos suenan uno un poco a la izquierda y el siguiente un poco a la derecha, como los dos pies. "
+                  "Con no, todos suenan al centro, delante de ti. Vale con los dos motores de sonido.")),
             si_no("sonido_mono", tr("Sonido mono, lo mismo por los dos oídos"),
                   tr("Para quien oye por un solo oído o usa un solo auricular. Se pierde la sensación de izquierda y derecha: oriéntate con el radar, el escáner y el GPS hablado."),
                   al_cambiar=app.aplicar_volumenes),
@@ -861,6 +865,9 @@ def opciones(app):
         ], tr("Cómo caminas y cómo conduces.")),
         seccion(tr("Orientación y avisos"), [
             lista("direcciones", tr("Formato de las direcciones"), tr("Cómo se dicen las direcciones del radar y del GPS.")),
+            lista("dia_semana", tr("Cómo se dicen los días"),
+                  tr("Con la T y en los avisos del día. Con su nombre y su número, que es como viene; solo con el número, como antes; o solo con el nombre. "
+                  "La partida empieza en lunes, y los locales que cierran algún día, con los horarios activados, cierran según el día de la semana.")),
             si_no("gps_voz", tr("Indicaciones habladas del GPS"),
                   tr("Con sí, mientras sigues un destino marcado en el GPS, el juego te dice cuándo y hacia dónde girar. Con no, no dice nada por el camino y solo te guía la baliza, si la tienes activada.")),
             si_no("baliza", tr("Baliza sonora del GPS"), tr("Un toque que suena desde la dirección que tienes que seguir. Al activarla se oye una muestra."),
@@ -1016,6 +1023,9 @@ def opciones(app):
             si_no("historial_al_final", tr("Al llegar un mensaje nuevo, el historial salta al final"),
                   tr("El historial de mensajes se repasa con Re Pág y Av Pág; Control Re Pág va al primero y Control Av Pág al último. Con sí, cada mensaje nuevo te lleva al final, "
                   "como siempre. Con no, si estás repasando, sigues donde estabas aunque lleguen mensajes, y vas al último con Control Av Pág.")),
+            si_no("callar_sin_foco", tr("Callar mientras el juego está en segundo plano"),
+                  tr("Con sí, que es como viene, cuando cambias a otra ventana el juego deja de hablar, para no interrumpir a tu lector de pantalla en lo que estés haciendo. "
+                  "Lo que pase mientras tanto va al historial: al volver, lo repasas con Re Pág. Los sonidos siguen. Con no, habla aunque estés en otra ventana, como antes.")),
             si_no("historial_menus", tr("Guardar en el historial lo que se lee al moverse por los menús"),
                   tr("Con no, el historial guarda lo que pasa y no se repite: diálogos, conversaciones, compras, pagos y avisos. Lo que se lee al abrir un menú o al moverte por sus opciones "
                   "no entra, porque se vuelve a oír volviendo a él. Con sí, entra todo, como antes.")),
@@ -1053,7 +1063,27 @@ def opciones(app):
                   "Con no, que es como viene, cada uno sigue en su casa. Los planes nuevos en pareja no dependen de esta opción. Solo jugando en solitario.")),
         ], tr("Activa o desactiva los temas para mayores de 18 años.")),
     ]
-    principal_ = Menu(app, tr("Opciones"), secciones + [Opcion(tr("Volver"), lambda: app.cerrar(principal_), ayuda=tr("Cierra las opciones. También sirve Escape."))],
+    def restablecer():
+        def si():
+            cfg.restablecer()
+            cfg.guardar()
+            app.aplicar_volumenes()
+            try:
+                app.recargar_sonidos()
+            except Exception:
+                pass
+            app.cerrar(c)
+            principal_.refrescar(False)
+            app.son("guardado")
+            app.decir(tr("Opciones restablecidas como vienen de serie. Se conservan tu idioma, tus servidores y tu nombre en la red. Algún cambio, como el motor de sonido, se nota al volver a abrir el juego."), True)
+        c = Menu(app, tr("¿Restablecer todas las opciones como vienen de serie?"),
+                 [Opcion(tr("No, dejarlas como están"), lambda: app.cerrar(c), ayuda=tr("No cambia nada.")),
+                  Opcion(tr("Sí, restablecerlas"), si, ayuda=tr("Todas las opciones vuelven a como vienen de serie, también las teclas y los volúmenes de cada sonido. "
+                                                             "Se conservan tu idioma, tus servidores guardados, tu nombre en la red y tus datos de la inteligencia artificial. Tus partidas no se tocan."))])
+        app.abrir(c)
+    principal_ = Menu(app, tr("Opciones"), secciones + [Opcion(tr("Restablecer todas las opciones de serie"), restablecer,
+                                                              ayuda=tr("Deja todas las opciones como vienen con el juego, después de preguntarte. Se conservan tu idioma, tus servidores y tu nombre en la red.")),
+                                                       Opcion(tr("Volver"), lambda: app.cerrar(principal_), ayuda=tr("Cierra las opciones. También sirve Escape."))],
                       al_cerrar=cfg.guardar, intro=tr("Las opciones están agrupadas por secciones. Pulsa Intro para entrar en una"))
     app.abrir(principal_)
 
@@ -1769,6 +1799,9 @@ def _casa(p, l):
                                 ayuda=tr("Guardas el vehículo en el que has venido y te quedas a pie en la puerta. No caben las aeronaves ni los vehículos que no puedes quedarte, y nada si el garaje está lleno.")))
         else:
             cerca = p.tu_vehiculo(90)
+            c = getattr(p, "chofer", None)
+            if cerca is None and c and c.get("veh") is not None and not c["veh"].muerto and c["veh"].dist(*p.pos()) < 90:
+                cerca = c["veh"]                                 # el que te ha traído tu chófer y te espera aquí al lado
             if cerca is not None:
                 lista.append(Opcion(tr('Meter en el garaje {nombre}, que has dejado a {int} metros').format(nombre=(cerca.nombre), int=(int(cerca.dist(*p.pos())))), lambda: guardar_veh(cerca),
                                     ayuda=tr("Guarda el vehículo del que te has bajado, sin tener que volver a por él.")))
@@ -2098,14 +2131,20 @@ def _comisaria(p, l):
 def _taller(p, l):
     app = p.app
     j = p.j
-    if not j.veh:
+    aparcado = None
+    if not j.veh:                                                # a pie: el tuyo, o el de tu chófer, aparcado aquí al lado también vale
+        c = getattr(p, "chofer", None)
+        cerca = [u for u in (p.tu_vehiculo(30), c.get("veh") if c else None)
+                 if u is not None and not u.muerto and u.ardiendo < 0 and u.dist(l.x, l.y) < 30 and not u.modelo.get("vuela")]
+        aparcado = cerca[0] if cerca else None
+    if not j.veh and aparcado is None:
         if p.local_atracable(l):                                 # a pie no hay nada que reparar, pero la caja está ahí
             _menu_lugar(p, l, [Opcion(tr("Ven con un vehículo para repararlo, pintarlo o mejorarlo"),
                                       ayuda=tr("A pie no hay nada que reparar. Vuelve conduciendo el vehículo y párate en la puerta."))])
         else:
             app.decir(tr('{nombre}. Ven con un vehículo para repararlo o pintarlo.').format(nombre=(l.nombre)), True)
         return
-    v = j.veh
+    v = j.veh or aparcado
 
     def coste():
         return int(p.precio("reparacion_base", 40) + (1 - v.salud / v.salud_max) * max(300, v.modelo["valor"]) * 0.3)
@@ -2163,7 +2202,8 @@ def _taller(p, l):
                       ayuda=tr("Aceite, frenos y ruedas. Si le toca y no la pasas, los frenos van perdiendo. Arregla también un pinchazo.")),
                Opcion(lambda: tr('Rueda de repuesto: {int} euros. Llevas {get}').format(int=(int(R.aj('precio_rueda'))), get=(j.objetos.get('rueda', 0))), repuesto,
                       ayuda=tr("Para llevarla encima. Si pinchas, la cambias tú desde el móvil, en Servicios, con el vehículo parado."))] if p.averias_activas() else []
-    _menu_lugar(p, l, [Opcion(lambda: tr('Reparar {nombre}: {coste} euros. Estado {int} por ciento').format(nombre=(v.nombre), coste=(coste()), int=(int(100 * v.salud / v.salud_max))), reparar,
+    _menu_lugar(p, l, [Opcion(lambda: (tr('{nombre}, aparcado aquí al lado. ').format(nombre=v.nombre) if aparcado is not None else "")
+                              + tr('Reparar {nombre}: {coste} euros. Estado {int} por ciento').format(nombre=(v.nombre), coste=(coste()), int=(int(100 * v.salud / v.salud_max))), reparar,
                               ayuda=tr("Lo dejan al 100 por ciento. Cuanto más dañado está y más vale, más cuesta.")),
                        Opcion(tr('Pintar y cambiar matrículas: {precio} euros. Elimina la búsqueda policial').format(precio=(p.precio('pintura', 300))), pintar,
                               ayuda=tr("Pintura y matrículas nuevas: la policía deja de buscarte y de buscar este vehículo. No se puede con agentes o una patrulla cerca."))] + averias + sistemas.opciones_taller(p, v, Opcion) +

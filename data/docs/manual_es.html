@@ -91,7 +91,7 @@ li { margin-bottom: .3em; }
 <li><kbd>F1</kbd>: explicación de la opción actual.</li>
 <li><kbd>Re Pág</kbd> y <kbd>Av Pág</kbd>: repasar los mensajes anteriores. <kbd>Control Re Pág</kbd> va al primero del historial y <kbd>Control Av Pág</kbd> al último.</li>
 </ul>
-<p>El historial guarda los últimos trescientos mensajes. De serie, cada mensaje nuevo te lleva al final. Si prefieres seguir donde estabas mientras repasas, en Opciones, Voz, pon en no Al llegar un mensaje nuevo, el historial salta al final; entonces vas al último con <kbd>Control Av Pág</kbd>. Con mando, en el menú de acciones están Ir al primer mensaje del historial e Ir al último. Lo que se lee al abrir un menú o al moverte por sus opciones no se guarda, porque se vuelve a oír volviendo a él; si lo quieres como antes, en Opciones, Voz, Guardar en el historial lo que se lee al moverse por los menús.</p>
+<p>El historial guarda los últimos trescientos mensajes. De serie, cada mensaje nuevo te lleva al final. Si prefieres seguir donde estabas mientras repasas, en Opciones, Voz, pon en no Al llegar un mensaje nuevo, el historial salta al final; entonces vas al último con <kbd>Control Av Pág</kbd>. Con mando, en el menú de acciones están Ir al primer mensaje del historial e Ir al último. Lo que se lee al abrir un menú o al moverte por sus opciones no se guarda, porque se vuelve a oír volviendo a él; si lo quieres como antes, en Opciones, Voz, Guardar en el historial lo que se lee al moverse por los menús. Mientras repasas, los mensajes que van llegando no te sacan de donde estás: quedan al final, y Av Pág llega a ellos. Al llegar al último vuelves a seguir lo nuevo, y en el primero y en el último el juego te dice que no hay más.</p>
 <p>Al escribir un texto, como el nombre de tu personaje o un mensaje, valen también las vocales con tilde que se escriben con la tecla del acento, y los métodos de entrada de Windows.</p>
 <p>En los diálogos de la historia, <kbd>Intro</kbd> pasa a la frase siguiente, <kbd>Flecha arriba</kbd> repite la frase, <kbd>Flecha izquierda</kbd> vuelve a la anterior y <kbd>Escape</kbd> salta el diálogo entero. Ningún diálogo avanza solo: lees a tu ritmo.</p>
 
@@ -193,7 +193,7 @@ Buscar un sonido sirve para no tener que adivinar el grupo: escribe una palabra 
 <li><kbd>Números del 1 al 9</kbd>: eligen arma. La coma pasa a la siguiente y Mayúsculas coma a la anterior.</li>
 <li><kbd>I</kbd>: abre la lista de tus armas para elegir una.</li>
 <li><kbd>P</kbd>: en el mar, lanza la caña para pescar; cuando oigas que pican, pulsa Espacio. En vehículos de emergencias, enciende la sirena.</li>
-<li><kbd>Z</kbd>: usa un botiquín.</li>
+<li><kbd>Z</kbd>: usa un botiquín. Con tu salud al máximo, cura a uno de los tuyos que tengas al lado.</li>
 <li><kbd>Mayúsculas H</kbd>: rendirte: con la policía buscándote y un agente cerca, levantas las manos. Los agentes dejan de disparar y vienen a detenerte; no te muevas ni ataques. Cuanto más nivel de búsqueda, más multa y más horas de calabozo, y con el nivel más alto pierdes todas las armas. Otra pulsación baja las manos.</li>
 <li><kbd>Re Pág y Av Pág</kbd>: repasan los mensajes anteriores. El punto repite el último.</li>
 <li><kbd>Control Re Pág y Control Av Pág</kbd>: van al primer mensaje del historial y al último. En Opciones, Voz, eliges si cada mensaje nuevo te lleva al final.</li>
@@ -239,6 +239,7 @@ Buscar un sonido sirve para no tener que adivinar el grupo: escribe una palabra 
 <li><kbd>Mayúsculas Y</kbd>: cómo conduce el piloto del GPS: normal; con prisa, que corre más y para en rojo; con mucha prisa, a toda velocidad y sin parar en los semáforos, para huir de la policía; o temerario, que además no frena por el que va delante.</li>
 <li><kbd>E</kbd>: en conducción libre, endereza el coche hacia el punto cardinal más cercano.</li>
 <li><kbd>W</kbd>: velocidad actual.</li>
+<li><kbd>Mayúsculas W</kbd>: estado del vehículo: cómo está, sus mejoras, el combustible y las averías.</li>
 <li><kbd>H</kbd>: claxon.</li>
 <li><kbd>R</kbd>: cambia de emisora. Mayúsculas R apaga la radio.</li>
 <li><kbd>Control</kbd>: disparar desde el vehículo sin bajarte, con un arma de fuego en la mano: primero la Q fija a quien tengas cerca, y Control le dispara. La I cambia de arma. Con un arma automática, mantenla pulsada.</li>
@@ -386,7 +387,7 @@ Buscar un sonido sirve para no tener que adivinar el grupo: escribe una palabra 
 <li>La cuota y la franquicia se ajustan en el editor de mods, en Mis vehículos y chófer.</li>
 </ul>
 <h3>Mejorar tus vehículos</h3>
-<p>En cualquier taller, además de reparar y pintar, puedes mejorar el vehículo en el que hayas llegado. Hay siete mejoras. Cada una tiene sus niveles, y cada nivel cuesta más que el anterior: el segundo, el doble que el primero, y el tercero, el triple.</p>
+<p>En cualquier taller, además de reparar y pintar, puedes mejorar el vehículo en el que hayas llegado. Hay siete mejoras. Cada una tiene sus niveles, y cada nivel cuesta más que el anterior: el segundo, el doble que el primero, y el tercero, el triple. Si llegas a pie, también atienden a tu vehículo, o al de tu chófer, si está aparcado a menos de treinta metros.</p>
 <ul>
 <li>Motor, tres niveles: más velocidad punta y más aceleración. Se nota al oído, porque el motor suena más agudo.</li>
 <li>Frenos, tres niveles: frena en menos metros.</li>
@@ -528,7 +529,7 @@ Buscar un sonido sirve para no tener que adivinar el grupo: escribe una palabra 
 
 <h2>8. Combate</h2>
 <ul>
-<li><kbd>Q</kbd> fija al enemigo más cercano. Oirás un tono que sale de donde está: grave y doble si lo tienes a tiro, agudo si está fuera de alcance.</li>
+<li><kbd>Q</kbd> fija al enemigo más cercano. Oirás un tono que sale de donde está: grave y doble si lo tienes a tiro, agudo si está fuera de alcance. Con un arma de largo alcance en la mano, como el rifle de precisión o el lanzacohetes, se fija hasta un poco más allá de su alcance; y los enemigos de una misión aparecen a esa distancia, quietos hasta que te acercas o les disparas.</li>
 <li><kbd>Espacio</kbd> dispara al enemigo fijado. Cuanto más cerca, más aciertas.</li>
 <li>Medio segundo antes de dispararte, el enemigo amartilla el arma. Agáchate con <kbd>X</kbd> para que te den menos.</li>
 <li><kbd>R</kbd> recarga. <kbd>Z</kbd> usa un botiquín. Con poca salud oirás tu corazón.</li>
@@ -604,7 +605,7 @@ Buscar un sonido sirve para no tener que adivinar el grupo: escribe una palabra 
 <p>Las mejoras van con el arma: si te detienen y te la quitan, se pierden con ella.</p>
 
 <h3>Combates en el gimnasio</h3>
-<p>Además del boxeo, en los gimnasios hay veladas de artes marciales mixtas: tres asaltos seguidos en la jaula, cada uno contra un rival más duro, sin descanso y solo con los puños. Si caes en cualquiera, pierdes la velada. Paga bastante más que el boxeo, y cada velada ganada sube el premio y la dureza de la siguiente.</p>
+<p>Además del boxeo, en los gimnasios hay veladas de artes marciales mixtas: tres asaltos seguidos en la jaula, cada uno contra un rival más duro, sin descanso y solo con los puños. Si caes en cualquiera, pierdes la velada. Paga bastante más que el boxeo, y cada velada ganada sube el premio y la dureza de la siguiente. Cada victoria sube el premio y la dureza del rival hasta diez victorias; a partir de ahí, ya no. En el ring y en la jaula solo valen los puños: no se puede cambiar de arma.</p>
 <p>Los combates del gimnasio son deporte: tumbar a tu rival no es un delito, no llama a la policía y no baja tu prestigio entre los vecinos, haya quien haya mirando. Eso sí, un puñetazo a alguien que pasaba por allí sigue siendo una agresión.</p>
 <h2>9. La policía</h2>
 <p>Los delitos solo cuentan si alguien los ve. El nivel de búsqueda va de 1 a 5. Con nivel 1 intentan detenerte; a partir del 2, disparan. Para librarte:</p>
@@ -975,22 +976,22 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <p>En el menú principal, Nueva partida conservando lo ganado empieza la historia desde el principio con lo que tenías en una partida guardada: dinero, armas, habilidades, casas, vehículos de los garajes, barcos y logros. Las misiones, los territorios y las decisiones empiezan de cero. En cada vuelta, los enemigos de las misiones aguantan un quince por ciento más. La partida guardada de la que sales no se toca.</p>
 <p>Las partidas guardadas con versiones anteriores del juego se convierten solas al cargarlas. Una partida guardada con una versión más nueva que la que tienes no se carga: el juego te avisa de que actualices. Desde la versión 1.7.4 cada partida es la de su ranura, y hay diez. El guardado automático, el rápido con <kbd>F5</kbd> y el de un cierre inesperado van a la ranura de la partida que juegas, así que dos personajes nunca se pisan el guardado. Una partida nueva toma la primera ranura libre la primera vez que se guarda, y el juego dice cuál. Antes de escribir encima de una ranura, lo que había queda como copia anterior: en Cargar partida, debajo de las ranuras, está la Copia anterior de cada una, por si quieres volver atrás. Si no queda ninguna ranura libre, el guardado automático y el rápido van a sus archivos de siempre hasta que guardes la partida en una ranura. Para volver al sistema de antes, Opciones, Partidas guardadas.</p>
 <h3>Las opciones, por secciones</h3>
-<p>Las opciones están agrupadas. Pulsa <kbd>Intro</kbd> sobre una sección para entrar; dentro, la última opción es siempre Volver, y también sirve <kbd>Escape</kbd>. <kbd>F1</kbd> explica la opción en la que estás.</p>
+<p>Las opciones están agrupadas. Pulsa <kbd>Intro</kbd> sobre una sección para entrar; dentro, la última opción es siempre Volver, y también sirve <kbd>Escape</kbd>. <kbd>F1</kbd> explica la opción en la que estás. Al final, Restablecer todas las opciones de serie las deja como vienen con el juego, después de preguntarte; se conservan tu idioma, tus servidores y tu nombre en la red.</p>
 <ul>
 <li>Idioma: no es una sección, es la primera línea de Opciones. Se cambia con las flechas: automático, el de tu Windows, o el que elijas. Está explicado en el apartado 2.</li>
-<li>Sonido y música: los cinco volúmenes, abrir la carpeta de mi música, la música de ambiente con su propio volumen, el pack de sonidos, el igualado de volumen y el ajuste de cada sonido por separado. En un servidor en línea, si quieres oír la radio de los vehículos de otros jugadores, que viene activado. También el sonido mono, para quien oye por un solo oído, y bajar el ambiente y la música mientras habla la voz, que viene activado.</li>
+<li>Sonido y música: los cinco volúmenes, abrir la carpeta de mi música, la música de ambiente con su propio volumen, el pack de sonidos, el igualado de volumen y el ajuste de cada sonido por separado. En un servidor en línea, si quieres oír la radio de los vehículos de otros jugadores, que viene activado. También el sonido mono, para quien oye por un solo oído, y bajar el ambiente y la música mientras habla la voz, que viene activado. También si tus pasos suenan uno a cada lado o todos al centro.</li>
 <li>Jugar en línea: si el juego espera y vuelve a entrar solo cuando el servidor en el que juegas se reinicia o se corta la conexión, que viene activado, y cuántos minutos espera como mucho, que de serie son diez.</li>
-<li>Movimiento y conducción: movimiento a pie con brújula o con giros, conducción asistida o libre, frenada automática, piloto del GPS y sensor de proximidad. Y las tres del vuelo: Vuelo real, con altura y travesías de verdad entre localidades; Aterrizaje asistido en las travesías; y Las aeronaves gastan combustible. Las tres vienen puestas.</li>
-<li>Orientación y avisos: formato de las direcciones, voz y baliza del GPS, anuncios de cruces, lugares, barrios y suelo, sonido de los lugares y semáforos acústicos.</li>
+<li>Movimiento y conducción: movimiento a pie con brújula o con giros, conducción asistida o libre, frenada automática, piloto del GPS y sensor de proximidad. Y las tres del vuelo: Vuelo real, con altura y travesías de verdad entre localidades; Aterrizaje asistido en las travesías; y Las aeronaves gastan combustible. Las tres vienen puestas. Si alternas entre andar y correr con Mayúsculas, lo que tengas puesto se guarda con la partida.</li>
+<li>Orientación y avisos: formato de las direcciones, voz y baliza del GPS, anuncios de cruces, lugares, barrios y suelo, sonido de los lugares y semáforos acústicos. Y cómo se dicen los días: con su nombre y su número, solo con el número o solo con el nombre.</li>
 <li>Combate y dificultad: dificultad, ayuda de puntería, la ayuda en las persecuciones, si las misiones se ajustan a tu escolta, sucesos callejeros y las dos asistencias. Desde la 1.7.3, también cómo conduce el piloto del GPS: normal, con prisa o con mucha prisa.</li>
 <li>La calle: gente, policía y bandas: lo que pasa a tu alrededor sin que lo busques. Está explicado un poco más abajo, opción por opción. Y, desde la 1.7.3, semáforos al conducir: el semáforo del próximo cruce, cuando conduces tú.</li>
 <li>Vida, reputación y consecuencias: el nivel de consecuencias, que es apagado, suave, normal o exigente y viene en suave; los impuestos y las facturas, que vienen en sí; los antecedentes penales, en sí; la vida sentimental apta para todos, en sí; la vida social se vive en persona, en sí; y los horarios, que vienen en no. Los tres primeros están explicados en el capítulo de la vida honrada; los dos últimos, en el de la vida social y en Cada día es distinto.</li>
 <li>Teclado: cambiar con qué tecla se hace cada cosa mientras juegas. Eliges la función, pulsas Intro y luego la tecla que quieres. Las dos teclas se intercambian. No se pueden cambiar Escape, Intro, F1, F12, la Mayúsculas derecha ni las teclas de control y alt. La Mayúsculas izquierda sí: la tecla que pongas en su lugar sirve para correr y para todas las combinaciones con Mayúsculas. Con la opción Usar también las teclas cambiadas en los menús y los diálogos, los menús se recorren con tus teclas; sin ella, en los menús las teclas son las de serie. Al escribir un texto, las teclas son siempre las normales. La ayuda de F1 dice las teclas que hayas puesto.</li>
 <li>Mando: qué hace cada botón, reasignarlos, la vibración y su fuerza.</li>
-<li>Voz: lector de pantalla o voz de Windows, si las escenas suenan con las voces de los personajes, si a un personaje creado por ti se le generan las frases que dicen su nombre, si los menús dicen la posición de cada opción, por ejemplo tres de nueve, y si al llegar un mensaje nuevo el historial salta al final, que viene en sí.</li>
+<li>Voz: lector de pantalla o voz de Windows, si las escenas suenan con las voces de los personajes, si a un personaje creado por ti se le generan las frases que dicen su nombre, si los menús dicen la posición de cada opción, por ejemplo tres de nueve, y si al llegar un mensaje nuevo el historial salta al final, que viene en sí. Y si el juego calla mientras está en segundo plano, que es como viene, para no interrumpir a tu lector en otra ventana; lo dicho mientras tanto va al historial.</li>
 <li>Personas e inteligencia artificial: cómo contestan las personas de la calle, con qué servicio y con qué claves.</li>
 <li>Registro para informar de fallos: dónde está el registro de la sesión, qué contiene y cómo enviarlo.</li>
-<li>Actualizaciones: buscar una versión nueva, elegir de dónde se actualiza, y los componentes sueltos: idiomas, voces, guías, packs de sonidos y mods.</li>
+<li>Actualizaciones: buscar una versión nueva, elegir de dónde se actualiza, y los componentes sueltos: idiomas, voces, guías, packs de sonidos y mods. Y, si quieres, que al arrancar se instalen solas la versión nueva del juego y los componentes de las categorías que te interesan.</li>
 <li>Partidas guardadas: si cada partida guarda en su ranura, con su guardado automático y el rápido dentro, que es como viene, o como antes de la versión 1.7.4, con dos archivos que comparten todas las partidas.</li>
 <li>Contenido para adultos: activarlo o desactivarlo, y decir quién te atrae.</li>
 <li>Mods: activar o desactivar: no es una sección; abre la lista de mods instalados para activarlos o desactivarlos.</li>
@@ -1089,7 +1090,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <p>Cuando conquistas tu primer barrio puedes tener banda. En el móvil, en Territorios, entra en Tu banda:</p>
 <ul>
 <li>Reclutar a alguien cuesta 400 euros. Cada territorio te deja mantener a uno más: con un barrio, dos personas; con nueve o más, diez, que es el tope. Al llegar a él, el juego te lo dice; el tope se cambia en el editor de mods.</li>
-<li>Llamar a tu banda hace que acudan a donde estés. Te siguen a pie, suben contigo al vehículo y pelean a tu lado.</li>
+<li>Llamar a tu banda hace que acudan a donde estés. Te siguen a pie, suben contigo al vehículo y pelean a tu lado. Si hablas con uno de ellos con la J, te dice cuánta salud le queda; y con tu salud al máximo, la Z cura con un botiquín al de tu banda que tengas al lado.</li>
 <li>Cada miembro cobra 60 euros cada medianoche. Si no te llega, se marcha uno. Si te quedas sin territorios, la banda se disuelve.</li>
 <li>Puedes ponerle el nombre que quieras.</li>
 <li>Chófer: uno de los tuyos viene a recogerte y conduce él. Lo cuenta el apartado siguiente.</li>
@@ -1153,7 +1154,7 @@ Al cambiar de forma, lo que quedara en las cajas te llega igual.</li>
 <li>Si un día no te llega para pagar, uno se va: el menos leal, no el último que entró. Los demás se quedan, pero enfadados, y pierden lealtad.</li>
 <li>Su ficha dice cómo está: contigo a muerte, contento, tirando, descontento o muy quemado.</li>
 <li>Alguien muy quemado puede traicionarte: robarte lo que guardas en el armario de una casa y desaparecer, irse con otra banda, o irse de la lengua con la policía, que registra una de tus casas, se lleva la mercancía y a veces cierra el laboratorio.</li>
-<li>Tareas: en la ficha de cada uno, la opción Tarea. Puede vender en la calle la mercancía que guardas en el armario de tus casas, o cocinar en uno de tus laboratorios con el material que tengas, que se compra a un proveedor. Al final del día te traen lo vendido, en mano y menos su parte, y lo cocinado queda en el armario de esa casa. A un camello lo pueden detener: pierde lo que llevaba y pasa unos días fuera; y si no te es leal, se queda con algo más de la cuenta y, si le detienen, canta dónde guardas el resto. En un laboratorio también puede haber un incendio. Las tareas necesitan el contenido para adultos.</li>
+<li>Tareas: en la ficha de cada uno, la opción Tarea. Puede vender en la calle la mercancía que guardas en el armario de tus casas, o cocinar en uno de tus laboratorios con el material que tengas, que se compra a un proveedor. Al final del día te traen lo vendido, en mano y menos su parte, y lo cocinado queda en el armario de esa casa. A un camello lo pueden detener: pierde lo que llevaba y pasa unos días fuera; y si no te es leal, se queda con algo más de la cuenta y, si le detienen, canta dónde guardas el resto. En un laboratorio también puede haber un incendio. Las tareas necesitan el contenido para adultos. El material es uno solo, para ti y para tu banda: no hace falta llevarlo encima ni dejarlo en el armario, y cada cocinero gasta una tanda al día. Si el laboratorio se pierde, por una redada o un incendio, el cocinero te lo dice en el parte de la noche y se queda sin tarea; cuando montes otro, vuelve a dársela.</li>
 </ul>
 <p>En Tu gente, <kbd>Intro</kbd> sobre alguien abre lo que puedes hacer con esa persona, por su nombre: hablar un rato, que te cuenta cosas suyas; invitarle a algo, por treinta euros; darle una paga extra, por ciento cincuenta; o echarle de la banda. Cada cosa se puede una vez al día y le hace más leal, lo que más la paga, y alguien leal no te delata si lo detienen.</p>
 <p>Con el mando se hace todo desde los menús, con los botones de siempre: no hay ninguna tecla nueva.</p>

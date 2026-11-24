@@ -1,9 +1,14 @@
 """Salida de voz y braille mediante el lector de pantalla (NVDA, JAWS...) o SAPI."""
 from .i18n import tr
 import re
+import time
 from collections import deque
 
 from . import genero, palabras, registro
+
+# Mientras repasas el historial, los mensajes que llegan no te llevan al final: si no, con el GPS o los partes del día
+# hablando, Re Pág se quedaba siempre en el mismo mensaje. Se deja de repasar al llegar al último o tras este rato quieto.
+REPASO_PAUSA = 20.0
 
 
 # Con poco detalle se quitan las frases que solo explican qué tecla pulsar: quien ya conoce el juego no las necesita.
@@ -21,6 +26,7 @@ class Voz:
     def __init__(self, sapi=False, muda=False):
         self.historial = deque(maxlen=300)
         self.cursor = 0
+        self.repaso_t = -1e9         # cuándo se pulsó por última vez Re Pág o Av Pág
         # Aparte, solo lo que dicen los demás jugadores y el servidor (chat, avisos, quién entra y sale): se repasa con
         # Mayúsculas Re Pág y Av Pág sin que se mezcle con las teclas y los menús.
         self.mensajes = deque(maxlen=100)
@@ -67,7 +73,7 @@ class Voz:
             except Exception:
                 pass
 
-    def decir(self, texto, interrumpir=False, guardar=True):
+    def decir(self, texto, interrumpir=False, guardar=True, hablar=True):
         """Dice un texto. Los avisos del juego no interrumpen; los menús sí."""
         if not texto:
             return
@@ -85,7 +91,7 @@ class Voz:
             if len(self.registro) > 2000:
                 del self.registro[:1000]
             return
-        if self.salida is None:
+        if self.salida is None or not hablar:
             return
         try:
             self.salida.speak(texto, interrupt=interrumpir)
@@ -126,7 +132,10 @@ class Voz:
         lleno = len(self.historial) == self.historial.maxlen
         self.historial.append(texto)
         cfg = getattr(self, "cfg", None)
-        if al_final or cfg is None or cfg["historial_al_final"]:
+        if self.repasando():
+            if lleno:
+                self.cursor = max(0, self.cursor - 1)           # el más antiguo se ha ido: el tuyo está un puesto antes
+        elif al_final or cfg is None or cfg["historial_al_final"]:
             self.cursor = len(self.historial) - 1
         elif lleno:
             self.cursor = max(0, self.cursor - 1)               # el más antiguo se ha ido: el tuyo está un puesto antes
@@ -158,12 +167,20 @@ class Voz:
         self.cursor_msj = nuevo
         self.decir(self.mensajes[nuevo], True, False)
 
+    def repasando(self):
+        return time.monotonic() - self.repaso_t < REPASO_PAUSA
+
+    def _marcar_repaso(self):
+        """Al llegar al último mensaje dejas de repasar: los nuevos vuelven a llevarte al final."""
+        self.repaso_t = -1e9 if self.cursor >= len(self.historial) - 1 else time.monotonic()
+
     def repasar_extremo(self, al_final):
         """Control Re Pág y Control Av Pág: el primer mensaje del historial, o el último."""
         if not self.historial:
             self.decir(tr("No hay mensajes."), True, False)
             return
         self.cursor = len(self.historial) - 1 if al_final else 0
+        self._marcar_repaso()
         self.decir((tr("Último. ") if al_final else tr("Primero. ")) + self.historial[self.cursor], True, False)
 
     def repasar(self, delta):
@@ -171,8 +188,12 @@ class Voz:
         if not self.historial:
             self.decir(tr("No hay mensajes."), True, False)
             return
-        self.cursor = max(0, min(len(self.historial) - 1, self.cursor + delta))
-        self.decir(self.historial[self.cursor], True, False)
+        nuevo = self.cursor + delta
+        self.cursor = max(0, min(len(self.historial) - 1, nuevo))
+        self._marcar_repaso()
+        # Si ya no hay más, se dice: así se sabe que la tecla ha llegado al borde y no que no responde.
+        borde = tr("Primero. ") if nuevo < 0 else tr("Último. ") if delta > 0 and nuevo > self.cursor else ""
+        self.decir(borde + self.historial[self.cursor], True, False)
 
     def ultimo(self):
         return self.historial[-1] if self.historial else ""

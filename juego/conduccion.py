@@ -571,6 +571,8 @@ class Conduccion:
                 self.decir(tr('Enderezas hacia el {cardinal}.').format(cardinal=(M.cardinal(v.rumbo))), True)
         elif k == pygame.K_j:
             self.alternar_trabajo()
+        elif k == pygame.K_w and mayus:
+            self.decir(self.vehiculo_estado_txt(v), True)
         elif k == pygame.K_w:
             self.decir(tr('{int} kilómetros por hora.').format(int=(int(abs(v.vel) * 3.6))), True)
         elif k == pygame.K_y and mayus:
