@@ -487,6 +487,26 @@ Pack rules, with their watchdog tests in `pruebas/test_171_sonidos.py`:
 - `IMPORTANTES` is the order of the group "The most important", and the glossary `ayuda.SONIDOS` is derived from it. `es_orientacion` says which sounds the packs keep (it does not depend on the groups). `buscar` is the search used by both menus (`menus_juego.buscar_sonido`): all the words, in the name, explanation, group or file name, ignoring accents and capitals.
 - The per-sound volume is saved in `vol_sonidos` by file name, so reclassifying loses nothing. `packs.factor`, `packs.cambiado` and `packs.restablecer` give the adjustment that is actually applied, say whether it has been changed and return it to the standard value; the menu (`MenuVolumenes`) adds Delete, the "Changed sounds" list and resetting a group.
 
+## Contributors and acknowledgements
+
+Thanks to everyone who has helped make Puerto Bravo better through GitHub. Whenever someone new contributes, they are added here, in this document and in its Spanish version.
+
+### Code, translations and mods
+
+- [patricus3](https://github.com/patricus3): the careless style of the GPS autopilot and the El Diablo mod, a hitman agency with its own missions and contracts. Their reports and suggestions also brought the English release notes and the hurried driving styles, building on any Windows, fixes for failing tests and each game saving to its own slot.
+- [Daoductrung](https://github.com/Daoductrung): the Vietnamese translation of the game, all of its documentation and the Marisma Negra mod.
+- [leoguimaoficial](https://github.com/leoguimaoficial): the complete Brazilian Portuguese translation and its corrections.
+
+### Bug reports and suggestions
+
+- [lishi-lg](https://github.com/lishi-lg): the first bug ever reported, with its error log.
+- [zeoltan](https://github.com/zeoltan): two unexpected crashes, the missing four-by-four and a sound pack proposal.
+- [aaronalostiza](https://github.com/aaronalostiza): the game closing when joining a server, and another error.
+- [jgudino013-ship-it](https://github.com/jgudino013-ship-it): gangs not attacking in waves when you are only defending yourself.
+- [amirh123123](https://github.com/amirh123123): the request for more languages, starting with English.
+- [cmjh](https://github.com/cmjh): a game that would not start.
+- [retrochiptuner](https://github.com/retrochiptuner): the powder magazine key mission, which still showed as available.
+
 ---
 
 ## License

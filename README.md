@@ -473,6 +473,26 @@ Reglas de los packs, con sus pruebas vigilantes en `pruebas/test_171_sonidos.py`
 - `IMPORTANTES` es el orden del grupo «Los más importantes» y el glosario `ayuda.SONIDOS` se deriva de él. `es_orientacion` dice qué sonidos conservan los packs (no depende de los grupos). `buscar` es el buscador de los dos menús (`menus_juego.buscar_sonido`): todas las palabras, en nombre, explicación, grupo o nombre de archivo, sin tildes ni mayúsculas.
 - El volumen por sonido se guarda en `vol_sonidos` por nombre de archivo, así que reclasificar no pierde nada. `packs.factor`, `packs.cambiado` y `packs.restablecer` dan el ajuste que de verdad se aplica, si está cambiado y lo devuelven al de serie; el menú (`MenuVolumenes`) añade Suprimir, la lista «Sonidos cambiados» y restablecer un grupo.
 
+## Colaboradores y menciones
+
+Gracias a todas las personas que han ayudado a mejorar Puerto Bravo desde GitHub. Cada vez que alguien nuevo colabora, se añade aquí, en este documento y en su versión en inglés.
+
+### Con código, traducciones y mods
+
+- [patricus3](https://github.com/patricus3): el estilo temerario del piloto automático del GPS y el mod El Diablo, una agencia de sicarios con sus misiones y sus contratos. Además, sus avisos y propuestas trajeron las novedades en inglés y los estilos de conducción con prisa, la compilación en cualquier Windows, el arreglo de pruebas que fallaban y que cada partida guarde en su propia ranura.
+- [Daoductrung](https://github.com/Daoductrung): la traducción al vietnamita del juego, de toda su documentación y del mod Marisma Negra.
+- [leoguimaoficial](https://github.com/leoguimaoficial): la traducción completa al portugués de Brasil y sus correcciones.
+
+### Con avisos de fallos y propuestas
+
+- [lishi-lg](https://github.com/lishi-lg): el primer fallo avisado, con su registro de error.
+- [zeoltan](https://github.com/zeoltan): dos cierres inesperados del juego, el todoterreno que no aparecía y la propuesta de un pack de sonidos.
+- [aaronalostiza](https://github.com/aaronalostiza): el cierre del juego al entrar a un servidor y otro error.
+- [jgudino013-ship-it](https://github.com/jgudino013-ship-it): que las bandas no te ataquen en oleadas cuando solo te defiendes.
+- [amirh123123](https://github.com/amirh123123): la petición de más idiomas, empezando por el inglés.
+- [cmjh](https://github.com/cmjh): un juego que no llegaba a arrancar.
+- [retrochiptuner](https://github.com/retrochiptuner): la misión de la llave del polvorín, que seguía saliendo como disponible.
+
 ---
 
 ## Licencia
