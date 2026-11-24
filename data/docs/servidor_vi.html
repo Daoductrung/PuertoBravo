@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Thiết lập máy chủ Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 56em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3, h4 { color: #ffd84d; }
+li { margin-bottom: .4em; }
+code, kbd { background: #2a2a2a; padding: 0 .3em; }
+a { color: #9fd0ff; }
+</style>
+</head>
+<body>
+<h1>Thiết lập máy chủ Puerto Bravo</h1>
+<p>Máy chủ là một chương trình nhỏ bạn để chạy nền để nhiều người có thể chơi cùng nhau trong cùng một thành phố. Máy chủ lưu trữ các nhân vật, băng đảng và khu phố, đồng thời quyết định những gì xảy ra giữa các người chơi. Máy chủ không cần máy tính cấu hình mạnh và hoạt động mượt mà cho dù là hai người bạn hay một trăm người trở lên.</p>
+<p>Mọi thao tác đều có thể thực hiện bằng bàn phím và trình đọc màn hình: có một bảng điều khiển dạng cửa sổ dành cho Windows và trên mọi hệ thống, máy chủ đều có thể vận hành thông qua giao diện văn bản.</p>
+<p>Bạn có thể điều hướng trong cẩm nang này theo các đề mục. Mỗi cách thiết lập đều có mục riêng đi kèm các bước chi tiết. Bạn không cần phải đọc toàn bộ: hãy chọn cách phù hợp trong mục 3 và chuyển thẳng tới đó.</p>
+
+<h2 id="indice">Mục lục</h2>
+<ol>
+<li><a href="#que">Những thứ bạn cần</a></li>
+<li><a href="#carpeta">Những gì có trong thư mục servidor</a></li>
+<li><a href="#elegir">Lựa chọn cách thiết lập</a></li>
+<li><a href="#panel">Trên máy tính Windows của bạn, bằng bảng điều khiển</a></li>
+<li><a href="#consola">Trên máy tính Windows của bạn, từ bảng điều khiển dòng lệnh</a></li>
+<li><a href="#inicio">Tự động khởi động cùng Windows</a></li>
+<li><a href="#linux">Trên Linux hoặc máy chủ thuê ngoài, bằng Python</a></li>
+<li><a href="#systemd">Trên Linux, dưới dạng dịch vụ systemd</a></li>
+<li><a href="#raspberry">Trên Raspberry Pi</a></li>
+<li><a href="#mac">Trên máy Mac</a></li>
+<li><a href="#docker">Với Docker và docker compose</a></li>
+<li><a href="#synology">Trên NAS Synology</a></li>
+<li><a href="#direccion">Địa chỉ bạn gửi cho bạn bè, và cách kết nối từ bên ngoài ngôi nhà của bạn</a></li>
+<li><a href="#cifrado">Mã hóa và chứng chỉ</a></li>
+<li><a href="#entrada">Ai có thể tham gia</a></li>
+<li><a href="#administrar">Vận hành máy chủ</a></li>
+<li><a href="#versiones">Chơi cùng các phiên bản khác nhau của trò chơi</a></li>
+<li><a href="#dinero">Tiền bạc của người chơi: mức giới hạn theo giờ và các công việc</a></li>
+<li><a href="#rol">Nhập vai qua văn bản, giọng nói và radio trên phương tiện</a></li>
+<li><a href="#copias">Bản sao lưu, di chuyển máy chủ và cập nhật</a></li>
+<li><a href="#grandes">Các máy chủ có lượng người tham gia lớn</a></li>
+<li><a href="#problemas">Xử lý sự cố</a></li>
+<li><a href="#privacidad">Những gì máy chủ lưu giữ</a></li>
+<li><a href="#opciones">Tất cả các tùy chọn cấu hình</a></li>
+</ol>
+
+<h2 id="que">1. Những thứ bạn cần</h2>
+<ul>
+<li>Một máy tính luôn bật trong khi mọi người chơi: máy tính để bàn của bạn, máy tính xách tay cũ, NAS, Raspberry Pi hoặc máy chủ thuê ngoài.</li>
+<li>Trên Windows bạn không cần cài đặt thêm gì: máy chủ đi kèm sẵn theo trò chơi.</li>
+<li>Trên Linux, Mac, NAS hoặc Raspberry Pi bạn cần Python 3.8 trở lên, hầu như luôn được cài đặt sẵn. Bạn không cần cài đặt thêm gì khác: máy chủ chỉ sử dụng các thư viện có sẵn của Python. Bạn không cần cài đặt trò chơi tại đó.</li>
+<li>Để bạn bè bên ngoài mạng gia đình tham gia: mở một cổng trên modem/router, hoặc sử dụng mạng riêng ảo. Hướng dẫn chi tiết ở mục 13.</li>
+<li>Máy chủ tốn rất ít tài nguyên: với một vài người chơi bạn hầu như không nhận thấy mức tải CPU hay bộ nhớ.</li>
+</ul>
+
+<h2 id="carpeta">2. Những gì có trong thư mục servidor</h2>
+<p>Bên trong thư mục trò chơi có một thư mục tên là <code>servidor</code>. Mọi thứ dành cho máy chủ đều nằm ở đó và mọi dữ liệu máy chủ lưu lại cũng được đưa vào đó. Các bản cập nhật trò chơi không bao giờ can thiệp vào cấu hình hoặc dữ liệu của bạn.</p>
+<ul>
+<li><code>Panel del servidor.bat</code> (Bảng điều khiển máy chủ): mở cửa sổ bảng điều khiển. Đây là lựa chọn dễ dàng nhất trên Windows.</li>
+<li><code>Servidor por consola.bat</code> (Máy chủ dòng lệnh): khởi chạy máy chủ trong một cửa sổ văn bản.</li>
+<li><code>Parar el servidor.bat</code> (Dừng máy chủ): dừng máy chủ đang chạy một cách tuần tự và an toàn.</li>
+<li><code>Arrancar con Windows - activar.bat</code> (Khởi động cùng Windows - kích hoạt) và <code>Arrancar con Windows - quitar.bat</code> (Khởi động cùng Windows - gỡ bỏ): để máy chủ tự động khởi chạy khi bạn đăng nhập Windows.</li>
+<li><code>documentacion_es.html</code> và <code>documentacion_en.html</code>: cẩm nang hướng dẫn này, bằng tiếng Tây Ban Nha và tiếng Anh.</li>
+<li><code>servidor.conf.ejemplo</code>: toàn bộ các tùy chọn cấu hình được giải thích chi tiết từng mục một.</li>
+<li><code>otros_sistemas</code>: thư mục bạn sao chép sang máy Linux, Mac, NAS hoặc Raspberry Pi. Thư mục chứa mã nguồn máy chủ, các tập lệnh <code>arrancar.sh</code>, <code>parar.sh</code>, <code>reiniciar.sh</code> và <code>estado.sh</code>, tệp dịch vụ systemd <code>puertobravo.service</code>, và các tệp Docker: <code>Dockerfile</code>, <code>docker-compose.yml</code> cùng <code>entrada_docker.sh</code>.</li>
+</ul>
+<p>Khi bạn khởi chạy máy chủ lần đầu tiên, các mục sau cũng sẽ xuất hiện:</p>
+<ul>
+<li><code>servidor.conf</code>: tệp cấu hình của bạn.</li>
+<li><code>datos_servidor</code>: thư mục lưu các nhân vật, băng đảng, chứng chỉ và bên trong là thư mục <code>copias</code> chứa các bản sao lưu.</li>
+</ul>
+<p>Các chương trình máy chủ dành cho Windows nằm trong thư mục trò chơi, ngay cạnh tệp chạy trò chơi: <code>PuertoBravoServidorPanel.exe</code> (bảng điều khiển) và <code>PuertoBravoServidor.exe</code> (bảng điều khiển dòng lệnh). Cả hai đều luôn làm việc với thư mục <code>servidor</code> bất kể bạn mở chúng từ đâu.</p>
+
+<h2 id="elegir">3. Lựa chọn cách thiết lập</h2>
+<ul>
+<li>Bạn muốn chơi cùng bạn bè từ máy tính Windows của mình và muốn mọi thứ thật dễ dàng: <a href="#panel">bảng điều khiển</a>, mục 4.</li>
+<li>Bạn thích giao diện cửa sổ văn bản hơn, hoặc để máy chủ chạy tự động không cần giám sát: <a href="#consola">dòng lệnh</a>, mục 5, và <a href="#inicio">tự động khởi động</a>, mục 6.</li>
+<li>Bạn có máy tính chạy Linux hoặc thuê máy chủ riêng: mục <a href="#linux">7</a> và <a href="#systemd">8</a>.</li>
+<li>Bạn có Raspberry Pi: <a href="#raspberry">mục 9</a>.</li>
+<li>Bạn có máy Mac: <a href="#mac">mục 10</a>.</li>
+<li>Bạn sử dụng Docker: <a href="#docker">mục 11</a>.</li>
+<li>Bạn có NAS Synology: <a href="#synology">mục 12</a>.</li>
+</ul>
+<p>Cấu hình và dữ liệu hoàn toàn giống nhau trên mọi hệ thống: bạn có thể bắt đầu trên máy tính Windows của mình rồi chuyển máy chủ sang máy khác sau này. Mục 20 sẽ hướng dẫn bạn cách thực hiện.</p>
+
+<h2 id="panel">4. Trên máy tính Windows của bạn, bằng bảng điều khiển</h2>
+<h3>Khởi động lần đầu tiên</h3>
+<ol>
+<li>Mở thư mục trò chơi, đi vào thư mục <code>servidor</code> và mở <code>Panel del servidor.bat</code>. Bạn cũng có thể mở trực tiếp <code>PuertoBravoServidorPanel.exe</code> trong thư mục trò chơi.</li>
+<li>Cửa sổ bảng điều khiển mở ra, tiêu điểm nằm ở trạng thái máy chủ, thông báo máy chủ đang dừng.</li>
+<li>Nếu bạn muốn thay đổi điều gì trước khi khởi động, nhấn Control+P để mở phần cài đặt. Điều tối thiểu là đặt tên cho máy chủ của bạn ở thẻ đầu tiên. Nhấn Đồng ý để lưu lại.</li>
+<li>Nhấn F5 để khởi động. Lần đầu tiên sẽ mất vài giây vì máy chủ phải tạo chứng chỉ để mã hóa kết nối.</li>
+<li>Khi hoàn tất, bảng điều khiển sẽ thông báo "Máy chủ đang chạy" và số cổng kết nối. Nếu Windows hỏi bạn có cho phép chương trình giao tiếp qua mạng hay không, hãy chọn có: nếu không đồng ý thì không ai có thể tham gia được.</li>
+<li>Thẻ Trạng thái hiển thị địa chỉ bạn cần gửi cho những ai chơi trong cùng mạng nội bộ nhà bạn. Nút Sao chép địa chỉ sẽ đưa địa chỉ này vào khay nhớ tạm.</li>
+<li>Hãy tự mình tham gia trước từ trò chơi: tài khoản đầu tiên tham gia sẽ là quản trị viên (admin).</li>
+</ol>
+<h3>Các thẻ giao diện</h3>
+<p>Bạn chuyển đổi qua lại giữa các thẻ bằng Control+Tab và Control+Shift+Tab.</p>
+<ul>
+<li>Trạng thái: máy chủ có đang chạy không, bao nhiêu người đang trực tuyến, cổng kết nối, địa chỉ cho bạn bè, thông tin mã hóa kèm dấu vân tay chứng chỉ, và thế giới máy chủ đang hoạt động cùng. Mỗi thông tin trên một dòng. Thẻ tự động cập nhật chỉ khi có sự thay đổi mà không di chuyển con trỏ khỏi vị trí hiện tại; F6 cập nhật lại ngay lập tức.</li>
+<li>Người chơi: ai đang trực tuyến, ở đâu và sử dụng phiên bản trò chơi nào. Bằng các nút bấm hoặc phím Menu ứng dụng trên một người chơi, bạn có thể gửi tin nhắn, đuổi ra ngoài, cấm tham gia hoặc chỉ định làm quản trị viên.</li>
+<li>Tài khoản: tất cả tài khoản từng tham gia máy chủ. Tại đây bạn có thể cấm, gỡ bỏ lệnh cấm, cấp hoặc tước quyền quản trị viên và xóa tài khoản, ngay cả khi người đó đang không trực tuyến.</li>
+<li>Lời mời: các mã mời tham gia, gồm mã chưa dùng và mã đã dùng. Bạn tạo mới, sao chép và hủy bỏ mã mời tại đây.</li>
+<li>Nhật ký: những gì máy chủ ghi nhận trong quá trình hoạt động, thông tin mới nhất ở cuối cùng. Phía dưới có một ô để nhập lệnh cho máy chủ, tương tự như các lệnh trong giao diện dòng lệnh.</li>
+</ul>
+<h3>Các phím tắt trong bảng điều khiển</h3>
+<ul>
+<li>F5: khởi động máy chủ. Shift+F5: dừng máy chủ. Control+F5: khởi động lại máy chủ.</li>
+<li>Control+P: cài đặt. Control+Q: thoát.</li>
+<li>Control+N: thông báo tới toàn bộ người chơi. Control+M: gửi tin nhắn tới người chơi đã chọn. Control+E: đuổi người chơi đã chọn.</li>
+<li>Control+I: tạo mã mời. Control+D: đổi thông điệp trong ngày. Control+O: nhập lệnh.</li>
+<li>F6: cập nhật trạng thái và danh sách.</li>
+<li>Control+S: lưu ngay bây giờ. Control+B: tạo bản sao lưu ngay bây giờ. Control+R: khôi phục bản sao lưu. Control+G: lưu nhật ký ra tệp.</li>
+<li>F1: mở cẩm nang hướng dẫn này. Control+H: giải thích về điều khiển bạn đang đứng.</li>
+<li>Alt cùng chữ cái gạch chân: đi tới điều khiển trên thẻ hoặc mở menu.</li>
+<li>Phím Menu ứng dụng, hoặc Shift+F10, trong danh sách người chơi và tài khoản: mở menu thao tác cho mục đã chọn.</li>
+</ul>
+<h3>Phần cài đặt</h3>
+<ul>
+<li>Control+P mở hộp thoại với mỗi thẻ tương ứng với một nhóm tùy chọn. Phím Control+H trên bất kỳ điều khiển nào sẽ cho biết điều khiển đó có tác dụng gì, chấp nhận giá trị nào và có cần khởi động lại máy chủ hay không.</li>
+<li>Đồng ý sẽ lưu và đóng hộp thoại. Áp dụng sẽ lưu lại mà không đóng. Hủy bỏ sẽ giữ nguyên mọi thứ không thay đổi.</li>
+<li>Khôi phục mặc định sẽ đặt lại các tùy chọn trên thẻ bạn đang đứng, hoặc toàn bộ các tùy chọn, về giá trị gốc ban đầu. Không có gì được lưu cho đến khi bạn nhấn Đồng ý hoặc Áp dụng.</li>
+<li>Hầu như mọi tùy chọn đều có hiệu lực ngay khi máy chủ đang chạy. Nếu bạn thay đổi điều gì cần khởi động lại máy chủ, chẳng hạn như cổng kết nối hoặc mã hóa, bảng điều khiển sẽ thông báo và đề xuất khởi động lại ngay lúc đó.</li>
+<li>Cấu hình được lưu trong tệp <code>servidor.conf</code>, một tệp văn bản có giải thích chi tiết từng tùy chọn mà bạn cũng có thể chỉnh sửa bằng Notepad.</li>
+</ul>
+<h3>Dừng và đóng máy chủ</h3>
+<ul>
+<li>Shift+F5 dừng máy chủ: máy chủ sẽ cảnh báo người chơi, lưu lại mọi dữ liệu và ngắt kết nối. Nếu đang có người trực tuyến, chương trình sẽ hỏi xác nhận trước.</li>
+<li>Nếu bạn đóng bảng điều khiển khi máy chủ đang chạy, chương trình sẽ hỏi và nếu bạn đồng ý, máy chủ sẽ dừng một cách an toàn tuần tự trước khi đóng.</li>
+<li>Máy chủ chỉ hoạt động trong khi bảng điều khiển mở. Bạn có thể thu nhỏ cửa sổ xuống thanh tác vụ.</li>
+<li>Control+F5 khởi động lại máy chủ: người chơi được thông báo rằng máy chủ đang khởi động lại, và trò chơi của họ sẽ chờ đợi rồi tự động kết nối lại ngay khi máy chủ chạy lại.</li>
+<li>Nếu bạn cập nhật trò chơi khi bảng điều khiển đang mở, bảng điều khiển sẽ tự động đóng một cách an toàn và mở lại khi cập nhật xong, đưa máy chủ hoạt động trở lại nếu trước đó nó đang chạy. Chi tiết ở <a href="#copias">mục 20</a>.</li>
+</ul>
+
+<h2 id="consola">5. Trên máy tính Windows của bạn, từ bảng điều khiển dòng lệnh</h2>
+<ol>
+<li>Trong thư mục <code>servidor</code> của trò chơi, mở <code>Servidor por consola.bat</code>.</li>
+<li>Lần đầu tiên, chương trình sẽ ghi tệp <code>servidor.conf</code> đi kèm giải thích tất cả các tùy chọn và khởi động với các giá trị mặc định.</li>
+<li>Cửa sổ thông báo những gì đang diễn ra: cổng nào đang lắng nghe, có mã hóa hay không, ai tham gia và ai rời đi.</li>
+<li>Bạn nhập các lệnh trực tiếp trong cùng cửa sổ đó. Gõ <code>help</code> và nhấn Enter để nghe toàn bộ danh sách lệnh. Danh sách lệnh nằm ở mục 16.</li>
+<li>Để thay đổi cấu hình, hãy mở <code>servidor.conf</code> bằng Notepad, chỉnh sửa những gì bạn muốn rồi lưu lại. Sau đó gõ <code>reload</code> trong bảng điều khiển: lệnh này sẽ áp dụng những gì có thể thay đổi mà không cần khởi động lại và thông báo những gì đang chờ khởi động lại.</li>
+<li>Để dừng máy chủ, hãy gõ <code>shutdown</code>, nhấn Control+C hoặc đóng cửa sổ. Trong cả ba trường hợp, máy chủ đều cảnh báo người chơi và lưu lại mọi dữ liệu.</li>
+</ol>
+<p>Bảng điều khiển đồ họa và bảng điều khiển dòng lệnh sử dụng cùng một cấu hình và cùng dữ liệu: bạn có thể dùng loại này hôm nay và loại kia vào ngày khác, nhưng không thể chạy cả hai cùng lúc.</p>
+<p>Nếu bạn thành thạo sử dụng cửa sổ dòng lệnh, bạn có thể gọi chương trình trực tiếp từ thư mục trò chơi:</p>
+<ul>
+<li><code>PuertoBravoServidor.exe --ejemplo</code>: ghi tệp <code>servidor.conf</code> mẫu rồi thoát.</li>
+<li><code>PuertoBravoServidor.exe --comprobar</code>: kiểm tra tệp <code>servidor.conf</code>, thông báo mục nào không hợp lệ rồi thoát.</li>
+<li><code>PuertoBravoServidor.exe --opciones</code>: liệt kê tất cả các tùy chọn kèm theo giải thích.</li>
+<li><code>PuertoBravoServidor.exe --parar</code>: dừng máy chủ đang chạy một cách an toàn tuần tự.</li>
+<li><code>PuertoBravoServidor.exe --actualizar</code>: dừng máy chủ, cảnh báo người chơi rằng máy chủ khởi động lại để cập nhật. Trò chơi của họ sẽ chờ đợi và tự động kết nối lại khi bạn khởi động lại máy chủ.</li>
+<li><code>PuertoBravoServidor.exe --reiniciar</code>: tương tự, thông báo lý do là để bảo trì.</li>
+<li><code>PuertoBravoServidor.exe --puerto=47821</code>: bất kỳ tùy chọn nào cũng có thể truyền theo cách này mà không cần chỉnh sửa tệp cấu hình.</li>
+</ul>
+
+<h2 id="inicio">6. Tự động khởi động cùng Windows</h2>
+<h3>Khi bạn đăng nhập</h3>
+<ol>
+<li>Trong thư mục <code>servidor</code>, mở <code>Arrancar con Windows - activar.bat</code>. Tệp này sẽ tạo một lối tắt trong thư mục Khởi động (Startup) của người dùng. Bạn không cần quyền quản trị viên.</li>
+<li>Kể từ đó, mỗi lần bạn đăng nhập Windows, máy chủ sẽ tự động khởi động trong một cửa sổ thu nhỏ.</li>
+<li>Để dừng máy chủ mà không cần tìm cửa sổ đó, hãy mở <code>Parar el servidor.bat</code>.</li>
+<li>Để hủy việc tự động khởi động, hãy mở <code>Arrancar con Windows - quitar.bat</code>.</li>
+</ol>
+<h3>Khi máy tính bật nguồn mà không cần ai đăng nhập</h3>
+<p>Cách này dành cho những ai có máy tính chạy chuyên dụng. Bạn cần một tài khoản có quyền quản trị viên.</p>
+<ol>
+<li>Mở Windows Task Scheduler: nhấn phím Windows, gõ Task Scheduler và nhấn Enter.</li>
+<li>Trong menu Action, chọn Create Task.</li>
+<li>Trên thẻ General, đặt tên là Puerto Bravo Server và đánh dấu chọn Run whether user is logged on or not.</li>
+<li>Trên thẻ Triggers, nhấn New và chọn At startup.</li>
+<li>Trên thẻ Actions, nhấn New. Trong mục Program/script, điền đường dẫn đầy đủ tới <code>PuertoBravoServidor.exe</code> trong thư mục trò chơi. Trong Add arguments, gõ <code>servidor.conf</code>.</li>
+<li>Trên thẻ Settings, bỏ chọn Stop the task if it runs longer than để tác vụ không bị ngắt sau ba ngày.</li>
+<li>Nhấn OK. Windows sẽ yêu cầu nhập mật khẩu tài khoản của bạn để có thể khởi chạy tác vụ mà không cần phiên đăng nhập.</li>
+</ol>
+<p>Khởi động theo cách này máy chủ sẽ không có cửa sổ hiển thị. Để dừng máy chủ an toàn hãy dùng <code>Parar el servidor.bat</code>, và để quản lý hãy dùng các lệnh từ ô chat trong trò chơi được nêu ở mục 16. Nếu bạn chọn End trong Task Scheduler, máy chủ sẽ bị dừng đột ngột: bạn chỉ mất tối đa một phút dữ liệu gần nhất, nhưng dừng tuần tự vẫn luôn tốt hơn.</p>
+
+<h2 id="linux">7. Trên Linux hoặc máy chủ thuê ngoài, bằng Python</h2>
+<ol>
+<li>Kiểm tra xem bạn đã có Python 3.8 trở lên chưa: gõ <code>python3 --version</code>.</li>
+<li>Sao chép thư mục <code>otros_sistemas</code> của trò chơi sang máy chủ với bất kỳ tên nào bạn thích, ví dụ <code>puertobravo</code> bên trong thư mục cá nhân (home) của bạn. Bất kỳ cách chép tệp nào cũng được: USB, <code>scp</code> hoặc chương trình truyền tệp.</li>
+<li>Đi vào thư mục đó: <code>cd puertobravo</code>. Thư mục <code>servidor</code> chứa mã nguồn phải nằm bên trong thư mục này.</li>
+<li>Tạo cấu hình mẫu: <code>python3 -m servidor --ejemplo</code>. Lệnh này tạo ra tệp <code>servidor.conf</code>.</li>
+<li>Chỉnh sửa cấu hình theo ý bạn bằng trình soạn thảo văn bản, ví dụ <code>nano servidor.conf</code>. Để kiểm tra không có lỗi: <code>python3 -m servidor --comprobar</code>.</li>
+<li>Khởi động máy chủ: <code>python3 -m servidor</code>. Chương trình sẽ thông báo cổng lắng nghe và tình trạng mã hóa. Bạn nhập các lệnh trực tiếp trong cùng cửa sổ dòng lệnh đó; gõ <code>help</code> để xem toàn bộ danh sách lệnh. Bạn dừng máy chủ bằng <code>shutdown</code> hoặc Control+C.</li>
+</ol>
+<h3>Chạy máy chủ ở chế độ nền</h3>
+<ul>
+<li><code>sh arrancar.sh</code>: khởi chạy máy chủ dưới nền nếu máy chủ chưa chạy. Những gì máy chủ thông báo sẽ được lưu trong <code>servidor.log</code>.</li>
+<li><code>sh estado.sh</code>: cho biết máy chủ có đang chạy hay không và hiển thị thông tin mới nhất.</li>
+<li><code>sh parar.sh</code>: dừng máy chủ một cách an toàn tuần tự.</li>
+<li><code>sh reiniciar.sh</code>: cảnh báo người chơi bằng đếm ngược, dừng máy chủ an toàn rồi khởi động lại. Đây là lệnh bạn sử dụng sau khi cập nhật mã nguồn máy chủ mới: trò chơi của người chơi sẽ chờ đợi và tự động kết nối lại.</li>
+<li>Để máy chủ tự khởi động khi máy tính bật nguồn mà không dùng systemd, hãy thêm một dòng như <code>@reboot sh /home/tu_usuario/puertobravo/arrancar.sh</code> vào crontab của bạn bằng lệnh <code>crontab -e</code>.</li>
+<li>Chạy theo cách này sẽ không có giao diện dòng lệnh. Bạn quản lý máy chủ từ ô chat trong trò chơi bằng các lệnh ở mục 16.</li>
+</ul>
+<h3>Tường lửa (Firewall)</h3>
+<ul>
+<li>Nếu máy chủ có tường lửa, bạn phải mở cổng máy chủ qua giao thức TCP. Với ufw: <code>sudo ufw allow 47820/tcp</code>. Với firewalld: <code>sudo firewall-cmd --permanent --add-port=47820/tcp</code> rồi <code>sudo firewall-cmd --reload</code>.</li>
+<li>Trên máy chủ thuê ngoài thường có thêm tường lửa trong bảng điều khiển của nhà cung cấp dịch vụ (đôi khi gọi là security group): hãy mở cổng 47820 qua TCP tại đó nữa.</li>
+<li>Máy chủ thuê ngoài luôn có địa chỉ IP công khai tĩnh: không cần phải cấu hình modem/router. Địa chỉ gửi cho bạn bè là <code>puertobravo://</code>, địa chỉ của máy, dấu hai chấm và số cổng.</li>
+</ul>
+
+<h2 id="systemd">8. Trên Linux, dưới dạng dịch vụ systemd</h2>
+<p>Cách này giúp máy chủ tự khởi động cùng hệ thống, tự khởi động lại nếu bị sự cố và dừng an toàn khi tắt máy. Bạn cần có quyền chạy <code>sudo</code>.</p>
+<ol>
+<li>Sao chép thư mục máy chủ vào <code>/opt/puertobravo</code>: <code>sudo cp -r puertobravo /opt/puertobravo</code>. Thư mục <code>servidor</code> phải nằm bên trong đó.</li>
+<li>Tạo một người dùng hệ thống không đặc quyền cho máy chủ: <code>sudo useradd --system --home /opt/puertobravo puertobravo</code>.</li>
+<li>Gán quyền sở hữu thư mục cho người dùng này: <code>sudo chown -R puertobravo: /opt/puertobravo</code>.</li>
+<li>Nếu chưa có tệp cấu hình, hãy tạo: <code>cd /opt/puertobravo</code> và <code>sudo -u puertobravo python3 -m servidor --ejemplo</code>. Chỉnh sửa bằng <code>sudo -u puertobravo nano servidor.conf</code>.</li>
+<li>Sao chép tệp dịch vụ: <code>sudo cp /opt/puertobravo/puertobravo.service /etc/systemd/system/</code>.</li>
+<li>Kích hoạt dịch vụ: <code>sudo systemctl daemon-reload</code> rồi <code>sudo systemctl enable --now puertobravo</code>.</li>
+</ol>
+<ul>
+<li>Kiểm tra tình trạng hoạt động: <code>systemctl status puertobravo</code>.</li>
+<li>Theo dõi nhật ký hoạt động trực tiếp: <code>journalctl -u puertobravo -f</code>. Thoát bằng Control+C.</li>
+<li>Dừng máy chủ: <code>sudo systemctl stop puertobravo</code>. Khởi động máy chủ: <code>sudo systemctl start puertobravo</code>. Khởi động lại, ví dụ sau khi đổi cổng: <code>sudo systemctl restart puertobravo</code>.</li>
+<li>Nếu bạn dùng thư mục khác hoặc người dùng khác, hãy chỉnh sửa các dòng <code>WorkingDirectory</code> và <code>User</code> trong tệp dịch vụ.</li>
+<li>Chạy dưới dạng dịch vụ sẽ không có bảng điều khiển: bạn quản lý từ ô chat trong trò chơi.</li>
+<li>Khởi động lại có cảnh báo, chẳng hạn sau khi cập nhật: quản trị viên gõ <code>/reiniciar</code> hoặc <code>/actualizar</code> trong ô chat trò chơi, hoặc trên máy chủ gõ <code>sudo -u puertobravo python3 -m servidor --actualizar</code> từ thư mục máy chủ. Máy chủ sẽ cảnh báo kèm đếm ngược, lưu lại mọi thứ và thoát với mã 75; dịch vụ systemd sẽ tự động khởi động lại máy chủ sau năm giây và các lượt chơi sẽ kết nối lại.</li>
+</ul>
+
+<h2 id="raspberry">9. Trên Raspberry Pi</h2>
+<ul>
+<li>Bất kỳ phiên bản nào chạy Raspberry Pi OS đều hoạt động tốt: hệ điều hành đã tích hợp sẵn Python 3. Đối với nhóm bạn vài người, mẫu máy cơ bản nhất cũng quá đủ mạnh mẽ.</li>
+<li>Các bước tiến hành hoàn toàn giống như trên Linux: mục 7 và 8. Cách thuận tiện nhất là thiết lập dưới dạng dịch vụ systemd để máy chủ tự chạy khi bạn cắm nguồn.</li>
+<li>Để sao chép thư mục <code>otros_sistemas</code> bạn có thể dùng USB hoặc <code>scp</code> từ máy tính nếu đã bật SSH trên Raspberry Pi.</li>
+<li>Trên các mẫu máy đời cũ tốc độ xử lý chậm hơn, việc kiểm tra danh tính người tham gia sẽ mất hơn một giây một chút. Điều này chỉ diễn ra lúc đăng nhập tham gia; trong khi chơi bạn hoàn toàn không nhận thấy độ trễ.</li>
+<li>Hãy gán cho Raspberry Pi một địa chỉ IP cố định trong mạng gia đình từ phần cài đặt của modem/router, trong mục đặt trước địa chỉ (address reservation) hoặc DHCP tĩnh. Như vậy địa chỉ gửi cho bạn bè sẽ không bị thay đổi và việc mở cổng luôn trỏ chính xác vào máy.</li>
+<li>Hãy sử dụng thẻ nhớ chất lượng tốt và luôn bật tính năng tự động sao lưu: thẻ nhớ có thể bị hao mòn theo thời gian.</li>
+</ul>
+
+<h2 id="mac">10. Trên máy Mac</h2>
+<ol>
+<li>Mở Terminal và gõ <code>python3 --version</code>. Nếu Mac đề xuất cài đặt công cụ cho nhà phát triển (developer tools), hãy đồng ý: bộ công cụ này đã bao gồm Python. Bạn cũng có thể cài đặt Python từ trang web chính thức.</li>
+<li>Sao chép thư mục <code>otros_sistemas</code> sang máy Mac, ví dụ vào thư mục cá nhân với tên <code>puertobravo</code>.</li>
+<li>Trong Terminal: <code>cd ~/puertobravo</code>, sau đó chạy <code>python3 -m servidor --ejemplo</code> và khi đã chỉnh sửa <code>servidor.conf</code> theo ý muốn, chạy <code>python3 -m servidor</code>.</li>
+<li>Lần đầu tiên, Mac sẽ hỏi bạn có cho phép các kết nối đến đối với Python không: hãy chọn có.</li>
+<li>Để chạy dưới nền, các tập lệnh tương tự vẫn hoạt động: <code>sh arrancar.sh</code>, <code>sh estado.sh</code>, <code>sh parar.sh</code> và <code>sh reiniciar.sh</code>.</li>
+<li>Để tránh việc máy Mac chuyển sang chế độ ngủ (sleep) trong khi mọi người đang chơi, hãy kiểm tra trong Cài đặt hệ thống (System Settings), tại mục năng lượng hoặc pin.</li>
+</ol>
+
+<h2 id="docker">11. Với Docker và docker compose</h2>
+<ol>
+<li>Sao chép thư mục <code>otros_sistemas</code> sang máy tính đã cài đặt Docker với tên <code>puertobravo</code>. Bên trong có sẵn <code>Dockerfile</code>, <code>docker-compose.yml</code>, <code>entrada_docker.sh</code> và thư mục <code>servidor</code>.</li>
+<li>Đi vào thư mục đó và gõ <code>docker compose up -d --build</code>. Lệnh này sẽ xây dựng hình ảnh (image) và khởi động máy chủ.</li>
+<li>Thư mục <code>datos</code> sẽ xuất hiện ngay cạnh đó. Bên trong chứa <code>servidor.conf</code> (được tự động tạo lần đầu) và <code>datos_servidor</code> chứa các nhân vật cùng bản sao lưu. Chúng nằm ngoài vùng chứa (container) nên hoàn toàn được giữ nguyên qua các lần cập nhật.</li>
+<li>Để thay đổi cấu hình, hãy chỉnh sửa <code>datos/servidor.conf</code> rồi khởi động lại: <code>docker compose restart</code>.</li>
+</ol>
+<ul>
+<li>Xem nhật ký hoạt động: <code>docker compose logs -f</code>. Thoát xem bằng Control+C mà không làm dừng máy chủ.</li>
+<li>Dừng máy chủ tuần tự an toàn: <code>docker compose down</code>. Lệnh này cảnh báo người chơi và lưu lại mọi dữ liệu.</li>
+<li>Gửi lệnh cho máy chủ: <code>docker attach puertobravo</code>, gõ lệnh rồi nhấn Enter. Để thoát ra mà không làm dừng máy chủ, nhấn Control+P rồi nhấn Control+Q. Cách đơn giản nhất là quản lý từ ô chat trong trò chơi.</li>
+<li>Không sử dụng lệnh <code>shutdown</code> bên trong Docker để dừng máy chủ: Docker sẽ tự động khởi chạy lại ngay. Hãy dùng <code>docker compose down</code>.</li>
+<li>Để khởi động lại có cảnh báo, các lệnh <code>restart</code> và <code>update</code> hoạt động bình thường từ ô chat trò chơi hoặc qua <code>docker attach</code>: máy chủ cảnh báo kèm đếm ngược, lưu lại mọi thứ và thoát ra, sau đó Docker sẽ tự khởi động lại máy chủ. Các lượt chơi sẽ chờ đợi và tự động kết nối lại.</li>
+<li>Nếu bạn đổi cổng trong <code>servidor.conf</code>, hãy đổi cả hai con số trên dòng <code>ports</code> của tệp <code>docker-compose.yml</code>.</li>
+<li>Với Docker, tất cả kết nối có thể đi tới máy chủ từ cùng một địa chỉ nội bộ. Do đó tùy chọn <code>conexiones_por_ip</code> phải được giữ ở mức 0.</li>
+</ul>
+
+<h2 id="synology">12. Trên NAS Synology</h2>
+<h3>Với Container Manager</h3>
+<p>Container Manager là gói Docker của Synology. Bạn cài đặt từ Package Center, gói này sẽ tạo một thư mục chia sẻ tên là <code>docker</code>.</p>
+<ol>
+<li>Mở File Station, đi vào thư mục chia sẻ <code>docker</code> và tạo một thư mục bên trong tên là <code>puertobravo</code>.</li>
+<li>Tải toàn bộ nội dung của <code>otros_sistemas</code> lên thư mục đó: thư mục <code>servidor</code>, <code>Dockerfile</code>, <code>docker-compose.yml</code> và <code>entrada_docker.sh</code>. Các tệp khác không gây ảnh hưởng gì.</li>
+<li>Mở Container Manager và đi tới mục Project.</li>
+<li>Nhấn Create. Đặt tên dự án là <code>puertobravo</code>. Trong mục Path, chọn thư mục <code>docker/puertobravo</code>.</li>
+<li>Container Manager nhận diện đã có sẵn tệp <code>docker-compose.yml</code> tại đó và hỏi có sử dụng không: hãy chọn có.</li>
+<li>Tiếp tục nhấn Next cho đến cuối mà không bật cổng thông tin web, rồi nhấn Done. Hệ thống sẽ xây dựng hình ảnh và khởi động máy chủ. Lần đầu tiên sẽ mất vài phút.</li>
+<li>Cấu hình nằm tại <code>docker/puertobravo/datos/servidor.conf</code>. Bạn có thể chỉnh sửa từ File Station bằng gói Text Editor. Sau đó trong Container Manager, Project, chọn <code>puertobravo</code> và trong Action, chọn Stop rồi chọn Start.</li>
+<li>Những gì máy chủ ghi nhận nằm trong Container Manager, Container, <code>puertobravo</code>, thẻ Log.</li>
+</ol>
+<ul>
+<li>Nếu bạn bật tường lửa của NAS, trong Control Panel, Security, Firewall, hãy thêm một quy tắc cho phép cổng 47820 qua TCP.</li>
+<li>Gán cho NAS một địa chỉ cố định trong mạng gia đình hoặc đặt trước địa chỉ trong router để việc chuyển tiếp cổng không bị lệch hướng.</li>
+<li>Để cập nhật máy chủ: tải thư mục <code>servidor</code> mới đè lên thư mục cũ và trong dự án, chọn Action, Build. Thư mục <code>datos</code> không bị ảnh hưởng.</li>
+</ul>
+<h3>Không dùng Docker, bằng chính Python của NAS</h3>
+<ol>
+<li>Cài đặt gói Python 3 từ Package Center nếu chưa có.</li>
+<li>Sao chép nội dung của <code>otros_sistemas</code> vào một thư mục trên NAS, ví dụ <code>puertobravo</code> bên trong thư mục chia sẻ.</li>
+<li>Trong Control Panel, Task Scheduler, tạo một Triggered Task thuộc loại User-defined script, với sự kiện Boot-up và chạy dưới tài khoản người dùng của bạn chứ không phải quản trị viên hệ thống.</li>
+<li>Trong phần kịch bản, gõ <code>sh</code>, dấu cách và đường dẫn đầy đủ tới <code>arrancar.sh</code>. Ví dụ: <code>sh /volume1/docker/puertobravo/arrancar.sh</code>.</li>
+<li>Để khởi động ngay lập tức mà không cần khởi động lại NAS, hãy chọn tác vụ đó và nhấn Run.</li>
+<li>Để dừng máy chủ, hãy tạo một tác vụ tương tự không gắn sự kiện với <code>parar.sh</code> và chạy khi cần thiết.</li>
+</ol>
+
+<h2 id="direccion">13. Địa chỉ bạn gửi cho bạn bè, và cách kết nối từ bên ngoài ngôi nhà của bạn</h2>
+<h3>Cấu trúc của địa chỉ</h3>
+<ul>
+<li>Địa chỉ có dạng <code>puertobravo://</code>, địa chỉ của máy tính, dấu hai chấm và số cổng. Ví dụ: <code>puertobravo://192.168.1.50:47820</code>.</li>
+<li>Trong trò chơi bạn thêm địa chỉ này tại mục Chơi trên máy chủ, Thêm máy chủ.</li>
+<li>Nếu bạn không đổi cổng (mặc định là 47820), bạn có thể gửi địa chỉ mà không cần phần dấu hai chấm và số cổng.</li>
+</ul>
+<h3>Dành cho người chơi trong cùng gia đình</h3>
+<ul>
+<li>Địa chỉ mạng nội bộ của máy tính là dùng được; địa chỉ này thường bắt đầu bằng 192.168. Bảng điều khiển hiển thị địa chỉ này trên thẻ Trạng thái và có thể sao chép nhanh bằng nút Sao chép địa chỉ.</li>
+<li>Trên Windows bạn cũng có thể tìm địa chỉ này bằng cách mở cửa sổ dòng lệnh và gõ <code>ipconfig</code>: đó là dòng IPv4 Address. Trên Linux, gõ <code>hostname -I</code>.</li>
+<li>Nếu máy chủ chạy trên cùng máy tính bạn đang chơi trò chơi, bạn có thể tham gia bằng <code>puertobravo://127.0.0.1</code>.</li>
+</ul>
+<h3>Dành cho người chơi từ bên ngoài: mở cổng trên modem/router</h3>
+<p>Từ Internet, người ngoài chỉ có thể nhìn thấy router của bạn. Bạn phải yêu cầu router chuyển tiếp mọi dữ liệu gửi tới cổng máy chủ sang máy tính đang chạy máy chủ. Thao tác này được gọi là mở cổng, chuyển hướng cổng hoặc chuyển tiếp cổng (port forwarding).</p>
+<ol>
+<li>Gán cho máy tính chạy máy chủ một địa chỉ IP cố định trong mạng gia đình. Trên router mục này thường nằm ở phần mạng nội bộ hoặc DHCP, với tên gọi như address reservation hoặc static DHCP.</li>
+<li>Truy cập vào trang cài đặt của router qua trình duyệt web. Địa chỉ thường là <code>192.168.1.1</code> hoặc <code>192.168.0.1</code>, còn tên người dùng và mật khẩu được in trên tem dán ở chính router.</li>
+<li>Tìm mục cài đặt cổng. Tùy theo hãng sản xuất mục này có tên là Ports, Port redirection, NAT, Virtual server hoặc Port forwarding.</li>
+<li>Thêm một quy tắc: giao thức TCP, cổng ngoài 47820, cổng trong 47820 và đích đến là địa chỉ IP của máy tính chạy máy chủ trong mạng nội bộ.</li>
+<li>Lưu lại. Một số router yêu cầu khởi động lại thiết bị.</li>
+<li>Tìm địa chỉ IP công khai của bạn: router hiển thị địa chỉ này trên trang trạng thái với tên như internet IP address hoặc WAN. Địa chỉ đó, thêm <code>puertobravo://</code> ở phía trước, chính là địa chỉ bạn gửi cho bạn bè.</li>
+</ol>
+<h3>Mở cổng tự động bằng UPnP</h3>
+<ul>
+<li>Nhiều router cho phép một chương trình trong mạng yêu cầu mở cổng tự động. Cơ chế này được gọi là UPnP.</li>
+<li>Trong bảng điều khiển, khi máy chủ đang chạy, hãy vào menu Quản lý và chọn Mở cổng trên router bằng UPnP. Nếu router cho phép, cổng sẽ được mở và bảng điều khiển sẽ thông báo; khi bạn dừng máy chủ cổng sẽ tự động đóng lại.</li>
+<li>Nếu router không phản hồi hoặc từ chối, nghĩa là router đã tắt tính năng UPnP hoặc không hỗ trợ. Bạn có thể bật tính năng này trong phần cài đặt của router hoặc mở cổng thủ công như hướng dẫn ở trên.</li>
+<li>Máy chủ dòng lệnh và máy chủ trên Linux không tự động mở cổng: bạn phải thao tác thủ công.</li>
+</ul>
+<h3>Nếu địa chỉ công khai của bạn thay đổi: DNS động (Dynamic DNS)</h3>
+<ul>
+<li>Ở nhiều gia đình địa chỉ IP công khai bị thay đổi theo định kỳ. Để không phải gửi lại địa chỉ cho bạn bè mỗi lần thay đổi, bạn có thể dùng một tên miền luôn trỏ về địa chỉ hiện tại của bạn. Đó chính là DNS động.</li>
+<li>Có nhiều dịch vụ miễn phí cung cấp tính năng này. Nhiều router và thiết bị NAS có sẵn mục DDNS hoặc dynamic DNS để tự động cập nhật địa chỉ.</li>
+<li>Khi có tên miền, địa chỉ gửi cho bạn bè sẽ có dạng, ví dụ: <code>puertobravo://minombre.ejemplo.net:47820</code>.</li>
+</ul>
+<h3>Nếu bạn không thể mở cổng</h3>
+<ul>
+<li>Một số nhà cung cấp mạng không cấp cho mỗi gia đình một địa chỉ IP công khai riêng mà nhiều gia đình dùng chung một địa chỉ. Hiện tượng này gọi là CG-NAT. Bạn có thể nhận biết vì địa chỉ WAN trên trang router không trùng với địa chỉ hiển thị trên các trang web kiểm tra IP. Trong trường hợp đó việc mở cổng sẽ không có tác dụng. Bạn có thể yêu cầu nhà mạng hủy chế độ CG-NAT cho bạn, hoặc sử dụng mạng riêng ảo.</li>
+<li>Một mạng riêng ảo, chẳng hạn như mạng do Tailscale hoặc ZeroTier tạo ra, kết nối các máy tính bạn chọn qua Internet như thể chúng đang ở trong cùng một nhà mà không cần mở bất kỳ cổng nào. Bạn và mỗi người cùng chơi cài đặt chương trình và tham gia vào cùng một mạng. Mỗi máy tính sẽ nhận được một địa chỉ bên trong mạng đó.</li>
+<li>Địa chỉ gửi cho bạn bè khi đó sẽ là <code>puertobravo://</code> cùng địa chỉ mà mạng riêng ảo cấp cho máy tính chạy máy chủ. Với Tailscale địa chỉ thường bắt đầu bằng 100.</li>
+<li>Chỉ những ai tham gia vào mạng riêng ảo của bạn mới có thể kết nối: đây cũng là cách lý tưởng để tạo máy chủ dành riêng cho nhóm kín của bạn.</li>
+<li>Một giải pháp khác là thuê một máy chủ nhỏ giá rẻ có sẵn địa chỉ IP công khai riêng: mục 7.</li>
+</ul>
+
+<h2 id="cifrado">14. Mã hóa và chứng chỉ</h2>
+<ul>
+<li>Theo mặc định với <code>cifrado = auto</code>, kết nối luôn được mã hóa. Máy chủ tự động tạo chứng chỉ riêng trong lần đầu tiên khởi chạy. Bạn không cần cài đặt thêm bất kỳ thứ gì, kể cả trên Windows.</li>
+<li>Chứng chỉ và khóa bí mật được lưu trong thư mục dữ liệu, tại <code>certificado.pem</code> và <code>llave.pem</code>.</li>
+<li>Khi khởi động, máy chủ thông báo dấu vân tay của chứng chỉ và bảng điều khiển hiển thị dấu vân tay này trên thẻ Trạng thái. Đây là một chuỗi chữ cái và con số giúp nhận diện chứng chỉ.</li>
+<li>Trò chơi của mỗi người chơi sẽ ghi nhớ chứng chỉ của máy chủ trong lần đầu tiên tham gia. Nếu một ngày nào đó máy chủ đưa ra chứng chỉ khác, trò chơi sẽ cảnh báo và không kết nối nếu chưa có sự đồng ý: vì có thể có ai đó đang giả mạo máy chủ của bạn.</li>
+<li>Vì lý do đó nếu bạn chuyển máy chủ sang máy khác, hãy mang theo cả <code>certificado.pem</code> và <code>llave.pem</code> cùng với dữ liệu: như vậy sẽ không ai gặp phải cảnh báo. Các bản sao lưu đã bao gồm sẵn các tệp này.</li>
+<li>Nếu bạn thực sự chủ động thay đổi chứng chỉ, hãy báo trước cho bạn bè rằng trò chơi sẽ hỏi xác nhận và họ nên chấp nhận chứng chỉ mới.</li>
+<li>Nếu bạn có chứng chỉ riêng, hãy điền đường dẫn tới các tệp vào tùy chọn <code>certificado</code> và <code>llave</code>. Điều này không bắt buộc: trò chơi không kiểm tra tên trên chứng chỉ mà chỉ kiểm tra xem chứng chỉ có luôn là một chứng chỉ duy nhất hay không.</li>
+<li>Với <code>cifrado = si</code>, máy chủ sẽ không khởi động nếu không thể mã hóa. Với <code>cifrado = no</code>, máy chủ không bao giờ mã hóa: điều này chỉ có ý nghĩa khi thử nghiệm trong mạng nội bộ gia đình.</li>
+<li>Khóa bí mật của chứng chỉ là tuyệt mật. Đừng bao giờ chia sẻ tệp <code>llave.pem</code> hoặc các bản sao lưu của bạn cho người khác.</li>
+</ul>
+
+<h2 id="entrada">15. Ai có thể tham gia</h2>
+<ul>
+<li>Mỗi người chơi có một danh tính do trò chơi của họ tự tạo và không bao giờ rời khỏi máy tính của họ. Máy chủ nhận diện họ thông qua danh tính này: không có mật khẩu tài khoản nào cần phải ghi nhớ hay lo bị đánh cắp.</li>
+<li>Tùy chọn <code>entrada</code> quyết định ai có thể tạo một nhân vật mới. Bất kỳ ai đã có nhân vật đều luôn có thể quay trở lại tham gia.</li>
+<li><code>abierta</code>: bất kỳ ai có địa chỉ đều có thể tham gia.</li>
+<li><code>clave</code>: cần biết mật khẩu tham gia mà bạn thiết lập trong tùy chọn <code>clave</code>. Trò chơi sẽ hỏi mật khẩu trong lần đầu tiên.</li>
+<li><code>invitacion</code>: cần một mã dùng một lần. Bạn tạo mã trong bảng điều khiển bằng Control+I hoặc bằng lệnh <code>invitar</code>. Mỗi mã chỉ dùng được cho một nhân vật duy nhất.</li>
+<li>Tùy chọn <code>max_jugadores</code> quy định số người tối đa có thể tham gia cùng lúc. Đặt bằng 0 nghĩa là không giới hạn. Quản trị viên luôn vào được ngay cả khi máy chủ đã đầy.</li>
+<li>Để chặn ai đó: trong bảng điều khiển nhấn nút Cấm; qua dòng lệnh dùng lệnh <code>vetar</code> cùng tên của họ. Bạn gỡ cấm bằng nút Tha thứ lệnh cấm hoặc lệnh <code>perdonar</code>. Ngoài ra còn có danh sách tên bị cấm trong cấu hình tại tùy chọn <code>vetados</code>.</li>
+<li>Để giải phóng chỗ trên các máy chủ đông người, tùy chọn <code>inactividad_minutos</code> sẽ tự động mời ra ngoài những ai không thao tác gì trong khoảng thời gian đó. Nhân vật của họ vẫn được lưu an toàn.</li>
+</ul>
+
+<h2 id="administrar">16. Vận hành máy chủ</h2>
+<h3>Ai là người vận hành</h3>
+<ul>
+<li>Tài khoản đầu tiên tham gia vào máy chủ mới sẽ là quản trị viên. Thông thường đó là bạn: hãy tham gia đầu tiên.</li>
+<li>Bạn có thể chỉ định thêm quản trị viên bằng nút Chỉ định admin trong bảng điều khiển, bằng lệnh <code>admin</code> kèm tên người chơi, hoặc điền tên của họ vào tùy chọn <code>admins</code> phân tách bằng dấu phẩy.</li>
+<li>Bạn thu hồi quyền bằng nút Tước quyền admin trên thẻ Tài khoản, hoặc bằng lệnh <code>quitaradmin</code>.</li>
+</ul>
+<h3>Nơi bạn nhập lệnh điều hành</h3>
+<ul>
+<li>Từ bảng điều khiển: bằng các nút bấm và menu, hoặc gõ lệnh vào ô Lệnh cho máy chủ trên thẻ Nhật ký.</li>
+<li>Từ bảng điều khiển dòng lệnh: bằng cách gõ lệnh trực tiếp trong cửa sổ máy chủ.</li>
+<li>Từ trong trò chơi nếu bạn là quản trị viên: trong ô chat chung mở bằng F10, thêm dấu gạch chéo ở đầu. Ví dụ: <code>/players</code> hoặc <code>/announce Tối nay chiến tranh băng đảng</code>. Trò chơi chỉ gửi câu trả lời riêng cho bạn. Đây là cách bạn vận hành máy chủ không có giao diện dòng lệnh: dịch vụ nền, vùng chứa Docker hoặc thiết bị NAS.</li>
+</ul>
+<h3>Các lệnh</h3>
+<p>Kể từ phiên bản 1.7.3 mọi lệnh đều hoạt động bằng cả tiếng Anh và tiếng Tây Ban Nha cùng lúc bất kể ngôn ngữ của máy chủ là gì: <code>help</code> hoặc <code>ayuda</code>, <code>players</code> hoặc <code>jugadores</code>, <code>kick</code> hoặc <code>expulsar</code>, <code>ban</code> hoặc <code>vetar</code>, <code>shutdown</code> hoặc <code>apagar</code>, tương tự cho tất cả các lệnh khác. Trợ giúp liệt kê các lệnh theo ngôn ngữ của bảng điều khiển: bằng tiếng Anh, kèm lệnh tiếng Tây Ban Nha trong ngoặc đơn. Và với lệnh <code>rename tên: tên mới</code> bạn có thể đổi tên nhân vật của một tài khoản mà không làm mất bất kỳ dữ liệu nào; kể từ 1.7.3 không ai tham gia lần đầu mà không có tên người chơi, vì vậy những tài khoản như "Player 3" không còn xuất hiện nữa.</p>
+<!-- ORDENES:INICIO -->
+<ul>
+<li><code>help (ayuda)</code>: liệt kê danh sách tất cả các lệnh.</li>
+<li><code>status (estado)</code>: tình trạng máy chủ: cổng, mã hóa, thế giới, thời gian hoạt động và số người online.</li>
+<li><code>players (jugadores)</code>: ai đang online và vị trí hiện tại.</li>
+<li><code>accounts (cuentas)</code>: tất cả tài khoản trên máy chủ, gồm tài khoản bị cấm và quản trị viên.</li>
+<li><code>announce (aviso) văn bản</code>: nói điều gì đó với tất cả người đang online.</li>
+<li><code>tell (decir) tên: nội dung</code>: nói điều gì đó chỉ với một người chơi.</li>
+<li><code>kick (expulsar) tên</code>: đuổi một người chơi; họ vẫn có thể vào lại. Sau dấu hai chấm có thể nêu lý do.</li>
+<li><code>ban (vetar) tên</code>: đuổi một người chơi và cấm tham gia lại.</li>
+<li><code>unban (perdonar) tên</code>: gỡ bỏ lệnh cấm.</li>
+<li><code>op (admin) tên</code>: cấp quyền quản trị viên cho một người chơi.</li>
+<li><code>deop (quitaradmin) tên</code>: tước quyền quản trị viên.</li>
+<li><code>rename (renombrar) tên: tên mới</code>: đổi tên người chơi của một tài khoản mà không mất gì; nếu người đó đang ở trong, họ sẽ vào lại với tên mới.</li>
+<li><code>deleteaccount (borrarcuenta) tên</code>: xóa tài khoản cùng nhân vật, tài sản và vị trí trong băng; không thể hoàn tác.</li>
+<li><code>invite (invitar)</code>: tạo một mã mời dùng một lần; thêm số phía sau để tạo nhiều mã.</li>
+<li><code>invites (invitaciones)</code>: danh sách lời mời hiện có, chưa dùng và đã dùng.</li>
+<li><code>revoke (anular) mã</code>: hủy mã mời chưa có ai sử dụng.</li>
+<li><code>motd (mensaje) văn bản</code>: thay đổi thông điệp trong ngày; để trống để xóa bỏ.</li>
+<li><code>time (hora) số lượng</code>: chỉnh giờ trong game, từ 0 đến 23.</li>
+<li><code>gangs (bandas)</code>: các băng đảng, thành viên và quỹ tiền.</li>
+<li><code>save (guardar)</code>: lưu toàn bộ dữ liệu ngay bây giờ.</li>
+<li><code>backup (copia)</code>: tạo một bản sao lưu.</li>
+<li><code>backups (copias)</code>: danh sách các bản sao lưu hiện có.</li>
+<li><code>reload (recargar)</code>: đọc lại servidor.conf và áp dụng các thay đổi không cần khởi động lại.</li>
+<li><code>update (actualizar)</code>: thông báo cho toàn thể người chơi rằng máy chủ khởi động lại để cập nhật, đếm ngược, lưu dữ liệu và dừng lại; các máy khách sẽ chờ và tự động kết nối lại khi mở máy chủ. Có thể thêm số giây đếm ngược phía sau.</li>
+<li><code>restart (reiniciar)</code>: tương tự, nhưng thông báo lý do là bảo trì. Có thể thêm số giây đếm ngược phía sau.</li>
+<li><code>shutdown (apagar)</code>: thông báo cho toàn thể người chơi, lưu mọi dữ liệu và dừng máy chủ.</li>
+</ul>
+<!-- ORDENES:FIN -->
+<p>Tên người chơi được gõ nguyên văn như vốn có, bao gồm cả khoảng trắng. Ví dụ: <code>expulsar Ana la Rápida</code> hoặc <code>decir Ana la Rápida: vặn nhỏ nhạc xuống</code>.</p>
+
+<h2 id="versiones">17. Chơi cùng các phiên bản khác nhau của trò chơi</h2>
+<p>Những người chơi sử dụng các phiên bản trò chơi khác nhau đều có thể chơi cùng nhau trên máy chủ của bạn. Không ai bị đuổi ra ngoài chỉ vì dùng bản cũ hơn hay mới hơn: một người chơi chỉ bị từ chối do phiên bản nếu bạn chủ động yêu cầu điều đó qua tùy chọn phiên bản tối thiểu. Và từ thời điểm đó, mọi người chơi đều được đồng bộ công bằng nhất có thể.</p>
+<h3>Thế giới do người đầu tiên tham gia mang đến</h3>
+<p>Máy chủ chỉ đóng vai trò quản lý, còn nội dung đến từ chính trò chơi. Thế giới trong game với các địa điểm, vũ khí, phương tiện và nhiệm vụ không bị gắn chặt vào máy chủ: thế giới được cung cấp bởi bản trò chơi của người đầu tiên tham gia.</p>
+<ul>
+<li>Bản máy chủ đi kèm theo trò chơi đã tích hợp sẵn thế giới của phiên bản đó. Nếu bạn thiết lập máy chủ mà không có thế giới, hoặc xóa thế giới đi, máy chủ sẽ khởi động trống và tiếp nhận thế giới từ người đầu tiên tham gia.</li>
+<li>Nếu người đầu tiên tham gia có phiên bản cũ hơn và sau đó có người mang phiên bản mới hơn tới, máy chủ sẽ tự động chuyển sang thế giới của phiên bản mới hơn mà không cần khởi động lại và không đuổi bất kỳ ai. Máy chủ sẽ thông báo điều này cho những ai đang trực tuyến. Máy chủ chỉ làm điều này nếu thế giới đó có chữ ký số của nhà phát hành trò chơi để không ai có thể cài cắm thế giới bị chỉnh sửa trái phép vào.</li>
+<li>Nếu ngược lại, có người tham gia bằng phiên bản cũ hơn phiên bản của máy chủ, máy chủ vẫn giữ nguyên thế giới hiện tại (vốn là thế giới mới nhất) và người đó vẫn được vào chơi bình thường.</li>
+<li>Máy chủ nhận biết sẵn thế giới của các phiên bản đã phát hành chính thức và ghi nhớ các thế giới đã kiểm tra: máy chủ không đòi hỏi thêm gì từ bất kỳ ai tham gia bằng một trong những phiên bản đó.</li>
+<li>Nếu máy chủ đang trống và người đầu tiên tham gia có cài mod hoặc chơi bằng bản sao không có chữ ký số, thế giới của họ sẽ được tạm thời chấp nhận, một cảnh báo được ghi vào nhật ký, và thế giới đó sẽ được thay thế ngay khi có thế giới có chữ ký số đầu tiên xuất hiện.</li>
+</ul>
+<h3>Điều gì xảy ra khi không phải ai cũng có nội dung giống nhau</h3>
+<ul>
+<li><strong>Sát thương, tầm bắn, tốc độ bắn và tiền bạc do máy chủ quyết định</strong>, theo các chỉ số trong thế giới của máy chủ, hoàn toàn đồng nhất giữa người bắn dùng phiên bản này và người trúng đạn dùng phiên bản khác. Việc sở hữu phiên bản mới không mang lại lợi thế chiến đấu nào.</li>
+<li><strong>Một vũ khí mà trò chơi của một người không có sẵn</strong> sẽ hiển thị với họ dưới dạng vũ khí gần giống nhất mà trò chơi của họ biết: họ sẽ nghe thấy tiếng súng của vũ khí cùng loại trong bản của mình và chịu sát thương do máy chủ quy định. Ví dụ: với người chơi bản 1.7.0, khẩu shotgun bơm đạn 1.7.1 sẽ phát ra tiếng như một khẩu shotgun của họ.</li>
+<li><strong>Một phương tiện họ không có</strong> sẽ được nghe thấy khi chạy ngang qua và nhìn thấy khi đỗ dưới dạng xe gần giống nhất của họ, đi kèm tên gọi do chủ xe đặt. Trên máy chủ, phương tiện đó vẫn giữ nguyên đúng bản chất thực của nó.</li>
+<li><strong>Tặng một vũ khí</strong> cho người mà phiên bản của họ không có vũ khí đó là điều không thể: máy chủ sẽ trả lại vũ khí cho người tặng và thông báo lý do.</li>
+<li><strong>Các kênh nhập vai</strong> được chuyển tới trò chơi phiên bản cũ thông qua ô chat thông thường, kèm vài từ ở đầu cho biết đó là kênh gì.</li>
+<li><strong>Cảnh báo khởi động lại máy chủ</strong> được gửi tới họ như một thông báo bình thường, và thông báo tắt máy chủ sẽ có văn bản để trò chơi của họ đọc nguyên văn. Nhân vật của họ vẫn được lưu lại an toàn trọn vẹn.</li>
+<li><strong>Nếu thế giới của máy chủ thuộc phiên bản cũ hơn</strong> (vì bạn không muốn nhận thế giới mới hoặc chưa có ai dùng bản mới tham gia), vũ khí mới của người có chúng sẽ chỉ tính sát thương đối với người chơi khác như tay không, phương tiện mới của họ hiển thị như một chiếc ô tô cỡ nhỏ, và trong một thị trấn mới sẽ không ai nhìn thấy họ. Người đó sẽ được máy chủ thông báo rõ.</li>
+<li><strong>Khi tham gia máy chủ</strong>, bất kỳ ai không có dữ liệu trùng khớp với máy chủ sẽ được thông báo cụ thể tên vũ khí và phương tiện không khớp cùng những khác biệt họ sẽ nhận thấy. Thông tin này cũng có thể xem trên điện thoại trong trò chơi, tại mục Trực tuyến, Dữ liệu và luật chơi của máy chủ này.</li>
+</ul>
+<h3>Nhân vật khi chuyển đổi qua lại giữa các phiên bản</h3>
+<p>Nhân vật được lưu trữ trọn vẹn trên máy chủ, bao gồm cả những dữ liệu mà máy chủ chưa biết tới. Nếu ai đó chơi bằng phiên bản mới rồi một ngày nọ tham gia bằng phiên bản cũ hơn, họ sẽ không bị mất bất cứ thứ gì:</p>
+<ul>
+<li>Bản trò chơi cũ của họ sẽ nhận nhân vật mà không có các vũ khí hoặc phương tiện mà nó không biết. Những món đồ này vẫn được lưu trên máy chủ và người chơi được thông báo rõ.</li>
+<li>Khi trò chơi đó lưu lại, máy chủ sẽ ghép nối lại toàn bộ những gì mà phiên bản cũ không thể lưu. Mọi thứ họ kiếm được, chi tiêu hoặc thu thập được trong khi chơi bản cũ đều được ghi nhận đầy đủ.</li>
+<li>Khi họ tham gia lại bằng phiên bản mới, họ sẽ có lại đầy đủ tất cả mọi thứ.</li>
+</ul>
+<h3>Những gì bạn có thể quyết định</h3>
+<ul>
+<li><code>version_minima</code>: phiên bản cũ nhất được phép tham gia. Để trống (mặc định) nghĩa là chấp nhận mọi phiên bản. Đây là cách duy nhất để từ chối người chơi dựa trên phiên bản.</li>
+<li><code>mundo_distinto</code>: cách xử lý khi có người mang dữ liệu không thể kiểm chứng tới, hầu như luôn là người dùng các bản mod thay đổi thế giới. Với <code>admitir</code> (mặc định), họ được vào chơi với những nội dung chung: họ được thông báo những gì không khớp và những gì bản mod của họ thay đổi hoặc thêm vào sẽ không có tác dụng đối với người khác. Với <code>rechazar</code>, họ sẽ không được vào.</li>
+<li><code>actualizar_mundo</code>: ai có quyền mang thế giới mới tới. Với <code>firmado</code> (mặc định), bất kỳ ai cũng được nếu thế giới đó đến từ phiên bản chính thức. Với <code>admin</code>, quản trị viên không cần chữ ký số cũng có thể mang tới: đây là điều bạn cần khi muốn toàn bộ máy chủ chơi cùng một bản mod. Với <code>no</code>, máy chủ luôn giữ nguyên thế giới hiện có.</li>
+<li><code>versiones</code>: với <code>compatibles</code> (mặc định), áp dụng toàn bộ cơ chế trong mục này. Với <code>iguales</code>, chỉ những ai có dữ liệu hoàn toàn trùng khớp với máy chủ mới được vào.</li>
+<li><code>comprobar_datos = no</code> cho phép mọi người vào mà không kiểm tra bất kỳ điều gì, và máy chủ không cập nhật các thế giới mới. Bạn không cần tùy chọn này để chơi cùng các phiên bản khác nhau.</li>
+</ul>
+<h3>Những điều cần biết</h3>
+<ul>
+<li>Trong bảng điều khiển, danh sách người chơi hiển thị phiên bản mà mỗi người sử dụng khi tham gia.</li>
+<li>Bạn không nhất thiết phải cập nhật máy chủ mỗi khi có phiên bản trò chơi mới ra mắt. Một máy chủ 1.7.0 vẫn tiếp nhận các bản trò chơi 1.7.1, nhưng không thể cung cấp sự tương thích gần nhất cho từng bản hoặc khôi phục nhân vật hoàn chỉnh: ai tham gia bằng phiên bản cũ hơn máy chủ sẽ không nghe thấy vũ khí mới của người khác. Hãy cập nhật máy chủ khi bạn có thời gian.</li>
+<li>Để toàn bộ máy chủ của bạn chơi cùng một bản mod, hãy đặt <code>actualizar_mundo = admin</code> và yêu cầu một quản trị viên tham gia đầu tiên với bản mod đã bật. Những ai tham gia mà không có mod vẫn chơi được bình thường với các nội dung chung.</li>
+<li>Những gì chỉ tồn tại trong phiên bản mới mà không truyền qua máy chủ (nhiệm vụ mới, cửa hàng mới, nghề nghiệp mới) sẽ khả dụng cho những ai sở hữu phiên bản đó, giống như bất kỳ tính năng mới nào của trò chơi. Mọi nguồn tạo ra tiền bạc đều phải tuân theo giới hạn của máy chủ bất kể phiên bản nào.</li>
+<li>Nếu một phiên bản mới thay đổi vị trí các con phố của một thị trấn đã có từ trước, người vẫn dùng bản cũ sẽ thấy giao thông của máy chủ di chuyển ở nơi không còn là đường phố nữa cho đến khi họ cập nhật trò chơi.</li>
+</ul>
+
+<h3>Những điểm mới trên đường phố trong phiên bản 1.7.1 khi chơi trên máy chủ</h3>
+<p>Kể từ phiên bản 1.7.1 đối với chế độ chơi đơn, trò chơi có các đội tuần tra đi tuần mà không săn tìm ai, trực thăng cảnh sát tùy chọn và tính năng đầu hàng giơ tay lên trời. Khi chia sẻ cảnh sát chung (tùy chọn <code>policia</code> đặt là <code>si</code>), các tính năng đó không bật riêng lẻ trong trò chơi của từng người: các đội tuần tra do máy chủ điều phối, không có trực thăng và không có tính năng đầu hàng. Khi tùy chọn đó đặt là <code>no</code>, mỗi người chơi sẽ có các tính năng đó theo cài đặt cá nhân của họ và chỉ họ nhìn thấy. Xe cứu thương xuất hiện sau vụ xả súng và chế độ chiến tranh khu phố trên đường phố cũng không áp dụng trên máy chủ. Quyền tự vệ chính đáng thì có: nếu ai đó tự vệ trước thành viên băng đảng tấn công họ trước, trò chơi của họ sẽ không ghi nhận tội phạm.</p>
+<h2 id="dinero">18. Tiền bạc của người chơi: mức giới hạn theo giờ và các công việc</h2>
+<p>Khi tùy chọn <code>economia</code> đặt là <code>si</code> (mặc định), máy chủ sẽ theo dõi tiền bạc của từng người chơi để không ai có thể gian lận bằng bản game đã chỉnh sửa. Việc chi tiêu luôn luôn được cho phép. Việc kiếm tiền phụ thuộc vào nguồn gốc của số tiền đó.</p>
+<h3>Những khoản máy chủ chấp nhận không giới hạn</h3>
+<ul>
+<li>Những khoản do chính máy chủ trao tặng: chiến lợi phẩm giữa các người chơi, tiền bán nhà và cơ sở kinh doanh, quỹ của băng đảng, tiền công hỗ trợ trong nhiệm vụ nhóm.</li>
+<li>Những khoản do người chơi khác trao tặng.</li>
+<li>Phần thưởng của từng nhiệm vụ cốt truyện, chỉ một lần duy nhất.</li>
+</ul>
+<h3>Các công việc có thể làm lại nhiều lần</h3>
+<p>Hợp đồng từ bảng tin, đấu võ ở phòng tập, cướp ngân hàng và cửa hàng cùng các công việc xe cộ có thể thực hiện lặp đi lặp lại. Máy chủ công nhận các khoản này mà không tiêu tốn hạn mức thu nhập theo giờ, với hai giới hạn:</p>
+<ul>
+<li><code>encargos_hora</code>: số lượng công việc được công nhận mỗi giờ cho từng loại. Mặc định là 6.</li>
+<li><code>encargo_max</code>: mức tiền tối đa được chấp nhận từ thù lao của một công việc đơn lẻ. Mặc định là 15.000 euro. Ngoài ra, máy chủ nhận biết từ dữ liệu trò chơi mức tối đa mỗi loại công việc có thể chi trả và không công nhận vượt quá mức đó.</li>
+</ul>
+<p>Người chơi vượt quá số lượng đó trong một giờ sẽ bị cảnh báo, và công việc đó sẽ bị tính vào hạn mức thu nhập thông thường. Những ai chơi bằng phiên bản cũ hơn 1.7.1 không báo cáo công việc cho máy chủ: với người đó, mọi khoản tiền đều tính vào hạn mức theo giờ như trước đây cho đến khi họ cập nhật.</p>
+<h3>Tất cả các nguồn thu khác: hạn mức thu nhập theo giờ</h3>
+<p>Tất cả các khoản khác bạn tự kiếm được khi chơi một mình (làm việc, bán đồ, cờ bạc, nhặt đồ ngoài đường) đều có mức trần theo mỗi giờ đồng hồ thực tế, thông qua tùy chọn <code>ganancia_hora</code>, mặc định là 30.000 euro. Khoản tiền vượt quá mức trần sẽ bị thu hồi, và người chơi được thông báo rõ ràng bằng các con số: họ đã kiếm được bao nhiêu, số tiền được chấp nhận là bao nhiêu, mức trần là bao nhiêu và tốc độ hồi phục hạn mức ra sao.</p>
+<ul>
+<li>Hạn mức chưa dùng hết sẽ được tích lũy dần, tối đa bằng số giờ do <code>ganancia_acumula</code> quy định, mặc định là 3 giờ. Bằng cách đó, người lâu ngày không kiếm được gì có thể có một chuỗi kiếm tiền thuận lợi trọn vẹn mà không bị mất tiền. Hạn mức cũng tích lũy trong khi người chơi không trực tuyến.</li>
+<li>Người tham gia lần đầu tiên bắt đầu với một phần tư giờ hạn mức. Việc rời máy chủ rồi vào lại không làm đầy lại hạn mức.</li>
+<li>Người chơi có thể theo dõi tình trạng hạn mức trên điện thoại: mục Trực tuyến, Dữ liệu và luật chơi của máy chủ này.</li>
+</ul>
+<h3>Hợp đồng lao động chính thức và tiền lương định kỳ</h3>
+<p>Kể từ phiên bản 1.7.1 trò chơi có các hợp đồng lao động chính thức: bạn ký kết tại trung tâm việc làm, yêu cầu làm việc một số ca nhất định sau mỗi bảy ngày trong game và chi trả lương vào cuối mỗi kỳ. Trên máy chủ, tiền lương do chính máy chủ chi trả để không ai có thể gian lận:</p>
+<ul>
+<li>Máy chủ đếm số ca làm việc, quản lý lịch làm việc và quyết định số tiền dựa trên dữ liệu trò chơi. Con số mà trò chơi của từng người tự báo cáo không có hiệu lực.</li>
+<li>Tiền lương định kỳ không tiêu tốn hạn mức thu nhập theo giờ. Tiền công kiếm được cho từng ca làm việc thì có tiêu tốn hạn mức như mọi công việc khác.</li>
+<li><code>nominas</code>: với <code>no</code>, máy chủ của bạn sẽ không có hợp đồng lao động chính thức. Mặc định là có.</li>
+<li><code>nomina_max</code>: mức lương tối đa máy chủ chi trả cho một kỳ lương. Mặc định là 1.500 euro, mức này không cắt giảm bất kỳ khoản lương nào của trò chơi; nó tồn tại để tránh việc bản mod đẩy mức lương lên quá cao.</li>
+<li><code>nomina_turnos_dia</code>: số ca làm việc tối đa tính cho mỗi người chơi trong một ngày trong game. Mặc định là 3.</li>
+<li>Yêu cầu nhận lương sớm, lặp lại yêu cầu, hoặc thoát ra vào lại đều không mang lại tiền: hợp đồng và ngày trả lương được lưu trữ an toàn trên máy chủ.</li>
+<li>Thế giới của máy chủ phải từ phiên bản 1.7.1 trở lên. Ai chơi bản 1.7.0 sẽ không có hợp đồng chính thức, kể cả tại đây hay khi chơi đơn.</li>
+</ul>
+<p>Đối với các phần còn lại của cuộc sống lương thiện, trên máy chủ bạn có chứng chỉ học viện (chỉ tốn tiền học); tiền án tiền sự (ảnh hưởng tới công việc tin cậy); và nếu bạn để <code>trato_prestigio</code> là <code>si</code>, sẽ có chiết khấu nhỏ tại cửa hàng cho người có danh tiếng tốt và phụ phí cho người có danh tiếng rất xấu, áp dụng như nhau cho mọi người. Vay vốn, thế chấp, thuế và quản lý cơ sở kinh doanh không tồn tại trên máy chủ: chúng tạo ra hoặc luân chuyển dòng tiền mà máy chủ không thể kiểm soát. Trò chơi sẽ thông báo điều này cho người chơi.</p>
+<h3>Những gì nên thiết lập trên máy chủ của bạn</h3>
+<ul>
+<li>Giữa những người bạn tin cậy: hãy thoải mái tăng <code>ganancia_hora</code> lên 100.000 hoặc cao hơn, hoặc tắt hoàn toàn việc theo dõi tiền bạc bằng <code>economia = no</code>. Mức trần sinh ra dành cho các máy chủ mở cho người lạ, chứ không phải để làm phiền bạn bè của bạn.</li>
+<li>Trên máy chủ công khai: hãy giữ nguyên mức trần mặc định và nếu người chơi chuyên sống bằng hợp đồng hoặc cướp bóc phàn nàn, hãy tăng <code>encargos_hora</code> trước khi tăng <code>ganancia_hora</code>.</li>
+<li>Nếu có người phàn nàn rằng máy chủ thu hồi tiền của họ, hãy hỏi họ trò chơi đã thông báo điều gì: từ bản 1.7.1 trò chơi luôn hiển thị các con số rõ ràng. Nhật ký máy chủ cũng ghi lại một dòng mỗi lần kèm số tiền bị thu hồi và hạn mức.</li>
+<li>Tất cả các tùy chọn này đều có thể thay đổi ngay trong khi máy chủ đang chạy.</li>
+</ul>
+<h3>Nếu bị mất kết nối ngay sau khi mua sắm</h3>
+<p>Nhân vật được lưu trên máy chủ sau mỗi ba phần tư phút và kể từ 1.7.1, được lưu sau vài giây sau một giao dịch mua: hai hoặc ba giây sau lần mua đầu tiên và nếu người chơi tiếp tục chi tiêu, tối đa là sau mỗi mười hai giây. Nếu dù vậy kết nối của ai đó bị ngắt trước khi trò chơi kịp lưu, máy chủ sẽ hoàn lại vào số dư của họ khoản tiền họ đã chi tiêu kể từ lần lưu cuối: những gì họ mua chưa có trên nhân vật nhưng số tiền cũng không bị mất. Một dòng thông báo sẽ xuất hiện trong nhật ký. Cơ chế này không thể bị lợi dụng để trục lợi: tiền đã chuyển cho người chơi khác, tiền máy chủ đã thu phí và nhà cửa đã mua sẽ không được hoàn lại.</p>
+
+<h2 id="rol">19. Nhập vai qua văn bản, giọng nói và radio trên phương tiện</h2>
+<h3>Các kênh nhập vai</h3>
+<p>Khi tùy chọn <code>rol</code> đặt là <code>si</code> (mặc định), ngoài ô chat thông thường người chơi còn có:</p>
+<ul>
+<li>Một kênh để trò chuyện theo vai nhân vật. Chỉ những ai ở gần mới nghe thấy: gần hơn khoảng cách mét quy định trong <code>rol_metros</code>, mặc định là 30 mét.</li>
+<li>Một lệnh để diễn tả hành động nhân vật thực hiện. Bất kỳ ai gõ "mở cửa" sẽ làm những người ở gần nghe thấy tên của họ và "mở cửa". Khoảng cách tác dụng tương tự.</li>
+<li>Một kênh để trò chuyện ngoài đời thực với tư cách người chơi. Toàn bộ máy chủ đều nghe thấy.</li>
+<li>Một dòng giới thiệu hồ sơ cá nhân, dài tối đa hai trăm ký tự, mô tả nhân vật của họ là ai. Những người khác có thể đọc thông tin này bất cứ lúc nào họ muốn.</li>
+</ul>
+<p>Mỗi kênh có âm thanh riêng trong trò chơi và mọi nội dung đã nói đều có thể xem lại trên điện thoại, mục Trực tuyến, Nhập vai. Trong trò chơi thao tác như sau:</p>
+<ul>
+<li>Shift F10 để nói theo vai nhân vật, và Control F10 để mô tả hành động. F10 độc lập là ô chat chung thông thường. Người chơi dùng tay cầm có các tùy chọn này trong menu hành động và có thể gõ chữ qua vòng xoay chữ cái hoặc chọn một câu có sẵn.</li>
+<li>Trong bất kỳ tin nhắn nào bạn có thể gõ lệnh ở phía trước: /yo và hành động nhân vật thực hiện; /ep và câu nói theo vai nhân vật; /fp và câu nói ngoài đời thực; và /ficha cùng dòng hồ sơ cá nhân. Ví dụ: <code>/yo mở cửa</code>.</li>
+<li>Hồ sơ của người chơi khác có thể đọc trên điện thoại, mục Trực tuyến, Ai đang ở đây, bằng cách chọn người đó; hoặc bằng Shift J khi họ đang ở gần bạn.</li>
+</ul>
+<ul>
+<li>Người chơi sử dụng phiên bản cũ hơn 1.7.1 không có các kênh này trong trò chơi nhưng không bị bỏ rơi: những gì nói theo vai và các hành động sẽ đến với họ qua kênh chat lân cận kèm vài từ ở đầu cho biết phân loại, và họ có thể dùng các lệnh dấu gạch chéo từ ô chat chung.</li>
+<li>Với <code>rol = no</code> sẽ không có các kênh nhập vai hay hồ sơ nhân vật, chỉ còn lại ô chat thông thường. Tùy chọn này có thể đổi khi máy chủ đang chạy: ai đang trực tuyến sẽ nhận biết khi cố gắng sử dụng chúng.</li>
+<li>Các lệnh quản trị viên vẫn được gõ trong ô chat kèm dấu gạch chéo ở đầu. Bốn lệnh nhập vai dành cho tất cả mọi người; các lệnh còn lại chỉ dành cho người quản trị.</li>
+<li>Máy chủ không lưu lại những gì được nói trên bất kỳ kênh nào. Dòng hồ sơ nhân vật thì được lưu giữ cùng với tài khoản của mỗi người chơi.</li>
+</ul>
+<h3>Giọng nói (Voice chat)</h3>
+<p>Trò chơi không tích hợp sẵn tính năng chat thoại bằng micro. Nếu trên máy chủ của bạn muốn nói chuyện trực tiếp trong khi chơi (điều rất phổ biến trên các máy chủ nhập vai), hãy sử dụng một chương trình trò chuyện thoại riêng biệt: bất kỳ phần mềm gọi nhóm qua mạng nào cũng được và không cần phải thiết lập bất cứ điều gì trên máy chủ hay trong trò chơi. Một mẹo nhỏ nếu bạn dùng trình đọc màn hình: hãy xuất âm thanh giọng nói của người khác qua loa ngoài hoặc tai nghe khác với tai nghe của trình đọc màn hình, hoặc vặn nhỏ âm lượng của họ để âm thanh không bị đè lên nhau.</p>
+<h3>Radio trên phương tiện của người chơi khác</h3>
+<p>Khi tùy chọn <code>radio_coches</code> đặt là <code>si</code> (mặc định), ai ở gần phương tiện của người chơi khác sẽ nghe thấy tiếng đài phát thanh đang bật nhỏ dần và mờ ảo, và tiếng đài sẽ tắt khi đi ra xa.</p>
+<ul>
+<li>Tính năng này chỉ áp dụng cho các kênh phát thanh có sẵn của trò chơi. Không có dữ liệu nào được chia sẻ về "Nhạc của tôi" hoặc các kênh phát thanh người chơi tự tạo bằng tệp riêng: cả bài hát lẫn tên gọi đều không rời khỏi máy tính của họ.</li>
+<li>Chỉ có tên viết tắt của kênh phát thanh được truyền qua máy chủ, gồm vài ký tự. Không có dữ liệu âm thanh nào được truyền qua mạng: mỗi trò chơi tự phát bản sao của kênh đó trên máy mình, vì vậy có thể bài hát đang phát không trùng khớp hoàn toàn với bài tài xế đang nghe.</li>
+<li>Mỗi người chơi có thể tắt tính năng này trong phần Tùy chọn, mục Âm thanh và âm nhạc. Với <code>radio_coches = no</code> sẽ không ai nghe thấy.</li>
+<li>Người chơi phiên bản cũ không nghe thấy và cũng không phát kênh của mình cho người khác nghe.</li>
+</ul>
+
+<h2 id="copias">20. Bản sao lưu, di chuyển máy chủ và cập nhật</h2>
+<h3>Sao lưu dữ liệu</h3>
+<ul>
+<li>Theo mặc định, máy chủ tự động tạo bản sao lưu sau mỗi 24 giờ và giữ lại 7 bản gần nhất. Bạn có thể thay đổi qua tùy chọn <code>copia_auto_horas</code> và <code>copias_guardar</code>.</li>
+<li>Các bản sao lưu nằm trong thư mục <code>copias</code> bên trong thư mục dữ liệu. Mỗi bản sao lưu là một tệp zip.</li>
+<li>Để tạo bản sao lưu ngay lập tức: trong bảng điều khiển nhấn Control+B; ở chế độ dòng lệnh dùng lệnh <code>copia</code>. Những bản sao lưu bạn tự tạo thủ công sẽ không bị tự động xóa.</li>
+<li>Một bản sao lưu chứa cơ sở dữ liệu các tài khoản và nhân vật, thế giới máy chủ đang hoạt động cùng, chứng chỉ kèm khóa bí mật và tệp cấu hình.</li>
+<li>Vì bản sao lưu chứa khóa bí mật của chứng chỉ và tệp cấu hình nên không được chia sẻ cho người khác: hãy cất giữ ở nơi chỉ mình bạn xem được. Bạn nên lưu một bản ở nơi khác ngoài máy tính chạy máy chủ.</li>
+</ul>
+<h3>Khôi phục bản sao lưu</h3>
+<ul>
+<li>Trong bảng điều khiển: nhấn Control+R, chọn bản sao lưu rồi nhấn Đồng ý. Nếu máy chủ đang chạy, chương trình sẽ dừng máy chủ trước. Dữ liệu hiện tại lúc đó sẽ được lưu vào một bản sao lưu khác phòng hờ, với tên bắt đầu bằng <code>antes_de_restaurar</code>.</li>
+<li>Bạn có thể đánh dấu chọn khôi phục cả tệp cấu hình bên trong bản sao lưu. Nếu không đánh dấu, cấu hình hiện tại sẽ được giữ nguyên.</li>
+<li>Thao tác thủ công trên mọi hệ thống: dừng máy chủ, giải nén tệp zip vào bên trong thư mục dữ liệu và cho phép ghi đè các tệp, rồi khởi động lại máy chủ. Tệp <code>servidor.conf</code> của bản sao lưu được đặt cạnh thư mục dữ liệu chứ không nằm bên trong nó.</li>
+</ul>
+<h3>Di chuyển máy chủ sang máy tính khác</h3>
+<ol>
+<li>Dừng máy chủ.</li>
+<li>Sao chép tệp <code>servidor.conf</code> và toàn bộ thư mục dữ liệu <code>datos_servidor</code> sang máy mới. Hoặc tạo một bản sao lưu và mang tệp zip theo.</li>
+<li>Trên máy mới, thiết lập máy chủ theo hướng dẫn trong mục tương ứng và đặt các tệp vào đúng vị trí: trên Windows đặt trong thư mục <code>servidor</code> của trò chơi; trên Linux đặt cạnh thư mục mã nguồn <code>servidor</code>; với Docker đặt bên trong thư mục <code>datos</code>.</li>
+<li>Khởi động máy chủ. Nhân vật, băng đảng và chứng chỉ hoàn toàn giữ nguyên: không ai nhận thấy sự thay đổi ngoại trừ địa chỉ kết nối mới.</li>
+</ol>
+<h3>Cập nhật máy chủ</h3>
+<p>Kể từ phiên bản 1.7.1, việc cập nhật không còn làm văng bất kỳ ai về menu chính nữa. Máy chủ cảnh báo người chơi bằng đồng hồ đếm ngược, chờ từng người chơi lưu lại nhân vật, lưu lại mọi thứ rồi đóng lại kèm thông báo lý do. Trò chơi của mọi người dừng lại ở màn hình chờ với phiên chơi nguyên vẹn, và khi máy chủ hoạt động trở lại họ sẽ chờ đợi rồi tự động kết nối lại: mọi người tiếp tục chơi đúng tại nơi họ đang đứng.</p>
+<h4>Trên Windows</h4>
+<ul>
+<li>Chỉ cần cập nhật trò chơi khi máy chủ hoặc bảng điều khiển đang mở. Không cần phải dừng máy chủ trước.</li>
+<li>Trò chơi sẽ thông báo bạn đang mở máy chủ, giải thích những gì sắp diễn ra và xin phép bạn. Nếu bạn đồng ý: trò chơi sẽ cảnh báo người chơi, máy chủ tự động dừng, trò chơi đóng lại và cập nhật, và khi hoàn tất máy chủ sẽ tự khởi động lại đúng như trạng thái ban đầu: bản dòng lệnh thu nhỏ trong cửa sổ của nó hoặc bảng điều khiển với máy chủ đang chạy nếu trước đó đang chạy.</li>
+<li>Nếu bạn chỉ mở bảng điều khiển với máy chủ đang dừng (ngay cả khi chưa bao giờ khởi động), sẽ không có người chơi nào cần cảnh báo: bảng điều khiển tự đóng lại và mở lại sau khi cập nhật xong ở trạng thái dừng như cũ.</li>
+<li>Máy chủ dòng lệnh và bảng điều khiển mở lại ở dạng thu nhỏ và không chiếm tiêu điểm: tiêu điểm vẫn giữ nguyên trên cửa sổ trò chơi. Khi bạn chuyển sang bảng điều khiển, tiêu điểm nằm ở trạng thái máy chủ như thường lệ.</li>
+<li>Nếu việc cập nhật gặp sự cố, phiên bản cũ của bạn được giữ nguyên và máy chủ vẫn được khởi động lại bình thường. Những gì máy chủ đã lưu khi đóng lại không bao giờ bị mất: quá trình cập nhật chỉ lưu và khôi phục các tệp chương trình chứ không can thiệp vào cơ sở dữ liệu của bạn.</li>
+<li>Khi mở lại, trò chơi sẽ thông báo xem máy chủ đã khởi động lại thành công chưa. Mọi diễn biến được ghi lại vào tệp <code>actualizacion.log</code> trong thư mục <code>data\logs</code> của trò chơi.</li>
+<li>Nếu máy chủ được cài đặt tự khởi động khi đăng nhập bằng Arrancar con Windows (Khởi động cùng Windows), nó cũng sẽ tự khởi động lại bình thường.</li>
+<li>Nếu bạn thiết lập máy chủ dưới dạng dịch vụ hoặc tác vụ theo lịch chạy không cần đăng nhập, trò chơi có thể yêu cầu đóng máy chủ nhưng không thể khởi động theo cách Windows khởi động dịch vụ: chương trình sẽ cảnh báo trước khi bắt đầu và sau đó bạn sẽ phải khởi động lại theo cách bạn đã thiết lập nếu máy chủ không tự chạy lại.</li>
+<li>Cấu hình và dữ liệu của bạn không bao giờ bị ảnh hưởng cho dù việc cập nhật thành công hay thất bại, cho dù chúng nằm trong thư mục dữ liệu mặc định hay thư mục riêng bạn chỉ định. Trường hợp duy nhất không được hỗ trợ là đặt thư mục dữ liệu bên trong các thư mục chương trình như <code>lib</code>: nếu phát hiện điều này, trò chơi sẽ thông báo và không cập nhật cho đến khi bạn di chuyển thư mục dữ liệu ra ngoài.</li>
+</ul>
+<h4>Trên Linux, Mac, NAS, Raspberry Pi hoặc Docker</h4>
+<p>Trên các hệ thống này máy chủ không cập nhật tự động cùng trò chơi: bạn thay thế mã nguồn thủ công. Để người chơi nhận được cùng trải nghiệm chờ đợi và tự động kết nối lại, hãy dừng máy chủ bằng lệnh khởi động lại thay vì ngắt đột ngột:</p>
+<ol>
+<li>Thay thế thư mục mã nguồn <code>servidor</code> bằng thư mục lấy từ <code>otros_sistemas</code> của bản game mới. Bạn có thể làm điều này khi máy chủ đang chạy: máy chủ không đọc mã mới cho đến khi khởi động lại. Tuyệt đối không can thiệp vào <code>servidor.conf</code> hoặc thư mục dữ liệu.</li>
+<li>Khởi động lại máy chủ kèm cảnh báo. Tùy theo cách bạn thiết lập:
+<ul>
+<li>Với các tập lệnh: <code>sh reiniciar.sh</code>. Lệnh này cảnh báo, dừng máy chủ rồi khởi động lại.</li>
+<li>Với systemd hoặc Docker: quản trị viên gõ <code>/actualizar</code> trong ô chat trò chơi. Máy chủ cảnh báo, đóng lại với mã 75, và systemd hoặc Docker sẽ tự khởi động lại. Với Docker nếu bạn đã thay đổi cả hình ảnh image, hãy gõ <code>docker compose up -d --build</code>: khi vùng chứa dừng lại, máy chủ vẫn thông báo cho trò chơi rằng nó sẽ quay lại.</li>
+<li>Thao tác thủ công trên giao diện dòng lệnh: gõ <code>update</code>, chờ chương trình kết thúc rồi khởi động lại.</li>
+<li>Không có giao diện dòng lệnh: từ thư mục máy chủ chạy <code>python3 -m servidor --actualizar</code>. Hoặc tạo một tệp văn bản tên là <code>parar.txt</code> trong thư mục dữ liệu chứa từ <code>update</code> bên trong: máy chủ kiểm tra tệp này mỗi giây, xóa tệp và thực thi lệnh. Dùng từ <code>restart</code> sẽ thông báo bảo trì, và từ <code>parar</code> sẽ chỉ dừng máy chủ. Sau từ khóa bạn có thể đặt số giây cảnh báo, ví dụ <code>actualizar 60</code>.</li>
+</ul></li>
+</ol>
+<ul>
+<li>Thời gian đếm ngược quy định trong tùy chọn <code>parada_aviso</code>, mặc định là 20 giây. Thời gian chờ lần lưu cuối của từng trò chơi quy định trong <code>parada_espera</code>.</li>
+<li>Khi máy chủ dừng để khởi động lại (lệnh <code>update</code> và <code>restart</code>), chương trình kết thúc với mã 75. Nếu người vận hành chủ động dừng máy chủ (<code>shutdown</code>, Control+C), chương trình kết thúc với mã 0 và các lượt chơi quay về menu chính như thường lệ.</li>
+<li>Nếu hệ thống dừng máy chủ (<code>systemctl stop</code>, <code>docker compose down</code>, <code>sh parar.sh</code>, tắt máy tính), sẽ không đủ thời gian đếm ngược nhưng máy chủ vẫn thông báo đây là khởi động lại: các trò chơi sẽ chờ đợi và tự kết nối lại nếu máy chủ hoạt động lại trước thời hạn từ bỏ (mặc định là mười phút).</li>
+<li>Người chơi dùng bản 1.7.0 sẽ nghe thấy cảnh báo như một thông báo bình thường và khi máy chủ đóng lại sẽ quay về menu chính kèm thông báo máy chủ đang khởi động lại và hãy quay lại sau vài phút. Nhân vật của họ vẫn được lưu lại an toàn.</li>
+</ul>
+<h4>Trong mọi trường hợp</h4>
+<ul>
+<li>Các tùy chọn mới luôn hoạt động với giá trị mặc định ngay cả khi tệp <code>servidor.conf</code> của bạn chưa có chúng. Nếu bạn lưu cấu hình từ bảng điều khiển, tệp sẽ được ghi lại kèm đầy đủ tất cả các tùy chọn. Những tùy chọn máy chủ chưa biết sẽ được giữ nguyên và thông báo khi khởi động.</li>
+</ul>
+
+<h2 id="grandes">21. Các máy chủ có lượng người tham gia lớn</h2>
+<ul>
+<li>Không có giới hạn người chơi cố định. Với <code>max_jugadores = 0</code> mọi người đến đều được vào.</li>
+<li>Thành phần tiêu tốn nhiều tài nguyên nhất trên vi xử lý và đặc biệt là băng thông mạng là việc thông báo vị trí của người này cho những người khác. Do đó những người ở gần nhau được cập nhật vị trí 10 lần mỗi giây; những người khác trong cùng thị trấn được cập nhật đại khái vị trí mỗi giây một lần; và những người ở thị trấn khác được cập nhật mỗi hai giây một lần. Nếu có đám đông tụ tập xung quanh, tần suất cập nhật mỗi giây sẽ tự động giảm bớt.</li>
+<li>Khoảng cách theo dõi chi tiết vị trí của người khác do tùy chọn <code>radio_detalle</code> quyết định, mặc định là 150 mét. Nếu đường truyền mạng hạn chế, hãy giảm xuống 100 mét. Đừng đặt bằng 0 khi có đông người: với mức 0 mọi thứ đều được gửi tới tất cả mọi người liên tục không ngừng.</li>
+<li>Để tham khảo lượng dữ liệu máy chủ gửi tới mỗi người chơi chỉ riêng cho vị trí: với mười người chơi tốn khoảng 3 KB mỗi giây; với một trăm người tản ra khắp thị trấn tốn khoảng 25 KB/s; với một trăm người tụ tập lại một chỗ tốn khoảng 40 KB/s. Nhân với số lượng người chơi, một trăm người đồng nghĩa với tốc độ tải lên (upload) từ 2,5 đến 4 MB mỗi giây. Giao thông, người đi bộ và cảnh sát chia sẻ chung sẽ tăng thêm một chút.</li>
+<li>Giao thông và người đi bộ của máy chủ xuất hiện theo từng khu vực, ở bất kỳ nơi nào có người chơi. Mức trần cho mỗi thị trấn là <code>trafico_total</code> và <code>peatones_total</code>. Nếu máy tính quá tải, hãy giảm các con số này xuống hoặc tắt giao thông, người đi bộ hoặc cảnh sát chia sẻ chung: khi đó mỗi bản game sẽ tự tạo phương tiện và người đi bộ riêng.</li>
+<li>Khi có rất đông người, thứ cạn kiệt đầu tiên thường là băng thông tải lên của mạng gia đình chứ không phải phần cứng máy tính. Đối với máy chủ quy mô lớn, hãy thuê một máy chủ chuyên dụng có đường truyền mạng mạnh mẽ.</li>
+<li>Trên Linux mỗi người chơi chiếm một kết nối mở (file descriptor). Dịch vụ systemd đã tự động nâng giới hạn này lên cao. Nếu bạn chạy thủ công với hơn một nghìn người, hãy nâng giới hạn trước bằng lệnh <code>ulimit -n 65536</code>.</li>
+<li>Hãy bật <code>inactividad_minutos</code> để những ai vắng mặt mà không thoát game không chiếm dụng chỗ của người khác.</li>
+<li>Việc lưu dữ liệu mỗi phút với hàng nghìn tài khoản hầu như không gây tốn tài nguyên, nhưng bạn có thể kéo giãn thời gian bằng <code>guardado_minutos</code>.</li>
+</ul>
+
+<h2 id="problemas">22. Xử lý sự cố</h2>
+<h3>Máy chủ không khởi động</h3>
+<ul>
+<li>"Không thể mở cổng": máy chủ đã đang chạy trong một cửa sổ khác, hoặc chạy đồng thời ở cả bảng điều khiển và dòng lệnh, hoặc có chương trình khác đang dùng cổng đó. Hãy đóng chương trình kia lại, hoặc đổi cổng trong tùy chọn <code>puerto</code>.</li>
+<li>"Mã hóa là bắt buộc nhưng không có chứng chỉ": bạn đã đặt <code>cifrado = si</code> và chứng chỉ không thể tạo ra được. Hãy đặt <code>cifrado = auto</code>, hoặc kiểm tra xem thư mục dữ liệu có quyền ghi hay không.</li>
+<li>Máy chủ thông báo có vấn đề trong cấu hình: mỗi cảnh báo nêu rõ tùy chọn nào và vì sao không hợp lệ. Máy chủ vẫn sẽ khởi động với giá trị mặc định của tùy chọn đó. Dùng tham số <code>--comprobar</code> để kiểm tra mà không cần khởi động máy chủ.</li>
+</ul>
+<h3>Không ai có thể tham gia được</h3>
+<ul>
+<li>Trước tiên hãy tự thử kết nối từ chính máy tính đó với <code>puertobravo://127.0.0.1</code>. Nếu bạn vào được, máy chủ hoàn toàn bình thường và vấn đề nằm ở mạng.</li>
+<li>Nếu người trong nhà không vào được: kiểm tra xem họ có dùng địa chỉ mạng nội bộ hay không chứ không phải địa chỉ công khai, và tường lửa trên máy chủ có mở cổng hay không. Trên Windows chương trình sẽ hỏi trong lần đầu; nếu bạn chọn từ chối, bạn phải vào Windows Security, Firewall, Allow an app để cho phép lại.</li>
+<li>Nếu người bên ngoài không vào được: kiểm tra quy tắc trên router xem đã trỏ chính xác vào địa chỉ hiện tại của máy chủ chưa và giao thức phải là TCP. Kiểm tra bạn đã gửi đúng địa chỉ IP công khai hiện tại chưa và xem bạn có đang bị nhà mạng đặt sau CG-NAT không như mục 13 hướng dẫn.</li>
+<li>Từ trong nhà, nhiều router không cho phép bạn kết nối bằng chính địa chỉ công khai của mình. Đây không phải là lỗi: khi ở nhà hãy dùng địa chỉ mạng nội bộ.</li>
+</ul>
+<h3>Những gì trò chơi thông báo khi cố gắng tham gia</h3>
+<ul>
+<li>"Máy chủ đã đầy": tăng <code>max_jugadores</code> hoặc đặt bằng 0.</li>
+<li>"Mật khẩu tham gia không đúng" hoặc "mã mời không hợp lệ": máy chủ yêu cầu mật khẩu hoặc mã mời. Hãy gửi cho họ mật khẩu đúng hoặc tạo mã mời mới.</li>
+<li>"Bạn không thể tham gia máy chủ này": tài khoản đó đã bị cấm. Cần dùng lệnh tha thứ lệnh cấm để gỡ bỏ.</li>
+<li>"Dữ liệu trò chơi của bạn không phải của máy chủ này": họ dùng bản mod làm thay đổi thế giới hoặc game không có chữ ký số và bạn đang đặt <code>mundo_distinto</code> là <code>rechazar</code> hoặc <code>versiones</code> là <code>iguales</code>. Theo mặc định người đó vẫn vào được. Xem mục 17.</li>
+<li>"Máy chủ này vừa được thiết lập và chưa có dữ liệu trò chơi": máy chủ đang trống và không thể nhận thế giới từ người đang tham gia, hầu như luôn là do bạn đặt <code>actualizar_mundo</code> là <code>no</code>. Xem mục 17.</li>
+<li>"Máy chủ này yêu cầu trò chơi phiên bản nọ kia trở lên": bạn đã thiết lập tùy chọn <code>version_minima</code>.</li>
+<li>"Máy chủ không đưa ra chứng chỉ giống như lần trước": bạn đã thay đổi chứng chỉ, ví dụ cài đặt lại mà không mang theo dữ liệu cũ. Xem mục 14.</li>
+<li>"Quá nhiều kết nối từ địa chỉ của bạn": bạn đã thiết lập tùy chọn <code>conexiones_por_ip</code> và có nhiều người cùng chơi chung một địa chỉ IP. Hãy tăng con số lên hoặc đặt bằng 0.</li>
+</ul>
+<h3>Các trường hợp khác</h3>
+<ul>
+<li>Sau khi cập nhật trò chơi máy chủ không tự chạy lại: trò chơi sẽ thông báo khi mở kèm lý do và được ghi lại trong <code>actualizacion.log</code> trong thư mục <code>data\logs</code> của trò chơi. Thường là do máy chủ được thiết lập dưới dạng dịch vụ hoặc tác vụ Windows: hãy khởi động lại theo cách bạn đã thiết lập. Nếu không, hãy tự mở từ thư mục <code>servidor</code>.</li>
+<li>Người chơi cứ ở trạng thái chờ đợi mà không vào được: họ sẽ chờ tối đa theo thời gian họ đặt trong tùy chọn của mình (mặc định là mười phút) và thử lại sau mỗi vài giây. Nếu máy chủ hoạt động lại đòi hỏi phiên bản mới hơn (<code>version_minima</code>), trò chơi của họ sẽ thông báo và đề xuất cập nhật.</li>
+<li>Có người bị thu hồi tiền: máy chủ theo dõi và không chấp nhận tiền kiếm được nhanh hơn mức <code>ganancia_hora</code> cho phép. Từ 1.7.1 trò chơi hiển thị các con số rõ ràng. Những gì được tính, những gì không và nên thiết lập ra sao xem tại <a href="#dinero">mục 18</a>.</li>
+<li>Tôi bị mất quyền quản trị viên: dừng máy chủ, điền tên người chơi của bạn vào tùy chọn <code>admins</code> rồi khởi động lại.</li>
+<li>Tôi muốn bắt đầu lại từ đầu: dừng máy chủ và xóa hoặc di chuyển thư mục dữ liệu đi nơi khác. Thư mục mới sẽ được tạo khi khởi động lại kèm chứng chỉ mới.</li>
+<li>Để yêu cầu trợ giúp hãy lưu nhật ký: trong bảng điều khiển nhấn Control+G. Nhật ký không chứa thông tin cá nhân nào ngoại trừ tên người chơi, và địa chỉ IP nếu bạn đã bật <code>registro_ip</code>.</li>
+</ul>
+
+<h2 id="privacidad">23. Những gì máy chủ lưu giữ</h2>
+<ul>
+<li>Đối với mỗi người chơi: khóa công khai của họ (con số dùng để nhận diện); tên họ đã chọn; nhân vật của họ; và phiên bản trò chơi họ sử dụng lần gần nhất.</li>
+<li>Máy chủ không lưu giữ email, mật khẩu tài khoản hay địa chỉ mạng.</li>
+<li>Địa chỉ mạng của người kết nối chỉ được ghi vào nhật ký và chỉ hiển thị trong bảng điều khiển nếu bạn đặt <code>registro_ip = si</code>. Mặc định là không.</li>
+<li>Tin nhắn trò chuyện không bao giờ được lưu lại, kể cả tin nhắn trên các kênh nhập vai. Dòng giới thiệu hồ sơ cá nhân của mỗi người chơi được lưu cùng tài khoản của họ và sẽ bị xóa khi tài khoản bị xóa.</li>
+<li>Từ radio trên phương tiện chỉ có tên viết tắt của kênh phát thanh trò chơi truyền qua máy chủ và không được lưu lại.</li>
+<li>Mật khẩu tham gia nếu bạn sử dụng được ghi trong <code>servidor.conf</code>: đừng chia sẻ tệp đó cho người khác.</li>
+<li>Nếu bạn vận hành máy chủ mở cho người lạ, bạn chịu trách nhiệm về dữ liệu của họ: hãy thông báo cho bạn bè và xóa tài khoản của bất kỳ ai yêu cầu. Thao tác thực hiện bằng nút Xóa tài khoản trên thẻ Tài khoản trong bảng điều khiển hoặc bằng lệnh <code>borrarcuenta</code> kèm tên người chơi.</li>
+</ul>
+
+<h2 id="opciones">24. Tất cả các tùy chọn cấu hình</h2>
+<p>Mỗi tùy chọn nằm trên một dòng của tệp <code>servidor.conf</code>, theo định dạng <code>nombre = valor</code> (tên = giá trị). Các dòng bắt đầu bằng dấu thăng (#) là dòng chú thích. Trong bảng điều khiển các tùy chọn nằm ở phần Cài đặt (Control+P), mỗi nhóm nằm trong một thẻ riêng.</p>
+<p>Hầu hết các tùy chọn đều có hiệu lực ngay khi máy chủ đang chạy: từ bảng điều khiển khi bạn nhấn Đồng ý; ở chế độ dòng lệnh dùng lệnh <code>reload</code>. Một số luật chơi như giao thông, cảnh sát, người đi bộ, chiến đấu, nội dung người lớn và giá cả sẽ gửi tới trò chơi của từng người khi họ tham gia: ai đang trực tuyến sẽ nhận thấy trọn vẹn khi họ tham gia lại. Những tùy chọn nào cần khởi động lại máy chủ đều có ghi chú rõ ràng.</p>
+<!-- OPCIONES:INICIO -->
+<h3>Tổng quan</h3>
+<p>Tên máy chủ, thông báo chào mừng người tham gia và sức chứa người chơi.</p>
+<h4>Tên máy chủ: <code>nombre</code></h4>
+<p>Tên máy chủ hiển thị trong danh sách máy chủ của người chơi.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 60 ký tự.</li>
+<li>Mặc định: <code>Servidor de Puerto Bravo</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Chào mừng: <code>bienvenida</code></h4>
+<p>Thông báo gửi tới mỗi người chơi ngay khi đăng nhập.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 300 ký tự.</li>
+<li>Mặc định: <code>Bienvenido. Juega limpio.</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Thông điệp trong ngày: <code>mensaje_dia</code></h4>
+<p>Thông báo người chơi nghe thấy khi vào phòng, sau lời chào mừng: hẹn gặp mặt, luật mới. Để trống nếu không dùng. Có thể thay đổi khi máy chủ đang chạy.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 300 ký tự.</li>
+<li>Mặc định: trống.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số người chơi tối đa cùng lúc: <code>max_jugadores</code></h4>
+<p>Số lượng người chơi tối đa có thể tham gia cùng lúc. Đặt 0 là không giới hạn. Quản trị viên luôn có thể vào kể cả khi phòng đầy. Các nhân vật do máy chủ điều khiển không tính vào giới hạn này.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 100000.</li>
+<li>Mặc định: <code>32</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Nội dung người lớn: <code>adultos</code></h4>
+<p>Chọn no: người tham gia sẽ chơi không có nội dung 18+ kể cả khi họ đã bật tính năng này trong bản game của họ.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>no</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số giây đếm ngược thông báo trước khi khởi động lại để cập nhật hoặc bảo trì: <code>parada_aviso</code></h4>
+<p>Khi máy chủ chuẩn bị dừng để cập nhật hoặc bảo trì (qua lệnh actualizar, reiniciar hoặc cập nhật trên Windows), máy chủ sẽ thông báo cho người chơi kèm đồng hồ đếm ngược này trước khi đóng. Đặt 0 để đóng ngay lập tức. Bản game của người chơi sẽ chờ và tự động kết nối lại khi máy chủ mở lại.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 120.</li>
+<li>Mặc định: <code>20</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Lưu dữ liệu cuối cùng: số giây chờ khi dừng máy chủ: <code>parada_espera</code></h4>
+<p>Khi dừng lại, máy chủ yêu cầu từng máy khách lưu nhân vật và đợi tối đa số giây này để nhận dữ liệu. Nếu tất cả lưu xong sớm hơn, máy chủ sẽ dừng ngay.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 30.</li>
+<li>Mặc định: <code>6</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Ngôn ngữ máy chủ: <code>idioma</code></h4>
+<p>Ngôn ngữ máy chủ dùng cho người quản trị: màn hình dòng lệnh, nhật ký, phần trợ giúp và các chú thích trong servidor.conf. Những gì người chơi nghe không thay đổi: máy chủ gửi bằng tiếng Tây Ban Nha và bản game của từng người sẽ tự phát âm bằng ngôn ngữ của họ, do đó người chơi từ nhiều quốc gia khác nhau có thể chơi chung trên cùng một máy chủ. Nếu máy chủ chạy bên trong bảng điều khiển, nó sẽ dùng ngôn ngữ của game.</p>
+<ul>
+<li>Các giá trị:<ul>
+<li><code>auto</code>: theo hệ điều hành: nếu là tiếng Tây Ban Nha thì dùng tiếng Tây Ban Nha; nếu không thì dùng tiếng Anh, hoặc ngôn ngữ hệ thống nếu có bản dịch.</li>
+<li><code>es</code>: Español.</li>
+<li><code>en</code>: English.</li>
+<li><code>pt</code>: Português do Brasil.</li>
+<li><code>vi</code>: Tiếng Việt.</li>
+</ul></li>
+<li>Mặc định: <code>auto</code>.</li>
+<li>Cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Mạng và mã hóa</h3>
+<p>Cổng mạng máy chủ lắng nghe và cách thức bảo vệ kết nối.</p>
+<h4>Cổng mạng: <code>puerto</code></h4>
+<p>Cổng mạng mà máy chủ lắng nghe. Đây là cổng cần mở trên router để người ngoài mạng nhà có thể vào. Đặt 0 để hệ thống tự chọn cổng trống ngẫu nhiên mỗi lần chạy, chỉ dùng khi thử nghiệm.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 65535.</li>
+<li>Mặc định: <code>47820</code>.</li>
+<li>Cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Địa chỉ IP lắng nghe: <code>interfaz</code></h4>
+<p>Đặt 0.0.0.0 để lắng nghe trên mọi giao diện mạng của máy tính (mặc định). Đặt 127.0.0.1 chỉ cho phép kết nối nội bộ từ chính máy tính này. Bạn cũng có thể điền địa chỉ IP của một cổng mạng cụ thể.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 60 ký tự.</li>
+<li>Mặc định: <code>0.0.0.0</code>.</li>
+<li>Cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Mã hóa kết nối: <code>cifrado</code></h4>
+<p>Chọn auto: máy chủ sẽ tự khởi tạo chứng chỉ riêng trong lần chạy đầu tiên và mã hóa kết nối; bạn không cần cài đặt thêm gì.</p>
+<ul>
+<li>Các giá trị:<ul>
+<li><code>auto</code>: mã hóa nếu có thể, và hầu như luôn có thể.</li>
+<li><code>si</code>: bắt buộc: nếu không thể mã hóa, máy chủ sẽ không khởi động.</li>
+<li><code>no</code>: không bao giờ mã hóa.</li>
+</ul></li>
+<li>Mặc định: <code>auto</code>.</li>
+<li>Cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Tệp chứng chỉ: <code>certificado</code></h4>
+<p>Chỉ dùng khi bạn muốn dùng chứng chỉ riêng: đường dẫn tới tệp PEM. Để trống, máy chủ sẽ dùng chứng chỉ tự tạo trong thư mục dữ liệu.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 260 ký tự.</li>
+<li>Mặc định: trống.</li>
+<li>Cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Tệp khóa riêng của chứng chỉ: <code>llave</code></h4>
+<p>Đường dẫn tới tệp PEM chứa khóa riêng của chứng chỉ. Để trống nếu khóa nằm chung trong chứng chỉ hoặc dùng chứng chỉ tự tạo của máy chủ.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 260 ký tự.</li>
+<li>Mặc định: trống.</li>
+<li>Cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số kết nối đồng thời từ cùng một địa chỉ IP: <code>conexiones_por_ip</code></h4>
+<p>Số lượng kết nối đồng thời được phép từ cùng một địa chỉ IP. Đặt 0 là không giới hạn. Lưu ý: những người chơi cùng nhà sẽ chung địa chỉ IP, và khi chạy qua Docker hoặc proxy thì mọi người có thể bị nhận diện là cùng một địa chỉ.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 100000.</li>
+<li>Mặc định: <code>0</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Ghi lại địa chỉ IP của người kết nối: <code>registro_ip</code></h4>
+<p>Chọn si: nhật ký sẽ ghi lại địa chỉ IP của mỗi kết nối và hiển thị trên bảng điều khiển. Mặc định là no: máy chủ không lưu trữ bất kỳ thông tin cá nhân nào.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>no</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Quyền truy cập và quản trị</h3>
+<p>Ai được phép vào, ai nắm quyền quản trị và ai bị chặn.</p>
+<h4>Ai có thể tạo nhân vật: <code>entrada</code></h4>
+<p>Chỉ áp dụng với người tham gia lần đầu: người đã có nhân vật luôn có thể vào lại.</p>
+<ul>
+<li>Các giá trị:<ul>
+<li><code>abierta</code>: bất kỳ ai có địa chỉ máy chủ.</li>
+<li><code>clave</code>: phải biết mật khẩu truy cập.</li>
+<li><code>invitacion</code>: cần có mã mời dùng một lần.</li>
+</ul></li>
+<li>Mặc định: <code>abierta</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Mật khẩu truy cập: <code>clave</code></h4>
+<p>Mật khẩu cần biết để tạo nhân vật khi máy chủ đặt chế độ bảo vệ bằng mật khẩu.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 60 ký tự. Được lưu nguyên văn trong tệp: không chia sẻ cho người khác xem.</li>
+<li>Mặc định: trống.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Quản trị viên: <code>admins</code></h4>
+<p>Tên những người chơi có quyền quản trị máy chủ, phân tách bằng dấu phẩy. Được cộng thêm vào danh sách quản trị viên cấp bằng lệnh admin.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 600 ký tự.</li>
+<li>Mặc định: trống.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Tài khoản đầu tiên là quản trị viên: <code>primer_admin</code></h4>
+<p>Chọn si: tài khoản đầu tiên tạo trên máy chủ sẽ được cấp quyền quản trị viên (thường chính là bạn).</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Danh sách tên bị cấm: <code>vetados</code></h4>
+<p>Tên những người chơi bị cấm tham gia, phân tách bằng dấu phẩy. Được cộng thêm vào danh sách tài khoản bị cấm bằng lệnh vetar.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 600 ký tự.</li>
+<li>Mặc định: trống.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Đuổi do treo máy (AFK), tính theo phút: <code>inactividad_minutos</code></h4>
+<p>Số phút bất động không làm gì mà sau đó người chơi sẽ bị mời ra để nhường chỗ. Đặt 0 để không bao giờ đuổi. Quản trị viên không bao giờ bị đuổi.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1440.</li>
+<li>Mặc định: <code>0</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Cho phép hai phiên đăng nhập cùng thông tin định danh: <code>varias_sesiones</code></h4>
+<p>Chỉ dùng để thử nghiệm. Mặc định là no: nếu ai đó đăng nhập nhân vật từ nơi khác, phiên đăng nhập trước sẽ bị ngắt.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>no</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Các phiên bản trò chơi</h3>
+<p>Những phiên bản game nào có thể chơi chung trên máy chủ này.</p>
+<h4>Kiểm tra dữ liệu trò chơi của người kết nối: <code>comprobar_datos</code></h4>
+<p>Chọn si: máy chủ kiểm tra xem thế giới từ bản game của người vào có khớp không, có phải bản chính thức hay bản mod, rồi xử lý theo các tùy chọn tiếp theo. Chọn no: không kiểm tra gì, ai mang gì vào cũng được và máy chủ không cập nhật thế giới từ các phiên bản mới.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Xử lý thế nào với người mang dữ liệu không thể xác minh: <code>mundo_distinto</code></h4>
+<p>Người chơi cài mod làm thay đổi thế giới, hoặc dùng phiên bản mà dữ liệu máy chủ không thể xác minh. Nếu dùng bản chính thức khác với máy chủ thì luôn được vào, bất kể bạn thiết lập thế nào ở đây.</p>
+<ul>
+<li>Các giá trị:<ul>
+<li><code>admitir</code>: được vào và chơi các phần tương thích với máy chủ; người chơi sẽ được thông báo những điểm không khớp, và những gì ảnh hưởng tới người khác do thế giới của máy chủ quyết định.</li>
+<li><code>rechazar</code>: không cho vào: chỉ được chơi với dữ liệu của phiên bản chính thức.</li>
+</ul></li>
+<li>Mặc định: <code>admitir</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Các phiên bản có thể chơi chung: <code>versiones</code></h4>
+<p>Máy chủ hoạt động với thế giới từ phiên bản mới nhất từng nhận, và giao tiếp với từng bản game theo những gì phiên bản đó biết: vũ khí hoặc phương tiện chưa có sẽ hiển thị dưới dạng gần giống nhất của bản đó.</p>
+<ul>
+<li>Các giá trị:<ul>
+<li><code>compatibles</code>: người chơi ở các phiên bản khác nhau có thể chơi chung, mỗi người trải nghiệm theo nội dung bản của mình biết.</li>
+<li><code>iguales</code>: chỉ cho phép người có dữ liệu hoàn toàn trùng khớp với máy chủ tham gia.</li>
+</ul></li>
+<li>Mặc định: <code>compatibles</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Phiên bản game tối thiểu: <code>version_minima</code></h4>
+<p>Phiên bản game cũ nhất được phép tham gia, ví dụ 1.7.0. Để trống để cho phép mọi phiên bản.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 20 ký tự.</li>
+<li>Mặc định: trống.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Ai có thể cập nhật dữ liệu thế giới mới: <code>actualizar_mundo</code></h4>
+<p>Thế giới trò chơi (địa điểm, vũ khí, nhiệm vụ) không gắn cố định vào máy chủ: nó được cung cấp từ bản game của người tham gia. Máy chủ mới sẽ lấy dữ liệu từ người đầu tiên; nếu bản đó chưa có chữ ký số, máy chủ sẽ thay bằng bản có chữ ký số đầu tiên nhận được.</p>
+<ul>
+<li>Các giá trị:<ul>
+<li><code>firmado</code>: chấp nhận dữ liệu phiên bản mới từ bất kỳ ai nếu có chữ ký số của nhà phát hành.</li>
+<li><code>admin</code>: chấp nhận thêm bản không chữ ký số từ quản trị viên: dành cho máy chủ có mod.</li>
+<li><code>no</code>: không bao giờ: máy chủ giữ nguyên thế giới hiện tại.</li>
+</ul></li>
+<li>Mặc định: <code>firmado</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Dữ liệu và bản sao lưu</h3>
+<p>Nơi lưu trữ toàn bộ dữ liệu, tần suất sao lưu và số lượng bản sao lưu được giữ lại.</p>
+<h4>Thư mục dữ liệu: <code>datos</code></h4>
+<p>Thư mục lưu trữ tất cả: nhân vật, băng đảng, địa bàn, phương tiện, chứng chỉ bảo mật và các bản sao lưu.</p>
+<ul>
+<li>Một đoạn văn bản tối đa 260 ký tự.</li>
+<li>Mặc định: <code>datos_servidor</code>.</li>
+<li>Cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Tự động lưu sau mỗi số phút: <code>guardado_minutos</code></h4>
+<p>Khoảng thời gian (theo phút) lưu toàn bộ dữ liệu vào ổ đĩa. Khi dừng máy chủ hệ thống sẽ luôn tự động lưu.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 120.</li>
+<li>Mặc định: <code>1</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Sao lưu tự động theo chu kỳ (giờ): <code>copia_auto_horas</code></h4>
+<p>Khoảng thời gian (theo giờ) máy chủ tự động sao lưu vào thư mục copias trong thư mục dữ liệu. Đặt 0 để tắt sao lưu tự động.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 720.</li>
+<li>Mặc định: <code>24</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số bản sao lưu được lưu trữ: <code>copias_guardar</code></h4>
+<p>Số lượng bản sao lưu tự động được lưu trữ: khi tạo bản mới, các bản cũ nhất sẽ bị xóa bớt. Những bản bạn sao lưu thủ công với tên khác sẽ không bị đụng tới.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 365.</li>
+<li>Mặc định: <code>7</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Lưu nhật ký vào tệp: <code>registro_archivo</code></h4>
+<p>Chọn si: mọi thông báo từ máy chủ sẽ được ghi vào tệp registro.txt bên trong thư mục dữ liệu.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>no</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Đấu người chơi với người chơi (PvP)</h3>
+<p>Quy tắc chiến đấu, trấn lột và tiền thưởng truy nã.</p>
+<h4>Đấu người chơi với người chơi (PvP): <code>pvp</code></h4>
+<p>Chọn no: người chơi không thể gây sát thương, trấn lột hay cướp bóc lẫn nhau.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Khu vực an toàn: <code>zonas_seguras</code></h4>
+<p>Chọn si: tại bệnh viện, đồn cảnh sát, nhà riêng và bên trong các cơ sở kinh doanh, không ai có thể làm tổn thương ai.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Cho phép chế độ hòa bình: <code>modo_pasivo</code></h4>
+<p>Chọn si: từng người chơi có thể tự bật chế độ hòa bình: không gây hại cho ai và cũng không ai hại được mình.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số giây bảo vệ khi mới vào phòng chơi: <code>proteccion</code></h4>
+<p>Số giây không thể gây hại và không bị tổn hại khi mới vào hoặc hồi sinh.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 600.</li>
+<li>Mặc định: <code>20</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Tỷ lệ tiền rơi ra khi hạ gục người chơi khác, tính theo phần trăm: <code>botin</code></h4>
+<p>Tỷ lệ tiền mặt trong túi bị mất khi bị người chơi khác hạ gục, tính theo phần trăm.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 100.</li>
+<li>Mặc định: <code>10</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Tiền thưởng hạ gục tối đa: <code>botin_max</code></h4>
+<p>Số tiền tối đa có thể bị mất khi bị người chơi khác hạ gục, tính bằng euro.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 100000000.</li>
+<li>Mặc định: <code>5000</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Tỷ lệ tiền cướp được từ người chơi khác, tính theo phần trăm: <code>atraco</code></h4>
+<p>Tỷ lệ tiền mặt trong túi cuỗm được khi trấn lột người chơi khác, tính theo phần trăm.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 100.</li>
+<li>Mặc định: <code>15</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số tiền cướp tối đa: <code>atraco_max</code></h4>
+<p>Số tiền tối đa có thể trấn lột từ người chơi khác trong một vụ cướp, tính bằng euro.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 100000000.</li>
+<li>Mặc định: <code>1000</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số giây cần thiết để trấn lột cơ sở kinh doanh: <code>robo_segundos</code></h4>
+<p>Số giây phải cầm cự trước cửa để vét sạch két tiền của cơ sở kinh doanh thuộc về người chơi khác. Chủ sở hữu sẽ nhận được cảnh báo ngay.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 600.</li>
+<li>Mặc định: <code>20</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Tiền thưởng truy nã khi hạ gục người vô tội: <code>recompensa</code></h4>
+<p>Mức tiền thưởng truy nã tăng thêm (tính bằng euro) trên đầu kẻ đã hạ gục người không có khả năng tự vệ.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 100000000.</li>
+<li>Mặc định: <code>500</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Thế giới sống động</h3>
+<p>Giao thông, người qua đường, cảnh sát và các nhân vật do máy chủ điều khiển.</p>
+<h4>Giao thông dùng chung: <code>trafico</code></h4>
+<p>Chọn si: phương tiện giao thông trên đường do máy chủ điều phối và đồng bộ cho tất cả người chơi. Chọn no: mỗi người chơi tự thấy lưu lượng giao thông riêng của mình.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số ô tô mỗi khu vực có người chơi: <code>trafico_max</code></h4>
+<p>Số ô tô tối đa mà máy chủ điều phối tại mỗi khu vực có người chơi. Nếu nhóm bạn đi cùng nhau thì đó là tổng số ô tô trong toàn địa phương.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 200.</li>
+<li>Mặc định: <code>8</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số ô tô tối đa mỗi địa phương: <code>trafico_total</code></h4>
+<p>Giới hạn số ô tô trong cùng một địa phương khi người chơi tản ra nhiều khu vực. Đặt 0 là không giới hạn.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 5000.</li>
+<li>Mặc định: <code>60</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Xe tuần tra mỗi địa phương: <code>patrullas</code></h4>
+<p>Số lượng xe tuần tra của máy chủ chạy lòng vòng tại mỗi địa phương có người chơi. Đặt 0 nếu không muốn có xe tuần tra.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 50.</li>
+<li>Mặc định: <code>1</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Cảnh sát dùng chung: <code>policia</code></h4>
+<p>Chọn si: mức truy nã, các cuộc rượt đuổi và bắt giữ sẽ do máy chủ xử lý, mọi người ở gần đều thấy và nghe thấy. Chọn no: máy khách của từng người tự xử lý.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Người đi đường dùng chung: <code>peatones</code></h4>
+<p>Chọn si: người đi bộ do máy chủ điều phối và đồng bộ cho tất cả người chơi.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số người đi bộ mỗi khu vực có người chơi: <code>peatones_max</code></h4>
+<p>Số người đi bộ tối đa mà máy chủ điều phối tại mỗi khu vực có người chơi.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 200.</li>
+<li>Mặc định: <code>10</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số người đi bộ tối đa mỗi địa phương: <code>peatones_total</code></h4>
+<p>Giới hạn số người đi bộ trong cùng một địa phương khi người chơi tản ra nhiều khu vực. Đặt 0 là không giới hạn.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 5000.</li>
+<li>Mặc định: <code>80</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Các nhân vật do máy chủ điều phối: <code>personajes</code></h4>
+<p>Người đi dạo, móc túi, tay súng, trộm xe và cướp bóc do máy chủ điều phối và đồng bộ cho tất cả. Chỉ xuất hiện ở nơi có người chơi. Đặt 0 để tắt.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 200.</li>
+<li>Mặc định: <code>6</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Khoảng cách (mét) theo dõi chi tiết người chơi khác: <code>radio_detalle</code></h4>
+<p>Mỗi người chơi được cập nhật vị trí 10 lần mỗi giây đối với người trong phạm vi khoảng cách này, và 1 lần mỗi giây đối với những người khác trong cùng địa phương. Đây là cách tiết kiệm băng thông và CPU hiệu quả nhất khi máy chủ đông người. Đặt 0 để cập nhật chi tiết liên tục cho mọi người, chỉ phù hợp khi máy chủ ít người.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 100000.</li>
+<li>Mặc định: <code>150</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Kinh tế và phương tiện</h3>
+<p>Số tiền máy chủ công nhận và các phương tiện để ngoài đường.</p>
+<h4>Máy chủ kiểm soát tiền tệ: <code>economia</code></h4>
+<p>Chọn si: máy chủ sẽ theo dõi sát sao số tiền của từng người chơi và từ chối các khoản tiền không rõ nguồn gốc.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Thu nhập tối đa mỗi giờ: <code>ganancia_hora</code></h4>
+<p>Số tiền tối đa có thể kiếm được trong một giờ thực tế từ công việc, bán hàng, cờ bạc và nhặt đồ trên phố (tính bằng euro). Các khoản do chính máy chủ phát không tính vào đây.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000000000.</li>
+<li>Mặc định: <code>30000</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số giờ thu nhập có thể tích lũy: <code>ganancia_acumula</code></h4>
+<p>Hạn mức thu nhập theo giờ chưa dùng của người chơi không bị mất: nó được tích lũy tối đa bằng này giờ (kể cả khi offline), để có thể bù trọn vẹn những chuỗi kiếm tiền nhanh. Đặt 1 để không tích lũy quá hạn mức của một giờ.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 48.</li>
+<li>Mặc định: <code>3</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số phi vụ lặp lại được công nhận mỗi giờ, cho từng loại: <code>encargos_hora</code></h4>
+<p>Hợp đồng, các trận so găng ở phòng tập, các vụ cướp và phi vụ xe hoàn thành thực sự sẽ không làm tiêu hao hạn mức thu nhập theo giờ: máy chủ công nhận chúng tối đa theo số lượng này mỗi giờ cho từng loại. Đặt 0 để không công nhận riêng và tất cả sẽ tính vào hạn mức theo giờ.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000.</li>
+<li>Mặc định: <code>6</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Thù lao tối đa được công nhận cho phi vụ lặp lại: <code>encargo_max</code></h4>
+<p>Tiền công tối đa được máy chủ công nhận cho một phi vụ lặp lại (tính bằng euro). Phần vượt quá sẽ tính vào giới hạn thu nhập theo giờ.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000000000.</li>
+<li>Mặc định: <code>15000</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số tiền khởi đầu tối đa: <code>saldo_inicial</code></h4>
+<p>Số tiền tối đa mà nhân vật mới có thể mang theo khi bắt đầu, tính bằng euro.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000000000.</li>
+<li>Mặc định: <code>5000</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số giờ phương tiện tồn tại trên đường: <code>vehiculos_horas</code></h4>
+<p>Số giờ thực tế mà phương tiện bỏ lại trên đường vẫn tồn tại ở đó.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 8760.</li>
+<li>Mặc định: <code>12</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số xe đỗ ngoài đường mỗi người chơi: <code>vehiculos_por_jugador</code></h4>
+<p>Số phương tiện tối đa mà mỗi người chơi có thể đỗ ngoài đường. Khi đỗ thêm xe mới, chiếc xe cũ nhất sẽ biến mất.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 100.</li>
+<li>Mặc định: <code>3</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Nhà ở và cơ sở kinh doanh</h3>
+<p>Bán chúng, mất chúng vì không vào, và không để ai chiếm hết các cơ sở kinh doanh.</p>
+<h4>Tỷ lệ bán lại cho thị trường, tính theo phần trăm: <code>venta_mercado</code></h4>
+<p>Tỷ lệ giá trị nhận lại khi bán nhà hoặc cơ sở kinh doanh cho thị trường, tính theo phần trăm.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 100.</li>
+<li>Mặc định: <code>70</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số ngày không online để tịch thu tài sản: <code>propiedad_dias</code></h4>
+<p>Số ngày thực tế không đăng nhập mà sau đó tài sản của người chơi sẽ bị thu hồi và bán đấu giá lại trên thị trường. Họ vẫn được giữ lại phần tiền của mình.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 3650.</li>
+<li>Mặc định: <code>30</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số cơ sở kinh doanh mỗi người chơi: <code>negocios_max</code></h4>
+<p>Số cơ sở kinh doanh tối đa một người chơi được sở hữu cùng lúc, để không ai chiếm hết. Đặt 0 thì không giới hạn. Nếu ai đó sở hữu nhiều hơn mức cho phép, vào nửa đêm những cơ sở mua sau cùng sẽ quay lại thị trường và họ được hoàn lại số tiền đã trả.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000.</li>
+<li>Mặc định: <code>3</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Cưỡng ép mua lại cơ sở của người khác, theo phần trăm giá: <code>compra_forzosa</code></h4>
+<p>Bất kỳ người chơi nào cũng có thể lấy cơ sở kinh doanh của người khác bằng cách trả cho họ phần trăm này của giá, dù họ không bán. Chủ cũ nhận tiền. Không áp dụng với cơ sở của băng nhóm bạn hoặc băng đồng minh. Đặt 0 thì không thể.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 10000.</li>
+<li>Mặc định: <code>200</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số ngày bảo vệ cơ sở kinh doanh vừa mua: <code>forzosa_dias</code></h4>
+<p>Trong số ngày thực này sau khi mua, không ai có thể cưỡng ép mua lại cơ sở đó.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 365.</li>
+<li>Mặc định: <code>3</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Băng đảng và địa bàn</h3>
+<p>Chi phí thành lập băng đảng, chiếm cứ địa bàn và phát động chiến tranh.</p>
+<h4>Chi phí thành lập băng đảng: <code>precio_banda</code></h4>
+<p>Tính bằng euro.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000000000.</li>
+<li>Mặc định: <code>2000</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Chi phí chiếm cứ địa bàn: <code>precio_barrio</code></h4>
+<p>Tính bằng euro, trích từ két quỹ của băng.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000000000.</li>
+<li>Mặc định: <code>3000</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Thu nhập hằng ngày từ mỗi địa bàn: <code>renta_barrio</code></h4>
+<p>Số tiền mỗi địa bàn mang lại vào két quỹ của băng vào nửa đêm, tính bằng euro.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000000000.</li>
+<li>Mặc định: <code>300</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Chi phí tuyên chiến: <code>precio_guerra</code></h4>
+<p>Tính bằng euro, trích từ két quỹ của băng.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000000000.</li>
+<li>Mặc định: <code>1000</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số phút cho đến khi chiến tranh bắt đầu: <code>guerra_espera</code></h4>
+<p>Số phút thực tế từ khi tuyên chiến cho đến lúc trận chiến bắt đầu.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 10080.</li>
+<li>Mặc định: <code>20</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Thời gian diễn ra một cuộc chiến (phút): <code>guerra_dura</code></h4>
+<p>Số phút thực tế.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 1440.</li>
+<li>Mặc định: <code>10</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Nhập vai và cộng đồng</h3>
+<p>Các kênh chat để nhập vai nhân vật và phạm vi nghe thấy từ những người chơi khác.</p>
+<h4>Kênh nhập vai: <code>rol</code></h4>
+<p>Chọn si: người chơi có kênh nói chuyện nhập vai (chỉ người ở gần nghe thấy), kênh ngoài vai (toàn máy chủ nghe thấy), lệnh mô tả hành động và một dòng hồ sơ để người khác đọc. Chọn no: chỉ dùng khung chat thông thường.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Khoảng cách (mét) truyền đi của lời thoại nhập vai: <code>rol_metros</code></h4>
+<p>Khoảng cách có thể nghe thấy lời thoại nhập vai và hành động mô tả của người chơi. Những gì nói ngoài vai sẽ luôn truyền đi khắp toàn bộ máy chủ.</p>
+<ul>
+<li>Một số nguyên từ 5 đến 2000.</li>
+<li>Mặc định: <code>30</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Đài radio trên xe của người chơi khác: <code>radio_coches</code></h4>
+<p>Chọn si: người đứng gần xe của người chơi khác sẽ nghe thấy tiếng đài radio trong game phát nhỏ. Chỉ chia sẻ thông tin kênh radio trong game: tuyệt đối không truyền file nhạc hay dữ liệu cá nhân. Chọn no: không ai nghe thấy radio của ai.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h3>Cuộc sống lương thiện</h3>
+<p>Hợp đồng dài hạn kèm bảng lương và cách ứng xử của các cửa hàng theo uy tín của từng người chơi.</p>
+<h4>Tiền lương hợp đồng dài hạn: <code>nominas</code></h4>
+<p>Chọn si: người ký hợp đồng dài hạn tại trung tâm việc làm sẽ nhận lương khi hết kỳ. Máy chủ trực tiếp chi trả: máy chủ đếm số ca làm và định ra mức tiền theo dữ liệu game, không tính vào hạn mức kiếm tiền mỗi giờ. Chọn no: không có hợp đồng dài hạn trên máy chủ này. Yêu cầu dữ liệu thế giới của máy chủ từ bản 1.7.1 trở lên.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Lương tối đa mỗi kỳ: <code>nomina_max</code></h4>
+<p>Mức lương tối đa mà máy chủ chi trả cho một kỳ làm việc (tính bằng euro), bất kể dữ liệu game hay bản mod quy định thế nào.</p>
+<ul>
+<li>Một số nguyên từ 0 đến 1000000000.</li>
+<li>Mặc định: <code>1500</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Số ca làm việc hợp đồng được tính mỗi ngày: <code>nomina_turnos_dia</code></h4>
+<p>Số ca làm việc theo hợp đồng dài hạn tối đa mà máy chủ ghi nhận cho người chơi trong một ngày trong game.</p>
+<ul>
+<li>Một số nguyên từ 1 đến 50.</li>
+<li>Mặc định: <code>3</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<h4>Giảm giá theo uy tín tại các cửa hàng: <code>trato_prestigio</code></h4>
+<p>Chọn si: người có danh tiếng tốt trong khu phố sẽ được các cửa hàng giảm giá chút ít, còn kẻ có tiếng xấu sẽ bị đội giá, tương tự như khi chơi offline ở mức độ mềm mỏng. Chỉ người chơi bản 1.7.1 trở lên mới nhận thấy điều này. Chọn no: mọi người đều trả giá như nhau.</p>
+<ul>
+<li>Các giá trị: si (có) hoặc no (không).</li>
+<li>Mặc định: <code>si</code>.</li>
+<li>Được áp dụng ngay mà không cần khởi động lại máy chủ.</li>
+</ul>
+<!-- OPCIONES:FIN -->
+</body>
+</html>

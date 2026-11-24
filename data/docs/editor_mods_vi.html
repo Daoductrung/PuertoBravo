@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Cẩm nang trình chỉnh sửa mod Puerto Bravo</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; max-width: 54em; margin: 1em auto; padding: 0 1em; line-height: 1.6; background: #111; color: #f2f2f2; font-size: 1.1em; }
+h1, h2, h3 { color: #ffd84d; }
+a { color: #8fd0ff; }
+code { color: #9fe89f; }
+kbd { border: 1px solid #aaa; border-radius: 4px; padding: 0 .35em; background: #2a2a2a; }
+li { margin-bottom: .3em; }
+</style>
+</head>
+<body>
+<h1>Cẩm nang trình chỉnh sửa mod Puerto Bravo</h1>
+<p>Trình chỉnh sửa mod là một chương trình riêng biệt, có các cửa sổ và điều khiển thông thường của Windows, được thiết kế để sử dụng với trình đọc màn hình và bàn phím. Với chương trình này, bạn có thể tạo mọi thứ mà một bản mod hỗ trợ mà không cần phải viết thủ công một dòng mã nào. Cẩm nang này được sắp xếp theo các đề mục.</p>
+
+<h2>1. Mở trình chỉnh sửa</h2>
+<ul>
+<li>Chạy <strong>EditorMods.exe</strong>, nằm ngay cạnh <strong>PuertoBravo.exe</strong>.</li>
+</ul>
+<p>Trình chỉnh sửa lưu các bản mod trong thư mục <code>data\mods</code>, đây là nơi trò chơi đọc dữ liệu từ đó. Mỗi bản mod là một tệp duy nhất, có phần mở rộng <code>.pbm</code>.</p>
+<p>Các bản mod mà trình chỉnh sửa lưu lại đều được bảo vệ với phần mở rộng <code>.pbm</code>: tệp được mã hóa và ký số, không thể đọc hoặc chỉnh sửa bằng trình soạn thảo văn bản thông thường. Trình chỉnh sửa mở được các bản mod được bảo vệ, bao gồm cả những bản mod đi kèm theo trò chơi; khi lưu, nó luôn bảo vệ chúng.</p>
+<p>Giao diện của trình chỉnh sửa xuất hiện theo ngôn ngữ của trò chơi: ngôn ngữ bạn chọn trong Tùy chọn, Ngôn ngữ, hoặc theo ngôn ngữ Windows của bạn ở chế độ tự động. Mặt khác, các văn bản trong bản mod của bạn sẽ xuất hiện trong trò chơi đúng hệt như bạn viết, bằng bất kỳ ngôn ngữ nào.</p>
+<p>Nếu ai đó gửi cho bạn một bản mod chưa được bảo vệ ở định dạng tệp <code>.json</code>, trò chơi sẽ không tải tệp này: hãy mở nó tại đây bằng <kbd>Control O</kbd> và lưu lại bằng <kbd>Control S</kbd>. Trình chỉnh sửa sẽ kiểm tra, chuyển đổi thành tệp <code>.pbm</code> sẵn sàng sử dụng, và giữ lại tệp gốc với phần mở rộng <code>.json.original</code>.</p>
+
+<h2>2. Cửa sổ chính</h2>
+<p>Cửa sổ có hai danh sách và một hàng nút bấm. Sử dụng phím <kbd>Tab</kbd> để di chuyển qua lại giữa chúng.</p>
+<ul>
+<li>Các mục: các loại nội dung. Khi bạn dùng các phím mũi tên duyệt qua danh sách này, danh sách thứ hai sẽ thay đổi tương ứng.</li>
+<li>Phần tử: những nội dung mà bản mod của bạn có trong mục đã chọn.</li>
+<li>Các nút bấm: Thêm, Chỉnh sửa, Nhân bản, Xóa, Di chuyển lên, Di chuyển xuống và Sao chép từ trò chơi gốc.</li>
+</ul>
+<p>Mỗi danh sách và nút bấm đều có chữ cái phím tắt riêng: nhấn phím <kbd>Alt</kbd> cùng chữ cái mà trình đọc màn hình thông báo để nhảy nhanh tới điều khiển đó.</p>
+<h3>Các mục</h3>
+<ul>
+<li>Địa điểm: cửa hàng, nhà ở, cơ sở kinh doanh, ngân hàng, trung tâm việc làm, học viện, bếp ăn từ thiện và tất cả các loại hình khác, đi kèm vị trí, âm thanh và các tùy chọn của chúng.</li>
+<li>Nhiệm vụ: đi kèm địa điểm bắt đầu, yêu cầu, phần thưởng và tất cả các bước thực hiện.</li>
+<li>Vũ khí, phương tiện và các cuộc đua.</li>
+<li>Bữa ăn, vật phẩm và các loài cá.</li>
+<li>Nhân vật để lựa chọn khi bắt đầu trò chơi.</li>
+<li>Trang phục: các món đồ trong cửa hàng quần áo, đi kèm giá cả và giáp bảo hộ cung cấp nếu có gia cố.</li>
+<li>Phụ kiện: kính mắt, dây chuyền, nhẫn, đồng hồ và bất cứ thứ gì bạn sáng tạo ra. Mỗi loại có phân nhóm riêng; bạn chỉ có thể đeo một món cho mỗi phân nhóm.</li>
+<li>Đồ bảo hộ ở cửa hàng súng: các món được bán ngoài áo giáp, đi kèm mức giáp tối đa mang lại.</li>
+<li>Ca làm việc: các công việc không dùng phương tiện tại trung tâm việc làm, đi kèm tiền công và mức độ tiêu hao sức lực.</li>
+<li>Đấu võ ở phòng tập: quyền anh, võ thuật tổng hợp và bất kỳ môn nào bạn thêm vào. Số hiệp đấu, tên các đối thủ, độ chịu đòn của họ và số tiền bạn nhận được. Hộp kiểm Trận đấu thể thao được đánh dấu mặc định: hạ gục đối thủ không bị coi là tội phạm và không làm giảm danh tiếng. Chỉ bỏ chọn nếu bạn muốn tạo trận đấu bất hợp pháp, khi đó mỗi đối thủ bị hạ gục sẽ bị tính là hành hung nếu có người nhìn thấy.</li>
+<li>Nội thất nhà ở: tên gọi, giá cả và văn bản mô tả.</li>
+<li>Nâng cấp ở xưởng sửa chữa: tên gọi, giá cả, số cấp độ nâng cấp, thuộc tính cải thiện và mức gia tăng của mỗi cấp. Bạn có thể sửa đổi bảy loại có sẵn của trò chơi hoặc thêm các loại mới.</li>
+<li>Người đi đường: tên gọi, họ, nghề nghiệp và các câu thoại ngẫu nhiên của người dân, biệt danh của các mục tiêu hợp đồng, tên chó và các tên gọi khác được trò chơi chọn ngẫu nhiên.</li>
+<li>Tính cách con người: các nét tính cách của những người bạn trò chuyện cùng.</li>
+<li>Băng đảng: các băng đảng trong vùng và những kẻ thù mà mỗi băng đảng giao chiến cùng.</li>
+<li>Loại kẻ thù: danh mục kẻ thù, đi kèm tên gọi, vũ khí, lượng máu, độ chính xác, câu thoại và phương tiện nếu có.</li>
+<li>Cảnh sát theo mức độ truy nã: loại nhân viên cảnh sát xuất hiện ở mỗi mức độ truy nã.</li>
+<li>Tiền trong quầy của cơ sở kinh doanh: số tiền trong ngăn kéo thu ngân của từng loại địa điểm và người canh giữ.</li>
+<li>Giao hàng tận nơi, chia làm hai phần: thực đơn, gồm từng món ăn và thức uống, giá cả cùng mức độ giải tỏa cơn đói và khát; cùng thời gian và các câu thoại.</li>
+<li>Mua sắm và nấu ăn, chia làm năm phần: Sản phẩm cửa hàng thực phẩm, Gian hàng trong cửa hàng, Loại cửa hàng thực phẩm, Công thức nấu ăn, cùng các chỉ số và câu thoại cho việc mua sắm, tủ thức ăn và nhà bếp.</li>
+<li>Cướp cơ sở kinh doanh và đột kích nhà cung cấp: số ngày một địa điểm bị cướp sẽ nhớ mặt bạn, và tất cả thông tin về các vụ đột kích nhà cung cấp cùng hậu quả của chúng.</li>
+<li>Vụ cướp có chuẩn bị, chia làm hai phần: Vai trò trong vụ cướp, gồm từng vai trò, nhiệm vụ đảm nhiệm, kỹ năng phụ thuộc và tỷ lệ chia chiến lợi phẩm; cùng các chỉ số và câu thoại qua bộ đàm.</li>
+<li>Lái máy bay, chia làm ba phần: Lái máy bay: chỉ số và câu thoại; Máy bay: cách vận hành của từng loại; và Bản đồ đường hàng không: vị trí của từng thị trấn.</li>
+<li>Đàm phán với các băng đảng: số tiền phải trả để hoàn trả, mua lại hoặc thu cống nạp, chi phí đình chiến và các câu thoại cho từng câu trả lời.</li>
+<li>Tái chiếm khu phố: tất cả thông tin về các băng đảng bại trận cố gắng chiếm lại các khu phố của người chơi: nhịp độ, cảnh báo, tấn công, phòng thủ, lòng trung thành và các câu thoại.</li>
+<li>Hợp đồng từ bảng tin: các loại công việc được dán trên bảng thông báo trong quán rượu.</li>
+<li>Người dân hành động và gia nhập băng đảng của bạn: thời điểm ai đó đi cùng bạn, tấn công bạn hoặc báo cảnh sát, các ân huệ và điều kiện để chiêu mộ.</li>
+<li>Nghề cảnh sát và Cảnh báo vô tuyến cảnh sát: cấp bậc, tiền lương, lời khiển trách và các cảnh báo do tổng đài điều phối phát ra.</li>
+<li>Kế hoạch hẹn hò và Sống chung như một cặp đôi, dành cho nội dung người lớn: các kế hoạch đi kèm phân cảnh, cùng các chỉ số và câu thoại khi sống chung.</li>
+<li>Giá cước và bảng giá: chi phí dịch vụ, vé, vé vào cửa, thuê mướn, tiền phạt và tiền hối lộ, cùng thù lao công việc và giải thưởng cố định. Với mỗi mục bạn có thể thay đổi giá cả và tên gọi; mã định danh là thứ trò chơi dùng để tìm kiếm và không được thay đổi. Trong trường hợp giá tiền được tính toán, ví dụ như tiền hối lộ cho mỗi mức truy nã, giá cước chính là mức cơ sở.</li>
+<li>Đường phố: phản ứng, cảnh sát và trực thăng: những gì trò chơi thông báo khi người dân bỏ chạy, tần suất người đi đường trò chuyện khi đi ngang qua, đạn dược kẻ thù rơi ra, số lượng tuần tra đi tuần, xe cứu thương, chi phí đầu hàng và tất cả về trực thăng cảnh sát.</li>
+<li>Chiến tranh khu phố trên đường phố: số lượng thành viên băng đảng đi lại trong khu phố của họ, số đợt tấn công, phần thưởng bạn giành được và các câu thoại. Trong thẻ Khiêu chiến, các chỉ số và câu thoại của những trận đấu người chơi khiêu chiến với một băng đảng mà không chiếm giữ lãnh địa.</li>
+<li>Nhiệm vụ điều chỉnh theo người hộ tống của bạn: mức độ gia tăng lực lượng đối địch trong nhiệm vụ cho mỗi người đi cùng người chơi, ở mức vừa phải và mạnh mẽ, đi kèm giới hạn tối đa và các câu thoại cảnh báo.</li>
+<li>Truy đuổi và phím mục tiêu: cách bao nhiêu giây trò chơi thông báo hướng đối tượng bỏ chạy và từ khoảng cách bao xa, ở cự ly bao nhiêu mét đối tượng giảm tốc và giảm bao nhiêu, các chỉ số tương tự khi bật Tùy chọn hỗ trợ truy đuổi, bạn có thể bám theo đối tượng đi bộ trong bao lâu, thời gian bấm đúp phím mục tiêu và các câu thoại giải thích cuộc truy đuổi khi bắt đầu.</li>
+<li>Phương tiện của tôi và tài xế: số lượng phương tiện của người chơi có thể đỗ trên đường phố cùng lúc, thời gian tài xế của băng đảng có mặt, phương tiện họ điều khiển đến và các câu thoại họ nói.</li>
+<li>Radio khi đi bộ và trong các cơ sở: những loại địa điểm nào phát nhạc nền và ở âm lượng bao nhiêu, cùng âm lượng của máy nghe nhạc dùng tai nghe. Mỗi địa điểm cũng có thể tự yêu cầu bật nhạc hoặc tắt nhạc riêng.</li>
+<li>Mức độ chân thực: các chỉ số về cơn khát, vệ sinh, hỏng hóc và luật giao thông: tần suất thủng lốp xe, mức phạt tiền, số điểm trên giấy phép lái xe.</li>
+<li>Nhiên liệu: giá mỗi lít xăng, quãng đường đi được với một bình xăng, khi nào cảnh báo dự trữ bật sáng, can xăng, cứu hộ bên đường và dung tích bình xăng theo từng loại động cơ.</li>
+<li>Các chương của cốt truyện.</li>
+<li>Bản đồ: toàn bộ các thị trấn, đi kèm các khu phố, đường phố và hải đảo của chúng.</li>
+<li>Dành cho nội dung người lớn: nhân vật, hoạt động, quà tặng và chất kích thích. Mỗi nhân vật ghi rõ là nam hay nữ: với tùy chọn Tôi bị thu hút bởi, bạn không thể rủ những người không thu hút người chơi đi hẹn hò lãng mạn. Nếu không bật tùy chọn này, họ xuất hiện cho tất cả mọi người.</li>
+</ul>
+
+<h2>3. Các phím phím tắt</h2>
+<h3>Bất kỳ đâu trong trình chỉnh sửa</h3>
+<ul>
+<li><kbd>Control H</kbd>: đọc tên và giải thích về điều khiển bạn đang đứng. Sử dụng bất cứ khi nào bạn không chắc một trường dùng để làm gì.</li>
+<li><kbd>F1</kbd>: mở cẩm nang này.</li>
+<li><kbd>Alt</kbd>: chuyển tới thanh menu.</li>
+</ul>
+<h3>Menu Tệp (File)</h3>
+<ul>
+<li><kbd>Control N</kbd>: tạo bản mod mới.</li>
+<li><kbd>Control O</kbd>: mở bản mod từ thư mục mods.</li>
+<li><kbd>Control S</kbd>: lưu lại.</li>
+<li><kbd>Control Shift S</kbd>: lưu thành tệp khác.</li>
+<li><kbd>Control Q</kbd>: thoát chương trình. Nếu có thay đổi chưa lưu, chương trình sẽ hỏi trước.</li>
+</ul>
+<h3>Menu Mod</h3>
+<ul>
+<li><kbd>Control D</kbd>: thông tin chi tiết về bản mod: tên gọi, tác giả, phiên bản và mô tả.</li>
+<li><kbd>F5</kbd>: kiểm tra bản mod.</li>
+<li><kbd>Control M</kbd>: kích hoạt hoặc vô hiệu hóa các bản mod, để chọn bản mod nào trò chơi sẽ tải.</li>
+<li><kbd>Control B</kbd>: mở thư mục mods trong File Explorer.</li>
+<li><kbd>F9</kbd>: lưu, kiểm tra và mở trò chơi để thử nghiệm bản mod.</li>
+<li><kbd>Control G</kbd>: ghi kịch bản lồng tiếng của bản mod, để thu âm các câu thoại cho nhiệm vụ.</li>
+<li><kbd>Control Shift V</kbd>: mở thư mục giọng nói.</li>
+<li><kbd>Control Shift A</kbd>: thêm âm thanh riêng của bạn, để sử dụng cho vũ khí, phương tiện và địa điểm.</li>
+</ul>
+<h3>Trong danh sách phần tử</h3>
+<ul>
+<li><kbd>Các phím mũi tên</kbd>: di chuyển qua lại trong danh sách.</li>
+<li><kbd>Enter</kbd>: chỉnh sửa phần tử đã chọn.</li>
+<li><kbd>Delete</kbd>: xóa phần tử. Chương trình sẽ yêu cầu xác nhận.</li>
+</ul>
+<h3>Trong các biểu mẫu</h3>
+<ul>
+<li><kbd>Tab</kbd> và <kbd>Shift Tab</kbd>: chuyển tới trường tiếp theo và trường trước đó.</li>
+<li><kbd>Alt</kbd> cùng chữ cái của trường: nhảy nhanh tới trường đó.</li>
+<li><kbd>Control Tab</kbd>: trong các biểu mẫu có nhiều thẻ, chuyển sang thẻ tiếp theo.</li>
+<li><kbd>Enter</kbd>: chấp nhận. <kbd>Escape</kbd>: hủy bỏ mà không lưu các thay đổi trên biểu mẫu.</li>
+</ul>
+
+<h2>4. Tạo một phần tử</h2>
+<ol>
+<li>Chọn mục nội dung.</li>
+<li>Nhấn nút Thêm. Một biểu mẫu sẽ mở ra chứa các trường dành cho loại nội dung đó.</li>
+<li>Điền thông tin vào các trường. Các trường bắt buộc có ghi rõ trong tên của chúng. Nhấn <kbd>Control H</kbd> để nghe giải thích về từng trường.</li>
+<li>Chấp nhận. Nếu thiếu thông tin bắt buộc nào, trình chỉnh sửa sẽ đưa bạn đến trường đó và cho biết còn thiếu thứ gì.</li>
+</ol>
+<p>Các biểu mẫu dài được chia thành nhiều thẻ. Chỉ những trường hợp lý mới xuất hiện: ví dụ: khi bạn chọn loại địa điểm là "học viện", trường dành cho các khóa học giảng dạy tại đây sẽ xuất hiện.</p>
+<h3>Các trường chứa danh sách</h3>
+<p>Một số trường chứa danh sách riêng: các bước của một nhiệm vụ, các câu thoại của một đoạn hội thoại, kẻ thù trong một bước hoặc các khu phố của một bản đồ. Chúng được chỉnh sửa bằng một nút bấm mở ra cửa sổ khác đi kèm danh sách cùng các nút Thêm, Chỉnh sửa, Nhân bản, Xóa, Di chuyển lên và Di chuyển xuống. Thứ tự sắp xếp rất quan trọng: các bước của nhiệm vụ được diễn ra tuần tự từ trên xuống dưới.</p>
+<h3>Các trường lựa chọn mục từ trò chơi</h3>
+<p>Bất cứ nơi nào bạn phải chỉ định một địa điểm, vũ khí, phương tiện, âm thanh hoặc nhiệm vụ, trình chỉnh sửa sẽ cung cấp một danh sách thả xuống chứa mọi thứ hiện có: những gì có trong trò chơi gốc, trong các bản mod khác và trong chính bản mod của bạn. Bạn không cần phải ghi nhớ các mã định danh.</p>
+<h3>Sao chép từ trò chơi gốc</h3>
+<p>Nút Sao chép từ trò chơi gốc sẽ đưa một bản sao của phần tử gốc vào bản mod của bạn để bạn có thể chỉnh sửa. Nếu bạn giữ nguyên mã định danh, nó sẽ thay thế phần tử gốc; nếu bạn đổi mã định danh, nó sẽ được thêm vào dưới dạng phần tử mới. Đây là cách học nhanh nhất: sao chép một nhiệm vụ bạn thích và xem cách nó được tạo ra.</p>
+
+<h3>Tạo phương tiện riêng của bạn</h3>
+<p>Một phương tiện mới chỉ đơn giản là thêm một phần tử: bạn không cần phải lập trình bất cứ điều gì. Trong mục Phương tiện, nhấn Thêm, hoặc đưa một phương tiện tương tự vào bằng nút Sao chép từ trò chơi gốc rồi đổi mã định danh của nó. Điền tên gọi, tốc độ tối đa, khả năng tăng tốc, phanh và độ bền; chọn âm thanh động cơ và cao độ âm thanh, con số càng lớn âm thanh phát ra càng cao; và nếu muốn, hãy chọn còi xe, còi báo động, dung tích bình xăng và công việc có thể thực hiện với phương tiện đó. Đánh dấu xem nó là thuyền hay máy bay. Để phương tiện xuất hiện trong trò chơi: hãy thêm nó vào danh sách phương tiện của một khu phố để nó lưu thông và đỗ tại đó, đặt giá bán để các đại lý xe hoặc đại lý thuyền bán nó, hoặc sử dụng nó trong một bước nhiệm vụ. Nếu không có giá bán, phương tiện không thể mua được ở bất cứ đâu và chức năng kiểm tra mod (<kbd>F5</kbd>) sẽ cảnh báo điều này. Khi có giá bán, nó sẽ được bán ở mọi đại lý không giới hạn mẫu xe; để chỉ một đại lý cụ thể bán nó, hãy đánh dấu phương tiện đó trong mục Mẫu xe bày bán của đại lý đó.</p>
+<h3>Học hỏi từ các bản mod mẫu</h3>
+<p>Trong thư mục mods có sẵn tám bản mod hoàn chỉnh: Bahía del Ocaso, là toàn bộ một thành phố với cốt truyện dài, Costa Dorada, Valdeolmos, Peñas Altas, Isla de los Vientos, Neon Nights, Ngành nghề và việc vặt, cùng Động cơ và Nhựa đường. Hãy mở chúng bằng <kbd>Control O</kbd>: bản mod <code>costa_dorada</code> có ví dụ về mọi thứ có thể tạo ra, bao gồm toàn bộ bản đồ và các nhiệm vụ với đầy đủ cả chín loại bước.</p>
+
+<h2>5. Nhiệm vụ</h2>
+<p>Một nhiệm vụ là một danh sách các bước. Mỗi bước có một loại riêng:</p>
+<ul>
+<li>Hội thoại: các câu thoại mà mỗi nhân vật nói.</li>
+<li>Đi đến: đến một địa điểm, đi bộ hoặc bằng phương tiện, có hoặc không có giới hạn thời gian.</li>
+<li>Trao tặng: trò chơi trao cho bạn vũ khí, tiền bạc hoặc một vật phẩm.</li>
+<li>Trộm xe: chiếm lấy một phương tiện cụ thể.</li>
+<li>Giao hàng: đưa phương tiện đến một địa điểm, với mức hư hại tối đa cho phép.</li>
+<li>Tiêu diệt: hạ gục một số kẻ thù.</li>
+<li>Nhặt đồ: nhặt một hoặc nhiều vật phẩm.</li>
+<li>Cảnh sát: gắn cho bạn mức truy nã, hoặc yêu cầu bạn cắt đuôi cảnh sát.</li>
+<li>Truy đuổi: bắt kịp một phương tiện đang bỏ chạy.</li>
+</ul>
+<p>Trong các văn bản bạn có thể viết Dani: trò chơi sẽ tự động thay thế bằng tên nhân vật mà người chơi đã chọn.</p>
+<h3>Nhiệm vụ dùng phương tiện: yêu cầu phương tiện riêng hay không</h3>
+<p>Một nhiệm vụ có bước trộm xe theo mặc định sẽ yêu cầu chính phương tiện đó: người chơi phải bước lên xe và lái đi bàn giao. Nếu điều quan trọng trong nhiệm vụ của bạn là vận chuyển đồ vật mà không quan trọng đi bằng xe gì, hãy đánh dấu vào hộp kiểm Có thể thực hiện bằng phương tiện của người chơi trong nhiệm vụ. Khi đó người chơi có thể lái phương tiện riêng của mình đến vị trí xe nhiệm vụ đang đỗ, dừng bên cạnh và thực hiện nhiệm vụ bằng chính xe của mình; khi bàn giao, họ vẫn giữ lại xe đó. Phương tiện của họ phải cùng phân khúc với xe nhiệm vụ: nếu xe nhiệm vụ biết bay thì xe của họ cũng phải biết bay. Đừng đánh dấu tùy chọn này khi phương tiện chính là mục tiêu công việc, chẳng hạn như trong phi vụ trộm xe. Trò chơi sẽ thông báo cho người chơi trong phần tóm tắt nhiệm vụ trước khi họ chấp nhận, cho biết họ được cấp xe, phải lấy một xe cụ thể hay xe riêng của họ là đủ: bạn không cần phải tự viết điều này.</p>
+<h3>Phương tiện của tôi và tài xế</h3>
+<p>Trong mục Phương tiện của tôi và tài xế có một phần tử chung duy nhất. Tại đây bạn quyết định có bao nhiêu phương tiện của người chơi đỗ vừa trên đường phố trước khi chiếc cũ nhất tự động chuyển về gara, tài xế của băng đảng mất trong khoảng bao nhiêu giây để đến nơi, ở mức truy nã nào tài xế sẽ ngừng đến, họ có thể đến bằng phương tiện băng đảng nào và các câu thoại họ nói tại từng thời điểm: khi khởi hành, khi đến nơi, khi chưa có điểm đến, khi được chỉ định điểm đến, khi đến đích, khi bạn xuống xe và khi bạn cho họ về. Nếu bạn để trống danh sách câu thoại, các câu thoại mặc định của trò chơi sẽ được sử dụng. Trong cùng mục đó có danh sách Tên gợi ý cho phương tiện: đây là những tên mà trò chơi gợi ý ngẫu nhiên một vài tên mỗi lần, khi người chơi đặt tên cho phương tiện mà không muốn gõ chữ, bằng phím Tab hoặc bằng một nút trên tay cầm. Chi phí gọi tài xế nằm trong mục Giá cước và bảng giá, tại phần Tài xế băng đảng của bạn.</p>
+<h3>Đường phố: phản ứng, cảnh sát và trực thăng</h3>
+<p>Trong mục Đường phố có một phần tử chung duy nhất, được chia thành sáu thẻ. Đây là các chỉ số và câu thoại cho những sự kiện diễn ra trên đường phố mà người chơi không chủ động tìm kiếm. Mỗi việc được bật hay tắt do từng người chơi quyết định trong phần cài đặt của họ; tại đây bạn quyết định mọi thứ diễn ra như thế nào khi được bật.</p>
+<ul>
+<li>Tổng quát: cách bao nhiêu giây trò chơi có thể thông báo ai đó đang bỏ chạy, có bao nhiêu người trong số họ la hét, và các câu thoại. Trong câu thoại, nơi bạn viết quien trong ngoặc nhọn sẽ hiển thị "Một người đàn ông", "Một người phụ nữ" hoặc tên của người đó nếu người chơi đã quen biết họ; và nơi bạn viết n trong ngoặc nhọn sẽ hiển thị có bao nhiêu người.</li>
+<li>Người trò chuyện: bao nhiêu người đi bộ đi theo cặp, cách bao nhiêu giây nghe thấy một cuộc trò chuyện tùy theo thiết lập của người chơi, câu thoại được mở đầu ra sao và họ bàn về chủ đề gì. Bản thân các câu thoại là những câu trong cơ sở hội thoại của trò chơi.</li>
+<li>Chiến lợi phẩm và tuần tra: bao nhiêu kẻ thù bị hạ rơi ra đạn dược và số lượng bao nhiêu, bao nhiêu kẻ rơi vũ khí theo tùy chọn độ khó, bao nhiêu đội tuần tra đi tuần ban ngày và ban đêm, và tần suất một đội tuần tra xuất hiện khi người chơi bị tấn công. Đặt tuần tra bằng 0 nghĩa là không có đội tuần tra nào.</li>
+<li>Xe cứu thương và đầu hàng: tần suất xe cứu thương đến, mất bao lâu để đến và đỗ lại bao lâu; cùng chi phí đầu hàng: tiền phạt theo từng mức độ, phần trăm tiền mặt, số giờ bị giam trong phòng giam và từ mức độ nào sẽ mất toàn bộ vũ khí.</li>
+<li>Trực thăng: trực thăng xuất hiện ở mức truy nã nào, mất bao lâu để tới, độ chịu đòn ra sao, bay lượn ở độ cao và khoảng cách bao nhiêu mét, vũ khí cần sát thương tối thiểu bao nhiêu để gây ảnh hưởng và tổn thất khi bắn hạ nó.</li>
+<li>Cắt đuôi trực thăng: bạn phải ở ngoài tầm nhìn của nó trong bao nhiêu giây, nó tìm kiếm trong bao lâu, mất bao lâu để nhận diện người chơi và quay trở lại, loa phóng thanh phát ra những câu gì và những loại địa điểm nào không có mái che.</li>
+</ul>
+<p>Một mẹo nhỏ: nếu bạn tăng bán kính bay của trực thăng lên rất cao, hãy kiểm tra xem vũ khí hạng nặng của bạn có tầm bắn tới được nó hay không, nếu không sẽ không thể nào bắn hạ được trực thăng.</p>
+<h3>Chiến tranh khu phố trên đường phố</h3>
+<p>Đây cũng là một phần tử chung duy nhất và nó chỉ có hiệu lực với những người chơi bật chế độ này trong phần tùy chọn. Bạn quyết định có bao nhiêu người đi bộ trong khu phố của băng đảng thuộc về băng đảng đó, sau bao nhiêu thương vong thì băng đảng tuyên chiến, cần đánh bại bao nhiêu đợt để chiếm đóng và phòng thủ, đợt đầu tiên có bao nhiêu kẻ thù, thời gian nghỉ giữa các đợt, bạn có thể rời khỏi khu phố trong bao lâu, phần thưởng và các câu thoại. Trong câu thoại, banda trong ngoặc nhọn là tên băng đảng và barrio trong ngoặc nhọn là tên khu phố.</p>
+<p>Những kẻ tham chiến trong mỗi đợt được lấy từ mục Băng đảng: các loại kẻ thù của băng đảng, và viện binh đi xe của họ ở đợt cuối cùng. Những kẻ đi dạo trên đường thuộc loại mà băng đảng đã thiết lập trong trường Loại kẻ thù của người đi lại trên đường phố; nếu không thiết lập, sẽ lấy loại đầu tiên trong danh sách. Và băng đảng nào cai quản một khu phố, nếu bạn muốn tự chỉ định, hãy nêu rõ trong chính khu phố đó, tại trường Băng đảng cai quản khu phố; các khu phố không có chỉ định sẽ được chế độ này tự gán cho một băng đảng, luôn luôn là cùng một băng đảng trong mỗi lượt chơi.</p>
+<h3>Cốt truyện đan xen nhiều nhánh</h3>
+<p>Một quyết định sẽ mở ra một nhánh rẽ: với trường Chỉ xuất hiện nếu quyết định đã được đưa ra, một nhiệm vụ hoặc một bước chỉ áp dụng cho những người chơi đã chọn một phương án cụ thể. Để một nhánh ghi nhớ những gì đã quyết định ở một nhánh khác, hoặc kết hợp nhiều nhánh lại với nhau, có thêm ba trường nữa trong nhiệm vụ và các bước:</p>
+<ul>
+<li>Chỉ xuất hiện nếu kết hợp các quyết định này: nhiều quyết định cùng lúc, mỗi quyết định gồm tên gọi, dấu hai chấm và số thứ tự phương án, phân tách bằng dấu phẩy. Ví dụ: concejal:1, trono:3. Để nguyên như vậy, tất cả các điều kiện đều phải được thỏa mãn.</li>
+<li>Cần tối thiểu bao nhiêu điều kiện, và tối đa bao nhiêu điều kiện: dùng để đếm. Với một danh sách các lựa chọn lương thiện, tối thiểu ba lựa chọn là kết cục cho người làm đúng mọi việc, tối đa bằng không là kết cục cho người không làm đúng việc nào, và từ một đến hai là kết cục ở mức giữa.</li>
+<li>Trong nhiệm vụ, Và ít nhất một nhiệm vụ từ mỗi nhóm: dành cho nhiệm vụ xuất hiện sau một ngã rẽ. Bạn viết các nhiệm vụ của từng nhánh phân tách bằng dấu cách, và các nhóm phân tách bằng dấu chấm phẩy: fd2 fd3 fd4; vd2 vd3. Nhiệm vụ sẽ xuất hiện khi đã hoàn thành một nhiệm vụ từ mỗi nhóm.</li>
+</ul>
+<p>Một bước hội thoại với một trong các điều kiện này, được đặt ở cuối nhiệm vụ, là cách đơn giản nhất để một nhân vật bình luận về những gì người chơi đã làm trong một cốt truyện khác. Nếu quyết định đó chưa được đưa ra, bước này sẽ được bỏ qua.</p>
+<p>Người chơi có thể là nam hoặc nữ. Khi một câu thoại thay đổi tùy thuộc vào đối tượng nghe, hãy viết cả hai dạng trong dấu ngoặc vuông, dạng nam trước dạng nữ sau, phân tách bằng dấu gạch đứng. Trò chơi sẽ chỉ giữ lại dạng phù hợp. Các ví dụ sau là trong tiếng Tây Ban Nha, nơi từ ngữ biến đổi theo giống:</p>
+<ul>
+<li>Bienvenid[o|a] al pueblo: bienvenido hoặc bienvenida.</li>
+<li>Tú eres [el nuevo|la nueva]: cũng áp dụng cho cụm nhiều từ.</li>
+<li>Buen[|a] vecin[o|a]: một trong hai dạng có thể để trống.</li>
+</ul>
+<p>Cách này hoạt động trong mọi văn bản: hội thoại, văn bản các bước, các phương án quyết định, phần kết thúc và mô tả. Nếu bạn không dùng dấu ngoặc vuông, câu thoại sẽ được đọc nguyên văn cho tất cả mọi người, vì vậy cách dễ nhất là viết các câu thoại phù hợp với bất kỳ ai và chỉ dùng ngoặc vuông khi không còn cách diễn đạt nào khác.</p>
+<p>Trong các nhân vật để lựa chọn có một trường là Xưng hô với họ. Nếu bạn để trống không chọn giá trị, người chơi sẽ tự quyết định lúc bắt đầu xem họ được xưng hô theo giới tính nam hay nữ. Chỉ thiết lập trường này khi nhân vật của bạn bắt buộc phải là nam hoặc nữ.</p>
+
+<h3>Các bước chơi bằng thính giác</h3>
+<p>Ngoài chín loại bước thông thường, có sáu loại bước được thiết kế riêng dành cho đôi tai:</p>
+<ul>
+<li>Đi theo ai đó trên bộ mà không bị phát hiện. Trường Địa điểm chứa điểm xuất phát, Địa điểm đích là nơi người đó đi tới, và Họ là ai là cách trò chơi gọi họ: kế toán, em họ của bạn.</li>
+<li>Hộ tống ai đó đến một địa điểm. Trường Địa điểm là nơi đón họ và Địa điểm đích là nơi cần đưa họ tới.</li>
+<li>Tiếp cận một điểm bị canh gác mà không gây tiếng động. Bạn chọn địa điểm, số lượng lính gác tuần tra xung quanh và tên của vật phẩm nhận được khi đến nơi nếu muốn.</li>
+<li>Đi qua nhiều địa điểm theo thứ tự. Bạn đánh dấu các địa điểm; giới hạn thời gian nếu bạn đặt ra sẽ áp dụng cho toàn bộ lộ trình.</li>
+<li>Theo dõi một địa điểm trong một khoảng thời gian mà không bị nhìn thấy. Bạn chọn địa điểm, số giây cần theo dõi, số mét khoảng cách bạn phải duy trì và những gì người chơi phát hiện ra ở đoạn cuối nếu muốn.</li>
+<li>Đua xe với các đối thủ. Trường Địa điểm là vạch xuất phát; Các địa điểm phải đi qua là lộ trình, với địa điểm cuối cùng là đích đến. Bạn chọn số lượng đối thủ tranh tài, từ một đến bốn người, và tốc độ của họ tính bằng mét trên giây: mười là dễ và mười lăm là khó. Tất cả các địa điểm phải nằm trong cùng một thị trấn.</li>
+</ul>
+<p>Trong bản mod Bahía del Ocaso, các nhiệm vụ từ ocs1 đến ocs6 là ví dụ cụ thể cho từng loại bước này.</p>
+<h3>Hướng dẫn tập luyện và hình nộm tập đánh</h3>
+<p>Một nhiệm vụ có thể được đánh dấu là bài hướng dẫn: trong thời gian làm nhiệm vụ, cảnh sát sẽ không phản ứng dù người chơi làm bất cứ điều gì. Và trong một nhóm kẻ thù, hộp kiểm Không tấn công sẽ biến chúng thành hình nộm tập đánh: người chơi có thể khóa mục tiêu và hạ gục chúng, nhưng chúng không di chuyển hay gây ra bất kỳ sát thương nào. Kết hợp cả hai điều này, bạn có thể tạo ra một bài hướng dẫn chiến đấu không bao giờ thất bại.</p>
+<p>Để bài hướng dẫn kiểm tra xem người chơi thực sự thao tác ra sao chứ không chỉ hoàn thành bằng việc đi đến một địa điểm, có loại bước Thực hành hướng dẫn. Bước này chỉ hoàn thành khi người chơi thực sự thực hiện một trong những thao tác sau: nhổ neo ra khơi, lái tàu theo quãng đường và góc rẽ bạn đã đặt, cập bến tại một cầu tàu, bắt đầu làm việc với một phương tiện công việc, hoặc hoàn thành một chuyến phục vụ trong công việc đó. Và bước đi đến một địa điểm có trường Ngoài việc đến nơi còn yêu cầu: với trường này, bước đi sẽ không hoàn thành khi đến nơi nếu người chơi chưa sử dụng radar trước đó. Trong các bài tập nhổ neo, bẻ lái và cập bến, các cầu tàu sẽ cho mượn cano máy miễn phí; và trong các bài tập làm việc, phím công việc có thể được sử dụng ngay cả khi đang thực hiện nhiệm vụ.</p>
+<p>Hộp kiểm Là buổi giao ban biến một nhiệm vụ thành thứ không cần phải chơi: nhiệm vụ xuất hiện trên điện thoại với chữ Giao ban ở phía trước và khi được chọn, các câu thoại của các bước hội thoại sẽ được đọc lần lượt, kèm giọng lồng tiếng nếu có. Tính năng này dùng để giải thích những điều không thể kiểm tra tự động, chẳng hạn như hướng dẫn chơi cùng bạn bè.</p>
+<p>Và trong một nhóm kẻ thù, hộp kiểm Không cần phải tiêu diệt sẽ khiến kẻ thù đầu hàng khi máu của chúng còn dưới một nửa: nhiệm vụ được tính là giải quyết xong, và nếu người chơi cố tình giết chúng thì nhiệm vụ sẽ thất bại. Đây chính là cách hoạt động của các hợp đồng dạy cho ai đó một bài học.</p>
+<h3>Người đi đường</h3>
+<p>Mục Người đi đường có một phần tử duy nhất, với nhiều danh sách trải dài qua ba thẻ. Trong hầu hết các danh sách, bạn viết một tên hoặc một câu thoại trên mỗi dòng:</p>
+<p>Nhóm Các câu thoại có sẵn chứa các câu mà trò chơi cung cấp cho những người chơi không muốn gõ phím hoặc chơi bằng tay cầm khi gửi tin nhắn cho người chơi khác: câu trò chuyện, câu thoại nhập vai theo nhân vật, hành động nhập vai (được viết bằng chữ thường và không có tên ở đầu vì trò chơi sẽ tự thêm tên), và câu trò chuyện ngoài đời thực. Người chơi chuyển đổi qua lại giữa chúng bằng phím Tab hoặc một nút trên tay cầm.</p>
+<ul>
+<li>Tên nam, tên nữ và họ: tên của những người bạn trò chuyện cùng trên đường phố.</li>
+<li>Biệt danh của các mục tiêu hợp đồng, đi kèm mạo từ: el Chato, la Culebra.</li>
+<li>Tên chó: những tên mà trạm cứu hộ động vật cung cấp.</li>
+<li>Nghề nghiệp: mỗi nghề đi kèm dạng giống cái nếu có biến đổi, độ tuổi hành nghề và mức độ phổ biến. Bằng cách đó sẽ không ai phải đi học ở tuổi sáu mươi hay nghỉ hưu ở tuổi hai mươi.</li>
+<li>Câu thoại ngẫu nhiên: những gì ai đó nói khi bạn nhấn Enter cạnh họ.</li>
+<li>Tên cho băng đảng của người chơi, tên của các đối thủ trong các cuộc đua nhiệm vụ và tên của các nhân vật trên máy chủ trực tuyến.</li>
+<li>Nhân vật trên máy chủ: những gì các nhân vật do máy chủ trực tuyến điều khiển thỉnh thoảng nói ra, với danh sách riêng cho từng lớp: người đi dạo, kẻ móc túi, tay súng, kẻ trộm xe và kẻ cướp. Nếu bạn để trống danh sách, máy chủ sẽ dùng các câu thoại mặc định đi kèm. Chúng áp dụng cho máy chủ mà ai đó tham gia với dữ liệu này.</li>
+</ul>
+<p>Những gì bạn viết sẽ được thêm vào nội dung trò chơi đã có sẵn: nếu bạn thêm ba tên mới, người dân sẽ có những tên cũ trước đây và thêm cả ba tên đó. Nếu bạn muốn chỉ có các tên của mình tồn tại, chẳng hạn như cho một bản mod lấy bối cảnh ở quốc gia khác, hãy đánh dấu vào ô Danh sách của tôi thay thế danh sách của trò chơi: khi đó mỗi danh sách bạn điền sẽ thế chỗ của trò chơi, còn danh sách nào bạn để trống vẫn giữ nguyên của trò chơi. Nút Sao chép từ trò chơi gốc cho phép bạn lấy về toàn bộ danh sách để xem hoặc cắt giảm bớt.</p>
+<p>Mục Tính cách con người có năm loại tính cách sẵn có của trò chơi: thân thiện, hoạt ngôn, cộc cằn, nhút nhát và ngạo mạn. Với mỗi loại, bạn có thể thay đổi cách họ nói chuyện với bạn và mức độ họ tăng hay giảm độ tin cậy khi được chào hỏi, khen ngợi, nói đùa hoặc xúc phạm, cùng lòng dũng cảm quyết định xem họ sẽ bỏ chạy hay đứng lại đối đầu với bạn. Bạn có thể thêm các tính cách mới; vì trò chơi chỉ có sẵn các câu thoại cho năm loại đó nên mỗi tính cách mới phải chỉ định nó mượn câu thoại từ loại nào trong số đó.</p>
+<h3>Loại kẻ thù</h3>
+<p>Loại kẻ thù là một hồ sơ bạn tạo một lần và sử dụng ở nhiều nơi. Hồ sơ nêu rõ tên gọi, vũ khí, hoặc nhiều vũ khí để mỗi kẻ thù xuất hiện ngẫu nhiên với một loại, lượng máu, độ chính xác, giọng nói, các câu thoại la lên khi nhìn thấy người chơi, và việc chúng đi bộ hay đi xe. Hồ sơ này được sử dụng bởi:</p>
+<ul>
+<li>Các bước tiêu diệt của nhiệm vụ: trong mỗi nhóm kẻ thù bạn chọn loại và số lượng. Các trường khác của nhóm như tên gọi, vũ khí, lượng máu, độ chính xác và phương tiện dùng để thay đổi thuộc tính của loại đó riêng trong nhóm này. Cách làm thông thường vẫn hoạt động: một nhóm không có loại, đi kèm tên gọi và vũ khí riêng.</li>
+<li>Các băng đảng: mỗi băng đảng chỉ định loại kẻ thù mà chúng chiến đấu cùng khi một khu phố bị xâm chiếm, loại viện binh và loại thành viên đi lại trên đường phố.</li>
+<li>Cảnh sát: mục Cảnh sát theo mức độ truy nã chỉ định loại nhân viên cảnh sát xuất hiện ở mỗi mức độ.</li>
+<li>Tiền trong quầy của cơ sở kinh doanh: loại người canh giữ quầy thu ngân.</li>
+</ul>
+<p>Nếu một loại kẻ thù đi bằng phương tiện, chúng sẽ đến bằng xe đó: xuất hiện cách khoảng hai trăm mét, đi dọc theo con phố về phía người chơi, dừng lại gần đó và bước xuống xe. Trường Chở được bao nhiêu người trên xe sẽ chia một nhóm đông người vào nhiều phương tiện. Ở ngoài biển hoặc khi chơi trên máy chủ, chúng sẽ đi bộ.</p>
+<p>Nếu bạn đặt cho một loại kẻ thù mã định danh trùng với mã của trò chơi, bạn sẽ thay đổi nó trong toàn bộ trò chơi. Đó là cách các kẻ thù tiêu chuẩn bị thay đổi: các mã định danh agente, agente_subfusil, agente_escopeta và asalto là của cảnh sát; guardaespaldas và objetivo_contrato là của hợp đồng; vigilante và vigilante_armado là của ngân hàng; pandillero, pandillero_duro và pandillero_motorizado là của băng đảng. Với nút Sao chép từ trò chơi gốc, bạn có thể thấy tất cả chúng.</p>
+<p>Trong các câu thoại, những từ thay đổi tùy theo nhân vật chính là nam hay nữ được viết trong dấu ngoặc vuông như các phần còn lại của trò chơi: Bắt lấy [anh ta|cô ta]!</p>
+<h3>Cảnh sát ở mỗi mức độ truy nã</h3>
+<p>Trong mục Cảnh sát theo mức độ truy nã có năm phần tử, mỗi mức một phần tử, với các mã định danh nivel_1 đến nivel_5. Mỗi phần tử đánh dấu các loại nhân viên cảnh sát có thể xuất hiện: mỗi đội tuần tra truy đuổi người chơi sẽ mang theo các nhân viên thuộc một trong các loại đó, được chọn ngẫu nhiên. Loại cảnh sát quyết định vũ khí, lượng máu, xe tuần tra và số nhân viên bước xuống xe. Trường Cảnh báo là câu thoại được phát ra khi đạt tới mức truy nã đó; trò chơi dùng nó ở mức 5 để thông báo đơn vị đặc nhiệm đột kích. Để cảnh sát thiện chiến hơn, hãy tạo các loại nhân viên cảnh sát mới và đánh dấu họ ở các mức truy nã cao.</p>
+<h3>Tiền trong quầy của cơ sở kinh doanh</h3>
+<p>Mỗi phần tử trong mục Tiền trong quầy của cơ sở kinh doanh áp dụng cho một loại địa điểm: cửa hàng, ngân hàng, xưởng sửa xe, phòng tập thể hình, cửa hàng súng và các nơi khác. Nó nêu rõ số tiền trong ngăn kéo thu ngân, giữa mức tối thiểu và tối đa, bao nhiêu người canh giữ, họ thuộc loại kẻ thù nào và bạn bị mức truy nã nào khi cướp nơi đó. Mỗi ngày trò chơi chọn một số tiền khác nhau cho từng địa điểm. Dữ liệu này được dùng trong các vụ cướp bất kỳ địa điểm nào, cướp ngân hàng và đột kích nhà cung cấp.</p>
+<h3>Cướp cơ sở kinh doanh và đột kích nhà cung cấp</h3>
+<p>Bất kỳ địa điểm nào có loại hình sở hữu quầy thu ngân trong mục Tiền trong quầy của cơ sở kinh doanh đều có thể bị cướp từ menu của địa điểm đó: nếu bạn gắn quầy thu ngân cho một loại địa điểm trước đó chưa có, địa điểm đó sẽ trở nên có thể cướp được; nếu bạn gỡ bỏ, nó sẽ không thể cướp được nữa. Nếu có bảo vệ canh giữ, bạn phải hạ gục họ trước. Mục Cướp cơ sở kinh doanh và đột kích nhà cung cấp chỉ có một phần tử duy nhất, bao quát các phần còn lại: địa điểm nhớ mặt bạn trong bao nhiêu ngày, bao nhiêu người trong số một trăm người sẽ gọi cảnh sát khi thấy bạn quay lại thay vì đóng sầm cửa trước mặt bạn, loại địa điểm nào không nhớ mặt bạn, nhân viên phục vụ ở mỗi nơi được gọi là gì, và các câu thoại. Các thẻ khác chứa thông tin đột kích nhà cung cấp: viện binh, hàng hóa người chơi cướp được và ba hậu quả, mỗi hậu quả có trọng số riêng; với trọng số bằng không, hậu quả đó không bao giờ xảy ra.</p>
+<h3>Vụ cướp có chuẩn bị và vai trò trong vụ cướp</h3>
+<p>Mục Vai trò trong vụ cướp có một phần tử cho mỗi vai trò. Mỗi phần tử nêu rõ tên gọi, nhiệm vụ đảm nhiệm, kỹ năng quyết định độ thành thạo (có thể là thiện xạ, lái xe, độ gan lì hoặc lòng trung thành), tỷ lệ chia chiến lợi phẩm và lời giải thích đọc được trong trò chơi. Nhiệm vụ đảm nhiệm được chọn từ danh sách năm nhiệm vụ cố định: chờ bên ngoài với động cơ nổ sẵn, kìm chân cảnh sát, khống chế con tin, phá két sắt hoặc bắn yểm trợ từ trên xe. Bạn có thể thay đổi các vai trò của trò chơi bằng cách dùng cùng mã định danh, xóa bớt một số vai trò hoặc thêm vai trò khác với tên gọi và tỷ lệ chia chác mới. Nếu bản mod của bạn có mục này, các vai trò sẽ là của riêng bản mod đó và chỉ riêng nó.</p>
+<p>Mục Vụ cướp có chuẩn bị: chỉ số và câu thoại chỉ có một phần tử duy nhất, bao quát các phần còn lại trải dài qua các thẻ: độ giỏi của những người mới được tuyển dụng và mức độ họ học hỏi; thời gian mở két sắt tùy theo loại địa điểm; thời gian người cảnh giới kìm chân cảnh sát, lợi thế dẫn trước của tài xế và độ chính xác của tay súng; xác suất xảy ra của từng sự cố bất trắc; điều gì xảy ra với những người bị bắt; mức trần chia tiền; và tất cả các câu thoại của năm giai đoạn cùng những câu mỗi người nói qua bộ đàm. Xác suất bằng không sẽ vô hiệu hóa phần đó.</p>
+<p>Ngoài ra, hai trường mới hoạt động trong nhiệm vụ của bất kỳ bản mod nào. Trong bước Nhặt đồ, trường Số giây cần để mở hoặc nhặt: với giá trị lớn hơn không, vật phẩm không được nhặt tức thì; người chơi nhấn Enter, nghe tiến trình đang diễn ra và phải đứng yên cạnh vật phẩm. Trong bước Cảnh sát, trường Số giây cảnh sát đến nơi: người chơi có chừng đó thời gian để tẩu thoát trước khi cảnh sát bắt đầu truy tìm họ.</p>
+<h3>Lái máy bay: chỉ số và câu thoại, Máy bay và Bản đồ đường hàng không</h3>
+<p>Mục Máy bay: cách vận hành của từng loại có một phần tử cho mỗi phương tiện biết bay: tốc độ bay đường trường và độ cao bay, trần bay tối đa, tầm hoạt động khi đầy bình nhiên liệu, độ cao leo lên mỗi giây và việc nó có cần đường băng để hạ cánh hay không. Sử dụng mã định danh của một máy bay trong trò chơi, bạn sẽ thay đổi cách bay của máy bay đó; với phương tiện bay riêng của bạn không có trong danh sách, trò chơi sẽ tự động tính toán hợp lý dựa trên tốc độ của nó.</p>
+<p>Mục Bản đồ đường hàng không: vị trí của từng thị trấn cho biết mỗi thị trấn nằm ở đâu trong khu vực, tính bằng kilomet về phía đông và phía bắc của Puerto Bravo. Khoảng cách và hướng bay của các chuyến bay được tính toán từ đây. Nếu bản mod của bạn thêm một thị trấn có sân bay trực thăng hoặc sân bay thông thường mà bạn không đưa vào đây, trò chơi sẽ tự định vị nó bằng cách xem cách thức di chuyển tới đó: một hòn đảo sẽ nằm ở nơi có cầu tàu ngoài biển; một thị trấn có đường bộ sẽ cách thị trấn láng giềng vài kilomet về phía con đường dẫn ra. Nếu bạn muốn nó nằm ở một vị trí cụ thể, hãy đặt nó tại đây.</p>
+<p>Mục Lái máy bay: chỉ số và câu thoại chỉ có một phần tử duy nhất, quản lý các phần còn lại theo từng thẻ: độ cao và hạ cánh khẩn cấp; nhiên liệu; chuyến bay, đi kèm mức độ tăng tốc và gió; tiếp cận hạ cánh; các biến cố và trọng số của chúng, với trọng số bằng không sẽ loại bỏ biến cố đó; bão và các chướng ngại vật khi bay thấp; radar và không tặc; nhà chứa máy bay và các chuyến bay thương mại; cùng toàn bộ các câu thoại của đài kiểm soát không lưu và các câu thoại khác. Các địa điểm thuộc loại sân bay trực thăng hoặc sân bay có trường mới là Giá thuê chỗ đỗ nhà chứa máy bay. Giá nhiên liệu, thuê nhà chứa và chuyển tiếp nằm trong mục Giá cước và bảng giá, còn bằng lái máy bay nằm trong mục chứng chỉ bằng cấp.</p>
+<h3>Giao hàng tận nơi</h3>
+<p>Mục Giao hàng tận nơi: thực đơn có một phần tử cho mỗi món ăn hoặc thức uống: tên gọi, giá cả, mức độ giải tỏa cơn đói và khát từ không đến một trăm, cùng lượng máu hồi phục. Với mã định danh có sẵn của trò chơi bạn sẽ thay đổi món đó; với mã mới, bạn thêm món khác vào thực đơn. Mục Giao hàng tận nơi: thời gian và câu thoại chỉ có một phần tử duy nhất: thời gian giao hàng mất bao lâu, giữa mức tối thiểu và tối đa tính theo phút trong trò chơi, thêm bao nhiêu thời gian nếu trời mưa, sức chứa bao nhiêu món, người giao hàng đợi bao lâu nếu người chơi không có mặt, và các câu thoại đi kèm tên các địa điểm nhận giao hàng. Phí giao hàng nằm trong mục Giá cước và bảng giá.</p>
+<h3>Thực đơn của các quán ăn và những gì mỗi cửa hàng bày bán</h3>
+<p>Mục Thực đơn của các quán ăn có một thực đơn cho mỗi loại địa điểm: tiệm kem, tiệm pizza, quán bar bãi biển, quán rượu... Mỗi thực đơn có các món ăn và đồ uống riêng, đi kèm giá cả, mức độ giải tỏa cơn đói và khát từ không đến một trăm, lượng máu hồi phục và lời giải thích khi nhấn <kbd>F1</kbd>. Mỗi quán ăn, quán bar hoặc quán rượu tự chọn thực đơn của mình trong trường Thực đơn; nếu không chọn thực đơn, quán ăn sẽ phục vụ danh sách món ăn chung như ở các phiên bản trước, còn quán bar hoặc quán rượu chỉ phục vụ bia kèm món nhắm. Với mã định danh của một thực đơn có sẵn trong trò chơi, bạn sẽ thay thế hoàn toàn thực đơn đó; với mã mới, bạn thêm thực đơn khác. Trong các cửa hàng, trường Hàng bán ngoài thực phẩm đánh dấu xem cửa hàng có bán bộ sơ cứu, dụng cụ mở khóa, máy nghe nhạc tai nghe, thức ăn cho chó hay vũ khí của cửa hàng không; nếu không đánh dấu mục nào, cửa hàng sẽ bán tất cả mọi thứ.</p>
+<h3>Mua sắm và nấu ăn: sản phẩm, gian hàng, cửa hàng và công thức nấu ăn</h3>
+<p>Năm mục này đi liền với nhau. Với chúng, một bản mod có thể thêm sản phẩm và công thức nấu ăn, mở một gian hàng mới hoặc sáng tạo ra một loại cửa hàng hoàn toàn mới.</p>
+<ul>
+<li>Sản phẩm cửa hàng thực phẩm: một phần tử cho mỗi sản phẩm, đi kèm tên gọi, giá cả, gian hàng bày bán, việc ở nhà nó được cất trong tủ lạnh hay tủ thức ăn, và thời hạn bảo quản bao nhiêu ngày; để trống hoặc bằng không nghĩa là không hết hạn. Nếu có thể ăn trực tiếp mà không cần nấu, hãy điền vào thẻ Nếu ăn không cần nấu các chỉ số về cơn đói và khát giải tỏa được, lượng máu và tâm trạng mang lại, cùng đánh dấu xem đó có phải là đồ uống không. Nếu để trống toàn bộ, nó chỉ là một nguyên liệu.</li>
+<li>Gian hàng trong cửa hàng: tên gọi của gian hàng, có mạo từ đi kèm ở phía trước và viết chữ thường như cách trò chơi đọc khi bạn bước tới, cùng phần mô tả.</li>
+<li>Loại cửa hàng thực phẩm: mỗi loại cửa hàng có những gian hàng nào và mức độ đắt đỏ tính theo phần trăm. Trò chơi quyết định loại hình của mỗi cửa hàng như sau: đầu tiên nó nhìn vào trường Là loại cửa hàng thực phẩm nào của chính địa điểm đó; nếu trống, nó xét danh sách cửa hàng của loại hình; tiếp theo là các từ ngữ trong tên gọi, và loại hình đầu tiên trong danh sách phù hợp sẽ được chọn; cuối cùng là loại hình được đánh dấu là áp dụng cho tất cả các trường hợp còn lại. Một loại hình không có gian hàng là cửa hàng không bán đồ ăn mang về nhà.</li>
+<li>Công thức nấu ăn: tên món, nguyên liệu (chọn từ danh sách sản phẩm và mỗi loại dùng một đơn vị), thời gian chế biến tính theo phút trong trò chơi, số phần ăn làm ra, thời gian để được trong tủ lạnh bao nhiêu ngày và cách thức chế biến: không cần nhiệt, dùng chảo rán hoặc dùng nồi nấu (quyết định âm thanh bạn nghe thấy và việc món ăn có thể bị cháy khét hay không). Trong thẻ Mỗi phần ăn, điền mức độ giải tỏa đói khát cùng lượng máu và tâm trạng mang lại. Đảm bảo rằng món nấu chín no hơn rõ rệt so với đồ ăn đóng gói sẵn.</li>
+<li>Mua sắm, tủ thức ăn và nhà bếp, chỉ số và câu thoại: một phần tử duy nhất. Sức chứa của tủ thức ăn, trong tủ lạnh và trên nóc tủ; cảnh báo trước bao nhiêu ngày khi một món sắp hết hạn; mỗi ngày thiếu bao nhiêu sản phẩm và mức giảm giá của chương trình khuyến mãi; mức độ dễ dàng bị phát hiện khi ra về không trả tiền và điều gì xảy ra sau đó; tần suất một món ăn bị cháy khét hoặc đạt mức hảo hạng, lượng dinh dưỡng mang lại thay đổi ra sao, mỗi món ăn tập nấu mang lại điều gì và việc luyện tập cùng một gian bếp đầy đủ trang thiết bị giúp ích được bao nhiêu; cùng các câu thoại của chủ cửa hàng và trong gian bếp.</li>
+</ul>
+<p>Một sản phẩm mới sẽ xuất hiện ở mọi cửa hàng có gian hàng bày bán sản phẩm đó. Một công thức mới sẽ xuất hiện trong sổ tay công thức nấu ăn của mọi gian bếp.</p>
+<h3>Tái chiếm khu phố</h3>
+<p>Mục Tái chiếm khu phố chứa toàn bộ các chỉ số và câu thoại cho những gì diễn ra khi người chơi đã nắm giữ toàn bộ thành phố hoặc nhiều khu phố, và các băng đảng bại trận cố gắng giành lại chúng. Chỉ phần tử đầu tiên được sử dụng; hãy giữ nguyên mã định danh general cho nó. Mục này trải dài qua các thẻ:</p>
+<ul>
+<li>Thẻ đầu tiên: những ngày bình yên, số khu phố bắt đầu kích hoạt phiên bản nhẹ nhàng, và nhịp độ của từng giai đoạn.</li>
+<li>Băng đảng: sức mạnh ban đầu của chúng, mức độ gia tăng mỗi ngày và ở từng cường độ, mức sức mạnh khiến chúng quyết định tấn công, và các liên minh.</li>
+<li>Mục tiêu: trọng số của từng lý do khi chọn một khu phố: khu phố từng thuộc về chúng, khu phố phòng thủ yếu, khu phố bị bỏ bê hay khu phố mang lại nhiều lợi nhuận nhất, cùng mức độ ngẫu nhiên.</li>
+<li>Tấn công: số ngày chuẩn bị, giờ bắt đầu tấn công, thời hạn phản hồi và thời gian nghỉ ngơi ở mỗi cường độ, cùng số giờ luôn còn lại khi bạn thức dậy.</li>
+<li>Trực tiếp và Cử người: các đợt tấn công, và công thức tính sức mạnh đối đầu phòng thủ khi người chơi không đích thân đến.</li>
+<li>Phòng thủ và Lòng trung thành: lính canh, viện binh và người chỉ điểm đi kèm giá cả của họ, cùng cách thức lòng trung thành của một khu phố tăng giảm.</li>
+<li>Hậu quả, Vụ cướp và Kẻ ngoại lai: danh tiếng đường phố, tinh thần, thời điểm một băng đảng bị xóa sổ, đòn giáng vào các sào huyệt và tên của các băng đảng ngoại lai.</li>
+<li>Bốn thẻ câu thoại: cảnh báo ban đầu, lời đe dọa, kết quả, cùng lòng trung thành và đình chiến. Mỗi câu thoại nêu rõ trong phần trợ giúp những biến thay thế mà nó chấp nhận, chẳng hạn như {banda} hoặc {barrio}.</li>
+</ul>
+<p>Các chỉ số đình chiến, vì được đàm phán như các thỏa thuận khác, nằm trong mục Đàm phán với các băng đảng, thẻ Đình chiến.</p>
+<h3>Cuộc sống, danh tiếng và hậu quả</h3>
+<p>Sáu mục quản lý tất cả về cuộc sống lương thiện, cuộc sống hai mặt và hậu quả của chúng.</p>
+<ul>
+<li>Cuộc sống, danh tiếng và hậu quả: chỉ số và câu thoại. Một phần tử duy nhất; hãy giữ nguyên mã định danh general cho nó. Trải dài qua các thẻ: Cửa hàng, với chiết khấu, phụ phí và mua chịu; Nhân chứng và cảnh sát; Đường phố; Tiền án tiền sự, với số ngày kéo dài của từng mức độ nghiêm trọng và những gì lao động công ích cùng luật sư giúp giảm trừ; Sự nghiệp, với số ngày của từng kỳ đánh giá, xếp loại đánh giá, lời khiển trách và thăng chức; Doanh nghiệp; Thanh tra và vỏ bọc; Thuế và hóa đơn; Ngân hàng; Cuộc sống hai mặt; Tống tiền và việc tốt; Bạn đời; cùng sáu thẻ câu thoại. Mỗi câu thoại nêu rõ trong phần trợ giúp những biến thay thế mà nó chấp nhận, chẳng hạn như {jefe}, {euros} hoặc {negocio}. Mức độ dễ và khắt khe được tính toán từ mức bình thường thông qua hai tỷ lệ phần trăm ở thẻ đầu tiên.</li>
+<li>Chứng chỉ bằng cấp. Mỗi chứng chỉ có tên gọi, số buổi học cần tham gia, chi phí mỗi buổi và thời lượng kéo dài, mức danh tiếng tối thiểu để ghi danh, chứng chỉ tiên quyết cần có trước nếu có, và văn bản cho biết chứng chỉ mở khóa điều gì.</li>
+<li>Công việc chính thức và vị trí công tác. Mỗi công việc gắn liền với một cơ quan, việc đó có phải là vị trí tin cậy hay không, những công việc nào được tính là một ca làm việc và các vị trí công tác từ bậc đầu tiên đến bậc cao nhất. Trong Các công việc được tính là một ca làm việc, bạn viết một công việc trên mỗi dòng: từ jornada, dấu hai chấm và mã định danh của một ca làm việc ban ngày trong mục Ca làm việc, hoặc từ oficio, dấu hai chấm và một nghề dùng phương tiện như taxi hoặc ambulancia. Mỗi vị trí có tên gọi, mức lương theo kỳ, số ca làm việc đòi hỏi, chứng chỉ và danh tiếng yêu cầu, cùng việc vị trí đó có đưa ra các quyết định mang tính trách nhiệm hay không.</li>
+<li>Nâng cấp cơ sở kinh doanh. Mỗi nâng cấp đưa doanh nghiệp lên một cấp độ từ cấp hai trở lên, nêu rõ chi phí và những gì gia tăng, tính theo tỷ lệ phần trăm của giá mua và lợi nhuận doanh nghiệp mang lại, cùng chứng chỉ và danh tiếng đòi hỏi. Trò chơi chấp nhận số lượng cấp độ nhiều tùy ý theo cách bạn tạo.</li>
+<li>Quyết định của các vị trí có trách nhiệm. Một tình huống và từ hai đến bốn phương án xử lý; mỗi phương án cộng thêm hoặc trừ bớt vào chất lượng ca làm việc, tính vào kỳ đánh giá.</li>
+<li>Tình huống trên đường phố: giúp đỡ hoặc trục lợi. Một tình huống và tối đa bốn phương án xử lý. Mỗi phương án có thể đòi hỏi một vật phẩm, tiền bạc hoặc thời gian, và có kết quả xảy ra nếu suôn sẻ, cùng xác suất thất bại và những gì xảy ra khi đó: vị thế xã hội, danh tiếng đường phố, tiền bạc, tâm trạng và sức khỏe, cùng lời thuật lại. Tùy chọn Tiếp tục đi trên con đường của mình luôn được trò chơi tự động thêm vào.</li>
+</ul>
+<p>Nhiệm vụ có các trường mới dành cho những cốt truyện như con đường lương thiện: Là một phần của con đường lương thiện, làm cho nhiệm vụ mang lại vị thế xã hội thay vì danh tiếng đường phố và không tự động bắt đầu khi bạn bước tới địa điểm đó mà xuất hiện như một tùy chọn trong menu của địa điểm; Đòi hỏi gì trong cuộc sống của người chơi, khiến nhiệm vụ chờ đợi cho đến khi người chơi có một hợp đồng lao động, đã làm việc một số ca nhất định, có chứng chỉ bằng cấp, vị thế xã hội, cơ sở kinh doanh hoặc lý lịch trong sạch; và Lời bạt, để nhiệm vụ cuối cùng khép lại câu chuyện bằng kết cục này hay kết cục khác tùy thuộc vào những gì đã được quyết định. Trong các phương án của một quyết định còn có trường Vị thế xã hội mang lại hoặc lấy đi.</p>
+<h3>Đàm phán với các băng đảng</h3>
+<p>Một phần tử duy nhất chứa các con số cho ba thỏa thuận: số tiền họ trả để bạn trao trả lại một khu phố, số tiền họ đòi để bán lại một khu phố, và tiền cống nạp hàng ngày mà trò chơi điều chỉnh theo thực lực của người chơi và mối quan hệ với từng băng đảng. Ngoài ra còn có số ngày một kỳ cống nạp kéo dài, số ngày bạn phải chờ để đàm phán lại cùng một vấn đề, những gì bạn đạt được khi mặc cả, và các câu thoại cho từng câu trả lời trải qua ba thẻ. Các băng đảng chính là các băng đảng trong mục Băng đảng.</p>
+<h3>Hợp đồng từ bảng tin</h3>
+<p>Mỗi phần tử là một loại công việc nhận từ quán rượu. Điều quan trọng nhất là trường Tính chất công việc, gồm tám giá trị: tiêu diệt mục tiêu và vệ sĩ của hắn; tương tự nhưng một phần hộ tống đến bằng xe; mục tiêu bỏ chạy bằng xe; mục tiêu cố thủ trong một địa điểm; bám theo người chuyển hàng của chúng tới sào huyệt; dạy cho chúng một bài học mà không giết; thu hồi một vật phẩm; hoặc bảo vệ ai đó và đưa họ đến nơi an toàn. Khi bạn chọn một loại, các trường tương ứng sẽ xuất hiện: loại kẻ thù của mục tiêu, của vệ sĩ và của viện binh lấy từ mục Loại kẻ thù; phương tiện chúng có thể bỏ chạy; loại địa điểm; vật phẩm hoặc người cần bảo vệ.</p>
+<p>Ngoài ra: mức độ phổ biến, phải hoàn thành bao nhiêu hợp đồng thì loại công việc này mới xuất hiện, thù lao cơ bản và thù lao cộng thêm cho mỗi kẻ thù trong đội hộ tống, cùng văn bản công bố công việc trên bảng tin (chấp nhận biệt danh của mục tiêu, địa điểm, số người đi cùng và các thông tin khác; phần trợ giúp của trường chỉ rõ cách viết từng thông tin). Trò chơi đăng ba công việc khác nhau mỗi ngày. Biệt danh của các mục tiêu nằm trong mục Người đi đường.</p>
+<h3>Người dân hành động và gia nhập băng đảng của bạn</h3>
+<p>Một phần tử duy nhất. Trên thẻ đầu tiên, với mức độ tin cậy bao nhiêu và bao nhiêu lần trong một trăm lần ai đó sẽ đồng hành cùng người chơi một lúc, kéo dài bao lâu, bao nhiêu lần một người bị xúc phạm sẽ tấn công người chơi, bao nhiêu lần họ báo cảnh sát, và cần bao nhiêu độ tin cậy để nhận được một ân huệ. Trên thẻ Chiêu mộ, các điều kiện để một người đi đường gia nhập băng đảng: độ tin cậy, danh tiếng đường phố, lòng dũng cảm theo tính cách, độ tuổi tối đa và tiền thưởng tính theo tỷ lệ phần trăm phí chiêu mộ. Các thẻ khác là câu thoại. Lòng dũng cảm của từng tính cách được thay đổi trong mục Tính cách con người.</p>
+<h3>Nghề cảnh sát và cảnh báo vô tuyến</h3>
+<p>Mục Nghề cảnh sát có một phần tử duy nhất trải dài qua nhiều thẻ: vị thế xã hội cần thiết để gia nhập, các cấp bậc, sau bao nhiêu cuộc gọi thì được thăng chức và kiếm thêm được bao nhiêu tiền, các lời khiển trách, thời gian giữa các cuộc gọi và thời gian đến nơi, bao nhiêu người chấp hành lệnh dừng xe, bao nhiêu tài xế tấp vào lề khi nghe còi báo động, tiền phạt và số tiền viên cảnh sát đút túi, cùng tất cả các câu thoại. Học phí khóa học nằm trong mục Giá cước và bảng giá.</p>
+<p>Mục Cảnh báo vô tuyến cảnh sát có một phần tử cho mỗi loại cảnh báo. Phân loại thuộc một trong bốn loại: cướp tại một địa điểm, ẩu đả trên đường phố, tài xế lái ẩu hoặc truy đuổi. Mỗi phần tử nêu rõ mức độ phổ biến, tiền thù lao, loại kẻ thù của nghi phạm, số lượng nghi phạm, phương tiện chúng có thể dùng và những gì bộ đàm thông báo đi kèm địa điểm và phương tiện. Bạn có thể thay đổi bốn loại có sẵn của trò chơi hoặc thêm các loại khác thuộc cùng những phân loại đó.</p>
+<h3>Kế hoạch hẹn hò và sống chung như một cặp đôi</h3>
+<p>Đây là nội dung người lớn. Mỗi kế hoạch trong mục Kế hoạch hẹn hò có giá cả, số giờ kéo dài, sự hòa hợp và tâm trạng mang lại, loại địa điểm bắt buộc phải có trong thị trấn nếu có đòi hỏi, và các phân cảnh của nó: mỗi lần thực hiện kế hoạch sẽ có hai phân cảnh được thuật lại, và chúng không lặp lại cho đến khi tất cả các cảnh đã được nghe, vì vậy tốt nhất bạn nên viết từ bốn phân cảnh trở lên. Trong các phân cảnh, tên của bạn đời được viết như hướng dẫn trợ giúp của trường chỉ rõ, và câu văn phải được diễn đạt sao cho phù hợp cho dù bạn đời là nam hay nữ.</p>
+<p>Mục Sống chung như một cặp đôi chỉ có một phần tử duy nhất: với độ hòa hợp bao nhiêu và sau bao nhiêu buổi hẹn hò thì người bạn đời đồng ý dọn về sống chung, có bao nhiêu người trong số một trăm người không bao giờ chịu dọn về sống chung, việc ăn cơm cùng nhau mang lại điều gì, tần suất họ đòi hỏi một điều gì đó và những gì được hoặc mất, cùng các câu thoại. Trong mục Con người, mỗi nhân vật cũng có trường Khả năng dọn về sống chung với người chơi để thiết lập thủ công: dễ dàng, khi mối quan hệ tiến triển rất tốt, hoặc không bao giờ.</p>
+<h3>Nâng cấp ở xưởng sửa chữa</h3>
+<p>Mỗi nâng cấp nêu rõ nó cải thiện điều gì, chọn từ danh sách bảy hiệu ứng mà trò chơi hỗ trợ: động cơ, phanh, giáp, lốp xe, giảm xóc, ống xả và bình xăng. Nó cũng nêu rõ số cấp độ nâng cấp từ một đến năm, mức độ cải thiện của mỗi cấp tính theo phần trăm và chi phí của cấp đầu tiên; mỗi cấp tiếp theo có giá bằng mức giá đó nhân với số thứ tự của cấp. Sử dụng mã định danh của một nâng cấp có sẵn trong trò chơi, bạn sẽ sửa đổi nó; với mã mới, bạn thêm một dòng nâng cấp khác vào menu xưởng sửa xe. Một nâng cấp không có hiệu ứng vẫn có thể mua được và có mô tả, nhưng nó không làm thay đổi bất cứ điều gì.</p>
+<h3>Vũ khí: nơi mua sắm</h3>
+<p>Trường Nơi mua sắm của một vũ khí chọn loại địa điểm bán vũ khí đó: cửa hàng súng, cửa hàng bách hóa hoặc tiệm cầm đồ. Nếu không đặt giá trị, vũ khí được bán trong cửa hàng súng. Đạn dược luôn được mua ở cửa hàng súng bất kể vũ khí được bán ở đâu. Hộp kiểm Không gắn được ống giảm thanh sẽ loại bỏ nâng cấp đó cho vũ khí này. Và mỗi vũ khí cần có âm thanh riêng: hãy chọn một âm thanh có sẵn của trò chơi hoặc đặt tệp âm thanh của bạn vào thư mục âm thanh như cẩm nang âm thanh giải thích.</p>
+<h3>Khu phố và băng đảng</h3>
+<p>Mô tả của một khu phố nói lên khu phố đó trông như thế nào, chứ không phải khu phố đó thuộc về ai. Nếu một băng đảng cai quản khu phố của bạn, hãy viết tên băng đảng vào trường Băng đảng cai quản khu phố, và để phần mô tả không chứa các câu như "lãnh địa của băng đảng nọ kia". Trò chơi sẽ tự động thêm vào câu phù hợp tại từng thời điểm: lãnh địa của băng đảng đó khi chúng cai quản, lãnh địa của người chơi khi bạn chinh phục được, đang có chiến tranh khi đang bị tranh giành, và lãnh địa của băng đảng đoạt lấy từ tay người chơi nếu bạn không bảo vệ nó. Nếu bạn viết tên băng đảng vào phần mô tả, khu phố sẽ tiếp tục nói rằng nó thuộc về băng đảng đó ngay cả khi không còn như vậy nữa. Bất cứ ai chinh phục khu phố đó sẽ chiến đấu với băng đảng bạn đã thiết lập; nếu bạn không thiết lập băng đảng nào, trò chơi sẽ chọn ngẫu nhiên. Các băng đảng nằm trong mục Băng đảng: bạn có thể thêm băng đảng của riêng mình đi kèm tên gọi và các loại kẻ thù, rồi viết tên đó vào các khu phố của bạn.</p>
+<p>Nếu bạn vẫn muốn mô tả của khu phố nhắc đến những người cai quản hoặc những người xuất hiện trên đường phố của nó, hãy điền thêm vào trường Mô tả khi khu phố đổi chủ: trò chơi sẽ sử dụng mô tả đó khi khu phố thuộc về người chơi hoặc một băng đảng khác. Các địa điểm cũng có tính năng tương tự trong Tùy chọn khác: Tên gọi khi khu phố đổi chủ và Mô tả khi khu phố đổi chủ. Chúng rất hữu ích cho một sào huyệt, một địa điểm băng đảng kiểm soát hoặc bất kỳ điểm nào mà tên gọi hoặc mô tả nói lên ai là người cai quản: ví dụ "Sào huyệt Los Calaveras" có thể trở thành "Cựu sào huyệt của Los Calaveras". Nếu bạn để trống, địa điểm sẽ không thay đổi.</p>
+<p>Hai địa điểm không thể nằm tại cùng một điểm tọa độ, vì người chơi chỉ có thể bước vào một nơi. Nếu bạn đặt một địa điểm trên mặt tiền tòa nhà tại vị trí đã có địa điểm khác chiếm giữ, kể cả địa điểm từ bản mod khác hay từ trò chơi gốc, trò chơi sẽ tự động di chuyển nó đến một vị trí còn trống trên cùng mặt tiền đó. Tốt hơn hết là bạn nên tự chọn một vị trí còn trống.</p>
+<h3>Trạm xăng và nhiên liệu</h3>
+<p>Để người chơi có thể tiếp nhiên liệu trong thị trấn của bạn, hãy tạo một địa điểm thuộc loại Cửa hàng và đánh dấu Là trạm xăng: nơi đó sẽ có cây bơm xăng. Bạn có thể đặt giá riêng cho mỗi lít xăng. Hãy đặt ít nhất một trạm xăng trong mỗi thị trấn có ô tô: bất kỳ ai chơi với tùy chọn tiêu thụ nhiên liệu đều sẽ cần đến nó. Với mỗi phương tiện bạn có thể điền dung tích bình xăng theo lít, hoặc đánh dấu không dùng nhiên liệu nếu phương tiện không có động cơ.</p>
+<h3>Tàu điện, tàu hỏa và sân bay trong thị trấn của bạn</h3>
+<p>Trong dữ liệu trò chơi và các bản mod đi kèm, các trạm dừng tàu điện, ga tàu hỏa, sân bay và đường ray được định nghĩa như mọi thứ khác và được chỉnh sửa theo cùng một cách:</p>
+<ul>
+<li>Mỗi trạm dừng, ga tàu và sân bay là một địa điểm, đi kèm loại hình: Trạm dừng tàu điện, Ga tàu hỏa hoặc Sân bay. Bạn có thể thay đổi tên gọi, mô tả, khối nhà, mặt tiền và vị trí tọa độ, hoặc xóa bỏ nó.</li>
+<li>Mỗi trạm dừng còn có Thứ tự trên tuyến tàu điện: tàu điện đi qua các trạm từ số nhỏ nhất đến lớn nhất rồi quay trở lại trạm đầu tiên.</li>
+<li>Một sân bay có thể là bãi đáp dã chiến: đánh dấu Là bãi đáp dã chiến, với đường băng ngắn. Các chuyến bay định kỳ bằng máy bay hạng nhẹ sẽ hạ cánh tại bãi đáp dã chiến chứ không phải máy bay lớn, và chỉ có máy bay hạng nhẹ mới có thể thuê được ở đó. Đây là lựa chọn phù hợp cho một ngôi làng.</li>
+<li>Thị trấn có các trường Tuyến tàu hỏa chạy dọc theo, và Số thứ tự của con đường hoặc đại lộ đó. Tuyến tàu hỏa băng qua thị trấn từ bên này sang bên kia theo một đường thẳng: dọc theo một con đường từ tây sang đông, hoặc dọc theo một đại lộ từ nam lên bắc. Các đoàn tàu chạy dọc tuyến đường này và dừng tại ga tàu hỏa. Nếu bạn để trống giá trị, tuyến đường sẽ chạy ngang qua trước mặt ga tàu hỏa. Nếu không có ga tàu hỏa thì sẽ không có tuyến tàu hỏa.</li>
+<li>Thị trấn có trường Lộ trình đường ray tàu điện: danh sách các giao lộ mà tàu đi qua theo thứ tự. Bạn chỉ cần nhập các giao lộ nơi tàu rẽ hướng. Mỗi trạm dừng nằm tại điểm gần nó nhất trên đường ray.</li>
+<li>Thị trấn cũng có trường Thêm phương tiện giao thông công cộng còn thiếu. Nếu chọn có, trường hợp thị trấn của bạn còn thiếu bất kỳ thứ nào trong số này, trò chơi sẽ tự động bổ sung khi tải dữ liệu: các trạm dừng trong mọi khu phố và một sân bay nếu đó là thành phố, cùng một ga tàu hỏa nếu có đường bộ dẫn ra ngoài. Nếu chọn không, thị trấn chỉ có những gì bạn thiết lập.</li>
+</ul>
+<p>Nếu bạn tạo một thị trấn mới mà không thêm bất kỳ thứ gì, trò chơi vẫn hoạt động bình thường: trò chơi sẽ tự động bổ sung những gì còn thiếu. Nếu bạn tự thêm các trạm dừng, trò chơi sẽ không thêm trạm nào nữa. Nút Kiểm tra sẽ cảnh báo bạn nếu một giao lộ trên đường ray không tồn tại, nếu hai trạm dừng có cùng số thứ tự, hoặc nếu một trạm dừng nằm cách đường ray hơn sáu mươi mét.</p>
+<h3>Quyết định, nhánh rẽ và các kết cục</h3>
+<p>Mỗi phương án của một quyết định cũng có thể để lại một nguồn thu nhập: số tiền người chơi nhận được, hoặc phải trả, vào mỗi nửa đêm mãi mãi về sau.</p>
+<p>Loại bước Quyết định của người chơi mở ra một menu với các phương án bạn soạn ra từ hai đến bốn phương án. Mỗi phương án có nội dung người chơi lựa chọn, lời giải thích khi nhấn F1, những gì được thuật lại khi chọn phương án đó, cùng các hệ quả: tiền bạc, danh tiếng, tâm trạng và mối quan hệ với một băng đảng.</p>
+<ul>
+<li>Đặt cho quyết định một tên gọi, một từ duy nhất không có dấu cách. Với tên gọi đó, các nhiệm vụ khác và các bước khác có thể phụ thuộc vào phương án đã được chọn.</li>
+<li>Trong nhiệm vụ, trường Chỉ xuất hiện nếu quyết định đã được đưa ra và Số thứ tự của phương án đã chọn giúp nhiệm vụ đó chỉ tồn tại trong một nhánh của cốt truyện. Phương án đầu tiên là 1.</li>
+<li>Trong một bước, hai trường tương tự giúp bước đó chỉ diễn ra trong một nhánh; trong các nhánh khác bước đó sẽ bị bỏ qua.</li>
+<li>Trong nhiệm vụ, trường Văn bản kết thúc cốt truyện biến nhiệm vụ thành một kết cục: khi hoàn thành nhiệm vụ, văn bản đó sẽ được đọc lên và ghi lại vào nhật ký. Với nhiều nhiệm vụ như vậy, mỗi nhiệm vụ nằm sau một phương án lựa chọn khác nhau, cốt truyện sẽ có nhiều kết cục khác nhau.</li>
+</ul>
+<p>Trong cốt truyện chính, các nhiệm vụ từ fd1 đến fd4 là một ví dụ: một quyết định với ba phương án và một kết cục cho mỗi phương án.</p>
+
+<h3>Lồng tiếng cho các nhân vật</h3>
+<p>Các câu thoại được trình đọc màn hình của người chơi đọc lên. Nếu bạn muốn chúng được phát bằng các giọng thu âm thực tế, bạn không cần phải thay đổi bất cứ điều gì trong bản mod: chỉ cần đặt các tệp thu âm vào thư mục giọng nói của trò chơi.</p>
+<ol>
+<li>Lưu bản mod và nhấn <kbd>Control G</kbd>, hoặc chọn Kịch bản lồng tiếng để thu âm trong menu Mod. Trình chỉnh sửa sẽ ghi một tệp văn bản chứa toàn bộ các câu thoại của tất cả các nhiệm vụ và mở tệp đó trong Notepad.</li>
+<li>Trong kịch bản, mỗi câu thoại có tên tệp thu âm tương ứng ở phía trên, ví dụ <strong>oc01_1_2</strong>: mã nhiệm vụ, số thứ tự bước và số thứ tự câu thoại. Ở cuối tệp có ghi rõ mỗi nhân vật có bao nhiêu câu thoại để bạn có thể phân chia cho nhiều người cùng thu âm.</li>
+<li>Thu âm từng câu thoại thành một tệp riêng biệt ở định dạng WAV, OGG, FLAC hoặc MP3 với đúng tên gọi đó.</li>
+<li>Một số câu thoại biến đổi theo nhân vật chính: những câu nhắc đến tên họ, những câu có dạng nam và nữ trong dấu ngoặc vuông, và những câu do chính nhân vật chính nói ra. Kịch bản ghi chú điều này bên dưới mỗi câu và cung cấp tên tệp cho các dạng khác đi kèm ký tự @: <strong>oc01_1_2@alex</strong>, <strong>oc01_1_2@m</strong>, <strong>oc01_1_2@alex_m</strong>. Tệp không có phần đuôi phía sau là tệp dành cho nhân vật Dani nam. Bạn có thể chỉ cần thu âm tệp đó: với người chơi chọn nhân vật chính khác, câu thoại đó sẽ được trình đọc màn hình đọc lên chứ không bao giờ phát nhầm bản thu của người khác.</li>
+<li>Đặt các tệp vào thư mục giọng nói, mở nhanh bằng <kbd>Control Shift V</kbd>. Các tệp có thể nằm trong các thư mục con.</li>
+<li>Nhấn lại <kbd>Control G</kbd> bất cứ khi nào bạn muốn: những câu thoại đã có tệp thu âm sẽ được đánh dấu bằng chữ ĐÃ THU ÂM.</li>
+</ol>
+<p>Các câu thoại chưa có bản thu âm vẫn được trình đọc màn hình đọc bình thường, vì vậy bạn có thể thu âm dần từng phần một. Nếu sau này bạn thay đổi thứ tự các bước hoặc thứ tự các câu thoại trong một nhiệm vụ, số thứ tự của chúng sẽ thay đổi: hãy tạo lại kịch bản và đổi tên các tệp tương ứng.</p>
+<p>Để chia sẻ một bản mod có giọng lồng tiếng, hãy gửi tệp mod và đính kèm riêng một thư mục chứa các bản thu âm để người dùng chép vào <strong>data\voces\propias</strong>. Hãy sử dụng giọng nói của chính bạn hoặc giọng nhân tạo mà bạn có quyền sử dụng: không dùng giọng sao chép từ người thật hoặc lấy từ các trò chơi hay phim ảnh khác.</p>
+
+<h2>6. Âm thanh</h2>
+<p>Mọi thứ bạn thêm vào đều nên có âm thanh. Mỗi địa điểm có một trường âm thanh, là âm thanh bạn nghe thấy khi đi ngang qua cửa và âm thanh nền bên trong, còn vũ khí và phương tiện cũng có âm thanh riêng của chúng. Hãy chọn một trong các âm thanh có sẵn của trò chơi trong danh sách thả xuống. Nếu bạn muốn dùng âm thanh riêng của mình, trong menu Mod chọn Thêm âm thanh riêng bằng <kbd>Control Shift A</kbd>: bạn chọn một tệp WAV, OGG, FLAC hoặc MP3, trình chỉnh sửa sẽ sao chép tệp đó vào <code>data\mods\sonidos</code> với tên không dấu và không dấu cách, và nó sẽ xuất hiện trong mọi danh sách thả xuống chọn âm thanh. Nếu tệp trùng tên với một âm thanh của trò chơi, nó sẽ được thêm tiền tố <code>mod_</code> ở phía trước: bản mod không bao giờ thay thế âm thanh gốc của trò chơi vốn thuộc về mọi gói âm thanh. Cẩm nang hướng dẫn <a href="cambiar_sonidos_vi.html">cambiar_sonidos_vi.html</a> mô tả chi tiết tất cả các âm thanh.</p>
+
+<h2>7. Kiểm tra và thử nghiệm</h2>
+<p>Phím <kbd>F5</kbd> kiểm tra bản mod và liệt kê những gì tìm thấy: các liên kết tới những thứ không tồn tại, địa điểm nằm ngoài bản đồ hoặc trên nóc tòa nhà, nhiệm vụ không có bước nào, mã định danh bị trùng lặp và các bước không nhất quán. Mỗi cảnh báo cho biết nó nằm ở phần tử nào. Hãy sửa chúng và kiểm tra lại cho đến khi không còn cảnh báo nào.</p>
+<p>Phím <kbd>F9</kbd> lưu, kiểm tra và mở trò chơi. Hãy bắt đầu một lượt chơi mới hoặc tải lượt chơi đã có và đi trải nghiệm nội dung của bạn.</p>
+<p>Nếu kết quả kiểm tra cho biết có liên kết trỏ tới một thị trấn không tồn tại, nó cũng giải thích lý do: bạn đã nhập tên thị trấn thay vì mã định danh của nó, hoặc thị trấn đó nằm trong bản mod khác. Các địa điểm dẫn tới một thị trấn phải nằm trong cùng bản mod với thị trấn đó. Khi bạn đổi mã định danh của một thị trấn trong bản mod của mình, mọi thứ trỏ tới nó như địa điểm, lối ra, cuộc đua và bản đồ hàng không sẽ tự động cập nhật theo, và trình chỉnh sửa sẽ thông báo số lượng liên kết mà nó đã thay đổi.</p>
+
+<h2>8. Kích hoạt và vô hiệu hóa mod</h2>
+<p>Phím <kbd>Control M</kbd> mở danh sách các hộp kiểm chứa tất cả các bản mod trong thư mục. Những bản mod được đánh dấu chọn là những bản mod mà trò chơi sẽ tải. Một bản mod bị vô hiệu hóa sẽ không bị xóa: tệp của nó được đổi phần mở rộng và trò chơi sẽ bỏ qua nó. Kể từ phiên bản 1.7.3, bạn cũng có thể thực hiện thao tác này ngay bên trong trò chơi, tại mục Tùy chọn, Các bản mod: bật hoặc tắt.</p>
+
+<h2>9. Chia sẻ bản mod</h2>
+<p>Gửi tệp <code>.pbm</code> từ thư mục <code>data\mods</code>. Người nhận chỉ việc sao chép tệp đó vào thư mục <code>data\mods</code> của họ. Nếu bản mod của bạn dùng âm thanh riêng, hãy gửi thêm cả các tệp âm thanh đó trong thư mục <code>data\mods\sonidos</code>, và người nhận sao chép chúng vào cùng thư mục tương ứng.</p>
+
+<h2>10. Các vấn đề thường gặp</h2>
+<ul>
+<li>Trình đọc màn hình không đọc tên trường: nhấn <kbd>Control H</kbd>.</li>
+<li>Trò chơi không hiển thị nội dung của tôi: kiểm tra bằng <kbd>Control M</kbd> để đảm bảo bản mod đã được bật và kiểm tra bằng <kbd>F5</kbd> để chắc chắn bản mod không có lỗi. Các địa điểm có nội dung người lớn chỉ xuất hiện khi tùy chọn đó được bật trong trò chơi.</li>
+<li>Tôi làm hỏng bản mod: các nội dung gốc của trò chơi không bao giờ bị ảnh hưởng. Hãy vô hiệu hóa hoặc xóa tệp mod đi và trò chơi sẽ trở lại trạng thái ban đầu.</li>
+</ul>
+
+</body>
+</html>
