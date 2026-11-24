@@ -923,6 +923,12 @@
      "saturacion_min": 25,
      "saturacion_dias": 7,
      "cupo_dia": 3,
+     "mejoras_pct": 35,
+     "chatarra_precio_pct": 20,
+     "chatarra": ["autobus=1800"],
+     "oficiales": ["patrulla", "ambulancia", "bomberos", "furgon_asalto", "blindado"],
+     "frases_oficial": ["Eso es un vehículo oficial: aquí no lo compra nadie, que se sabe de quién es y lo están buscando.", "¿Un {modelo}? Ni loco. Eso lo reconoce cualquiera, y aquí no quiero problemas."],
+     "frases_alquilado": ["Ese vehículo es alquilado: no es tuyo para venderlo. Devuélvelo o déjalo donde te digan."],
      "frases_lleno": ["Por hoy ya no compramos más. Vuelve mañana, o prueba en otro desguace.", "Hoy ya tenemos el patio lleno. Mañana hablamos.", "No me cabe ni un tornillo más hasta mañana."],
      "frases_saturado": ["Otro {modelo}... Esta semana ya me han traído {n}. No me lo quitan de las manos, así que pago menos.", "¿Otro {modelo}? Tengo {n} en el patio de estos días. Te doy lo que te doy."]}
   ],

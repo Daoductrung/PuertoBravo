@@ -667,7 +667,8 @@ def opciones(app):
                "no": tr("no, te esperan los mismos vayas con quien vayas"), "moderado": tr("moderado, algo más de oposición si vas acompañado"),
                "fuerte": tr("fuerte, bastante más oposición si vas acompañado"),
                "suave": tr("suave, se nota sin agobiar"), "exigente": tr("exigente, todo pesa más"),
-               "ambos": tr("con su nombre y su número: lunes, día 22"), "numero": tr("con su número: día 22"), "nombre": tr("con su nombre: lunes")}
+               "ambos": tr("con su nombre y su número: lunes, día 22"), "numero": tr("con su número: día 22"), "nombre": tr("con su nombre: lunes"),
+               "alfabetico": tr("en orden alfabético"), "cercania": tr("de más cerca a más lejos")}
     from .honrado import AJ as HON
     from .reconquista import AJ as REC
     OPCIONES.setdefault("detalle_voz", ["poco", "normal", "mucho"])
@@ -868,6 +869,9 @@ def opciones(app):
             lista("dia_semana", tr("Cómo se dicen los días"),
                   tr("Con la T y en los avisos del día. Con su nombre y su número, que es como viene; solo con el número, como antes; o solo con el nombre. "
                   "La partida empieza en lunes, y los locales que cierran algún día, con los horarios activados, cierran según el día de la semana.")),
+            lista("orden_lugares", tr("Orden de la lista de lugares"),
+                  tr("Cómo se ordenan los lugares en la lista del móvil, la L: en orden alfabético, que es como viene, o de más cerca a más lejos, para encontrar enseguida "
+                     "la gasolinera, el taller o el hospital más próximos. Dentro de la lista, el Tabulador, o el botón Vista, Crear o Share del mando, cambia de uno a otro.")),
             si_no("gps_voz", tr("Indicaciones habladas del GPS"),
                   tr("Con sí, mientras sigues un destino marcado en el GPS, el juego te dice cuándo y hacia dónde girar. Con no, no dice nada por el camino y solo te guía la baliza, si la tienes activada.")),
             si_no("baliza", tr("Baliza sonora del GPS"), tr("Un toque que suena desde la dirección que tienes que seguir. Al activarla se oye una muestra."),
@@ -1158,10 +1162,45 @@ def lista_lugares(p, al_elegir=None, titulo=None, mapa=None, otras=True):
                for m in p.mapas.values() if m.id != p.mundo.id]
         app.abrir(Menu(app, tr("Otras localidades"), ops, intro=tr("El GPS te guiará hasta la carretera, la estación o el embarcadero que lleva allí")))
 
+    aqui = mundo is p.mundo                                      # en otra localidad la distancia no dice nada: siempre alfabético
+
+    def por_cercania():
+        return aqui and p.cfg["orden_lugares"] == "cercania"
+
+    def orden_txt():
+        return tr("De más cerca a más lejos") if por_cercania() else tr("En orden alfabético")
+
+    def ordenados():
+        if por_cercania():
+            x, y = p.pos()
+            return sorted(mundo.lugares.values(), key=lambda l: (math.hypot(l.x - x, l.y - y), l.nombre.lower()))
+        return sorted(mundo.lugares.values(), key=lambda l: l.nombre.lower())
+
+    class MenuLugares(Menu):
+        """Un grupo de la lista: el Tabulador, o el botón Vista del mando, cambia el orden y lo deja apuntado en Opciones."""
+
+        def tecla(self, ev):
+            import pygame
+            if ev.key != pygame.K_TAB:
+                return super().tecla(ev)
+            if not aqui:
+                app.son("error")
+                _dice_menu_l(tr("Los lugares de otra localidad van siempre en orden alfabético: desde aquí, la distancia no dice nada."))
+                return
+            p.cfg["orden_lugares"] = "alfabetico" if p.cfg["orden_lugares"] == "cercania" else "cercania"
+            app.son("menu_ajuste")
+            self.i = 0
+            self.refrescar(False)
+            primero = self.opciones[0].texto if self.opciones else ""
+            _dice_menu_l(f"{orden_txt()}. {primero}")
+
+    def _dice_menu_l(texto):
+        app.decir_menu(texto)
+
     def abrir_grupo(nombre, filtro):
         def ops():
             lista = []
-            for l in sorted(mundo.lugares.values(), key=lambda l: l.nombre.lower()):
+            for l in ordenados():
                 if filtro == "propio" and l.id not in p.j.propiedades:
                     continue
                 if filtro == "nuevo" and l.id in p.j.visitados:
@@ -1181,9 +1220,11 @@ def lista_lugares(p, al_elegir=None, titulo=None, mapa=None, otras=True):
                 texto = p.situar(l.x, l.y, l.nombre) if l.mapa == p.mundo.id else l.nombre
                 lista.append(Opcion(texto + marca, ir, ayuda=l.desc))
             return lista or [Opcion(tr("No hay ningún lugar en esta lista"), ayuda=tr("En este grupo no hay nada ahora mismo. Prueba con otro grupo o con Todos los lugares."))]
-        mg = Menu(app, nombre, ops, intro=tr("En orden alfabético. Pulsa una letra para saltar, Intro para elegir y F1 para la descripción"))
+        mg = MenuLugares(app, nombre, ops, intro=orden_txt() + tr(". Pulsa una letra para saltar, Intro para elegir, F1 para la descripción y Tabulador para cambiar el orden"))
         app.abrir(mg)
-    grupos = [Opcion(n, (lambda n=n, f=f: abrir_grupo(n, f)), ayuda=tr("Los lugares de este grupo, en orden alfabético y con dónde está cada uno. Sobre un lugar, F1 dice cómo es.")) for n, f in GRUPOS]
+    grupos = [Opcion(n, (lambda n=n, f=f: abrir_grupo(n, f)),
+                     ayuda=tr("Los lugares de este grupo, con dónde está cada uno, en orden alfabético o de más cerca a más lejos, según Opciones, Orientación y avisos. "
+                              "Dentro, el Tabulador cambia el orden. Sobre un lugar, F1 dice cómo es.")) for n, f in GRUPOS]
     if al_elegir is None and mapa is None and (p.mision or p.trabajo):
         def al_objetivo():
             while len(app.pila) > 1 and app.pila[-1] is not p:
@@ -2246,7 +2287,7 @@ def _desguace(p, l):
         n = precio()
         if n <= 0:
             app.son("error")
-            app.decir(tr("Eso no lo quieren ni regalado."), True)
+            app.decir(desguace.por_que_no(v), True)
             return
         app.cerrar(m)
         if p.chofer and p.chofer.get("veh") is v:
@@ -2259,8 +2300,16 @@ def _desguace(p, l):
         if dicho:
             p.decir(dicho)
         p.dar_dinero(n, tr('Vendes {nombre}').format(nombre=(v.nombre)))
-    m = _menu_lugar(p, l, [Opcion(lambda: tr('Vender {nombre} por {precio} euros').format(nombre=(v.nombre), precio=(precio())), vender,
-                                  ayuda=tr("Te pagan al momento y el vehículo desaparece. Dan más cuanto más vale y mejor está, y menos si es robado o si ya les has vendido otros del mismo modelo. Cada desguace compra unos pocos al día."))])
+    def texto():
+        n = precio()
+        if n <= 0:
+            return tr('{nombre}: aquí no lo compran. {motivo}').format(nombre=(v.nombre), motivo=(desguace.por_que_no(v)))
+        extra = desguace.gastado_en_mejoras(v) and not desguace.robado(v)
+        return tr('Vender {nombre} por {precio} euros').format(nombre=(v.nombre), precio=(n)) + (tr(", con parte de lo que pagaste en mejoras") if extra else "")
+    m = _menu_lugar(p, l, [Opcion(texto, vender,
+                                  ayuda=tr("Te pagan al momento y el vehículo desaparece. Dan más cuanto más vale y mejor está, y menos si es robado o si ya les has vendido otros del mismo modelo. "
+                                           "De uno tuyo, comprado o mejorado en un taller, te devuelven además parte de lo que pagaste en mejoras. Un autobús, un barco o una aeronave se pagan como chatarra; "
+                                           "un vehículo oficial o uno alquilado no se compran. Cada desguace compra unos pocos al día."))])
 
 
 def _negocio(p, l):
@@ -2317,6 +2366,7 @@ def _taxi(p, l):
             x, y, d = p.mundo.plaza_junto_a(l)
             v = p.crear_vehiculo("taxi", x, y, d, None)
             v.propio = True
+            v.alquilado = True                                   # no es tuyo para venderlo en un desguace
             app.cerrar(m)
             app.decir(tr('Tienes un taxi en la calle. {situar}. Sube con F y pulsa J para empezar a hacer carreras.').format(situar=(p.situar(x, y, tr('Está')))), True)
 

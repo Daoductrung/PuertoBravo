@@ -47,6 +47,7 @@ POR_DEFECTO = {
     "voz_volumen": 100,            # de 0 a 100
     "detalle_voz": "normal",       # cuánto explica el juego al hablar: mucho, normal o poco
     "guardado_por_ranura": True,
+    "orden_lugares": "alfabetico", # la lista de lugares del móvil: alfabetico | cercania (de lo más cerca a lo más lejos)
     "dia_semana": "ambos",         # cómo se dicen los días: numero (día 22) | nombre (lunes) | ambos (lunes, día 22)
     "pasos_alternos": True,        # tus pasos, uno a cada lado (izquierda y derecha); con no, todos al centro
     "callar_sin_foco": True,       # con el juego en segundo plano no habla: no interrumpe a tu lector en otra ventana
@@ -135,6 +136,7 @@ OPCIONES = {
     "conduccion": ["asistida", "libre"],
     "piloto_estilo": ["normal", "prisa", "mucha_prisa", "temerario"],
     "dia_semana": ["ambos", "numero", "nombre"],
+    "orden_lugares": ["alfabetico", "cercania"],
     "punteria": ["completa", "manual"],
     "dificultad": ["facil", "normal", "dificil"],
     "direcciones": ["cardinal", "reloj", "relativa"],

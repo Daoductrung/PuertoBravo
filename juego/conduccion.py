@@ -359,6 +359,7 @@ class Conduccion:
         v.vel = 0.0
         if robado and not getattr(v, "propio", False):
             j.stats["vehiculos_robados"] += 1
+            v.robado = True                                      # para el desguace: no es tuyo, con papeles, hasta que lo mejores
         v.propio = True
         j.veh = v
         if v.modelo.get("vuela") and self.vuelo_real():

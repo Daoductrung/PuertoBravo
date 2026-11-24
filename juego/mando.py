@@ -109,7 +109,7 @@ POR_DEFECTO = {
                     "arriba": "cruce", "abajo": "necesidades", "izquierda": "radio_off", "derecha": "radio", "start": "ayuda", "misc": "lugares",
                     "touchpad": "lugares"},
 }
-MENU = {"a": K.K_RETURN, "b": K.K_ESCAPE, "start": K.K_ESCAPE, "y": K.K_F1, "x": K.K_PERIOD, "lb": K.K_PAGEUP, "rb": K.K_PAGEDOWN,
+MENU = {"a": K.K_RETURN, "b": K.K_ESCAPE, "start": K.K_ESCAPE, "y": K.K_F1, "x": K.K_PERIOD, "lb": K.K_PAGEUP, "rb": K.K_PAGEDOWN, "back": K.K_TAB,
         "arriba": K.K_UP, "abajo": K.K_DOWN, "izquierda": K.K_LEFT, "derecha": K.K_RIGHT}
 PANTALLA = {"a": K.K_RETURN, "b": K.K_ESCAPE, "start": K.K_ESCAPE, "x": K.K_TAB, "y": K.K_n, "lb": K.K_HOME, "rb": K.K_d, "back": K.K_F1,
             "arriba": K.K_UP, "abajo": K.K_DOWN, "izquierda": K.K_LEFT, "derecha": K.K_RIGHT}
@@ -120,6 +120,7 @@ PALANCAS_AYUDA = {
               tr("Palanca derecha abajo: pescar en el mar, o sirena en vehículos de emergencias")],
     "menu": [tr("En los menús: cruceta o palanca izquierda para moverte"), tr("A o Equis para elegir"), tr("B o Círculo para volver"),
              tr("Y o Triángulo para la ayuda de la opción"), tr("X o Cuadrado para repetir"), tr("LB y RB, o L1 y R1, para repasar los mensajes anteriores"),
+             tr("En la lista de lugares, el botón Vista, Crear o Share cambia el orden: alfabético, o de más cerca a más lejos"),
              tr("En la pantalla de espera de un servidor: A o Equis repite cómo va, B o Círculo deja de esperar, e Y o Triángulo lo explica"),
              tr("En una travesía en vuelo: cruceta arriba y abajo, altitud; cruceta izquierda y derecha, rumbo; X o Cuadrado, piloto automático; A o Equis, cómo va el vuelo; Y o Triángulo, acelerar; "
              "LB o L1, repetir a la torre; RB o R1, o B o Círculo, el menú de vuelo; y el botón Vista, Crear o Share, la ayuda"),

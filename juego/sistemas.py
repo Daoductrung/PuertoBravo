@@ -178,6 +178,7 @@ def opciones_taller(p, v, Opcion):
                 if v.canal and v is p.j.veh:                     # el escape nuevo se oye ya: el motor baja de volumen
                     v.canal.volumen(0.42 * factor_motor_volumen(v))
                 suyo = not p.es_mio(v) and p.hacer_mio(v, callar=True)      # lo que mejoras es tuyo: ya no se pierde en la calle
+                v.robado = False                                 # y a tu nombre: el desguace te lo paga como tuyo
                 app.decir(tr('{nombre} mejorado al nivel {v} de {niveles}. {resumen}.').format(nombre=(MEJORAS[cual]['nombre']), v=(n + 1), niveles=(niveles(cual)), resumen=(resumen(v)))
                           + (tr(' {nombre} queda a tu nombre: no desaparece aunque lo dejes en la calle, y lo tienes en el móvil, en Mis vehículos.').format(nombre=(v.nombre)) if suyo else ""), True)
         return f

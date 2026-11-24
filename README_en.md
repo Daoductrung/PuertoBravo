@@ -493,7 +493,7 @@ Thanks to everyone who has helped make Puerto Bravo better through GitHub. Whene
 
 ### Code, translations and mods
 
-- [patricus3](https://github.com/patricus3): the careless style of the GPS autopilot and the El Diablo mod, a hitman agency with its own missions and contracts. Their reports and suggestions also brought the English release notes and the hurried driving styles, building on any Windows, fixes for failing tests and each game saving to its own slot.
+- [patricus3](https://github.com/patricus3): the careless style of the GPS autopilot and the El Diablo mod, a hitman agency with its own missions and contracts. Their reports and suggestions also brought the English release notes and the hurried driving styles, building on any Windows, fixes for failing tests, each game saving to its own slot, the scrapyard paying for your vehicles' upgrades and the places list sorted from nearest to farthest.
 - [Daoductrung](https://github.com/Daoductrung): the Vietnamese translation of the game, all of its documentation and the Marisma Negra mod.
 - [leoguimaoficial](https://github.com/leoguimaoficial): the complete Brazilian Portuguese translation and its corrections.
 

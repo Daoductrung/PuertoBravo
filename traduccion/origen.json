@@ -1860,6 +1860,9 @@
 ", con ingreso en prisión": [
 "juego/combate.py"
 ],
+", con parte de lo que pagaste en mejoras": [
+"juego/menus_juego.py"
+],
 ", con una bala": [
 "juego/calle.py"
 ],
@@ -2291,6 +2294,9 @@
 ". Pide {pide}": [
 "juego/menus_honrado.py",
 "juego/menus_honrado.py"
+],
+". Pulsa una letra para saltar, Intro para elegir, F1 para la descripción y Tabulador para cambiar el orden": [
+"juego/menus_juego.py"
 ],
 ". Recurrirla con un abogado cuesta {hon_abogado_precio} euros": [
 "juego/menus_honrado.py"
@@ -11623,6 +11629,9 @@
 "Cómo se llama el servidor, qué se le dice a quien entra y cuánta gente cabe.": [
 "servidor/opciones.py"
 ],
+"Cómo se ordenan los lugares en la lista del móvil, la L: en orden alfabético, que es como viene, o de más cerca a más lejos, para encontrar enseguida la gasolinera, el taller o el hospital más próximos. Dentro de la lista, el Tabulador, o el botón Vista, Crear o Share del mando, cambia de uno a otro.": [
+"juego/menus_juego.py"
+],
 "Cómo se pilota: la ayuda de esta pantalla": [
 "juego/vuelo_pantalla.py"
 ],
@@ -12107,6 +12116,9 @@
 "De lejos. De noche se oyen bien los pasos.": [
 "data/mods/noches_de_neon.json"
 ],
+"De lo que costaron las mejoras, cuánto devuelve, por ciento": [
+"editor/esquema.py"
+],
 "De los que sobraron en el polvorín. Más potente que una granada: aléjate después de lanzarlo.": [
 "data/mods/penas_altas.json"
 ],
@@ -12142,6 +12154,9 @@
 ],
 "De momento no hay nadie más. ": [
 "juego/enlinea.py"
+],
+"De más cerca a más lejos": [
+"juego/menus_juego.py"
 ],
 "De mí se enamoran. Yo no.": [
 "juego/respuestas_datos2.py"
@@ -12892,6 +12907,10 @@
 "juego/extras3.py"
 ],
 "Desguace": [
+"editor/esquema.py",
+"editor/esquema.py",
+"editor/esquema.py",
+"editor/esquema.py",
 "editor/esquema.py",
 "editor/esquema.py",
 "editor/esquema.py",
@@ -17637,6 +17656,9 @@
 "En la libreta están todos los taxis de la ciudad, y al final una matrícula subrayada dos veces.": [
 "data/mods/noches_de_neon.json"
 ],
+"En la lista de lugares, el botón Vista, Crear o Share cambia el orden: alfabético, o de más cerca a más lejos": [
+"juego/mando.py"
+],
 "En la lonja de San Lucero ya no se paga a nadie por descargar. Doña Remedios preside la junta del mercado y te guarda siempre el primer plato. De Los Lagartos queda una pintada medio borrada.": [
 "data/datos/misiones_extra2.json"
 ],
@@ -17821,7 +17843,7 @@
 "editor/esquema.py",
 "editor/esquema.py"
 ],
-"En orden alfabético. Pulsa una letra para saltar, Intro para elegir y F1 para la descripción": [
+"En orden alfabético": [
 "juego/menus_juego.py"
 ],
 "En persona": [
@@ -19119,6 +19141,10 @@
 "Ese número ya lo llevas para ese sorteo: {cifras}.": [
 "juego/loteria.py"
 ],
+"Ese vehículo es alquilado: no es tuyo para venderlo. Devuélvelo o déjalo donde te digan.": [
+"juego/desguace.py",
+"data/datos/vida.json"
+],
 "Ese vehículo es de tu banda, y lo lleva tu chófer: no se puede guardar, vender ni mejorar.": [
 "juego/misvehiculos.py"
 ],
@@ -19178,6 +19204,10 @@
 "Eso es todo. La conexión no va cifrada: no escribas nada que no dirías en voz alta. Que lo paséis bien.": [
 "data/datos/misiones.json"
 ],
+"Eso es un vehículo oficial: aquí no lo compra nadie, que se sabe de quién es y lo están buscando.": [
+"juego/desguace.py",
+"data/datos/vida.json"
+],
 "Eso es verdad.": [
 "juego/respuestas.py"
 ],
@@ -19220,7 +19250,7 @@
 "servidor/nucleo.py"
 ],
 "Eso no lo quieren ni regalado.": [
-"juego/menus_juego.py"
+"juego/desguace.py"
 ],
 "Eso no lo sabe ni el alcalde.": [
 "juego/respuestas.py"
@@ -20841,6 +20871,8 @@
 "juego/catalogo_sonidos.py"
 ],
 "Frases": [
+"editor/esquema.py",
+"editor/esquema.py",
 "editor/esquema.py",
 "editor/esquema.py",
 "editor/esquema.py",
@@ -27797,6 +27829,12 @@
 "Lo que dice al salir": [
 "editor/esquema.py"
 ],
+"Lo que dice ante un vehículo alquilado": [
+"editor/esquema.py"
+],
+"Lo que dice ante un vehículo oficial": [
+"editor/esquema.py"
+],
 "Lo que dice cuando no hay destino marcado": [
 "editor/esquema.py"
 ],
@@ -27957,6 +27995,9 @@
 ],
 "Lo que no tiene botón propio en el mando": [
 "juego/mando.py"
+],
+"Lo que paga como chatarra por los modelos sin valor": [
+"editor/esquema.py"
 ],
 "Lo que paga como poco, aunque esté saturado, por ciento": [
 "editor/esquema.py"
@@ -28817,7 +28858,10 @@
 "Los libros del prestamista están en la fábrica vieja, y no está sola.": [
 "data/datos/misiones_extra2.json"
 ],
-"Los lugares de este grupo, en orden alfabético y con dónde está cada uno. Sobre un lugar, F1 dice cómo es.": [
+"Los lugares de este grupo, con dónde está cada uno, en orden alfabético o de más cerca a más lejos, según Opciones, Orientación y avisos. Dentro, el Tabulador cambia el orden. Sobre un lugar, F1 dice cómo es.": [
+"juego/menus_juego.py"
+],
+"Los lugares de otra localidad van siempre en orden alfabético: desde aquí, la distancia no dice nada.": [
 "juego/menus_juego.py"
 ],
 "Los lugares la eligen por él en su campo Carta. Si coincide con una carta del juego, la sustituye entera.": [
@@ -30811,6 +30855,9 @@
 "juego/menus_charla.py"
 ],
 "Modelos a la venta": [
+"editor/esquema.py"
+],
+"Modelos oficiales, que no compra nadie": [
 "editor/esquema.py"
 ],
 "Moderado": [
@@ -34015,6 +34062,9 @@
 "Operación salida: hoy hay mucho más tráfico.": [
 "juego/azar.py"
 ],
+"Orden de la lista de lugares": [
+"juego/menus_juego.py"
+],
 "Orden en la línea de tranvía": [
 "editor/esquema.py"
 ],
@@ -36452,6 +36502,9 @@
 ],
 "Por lo robado el prestamista paga mucho menos: sabe de dónde viene.": [
 "juego/mochila.py"
+],
+"Por los demás modelos sin valor, este por ciento de su precio": [
+"editor/esquema.py"
 ],
 "Por mar también se llega a muchos sitios, si tienes barca.": [
 "juego/respuestas_datos1.py"
@@ -40442,6 +40495,9 @@
 "Se suma a la defensa del barrio.": [
 "editor/esquema.py"
 ],
+"Se suma al valor del vehículo, según cómo esté. De uno robado, además, solo la parte de lo robado. Con 0, las mejoras no cuentan.": [
+"editor/esquema.py"
+],
 "Se te acaba la concentración. Tiempo normal.": [
 "juego/partida.py"
 ],
@@ -43366,7 +43422,7 @@
 "Te paga el 40 por ciento de lo que cuesta nueva. El arma deja de ser tuya y, si la llevabas en la mano, te quedas con los puños.": [
 "juego/menus_lugares.py"
 ],
-"Te pagan al momento y el vehículo desaparece. Dan más cuanto más vale y mejor está, y menos si es robado o si ya les has vendido otros del mismo modelo. Cada desguace compra unos pocos al día.": [
+"Te pagan al momento y el vehículo desaparece. Dan más cuanto más vale y mejor está, y menos si es robado o si ya les has vendido otros del mismo modelo. De uno tuyo, comprado o mejorado en un taller, te devuelven además parte de lo que pagaste en mejoras. Un autobús, un barco o una aeronave se pagan como chatarra; un vehículo oficial o uno alquilado no se compran. Cada desguace compra unos pocos al día.": [
 "juego/menus_juego.py"
 ],
 "Te pedirá la dirección que te ha dado tu amigo y la contraseña, si tiene.": [
@@ -45858,6 +45914,9 @@
 "Un barco no sigue carriles: se gobierna a mano. Flecha arriba acelera, flecha abajo frena y da marcha atrás, y las flechas izquierda y derecha giran el timón. La C te dice el rumbo.": [
 "data/datos/misiones.json"
 ],
+"Un barco o una aeronave sin valor de mercado, pero con precio de venta, se paga como chatarra a esta parte de su precio.": [
+"editor/esquema.py"
+],
 "Un barco pequeño. Para salir yo sol{o}, sin nadie.": [
 "juego/respuestas_datos2.py"
 ],
@@ -47542,6 +47601,10 @@
 "Una por línea; dice una al azar. {lugar} es el sitio y {modelo}, el vehículo.": [
 "editor/esquema.py"
 ],
+"Una por línea; puede llevar {modelo}.": [
+"editor/esquema.py",
+"editor/esquema.py"
+],
 "Una por línea; se dice una al azar. ": [
 "editor/esquema_golpes.py",
 "editor/esquema_honrado.py",
@@ -47723,6 +47786,9 @@
 "juego/agente.py",
 "data/datos/vida.json"
 ],
+"Uno por línea, con el identificador del modelo: patrulla, ambulancia...": [
+"editor/esquema.py"
+],
 "Uno por línea, con el nombre interno del tema de la base de conversación: tiempo, futbol, trabajo_duro, dinero, comida... Si lo dejas vacío, valen los de serie.": [
 "editor/esquema.py"
 ],
@@ -47800,6 +47866,9 @@
 "Uno por línea: el nombre interno del tipo, un signo igual y los segundos. Por ejemplo, banco=26.": [
 "editor/esquema_golpes.py"
 ],
+"Uno por línea: modelo=euros, por ejemplo autobus=1800. Vale para los modelos que no tienen valor de mercado.": [
+"editor/esquema.py"
+],
 "Uno quería hacerse el héroe. Ya no quiere.": [
 "juego/golpes.py",
 "data/datos/vida.json"
@@ -47807,7 +47876,7 @@
 "Uno se revuelve contra ti": [
 "editor/esquema.py"
 ],
-"Uno tuyo, comprado o mejorado, se paga entero según su valor y su estado; uno robado, solo esta parte.": [
+"Uno tuyo, comprado o mejorado en un taller, se paga entero según su valor y su estado; uno robado, solo esta parte.": [
 "editor/esquema.py"
 ],
 "Uno, si hace falta.": [
@@ -51319,6 +51388,9 @@
 "de la tarde": [
 "juego/partida.py"
 ],
+"de más cerca a más lejos": [
+"juego/menus_juego.py"
+],
 "de pocas palabras": [
 "juego/gente.py",
 "data/datos/gente.json"
@@ -52127,6 +52199,9 @@
 "en masculino": [
 "juego/genero.py",
 "juego/menus_vida.py"
+],
+"en orden alfabético": [
+"juego/menus_juego.py"
 ],
 "en paro": [
 "data/datos/gente.json"
@@ -53263,7 +53338,7 @@
 "lista de lugares": [
 "juego/mando.py"
 ],
-"lista de lugares de la ciudad para marcar un destino": [
+"lista de lugares de la ciudad para marcar un destino. Dentro de un grupo, Tabulador cambia el orden: alfabético, o de más cerca a más lejos": [
 "juego/ayuda.py"
 ],
 "lleva demasiado sin comer y ya no tiene fuerzas para buscar. Dale de comer.": [
@@ -57429,6 +57504,9 @@
 "{nombre}: al suelo.": [
 "juego/combate.py"
 ],
+"{nombre}: aquí no lo compran. {motivo}": [
+"juego/menus_juego.py"
+],
 "{nombre}: de {banda_de_barrio}. ": [
 "juego/menus_extra.py"
 ],
@@ -59613,6 +59691,10 @@
 ],
 "¿Un secreto? Soy la persona ideal. No se lo cuento a nadie... a nadie que no me pregunte.": [
 "juego/respuestas_datos2.py"
+],
+"¿Un {modelo}? Ni loco. Eso lo reconoce cualquiera, y aquí no quiero problemas.": [
+"juego/desguace.py",
+"data/datos/vida.json"
 ],
 "¿Vendes {nombre} al mercado por {v} euros? Vuelve a estar en venta para cualquiera": [
 "juego/menus_enlinea.py"

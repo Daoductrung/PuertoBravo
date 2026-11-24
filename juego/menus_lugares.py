@@ -250,6 +250,7 @@ def aeropuerto(p, l):
             v = p.crear_vehiculo(modelo, x, y, d, "aparcado")
             v.cerrado = False
             v.propio = True
+            v.alquilado = True                                   # no es tuyo para venderlo en un desguace
             p.son("llegada", cat="interfaz")
             app.cerrar(m)
             p.fijar_gps(x, y, v.nombre, auto=True, radio=4, callar=True)
