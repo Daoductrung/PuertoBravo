@@ -3709,8 +3709,8 @@
   ]
  },
  "mod-marisma_negra": {
-  "version": 3,
-  "huella": "d608b5bf79d1d5d14d99a9d77f6c5d88205babb6534954f33468ac2192fc1621",
+  "version": 4,
+  "huella": "bb40d337bf0f403ca059c82e49ecf91d6d8071676db2433dc1e08a592ae42d7d",
   "archivos": [
    "data/mods/marisma_negra.pbm",
    "data/idiomas/en/mods/marisma_negra.json",
@@ -3982,13 +3982,16 @@
   ]
  },
  "idioma-vi": {
-  "version": 3,
-  "huella": "592a77670436043ae3ae9101704d3e016ce3e4c49919312e856ebf0ad1aeba91",
+  "version": 4,
+  "huella": "4f015c171655342e6cf2db83fd028cffba8e8843d50150a39abc4850093da8df",
   "archivos": [
    "data/idiomas/vi/idioma.json",
    "data/idiomas/vi/palabras.json",
    "data/idiomas/vi/textos.json",
    "data/docs/cambiar_sonidos_vi.html",
+   "data/docs/editor_mods_vi.html",
+   "data/docs/manual_vi.html",
+   "data/docs/servidor_vi.html",
    "data/docs/teclas_vi.html"
   ]
  },

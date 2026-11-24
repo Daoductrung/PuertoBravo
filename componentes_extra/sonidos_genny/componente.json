@@ -2,13 +2,21 @@
   "id": "sonidos-genny",
   "tipo": "sonidos",
   "nombre": "Genny",
-  "nombres": {"en": "Genny", "vi": "Genny"},
+  "nombres": {
+    "en": "Genny",
+    "vi": "Genny",
+    "pt": "Genny"
+  },
   "descripcion": "Pack de sonidos Genny: los 282 sonidos del juego, todos generados por síntesis con genny, sin grabaciones ni sonidos de otros packs. Cada sonido es distinto de los demás y sigue la lógica del juego: lo bueno sube, lo malo baja y las señales para orientarse son cortas y claras. Se elige en Opciones, Sonido y música, Pack de sonidos.",
   "descripciones": {
     "en": "Genny sound pack: all 282 sounds of the game, every one synthesized with genny, with no recordings and no sounds from other packs. Each sound is different from the rest and follows the game's logic: good things rise, bad things fall and the orientation signals are short and clear. Choose it in Options, Sound and music, Sound pack.",
-    "vi": "Gói âm thanh Genny: toàn bộ 282 âm thanh của trò chơi, tất cả đều được tổng hợp bằng genny, không có bản ghi âm và không lấy âm thanh từ các gói khác. Mỗi âm thanh đều khác nhau và theo logic của trò chơi: điều tốt đi lên, điều xấu đi xuống, và các tín hiệu định hướng ngắn gọn, rõ ràng. Chọn trong Tùy chọn, Âm thanh và âm nhạc, Gói âm thanh."
+    "vi": "Gói âm thanh Genny: toàn bộ 282 âm thanh của trò chơi, tất cả đều được tổng hợp bằng genny, không có bản ghi âm và không lấy âm thanh từ các gói khác. Mỗi âm thanh đều khác nhau và theo logic của trò chơi: điều tốt đi lên, điều xấu đi xuống, và các tín hiệu định hướng ngắn gọn, rõ ràng. Chọn trong Tùy chọn, Âm thanh và âm nhạc, Gói âm thanh.",
+    "pt": "Pacote de sons Genny: os 282 sons do jogo, todos gerados por síntese com o genny, sem gravações nem sons de outros pacotes. Cada som é diferente dos outros e segue a lógica do jogo: o que é bom sobe, o que é ruim desce e os sinais de orientação são curtos e claros. Escolha-o em Opções, Som e música, Pacote de sons."
   },
   "archivos": [
-    {"carpeta": "pack", "destino": "data/sonidos/genny"}
+    {
+      "carpeta": "pack",
+      "destino": "data/sonidos/genny"
+    }
   ]
 }
