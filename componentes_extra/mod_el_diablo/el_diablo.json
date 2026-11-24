@@ -1,0 +1,422 @@
+{
+ "info": {
+  "nombre": "El Diablo",
+  "autor": "patricus",
+  "version": "1.0",
+  "descripcion": "Una agencia de sicarios en la trastienda de un bar del puerto, El Purgatorio, y el hombre que la lleva: El Diablo. Él no avisa ni negocia: solo da nombres. Cuatro misiones de muertes y persecuciones, cinco contratos nuevos en los tablones de encargos y un revólver silenciado, el Cuerno del Diablo."
+ },
+ "lugares": [
+  {
+   "id": "di_agencia",
+   "nombre": "El Purgatorio, la agencia de El Diablo",
+   "tipo": "taberna",
+   "mapa": "puerto_bravo",
+   "bloque": [
+    7,
+    4
+   ],
+   "lado": "S",
+   "pos": 50,
+   "desc": "Un bar sin letrero con la persiana a medio bajar. En la trastienda, detrás de una cortina roja, El Diablo reparte nombres. En el tablón de la barra cuelgan sus contratos.",
+   "sonido": "lugar_bar"
+  }
+ ],
+ "misiones": [
+  {
+   "id": "di01",
+   "titulo": "El primer nombre",
+   "capitulo": 61,
+   "contacto": "El Diablo",
+   "lugar": "di_agencia",
+   "requiere": [
+    "m01"
+   ],
+   "resumen": "En la trastienda de El Purgatorio, un hombre de traje rojo oscuro dice que tiene trabajo para gente que no hace preguntas.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Diablo",
+       "Siéntate. Me llaman El Diablo. No por lo que hago: porque nunca aviso."
+      ],
+      [
+       "Dani",
+       "¿Y qué haces?"
+      ],
+      [
+       "El Diablo",
+       "Doy nombres. Tú los tachas. Sin cartas, sin amenazas, sin segundas oportunidades."
+      ],
+      [
+       "El Diablo",
+       "El primero: Tano el Gordo. Bebe en el Bar La Gaviota con dos gorilas. Cuando salgas de allí, que no quede ninguno de pie."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Ve al Bar La Gaviota y acaba con Tano el Gordo y sus dos guardaespaldas.",
+     "lugar": "bar_gaviota",
+     "enemigos": [
+      {
+       "n": 1,
+       "tipo": "Tano el Gordo",
+       "arma": "pistola",
+       "salud": 110
+      },
+      {
+       "n": 2,
+       "tipo": "Gorila de Tano",
+       "arma": "pistola",
+       "salud": 70
+      }
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a El Purgatorio a cobrar.",
+     "lugar": "di_agencia"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Diablo",
+       "Ni una palabra de más, ni un tiro de menos. Me gusta."
+      ],
+      [
+       "El Diablo",
+       "Vuelve cuando quieras otro nombre. Y mira el tablón de la barra: ahí cuelgo los encargos pequeños."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 900
+   }
+  },
+  {
+   "id": "di02",
+   "titulo": "Pies ligeros",
+   "capitulo": 61,
+   "contacto": "El Diablo",
+   "lugar": "di_agencia",
+   "requiere": [
+    "di01"
+   ],
+   "resumen": "Alguien ha avisado a los hermanos Lobo de que El Diablo tiene su nombre. Se van de la ciudad.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Diablo",
+       "Los hermanos Lobo me deben una cosa que no se devuelve con dinero. Y alguien les ha ido con el cuento."
+      ],
+      [
+       "El Diablo",
+       "Están cargando un sedán en el Desguace Hierro Viejo. Que no salgan de Puerto Bravo."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y destroza el sedán de los hermanos Lobo antes de cinco minutos. Fíjalo con la Q.",
+     "lugar": "desguace",
+     "limite": 300,
+     "modelo": "sedan",
+     "nombre": "el sedán de los hermanos Lobo",
+     "salud": 170
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a El Purgatorio.",
+     "lugar": "di_agencia"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Diablo",
+       "Los Lobo ya no corren. Bien."
+      ],
+      [
+       "El Diablo",
+       "Lo que me preocupa es quién les avisó. Eso lo sabremos pronto."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1300
+   }
+  },
+  {
+   "id": "di03",
+   "titulo": "Todo al rojo",
+   "capitulo": 61,
+   "contacto": "El Diablo",
+   "lugar": "di_agencia",
+   "requiere": [
+    "di02"
+   ],
+   "resumen": "El chivato que avisó a los Lobo es Rubén Saldaña, y se está jugando el dinero en el Casino Belmonte.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Diablo",
+       "Rubén Saldaña. Trabajaba para mí y vendía mis nombres a quien pagase más."
+      ],
+      [
+       "El Diablo",
+       "Está en el Casino Belmonte con cuatro matones de alquiler. Entra por la puerta principal. Que lo oigan."
+      ]
+     ]
+    },
+    {
+     "tipo": "ir",
+     "texto": "Ve al Casino Belmonte y llega hasta la puerta, a pie.",
+     "lugar": "casino",
+     "radio": 9
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Empujas la puerta y las ruletas siguen girando. Saldaña te ve y grita. Acaba con todos.",
+     "lugar": "casino",
+     "enemigos": [
+      {
+       "n": 1,
+       "tipo": "Rubén Saldaña",
+       "arma": "pistola",
+       "salud": 110
+      },
+      {
+       "n": 2,
+       "tipo": "Matón de alquiler",
+       "arma": "pistola",
+       "salud": 75
+      },
+      {
+       "n": 2,
+       "tipo": "Matón de alquiler",
+       "arma": "subfusil",
+       "salud": 75
+      }
+     ],
+     "ya": true
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a El Purgatorio.",
+     "lugar": "di_agencia"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Diablo",
+       "Saldaña no vendía mis nombres por gusto. Se los compraban Los Arcángeles."
+      ],
+      [
+       "El Diablo",
+       "Otra agencia. Y ahora saben que existes."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 1800
+   }
+  },
+  {
+   "id": "di04",
+   "titulo": "El Diablo no perdona",
+   "capitulo": 61,
+   "contacto": "El Diablo",
+   "lugar": "di_agencia",
+   "requiere": [
+    "di03"
+   ],
+   "resumen": "Los Arcángeles vienen a El Purgatorio a por El Diablo, y a por ti.",
+   "final_titulo": "El Diablo: una sola agencia en Puerto Bravo",
+   "final": "Esa noche El Diablo cierra la persiana de El Purgatorio y sirve dos copas. Desde mañana, en Puerto Bravo solo hay una lista de nombres, y la llevas tú en el bolsillo.",
+   "pasos": [
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Diablo",
+       "Ya vienen. Un coche en la puerta y otro dando la vuelta a la manzana."
+      ],
+      [
+       "El Diablo",
+       "Los Arcángeles no avisan tampoco. Eso es lo único que tenemos en común."
+      ]
+     ]
+    },
+    {
+     "tipo": "eliminar",
+     "texto": "Los Arcángeles entran en El Purgatorio y llegan más en coche. Que no quede ninguno.",
+     "lugar": "di_agencia",
+     "enemigos": [
+      {
+       "n": 3,
+       "tipo": "Arcángel",
+       "arma": "pistola",
+       "salud": 80
+      },
+      {
+       "n": 1,
+       "tipo": "Arcángel",
+       "arma": "escopeta",
+       "salud": 85
+      },
+      {
+       "n": 2,
+       "clase": "escolta_motorizada"
+      }
+     ],
+     "ya": true
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Diablo",
+       "Su jefe, Gabriel, se escapa en el sedán blanco. Ese es el último nombre de la lista."
+      ]
+     ]
+    },
+    {
+     "tipo": "perseguir",
+     "texto": "Alcanza y destroza el sedán blanco de Gabriel antes de cinco minutos.",
+     "lugar": "di_agencia",
+     "limite": 300,
+     "modelo": "sedan",
+     "nombre": "el sedán blanco de Gabriel",
+     "salud": 260
+    },
+    {
+     "tipo": "ir",
+     "texto": "Vuelve a El Purgatorio.",
+     "lugar": "di_agencia"
+    },
+    {
+     "tipo": "dialogo",
+     "lineas": [
+      [
+       "El Diablo",
+       "Gabriel quería mi trastienda. Ahora no le hace falta nada."
+      ],
+      [
+       "El Diablo",
+       "Toma. El Cuerno del Diablo. No hace ruido, y tú tampoco lo harás."
+      ]
+     ]
+    }
+   ],
+   "recompensa": {
+    "dinero": 3000,
+    "arma": "di_cuerno",
+    "balas": 18
+   }
+  }
+ ],
+ "armas": [
+  {
+   "id": "di_cuerno",
+   "nombre": "Cuerno del Diablo",
+   "tipo": "fuego",
+   "dano": 50,
+   "alcance": 38,
+   "cadencia": 0.8,
+   "precision": 0.93,
+   "cargador": 6,
+   "sonido": "disparo_silenciado",
+   "ruido": 0,
+   "precio": 4800,
+   "balas": 12,
+   "precio_balas": 90,
+   "desc": "Un revólver negro con silenciador y la culata de hueso. Pega como un revólver y suena como una puerta que se cierra."
+  }
+ ],
+ "capitulos": {
+  "61": "El Diablo"
+ },
+ "contratos": [
+  {
+   "id": "di_sin_aviso",
+   "nombre": "El Diablo: sin aviso",
+   "situacion": "eliminar",
+   "peso": 2,
+   "paga": 1100,
+   "paga_escolta": 450,
+   "resumen": "{quien} está en {lugar} con {n} guardaespaldas, y El Diablo no quiere que vea amanecer. Ni avisos ni conversaciones.",
+   "objetivo": "objetivo_contrato",
+   "escolta": "guardaespaldas"
+  },
+  {
+   "id": "di_caceria",
+   "nombre": "El Diablo: cacería",
+   "situacion": "huye",
+   "peso": 2,
+   "desde": 1,
+   "paga": 1300,
+   "paga_escolta": 200,
+   "resumen": "{quien} sabe que El Diablo tiene su nombre y sale de {lugar} en un {modelo}. No le dejes llegar a la autovía.",
+   "modelos": [
+    "sedan",
+    "todoterreno",
+    "utilitario"
+   ],
+   "salud_vehiculo": 170
+  },
+  {
+   "id": "di_puerta",
+   "nombre": "El Diablo: puerta a puerta",
+   "situacion": "local",
+   "peso": 2,
+   "desde": 1,
+   "paga": 1200,
+   "paga_escolta": 420,
+   "resumen": "{quien} se ha encerrado en {lugar} con {n} de los suyos, creyendo que ahí dentro no entra nadie. El Diablo dice que entres.",
+   "objetivo": "objetivo_contrato",
+   "escolta": "maton",
+   "locales": [
+    "club",
+    "casino",
+    "bar",
+    "taberna",
+    "hotel"
+   ]
+  },
+  {
+   "id": "di_rastro",
+   "nombre": "El Diablo: el rastro",
+   "situacion": "seguir",
+   "peso": 2,
+   "desde": 2,
+   "paga": 1400,
+   "paga_escolta": 350,
+   "resumen": "Nadie sabe dónde duerme {quien}, pero su recadero sale de {lugar}. Síguele, y cuando llegue, termina el trabajo.",
+   "objetivo": "objetivo_contrato",
+   "escolta": "guardaespaldas"
+  },
+  {
+   "id": "di_convoy",
+   "nombre": "El Diablo: el convoy",
+   "situacion": "escolta_vehiculo",
+   "peso": 2,
+   "desde": 3,
+   "paga": 1600,
+   "paga_escolta": 480,
+   "resumen": "{quien} va a {lugar} con {n} de escolta, y más gente suya llegará en coche en cuanto suene el primer tiro. El Diablo paga por todos.",
+   "objetivo": "objetivo_contrato",
+   "escolta": "guardaespaldas",
+   "refuerzo": "escolta_motorizada"
+  }
+ ]
+}
