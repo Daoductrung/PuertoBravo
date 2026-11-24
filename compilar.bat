@@ -111,6 +111,7 @@ if exist "data\mods\penas_altas.json" copy /y "data\mods\penas_altas.json" "%D%\
 if exist "data\mods\isla_de_los_vientos.json" copy /y "data\mods\isla_de_los_vientos.json" "%D%\data\mods" >nul
 if exist "data\mods\noches_de_neon.json" copy /y "data\mods\noches_de_neon.json" "%D%\data\mods" >nul
 if exist "data\mods\bahia_del_ocaso.json" copy /y "data\mods\bahia_del_ocaso.json" "%D%\data\mods" >nul
+if exist "data\mods\el_diablo.json" copy /y "data\mods\el_diablo.json" "%D%\data\mods" >nul
 if exist "LEEME.txt" copy /y "LEEME.txt" "%D%\LEEME.txt" >nul
 rem En cada idioma, su LEEME con nombre que se entienda en ese idioma: README_en.txt, README_vi.txt...
 if exist "README_*.txt" copy /y "README_*.txt" "%D%" >nul

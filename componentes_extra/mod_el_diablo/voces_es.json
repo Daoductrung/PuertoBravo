@@ -1,0 +1,184 @@
+{
+"di01_1_1": {
+"texto": "Siéntate. Me llaman El Diablo. No por lo que hago: porque nunca aviso.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Siéntate, me llaman el diablo, no por lo que hago porque nunca aviso.",
+"guardada": true
+},
+"di01_1_2": {
+"texto": "¿Y qué haces?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y qué haces?",
+"guardada": true
+},
+"di01_1_2@dani_m": {
+"texto": "¿Y qué haces?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y qué haces?",
+"guardada": true
+},
+"di01_1_2@alex_h": {
+"texto": "¿Y qué haces?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y qué haces?",
+"guardada": true
+},
+"di01_1_2@alex_m": {
+"texto": "¿Y qué haces?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y qué haces?",
+"guardada": true
+},
+"di01_1_2@sam_h": {
+"texto": "¿Y qué haces?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y qué haces?",
+"guardada": true
+},
+"di01_1_2@sam_m": {
+"texto": "¿Y qué haces?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y qué haces?",
+"guardada": true
+},
+"di01_1_2@cris_h": {
+"texto": "¿Y qué haces?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "¿Y qué haces?",
+"guardada": true
+},
+"di01_1_2@cris_m": {
+"texto": "¿Y qué haces?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "y que haces.",
+"guardada": true
+},
+"di01_1_3": {
+"texto": "Doy nombres. Tú los tachas. Sin cartas, sin amenazas, sin segundas oportunidades.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Doy nombres, tú los tachas, sin cartas, sin amenazas, sin segundas oportunidades.",
+"guardada": true
+},
+"di01_1_4": {
+"texto": "El primero: Tano el Gordo. Bebe en el Bar La Gaviota con dos gorilas. Cuando salgas de allí, que no quede ninguno de pie.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "El primero, tano el gordo, bebe en el bar la gaviota con dos gorilas, cuando salgas de allí que no quede ninguno de pie.",
+"guardada": true
+},
+"di01_4_1": {
+"texto": "Ni una palabra de más, ni un tiro de menos. Me gusta.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "ni una palabra de más, ni un tiro de menos. Me gusta.",
+"guardada": true
+},
+"di01_4_2": {
+"texto": "Vuelve cuando quieras otro nombre. Y mira el tablón de la barra: ahí cuelgo los encargos pequeños.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "vuelve cuando quieras otro nombre y mira el tablón de la barra, ahí cuelgo los encargos pequeños.",
+"guardada": true
+},
+"di02_1_1": {
+"texto": "Los hermanos Lobo me deben una cosa que no se devuelve con dinero. Y alguien les ha ido con el cuento.",
+"quien": "El Diablo",
+"nota": 0.99,
+"oido": "Los hermanos logo me deben una cosa que no se devuelve con dinero, y alguien les ha ido con el cuento.",
+"guardada": true
+},
+"di02_1_2": {
+"texto": "Están cargando un sedán en el Desguace Hierro Viejo. Que no salgan de Puerto Bravo.",
+"quien": "El Diablo",
+"nota": 0.975,
+"oido": "Están cargando un sedán en el desguasi hierro viejo, que no salgan de Puerto Bravo.",
+"guardada": true
+},
+"di02_4_1": {
+"texto": "Los Lobo ya no corren. Bien.",
+"quien": "El Diablo",
+"nota": 0.962,
+"oido": "Los logo ya no corren. Bien.",
+"guardada": true
+},
+"di02_4_2": {
+"texto": "Lo que me preocupa es quién les avisó. Eso lo sabremos pronto.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Lo que me preocupa es quién les avisó. Eso lo sabremos pronto.",
+"guardada": true
+},
+"di03_1_1": {
+"texto": "Rubén Saldaña. Trabajaba para mí y vendía mis nombres a quien pagase más.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Rubén Saldana. Trabajaba para mí y vendía mis nombres a quien pagase más.",
+"guardada": true
+},
+"di03_1_2": {
+"texto": "Está en el Casino Belmonte con cuatro matones de alquiler. Entra por la puerta principal. Que lo oigan.",
+"quien": "El Diablo",
+"nota": 0.99,
+"oido": "está en el casino Belmonte con cuatro matones de Alquilev. Entra por la puerta principal. Que lo oigan.",
+"guardada": true
+},
+"di03_5_1": {
+"texto": "Saldaña no vendía mis nombres por gusto. Se los compraban Los Arcángeles.",
+"quien": "El Diablo",
+"nota": 0.993,
+"oido": "Saldanya no vendía mis nombres por gusto. Se los compraban los arcángeles.",
+"guardada": true
+},
+"di03_5_2": {
+"texto": "Otra agencia. Y ahora saben que existes.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "otra agencia. Y ahora saben que existes.",
+"guardada": true
+},
+"di04_1_1": {
+"texto": "Ya vienen. Un coche en la puerta y otro dando la vuelta a la manzana.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Ya vienen, un coche en la puerta y otro dando la vuelta a la manzana.",
+"guardada": true
+},
+"di04_1_2": {
+"texto": "Los Arcángeles no avisan tampoco. Eso es lo único que tenemos en común.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Los arcángeles no avisan tampoco, eso es lo único que tenemos en común.",
+"guardada": true
+},
+"di04_3_1": {
+"texto": "Su jefe, Gabriel, se escapa en el sedán blanco. Ese es el último nombre de la lista.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Su jefe, Gabriel, se escapa en el sedán blanco. Ese es el último nombre de la lista.",
+"guardada": true
+},
+"di04_6_1": {
+"texto": "Gabriel quería mi trastienda. Ahora no le hace falta nada.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Gabriel quería mi trastienda. Ahora no le hace falta nada.",
+"guardada": true
+},
+"di04_6_2": {
+"texto": "Toma. El Cuerno del Diablo. No hace ruido, y tú tampoco lo harás.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "toma el cuerno del diablo no hace ruido y tú tampoco lo harás",
+"guardada": true
+}
+}

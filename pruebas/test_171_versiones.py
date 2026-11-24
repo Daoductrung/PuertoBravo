@@ -437,7 +437,7 @@ def test_1_servidor_nuevo_vacio_entra_primero_el_juego_de_la_1_7_0_y_luego_el_de
     assert s.ev("srv._nominas() is None")                  # el mundo de la 1.7.0 no trae contratos fijos: no hay nóminas
     r = entrar(nueva, s, "Nico")
     assert r["mundo"]["version"] == VERSION and r["mundo"]["igual"] and r["mundo"]["huella"] != H170
-    assert s.ev("[srv.mundo['version'], len(srv.mundo['armas'])]") == [VERSION, 43] and s.ev("srv._nominas() is not None")
+    assert s.ev("[srv.mundo['version'], len(srv.mundo['armas'])]") == [VERSION, 44] and s.ev("srv._nominas() is not None")
     assert any(f"El mundo pasa de la versión 1.7.0 a la {VERSION}" in l for l in s.ev("lineas"))
     # a la jugadora de la 1.7.0 no se la echa: se le dice que el servidor cambia de datos y sigue jugando
     assert vieja.ev(f"hasta(\"'pasa a los datos de la versión {VERSION}' in dicho(8)\", 8)"), vieja.ev("dicho(4)")
@@ -456,10 +456,10 @@ def test_2_servidor_nuevo_vacio_entra_primero_el_juego_de_ahora_y_luego_el_de_la
     assert r["mundo"]["version"] == VERSION and r["mundo"]["igual"] and r["admin"]
     r = entrar(vieja, s, "Vito")
     assert r["mundo"]["version"] == VERSION and r["mundo"]["igual"] is False
-    assert s.ev("[srv.mundo['version'], len(srv.mundo['armas'])]") == [VERSION, 43]      # el servidor no retrocede
+    assert s.ev("[srv.mundo['version'], len(srv.mundo['armas'])]") == [VERSION, 44]      # el servidor no retrocede
     assert vieja.ev("hasta(\"'cosas que tu versión del juego no tiene' in dicho(10)\", 8)"), vieja.ev("dicho(5)")
     dicho = vieja.ev("dicho(10)")
-    assert "6 armas" in dicho and "Escopeta de corredera" in dicho and "Un vehículo" in dicho and "el mismo para todos" in dicho, dicho
+    assert "7 armas" in dicho and "Escopeta de corredera" in dicho and "Un vehículo" in dicho and "el mismo para todos" in dicho, dicho
     hecho = jugar_juntos(taller, s, nueva, vieja)
     assert hecho[-1] == "corte y reconexion" and "explosivo" in hecho, hecho
     parar_y_volver(taller, s, nueva, vieja, CFG_JUNTOS)
@@ -777,7 +777,7 @@ def test_quien_lleva_el_servidor_puede_pedir_solo_datos_de_verdad_o_una_version_
         # el mundo de la 1.7.0 publicada lo conoce de fábrica: entra aunque no venga firmado, también con «rechazar»
         b.mundo_cliente = ("", "")
         v = Cli(b, "De la 1.7.0", huella=H170, juego="1.7.0")
-        assert v.ok and not v.pidio_mundo and v.ok["mundo"]["distinto"]["faltan"]["armas"] and len(v.ok["mundo"]["distinto"]["faltan"]["armas"]) == 6
+        assert v.ok and not v.pidio_mundo and v.ok["mundo"]["distinto"]["faltan"]["armas"] and len(v.ok["mundo"]["distinto"]["faltan"]["armas"]) == 7
         # con la versión mínima, y solo con ella, se rechaza por versión, y se dice cuál hace falta
         b.hacer(b.srv.aplicar_config, dict(b.srv.cfg, version_minima="1.7.1"))
         from juego import ed25519
@@ -863,7 +863,7 @@ def test_los_equivalentes_se_eligen_por_clase_y_por_parecido_y_el_catalogo_de_la
     # lo que se dice al jugador no lleva palabras de programador
     le_falta, sobra = compat.diferencias(m, cat)
     texto = compat.texto_diferencias(le_falta, sobra)
-    assert len(le_falta["armas"]) == 6 and le_falta["vehiculos"] and not sobra["armas"] and "6 armas" in texto and "y 2 más" in texto
+    assert len(le_falta["armas"]) == 7 and le_falta["vehiculos"] and not sobra["armas"] and "7 armas" in texto and "y 3 más" in texto
     for palabra in ("huella", "protocolo", "json", "catálogo", "id ", "versión del protocolo"):
         assert palabra not in texto.lower(), palabra
     assert compat.texto_diferencias({"armas": [], "vehiculos": []}, {"armas": [], "vehiculos": []}) == ""

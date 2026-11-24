@@ -1,0 +1,53 @@
+{
+ "protagonista": {
+  "dani_h": {
+   "tipo": "pura",
+   "id": "d9XCyhjo4JhkHF1d",
+   "voz": "Miles"
+  },
+  "alex_h": {
+   "tipo": "pura",
+   "id": "LMDIYE0Oa377Qh6Z",
+   "voz": "Easton"
+  },
+  "sam_h": {
+   "tipo": "pura",
+   "id": "X6NceqF285Gr04gb",
+   "voz": "Alfie"
+  },
+  "cris_h": {
+   "tipo": "pura",
+   "id": "Zn7g6NxLqXlJb7Qi",
+   "voz": "Teddy"
+  },
+  "dani_m": {
+   "tipo": "pura",
+   "id": "4SZHfMpw-p46Ywgs",
+   "voz": "Harper"
+  },
+  "alex_m": {
+   "tipo": "pura",
+   "id": "NIWIOv5vTi5eRMj8",
+   "voz": "Juniper"
+  },
+  "sam_m": {
+   "tipo": "pura",
+   "id": "6PWnV0Nq4wu7RVBT",
+   "voz": "Maeve"
+  },
+  "cris_m": {
+   "tipo": "pura",
+   "id": "uem82D50GRv2Dwma",
+   "voz": "Pippa"
+  }
+ },
+ "personajes": {
+  "El Diablo": {
+   "tipo": "mezcla",
+   "id": "0zLApsZfVLLNaEGl",
+   "con_id": "zUCxzrOrugTSis03",
+   "parte": 0.5,
+   "voz": "Trevor con Edwin"
+  }
+ }
+}

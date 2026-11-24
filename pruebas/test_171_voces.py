@@ -12,7 +12,7 @@ import pytest
 from juego import mundo, rutas, voces, vozgen
 
 SERIE = ("historia_principal", "bahia_del_ocaso", "costa_dorada", "isla_de_los_vientos", "motor_y_asfalto", "noches_de_neon",
-         "oficios_y_recados", "penas_altas", "valdeolmos")
+         "oficios_y_recados", "penas_altas", "valdeolmos", "el_diablo")
 
 
 def _frases():

@@ -1,0 +1,53 @@
+{
+ "protagonista": {
+  "dani_h": {
+   "tipo": "pura",
+   "id": "t-_TS1e-0GzDAX02",
+   "voz": "Iker"
+  },
+  "alex_h": {
+   "tipo": "pura",
+   "id": "Ejb29qHnSOK0cIHY",
+   "voz": "Izan"
+  },
+  "sam_h": {
+   "tipo": "pura",
+   "id": "tIjCgP8v3RY8UpgM",
+   "voz": "Borja"
+  },
+  "cris_h": {
+   "tipo": "pura",
+   "id": "jvPx8j8zLGQ3utZz",
+   "voz": "Marcos"
+  },
+  "dani_m": {
+   "tipo": "pura",
+   "id": "rmLBOdHrfkFym9MM",
+   "voz": "Celia"
+  },
+  "alex_m": {
+   "tipo": "pura",
+   "id": "u2UscyAnHilpiwmf",
+   "voz": "Alba"
+  },
+  "sam_m": {
+   "tipo": "pura",
+   "id": "c9wqBDmQiBie5q6Y",
+   "voz": "Candela"
+  },
+  "cris_m": {
+   "tipo": "pura",
+   "id": "b6FvJAiokjdqIti4",
+   "voz": "Noa"
+  }
+ },
+ "personajes": {
+  "El Diablo": {
+   "tipo": "mezcla",
+   "id": "F05gqkzX7WhKVpSL",
+   "con_id": "G5HLUsQd659UtRe7",
+   "parte": 0.5,
+   "voz": "Lalo con Ulises"
+  }
+ }
+}

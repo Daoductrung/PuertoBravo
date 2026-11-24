@@ -23,7 +23,7 @@ sys.path.insert(0, RAIZ)
 from juego import mundo, rutas          # noqa: E402
 from juego import contratos             # noqa: E402
 
-ARCHIVO = os.path.join(AQUI, "el_diablo.json")
+ARCHIVO = os.path.join(RAIZ, "data", "mods", "el_diablo.json")
 MISIONES = ("di01", "di02", "di03", "di04")
 CONTRATOS = ("di_sin_aviso", "di_caceria", "di_puerta", "di_rastro", "di_convoy")
 

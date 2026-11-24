@@ -6,7 +6,8 @@ en coche, uno metido en un local, uno al que hay que seguir antes hasta su guari
 algo que recuperar, o alguien a quien proteger y poner a salvo.
 
 Los tipos de contrato están en los datos (vida.json, contratos) y el editor los edita: un mod puede cambiar los que
-hay o añadir otros con cualquiera de las situaciones que el juego sabe montar.
+hay o añadir otros con cualquiera de las situaciones que el juego sabe montar. Desde la 1.7.4, un tipo puede decir en
+qué tablones cuelga (tablones: identificadores de lugar o tipos de lugar); sin decirlo, cuelga en todos.
 """
 from .i18n import tr
 import random
@@ -45,6 +46,16 @@ def tipos(p):
     return lista or CONTRATOS
 
 
+def en_tablon(c, l):
+    """Si ese tipo de contrato cuelga del tablón de ese sitio: los que no dicen nada, en todos; los que dicen sus
+    tablones, solo en esos, por identificador del lugar o por su tipo."""
+    t = c.get("tablones")
+    if not isinstance(t, list) or not any(str(x).strip() for x in t):
+        return True
+    t = {str(x).strip() for x in t}
+    return l.id in t or l.tipo in t
+
+
 def _lista(c, clave, serie):
     v = c.get(clave)
     return [str(x) for x in v if str(x).strip()] if isinstance(v, list) and any(str(x).strip() for x in v) else list(serie)
@@ -58,9 +69,10 @@ class Contratos:
         j = self.j
         hechos = j.stats.get("contratos", 0)
         rng = random.Random(f"contratos:{j.semilla}:{self.dia}:{l.id}:{hechos}")
-        disponibles = [c for c in tipos(self) if hechos >= int(c.get("desde", 0) or 0)]
+        aqui = [c for c in tipos(self) if en_tablon(c, l)] or tipos(self)
+        disponibles = [c for c in aqui if hechos >= int(c.get("desde", 0) or 0)]
         if not disponibles:
-            disponibles = tipos(self)[:1]
+            disponibles = aqui[:1]
         elegidos = []
         bolsa = list(disponibles)
         while bolsa and len(elegidos) < n:

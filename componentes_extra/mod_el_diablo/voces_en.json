@@ -1,0 +1,184 @@
+{
+"di01_1_1": {
+"texto": "Sit down. They call me El Diablo. Not because of what I do: because I never give a warning.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Sit down, they call me el diablo, not because of what I do, because I never give a warning.",
+"guardada": true
+},
+"di01_1_2": {
+"texto": "And what do you do?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and what do you do?",
+"guardada": true
+},
+"di01_1_2@dani_m": {
+"texto": "And what do you do?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "and what do you do?",
+"guardada": true
+},
+"di01_1_2@alex_h": {
+"texto": "And what do you do?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And what do you do?",
+"guardada": true
+},
+"di01_1_2@alex_m": {
+"texto": "And what do you do?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And what do you do?",
+"guardada": true
+},
+"di01_1_2@sam_h": {
+"texto": "And what do you do?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And what do you do?",
+"guardada": true
+},
+"di01_1_2@sam_m": {
+"texto": "And what do you do?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And what do you do?",
+"guardada": true
+},
+"di01_1_2@cris_h": {
+"texto": "And what do you do?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And what do you do?",
+"guardada": true
+},
+"di01_1_2@cris_m": {
+"texto": "And what do you do?",
+"quien": "Dani",
+"nota": 1.0,
+"oido": "And what do you do?",
+"guardada": true
+},
+"di01_1_3": {
+"texto": "I give names. You cross them out. No letters, no threats, no second chances.",
+"quien": "El Diablo",
+"nota": 0.972,
+"oido": "You give names, you cross them out, no letters, no threats, no second chances.",
+"guardada": true
+},
+"di01_1_4": {
+"texto": "The first one: Fat Tano. He drinks at La Gaviota Bar with two heavies. When you leave, none of them should be standing.",
+"quien": "El Diablo",
+"nota": 0.982,
+"oido": "The first one, Fat Tano, Ed drinks at La Gavio Tabar with two heavies. When you leave, none of them should be standing.",
+"guardada": true
+},
+"di01_4_1": {
+"texto": "Not one word too many, not one shot too few. I like it.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Not one word too many, not one shot too few, I like it.",
+"guardada": true
+},
+"di01_4_2": {
+"texto": "Come back when you want another name. And check the board by the bar: that's where I hang the small jobs.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Come back when you want another name and check the board by the bar. That's where I hang the small jobs.",
+"guardada": true
+},
+"di02_1_1": {
+"texto": "The Lobo brothers owe me something you can't pay back with money. And somebody has told them.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "The Lobo Brothers owe me something you can't pay back with money, and somebody has told them.",
+"guardada": true
+},
+"di02_1_2": {
+"texto": "They're loading a sedan at the Hierro Viejo Scrapyard. Make sure they don't get out of Puerto Bravo.",
+"quien": "El Diablo",
+"nota": 0.979,
+"oido": "They're loading a Sedan a de hierro viejo Scrapyard. Make sure they don't get out of Puerto Bravo.",
+"guardada": true
+},
+"di02_4_1": {
+"texto": "The Lobos don't run any more. Good.",
+"quien": "El Diablo",
+"nota": 0.985,
+"oido": "The lobos don't run anymore. Good.",
+"guardada": true
+},
+"di02_4_2": {
+"texto": "What worries me is who tipped them off. We'll know soon enough.",
+"quien": "El Diablo",
+"nota": 0.95,
+"oido": "What worries may is who tip them off? We'll know soon enough.",
+"guardada": true
+},
+"di03_1_1": {
+"texto": "Rubén Saldanya. He worked for me and sold my names to the highest bidder.",
+"quien": "El Diablo",
+"nota": 0.956,
+"oido": "Rubén Saldana, E-word form and sold my names to the highest bidder.",
+"guardada": true
+},
+"di03_1_2": {
+"texto": "He's at the Casino Belmonte with four hired thugs. Go in through the front door. Let them hear it.",
+"quien": "El Diablo",
+"nota": 0.94,
+"oido": "is at the Casino Belmonte with four hired thugs going to the front door. Let them hear it.",
+"guardada": true
+},
+"di03_5_1": {
+"texto": "Saldanya wasn't selling my names for fun. Los Arcángeles were buying them.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Saldanya wasn't selling my names for fun. Los arcángeles were buying them.",
+"guardada": true
+},
+"di03_5_2": {
+"texto": "Another agency. And now they know you exist.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "another agency, and now they know you exist.",
+"guardada": true
+},
+"di04_1_1": {
+"texto": "They're coming. One car at the door and another one circling the block.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "They're coming. One car at the door and another one circling the block.",
+"guardada": true
+},
+"di04_1_2": {
+"texto": "Los Arcángeles don't give warnings either. That's the only thing we have in common.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Los arcangeles don't give warnings either. That's the only thing we have in common.",
+"guardada": true
+},
+"di04_3_1": {
+"texto": "Their boss, Gabriel, is getting away in the white sedan. That's the last name on the list.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Their boss, Gabriel, is getting away in the white sedan, that's the last name on the list.",
+"guardada": true
+},
+"di04_6_1": {
+"texto": "Gabriel wanted my back room. Now he doesn't need anything.",
+"quien": "El Diablo",
+"nota": 1.0,
+"oido": "Gabriel wanted my back room. Now he doesn't need anything.",
+"guardada": true
+},
+"di04_6_2": {
+"texto": "Here. The Devil's Horn. It makes no noise, and neither will you.",
+"quien": "El Diablo",
+"nota": 0.992,
+"oido": "Ere, the Devil's Horn, it makes no noise, and neither will you.",
+"guardada": true
+}
+}

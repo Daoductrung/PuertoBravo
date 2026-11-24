@@ -1016,6 +1016,7 @@ ESQUEMAS = {
                ("proteger", tr("Proteger a alguien de quienes llegan a por él y llevarle a un sitio seguro"))]),
         c("peso", tr("Cuánto abunda"), "decimal", tr("Con 3 sale tres veces más que uno con 1."), minimo=0.01, maximo=100, defecto=2),
         c("desde", tr("Contratos que hay que haber cumplido para que aparezca"), "entero", minimo=0, maximo=200, defecto=0),
+        c("tablones", tr("Solo en los tablones de estos sitios"), "refs", tr("Sin marcar ninguno, cuelga en el tablón de todas las tabernas. Marcando alguno, solo en el de esos sitios: por ejemplo, los encargos de una agencia, solo en su barra."), ref="lugar"),
         c("paga", tr("Paga base"), "entero", req=True, minimo=0, defecto=600),
         c("paga_escolta", tr("Paga de más por cada enemigo de la escolta"), "entero", tr("La escolta crece con los contratos cumplidos, de uno a cinco."), minimo=0, defecto=380),
         c("resumen", tr("Cómo se anuncia en el tablón"), "largo", tr("Se pueden usar {quien}, el apodo del objetivo; {lugar}; {n}, cuántos le acompañan; {modelo}, el vehículo; {objeto}; {persona} y {destino}.")),

@@ -3796,6 +3796,12 @@
 "Alcanza y destroza el camión de las garrafas antes de que salga del valle.": [
 "data/mods/valdeolmos.json"
 ],
+"Alcanza y destroza el sedán blanco de Gabriel antes de cinco minutos.": [
+"data/mods/el_diablo.json"
+],
+"Alcanza y destroza el sedán de los hermanos Lobo antes de cinco minutos. Fíjalo con la Q.": [
+"data/mods/el_diablo.json"
+],
 "Alcanza y destroza el sedán negro antes de que salga de la ciudad.": [
 "data/mods/noches_de_neon.json"
 ],
@@ -3921,6 +3927,9 @@
 ],
 "Alguien ha avisado a la policía: una patrulla viene hacia la pelea.": [
 "juego/calle.py"
+],
+"Alguien ha avisado a los hermanos Lobo de que El Diablo tiene su nombre. Se van de la ciudad.": [
+"data/mods/el_diablo.json"
 ],
 "Alguien ha dado el aviso. Despista a la patrulla.": [
 "data/mods/penas_altas.json"
@@ -4767,6 +4776,10 @@
 ],
 "Archivo {s}. {describir} Intro lo hace sonar. Izquierda y derecha lo bajan o lo suben, del 30 al 200 por ciento. Suprimir lo devuelve al 100.": [
 "juego/menus_juego.py"
+],
+"Arcángel": [
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json"
 ],
 "Arena": [
 "editor/esquema.py"
@@ -11108,6 +11121,9 @@
 "Cuentas, nóminas, proveedores e impuestos.": [
 "data/datos/vida.json"
 ],
+"Cuerno del Diablo": [
+"data/mods/el_diablo.json"
+],
 "Cuero negro gastado en los codos. Impone un poco.": [
 "data/datos/vida.json"
 ],
@@ -11738,7 +11754,8 @@
 "data/datos/misiones_extra2.json",
 "data/datos/misiones_extra2.json",
 "data/datos/misiones_extra2.json",
-"data/datos/personajes.json"
+"data/datos/personajes.json",
+"data/mods/el_diablo.json"
 ],
 "Dani Roca estuvo a una firma de volver a ser quien era. Le costó el dinero fácil, una multa y unas cuantas noches mirando a la puerta. Su negocio sigue abierto y Los Calaveras ya no pasan por su calle. Cuando Aurora se enteró de todo, solo dijo: «La segunda vez también cuenta».": [
 "data/datos/misiones_honrada.json"
@@ -13776,6 +13793,9 @@
 "Doy clase en cuatro minutos y tengo que colocar tres antenas para escuchar a Los Lagartos. Imposible estar en dos sitios a la vez. He hecho los cálculos.": [
 "data/datos/misiones_extra2.json"
 ],
+"Doy nombres. Tú los tachas. Sin cartas, sin amenazas, sin segundas oportunidades.": [
+"data/mods/el_diablo.json"
+],
 "Doña Remedios": [
 "data/datos/misiones_extra3.json"
 ],
@@ -14340,6 +14360,53 @@
 "El Cobrador": [
 "data/mods/noches_de_neon.json"
 ],
+"El Diablo": [
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json"
+],
+"El Diablo no perdona": [
+"data/mods/el_diablo.json"
+],
+"El Diablo: cacería": [
+"data/mods/el_diablo.json"
+],
+"El Diablo: el convoy": [
+"data/mods/el_diablo.json"
+],
+"El Diablo: el rastro": [
+"data/mods/el_diablo.json"
+],
+"El Diablo: puerta a puerta": [
+"data/mods/el_diablo.json"
+],
+"El Diablo: sin aviso": [
+"data/mods/el_diablo.json"
+],
+"El Diablo: una sola agencia en Puerto Bravo": [
+"data/mods/el_diablo.json"
+],
 "El Ensanche": [
 "data/datos/mapas/san_lucero.json"
 ],
@@ -14504,6 +14571,9 @@
 ],
 "El Puerto": [
 "data/datos/ciudad.json"
+],
+"El Purgatorio, la agencia de El Diablo": [
+"data/mods/el_diablo.json"
 ],
 "El Rayo": [
 "juego/misvehiculos.py",
@@ -14903,6 +14973,9 @@
 ],
 "El chivato": [
 "data/datos/misiones.json"
+],
+"El chivato que avisó a los Lobo es Rubén Saldaña, y se está jugando el dinero en el Casino Belmonte.": [
+"data/mods/el_diablo.json"
 ],
 "El chulo": [
 "editor/esquema.py"
@@ -16129,11 +16202,17 @@
 "juego/menus_vida.py",
 "juego/menus_vida.py"
 ],
+"El primer nombre": [
+"data/mods/el_diablo.json"
+],
 "El primero es el dos; un negocio recién comprado está en el uno.": [
 "editor/esquema_honrado.py"
 ],
 "El primero es la salida.": [
 "editor/esquema.py"
+],
+"El primero: Tano el Gordo. Bebe en el Bar La Gaviota con dos gorilas. Cuando salgas de allí, que no quede ninguno de pie.": [
+"data/mods/el_diablo.json"
 ],
 "El procesador de este equipo no puede con el generador de voces: le falta ": [
 "juego/vozgen.py"
@@ -17107,6 +17186,9 @@
 "Empujas la puerta de {nombre} y se acaba la música. {quien} te ha reconocido.": [
 "juego/contratos.py"
 ],
+"Empujas la puerta y las ruletas siguen girando. Saldaña te ve y grita. Acaba con todos.": [
+"data/mods/el_diablo.json"
+],
 "En ": [
 "juego/partida.py"
 ],
@@ -17620,6 +17702,9 @@
 ],
 "En la taquilla hay un cartel con tu cara. Mejor no.": [
 "juego/menus_lugares.py"
+],
+"En la trastienda de El Purgatorio, un hombre de traje rojo oscuro dice que tiene trabajo para gente que no hace preguntas.": [
+"data/mods/el_diablo.json"
 ],
 "En la verbena del año pasado bailé hasta las cinco. Con mi rodilla. Estuve una semana sin poder bajar la escalera, pero mereció la pena.": [
 "juego/respuestas_datos1.py"
@@ -18718,6 +18803,9 @@
 "Esa misión es de un mod que ahora no está cargado.": [
 "juego/menus_juego.py"
 ],
+"Esa noche El Diablo cierra la persiana de El Purgatorio y sirve dos copas. Desde mañana, en Puerto Bravo solo hay una lista de nombres, y la llevas tú en el bolsillo.": [
+"data/mods/el_diablo.json"
+],
 "Esa noche pasa un chaval a recoger el sobre. Ni te mira. Tu persiana amanece intacta, y tú, un poco más pequeñ[o|a].": [
 "data/datos/misiones_honrada.json"
 ],
@@ -19664,6 +19752,9 @@
 "Está en casa": [
 "juego/extras3.py"
 ],
+"Está en el Casino Belmonte con cuatro matones de alquiler. Entra por la puerta principal. Que lo oigan.": [
+"data/mods/el_diablo.json"
+],
 "Está en la puerta": [
 "editor/esquema_golpes.py"
 ],
@@ -19714,6 +19805,9 @@
 ],
 "Están ahora mismo en el colmado. Toma, la llave de las cisternas. Sirve para abrir y para convencer.": [
 "data/mods/bahia_del_ocaso.json"
+],
+"Están cargando un sedán en el Desguace Hierro Viejo. Que no salgan de Puerto Bravo.": [
+"data/mods/el_diablo.json"
 ],
 "Están junto a la sala El Sótano. Haz que lo entiendan.": [
 "data/mods/noches_de_neon.json"
@@ -21295,6 +21389,9 @@
 "Gabardina": [
 "data/datos/vida.json"
 ],
+"Gabriel quería mi trastienda. Ahora no le hace falta nada.": [
+"data/mods/el_diablo.json"
+],
 "Gafas de sol": [
 "data/datos/vida.json"
 ],
@@ -21589,6 +21686,9 @@
 ],
 "Google AI Studio, Gemini": [
 "juego/ia.py"
+],
+"Gorila de Tano": [
+"data/mods/el_diablo.json"
 ],
 "Gorra": [
 "data/datos/vida.json"
@@ -27840,6 +27940,9 @@
 "Lo que me da la gana.": [
 "juego/respuestas_datos2.py"
 ],
+"Lo que me preocupa es quién les avisó. Eso lo sabremos pronto.": [
+"data/mods/el_diablo.json"
+],
 "Lo que me sobran son pretendientes.": [
 "juego/respuestas_datos1.py"
 ],
@@ -28335,6 +28438,15 @@
 "Los Aljibes empezamos llenando los depósitos de las abuelas. Ahora también espantamos a los que vienen a romperlos.": [
 "data/mods/bahia_del_ocaso.json"
 ],
+"Los Arcángeles entran en El Purgatorio y llegan más en coche. Que no quede ninguno.": [
+"data/mods/el_diablo.json"
+],
+"Los Arcángeles no avisan tampoco. Eso es lo único que tenemos en común.": [
+"data/mods/el_diablo.json"
+],
+"Los Arcángeles vienen a El Purgatorio a por El Diablo, y a por ti.": [
+"data/mods/el_diablo.json"
+],
 "Los Barrenos": [
 "juego/gente.py",
 "data/datos/gente.json"
@@ -28420,6 +28532,9 @@
 ],
 "Los Lagartos se han adueñado del puerto deportivo de San Lucero.": [
 "data/datos/misiones_extra.json"
+],
+"Los Lobo ya no corren. Bien.": [
+"data/mods/el_diablo.json"
 ],
 "Los Mareas": [
 "data/datos/gente.json"
@@ -28686,6 +28801,9 @@
 ],
 "Los han visto subir hacia la ermita con una furgoneta. Sube y mira. Si están, que dejen lo que no es suyo.": [
 "data/datos/misiones_extra3.json"
+],
+"Los hermanos Lobo me deben una cosa que no se devuelve con dinero. Y alguien les ha ido con el cuento.": [
+"data/mods/el_diablo.json"
 ],
 "Los impuestos y las facturas están desactivados.": [
 "juego/honrado.py"
@@ -29464,6 +29582,10 @@
 ],
 "Matón de Seisdedos": [
 "data/mods/bahia_del_ocaso.json"
+],
+"Matón de alquiler": [
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json"
 ],
 "Matón de puerta": [
 "data/mods/noches_de_neon.json"
@@ -31275,6 +31397,9 @@
 "Nadie ofrece nada por tu cabeza": [
 "juego/menus_enlinea.py"
 ],
+"Nadie sabe dónde duerme {quien}, pero su recadero sale de {lugar}. Síguele, y cuando llegue, termina el trabajo.": [
+"data/mods/el_diablo.json"
+],
 "Nadie sabe dónde se esconde {quien}. Su recadero sale de {lugar}: síguele a pie sin que te vea y te llevará hasta él.": [
 "juego/contratos.py",
 "data/datos/vida.json"
@@ -31756,6 +31881,9 @@
 ],
 "Ni una chispa en el desguace. Te debo el negocio, foraster[o|a].": [
 "data/mods/bahia_del_ocaso.json"
+],
+"Ni una palabra de más, ni un tiro de menos. Me gusta.": [
+"data/mods/el_diablo.json"
 ],
 "Ninguna": [
 "juego/vida.py"
@@ -33973,6 +34101,9 @@
 "Os vais a vivir allí los dos. A partir de ahora es en esa casa donde está.": [
 "juego/convivencia.py"
 ],
+"Otra agencia. Y ahora saben que existes.": [
+"data/mods/el_diablo.json"
+],
 "Otra manera de volver": [
 "data/datos/misiones_honrada.json"
 ],
@@ -35732,6 +35863,9 @@
 ],
 "Pierdes: en las tiendas te cobran un {int} por ciento más, los testigos te denuncian con más ganas": [
 "juego/honrado.py"
+],
+"Pies ligeros": [
+"data/mods/el_diablo.json"
 ],
 "Pieza de la sala de máquinas": [
 "data/datos/mapas/plataforma.json"
@@ -39140,6 +39274,12 @@
 "Rubio llega cuando tú ya has apagado el motor. Se quita los guantes despacio.": [
 "data/datos/misiones_extra2.json"
 ],
+"Rubén Saldaña": [
+"data/mods/el_diablo.json"
+],
+"Rubén Saldaña. Trabajaba para mí y vendía mis nombres a quien pagase más.": [
+"data/mods/el_diablo.json"
+],
 "Rueda cambiada. Vuelve a rodar bien.": [
 "juego/menus_juego.py"
 ],
@@ -39412,6 +39552,9 @@
 "Salas": [
 "juego/gente.py",
 "data/datos/gente.json"
+],
+"Saldaña no vendía mis nombres por gusto. Se los compraban Los Arcángeles.": [
+"data/mods/el_diablo.json"
 ],
 "Saldo de tu cuenta: {banco} euros": [
 "juego/menus_lugares.py"
@@ -41378,6 +41521,9 @@
 "Sin informantes: te enteras el mismo día, si acaso por un rumor, o cuando ya han llegado.": [
 "juego/reconquista.py"
 ],
+"Sin marcar ninguno, cuelga en el tablón de todas las tabernas. Marcando alguno, solo en el de esos sitios: por ejemplo, los encargos de una agencia, solo en su barra.": [
+"editor/esquema.py"
+],
 "Sin marcar ninguno, se imparten los cuatro.": [
 "editor/esquema.py"
 ],
@@ -41497,6 +41643,9 @@
 ],
 "Situación: {dumps}\n\nEl jugador te dice: {v}": [
 "juego/ia.py"
+],
+"Siéntate. Me llaman El Diablo. No por lo que hago: porque nunca aviso.": [
+"data/mods/el_diablo.json"
 ],
 "Soborno al inspector, por ciento del precio del negocio": [
 "editor/esquema_honrado.py"
@@ -41646,6 +41795,9 @@
 ],
 "Solo en los puestos marcados con responsabilidad.": [
 "editor/esquema_honrado.py"
+],
+"Solo en los tablones de estos sitios": [
+"editor/esquema.py"
 ],
 "Solo entra el chico de los recados. No quiero acusarle sin saber. Sale del banco a las doce, de hacer el ingreso.": [
 "data/datos/misiones_extra3.json"
@@ -41895,6 +42047,9 @@
 ],
 "Su dueño": [
 "servidor/nucleo.py"
+],
+"Su jefe, Gabriel, se escapa en el sedán blanco. Ese es el último nombre de la lista.": [
+"data/mods/el_diablo.json"
 ],
 "Su nombre, dónde está, cómo está de daños y las mejoras que lleva.": [
 "juego/misvehiculos.py"
@@ -42516,6 +42671,9 @@
 ],
 "Tandas de la pelea larga": [
 "editor/esquema.py"
+],
+"Tano el Gordo": [
+"data/mods/el_diablo.json"
 ],
 "Tanto por ciento al que avisa de la reserva": [
 "editor/esquema_vuelo.py"
@@ -44181,6 +44339,9 @@
 "Todavía no tienes ningún servidor en la lista": [
 "juego/menus_enlinea.py"
 ],
+"Todo al rojo": [
+"data/mods/el_diablo.json"
+],
 "Todo cambia, menos el precio del café, que sube.": [
 "juego/respuestas_datos1.py"
 ],
@@ -44303,6 +44464,9 @@
 ],
 "Toma, la porra de mi cuñado, que era portero. Si se ponen tontos, tú más.": [
 "data/mods/noches_de_neon.json"
+],
+"Toma. El Cuerno del Diablo. No hace ruido, y tú tampoco lo harás.": [
+"data/mods/el_diablo.json"
 ],
 "Toma. Era de mi padre, que la trajo de la guerra. Yo no la quiero en casa, y tú sabrás usarla.": [
 "data/datos/misiones_extra2.json"
@@ -45688,6 +45852,9 @@
 "juego/sistemas.py",
 "data/datos/vida.json"
 ],
+"Un bar sin letrero con la persiana a medio bajar. En la trastienda, detrás de una cortina roja, El Diablo reparte nombres. En el tablón de la barra cuelgan sus contratos.": [
+"data/mods/el_diablo.json"
+],
 "Un barco no sigue carriles: se gobierna a mano. Flecha arriba acelera, flecha abajo frena y da marcha atrás, y las flechas izquierda y derecha giran el timón. La C te dice el rumbo.": [
 "data/datos/misiones.json"
 ],
@@ -46229,6 +46396,9 @@
 "Un resumen de tu vida: cómo te ven, lo que has trabajado de forma honrada y lo que has hecho fuera de la ley.": [
 "juego/menus_juego.py"
 ],
+"Un revólver negro con silenciador y la culata de hueso. Pega como un revólver y suena como una puerta que se cierra.": [
+"data/mods/el_diablo.json"
+],
 "Un rifle de los de antes: siete balas, y entre una y otra se oye la palanca. Preciso y más barato que uno moderno. De segunda mano, en las casas de empeños.": [
 "data/datos/armas.json"
 ],
@@ -46403,6 +46573,9 @@
 ],
 "Una aeronave no cabe en el garaje de una casa: se guarda en un hangar, en un helipuerto, un aeropuerto o un aeródromo. Desde el móvil, en Mis vehículos, puedes mandarla a uno.": [
 "juego/menus_extra.py"
+],
+"Una agencia de sicarios en la trastienda de un bar del puerto, El Purgatorio, y el hombre que la lleva: El Diablo. Él no avisa ni negocia: solo da nombres. Cuatro misiones de muertes y persecuciones, cinco contratos nuevos en los tablones de encargos y un revólver silenciado, el Cuerno del Diablo.": [
+"data/mods/el_diablo.json"
 ],
 "Una al día.": [
 "editor/esquema_honrado.py"
@@ -48146,6 +48319,9 @@
 "Ve al Banco de la Bahía y sigue al contable sin que te descubra. Guíate por el sonido de sus pasos. La tecla O te dice a cuánto va.": [
 "data/mods/bahia_del_ocaso.json"
 ],
+"Ve al Bar La Gaviota y acaba con Tano el Gordo y sus dos guardaespaldas.": [
+"data/mods/el_diablo.json"
+],
 "Ve al Bingo La Suerte y elimina a los cinco guardias.": [
 "data/datos/misiones_extra.json"
 ],
@@ -48154,6 +48330,9 @@
 ],
 "Ve al Casino Belmonte y elimina a los cinco guardias.": [
 "data/datos/misiones.json"
+],
+"Ve al Casino Belmonte y llega hasta la puerta, a pie.": [
+"data/mods/el_diablo.json"
 ],
 "Ve al Chiringuito El Espeto y encárgate de los guardaespaldas.": [
 "data/datos/misiones.json"
@@ -49166,6 +49345,14 @@
 "Vuelve a El Fogón de Barlovento antes de que atraque la barca.": [
 "data/mods/isla_de_los_vientos.json"
 ],
+"Vuelve a El Purgatorio a cobrar.": [
+"data/mods/el_diablo.json"
+],
+"Vuelve a El Purgatorio.": [
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json",
+"data/mods/el_diablo.json"
+],
 "Vuelve a Grúas y Cisternas Barral.": [
 "data/mods/bahia_del_ocaso.json"
 ],
@@ -49266,6 +49453,9 @@
 ],
 "Vuelve con el pedido a la Sala Crepúsculo.": [
 "data/mods/bahia_del_ocaso.json"
+],
+"Vuelve cuando quieras otro nombre. Y mira el tablón de la barra: ahí cuelgo los encargos pequeños.": [
+"data/mods/el_diablo.json"
 ],
 "Vuelve cuando tengas experiencia.": [
 "juego/respuestas_datos2.py"
@@ -49851,6 +50041,9 @@
 ],
 "Ya vienen": [
 "editor/esquema_golpes.py"
+],
+"Ya vienen. Un coche en la puerta y otro dando la vuelta a la manzana.": [
+"data/mods/el_diablo.json"
 ],
 "Ya vivís en {nombre_lugar}.": [
 "juego/convivencia.py"
@@ -51770,6 +51963,12 @@
 "el salón": [
 "juego/sistemas.py",
 "juego/sistemas.py"
+],
+"el sedán blanco de Gabriel": [
+"data/mods/el_diablo.json"
+],
+"el sedán de los hermanos Lobo": [
+"data/mods/el_diablo.json"
 ],
 "el sedán negro": [
 "data/mods/noches_de_neon.json"
@@ -58105,6 +58304,9 @@
 "{quien} está dentro de {nombre}, con {n} de los suyos. Llega hasta la puerta, a pie.": [
 "juego/contratos.py"
 ],
+"{quien} está en {lugar} con {n} guardaespaldas, y El Diablo no quiere que vea amanecer. Ni avisos ni conversaciones.": [
+"data/mods/el_diablo.json"
+],
 "{quien} está en {lugar}. Lleva {n} de escolta, y parte ronda la zona en un vehículo: llegarán cuando empiece el jaleo.": [
 "juego/contratos.py",
 "data/datos/vida.json"
@@ -58137,6 +58339,9 @@
 "juego/contratos.py",
 "data/datos/vida.json"
 ],
+"{quien} sabe que El Diablo tiene su nombre y sale de {lugar} en un {modelo}. No le dejes llegar a la autovía.": [
+"data/mods/el_diablo.json"
+],
 "{quien} sale corriendo.": [
 "juego/calle.py",
 "data/datos/vida.json"
@@ -58153,6 +58358,9 @@
 "juego/calle.py",
 "data/datos/vida.json"
 ],
+"{quien} se ha encerrado en {lugar} con {n} de los suyos, creyendo que ahí dentro no entra nadie. El Diablo dice que entres.": [
+"data/mods/el_diablo.json"
+],
 "{quien} se ha enterado de que le buscan y sale de {lugar} en un {modelo}. Hay que alcanzarle y dejarle sin vehículo: ve con algo que corra.": [
 "juego/contratos.py",
 "data/datos/vida.json"
@@ -58164,6 +58372,9 @@
 "{quien} se quita de en medio.": [
 "juego/calle.py",
 "data/datos/vida.json"
+],
+"{quien} va a {lugar} con {n} de escolta, y más gente suya llegará en coche en cuanto suene el primer tiro. El Diablo paga por todos.": [
+"data/mods/el_diablo.json"
 ],
 "{quien}, al pasar:": [
 "juego/calle.py",
@@ -59435,6 +59646,9 @@
 ],
 "¿Y quieres que entre yo sol[o|a] ahí?": [
 "data/datos/misiones.json"
+],
+"¿Y qué haces?": [
+"data/mods/el_diablo.json"
 ],
 "¿Y tú qué miras?": [
 "data/datos/gente.json"

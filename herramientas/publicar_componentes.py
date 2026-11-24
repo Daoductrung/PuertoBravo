@@ -20,7 +20,9 @@ Los componentes salen de la compilación (dist\\PuertoBravo), que es lo que el j
 - mod-<nombre>: cada mod de data\\mods.
 - Los de componentes_extra\\<carpeta>\\componente.json: lo que no viene con el juego y solo llega como componente (un mod
   con su traducción y sus voces, por ejemplo). Cada uno dice sus archivos y adónde van; un mod se protege como los del
-  juego. No entran en data\\componentes_de_serie.json, porque el juego no los trae.
+  juego. No entran en data\\componentes_de_serie.json, porque el juego no los trae. Si la compilación ya trae un mod con
+  el mismo identificador (El Diablo, que llegó como componente para la 1.7.3 y viene de serie desde la 1.7.4), vale
+  el de la compilación y el de componentes_extra no se publica.
 Cada uno lleva su versión, que solo sube si su contenido ha cambiado desde la última publicación. El manifiesto,
 componentes.json, va firmado con la misma clave que las versiones del juego.
 """
@@ -228,7 +230,14 @@ def main(args):
     if not os.path.isdir(DIST):
         raise SystemExit("No hay compilación en dist\\PuertoBravo. Compila primero.")
     estado = json.load(open(ESTADO, encoding="utf-8")) if os.path.exists(ESTADO) else {}
-    comps = definir() + definir_extra()
+    comps = definir()
+    de_serie = {c[0] for c in comps}
+    for extra in definir_extra():
+        if extra[0] in de_serie:                     # la compilación ya lo trae (El Diablo desde la 1.7.4): vale el de serie
+            EXTRAS.discard(extra[0])
+            print(f"{extra[0]}: viene con el juego; se publica el de la compilación, con sus voces y sus textos en los de cada idioma.")
+            continue
+        comps.append(extra)
     cambios = []
     for cid, tipo, nombre, arch in comps:
         hu = huella(DIST, arch)

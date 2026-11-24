@@ -352,6 +352,9 @@
    "nombre": "El Diablo: sin aviso",
    "situacion": "eliminar",
    "peso": 2,
+   "tablones": [
+    "di_agencia"
+   ],
    "paga": 1100,
    "paga_escolta": 450,
    "resumen": "{quien} está en {lugar} con {n} guardaespaldas, y El Diablo no quiere que vea amanecer. Ni avisos ni conversaciones.",
@@ -364,6 +367,9 @@
    "situacion": "huye",
    "peso": 2,
    "desde": 1,
+   "tablones": [
+    "di_agencia"
+   ],
    "paga": 1300,
    "paga_escolta": 200,
    "resumen": "{quien} sabe que El Diablo tiene su nombre y sale de {lugar} en un {modelo}. No le dejes llegar a la autovía.",
@@ -380,6 +386,9 @@
    "situacion": "local",
    "peso": 2,
    "desde": 1,
+   "tablones": [
+    "di_agencia"
+   ],
    "paga": 1200,
    "paga_escolta": 420,
    "resumen": "{quien} se ha encerrado en {lugar} con {n} de los suyos, creyendo que ahí dentro no entra nadie. El Diablo dice que entres.",
@@ -399,6 +408,9 @@
    "situacion": "seguir",
    "peso": 2,
    "desde": 2,
+   "tablones": [
+    "di_agencia"
+   ],
    "paga": 1400,
    "paga_escolta": 350,
    "resumen": "Nadie sabe dónde duerme {quien}, pero su recadero sale de {lugar}. Síguele, y cuando llegue, termina el trabajo.",
@@ -411,6 +423,9 @@
    "situacion": "escolta_vehiculo",
    "peso": 2,
    "desde": 3,
+   "tablones": [
+    "di_agencia"
+   ],
    "paga": 1600,
    "paga_escolta": 480,
    "resumen": "{quien} va a {lugar} con {n} de escolta, y más gente suya llegará en coche en cuanto suene el primer tiro. El Diablo paga por todos.",

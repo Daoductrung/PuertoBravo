@@ -2,16 +2,18 @@
 
     .venv\\Scripts\\python.exe componentes_extra\\mod_el_diablo\\crear.py
 
-El Diablo no viene con el juego: es un componente que se descarga aparte. Por eso el archivo queda aquí, en
-componentes_extra\\mod_el_diablo\\el_diablo.json, y no en data\\mods.
+Desde la 1.7.4 El Diablo viene con el juego, en data\\mods\\el_diablo.json, con sus voces en español y en inglés en
+data\\voces. Para la 1.7.3 se descarga como componente (componente.json, en esta carpeta), que coge el mod, las voces
+y las traducciones de esos mismos sitios.
 
 Una agencia de sicarios en la trastienda de un bar del puerto de Puerto Bravo, El Purgatorio, y el hombre que la
 lleva: El Diablo. No avisa ni negocia: solo da nombres. Trae cuatro misiones de historia, todas de muertes y
 persecuciones (sin escarmientos ni avisos), cinco tipos de contrato nuevos para los tablones de encargos y un
 revólver silenciado. Todo es inventado.
 
-Los contratos se suman a los de serie y salen en todos los tablones, no solo en el de El Purgatorio: los tipos de
-contrato son de todo el juego (contratos.py). Ninguno usa la situación «intimidar».
+Los contratos se suman a los de serie y, desde la 1.7.4, solo cuelgan del tablón de El Purgatorio (campo tablones de
+cada tipo de contrato). La 1.7.3 no conoce ese campo y los cuelga en todos los tablones. Ninguno usa la situación
+«intimidar».
 
 Sale con código 1 si el revisor encuentra errores; los avisos se escriben, pero no cuentan como fallo.
 """
@@ -28,7 +30,7 @@ import crear_mods_ejemplo as CME          # noqa: E402  (las tablas del juego y 
 ARMAS = CME.ARMAS
 clon, primero, D = CME.clon, CME.primero, CME.D
 
-ARCHIVO = os.path.join(AQUI, "el_diablo.json")
+ARCHIVO = os.path.join(RAIZ, "data", "mods", "el_diablo.json")
 AGENCIA = "di_agencia"
 DIABLO = "El Diablo"
 
@@ -107,19 +109,19 @@ def _misiones():
 def _contratos():
     """Cinco tipos de contrato para los tablones: matar y perseguir, nada de escarmientos."""
     return [
-        {"id": "di_sin_aviso", "nombre": "El Diablo: sin aviso", "situacion": "eliminar", "peso": 2, "paga": 1100, "paga_escolta": 450,
+        {"id": "di_sin_aviso", "nombre": "El Diablo: sin aviso", "situacion": "eliminar", "tablones": [AGENCIA], "peso": 2, "paga": 1100, "paga_escolta": 450,
          "objetivo": "objetivo_contrato", "escolta": "guardaespaldas",
          "resumen": "{quien} está en {lugar} con {n} guardaespaldas, y El Diablo no quiere que vea amanecer. Ni avisos ni conversaciones."},
-        {"id": "di_caceria", "nombre": "El Diablo: cacería", "situacion": "huye", "peso": 2, "desde": 1, "paga": 1300, "paga_escolta": 200,
+        {"id": "di_caceria", "nombre": "El Diablo: cacería", "situacion": "huye", "tablones": [AGENCIA], "peso": 2, "desde": 1, "paga": 1300, "paga_escolta": 200,
          "salud_vehiculo": 170, "modelos": ["sedan", "todoterreno", "utilitario"],
          "resumen": "{quien} sabe que El Diablo tiene su nombre y sale de {lugar} en un {modelo}. No le dejes llegar a la autovía."},
-        {"id": "di_puerta", "nombre": "El Diablo: puerta a puerta", "situacion": "local", "peso": 2, "desde": 1, "paga": 1200, "paga_escolta": 420,
+        {"id": "di_puerta", "nombre": "El Diablo: puerta a puerta", "situacion": "local", "tablones": [AGENCIA], "peso": 2, "desde": 1, "paga": 1200, "paga_escolta": 420,
          "objetivo": "objetivo_contrato", "escolta": "maton", "locales": ["club", "casino", "bar", "taberna", "hotel"],
          "resumen": "{quien} se ha encerrado en {lugar} con {n} de los suyos, creyendo que ahí dentro no entra nadie. El Diablo dice que entres."},
-        {"id": "di_rastro", "nombre": "El Diablo: el rastro", "situacion": "seguir", "peso": 2, "desde": 2, "paga": 1400, "paga_escolta": 350,
+        {"id": "di_rastro", "nombre": "El Diablo: el rastro", "situacion": "seguir", "tablones": [AGENCIA], "peso": 2, "desde": 2, "paga": 1400, "paga_escolta": 350,
          "objetivo": "objetivo_contrato", "escolta": "guardaespaldas",
          "resumen": "Nadie sabe dónde duerme {quien}, pero su recadero sale de {lugar}. Síguele, y cuando llegue, termina el trabajo."},
-        {"id": "di_convoy", "nombre": "El Diablo: el convoy", "situacion": "escolta_vehiculo", "peso": 2, "desde": 3, "paga": 1600, "paga_escolta": 480,
+        {"id": "di_convoy", "nombre": "El Diablo: el convoy", "situacion": "escolta_vehiculo", "tablones": [AGENCIA], "peso": 2, "desde": 3, "paga": 1600, "paga_escolta": 480,
          "objetivo": "objetivo_contrato", "escolta": "guardaespaldas", "refuerzo": "escolta_motorizada",
          "resumen": "{quien} va a {lugar} con {n} de escolta, y más gente suya llegará en coche en cuanto suene el primer tiro. El Diablo paga por todos."},
     ]
@@ -151,6 +153,8 @@ def escribir(crudo, ruta=ARCHIVO):
     """Comprueba el mod con el revisor del editor y lo guarda legible. Devuelve (errores, avisos)."""
     from editor import modelo
     mod = modelo.Mod.desde_crudo(crudo)
+    if os.path.exists(ruta):
+        os.remove(ruta)                              # para que el revisor no lo vea como «otro mod» con los mismos identificadores
     errores, avisos = modelo.comprobar(mod, modelo.Catalogo())
     mod.guardar(ruta, protegido=False)
     return errores, avisos

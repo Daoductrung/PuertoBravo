@@ -66,7 +66,11 @@ def test_datos_coherentes(app):
             if "arma" in paso:
                 assert paso["arma"] in armas, mi["id"]
             for g in paso.get("enemigos", []):
-                assert g["arma"] in armas, mi["id"]
+                if g.get("clase") and "arma" not in g:            # un grupo de un tipo de enemigo: lleva el arma de su tipo
+                    from juego import gente
+                    assert g["clase"] in gente.TIPOS and gente.enemigo(g)["arma"] in armas, (mi["id"], g["clase"])
+                else:
+                    assert g["arma"] in armas, mi["id"]
         r = mi.get("recompensa", {})
         assert r.get("arma", "punos") in armas
     for mi in app.datos["misiones"]:
