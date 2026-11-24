@@ -10066,6 +10066,9 @@
 "Con sí, cada detención y cada multa que pagas a un agente queda en tu ficha, más grave cuanto más te buscaban. Los antecedentes cierran los empleos de confianza, el ingreso en la policía y, si son graves, los créditos; y cada delito cuenta algo más mientras estés fichado. Caducan solos: a los {entero} días los leves, a los {entero2} los medios y a los {entero3} los graves, y se atenúan con servicios a la comunidad o con un abogado. Lo que hiciste antes de esta versión no cuenta. Con no, no se apunta nada, como antes.": [
 "juego/menus_juego.py"
 ],
+"Con sí, cada tanda del laboratorio clandestino se juega: un minijuego de oído en el que mantienes un tono igualado a otro, y cuanto mejor lo haces, más unidades sacas. Con no, la tanda sale al momento, normal, y sin peligro de que arda. El material, el olor que pueden notar los vecinos y lo demás siguen igual.": [
+"juego/menus_juego.py"
+],
 "Con sí, cada vez que pasas a otro barrio se dice su nombre. Con no, no se dice, y la tecla N te dice dónde estás cuando quieras.": [
 "juego/menus_juego.py"
 ],
@@ -15789,6 +15792,9 @@
 ],
 "El laboratorio ha contestado, y Nerea necesita ojos en Los Miradores.": [
 "data/mods/bahia_del_ocaso.json"
+],
+"El laboratorio, con su minijuego": [
+"juego/menus_juego.py"
 ],
 "El lecho del Cauce Seco": [
 "data/mods/bahia_del_ocaso.json"
@@ -26022,6 +26028,9 @@
 ],
 "La taberna del capitán Mendoza, que conoce cada roca del Mar de Poniente.": [
 "data/datos/mapas/cala_brava.json"
+],
+"La tanda sale al momento, normal: ni limpia ni floja, y sin peligro de que arda. El minijuego se vuelve a poner en Opciones, Contenido para adultos.": [
+"juego/laboratorio.py"
 ],
 "La tecla P pesca cuando estás en el mar y enciende la sirena en los vehículos de emergencias.": [
 "juego/partida.py"

@@ -1061,6 +1061,9 @@ def opciones(app):
             si_no("noche_por_pasos", tr("La noche con alguien, paso a paso"),
                   tr("Con sí, cuando pasas la noche con alguien decides tú qué haces en cada momento y la otra persona responde. Fijarte en lo que quiere, y parar si te lo pide, es lo que hace que salga bien. "
                   "Se sigue contando de forma sensual, sin escenas explícitas. Con no, la noche se cuenta en un par de frases, como antes.")),
+            si_no("minijuego_laboratorio", tr("El laboratorio, con su minijuego"),
+                  tr("Con sí, cada tanda del laboratorio clandestino se juega: un minijuego de oído en el que mantienes un tono igualado a otro, y cuanto mejor lo haces, más unidades sacas. "
+                  "Con no, la tanda sale al momento, normal, y sin peligro de que arda. El material, el olor que pueden notar los vecinos y lo demás siguen igual.")),
             si_no("pareja_convive", tr("Vida en pareja: poder pedirle a tu pareja que se venga a vivir contigo"),
                   tr("Con sí, en la ficha de tu pareja aparece la opción de pedirle que se mude a una de tus casas. Cada persona decide: unas aceptan cuando la relación va bien, y otras no dejan su casa por nadie. "
                   "Si acepta, te la encuentras en casa, cocina para los dos o te pide que cocines tú, te pide cosas de vez en cuando y nota si no apareces. Puedes pedirle que se vaya. "
