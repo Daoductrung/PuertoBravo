@@ -131,3 +131,16 @@ def test_el_diablo_tiene_voces(idioma):
     assert not faltan, faltan
     spec = json.load(open(os.path.join(BASE, "componente.json"), encoding="utf-8"))
     assert {"carpeta": f"../../data/voces/el_diablo_{idioma}", "destino": f"data/voces/el_diablo_{idioma}"} in spec["archivos"]
+
+
+def test_cada_mod_de_serie_esta_en_la_compilacion_y_en_su_comprobacion():
+    """Al hacer de serie un mod hay que apuntarlo en compilar.bat, que lo copia, y en comprobar_limpio.py, que si no lo
+    toma por un mod personal y la compilación falla al final (le pasó a El Diablo en la 1.7.4)."""
+    sys.path.insert(0, os.path.join(RAIZ, "herramientas"))
+    import comprobar_limpio
+    bat = open(os.path.join(RAIZ, "compilar.bat"), encoding="utf-8", errors="replace").read()
+    for f in sorted(os.listdir(os.path.join(RAIZ, "data", "mods"))):
+        if f.endswith(".json"):
+            nombre = os.path.splitext(f)[0]
+            assert nombre + ".pbm" in comprobar_limpio.MODS_DE_SERIE, nombre
+            assert f'copy /y "data\mods\{f}"' in bat, nombre

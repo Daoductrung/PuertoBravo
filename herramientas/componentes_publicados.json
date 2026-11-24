@@ -4364,8 +4364,8 @@
   ]
  },
  "idioma-ru": {
-  "version": 1,
-  "huella": "120af63ef9f1416a1743d7d7996490e6c8051abacce5d53c27c1ff4848052819",
+  "version": 2,
+  "huella": "a7c2427940f5f7264dc6d090fecf3190c8fc88ea2a7e20697c0adebfa6ed24eb",
   "archivos": [
    "data/idiomas/ru/idioma.json",
    "data/idiomas/ru/palabras.json",

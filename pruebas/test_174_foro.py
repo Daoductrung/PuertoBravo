@@ -217,3 +217,57 @@ def test_el_cocinero_avisa_si_ya_no_hay_laboratorio(robot):
     t = p._cocinar_cocinero(f, casa)
     assert "ya no tienes laboratorio" in t or "ya no hay laboratorio" in t
     assert f["tarea"] == ""
+
+
+def test_el_piloto_temerario_usa_toda_la_velocidad_con_las_mejoras(robot):
+    """En el foro: un coche mejorado llegaba a 206 km/h a mano y el piloto temerario se quedaba en 154."""
+    from juego import conduccion
+    p = robot.nueva_partida()
+    m = next(m for m in p.datos["vehiculos"] if not m.get("barco") and not m.get("vuela"))
+    v = p.crear_vehiculo(m["id"], *p.pos(), 0, None)
+    motor = next(k for k, x in sistemas.MEJORAS.items() if x["efecto"] == "motor")
+    sistemas.poner(v, {motor: sistemas.niveles(motor)})
+    p.j.veh = v
+    p.cfg["piloto_estilo"] = "temerario"
+    p.gps = {"dest": (v.x + 5000, v.y), "ruta": [], "sigue": None, "nombre": "lejos", "clave": None, "auto": True}
+    p._piloto_curva = lambda v, freno: 999.0                 # en recta
+    v.vel = 0.0
+    for _ in range(4000):
+        p._pilotar(v, 0.05, 10.0)
+    assert v.vel > m["vel_max"] * 1.05                       # pasa de la velocidad de fábrica: cuentan las mejoras
+    assert abs(v.vel - m["vel_max"] * sistemas.factor_velocidad(v) * (1 + 0.01 * p.nivel("conduccion"))) < 0.5
+
+
+def test_el_coche_arrimado_a_la_acera_no_para_el_trafico(robot):
+    """En el foro: sin conexión, el coche que dejas pegado a la acera paraba a los demás como si estuviera en medio."""
+    from juego import mundo as M
+    p = robot.nueva_partida()
+    m = next(m for m in p.datos["vehiculos"] if not m.get("barco") and not m.get("vuela"))
+    x, y = p.pos()
+    trafico = p.crear_vehiculo(m["id"], x, y, 1, "trafico")      # mirando al este
+    trafico.dir = 1
+    dejado = p.crear_vehiculo(m["id"], x + 8, y + 2.2, 1, None)   # dos metros y pico a un lado, como con la D
+    dejado.ia, dejado.vel = None, 0.0
+    p.j.veh = None
+    p.j.x, p.j.y = x - 200, y - 200
+    assert not p._obstaculo(trafico)
+    dejado.y = y + 0.3                                            # en medio del carril, sí estorba
+    assert p._obstaculo(trafico)
+
+
+def test_un_asunto_sin_contestar_lo_arregla_el_abogado_si_lo_tienes(robot):
+    """En el foro: con abogado, una inspección que se dejaba pasar se cobraba entera, sin decir cuál era."""
+    p = robot.nueva_partida()
+    h = p.hon()
+    neg = next(l for l in p.mundo.lugares.values() if l.tipo == "negocio")
+    p.j.propiedades.append(neg.id)
+    h["abogado"] = p.dia + 7
+    p.j.banco, p.j.dinero = 100000, 0
+    h["asuntos"].append({"tipo": "inspeccion", "lugar": neg.id, "dia": p.dia - 5, "plazo": p.dia - 1, "euros": 800})
+    p._hon_dia_asuntos()
+    assert not h["asuntos"] and p.j.banco == 100000 - 400
+    assert neg.nombre in robot.dicho() and "abogado" in robot.dicho()
+    h["abogado"] = 0                                              # sin abogado, la sanción entera
+    h["asuntos"].append({"tipo": "inspeccion", "lugar": neg.id, "dia": p.dia - 5, "plazo": p.dia - 1, "euros": 800})
+    p._hon_dia_asuntos()
+    assert p.j.banco == 100000 - 400 - 800

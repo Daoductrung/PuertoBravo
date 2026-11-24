@@ -755,6 +755,9 @@
 " Sanción de {cobrado} euros.": [
 "juego/vuelo_pantalla.py"
 ],
+" Se encarga tu abogado.": [
+"juego/honrado.py"
+],
 " Se está abriendo: faltan unos {max} segundos. No te apartes.": [
 "juego/misiones.py"
 ],
@@ -32115,6 +32118,9 @@
 "No conozco esa orden. Escribe ayuda.": [
 "servidor/nucleo.py"
 ],
+"No contestaste a tiempo a la inspección de {negocio}, y se resuelve sin ti.": [
+"juego/honrado.py"
+],
 "No creo.": [
 "juego/respuestas_datos2.py"
 ],
@@ -54969,6 +54975,7 @@
 ],
 "tu negocio": [
 "juego/enlinea.py",
+"juego/honrado.py",
 "juego/honrado.py",
 "juego/honrado.py"
 ],

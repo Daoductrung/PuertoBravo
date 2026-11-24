@@ -949,7 +949,13 @@ def test_inspecciones_limpias_y_con_tapadera_pagar_sobornar_o_abogado(robot, mon
     total = j.dinero + j.banco
     p.hon_resolver(h["asuntos"][0], "abogado")
     assert j.dinero + j.banco == total - 300
-    # si no contestas en plazo, se paga sola
+    # si no contestas en plazo, se resuelve sola de la manera menos mala: con abogado, la mitad (1.7.4); sin él, entera
+    h["asuntos"].append({"tipo": "inspeccion", "lugar": BAR, "dia": p.dia, "plazo": p.dia + 1, "euros": 500})
+    h["inspeccion"] = p.dia + 99
+    n = _marca(robot)
+    _dias(robot, 2)
+    assert not h["asuntos"] and "se resuelve sin ti" in _desde(robot, n) and "Se encarga tu abogado" in _desde(robot, n) and "Sanción pagada: 250 euros" in _desde(robot, n)
+    h["abogado"] = 0
     h["asuntos"].append({"tipo": "inspeccion", "lugar": BAR, "dia": p.dia, "plazo": p.dia + 1, "euros": 500})
     h["inspeccion"] = p.dia + 99
     n = _marca(robot)

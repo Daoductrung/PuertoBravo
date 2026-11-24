@@ -1470,6 +1470,8 @@ class Honrado:
         l = self.lugares.get(a.get("lugar"))
         e = self.hon_emp(l) if l is not None and l.id in j.propiedades else None
         if a["tipo"] == "inspeccion":
+            if clave == "abogado" and not self.hon_abogado():   # el abogado dejó de llevar tus asuntos entre medias: se paga entera
+                clave = "pagar"
             if clave == "sobornar":
                 soborno = int(int(l.get("precio", 0)) * AJ("soborno_pct") / 100.0) if l else a["euros"] // 2
                 if not self.pagar_sin_fiar(soborno):
@@ -1487,7 +1489,7 @@ class Honrado:
                 h["negro"] = 0.0
                 self.hon_antecedente(3, tr("Intento de soborno a un inspector y blanqueo"))
                 return self.hon_descubrir()
-            coste = a["euros"] // 2 if clave == "abogado" and self.hon_abogado() else a["euros"]
+            coste = a["euros"] // 2 if clave == "abogado" else a["euros"]
             falta = self.hon_cobrar_de_cuentas(coste)
             h["asuntos"].remove(a)
             if e:
@@ -1547,8 +1549,17 @@ class Honrado:
         for a in list(h["asuntos"]):
             if self.dia <= a["plazo"]:
                 continue
-            self.decir(tr("Se ha acabado el plazo de un asunto pendiente y se resuelve sin ti."))
-            self.hon_resolver(a, {"inspeccion": "pagar", "prensa": "dejar"}.get(a["tipo"], "negarte"))
+            # Con abogado contratado, lo menos malo es que se encargue él: la inspección, a la mitad; la prensa, sin coste.
+            clave = {"inspeccion": "pagar", "prensa": "dejar"}.get(a["tipo"], "negarte")
+            if self.hon_abogado() and a["tipo"] in ("inspeccion", "prensa"):
+                clave = "abogado"
+            if a["tipo"] == "inspeccion":                        # se dice cuál: puede ser otra inspección, después de la que ya arreglaste
+                l = self.lugares.get(a.get("lugar"))
+                self.decir(tr('No contestaste a tiempo a la inspección de {negocio}, y se resuelve sin ti.').format(negocio=(l.nombre if l else tr("tu negocio")))
+                           + (tr(" Se encarga tu abogado.") if clave == "abogado" else ""))
+            else:
+                self.decir(tr("Se ha acabado el plazo de un asunto pendiente y se resuelve sin ti."))
+            self.hon_resolver(a, clave)
 
     # ------------------------------------------------------------------ hacer el bien (y las tentaciones)
     def hon_buenas(self):

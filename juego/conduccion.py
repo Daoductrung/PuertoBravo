@@ -633,10 +633,13 @@ class Conduccion:
         estilo = self.estilo_piloto()
         salta = bool(self.sirena_propia) or bool(self.mision and self.mision.get("limite") is not None) or estilo in ("mucha_prisa", "temerario")
         prisa = salta or bool(self.trabajo and self.trabajo.get("limite") is not None) or estilo == "prisa"
+        # lo que da de verdad el vehículo: con sus mejoras de motor y tu habilidad, como cuando conduces tú (ver conducir)
+        from . import sistemas
+        tope = mo["vel_max"] * sistemas.factor_velocidad(v) * (1 + 0.01 * self.nivel("conduccion"))
         if estilo == "mucha_prisa":
-            objetivo = mo["vel_max"] * 0.95
+            objetivo = tope * 0.95
         elif estilo == "temerario":                              # al cien por cien, y sin la frenada automática (ver conducir)
-            objetivo = mo["vel_max"]
+            objetivo = tope
         else:
             objetivo = min(mo["vel_max"] * 0.85, 21.0) if prisa else min(mo["vel_max"] * 0.6, 14.0)
         quien = self.chofer["nombre"].split(",")[0] if self.chofer_conduce() else tr("El piloto")
@@ -959,14 +962,17 @@ class Conduccion:
         dx, dy = M.DIRS[v.dir]
         j = self.j
         px, py = self.pos()
-        cand = [(px, py)] if (j.veh or self.mundo.superficie(px, py) == "calzada") else []
+        cand = [(px, py, 2.4)] if (j.veh or self.mundo.superficie(px, py) == "calzada") else []
         for o in self.vehiculos:
             if o is not v and o is not j.veh and o.ia != "aparcado" and not o.muerto and not getattr(o, "volando", False):
-                cand.append((o.x, o.y))
-        for cx, cy in cand:
+                # Uno parado que no conduce nadie (el que dejas al bajarte) solo estorba si ocupa el carril: arrimado a la
+                # acera con la D se queda a unos dos metros del centro, y el tráfico pasa a su lado en vez de esperar detrás.
+                quieto = o.ia is None and abs(getattr(o, "vel", 0.0)) < 0.5
+                cand.append((o.x, o.y, 1.5 if quieto else 2.4))
+        for cx, cy, ancho in cand:
             a = (cx - v.x) * dx + (cy - v.y) * dy
             lat = abs((cx - v.x) * dy - (cy - v.y) * dx)
-            if 0.5 < a < alcance and lat < 2.4:
+            if 0.5 < a < alcance and lat < ancho:
                 return True
         return False
 
