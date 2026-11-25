@@ -326,3 +326,19 @@ def test_los_objetos_de_coleccion_ya_no_suben_la_fama(robot):
     p.recoger(o)
     assert len(j.casetes) == 5 and j.reputacion == 10.0 and j.dinero > dinero
     assert "Un coleccionista te adelanta" in robot.dicho()
+
+
+def test_la_comunidad_se_lee_tambien_protegida_como_en_el_juego_compilado(tmp_path, monkeypatch):
+    """En la 1.7.4 compilada solo salía el aviso: el archivo va protegido (comunidad.pbd) y se leía como .json."""
+    import json
+    import os
+    from juego import cifrado, comunidad, rutas
+    with open(os.path.join(rutas.DATOS, "comunidad.json"), encoding="utf-8") as f:
+        original = json.load(f)
+    with open(tmp_path / ("comunidad" + rutas.EXT_DATOS), "wb") as f:
+        f.write(cifrado.cifrar(original))
+    monkeypatch.setattr(rutas, "DATOS", str(tmp_path))
+    assert not (tmp_path / "comunidad.json").exists()
+    d = comunidad.cargar()
+    assert [s["id"] for s in d["secciones"]] == ["comunicacion", "foros", "servidores", "otros"]
+    assert d["responsabilidad"] and sum(len(s["enlaces"]) for s in d["secciones"]) >= 5

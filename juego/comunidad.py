@@ -1,7 +1,6 @@
 """Comunidad de jugadores, en el menú principal: grupos, foros, servidores y otros sitios que crean y llevan los propios
 jugadores. No es oficial. Lo que se lista está en data/datos/comunidad.json; aquí solo está cómo se recorre."""
 import copy
-import json
 import os
 
 from . import i18n, rutas
@@ -11,11 +10,14 @@ ARCHIVO = "comunidad.json"
 
 
 def cargar():
-    """Los datos de la sección, en el idioma del juego. Si el archivo falta o está roto, una sección vacía con los avisos."""
+    """Los datos de la sección, en el idioma del juego. Si el archivo falta o está roto, una sección vacía con los avisos.
+    En el juego compilado el archivo va protegido (comunidad.pbd): se lee como los demás datos, con mundo._leer_json."""
+    from .mundo import _leer_json
     try:
-        with open(os.path.join(rutas.DATOS, ARCHIVO), encoding="utf-8") as f:
-            d = json.load(f)
-    except (OSError, ValueError):
+        d = _leer_json(os.path.join(rutas.DATOS, ARCHIVO))
+    except Exception:
+        d = {}
+    if not isinstance(d, dict):
         d = {}
     d = i18n.traducir_datos(copy.deepcopy(d))
     d.setdefault("titulo", tr("Comunidad de jugadores, sección no oficial"))
