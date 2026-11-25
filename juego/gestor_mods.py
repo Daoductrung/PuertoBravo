@@ -49,8 +49,45 @@ def ficha(nombre):
         info = {}
     titulo = str(info.get("nombre") or "").strip()
     desc = str(info.get("descripcion") or "").strip()
-    titulo = i18n.en_idioma(titulo, i18n.actual()) if titulo and hasattr(i18n, "en_idioma") else titulo
-    desc = i18n.en_idioma(desc, i18n.actual()) if desc and hasattr(i18n, "en_idioma") else desc
+    cod = i18n.actual() if hasattr(i18n, "actual") else None
+    if cod:
+        orig_titulo, orig_desc = titulo, desc
+        if hasattr(i18n, "en_idioma"):
+            titulo = i18n.en_idioma(titulo, cod) if titulo else titulo
+            desc = i18n.en_idioma(desc, cod) if desc else desc
+        # Si no se tradujo con el catálogo general, buscar en el archivo de idioma del propio mod
+        if desc == orig_desc or not desc or titulo == orig_titulo or not titulo:
+            carpeta_idioma = i18n.carpeta(cod) if hasattr(i18n, "carpeta") else os.path.join(rutas.DATA, "idiomas", cod)
+            base_dir = rutas.base() if hasattr(rutas, "base") else os.path.dirname(os.path.dirname(rutas.MODS))
+            for carpeta_mods in (os.path.join(carpeta_idioma, "mods"),
+                                 os.path.join(base_dir, "traduccion", cod, "mods")):
+                mod_tr = os.path.join(carpeta_mods, f"{simple}.json")
+                if os.path.exists(mod_tr):
+                    try:
+                        import json
+                        with open(mod_tr, encoding="utf-8") as f:
+                            d = json.load(f)
+                        textos_mod = d.get("textos", d) or {}
+                        if orig_desc in textos_mod:
+                            desc = textos_mod[orig_desc]
+                        if orig_titulo in textos_mod:
+                            titulo = textos_mod[orig_titulo]
+                        break
+                    except Exception:
+                        pass
+        # Si sigue sin descripción (o info venía vacía), buscar en el componente correspondiente
+        if not desc or desc == orig_desc:
+            base_dir = rutas.base() if hasattr(rutas, "base") else os.path.dirname(os.path.dirname(rutas.MODS))
+            comp_json = os.path.join(base_dir, "componentes_extra", f"mod_{simple}", "componente.json")
+            if os.path.exists(comp_json):
+                try:
+                    import json
+                    with open(comp_json, encoding="utf-8") as f:
+                        c = json.load(f)
+                    desc = (c.get("descripciones") or {}).get(cod) or (c.get("descripcion") if cod in ("es", None) else None) or desc
+                    titulo = (c.get("nombres") or {}).get(cod) or (c.get("nombre") if cod in ("es", None) else None) or titulo
+                except Exception:
+                    pass
     return (titulo or simple.replace("_", " ")), desc
 
 
